@@ -33,10 +33,10 @@ import org.pentaho.ui.xul.containers.XulMenupopup;
 /**
  * This class is used to define a number of default values for various settings throughout Kettle. It also contains a
  * number of static final methods to make your life easier.
- * 
+ *
  * @author Matt
  * @since 07-05-2003
- * 
+ *
  */
 public class ConstUI {
 
@@ -132,7 +132,7 @@ public class ConstUI {
 
   /**
    * Determine the level of where the TreeItem is position in a tree.
-   * 
+   *
    * @param ti
    *          The TreeItem
    * @return The level of the item in the tree
@@ -150,7 +150,7 @@ public class ConstUI {
 
   /**
    * Get an array of strings containing the path from the given TreeItem to the parent.
-   * 
+   *
    * @param ti
    *          The TreeItem to look at
    * @return An array of string describing the path to the TreeItem.
@@ -173,7 +173,7 @@ public class ConstUI {
 
   /**
    * Return the tree path seperated by Const.FILE_SEPARATOR, starting from a certain depth in the tree.
-   * 
+   *
    * @param ti
    *          The TreeItem to get the path for
    * @param from
@@ -200,7 +200,7 @@ public class ConstUI {
 
   /**
    * Flips the TreeItem from expanded to not expanded or vice-versa.
-   * 
+   *
    * @param ti
    *          The TreeItem to flip.
    */
@@ -214,7 +214,7 @@ public class ConstUI {
 
   /**
    * Finds a TreeItem with a certain label (name) in a (part of a) tree.
-   * 
+   *
    * @param parent
    *          The TreeItem where we start looking.
    * @param parentName
@@ -227,7 +227,8 @@ public class ConstUI {
     return findTreeItem( null, parent, parentName, name );
   }
 
-  private static final TreeItem findTreeItem( TreeItem grandParent, TreeItem parent, String parentName, String name ) {
+  private static final TreeItem
+    findTreeItem( TreeItem grandParent, TreeItem parent, String parentName, String name ) {
     if ( Const.isEmpty( parentName ) ) {
       if ( parent.getText().equalsIgnoreCase( name ) ) {
         return parent;
@@ -237,7 +238,7 @@ public class ConstUI {
         System.out.println( "Other" );
       }
       if ( grandParent != null
-          && grandParent.getText().equalsIgnoreCase( parentName ) && parent.getText().equalsIgnoreCase( name ) ) {
+        && grandParent.getText().equalsIgnoreCase( parentName ) && parent.getText().equalsIgnoreCase( name ) ) {
         return parent;
       }
     }

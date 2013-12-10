@@ -51,13 +51,13 @@ import org.w3c.dom.Node;
 
 /**
  * Send file to SFTP host.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-April-2012
  */
 
 public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SFTPPutMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SFTPPutMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String serverName;
   private String serverPort;
@@ -88,7 +88,8 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -117,18 +118,20 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
       proxyHost = XMLHandler.getTagValue( stepnode, "proxyHost" );
       proxyPort = XMLHandler.getTagValue( stepnode, "proxyPort" );
       proxyUsername = XMLHandler.getTagValue( stepnode, "proxyUsername" );
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "proxyPassword" ) );
+      proxyPassword =
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "proxyPassword" ) );
 
       createRemoteFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "createRemoteFolder" ) );
 
       boolean remove = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "remove" ) );
-      setAfterFTPS( JobEntrySFTPPUT.getAfterSFTPPutByCode( Const.NVL(
-          XMLHandler.getTagValue( stepnode, "aftersftpput" ), "" ) ) );
+      setAfterFTPS( JobEntrySFTPPUT.getAfterSFTPPutByCode( Const.NVL( XMLHandler.getTagValue(
+        stepnode, "aftersftpput" ), "" ) ) );
       if ( remove && getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING ) {
         setAfterFTPS( JobEntrySFTPPUT.AFTER_FTPSPUT_DELETE );
       }
       destinationfolderFieldName = XMLHandler.getTagValue( stepnode, "destinationfolderFieldName" );
-      createDestinationFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "createdestinationfolder" ) );
+      createDestinationFolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "createdestinationfolder" ) );
       remoteFilenameFieldName = XMLHandler.getTagValue( stepnode, "remoteFilenameFieldName" );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -163,29 +166,32 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "serverport", serverPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", userName ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sourceFileFieldName", sourceFileFieldName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "remoteDirectoryFieldName", remoteDirectoryFieldName ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "remoteDirectoryFieldName", remoteDirectoryFieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "inputIsStream", inputIsStream ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "addFilenameResut", addFilenameResut ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "usekeyfilename", usekeyfilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "keyfilename", keyfilename ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "keyfilepass", Encr.encryptPasswordIfNotUsingVariables( keyfilepass ) ) );
+      XMLHandler.addTagValue( "keyfilepass", Encr.encryptPasswordIfNotUsingVariables( keyfilepass ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "compression", compression ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyType", proxyType ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyHost", proxyHost ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+      XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "createRemoteFolder", createRemoteFolder ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "aftersftpput", JobEntrySFTPPUT.getAfterSFTPPutCode( getAfterFTPS() ) ) );
+      XMLHandler.addTagValue( "aftersftpput", JobEntrySFTPPUT.getAfterSFTPPutCode( getAfterFTPS() ) ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "destinationfolderFieldName", destinationfolderFieldName ) );
     retval
-        .append( "      " ).append( XMLHandler.addTagValue( "destinationfolderFieldName", destinationfolderFieldName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "createdestinationfolder", createDestinationFolder ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "remoteFilenameFieldName", remoteFilenameFieldName ) );
+      .append( "      " ).append( XMLHandler.addTagValue( "createdestinationfolder", createDestinationFolder ) );
+    retval
+      .append( "      " ).append( XMLHandler.addTagValue( "remoteFilenameFieldName", remoteFilenameFieldName ) );
 
     return retval.toString();
   }
@@ -211,13 +217,14 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
       proxyHost = rep.getStepAttributeString( id_step, "proxyHost" );
       proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
       proxyUsername = rep.getStepAttributeString( id_step, "proxyUsername" );
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "proxyPassword" ) );
+      proxyPassword =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "proxyPassword" ) );
 
       createRemoteFolder = rep.getStepAttributeBoolean( id_step, "createRemoteFolder" );
 
       boolean remove = rep.getStepAttributeBoolean( id_step, "remove" );
       setAfterFTPS( JobEntrySFTPPUT.getAfterSFTPPutByCode( Const.NVL( rep.getStepAttributeString(
-          id_step, "aftersftpput" ), "" ) ) );
+        id_step, "aftersftpput" ), "" ) ) );
       if ( remove && getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING ) {
         setAfterFTPS( JobEntrySFTPPUT.AFTER_FTPSPUT_DELETE );
       }
@@ -235,9 +242,8 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "servername", serverName );
       rep.saveStepAttribute( id_transformation, id_step, "serverport", serverPort );
       rep.saveStepAttribute( id_transformation, id_step, "username", userName );
-      rep
-          .saveStepAttribute( id_transformation, id_step, "password", Encr
-              .encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveStepAttribute( id_transformation, id_step, "sourceFileFieldName", sourceFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "remoteDirectoryFieldName", remoteDirectoryFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "inputIsStream", inputIsStream );
@@ -246,16 +252,16 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "usekeyfilename", usekeyfilename );
       rep.saveStepAttribute( id_transformation, id_step, "keyfilename", keyfilename );
       rep.saveStepAttribute( id_transformation, id_step, "keyfilepass", Encr
-          .encryptPasswordIfNotUsingVariables( keyfilepass ) );
+        .encryptPasswordIfNotUsingVariables( keyfilepass ) );
       rep.saveStepAttribute( id_transformation, id_step, "compression", compression );
       rep.saveStepAttribute( id_transformation, id_step, "proxyType", proxyType );
       rep.saveStepAttribute( id_transformation, id_step, "proxyHost", proxyHost );
       rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
       rep.saveStepAttribute( id_transformation, id_step, "proxyUsername", proxyUsername );
       rep.saveStepAttribute( id_transformation, id_step, "proxyPassword", Encr
-          .encryptPasswordIfNotUsingVariables( proxyPassword ) );
+        .encryptPasswordIfNotUsingVariables( proxyPassword ) );
       rep.saveStepAttribute( id_transformation, id_step, "aftersftpput", JobEntrySFTPPUT
-          .getAfterSFTPPutCode( getAfterFTPS() ) );
+        .getAfterSFTPPutCode( getAfterFTPS() ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "createRemoteFolder", createRemoteFolder );
       rep.saveStepAttribute( id_transformation, id_step, "destinationfolderFieldName", destinationfolderFieldName );
@@ -268,42 +274,42 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "SFTPPutMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "SFTPPutMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SFTPPutMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SFTPPutMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SFTPPutMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SFTPPutMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SFTPPutMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SFTPPutMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new SFTPPut( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

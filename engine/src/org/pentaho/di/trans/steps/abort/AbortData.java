@@ -27,7 +27,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Data class for the Abort step.
- * 
+ *
  * @author Sven Boden
  */
 public class AbortData extends BaseStepData implements StepDataInterface {

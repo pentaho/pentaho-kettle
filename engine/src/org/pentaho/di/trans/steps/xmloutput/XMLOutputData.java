@@ -74,7 +74,7 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface {
   public boolean OpenedNewFile;
 
   /**
-   * 
+   *
    */
   public XMLOutputData() {
     super();

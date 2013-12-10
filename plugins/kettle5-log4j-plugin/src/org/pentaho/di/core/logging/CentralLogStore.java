@@ -31,32 +31,32 @@ import org.apache.log4j.spi.LoggingEvent;
 public class CentralLogStore {
   /**
    * Create the central log store with optional limitation to the size
-   * 
+   *
    * @param maxSize the maximum size
    * @param maxLogTimeoutMinutes The maximum time that a log line times out in Minutes.
    */
   private CentralLogStore(int maxSize, int maxLogTimeoutMinutes) {
     KettleLogStore.init(maxSize, maxLogTimeoutMinutes);
   }
-  
+
   public void replaceLogCleaner(final int maxLogTimeoutMinutes) {
     KettleLogStore.getInstance().replaceLogCleaner(maxLogTimeoutMinutes);
   }
 
   /**
    * Initialize the central log store with optional limitation to the size
-   * 
+   *
    * @param maxSize the maximum size
    * @param maxLogTimeoutHours The maximum time that a log line times out in hours.
    */
   public static void init(int maxSize, int maxLogTimeoutMinutes) {
     KettleLogStore.init(maxSize, maxLogTimeoutMinutes);
   }
-  
+
   public static void init() {
     KettleLogStore.init();
   }
-  
+
     /**
      * @return the number (sequence, 1..N) of the last log line.
      * If no records are present in the buffer, 0 is returned.
@@ -64,11 +64,11 @@ public class CentralLogStore {
     public static int getLastBufferLineNr() {
       return KettleLogStore.getLastBufferLineNr();
     }
-    
+
     /**
-     * 
+     *
      * Get all the log lines pertaining to the specified parent log channel id (including all children)
-     * 
+     *
      * @param parentLogChannelId the parent log channel ID to grab
      * @param includeGeneral include general log lines
      * @param from
@@ -80,7 +80,7 @@ public class CentralLogStore {
       return convertKettleLoggingEventsToLog4jLoggingEvents(events);
     }
 
-    
+
     private static List<LoggingEvent> convertKettleLoggingEventsToLog4jLoggingEvents(List<KettleLoggingEvent> events) {
       LogWriter logWriter = LogWriter.getInstance();
       // Copy the events over for compatibility
@@ -89,18 +89,18 @@ public class CentralLogStore {
         LoggingEvent loggingEvent = new LoggingEvent(
             logWriter.getPentahoLogger().getClass().getName(),
             logWriter.getPentahoLogger(), // Category is deprecated
-            event.getTimeStamp(), 
-            convertKettleLogLevelToLog4jLevel(event.getLevel()), 
-            event.getMessage(), 
-            null, 
-            null, 
-            null, 
-            null, 
+            event.getTimeStamp(),
+            convertKettleLogLevelToLog4jLevel(event.getLevel()),
+            event.getMessage(),
+            null,
+            null,
+            null,
+            null,
             null
           );
         list.add(loggingEvent);
       }
-      
+
       return list;
 
     }
@@ -120,7 +120,7 @@ public class CentralLogStore {
 
     /**
      * Get all the log lines for the specified parent log channel id (including all children)
-     * 
+     *
      * @param channelId channel IDs to grab
      * @param includeGeneral include general log lines
      * @param from
@@ -130,11 +130,11 @@ public class CentralLogStore {
     public static List<LoggingEvent> getLogBufferFromTo(List<String> channelId, boolean includeGeneral, int from, int to) {
       return convertKettleLoggingEventsToLog4jLoggingEvents(KettleLogStore.getLogBufferFromTo(channelId, includeGeneral, from, to));
     }
-    
+
     /*
      * This method will no longer be available in the Kettle 5 API
-     * 
-     * @return The appender that represents the central logging store.  It is capable of giving back log rows in an incremental fashion, etc. 
+     *
+     * @return The appender that represents the central logging store.  It is capable of giving back log rows in an incremental fashion, etc.
      *
     public static Log4jBufferAppender getAppender() {
       return getInstance().appender;
@@ -143,7 +143,7 @@ public class CentralLogStore {
 
     /**
      * Discard all the lines for the specified log channel id AND all the children.
-     *  
+     *
      * @param parentLogChannelId the parent log channel id to be removed along with all its children.
      */
   public static void discardLines(String parentLogChannelId, boolean includeGeneralMessages) {

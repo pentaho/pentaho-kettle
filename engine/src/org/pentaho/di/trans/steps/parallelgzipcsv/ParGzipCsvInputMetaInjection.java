@@ -35,7 +35,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 /**
  * This takes care of the external metadata injection into the ParGzipCsvInputMeta class
- * 
+ *
  * @author Matt
  */
 public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface {
@@ -43,8 +43,9 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
   private enum Entry {
 
     FILENAME( ValueMetaInterface.TYPE_STRING, "The file name to read" ), FILENAME_FIELD(
-        ValueMetaInterface.TYPE_STRING, "The filename field (if the step reads file names)" ), INCLUDING_FILENAMES(
-        ValueMetaInterface.TYPE_STRING, "Include file name in output? (Y/N)" ), ROW_NUMBER_FIELD(
+      ValueMetaInterface.TYPE_STRING, "The filename field (if the step reads file names)" ),
+      INCLUDING_FILENAMES( ValueMetaInterface.TYPE_STRING, "Include file name in output? (Y/N)" ),
+      ROW_NUMBER_FIELD(
         ValueMetaInterface.TYPE_STRING, "The row number field" ), HEADER_PRESENT(
         ValueMetaInterface.TYPE_STRING, "Is there a header row? (Y/N)" ), DELIMITER(
         ValueMetaInterface.TYPE_STRING, "The field delimiter" ), ENCLOSURE(
@@ -55,14 +56,15 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
         ValueMetaInterface.TYPE_STRING, "Run in parallel? (Y/N)" ), ENCODING(
         ValueMetaInterface.TYPE_STRING, "The file encoding" ),
 
-    FIELDS( ValueMetaInterface.TYPE_NONE, "The fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
-    FIELD_NAME( ValueMetaInterface.TYPE_STRING, "Name" ), FIELD_POSITION( ValueMetaInterface.TYPE_STRING, "Position" ),
-    FIELD_LENGTH( ValueMetaInterface.TYPE_STRING, "Length" ), FIELD_TYPE(
-        ValueMetaInterface.TYPE_STRING, "Data type (String, Number, ...)" ), FIELD_IGNORE(
-        ValueMetaInterface.TYPE_STRING, "Ignore? (Y/N)" ), FIELD_FORMAT( ValueMetaInterface.TYPE_STRING, "Format" ),
-    FIELD_TRIM_TYPE( ValueMetaInterface.TYPE_STRING, "Trim type (none, left, right, both)" ), FIELD_PRECISION(
-        ValueMetaInterface.TYPE_STRING, "Precision" ),
-    FIELD_DECIMAL( ValueMetaInterface.TYPE_STRING, "Decimal symbol" ), FIELD_GROUP(
+      FIELDS( ValueMetaInterface.TYPE_NONE, "The fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
+      FIELD_NAME( ValueMetaInterface.TYPE_STRING, "Name" ), FIELD_POSITION(
+        ValueMetaInterface.TYPE_STRING, "Position" ), FIELD_LENGTH( ValueMetaInterface.TYPE_STRING, "Length" ),
+      FIELD_TYPE( ValueMetaInterface.TYPE_STRING, "Data type (String, Number, ...)" ), FIELD_IGNORE(
+        ValueMetaInterface.TYPE_STRING, "Ignore? (Y/N)" ),
+      FIELD_FORMAT( ValueMetaInterface.TYPE_STRING, "Format" ), FIELD_TRIM_TYPE(
+        ValueMetaInterface.TYPE_STRING, "Trim type (none, left, right, both)" ), FIELD_PRECISION(
+        ValueMetaInterface.TYPE_STRING, "Precision" ), FIELD_DECIMAL(
+        ValueMetaInterface.TYPE_STRING, "Decimal symbol" ), FIELD_GROUP(
         ValueMetaInterface.TYPE_STRING, "Grouping symbol" ), FIELD_CURRENCY(
         ValueMetaInterface.TYPE_STRING, "Currency symbol" ), FIELD_REPEAT(
         ValueMetaInterface.TYPE_STRING, "Repeat values? (Y/N)" ), FIELD_NULL_STRING(
@@ -107,10 +109,10 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
     List<StepInjectionMetaEntry> all = new ArrayList<StepInjectionMetaEntry>();
 
     Entry[] topEntries =
-        new Entry[] {
-            Entry.FILENAME, Entry.FILENAME_FIELD, Entry.INCLUDING_FILENAMES, Entry.ROW_NUMBER_FIELD,
-            Entry.HEADER_PRESENT, Entry.DELIMITER, Entry.ENCLOSURE, Entry.BUFFER_SIZE, Entry.LAZY_CONVERSION,
-            Entry.ADD_FILES_TO_RESULT, Entry.RUN_IN_PARALLEL, Entry.ENCODING, };
+      new Entry[] {
+        Entry.FILENAME, Entry.FILENAME_FIELD, Entry.INCLUDING_FILENAMES, Entry.ROW_NUMBER_FIELD,
+        Entry.HEADER_PRESENT, Entry.DELIMITER, Entry.ENCLOSURE, Entry.BUFFER_SIZE, Entry.LAZY_CONVERSION,
+        Entry.ADD_FILES_TO_RESULT, Entry.RUN_IN_PARALLEL, Entry.ENCODING, };
     for ( Entry topEntry : topEntries ) {
       all.add( new StepInjectionMetaEntry( topEntry.name(), topEntry.getValueType(), topEntry.getDescription() ) );
     }
@@ -118,20 +120,21 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
     // The fields...
     //
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( Entry.FIELDS.name(), ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
+      new StepInjectionMetaEntry( Entry.FIELDS.name(), ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
     all.add( fieldsEntry );
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( Entry.FIELD.name(), ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
+      new StepInjectionMetaEntry( Entry.FIELD.name(), ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
     fieldsEntry.getDetails().add( fieldEntry );
 
     Entry[] aggEntries =
-        new Entry[] {
-            Entry.FIELD_NAME, Entry.FIELD_POSITION, Entry.FIELD_LENGTH, Entry.FIELD_TYPE, Entry.FIELD_IGNORE,
-            Entry.FIELD_FORMAT, Entry.FIELD_TRIM_TYPE, Entry.FIELD_PRECISION, Entry.FIELD_DECIMAL, Entry.FIELD_GROUP,
-            Entry.FIELD_CURRENCY, Entry.FIELD_REPEAT, Entry.FIELD_NULL_STRING, Entry.FIELD_IF_NULL, };
+      new Entry[] {
+        Entry.FIELD_NAME, Entry.FIELD_POSITION, Entry.FIELD_LENGTH, Entry.FIELD_TYPE, Entry.FIELD_IGNORE,
+        Entry.FIELD_FORMAT, Entry.FIELD_TRIM_TYPE, Entry.FIELD_PRECISION, Entry.FIELD_DECIMAL,
+        Entry.FIELD_GROUP, Entry.FIELD_CURRENCY, Entry.FIELD_REPEAT, Entry.FIELD_NULL_STRING,
+        Entry.FIELD_IF_NULL, };
     for ( Entry entry : aggEntries ) {
       StepInjectionMetaEntry metaEntry =
-          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
       fieldEntry.getDetails().add( metaEntry );
     }
 

@@ -51,12 +51,12 @@ import org.w3c.dom.Node;
 
 /**
  * Contains the meta-data for the Formula step: calculates ad-hoc formula's Powered by Pentaho's "libformula"
- * 
+ *
  * Created on 22-feb-2007
  */
 
 public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = FormulaMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FormulaMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The formula calculations to be performed */
   private FormulaMetaFunction[] formula;
@@ -77,7 +77,8 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
     formula = new FormulaMetaFunction[nrCalcs];
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     int nrCalcs = XMLHandler.countNodes( stepnode, FormulaMetaFunction.XML_TAG );
     allocate( nrCalcs );
     for ( int i = 0; i < nrCalcs; i++ ) {
@@ -142,7 +143,7 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < formula.length; i++ ) {
       FormulaMetaFunction fn = formula[i];
       if ( Const.isEmpty( fn.getReplaceField() ) ) {
@@ -164,7 +165,7 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
         int index = row.indexOfValue( fn.getReplaceField() );
         if ( index < 0 ) {
           throw new KettleStepException( "Unknown field specified to replace with a formula result: ["
-              + fn.getReplaceField() + "]" );
+            + fn.getReplaceField() + "]" );
         }
         // Change the data type etc.
         //
@@ -178,7 +179,7 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Checks the settings of this step and puts the findings in a remarks List.
-   * 
+   *
    * @param remarks
    *          The list to put the remarks in @see org.pentaho.di.core.CheckResult
    * @param stepMeta
@@ -192,38 +193,38 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
    * @param info
    *          The fields that are used as information by the step
    */
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "FormulaMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FormulaMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "FormulaMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FormulaMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new Formula( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

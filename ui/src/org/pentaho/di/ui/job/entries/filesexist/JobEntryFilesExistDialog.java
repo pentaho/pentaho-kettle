@@ -60,17 +60,17 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Files exist job entry settings.
- * 
+ *
  * @author Samatar
  * @since 12-10-2007
  */
 public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryFilesExist.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFilesExist.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] {
-      BaseMessages.getString( PKG, "JobFilesExist.Filetype.Text" ),
-      BaseMessages.getString( PKG, "JobFilesExist.Filetype.CSV" ),
-      BaseMessages.getString( PKG, "JobFilesExist.Filetype.All" ) };
+    BaseMessages.getString( PKG, "JobFilesExist.Filetype.Text" ),
+    BaseMessages.getString( PKG, "JobFilesExist.Filetype.CSV" ),
+    BaseMessages.getString( PKG, "JobFilesExist.Filetype.All" ) };
 
   private Label wlName;
 
@@ -281,14 +281,16 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] { new ColumnInfo(
-            BaseMessages.getString( PKG, "JobFilesExist.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "JobFilesExist.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobFilesExist.Fields.Column" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

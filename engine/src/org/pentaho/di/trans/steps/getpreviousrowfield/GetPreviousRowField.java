@@ -37,20 +37,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * return field value from previous row.
- * 
+ *
  * @author Samatar Hassan
  * @since 07 September 2008
  */
 public class GetPreviousRowField extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = GetPreviousRowFieldMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetPreviousRowFieldMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetPreviousRowFieldMeta meta;
 
   private GetPreviousRowFieldData data;
 
-  public GetPreviousRowField( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public GetPreviousRowField( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -93,8 +93,8 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
         data.inStreamNrs[i] = data.inputRowMeta.indexOfValue( meta.getFieldInStream()[i] );
         if ( data.inStreamNrs[i] < 0 ) { // couldn't find field!
 
-          throw new KettleException( BaseMessages.getString( PKG, "GetPreviousRowField.Exception.FieldRequired", meta
-              .getFieldInStream()[i] ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "GetPreviousRowField.Exception.FieldRequired", meta.getFieldInStream()[i] ) );
         }
       }
 
@@ -103,7 +103,7 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
         data.outStreamNrs[i] = meta.getFieldOutStream()[i];
         if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "GetPreviousRowField.Exception.OutputFieldEmpty", "" + i ) );
+            PKG, "GetPreviousRowField.Exception.OutputFieldEmpty", "" + i ) );
         }
       }
     } // end if first

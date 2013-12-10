@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm;
 
 /**
  * Symmetric algorithm
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */

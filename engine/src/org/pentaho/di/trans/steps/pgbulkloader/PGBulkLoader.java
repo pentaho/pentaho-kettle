@@ -26,9 +26,9 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 // The "designer" notes of the PostgreSQL bulkloader:
 // ----------------------------------------------
 //
-// Let's see how fast we can push data down the tube with the use of COPY FROM STDIN 
+// Let's see how fast we can push data down the tube with the use of COPY FROM STDIN
 //
-// 
+//
 
 import java.math.BigDecimal;
 
@@ -52,29 +52,29 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs a bulk load to a postgres table.
- * 
+ *
  * Based on (copied from) Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author matt
  * @since 28-mar-2008
  */
 public class PGBulkLoader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private PGBulkLoaderMeta meta;
   private PGBulkLoaderData data;
 
   public PGBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Get the contents of the control file as specified in the meta object
-   * 
+   *
    * @param meta
    *          the meta object to model the control file after
-   * 
+   *
    * @return a string containing the control file contents
    */
   public String getCopyCommand( RowMetaInterface rm, Object[] r ) throws KettleException {
@@ -85,8 +85,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     StringBuffer contents = new StringBuffer( 500 );
 
     String tableName =
-        dm.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
-            .getTableName() ) );
+      dm.getQuotedSchemaTableCombination(
+        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
     // Set the date style...
     //
@@ -129,7 +129,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
     // The "FORMAT" clause
     contents.append( " WITH CSV DELIMITER AS '" ).append( meta.getDelimiter() ).append( "' QUOTE AS '" ).append(
-        meta.getEnclosure() ).append( "'" );
+      meta.getEnclosure() ).append( "'" );
     contents.append( ";" ).append( Const.CR );
 
     return contents.toString();
@@ -137,14 +137,14 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
   /**
    * Create the command line for a psql process depending on the meta information supplied.
-   * 
+   *
    * @param meta
    *          The meta data to create the command line from
    * @param password
    *          Use the real password or not
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */
@@ -153,7 +153,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
     if ( meta.getPsqlpath() != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
         String psqlexec = Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) );
         sb.append( psqlexec );
       } catch ( KettleFileException ex ) {
@@ -264,7 +265,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
           int exitVal = data.psqlProcess.waitFor();
           logBasic( BaseMessages.getString( PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal ) );
           if ( meta.isStopOnError() && exitVal != 0 ) { // If we're supposed to stop on exception, then this is where.
-            throw new KettleException( BaseMessages.getString( PKG, "PGBulkLoader.Exception.ExitValueNotZero", exitVal ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "PGBulkLoader.Exception.ExitValueNotZero", exitVal ) );
           }
         } else {
           logBasic( BaseMessages.getString( PKG, "PGBulkLoader.Log.NullInputAndOrPSQLProcess" ) );

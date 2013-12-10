@@ -181,7 +181,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     }
 
     query.setIds( meta.isUseCustomTableId() ? environmentSubstitute( meta.getGaCustomTableId() ) : meta
-        .getGaProfileTableId() );
+      .getGaProfileTableId() );
 
     query.setStartDate( environmentSubstitute( meta.getStartDate() ) );
     query.setEndDate( environmentSubstitute( meta.getEndDate() ) );
@@ -206,7 +206,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     if ( !Const.isEmpty( meta.getGaApiKey() ) ) {
       // allow to use optionally encrypted environment variables
       query.setStringCustomParameter( "key", Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta
-          .getGaApiKey() ) ) );
+        .getGaApiKey() ) ) );
     }
 
     return query;

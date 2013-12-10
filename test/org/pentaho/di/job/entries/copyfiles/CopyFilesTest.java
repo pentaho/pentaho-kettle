@@ -41,7 +41,7 @@ public class CopyFilesTest {
 
   /**
    * Creates a Result and logs that fact.
-   * 
+   *
    * @return
    */
   private static Result createStartJobEntryResult() {
@@ -55,7 +55,7 @@ public class CopyFilesTest {
   /**
    * Tests copying a folder contents. The folders used are created in the Java's temp location using unique folder and
    * file names.
-   * 
+   *
    * @throws Exception
    */
   @Test

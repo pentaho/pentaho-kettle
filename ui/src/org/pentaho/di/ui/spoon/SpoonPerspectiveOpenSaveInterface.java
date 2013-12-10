@@ -26,7 +26,7 @@ import org.pentaho.di.core.EngineMetaInterface;
 
 /**
  * The spoon perspective implementing this interface implements its own open/save dialogs and logic.
- * 
+ *
  * @author matt
  */
 public interface SpoonPerspectiveOpenSaveInterface {
@@ -37,7 +37,7 @@ public interface SpoonPerspectiveOpenSaveInterface {
 
   /**
    * Import from a file (extension driven by the perspective)
-   * 
+   *
    * @param filename
    *          the file to read from
    */
@@ -45,7 +45,7 @@ public interface SpoonPerspectiveOpenSaveInterface {
 
   /**
    * Save the specified file/object
-   * 
+   *
    * @param meta
    *          The object to be saved.
    * @return true if the object was saved
@@ -54,7 +54,7 @@ public interface SpoonPerspectiveOpenSaveInterface {
 
   /**
    * Export to a file
-   * 
+   *
    * @param meta
    *          the object to export
    * @param filename

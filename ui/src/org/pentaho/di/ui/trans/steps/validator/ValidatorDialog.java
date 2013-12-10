@@ -77,7 +77,7 @@ import org.pentaho.di.ui.core.widget.warning.WarningMessageInterface;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ValidatorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ValidatorMeta input;
   private List wValidationsList;
@@ -347,7 +347,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
         // See if there is a selected Validation
         //
         if ( wValidationsList != null
-            && wValidationsList.getItemCount() > 0 && wValidationsList.getSelection().length == 1 ) {
+          && wValidationsList.getItemCount() > 0 && wValidationsList.getSelection().length == 1 ) {
           int index = wValidationsList.getSelectionIndex();
           String description = wValidationsList.getItem( index );
           Validation validation = Validation.findValidation( selectionList, description );
@@ -384,8 +384,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
       wFieldName.setItems( inputFields.getFieldNames() );
     } catch ( KettleStepException ex ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString(
-          PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
+        PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString(
+        PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
     }
 
     // ErrorCode
@@ -969,16 +969,17 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
         // Create a new validation rule page ...
         //
         EnterStringDialog enterStringDialog =
-            new EnterStringDialog( shell, "", BaseMessages.getString(
-                PKG, "ValidatorDialog.EnterValidationRuleName.Title" ), BaseMessages.getString(
-                PKG, "ValidatorDialog.EnterValidationRuleName.Message" ) );
+          new EnterStringDialog( shell, "", BaseMessages.getString(
+            PKG, "ValidatorDialog.EnterValidationRuleName.Title" ), BaseMessages.getString(
+            PKG, "ValidatorDialog.EnterValidationRuleName.Message" ) );
         String description = enterStringDialog.open();
         if ( description != null ) {
           if ( Validation.findValidation( selectionList, description ) != null ) {
             MessageBox messageBox = new MessageBox( shell, SWT.ICON_ERROR );
-            messageBox.setText( BaseMessages.getString( PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Title" ) );
+            messageBox.setText( BaseMessages.getString(
+              PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Title" ) );
             messageBox.setMessage( BaseMessages.getString(
-                PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Message" ) );
+              PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Message" ) );
             messageBox.open();
             return;
           }
@@ -1041,13 +1042,13 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
     warningText.addWarningInterface( new WarningInterface() {
       public WarningMessageInterface getWarningSituation( String text, Control widget, Object subject ) {
         return new SimpleWarningMessage( spacesValidation( text ), BaseMessages.getString(
-            PKG, "System.Warning.OnlySpaces" ) );
+          PKG, "System.Warning.OnlySpaces" ) );
       }
     } );
     warningText.addWarningInterface( new WarningInterface() {
       public WarningMessageInterface getWarningSituation( String text, Control widget, Object subject ) {
         return new SimpleWarningMessage( text != null && text.endsWith( " " ), BaseMessages.getString(
-            PKG, "System.Warning.TrailingSpaces" ) );
+          PKG, "System.Warning.TrailingSpaces" ) );
       }
     } );
   }
@@ -1071,9 +1072,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
    */
   protected void addAllowedValue() {
     EnterStringDialog dialog =
-        new EnterStringDialog(
-            shell, "", BaseMessages.getString( PKG, "ValidatorDialog.Dialog.AddAllowedValue.Title" ), BaseMessages
-                .getString( PKG, "ValidatorDialog.Dialog.AddAllowedValue.Message" ), true, transMeta );
+      new EnterStringDialog( shell, "", BaseMessages.getString(
+        PKG, "ValidatorDialog.Dialog.AddAllowedValue.Title" ), BaseMessages.getString(
+        PKG, "ValidatorDialog.Dialog.AddAllowedValue.Message" ), true, transMeta );
     String value = dialog.open();
     if ( !Const.isEmpty( value ) ) {
       wAllowedValues.add( value );
@@ -1309,8 +1310,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
       shell.setCursor( null );
       busy.dispose();
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "ValidatorDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "ValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "ValidatorDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "ValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

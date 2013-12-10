@@ -56,11 +56,11 @@ import org.w3c.dom.Node;
 
 /*
  * @author Biswapesh
- * @since 24-nov-2006 
+ * @since 24-nov-2006
  */
 
 public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] join_types = { "INNER", "LEFT OUTER", "RIGHT OUTER", "FULL OUTER" };
   public static final boolean[] one_optionals = { false, false, true, true };
@@ -73,7 +73,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * The supported join types are INNER, LEFT OUTER, RIGHT OUTER and FULL OUTER
-   * 
+   *
    * @return The type of join
    */
   public String getJoinType() {
@@ -82,7 +82,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Sets the type of join
-   * 
+   *
    * @param joinType
    *          The type of join, e.g. INNER/FULL OUTER
    */
@@ -128,7 +128,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -192,7 +193,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
       infoStreams.get( 1 ).setSubject( XMLHandler.getTagValue( stepnode, "step2" ) );
       joinType = XMLHandler.getTagValue( stepnode, "join_type" );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "MergeJoinMeta.Exception.UnableToLoadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "MergeJoinMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -221,8 +223,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
       infoStreams.get( 1 ).setSubject( rep.getStepAttributeString( id_step, "step2" ) );
       joinType = rep.getStepAttributeString( id_step, "join_type" );
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "MergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "MergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -251,25 +253,25 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "join_type", getJoinType() );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MergeJoinMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     /*
      * @todo Need to check for the following: 1) Join type must be one of INNER / LEFT OUTER / RIGHT OUTER / FULL OUTER
      * 2) Number of input streams must be two (for now at least) 3) The field names of input streams must be unique
      */
     CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-            PKG, "MergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
+      new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+        PKG, "MergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
     remarks.add( cr );
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
     // So we just merge in the info fields.
     //
@@ -288,7 +290,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new MergeJoin( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -305,9 +307,9 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
       ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
-          PKG, "MergeJoinMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
+        PKG, "MergeJoinMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
       ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
-          PKG, "MergeJoinMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
+        PKG, "MergeJoinMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
     }
 
     return ioMeta;

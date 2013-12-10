@@ -39,7 +39,7 @@ public class SAPConnectionMockTest {
 
   /**
    * How to use a SAPConnection
-   * 
+   *
    * @throws SAPException
    */
   public static void main( String[] args ) throws SAPException {

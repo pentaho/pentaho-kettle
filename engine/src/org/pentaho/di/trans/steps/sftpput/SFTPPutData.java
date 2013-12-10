@@ -28,7 +28,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Send file to SFTP host.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-April-2012
  */

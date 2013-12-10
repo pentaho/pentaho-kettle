@@ -40,9 +40,9 @@ import org.owasp.esapi.Encoder;
  * This port number will be allocated in such a way that the port number is unique for a given hostname.<br>
  * This in turn will ensure that all the slaves will use valid port numbers, even if multiple slaves run on the same
  * host.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class ListServerSocketServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 3634806745372015720L;
@@ -59,7 +59,8 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -79,7 +80,7 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
 
     out.println( "<HTML>" );
     out.println( "<HEAD><TITLE>List of server sockets on server '"
-        + encoder.encodeForHTML( hostname ) + "'</TITLE></HEAD>" );
+      + encoder.encodeForHTML( hostname ) + "'</TITLE></HEAD>" );
     out.println( "<BODY>" );
     out.println( "<H1>Ports for host '" + encoder.encodeForHTML( hostname ) + "'</H1>" );
 
@@ -99,11 +100,11 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
       if ( !onlyOpen || ( onlyOpen && allocation.isAllocated() ) ) {
 
         out.println( allocation.getPort()
-            + " : Transformation=" + allocation.getTransformationName() + ", " + allocation.getSourceSlaveName() + "/"
-            + allocation.getSourceStepName() + "." + allocation.getSourceStepCopy() );
+          + " : Transformation=" + allocation.getTransformationName() + ", " + allocation.getSourceSlaveName()
+          + "/" + allocation.getSourceStepName() + "." + allocation.getSourceStepCopy() );
         out.println( " --> "
-            + allocation.getTargetSlaveName() + "/" + allocation.getTargetStepName() + "."
-            + allocation.getTargetStepCopy() );
+          + allocation.getTargetSlaveName() + "/" + allocation.getTargetStepName() + "."
+          + allocation.getTargetStepCopy() );
         out.println( " id=" + allocation.getClusterRunId() + ", allocated=" + allocation.isAllocated() );
         out.println( " time=" + allocation.getLastRequested() );
 

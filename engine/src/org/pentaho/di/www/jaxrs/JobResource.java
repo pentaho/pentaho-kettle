@@ -66,9 +66,8 @@ public class JobResource {
     int lastLineNr = KettleLogStore.getLastBufferLineNr();
     Job job = CarteResource.getJob( id );
     String logText =
-        KettleLogStore
-            .getAppender().getBuffer( job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr )
-            .toString();
+      KettleLogStore.getAppender().getBuffer(
+        job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
     return logText;
   }
 
@@ -117,7 +116,7 @@ public class JobResource {
 
           String carteObjectId = UUID.randomUUID().toString();
           SimpleLoggingObject servletLoggingObject =
-              new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
+            new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
           servletLoggingObject.setContainerObjectId( carteObjectId );
 
           Job newJob = new Job( job.getRep(), job.getJobMeta(), servletLoggingObject );
@@ -180,7 +179,7 @@ public class JobResource {
 
       String carteObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject servletLoggingObject =
-          new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
+        new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
       servletLoggingObject.setLogLevel( jobExecutionConfiguration.getLogLevel() );
 

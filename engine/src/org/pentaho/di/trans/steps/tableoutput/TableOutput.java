@@ -53,18 +53,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Writes rows to a database table.
- * 
+ *
  * @author Matt Casters
  * @since 6-apr-2003
  */
 public class TableOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = TableOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableOutputMeta meta;
   private TableOutputData data;
 
   public TableOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -97,8 +97,8 @@ public class TableOutput extends BaseStep implements StepInterface {
         for ( int i = 0; i < meta.getFieldDatabase().length; i++ ) {
           data.valuenrs[i] = getInputRowMeta().indexOfValue( meta.getFieldStream()[i] );
           if ( data.valuenrs[i] < 0 ) {
-            throw new KettleStepException( BaseMessages.getString( PKG, "TableOutput.Exception.FieldRequired", meta
-                .getFieldStream()[i] ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "TableOutput.Exception.FieldRequired", meta.getFieldStream()[i] ) );
           }
         }
 
@@ -109,8 +109,8 @@ public class TableOutput extends BaseStep implements StepInterface {
             insertValue.setName( meta.getFieldDatabase()[i] );
             data.insertRowMeta.addValueMeta( insertValue );
           } else {
-            throw new KettleStepException( BaseMessages.getString( PKG, "TableOutput.Exception.FailedToFindField", meta
-                .getFieldStream()[i] ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i] ) );
           }
         }
       }
@@ -186,13 +186,15 @@ public class TableOutput extends BaseStep implements StepInterface {
         insertRowData = r;
       }
     } else if ( meta.isPartitioningEnabled()
-        && ( meta.isPartitioningDaily() || meta.isPartitioningMonthly() )
-        && ( meta.getPartitioningField() != null && meta.getPartitioningField().length() > 0 ) ) {
+      && ( meta.isPartitioningDaily() || meta.isPartitioningMonthly() )
+      && ( meta.getPartitioningField() != null && meta.getPartitioningField().length() > 0 ) ) {
       // Initialize some stuff!
       if ( data.indexOfPartitioningField < 0 ) {
-        data.indexOfPartitioningField = rowMeta.indexOfValue( environmentSubstitute( meta.getPartitioningField() ) );
+        data.indexOfPartitioningField =
+          rowMeta.indexOfValue( environmentSubstitute( meta.getPartitioningField() ) );
         if ( data.indexOfPartitioningField < 0 ) {
-          throw new KettleStepException( "Unable to find field [" + meta.getPartitioningField() + "] in the input row!" );
+          throw new KettleStepException( "Unable to find field ["
+            + meta.getPartitioningField() + "] in the input row!" );
         }
 
         if ( meta.isPartitioningDaily() ) {
@@ -205,12 +207,13 @@ public class TableOutput extends BaseStep implements StepInterface {
       ValueMetaInterface partitioningValue = rowMeta.getValueMeta( data.indexOfPartitioningField );
       if ( !partitioningValue.isDate() || r[data.indexOfPartitioningField] == null ) {
         throw new KettleStepException(
-            "Sorry, the partitioning field needs to contain a data value and can't be empty!" );
+          "Sorry, the partitioning field needs to contain a data value and can't be empty!" );
       }
 
       Object partitioningValueData = rowMeta.getDate( r, data.indexOfPartitioningField );
       tableName =
-          environmentSubstitute( meta.getTableName() ) + "_" + data.dateFormater.format( (Date) partitioningValueData );
+        environmentSubstitute( meta.getTableName() )
+          + "_" + data.dateFormater.format( (Date) partitioningValueData );
       insertRowData = r;
     } else {
       tableName = data.tableName;
@@ -234,7 +237,8 @@ public class TableOutput extends BaseStep implements StepInterface {
     insertStatement = data.preparedStatements.get( tableName );
     if ( insertStatement == null ) {
       String sql =
-          data.db.getInsertStatement( environmentSubstitute( meta.getSchemaName() ), tableName, data.insertRowMeta );
+        data.db
+          .getInsertStatement( environmentSubstitute( meta.getSchemaName() ), tableName, data.insertRowMeta );
       if ( log.isDetailed() ) {
         logDetailed( "Prepared statement : " + sql );
       }
@@ -373,12 +377,12 @@ public class TableOutput extends BaseStep implements StepInterface {
           if ( data.warnings < 20 ) {
             if ( log.isBasic() ) {
               logBasic( "WARNING: Couldn't insert row into table: "
-                  + rowMeta.getString( r ) + Const.CR + dbe.getMessage() );
+                + rowMeta.getString( r ) + Const.CR + dbe.getMessage() );
             }
           } else if ( data.warnings == 20 ) {
             if ( log.isBasic() ) {
               logBasic( "FINAL WARNING (no more then 20 displayed): Couldn't insert row into table: "
-                  + rowMeta.getString( r ) + Const.CR + dbe.getMessage() );
+                + rowMeta.getString( r ) + Const.CR + dbe.getMessage() );
             }
           }
           data.warnings++;
@@ -386,7 +390,7 @@ public class TableOutput extends BaseStep implements StepInterface {
           setErrors( getErrors() + 1 );
           data.db.rollback();
           throw new KettleException( "Error inserting row into table ["
-              + tableName + "] with values: " + rowMeta.getString( r ), dbe );
+            + tableName + "] with values: " + rowMeta.getString( r ), dbe );
         }
       }
     }
@@ -486,7 +490,7 @@ public class TableOutput extends BaseStep implements StepInterface {
         // For these situations we can use savepoints to help out.
         //
         data.useSafePoints =
-            data.databaseMeta.getDatabaseInterface().useSafePoints() && getStepMeta().isDoingErrorHandling();
+          data.databaseMeta.getDatabaseInterface().useSafePoints() && getStepMeta().isDoingErrorHandling();
 
         // Get the boolean that indicates whether or not we can/should release
         // savepoints during data load.
@@ -500,20 +504,21 @@ public class TableOutput extends BaseStep implements StepInterface {
         // - if we are reverting to save-points
         //
         data.batchMode =
-            meta.useBatchUpdate()
-                && data.commitSize > 0 && !meta.isReturningGeneratedKeys()
-                && !getTransMeta().isUsingUniqueConnections() && !data.useSafePoints;
+          meta.useBatchUpdate()
+            && data.commitSize > 0 && !meta.isReturningGeneratedKeys()
+            && !getTransMeta().isUsingUniqueConnections() && !data.useSafePoints;
 
         // Per PDI-6211 : give a warning that batch mode operation in combination with step error handling can lead to
         // incorrectly processed rows.
         //
         if ( getStepMeta().isDoingErrorHandling() && !dbInterface.supportsErrorHandlingOnBatchUpdates() ) {
           log.logMinimal( BaseMessages.getString(
-              PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
+            PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
         }
 
         if ( meta.getDatabaseMeta() == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected" ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected" ) );
         }
         if ( meta.getDatabaseMeta() == null ) {
           logError( BaseMessages.getString( PKG, "TableOutput.Init.ConnectionMissing", getStepname() ) );
@@ -547,9 +552,9 @@ public class TableOutput extends BaseStep implements StepInterface {
           // Only the first one truncates in a non-partitioned step copy
           //
           if ( meta.truncateTable()
-              && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Const.isEmpty( getPartitionID() ) ) ) {
+            && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Const.isEmpty( getPartitionID() ) ) ) {
             data.db.truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
-                .getTableName() ) );
+              .getTableName() ) );
           }
         }
 
@@ -628,7 +633,7 @@ public class TableOutput extends BaseStep implements StepInterface {
 
   /**
    * Allows subclasses of TableOuput to get hold of the step meta
-   * 
+   *
    * @return
    */
   protected TableOutputMeta getMeta() {
@@ -637,7 +642,7 @@ public class TableOutput extends BaseStep implements StepInterface {
 
   /**
    * Allows subclasses of TableOutput to get hold of the data object
-   * 
+   *
    * @return
    */
   protected TableOutputData getData() {

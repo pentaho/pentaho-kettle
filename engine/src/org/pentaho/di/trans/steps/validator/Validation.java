@@ -137,7 +137,7 @@ public class Validation implements Cloneable {
 
     xml.append( XMLHandler.addTagValue( "is_sourcing_values", sourcingValues ) );
     xml.append( XMLHandler.addTagValue( "sourcing_step", sourcingStep == null ? sourcingStepName : sourcingStep
-        .getName() ) );
+      .getName() ) );
     xml.append( XMLHandler.addTagValue( "sourcing_field", sourcingField ) );
 
     xml.append( XMLHandler.openTag( XML_TAG_ALLOWED ) );
@@ -233,7 +233,7 @@ public class Validation implements Cloneable {
 
     regularExpression = rep.getStepAttributeString( id_step, i, "validator_field_regular_expression" );
     regularExpressionNotAllowed =
-        rep.getStepAttributeString( id_step, i, "validator_field_regular_expression_not_allowed" );
+      rep.getStepAttributeString( id_step, i, "validator_field_regular_expression_not_allowed" );
 
     errorCode = rep.getStepAttributeString( id_step, i, "validator_field_error_code" );
     errorDescription = rep.getStepAttributeString( id_step, i, "validator_field_error_description" );
@@ -264,11 +264,11 @@ public class Validation implements Cloneable {
 
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_null_allowed", nullAllowed );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_only_null_allowed", onlyNullAllowed );
-    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_only_numeric_allowed", onlyNumericAllowed );
+    rep.saveStepAttribute(
+      id_transformation, id_step, i, "validator_field_only_numeric_allowed", onlyNumericAllowed );
 
-    rep
-        .saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type", ValueMeta
-            .getTypeDesc( dataType ) );
+    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type", ValueMeta
+      .getTypeDesc( dataType ) );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type_verified", dataTypeVerified );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_conversion_mask", conversionMask );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_decimal_symbol", decimalSymbol );
@@ -280,14 +280,14 @@ public class Validation implements Cloneable {
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_start_string", startString );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_end_string", endString );
     rep.saveStepAttribute(
-        id_transformation, id_step, i, "validator_field_start_string_not_allowed", startStringNotAllowed );
-    rep
-        .saveStepAttribute(
-            id_transformation, id_step, i, "validator_field_end_string_not_allowed", endStringNotAllowed );
+      id_transformation, id_step, i, "validator_field_start_string_not_allowed", startStringNotAllowed );
+    rep.saveStepAttribute(
+      id_transformation, id_step, i, "validator_field_end_string_not_allowed", endStringNotAllowed );
 
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_regular_expression", regularExpression );
     rep.saveStepAttribute(
-        id_transformation, id_step, i, "validator_field_regular_expression_not_allowed", regularExpressionNotAllowed );
+      id_transformation, id_step, i, "validator_field_regular_expression_not_allowed",
+      regularExpressionNotAllowed );
 
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_error_code", errorCode );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_error_description", errorDescription );
@@ -298,7 +298,9 @@ public class Validation implements Cloneable {
 
     if ( allowedValues != null ) {
       for ( int nr = 1; nr <= allowedValues.length; nr++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_value_" + nr, allowedValues[nr - 1] );
+        rep
+          .saveStepAttribute(
+            id_transformation, id_step, i, "validator_field_value_" + nr, allowedValues[nr - 1] );
       }
     }
   }
@@ -635,7 +637,7 @@ public class Validation implements Cloneable {
 
   /**
    * Find a validation by name in a list of validations
-   * 
+   *
    * @param validations
    *          The list to search
    * @param name

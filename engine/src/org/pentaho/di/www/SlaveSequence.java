@@ -87,8 +87,8 @@ public class SlaveSequence {
    * @param sequenceNameField
    * @param valueField
    */
-  public SlaveSequence( String name, long startValue, DatabaseMeta databaseMeta, String schemaName, String tableName,
-      String sequenceNameField, String valueField ) {
+  public SlaveSequence( String name, long startValue, DatabaseMeta databaseMeta, String schemaName,
+    String tableName, String sequenceNameField, String valueField ) {
     this.name = name;
     this.startValue = startValue;
     this.databaseMeta = databaseMeta;
@@ -150,7 +150,7 @@ public class SlaveSequence {
 
     } catch ( Exception e ) {
       throw new KettleException( "Unable to get next value for slave sequence '"
-          + name + "' on database '" + databaseMeta.getName() + "'", e );
+        + name + "' on database '" + databaseMeta.getName() + "'", e );
     } finally {
       db.disconnect();
     }
@@ -287,7 +287,7 @@ public class SlaveSequence {
 
   /**
    * Find a slave sequence with a certain name
-   * 
+   *
    * @param name
    *          the name to look for
    * @return the slave sequence with the specified name or null of the sequence couldn't be found.

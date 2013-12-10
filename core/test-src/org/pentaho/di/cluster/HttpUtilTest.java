@@ -40,11 +40,11 @@ public class HttpUtilTest {
 
   public static final String DEFAULT_ENCODING = "UTF-8";
   public static final String STANDART = "(\u256e\u00b0-\u00b0)\u256e\u2533\u2501\u2501\u2533\u30c6\u30fc\u30d6"
-      + "\u30eb(\u256f\u00b0\u25a1\u00b0)\u256f\u253b\u2501\u2501\u253b\u30aa\u30d5";
+    + "\u30eb(\u256f\u00b0\u25a1\u00b0)\u256f\u253b\u2501\u2501\u253b\u30aa\u30d5";
 
   /**
    * [PDI-4325] Test that we can decode/encode Strings without loss of data.
-   * 
+   *
    * @throws IOException
    * @throws NoSuchAlgorithmException
    */
@@ -59,8 +59,8 @@ public class HttpUtilTest {
 
   /**
    * Test that we can encode and decode String using only static class-under-test methods.
-   * 
-   * 
+   *
+   *
    * @throws IOException
    */
   public void testEncodeBase64ZippedString() throws IOException {
@@ -73,7 +73,7 @@ public class HttpUtilTest {
   /**
    * https://www.securecoding.cert.org/confluence/display/java/IDS12-J.+Perform+lossless+conversion+
    * of+String+data+between+differing+character+encodings
-   * 
+   *
    * @param in
    *          string to encode
    * @return

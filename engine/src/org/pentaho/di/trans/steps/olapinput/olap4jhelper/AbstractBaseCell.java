@@ -44,7 +44,7 @@ public abstract class AbstractBaseCell {
 
   /**
    * BaseCell Constructor, every cell type should inherit basecell.
-   * 
+   *
    * @param right
    * @param sameAsPrev
    */
@@ -55,7 +55,7 @@ public abstract class AbstractBaseCell {
 
   /**
    * Gets the formatted value.
-   * 
+   *
    * @return the formatted value
    */
   public String getFormattedValue() {
@@ -64,7 +64,7 @@ public abstract class AbstractBaseCell {
 
   /**
    * Gets the raw value.
-   * 
+   *
    * @return the raw value
    */
   public String getRawValue() {
@@ -73,7 +73,7 @@ public abstract class AbstractBaseCell {
 
   /**
    * Sets the formatted value.
-   * 
+   *
    * @param formattedValue
    *          the new formatted value
    */
@@ -83,7 +83,7 @@ public abstract class AbstractBaseCell {
 
   /**
    * Sets the raw value.
-   * 
+   *
    * @param rawValue
    *          the new raw value
    */
@@ -92,7 +92,7 @@ public abstract class AbstractBaseCell {
   }
 
   /**
-   * 
+   *
    * @param set
    */
   public void setRight( final boolean set ) {
@@ -101,7 +101,7 @@ public abstract class AbstractBaseCell {
 
   /**
    * Set true if value is same as the previous one in the row.
-   * 
+   *
    * @param same
    */
   public void setSameAsPrev( final boolean same ) {
@@ -110,7 +110,7 @@ public abstract class AbstractBaseCell {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

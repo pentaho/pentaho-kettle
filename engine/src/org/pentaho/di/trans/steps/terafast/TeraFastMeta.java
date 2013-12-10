@@ -50,7 +50,7 @@ import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
- * 
+ *
  */
 public class TeraFastMeta extends AbstractStepMeta {
 
@@ -133,7 +133,7 @@ public class TeraFastMeta extends AbstractStepMeta {
   private StringListPluginProperty streamFieldList;
 
   /**
-     * 
+     *
      */
   public TeraFastMeta() {
     super();
@@ -153,25 +153,25 @@ public class TeraFastMeta extends AbstractStepMeta {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#check(java.util.List, org.pentaho.di.trans.TransMeta,
    *      org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.row.RowMetaInterface, java.lang.String[],
    *      java.lang.String[], org.pentaho.di.core.row.RowMetaInterface)
    */
   public void check( final List<CheckResultInterface> remarks, final TransMeta transmeta, final StepMeta stepMeta,
-      final RowMetaInterface prev, final String[] input, final String[] output, final RowMetaInterface info,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    final RowMetaInterface prev, final String[] input, final String[] output, final RowMetaInterface info,
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
     CheckResult checkResult;
     try {
       RowMetaInterface tableFields = getRequiredFields( transmeta );
       checkResult =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
-              .getString( "TeraFastMeta.Message.ConnectionEstablished" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
+          .getString( "TeraFastMeta.Message.ConnectionEstablished" ), stepMeta );
       remarks.add( checkResult );
 
       checkResult =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_OK, MESSAGES.getString( "TeraFastMeta.Message.TableExists" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
+          .getString( "TeraFastMeta.Message.TableExists" ), stepMeta );
       remarks.add( checkResult );
 
       boolean error = false;
@@ -179,22 +179,22 @@ public class TeraFastMeta extends AbstractStepMeta {
         if ( tableFields.searchValueMeta( field ) == null ) {
           error = true;
           checkResult =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, MESSAGES
-                  .getString( "TeraFastMeta.Exception.TableFieldNotFound" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, MESSAGES
+              .getString( "TeraFastMeta.Exception.TableFieldNotFound" ), stepMeta );
           remarks.add( checkResult );
         }
       }
       if ( !error ) {
         checkResult =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
-                .getString( "TeraFastMeta.Message.AllTableFieldsFound" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
+            .getString( "TeraFastMeta.Message.AllTableFieldsFound" ), stepMeta );
         remarks.add( checkResult );
       }
       if ( prev != null && prev.size() > 0 ) {
         // step mode. step receiving input
         checkResult =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
-                .getString( "TeraFastMeta.Message.StepInputDataFound" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
+            .getString( "TeraFastMeta.Message.StepInputDataFound" ), stepMeta );
         remarks.add( checkResult );
 
         error = false;
@@ -202,15 +202,15 @@ public class TeraFastMeta extends AbstractStepMeta {
           if ( prev.searchValueMeta( field ) == null ) {
             error = true;
             checkResult =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, MESSAGES
-                    .getString( "TeraFastMeta.Exception.StreamFieldNotFound" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, MESSAGES
+                .getString( "TeraFastMeta.Exception.StreamFieldNotFound" ), stepMeta );
             remarks.add( checkResult );
           }
         }
         if ( !error ) {
           checkResult =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
-                  .getString( "TeraFastMeta.Message.AllStreamFieldsFound" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, MESSAGES
+              .getString( "TeraFastMeta.Message.AllStreamFieldsFound" ), stepMeta );
           remarks.add( checkResult );
         }
       }
@@ -218,8 +218,8 @@ public class TeraFastMeta extends AbstractStepMeta {
       // in transformation.
     } catch ( KettleDatabaseException e ) {
       checkResult =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, MESSAGES
-              .getString( "TeraFastMeta.Exception.ConnectionFailed" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, MESSAGES
+          .getString( "TeraFastMeta.Exception.ConnectionFailed" ), stepMeta );
       remarks.add( checkResult );
     } catch ( KettleException e ) {
       checkResult = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, e.getMessage(), stepMeta );
@@ -258,18 +258,18 @@ public class TeraFastMeta extends AbstractStepMeta {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStep(org.pentaho.di.trans.step.StepMeta,
    *      org.pentaho.di.trans.step.StepDataInterface, int, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.Trans)
    */
   public StepInterface getStep( final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int cnr,
-      final TransMeta transMeta, final Trans disp ) {
+    final TransMeta transMeta, final Trans disp ) {
     return new TeraFast( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStepData()
    */
   @Override
@@ -279,7 +279,7 @@ public class TeraFastMeta extends AbstractStepMeta {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#setDefault()
    */
   public void setDefault() {
@@ -295,21 +295,21 @@ public class TeraFastMeta extends AbstractStepMeta {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStepMeta#getFields(org.pentaho.di.core.row.RowMetaInterface, java.lang.String,
    *      org.pentaho.di.core.row.RowMetaInterface[], org.pentaho.di.trans.step.StepMeta,
    *      org.pentaho.di.core.variables.VariableSpace)
    */
   @Override
   public void getFields( final RowMetaInterface inputRowMeta, final String name, final RowMetaInterface[] info,
-      final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore )
+    final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore )
     throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStepMeta#getRequiredFields(org.pentaho.di.core.variables.VariableSpace)
    */
   @Override
@@ -331,7 +331,7 @@ public class TeraFastMeta extends AbstractStepMeta {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStepMeta#clone()
    */
   @Override

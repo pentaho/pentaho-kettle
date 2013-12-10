@@ -98,8 +98,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return null;
     }
     BigDecimal nanos =
-        BigDecimal.valueOf( timestamp.getTime() ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
-            BigDecimal.valueOf( timestamp.getNanos() ) );
+      BigDecimal.valueOf( timestamp.getTime() ).multiply( BigDecimal.valueOf( 1000000000L ) ).add(
+        BigDecimal.valueOf( timestamp.getNanos() ) );
     return nanos;
   }
 
@@ -179,7 +179,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
         throw new KettleValueException( toString() + " : I don't know how to convert a binary value to timestamp." );
       case TYPE_SERIALIZABLE:
         throw new KettleValueException( toString()
-            + " : I don't know how to convert a serializable value to timestamp." );
+          + " : I don't know how to convert a serializable value to timestamp." );
 
       default:
         throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
@@ -233,10 +233,9 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     try {
       return Timestamp.valueOf( string );
     } catch ( IllegalArgumentException e ) {
-      throw new KettleValueException(
-          toString()
-              + " : couldn't convert string [" + string
-              + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
+      throw new KettleValueException( toString()
+        + " : couldn't convert string [" + string
+        + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
     }
   }
 
@@ -255,7 +254,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   @Override
   public Object convertDataFromString( String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull,
-      int trim_type ) throws KettleValueException {
+    int trim_type ) throws KettleValueException {
     // null handling and conversion of value to null
     //
     String null_value = nullIf;
@@ -296,7 +295,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Const.isEmpty( pol )
-          || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+        || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -377,7 +376,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   /**
    * Convert the specified data to the data type specified in this object.
-   * 
+   *
    * @param meta2
    *          the metadata of the object to be converted
    * @param data2
@@ -418,7 +417,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   @Override
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name, ResultSetMetaData rm,
-      int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
+    int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
 
     try {
       int type = rm.getColumnType( index );
@@ -454,15 +453,15 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return resultSet.getTimestamp( index + 1 );
 
     } catch ( Exception e ) {
-      throw new KettleDatabaseException(
-          toStringMeta() + " : Unable to get timestamp from resultset at index " + index, e );
+      throw new KettleDatabaseException( toStringMeta()
+        + " : Unable to get timestamp from resultset at index " + index, e );
     }
 
   }
 
   @Override
-  public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement, int index,
-      Object data ) throws KettleDatabaseException {
+  public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement,
+    int index, Object data ) throws KettleDatabaseException {
 
     try {
 
@@ -470,7 +469,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
     } catch ( Exception e ) {
       throw new KettleDatabaseException( toStringMeta()
-          + " : Unable to set value on prepared statement on index " + index, e );
+        + " : Unable to set value on prepared statement on index " + index, e );
     }
 
   }
@@ -479,7 +478,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   public Object convertDataUsingConversionMetaData( Object data2 ) throws KettleValueException {
     if ( conversionMetadata == null ) {
       throw new KettleValueException(
-          "API coding error: please specify the conversion metadata before attempting to convert value " + name );
+        "API coding error: please specify the conversion metadata before attempting to convert value " + name );
     }
 
     return super.convertDataUsingConversionMetaData( data2 );
@@ -544,8 +543,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       }
     } catch ( ClassCastException e ) {
       throw new RuntimeException( toString()
-          + " : There was a data type error: the data type of " + object.getClass().getName() + " object [" + object
-          + "] does not correspond to value meta [" + toStringMeta() + "]" );
+        + " : There was a data type error: the data type of " + object.getClass().getName() + " object ["
+        + object + "] does not correspond to value meta [" + toStringMeta() + "]" );
     } catch ( IOException e ) {
       throw new KettleFileException( toString() + " : Unable to write value timestamp data to output stream", e );
     }

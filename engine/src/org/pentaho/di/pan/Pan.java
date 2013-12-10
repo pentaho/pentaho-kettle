@@ -55,7 +55,7 @@ import org.pentaho.di.version.BuildVersion;
 import org.w3c.dom.Document;
 
 public class Pan {
-  private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!!
 
   private static final String STRING_PAN = "Pan";
 
@@ -76,60 +76,78 @@ public class Pan {
     Trans trans = null;
 
     // The options:
-    StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
-    StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename, optionListParam, optionMetrics;
+    StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname;
+    StringBuffer optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
+    StringBuffer optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
+    StringBuffer optionVersion, optionJarFilename, optionListParam, optionMetrics;
+
     NamedParams optionParams = new NamedParamsDefault();
 
     CommandLineOption maxLogLinesOption =
-        new CommandLineOption(
-            "maxloglines", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogLines" ), new StringBuffer() );
+      new CommandLineOption(
+        "maxloglines", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogLines" ), new StringBuffer() );
     CommandLineOption maxLogTimeoutOption =
-        new CommandLineOption(
-            "maxlogtimeout", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogTimeout" ), new StringBuffer() );
+      new CommandLineOption(
+        "maxlogtimeout", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogTimeout" ), new StringBuffer() );
 
     CommandLineOption[] options =
-        new CommandLineOption[] {
-            new CommandLineOption( "rep", BaseMessages.getString( PKG, "Pan.ComdLine.RepName" ), optionRepname =
-                new StringBuffer() ),
-            new CommandLineOption( "user", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionUsername =
-                new StringBuffer() ),
-            new CommandLineOption( "pass", BaseMessages.getString( PKG, "Pan.ComdLine.RepPassword" ), optionPassword =
-                new StringBuffer() ),
-            new CommandLineOption( "trans", BaseMessages.getString( PKG, "Pan.ComdLine.TransName" ), optionTransname =
-                new StringBuffer() ),
-            new CommandLineOption( "dir", BaseMessages.getString( PKG, "Pan.ComdLine.RepDir" ), optionDirname =
-                new StringBuffer() ),
-            new CommandLineOption( "file", BaseMessages.getString( PKG, "Pan.ComdLine.XMLTransFile" ), optionFilename =
-                new StringBuffer() ),
-            new CommandLineOption( "level", BaseMessages.getString( PKG, "Pan.ComdLine.LogLevel" ), optionLoglevel =
-                new StringBuffer() ),
-            new CommandLineOption( "logfile", BaseMessages.getString( PKG, "Pan.ComdLine.LogFile" ), optionLogfile =
-                new StringBuffer() ),
-            new CommandLineOption( "log", BaseMessages.getString( PKG, "Pan.ComdLine.LogOldFile" ), optionLogfileOld =
-                new StringBuffer(), false, true ),
-            new CommandLineOption( "listdir", BaseMessages.getString( PKG, "Pan.ComdLine.ListDirRep" ), optionListdir =
-                new StringBuffer(), true, false ),
-            new CommandLineOption(
-                "listtrans", BaseMessages.getString( PKG, "Pan.ComdLine.ListTransDir" ), optionListtrans =
-                    new StringBuffer(), true, false ),
-            new CommandLineOption( "listrep", BaseMessages.getString( PKG, "Pan.ComdLine.ListReps" ), optionListrep =
-                new StringBuffer(), true, false ),
-            new CommandLineOption( "exprep", BaseMessages.getString( PKG, "Pan.ComdLine.ExpObjectsXML" ), optionExprep =
-                new StringBuffer(), true, false ),
-            new CommandLineOption( "norep", BaseMessages.getString( PKG, "Pan.ComdLine.NoRep" ), optionNorep =
-                new StringBuffer(), true, false ),
-            new CommandLineOption( "safemode", BaseMessages.getString( PKG, "Pan.ComdLine.SafeMode" ), optionSafemode =
-                new StringBuffer(), true, false ),
-            new CommandLineOption( "version", BaseMessages.getString( PKG, "Pan.ComdLine.Version" ), optionVersion =
-                new StringBuffer(), true, false ),
-            new CommandLineOption( "jarfile", BaseMessages.getString( PKG, "Pan.ComdLine.JarFile" ), optionJarFilename =
-                new StringBuffer(), false, true ),
-            new CommandLineOption( "param", BaseMessages.getString( PKG, "Pan.ComdLine.Param" ), optionParams, false ),
-            new CommandLineOption(
-                "listparam", BaseMessages.getString( PKG, "Pan.ComdLine.ListParam" ), optionListParam =
-                    new StringBuffer(), true, false ),
-            new CommandLineOption( "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
-                new StringBuffer(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+      new CommandLineOption[] {
+        new CommandLineOption( "rep", BaseMessages.getString( PKG, "Pan.ComdLine.RepName" ), optionRepname =
+          new StringBuffer() ),
+        new CommandLineOption(
+          "user", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionUsername =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "pass", BaseMessages.getString( PKG, "Pan.ComdLine.RepPassword" ), optionPassword =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "trans", BaseMessages.getString( PKG, "Pan.ComdLine.TransName" ), optionTransname =
+            new StringBuffer() ),
+        new CommandLineOption( "dir", BaseMessages.getString( PKG, "Pan.ComdLine.RepDir" ), optionDirname =
+          new StringBuffer() ),
+        new CommandLineOption(
+          "file", BaseMessages.getString( PKG, "Pan.ComdLine.XMLTransFile" ), optionFilename =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "level", BaseMessages.getString( PKG, "Pan.ComdLine.LogLevel" ), optionLoglevel =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "logfile", BaseMessages.getString( PKG, "Pan.ComdLine.LogFile" ), optionLogfile =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "log", BaseMessages.getString( PKG, "Pan.ComdLine.LogOldFile" ), optionLogfileOld =
+            new StringBuffer(), false, true ),
+        new CommandLineOption(
+          "listdir", BaseMessages.getString( PKG, "Pan.ComdLine.ListDirRep" ), optionListdir =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "listtrans", BaseMessages.getString( PKG, "Pan.ComdLine.ListTransDir" ), optionListtrans =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "listrep", BaseMessages.getString( PKG, "Pan.ComdLine.ListReps" ), optionListrep =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "exprep", BaseMessages.getString( PKG, "Pan.ComdLine.ExpObjectsXML" ), optionExprep =
+            new StringBuffer(), true, false ),
+        new CommandLineOption( "norep", BaseMessages.getString( PKG, "Pan.ComdLine.NoRep" ), optionNorep =
+          new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "safemode", BaseMessages.getString( PKG, "Pan.ComdLine.SafeMode" ), optionSafemode =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "version", BaseMessages.getString( PKG, "Pan.ComdLine.Version" ), optionVersion =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "jarfile", BaseMessages.getString( PKG, "Pan.ComdLine.JarFile" ), optionJarFilename =
+            new StringBuffer(), false, true ),
+        new CommandLineOption(
+          "param", BaseMessages.getString( PKG, "Pan.ComdLine.Param" ), optionParams, false ),
+        new CommandLineOption(
+          "listparam", BaseMessages.getString( PKG, "Pan.ComdLine.ListParam" ), optionListParam =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
+            new StringBuffer(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
 
     if ( args.size() == 0 ) {
       CommandLineOption.printUsage( options );
@@ -183,8 +201,9 @@ public class Pan {
     if ( !Const.isEmpty( optionVersion ) ) {
       BuildVersion buildVersion = BuildVersion.getInstance();
       if ( log.isBasic() ) {
-        log.logBasic( BaseMessages.getString( PKG, "Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion
-            .getRevision(), buildVersion.getBuildDate() ) );
+        log.logBasic( BaseMessages.getString(
+          PKG, "Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion
+            .getBuildDate() ) );
       }
 
       if ( a.length == 1 ) {
@@ -229,7 +248,8 @@ public class Pan {
       }
 
       // Read kettle transformation specified on command-line?
-      if ( !Const.isEmpty( optionRepname ) || !Const.isEmpty( optionFilename ) || !Const.isEmpty( optionJarFilename ) ) {
+      if ( !Const.isEmpty( optionRepname )
+        || !Const.isEmpty( optionFilename ) || !Const.isEmpty( optionJarFilename ) ) {
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "Pan.Log.ParsingCommandline" ) );
         }
@@ -258,11 +278,13 @@ public class Pan {
               log.logDebug( BaseMessages.getString( PKG, "Pan.Log.Allocate&ConnectRep" ) );
             }
 
-            rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
+            rep =
+              PluginRegistry.getInstance().loadClass(
+                RepositoryPluginType.class, repositoryMeta, Repository.class );
             rep.init( repositoryMeta );
 
             rep.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
-                ? optionPassword.toString() : null );
+              ? optionPassword.toString() : null );
 
             RepositoryDirectoryInterface directory = rep.loadRepositoryDirectoryTree(); // Default
             // =
@@ -285,9 +307,7 @@ public class Pan {
                   log.logDebug( BaseMessages.getString( PKG, "Pan.Log.LoadTransInfo" ) );
                 }
 
-                transMeta = rep.loadTransformation( optionTransname.toString(), directory, null, true, null ); // reads
-                                                                                                               // last
-                                                                                                               // version
+                transMeta = rep.loadTransformation( optionTransname.toString(), directory, null, true, null );
                 if ( log.isDebug() ) {
                   log.logDebug( BaseMessages.getString( PKG, "Pan.Log.AllocateTrans" ) );
                 }
@@ -298,7 +318,8 @@ public class Pan {
               // List the transformations in the repository
               if ( "Y".equalsIgnoreCase( optionListtrans.toString() ) ) {
                 if ( log.isDebug() ) {
-                  log.logDebug( BaseMessages.getString( PKG, "Pan.Log.GettingListTransDirectory", "" + directory ) );
+                  log
+                    .logDebug( BaseMessages.getString( PKG, "Pan.Log.GettingListTransDirectory", "" + directory ) );
                 }
 
                 String[] transnames = rep.getTransformationNames( directory.getObjectId(), false );
@@ -315,18 +336,18 @@ public class Pan {
               } else
               // Export the repository
               if ( !Const.isEmpty( optionExprep ) ) {
-                System.out.println( BaseMessages
-                    .getString( PKG, "Pan.Log.ExportingObjectsRepToFile", "" + optionExprep ) );
+                System.out.println( BaseMessages.getString( PKG, "Pan.Log.ExportingObjectsRepToFile", ""
+                  + optionExprep ) );
 
                 rep.getExporter().exportAllObjects( null, optionExprep.toString(), directory, "all" );
                 System.out.println( BaseMessages.getString( PKG, "Pan.Log.FinishedExportObjectsRepToFile", ""
-                    + optionExprep ) );
+                  + optionExprep ) );
               } else {
                 System.out.println( BaseMessages.getString( PKG, "Pan.Error.NoTransNameSupplied" ) );
               }
             } else {
               System.out.println( BaseMessages.getString( PKG, "Pan.Error.CanNotFindSpecifiedDirectory", ""
-                  + optionDirname ) );
+                + optionDirname ) );
               repositoryMeta = null;
             }
           } else {
@@ -390,7 +411,7 @@ public class Pan {
         for ( int i = 0; i < ri.nrRepositories(); i++ ) {
           RepositoryMeta rinfo = ri.getRepository( i );
           System.out.println( BaseMessages.getString(
-              PKG, "Pan.Log.RepNameDesc", "" + ( i + 1 ), rinfo.getName(), rinfo.getDescription() ) );
+            PKG, "Pan.Log.RepNameDesc", "" + ( i + 1 ), rinfo.getName(), rinfo.getDescription() ) );
         }
       }
     } catch ( Exception e ) {
@@ -411,8 +432,8 @@ public class Pan {
       }
 
       if ( !"Y".equalsIgnoreCase( optionListtrans.toString() )
-          && !"Y".equalsIgnoreCase( optionListdir.toString() ) && !"Y".equalsIgnoreCase( optionListrep.toString() )
-          && Const.isEmpty( optionExprep ) ) {
+        && !"Y".equalsIgnoreCase( optionListdir.toString() ) && !"Y".equalsIgnoreCase( optionListrep.toString() )
+        && Const.isEmpty( optionExprep ) ) {
         System.out.println( BaseMessages.getString( PKG, "Pan.Error.CanNotLoadTrans" ) );
 
         exitJVM( 7 );
@@ -463,10 +484,11 @@ public class Pan {
 
           if ( deflt != null ) {
             System.out.println( "Parameter: "
-                + parameterName + "=" + Const.NVL( value, "" ) + ", default=" + deflt + " : " + Const.NVL( descr, "" ) );
+              + parameterName + "=" + Const.NVL( value, "" ) + ", default=" + deflt + " : "
+              + Const.NVL( descr, "" ) );
           } else {
             System.out.println( "Parameter: "
-                + parameterName + "=" + Const.NVL( value, "" ) + " : " + Const.NVL( descr, "" ) );
+              + parameterName + "=" + Const.NVL( value, "" ) + " : " + Const.NVL( descr, "" ) );
           }
         }
 
@@ -518,16 +540,18 @@ public class Pan {
       } else if ( seconds <= 60 * 60 ) {
         int min = ( seconds / 60 );
         int rem = ( seconds % 60 );
-        log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.ProcessingEndAfterLong", String.valueOf( min ), String
-            .valueOf( rem ), String.valueOf( seconds ) ) );
+        log.logMinimal( BaseMessages.getString(
+          PKG, "Pan.Log.ProcessingEndAfterLong", String.valueOf( min ), String.valueOf( rem ), String
+            .valueOf( seconds ) ) );
       } else if ( seconds <= 60 * 60 * 24 ) {
         int rem;
         int hour = ( seconds / ( 60 * 60 ) );
         rem = ( seconds % ( 60 * 60 ) );
         int min = rem / 60;
         rem = rem % 60;
-        log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.ProcessingEndAfterLonger", String.valueOf( hour ), String
-            .valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
+        log.logMinimal( BaseMessages.getString(
+          PKG, "Pan.Log.ProcessingEndAfterLonger", String.valueOf( hour ), String.valueOf( min ), String
+            .valueOf( rem ), String.valueOf( seconds ) ) );
       } else {
         int rem;
         int days = ( seconds / ( 60 * 60 * 24 ) );
@@ -537,8 +561,8 @@ public class Pan {
         int min = rem / 60;
         rem = rem % 60;
         log.logMinimal( BaseMessages.getString(
-            PKG, "Pan.Log.ProcessingEndAfterLongest", String.valueOf( days ), String.valueOf( hour ), String
-                .valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
+          PKG, "Pan.Log.ProcessingEndAfterLongest", String.valueOf( days ), String.valueOf( hour ), String
+            .valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
       }
 
       if ( trans.getResult().getNrErrors() == 0 ) {
@@ -553,8 +577,10 @@ public class Pan {
           try {
             exitJVM( Integer.valueOf( transJVMExitCode ) );
           } catch ( NumberFormatException nfe ) {
-            log.logError( BaseMessages.getString(
-                PKG, "Pan.Error.TransJVMExitCodeInvalid", Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE, transJVMExitCode ) );
+            log
+              .logError( BaseMessages.getString(
+                PKG, "Pan.Error.TransJVMExitCodeInvalid", Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE,
+                transJVMExitCode ) );
             log.logError( BaseMessages.getString( PKG, "Pan.Log.JVMExitCode", "1" ) );
             exitJVM( 1 );
           }

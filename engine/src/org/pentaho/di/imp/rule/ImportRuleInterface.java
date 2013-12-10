@@ -42,7 +42,7 @@ public interface ImportRuleInterface extends Cloneable {
 
   /**
    * Validate the rule against a subject (transformation, job, database, ...)
-   * 
+   *
    * @param subject
    *          The subject to validate against
    * @return The feedback list consists of a series of approvals and/or warnings and/or errors.

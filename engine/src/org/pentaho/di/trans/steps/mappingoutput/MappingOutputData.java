@@ -33,7 +33,7 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class MappingOutputData extends BaseStepData implements StepDataInterface {
 

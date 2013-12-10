@@ -56,19 +56,20 @@ import org.xml.sax.InputSource;
 
 /**
  * Converts input rows to one or more XML files.
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
  */
 public class XMLJoin extends BaseStep implements StepInterface {
-  private static Class<?> PKG = XMLJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   private XMLJoinMeta meta;
   private XMLJoinData data;
 
   private Transformer serializer;
 
-  public XMLJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public XMLJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -108,13 +109,13 @@ public class XMLJoin extends BaseStep implements StepInterface {
       // Throw exception if target field has not been found
       if ( target_field_id == -1 ) {
         throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
-            .getTargetXMLfield() ) );
+          .getTargetXMLfield() ) );
       }
 
       data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
       meta.getFields(
-          data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null, this,
-          repository, metaStore );
+        data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null,
+        this, repository, metaStore );
       data.outputRowData = rTarget.clone();
 
       // get the target xml structure and create a DOM
@@ -184,7 +185,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
       // Throw exception if source xml field has not been found
       if ( data.iSourceXMLField == -1 ) {
         throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
-            .getSourceXMLfield() ) );
+          .getSourceXMLfield() ) );
       }
     }
 
@@ -199,7 +200,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
       // Throw exception if source xml field has not been found
       if ( data.iCompareFieldID == -1 ) {
         throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
-            .getJoinCompareField() ) );
+          .getJoinCompareField() ) );
       }
     }
 
@@ -253,8 +254,8 @@ public class XMLJoin extends BaseStep implements StepInterface {
     try {
       if ( meta.isOmitNullValues() ) {
         setSerializer( TransformerFactory.newInstance().newTransformer(
-            new StreamSource( XMLJoin.class.getClassLoader().getResourceAsStream(
-                "org/pentaho/di/trans/steps/xmljoin/RemoveNulls.xsl" ) ) ) );
+          new StreamSource( XMLJoin.class.getClassLoader().getResourceAsStream(
+            "org/pentaho/di/trans/steps/xmljoin/RemoveNulls.xsl" ) ) ) );
       } else {
         setSerializer( TransformerFactory.newInstance().newTransformer() );
       }

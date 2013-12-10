@@ -72,7 +72,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class RestDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlApplicationType;
   private ComboVar wApplicationType;
@@ -786,7 +786,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wTrustStoreFile.setText( dialog.getFilterPath()
-              + System.getProperty( "file.separator" ) + dialog.getFileName() );
+            + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );
@@ -809,7 +809,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdlTrustStorePassword.top = new FormAttachment( wbTrustStoreFile, margin );
     fdlTrustStorePassword.right = new FormAttachment( middle, -margin );
     wlTrustStorePassword.setLayoutData( fdlTrustStorePassword );
-    wTrustStorePassword = new TextVar( transMeta, gSSLTrustStore, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD );
+    wTrustStorePassword =
+      new TextVar( transMeta, gSSLTrustStore, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD );
     props.setLook( wTrustStorePassword );
     wTrustStorePassword.setEchoChar( '*' );
     wTrustStorePassword.addModifyListener( lsMod );
@@ -870,17 +871,18 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     final int FieldsRows = input.getHeaderName().length;
 
     colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ) };
 
     colinf[1].setUsingVariables( true );
     wFields =
-        new TableView(
-            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
+        props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -931,18 +933,18 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     final int ParametersRows = input.getParameterField().length;
 
     colinfoparams =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterName" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterField" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
 
     wParameters =
-        new TableView(
-            transMeta, wParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfoparams, ParametersRows,
-            lsMod, props );
+      new TableView(
+        transMeta, wParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfoparams,
+        ParametersRows, lsMod, props );
 
     fdParameters = new FormData();
     fdParameters.left = new FormAttachment( 0, 0 );
@@ -1288,10 +1290,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wParameters, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null );
+        BaseStepDialog
+          .getFieldsFromPrevious( r, wParameters, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "RestDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
@@ -1304,7 +1308,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetHeaders.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RestDialog.FailedToGetHeaders.DialogTitle" ), BaseMessages
           .getString( PKG, "RestDialog.FailedToGetHeaders.DialogMessage" ), ke );
     }
 

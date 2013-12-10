@@ -29,7 +29,7 @@ public interface ImportRuleCompositeInterface {
 
   /**
    * Get a composite with all controls on it that will allow a user to edit the import rule settings.
-   * 
+   *
    * @param parent
    *          The parent composite to place the new composite in.
    * @param importRule
@@ -40,7 +40,7 @@ public interface ImportRuleCompositeInterface {
 
   /**
    * Set the import rule data onto the composite
-   * 
+   *
    * @param importRule
    *          the import rule to use
    */
@@ -48,7 +48,7 @@ public interface ImportRuleCompositeInterface {
 
   /**
    * Get the data from the composite controls and set them in the import rule provided.
-   * 
+   *
    * @param importRule
    *          The import rule to update.
    */

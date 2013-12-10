@@ -31,7 +31,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of ValueInteger.
- * 
+ *
  * @author Sven Boden
  */
 public class ValueIntegerTest extends TestCase {

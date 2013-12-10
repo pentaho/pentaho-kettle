@@ -60,7 +60,7 @@ import org.w3c.dom.Node;
  */
 
 public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String xsdFilename;
   private String xmlStream;
@@ -178,7 +178,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     this.xmlStream = xmlStream;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -207,7 +208,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
 
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "XsdValidatorMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+        PKG, "XsdValidatorMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -227,18 +228,18 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Const.isEmpty( resultFieldname ) ) {
       if ( outputStringField ) {
         // Output field (String)
         ValueMetaInterface v =
-            new ValueMeta( space.environmentSubstitute( getResultfieldname() ), ValueMeta.TYPE_STRING );
+          new ValueMeta( space.environmentSubstitute( getResultfieldname() ), ValueMeta.TYPE_STRING );
         inputRowMeta.addValueMeta( v );
       } else {
 
         // Output field (boolean)
         ValueMetaInterface v =
-            new ValueMeta( space.environmentSubstitute( getResultfieldname() ), ValueMeta.TYPE_BOOLEAN );
+          new ValueMeta( space.environmentSubstitute( getResultfieldname() ), ValueMeta.TYPE_BOOLEAN );
         inputRowMeta.addValueMeta( v );
       }
 
@@ -246,7 +247,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     // Add String Field that contain validation message (most the time, errors)
     if ( addValidationMessage && !Const.isEmpty( validationMessageField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( validationMessageField ), ValueMeta.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( validationMessageField ), ValueMeta.TYPE_STRING );
       inputRowMeta.addValueMeta( v );
     }
 
@@ -290,7 +291,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "XsdValidatorMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+        PKG, "XsdValidatorMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -311,78 +312,78 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "XsdValidatorMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check XML stream field
     if ( Const.isEmpty( xmlStream ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty" ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldOK" ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldOK" ), stepinfo );
       remarks.add( cr );
     }
 
     // Check result fieldname
     if ( Const.isEmpty( resultFieldname ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.ResultFieldEmpty" ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.ResultFieldEmpty" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.ResultFieldOK" ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.ResultFieldOK" ), stepinfo );
       remarks.add( cr );
     }
 
     if ( xsdSource.equals( SPECIFY_FILENAME ) ) {
       if ( Const.isEmpty( xsdFilename ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "XsdValidatorMeta.CheckResult.XSDFieldEmpty" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "XsdValidatorMeta.CheckResult.XSDFieldEmpty" ), stepinfo );
         remarks.add( cr );
       }
     }
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.NoInputReceived" ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.NoInputReceived" ), stepinfo );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.ExpectedInputOk" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.ExpectedInputOk" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "XsdValidatorMeta.CheckResult.ExpectedInputError" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XsdValidatorMeta.CheckResult.ExpectedInputError" ), stepinfo );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new XsdValidator( stepMeta, stepDataInterface, cnr, transMeta, trans );
 
   }
@@ -400,7 +401,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -409,11 +410,11 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

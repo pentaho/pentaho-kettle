@@ -30,7 +30,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains MySQL specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -69,7 +69,7 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -89,7 +89,7 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   /**
    * Get the maximum length of a text field for this database connection. This includes optional CLOB, Memo and Text
    * fields. (the maximum!)
-   * 
+   *
    * @return The maximum text field length for this database type. (mostly CLOB_LENGTH)
    */
   @Override
@@ -149,7 +149,7 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -166,13 +166,13 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -189,13 +189,13 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP COLUMN " + v.getName() + Const.CR;
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -212,13 +212,14 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ALTER COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    String pk, boolean semicolon ) {
+    return "ALTER TABLE "
+      + tablename + " ALTER COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -246,7 +247,7 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           if ( use_autoinc ) {
             retval += "COUNTER PRIMARY KEY";
@@ -297,40 +298,41 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
    */
   @Override
   public String[] getReservedWords() {
     return new String[] {
-        /*
-         * http://support.microsoft.com/kb/q109312 Note that if you set a reference to a type library, an object
-         * library, or an ActiveX control, that library's reserved words are also reserved words in your database. For
-         * example, if you add an ActiveX control to a form, a reference is set and the names of the objects, methods,
-         * and properties of that control become reserved words in your database. For existing objects with names that
-         * contain reserved words, you can avoid errors by surrounding the object name with brackets [ ], see
-         * getStartQuote(),getEndQuote().
-         */
-        "ADD", "ALL", "ALPHANUMERIC", "ALTER", "AND", "ANY", "APPLICATION", "AS", "ASC", "ASSISTANT", "AUTOINCREMENT",
-        "AVG", "BETWEEN", "BINARY", "BIT", "BOOLEAN", "BY", "BYTE", "CHAR", "CHARACTER", "COLUMN", "COMPACTDATABASE",
-        "CONSTRAINT", "CONTAINER", "COUNT", "COUNTER", "CREATE", "CREATEDATABASE", "CREATEFIELD", "CREATEGROUP",
-        "CREATEINDEX", "CREATEOBJECT", "CREATEPROPERTY", "CREATERELATION", "CREATETABLEDEF", "CREATEUSER",
-        "CREATEWORKSPACE", "CURRENCY", "CURRENTUSER", "DATABASE", "DATE", "DATETIME", "DELETE", "DESC", "DESCRIPTION",
-        "DISALLOW", "DISTINCT", "DISTINCTROW", "DOCUMENT", "DOUBLE", "DROP", "ECHO", "ELSE", "END", "EQV", "ERROR",
-        "EXISTS", "EXIT", "FALSE", "FIELD", "FIELDS", "FILLCACHE", "FLOAT", "FLOAT4", "FLOAT8", "FOREIGN", "FORM",
-        "FORMS", "FROM", "FULL", "FUNCTION", "GENERAL", "GETOBJECT", "GETOPTION", "GOTOPAGE", "GROUP", "GUID",
-        "HAVING", "IDLE", "IEEEDOUBLE", "IEEESINGLE", "IF", "IGNORE", "IMP", "IN", "INDEX", "INDEX", "INDEXES",
-        "INNER", "INSERT", "INSERTTEXT", "INT", "INTEGER", "INTEGER1", "INTEGER2", "INTEGER4", "INTO", "IS", "JOIN",
-        "KEY", "LASTMODIFIED", "LEFT", "LEVEL", "LIKE", "LOGICAL", "LOGICAL1", "LONG", "LONGBINARY", "LONGTEXT",
-        "MACRO", "MATCH", "MAX", "MIN", "MOD", "MEMO", "MODULE", "MONEY", "MOVE", "NAME", "NEWPASSWORD", "NO", "NOT",
-        "NULL", "NUMBER", "NUMERIC", "OBJECT", "OLEOBJECT", "OFF", "ON", "OPENRECORDSET", "OPTION", "OR", "ORDER",
-        "OUTER", "OWNERACCESS", "PARAMETER", "PARAMETERS", "PARTIAL", "PERCENT", "PIVOT", "PRIMARY", "PROCEDURE",
-        "PROPERTY", "QUERIES", "QUERY", "QUIT", "REAL", "RECALC", "RECORDSET", "REFERENCES", "REFRESH", "REFRESHLINK",
-        "REGISTERDATABASE", "RELATION", "REPAINT", "REPAIRDATABASE", "REPORT", "REPORTS", "REQUERY", "RIGHT", "SCREEN",
-        "SECTION", "SELECT", "SET", "SETFOCUS", "SETOPTION", "SHORT", "SINGLE", "SMALLINT", "SOME", "SQL", "STDEV",
-        "STDEVP", "STRING", "SUM", "TABLE", "TABLEDEF", "TABLEDEFS", "TABLEID", "TEXT", "TIME", "TIMESTAMP", "TOP",
-        "TRANSFORM", "TRUE", "TYPE", "UNION", "UNIQUE", "UPDATE", "USER", "VALUE", "VALUES", "VAR", "VARP",
-        "VARBINARY", "VARCHAR", "WHERE", "WITH", "WORKSPACE", "XOR", "YEAR", "YES", "YESNO" };
+      /*
+       * http://support.microsoft.com/kb/q109312 Note that if you set a reference to a type library, an object library,
+       * or an ActiveX control, that library's reserved words are also reserved words in your database. For example, if
+       * you add an ActiveX control to a form, a reference is set and the names of the objects, methods, and properties
+       * of that control become reserved words in your database. For existing objects with names that contain reserved
+       * words, you can avoid errors by surrounding the object name with brackets [ ], see
+       * getStartQuote(),getEndQuote().
+       */
+      "ADD", "ALL", "ALPHANUMERIC", "ALTER", "AND", "ANY", "APPLICATION", "AS", "ASC", "ASSISTANT",
+      "AUTOINCREMENT", "AVG", "BETWEEN", "BINARY", "BIT", "BOOLEAN", "BY", "BYTE", "CHAR", "CHARACTER",
+      "COLUMN", "COMPACTDATABASE", "CONSTRAINT", "CONTAINER", "COUNT", "COUNTER", "CREATE", "CREATEDATABASE",
+      "CREATEFIELD", "CREATEGROUP", "CREATEINDEX", "CREATEOBJECT", "CREATEPROPERTY", "CREATERELATION",
+      "CREATETABLEDEF", "CREATEUSER", "CREATEWORKSPACE", "CURRENCY", "CURRENTUSER", "DATABASE", "DATE",
+      "DATETIME", "DELETE", "DESC", "DESCRIPTION", "DISALLOW", "DISTINCT", "DISTINCTROW", "DOCUMENT", "DOUBLE",
+      "DROP", "ECHO", "ELSE", "END", "EQV", "ERROR", "EXISTS", "EXIT", "FALSE", "FIELD", "FIELDS", "FILLCACHE",
+      "FLOAT", "FLOAT4", "FLOAT8", "FOREIGN", "FORM", "FORMS", "FROM", "FULL", "FUNCTION", "GENERAL",
+      "GETOBJECT", "GETOPTION", "GOTOPAGE", "GROUP", "GUID", "HAVING", "IDLE", "IEEEDOUBLE", "IEEESINGLE", "IF",
+      "IGNORE", "IMP", "IN", "INDEX", "INDEX", "INDEXES", "INNER", "INSERT", "INSERTTEXT", "INT", "INTEGER",
+      "INTEGER1", "INTEGER2", "INTEGER4", "INTO", "IS", "JOIN", "KEY", "LASTMODIFIED", "LEFT", "LEVEL", "LIKE",
+      "LOGICAL", "LOGICAL1", "LONG", "LONGBINARY", "LONGTEXT", "MACRO", "MATCH", "MAX", "MIN", "MOD", "MEMO",
+      "MODULE", "MONEY", "MOVE", "NAME", "NEWPASSWORD", "NO", "NOT", "NULL", "NUMBER", "NUMERIC", "OBJECT",
+      "OLEOBJECT", "OFF", "ON", "OPENRECORDSET", "OPTION", "OR", "ORDER", "OUTER", "OWNERACCESS", "PARAMETER",
+      "PARAMETERS", "PARTIAL", "PERCENT", "PIVOT", "PRIMARY", "PROCEDURE", "PROPERTY", "QUERIES", "QUERY",
+      "QUIT", "REAL", "RECALC", "RECORDSET", "REFERENCES", "REFRESH", "REFRESHLINK", "REGISTERDATABASE",
+      "RELATION", "REPAINT", "REPAIRDATABASE", "REPORT", "REPORTS", "REQUERY", "RIGHT", "SCREEN", "SECTION",
+      "SELECT", "SET", "SETFOCUS", "SETOPTION", "SHORT", "SINGLE", "SMALLINT", "SOME", "SQL", "STDEV", "STDEVP",
+      "STRING", "SUM", "TABLE", "TABLEDEF", "TABLEDEFS", "TABLEID", "TEXT", "TIME", "TIMESTAMP", "TOP",
+      "TRANSFORM", "TRUE", "TYPE", "UNION", "UNIQUE", "UPDATE", "USER", "VALUE", "VALUES", "VAR", "VARP",
+      "VARBINARY", "VARCHAR", "WHERE", "WITH", "WORKSPACE", "XOR", "YEAR", "YES", "YESNO" };
   }
 
   /**
@@ -361,7 +363,7 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Verifies on the specified database connection if an index exists on the fields with the specified name.
-   * 
+   *
    * @param database
    *          a connected database
    * @param schemaName
@@ -421,7 +423,7 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Get the SQL to insert a new empty unknown record in a dimension.
-   * 
+   *
    * @param schemaTable
    *          the schema-table name to insert into
    * @param keyField

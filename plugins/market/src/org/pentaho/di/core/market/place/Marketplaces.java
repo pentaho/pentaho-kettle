@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 /**
  * This class is an extension of ArrayList<Marketplace.
  * It will populate itself on construction.
- * 
+ *
  * @author sflatley
  * @extends ArrayList<Marketplace>
  */
@@ -65,12 +65,12 @@ public class Marketplaces extends ArrayList<Marketplace> {
 		   else {
 		      addAll(Marketplace.getDefaultMarketplaces());
 		   }
-		} 
+		}
 		catch(KettleXMLException kxe) {
-		   new ErrorDialog(Spoon.getInstance().getShell(), 
-				   BaseMessages.getString(MARKET_PKG, "Market.error"), 
+		   new ErrorDialog(Spoon.getInstance().getShell(),
+				   BaseMessages.getString(MARKET_PKG, "Market.error"),
 				   BaseMessages.getString(MARKET_PKG, "Marketplaces.xmlerror.message", marketplacesFile), kxe);
 		}
-   } 
+   }
 }
 

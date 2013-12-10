@@ -29,9 +29,9 @@ import org.pentaho.di.core.row.ValueMeta;
 
 /**
  * This is a single metadata attribute for step metadata injection.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class StepInjectionMetaEntry implements Cloneable {
   private String key;
@@ -59,7 +59,8 @@ public class StepInjectionMetaEntry implements Cloneable {
   @Override
   public String toString() {
     return "{"
-        + key + ":" + ValueMeta.getTypeDesc( valueType ) + ( value == null ? "" : "(" + value.toString() + ")" ) + "}";
+      + key + ":" + ValueMeta.getTypeDesc( valueType ) + ( value == null ? "" : "(" + value.toString() + ")" )
+      + "}";
   }
 
   public StepInjectionMetaEntry clone() {

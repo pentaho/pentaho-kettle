@@ -63,7 +63,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CalculatorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CalculatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CalculatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStepname;
   private Text wStepname;
@@ -143,55 +143,55 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     final int FieldsRows = currentMeta.getCalculation() != null ? currentMeta.getCalculation().length : 1;
 
     colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.NewFieldColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.CalculationColumn.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.FieldAColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.FieldBColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.FieldCColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.ValueTypeColumn.Column" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.LengthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.PrecisionColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.RemoveColumn.Column" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] {
-                    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) } ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.ConversionMask.Column" ), ColumnInfo.COLUMN_TYPE_FORMAT,
-                6 ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.DecimalSymbol.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.GroupingSymbol.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "CalculatorDialog.CurrencySymbol.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.NewFieldColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.CalculationColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.FieldAColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.FieldBColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.FieldCColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.ValueTypeColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.LengthColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.PrecisionColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.RemoveColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.No" ),
+            BaseMessages.getString( PKG, "System.Combo.Yes" ) } ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.ConversionMask.Column" ),
+          ColumnInfo.COLUMN_TYPE_FORMAT, 6 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.DecimalSymbol.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.GroupingSymbol.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "CalculatorDialog.CurrencySymbol.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[1].setSelectionAdapter( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, CalculatorMetaFunction.calcLongDesc, BaseMessages.getString(
-                PKG, "CalculatorDialog.SelectCalculationType.Title" ), BaseMessages.getString(
-                PKG, "CalculatorDialog.SelectCalculationType.Message" ) );
+          new EnterSelectionDialog( shell, CalculatorMetaFunction.calcLongDesc, BaseMessages.getString(
+            PKG, "CalculatorDialog.SelectCalculationType.Title" ), BaseMessages.getString(
+            PKG, "CalculatorDialog.SelectCalculationType.Message" ) );
         String string = esd.open();
         if ( string != null ) {
           TableView tv = (TableView) e.widget;
@@ -202,7 +202,8 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     } );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -353,8 +354,10 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         if ( fn.getValuePrecision() >= 0 ) {
           item.setText( 8, "" + fn.getValuePrecision() );
         }
-        item.setText( 9, fn.isRemovedFromResult() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-            .getString( PKG, "System.Combo.No" ) );
+        item
+          .setText( 9, fn.isRemovedFromResult()
+            ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+              PKG, "System.Combo.No" ) );
         item.setText( 10, Const.NVL( fn.getConversionMask(), "" ) );
         item.setText( 11, Const.NVL( fn.getDecimalSymbol(), "" ) );
         item.setText( 12, Const.NVL( fn.getGroupingSymbol(), "" ) );
@@ -403,9 +406,9 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
       String currencySymbol = item.getText( 13 );
 
       currentMeta.getCalculation()[i] =
-          new CalculatorMetaFunction(
-              fieldName, calcType, fieldA, fieldB, fieldC, valueType, valueLength, valuePrecision, removed,
-              conversionMask, decimalSymbol, groupingSymbol, currencySymbol );
+        new CalculatorMetaFunction(
+          fieldName, calcType, fieldA, fieldB, fieldC, valueType, valueLength, valuePrecision, removed,
+          conversionMask, decimalSymbol, groupingSymbol, currencySymbol );
     }
 
     if ( !originalMeta.equals( currentMeta ) ) {

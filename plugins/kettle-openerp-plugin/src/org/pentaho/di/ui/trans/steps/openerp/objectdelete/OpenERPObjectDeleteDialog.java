@@ -45,7 +45,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDialogInterface {
 
-	private static Class<?> PKG = OpenERPObjectDeleteMeta.class; // for i18n purposes, needed by Translator2!! // $NON-NLS-1$
+	private static Class<?> PKG = OpenERPObjectDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
 	private final OpenERPObjectDeleteMeta meta;
 	private Label                  labelStepName;
@@ -139,7 +139,7 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
 		fd.right = new FormAttachment(100, 0);
 		fd.top = new FormAttachment(textCommitBatchSize, margin);
 		comboIDFieldName.setLayoutData(fd);
-	    
+	
 		buttonOk = new Button(shell, SWT.CENTER);
 		buttonCancel = new Button(shell, SWT.CENTER);
 		buttonOk.setText(BaseMessages.getString("System.Button.OK"));
@@ -163,7 +163,7 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
 			}
 		});
 
-		// 
+		//
 		// Search the fields in the background
 		//
 		final Runnable runnable = new Runnable()

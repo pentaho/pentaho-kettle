@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-11-2008
- * 
+ *
  */
 public class ExecProcessData extends BaseStepData implements StepDataInterface {
   public int indexOfProcess;

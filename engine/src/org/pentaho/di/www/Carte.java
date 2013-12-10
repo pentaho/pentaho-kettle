@@ -47,7 +47,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class Carte {
-  private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
 
   private WebServer webServer;
   private SlaveServerConfig config;
@@ -75,8 +75,8 @@ public class Carte {
       try {
         port = Integer.parseInt( slaveServer.getPort() );
       } catch ( Exception e ) {
-        log.logError(
-            BaseMessages.getString( PKG, "Carte.Error.CanNotPartPort", slaveServer.getHostname(), "" + port ), e );
+        log.logError( BaseMessages.getString( PKG, "Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""
+          + port ), e );
         allOK = false;
       }
     }
@@ -87,8 +87,8 @@ public class Carte {
     //
     if ( config.isReportingToMasters() ) {
       final SlaveServer client =
-          new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
-              .getUsername(), slaveServer.getPassword() );
+        new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
+          .getUsername(), slaveServer.getPassword() );
       for ( final SlaveServer master : config.getMasters() ) {
         // Here we use the username/password specified in the slave server section of the configuration.
         // This doesn't have to be the same pair as the one used on the master!
@@ -97,10 +97,10 @@ public class Carte {
           SlaveServerDetection slaveServerDetection = new SlaveServerDetection( client );
           master.sendXML( slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH + "/" );
           log.logBasic( "Registered this slave server to master slave server ["
-              + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
+            + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
         } catch ( Exception e ) {
           log.logError( "Unable to register to master slave server ["
-              + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
+            + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
           allOK = false;
         }
       }
@@ -112,8 +112,8 @@ public class Carte {
 
     if ( allOK ) {
       this.webServer =
-          new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, config
-              .isJoining(), config.getPasswordFile() );
+        new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, config
+          .isJoining(), config.getPasswordFile() );
     }
   }
 
@@ -152,9 +152,10 @@ public class Carte {
       System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" ) + ": Carte 127.0.0.1 8080" );
       System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" ) + ": Carte 192.168.1.221 8081" );
       System.err.println();
-      System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" ) + ": Carte /foo/bar/carte-config.xml" );
       System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" )
-          + ": Carte http://www.example.com/carte-config.xml" );
+        + ": Carte /foo/bar/carte-config.xml" );
+      System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" )
+        + ": Carte http://www.example.com/carte-config.xml" );
 
       System.exit( 1 );
     }

@@ -73,13 +73,12 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 /**
  * This dialog allows you to edit the Table content evaluation job entry settings. (select the connection and the table
  * to evaluate)
- * 
+ *
  * @author Samatar
  * @since 22-07-2008
  */
 public class JobEntryEvalTableContentDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryEvalTableContent.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private Button wbTable, wbSQLTable;
 
@@ -160,7 +159,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
   private TextVar wLimit;
   private FormData fdlLimit, fdLimit;
 
-  public JobEntryEvalTableContentDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntryEvalTableContentDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryEvalTableContent) jobEntryInt;
     if ( this.jobEntry.getName() == null ) {
@@ -337,8 +337,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     wlLimit.setLayoutData( fdlLimit );
 
     wLimit =
-        new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobEntryEvalTableContent.Limit.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobEntryEvalTableContent.Limit.Tooltip" ) );
     props.setLook( wLimit );
     wLimit.addModifyListener( lsMod );
     fdLimit = new FormData();
@@ -426,7 +426,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     wlClearResultList.setLayoutData( fdlClearResultList );
     wClearResultList = new Button( wCustomGroup, SWT.CHECK );
     props.setLook( wClearResultList );
-    wClearResultList.setToolTipText( BaseMessages.getString( PKG, "JobEntryEvalTableContent.ClearResultList.Tooltip" ) );
+    wClearResultList.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryEvalTableContent.ClearResultList.Tooltip" ) );
     fdClearResultList = new FormData();
     fdClearResultList.left = new FormAttachment( middle, -margin );
     fdClearResultList.top = new FormAttachment( wUseSubs, margin );
@@ -449,7 +450,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     wlAddRowsToResult.setLayoutData( fdlAddRowsToResult );
     wAddRowsToResult = new Button( wCustomGroup, SWT.CHECK );
     props.setLook( wAddRowsToResult );
-    wAddRowsToResult.setToolTipText( BaseMessages.getString( PKG, "JobEntryEvalTableContent.AddRowsToResult.Tooltip" ) );
+    wAddRowsToResult.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryEvalTableContent.AddRowsToResult.Tooltip" ) );
     fdAddRowsToResult = new FormData();
     fdAddRowsToResult.left = new FormAttachment( middle, -margin );
     fdAddRowsToResult.top = new FormAttachment( wClearResultList, margin );
@@ -488,7 +490,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     wbSQLTable.setLayoutData( fdbSQLTable );
 
     wSQL =
-        new StyledTextComp( jobEntry, wCustomGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( jobEntry, wCustomGroup, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
     wSQL.addModifyListener( lsMod );
     fdSQL = new FormData();
@@ -607,9 +610,9 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
       DatabaseExplorerDialog std = new DatabaseExplorerDialog( shell, SWT.NONE, inf, jobMeta.getDatabases() );
       if ( std.open() ) {
         String sql =
-            "SELECT *"
-                + Const.CR + "FROM " + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() )
-                + Const.CR;
+          "SELECT *"
+            + Const.CR + "FROM "
+            + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() ) + Const.CR;
         wSQL.setText( sql );
 
         MessageBox yn = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
@@ -639,12 +642,15 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
                   sql += inf.quoteField( field.getName() ) + Const.CR;
                 }
                 sql +=
-                    "FROM " + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() ) + Const.CR;
+                  "FROM "
+                    + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() )
+                    + Const.CR;
                 wSQL.setText( sql );
               } else {
                 MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage( BaseMessages.getString( PKG, "JobEntryEvalTableContent.ERROR_CouldNotRetrieveFields" )
-                    + Const.CR + BaseMessages.getString( PKG, "JobEntryEvalTableContent.PerhapsNoPermissions" ) );
+                mb.setMessage( BaseMessages.getString(
+                  PKG, "JobEntryEvalTableContent.ERROR_CouldNotRetrieveFields" )
+                  + Const.CR + BaseMessages.getString( PKG, "JobEntryEvalTableContent.PerhapsNoPermissions" ) );
                 mb.setText( BaseMessages.getString( PKG, "JobEntryEvalTableContent.DialogCaptionError2" ) );
                 mb.open();
               }
@@ -652,7 +658,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
               mb.setText( BaseMessages.getString( PKG, "JobEntryEvalTableContent.DialogCaptionError3" ) );
               mb.setMessage( BaseMessages.getString( PKG, "JobEntryEvalTableContent.AnErrorOccurred" )
-                  + Const.CR + e.getMessage() );
+                + Const.CR + e.getMessage() );
               mb.open();
             } finally {
               db.disconnect();
@@ -683,8 +689,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
       posnr--;
       colnr++;
     }
-    wlPosition.setText( BaseMessages
-        .getString( PKG, "JobEntryEvalTableContent.Position.Label", "" + linenr, "" + colnr ) );
+    wlPosition.setText( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Position.Label", "" + linenr, ""
+      + colnr ) );
 
   }
 

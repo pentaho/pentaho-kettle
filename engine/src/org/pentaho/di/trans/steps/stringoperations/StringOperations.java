@@ -37,24 +37,24 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Apply certain operations too string.
- * 
+ *
  * @author Samatar Hassan
  * @since 02 April 2009
  */
 public class StringOperations extends BaseStep implements StepInterface {
-  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private StringOperationsMeta meta;
 
   private StringOperationsData data;
 
-  public StringOperations( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public StringOperations( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  private String processString( String string, int trimType, int lowerUpper, int padType, String padChar, int padLen,
-      int iniCap, int maskHTML, int digits, int removeSpecialCharacters ) {
+  private String processString( String string, int trimType, int lowerUpper, int padType, String padChar,
+    int padLen, int iniCap, int maskHTML, int digits, int removeSpecialCharacters ) {
     String rcode = string;
 
     // Trim ?
@@ -195,9 +195,9 @@ public class StringOperations extends BaseStep implements StepInterface {
         String value = getInputRowMeta().getString( row, data.inStreamNrs[i] );
         // Apply String operations and return result value
         value =
-            processString(
-                value, data.trimOperators[i], data.lowerUpperOperators[i], data.padType[i], data.padChar[i],
-                data.padLen[i], data.initCap[i], data.maskHTML[i], data.digits[i], data.removeSpecialCharacters[i] );
+          processString(
+            value, data.trimOperators[i], data.lowerUpperOperators[i], data.padType[i], data.padChar[i],
+            data.padLen[i], data.initCap[i], data.maskHTML[i], data.digits[i], data.removeSpecialCharacters[i] );
         if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
           // Update field
           RowData[data.inStreamNrs[i]] = value;
@@ -235,13 +235,13 @@ public class StringOperations extends BaseStep implements StepInterface {
         data.inStreamNrs[i] = getInputRowMeta().indexOfValue( meta.getFieldInStream()[i] );
         if ( data.inStreamNrs[i] < 0 ) { // couldn't find field!
 
-          throw new KettleStepException( BaseMessages.getString( PKG, "StringOperations.Exception.FieldRequired", meta
-              .getFieldInStream()[i] ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "StringOperations.Exception.FieldRequired", meta.getFieldInStream()[i] ) );
         }
         // check field type
         if ( !getInputRowMeta().getValueMeta( data.inStreamNrs[i] ).isString() ) {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "StringOperations.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
+            PKG, "StringOperations.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
         }
       }
 

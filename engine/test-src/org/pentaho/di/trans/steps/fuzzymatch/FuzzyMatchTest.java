@@ -66,8 +66,8 @@ public class FuzzyMatchTest {
   private class FuzzyMatchHandler extends FuzzyMatch {
     private Object[] resultRow = null;
 
-    public FuzzyMatchHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-        Trans trans ) {
+    public FuzzyMatchHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+      TransMeta transMeta, Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     }
 
@@ -80,9 +80,10 @@ public class FuzzyMatchTest {
   @Before
   public void setUp() throws Exception {
     mockHelper =
-        new StepMockHelper<FuzzyMatchMeta, FuzzyMatchData>( "Fuzzy Match", FuzzyMatchMeta.class, FuzzyMatchData.class );
+      new StepMockHelper<FuzzyMatchMeta, FuzzyMatchData>(
+        "Fuzzy Match", FuzzyMatchMeta.class, FuzzyMatchData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        mockHelper.logChannelInterface );
+      mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -95,8 +96,8 @@ public class FuzzyMatchTest {
   @Test
   public void testProcessRow() throws Exception {
     fuzzyMatch =
-        new FuzzyMatchHandler(
-            mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+      new FuzzyMatchHandler(
+        mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
     fuzzyMatch.init( mockHelper.initStepMetaInterface, mockHelper.initStepDataInterface );
     fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( rows ) );
     fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( lookupRows ) );

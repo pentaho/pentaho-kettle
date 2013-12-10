@@ -69,7 +69,7 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 
   /**
    * Finds the node.
-   * 
+   *
    * @param aSchema
    *          can be null
    * @param aName
@@ -81,7 +81,8 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
     return drillDown( theNodes, aSchema, aTable );
   }
 
-  private DatabaseExplorerNode drillDown( ListIterator<DatabaseExplorerNode> aNodes, String aSchema, String aTable ) {
+  private DatabaseExplorerNode
+    drillDown( ListIterator<DatabaseExplorerNode> aNodes, String aSchema, String aTable ) {
     boolean lookingForSchema = aTable == null || Const.isEmpty( aTable );
     DatabaseExplorerNode theNode = null;
     while ( aNodes.hasNext() ) {
@@ -90,8 +91,8 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
         if ( lookingForSchema && theNode.isSchema() && theNode.getName().equals( aSchema ) ) {
           break;
         } else if ( !lookingForSchema
-            && theNode.isTable() && theNode.getName().equals( aTable )
-            && ( theNode.getSchema() != null ? theNode.getSchema().equals( aSchema ) : aSchema == null ) ) {
+          && theNode.isTable() && theNode.getName().equals( aTable )
+          && ( theNode.getSchema() != null ? theNode.getSchema().equals( aSchema ) : aSchema == null ) ) {
           break;
         } else {
           theNode = drillDown( theNode.listIterator(), aSchema, aTable );

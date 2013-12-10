@@ -57,7 +57,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Sort the rows in the input-streams based on certain criteria
- * 
+ *
  * @author Matt
  * @since 29-apr-2003
  */
@@ -67,7 +67,8 @@ public class SortRows extends BaseStep implements StepInterface {
   private SortRowsMeta meta;
   private SortRowsData data;
 
-  public SortRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public SortRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (SortRowsMeta) getStepMeta().getStepMetaInterface();
@@ -121,8 +122,8 @@ public class SortRows extends BaseStep implements StepInterface {
                                                                             // from
                                                                             // disk
     doSort |=
-        data.freeMemoryPctLimit > 0
-            && data.freeMemoryPct < data.freeMemoryPctLimit && data.buffer.size() >= data.minSortSize;
+      data.freeMemoryPctLimit > 0
+        && data.freeMemoryPct < data.freeMemoryPctLimit && data.buffer.size() >= data.minSortSize;
 
     // time to sort the buffer and write the data to disk...
     //
@@ -144,8 +145,8 @@ public class SortRows extends BaseStep implements StepInterface {
 
     try {
       FileObject fileObject =
-          KettleVFS.createTempFile(
-              meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ), getTransMeta() );
+        KettleVFS.createTempFile(
+          meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ), getTransMeta() );
 
       data.files.add( fileObject ); // Remember the files!
       OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
@@ -447,7 +448,7 @@ public class SortRows extends BaseStep implements StepInterface {
         data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getFieldName()[i] );
         if ( data.fieldnrs[i] < 0 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "SortRowsMeta.CheckResult.StepFieldNotInInputStream", meta.getFieldName()[i], getStepname() ) );
+            PKG, "SortRowsMeta.CheckResult.StepFieldNotInInputStream", meta.getFieldName()[i], getStepname() ) );
         }
         data.convertKeysToNative[i] = getInputRowMeta().getValueMeta( data.fieldnrs[i] ).isStorageBinaryString();
       }
@@ -480,7 +481,7 @@ public class SortRows extends BaseStep implements StepInterface {
 
   /**
    * This method passes all rows in the buffer to the next steps.
-   * 
+   *
    */
   private void passBuffer( boolean signal ) throws KettleException {
     // Now we can start the output!
@@ -637,7 +638,8 @@ public class SortRows extends BaseStep implements StepInterface {
         valueMeta.setNumberOfBinaryStringConversions( 0L );
       }
       if ( log.isDetailed() ) {
-        logDetailed( "The number of binary string to data type conversions done in this sort block is " + nrConversions );
+        logDetailed( "The number of binary string to data type conversions done in this sort block is "
+          + nrConversions );
       }
     }
     if ( log.isDetailed() ) {

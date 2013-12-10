@@ -53,12 +53,12 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry type to evaluate the result of a previous job entry. It uses a piece of javascript to do this.
- * 
+ *
  * @author Matt
  * @since 5-11-2003
  */
 public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryEval.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryEval.class; // for i18n purposes, needed by Translator2!!
 
   private String script;
 
@@ -86,8 +86,8 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       script = XMLHandler.getTagValue( entrynode, "script" );
@@ -97,12 +97,12 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       script = rep.getJobEntryAttributeString( id_jobentry, "script" );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryEval.UnableToLoadFromRepo", String
-          .valueOf( id_jobentry ) ), dbe );
+        .valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -113,7 +113,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "script", script );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryEval.UnableToSaveToRepo", String
-          .valueOf( id_job ) ), dbe );
+        .valueOf( id_job ) ), dbe );
     }
   }
 
@@ -127,7 +127,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 
   /**
    * Evaluate the result of the execution of previous job entry.
-   * 
+   *
    * @param result
    *          The result to evaulate.
    * @param prev_result
@@ -202,7 +202,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param prev_result
    *          The result of the previous execution
    * @return The Result of the execution.
@@ -226,8 +226,8 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     return false;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "script", remarks, putValidators( notBlankValidator() ) );
   }
 

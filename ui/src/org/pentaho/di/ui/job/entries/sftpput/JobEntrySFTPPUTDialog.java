@@ -70,16 +70,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the FTP Put job entry settings.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySFTPPUT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-  private static final String[] FILETYPES =
-      new String[] {
-          BaseMessages.getString( PKG, "JobSFTPPUT.Filetype.Pem" ),
-          BaseMessages.getString( PKG, "JobSFTPPUT.Filetype.All" ) };
+  private static Class<?> PKG = JobEntrySFTPPUT.class; // for i18n purposes, needed by Translator2!!
+  private static final String[] FILETYPES = new String[] {
+    BaseMessages.getString( PKG, "JobSFTPPUT.Filetype.Pem" ),
+    BaseMessages.getString( PKG, "JobSFTPPUT.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -464,9 +463,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // keyfilePass line
     wkeyfilePass =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.keyfilePass.Label" ), BaseMessages
-                .getString( PKG, "JobSFTPPUT.keyfilePass.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.keyfilePass.Label" ), BaseMessages
+          .getString( PKG, "JobSFTPPUT.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
     wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
@@ -503,9 +502,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy host line
     wProxyHost =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Label" ), BaseMessages
-                .getString( PKG, "JobSFTPPUT.ProxyHost.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Label" ), BaseMessages
+          .getString( PKG, "JobSFTPPUT.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -516,9 +515,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy port line
     wProxyPort =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyPort.Label" ), BaseMessages
-                .getString( PKG, "JobSFTPPUT.ProxyPort.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyPort.Label" ), BaseMessages
+          .getString( PKG, "JobSFTPPUT.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -529,9 +528,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy username line
     wProxyUsername =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyUsername.Label" ), BaseMessages
-                .getString( PKG, "JobSFTPPUT.ProxyUsername.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyUsername.Label" ),
+        BaseMessages.getString( PKG, "JobSFTPPUT.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -542,9 +541,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy password line
     wProxyPassword =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyPassword.Label" ), BaseMessages
-                .getString( PKG, "JobSFTPPUT.ProxyPassword.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyPassword.Label" ),
+        BaseMessages.getString( PKG, "JobSFTPPUT.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
@@ -851,8 +850,8 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     } );
 
     wDestinationFolder =
-        new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobSFTPPUT.DestinationFolder.Tooltip" ) );
+      new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobSFTPPUT.DestinationFolder.Tooltip" ) );
     props.setLook( wDestinationFolder );
     wDestinationFolder.addModifyListener( lsMod );
     fdDestinationFolder = new FormData();
@@ -878,8 +877,8 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     fdlCreateDestinationFolder.right = new FormAttachment( middle, -margin );
     wlCreateDestinationFolder.setLayoutData( fdlCreateDestinationFolder );
     wCreateDestinationFolder = new Button( wSourceFiles, SWT.CHECK );
-    wCreateDestinationFolder
-        .setToolTipText( BaseMessages.getString( PKG, "JobSFTPPUT.CreateDestinationFolder.Tooltip" ) );
+    wCreateDestinationFolder.setToolTipText( BaseMessages.getString(
+      PKG, "JobSFTPPUT.CreateDestinationFolder.Tooltip" ) );
     props.setLook( wCreateDestinationFolder );
     fdCreateDestinationFolder = new FormData();
     fdCreateDestinationFolder.left = new FormAttachment( middle, 0 );
@@ -967,7 +966,8 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     wCreateRemoteFolder = new Button( wTargetFiles, SWT.CHECK );
     props.setLook( wCreateRemoteFolder );
     fdCreateRemoteFolder = new FormData();
-    wCreateRemoteFolder.setToolTipText( BaseMessages.getString( PKG, "JobSFTPPUT.CreateRemoteFolderFiles.Tooltip" ) );
+    wCreateRemoteFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobSFTPPUT.CreateRemoteFolderFiles.Tooltip" ) );
     fdCreateRemoteFolder.left = new FormAttachment( middle, 0 );
     fdCreateRemoteFolder.top = new FormAttachment( wScpDirectory, margin );
     fdCreateRemoteFolder.right = new FormAttachment( 100, 0 );
@@ -1106,7 +1106,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-          + Const.CR );
+        + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -1131,18 +1131,17 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
       if ( sftpclient == null ) {
         // Create sftp client to host ...
         sftpclient =
-            new SFTPClient(
-                InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ), Const.toInt( jobMeta
-                    .environmentSubstitute( wServerPort.getText() ), 22 ), jobMeta.environmentSubstitute( wUserName
-                    .getText() ), jobMeta.environmentSubstitute( wKeyFilename.getText() ), jobMeta
-                    .environmentSubstitute( wkeyfilePass.getText() ) );
+          new SFTPClient( InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ), Const
+            .toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 22 ), jobMeta
+            .environmentSubstitute( wUserName.getText() ), jobMeta.environmentSubstitute( wKeyFilename
+            .getText() ), jobMeta.environmentSubstitute( wkeyfilePass.getText() ) );
         // Set proxy?
         String realProxyHost = jobMeta.environmentSubstitute( wProxyHost.getText() );
         if ( !Const.isEmpty( realProxyHost ) ) {
           // Set proxy
           sftpclient.setProxy( realProxyHost, jobMeta.environmentSubstitute( wProxyPort.getText() ), jobMeta
-              .environmentSubstitute( wProxyUsername.getText() ), jobMeta.environmentSubstitute( wProxyPassword
-              .getText() ), wProxyType.getText() );
+            .environmentSubstitute( wProxyUsername.getText() ), jobMeta.environmentSubstitute( wProxyPassword
+            .getText() ), wProxyType.getText() );
         }
         // login to ftp host ...
         sftpclient.login( jobMeta.environmentSubstitute( wPassword.getText() ) );
@@ -1155,8 +1154,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
     } catch ( Exception e ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.ErrorConnect.NOK", wServerName.getText(), e.getMessage() )
-          + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.ErrorConnect.NOK", wServerName.getText(), e
+        .getMessage() )
+        + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.ErrorConnect.Title.Bad" ) );
       mb.open();
     }
@@ -1296,12 +1296,14 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
   private void setDefaulProxyPort() {
     if ( wProxyType.getText().equals( SFTPClient.PROXY_TYPE_HTTP ) ) {
       if ( Const.isEmpty( wProxyPort.getText() )
-          || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals( SFTPClient.SOCKS5_DEFAULT_PORT ) ) ) {
+        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals(
+          SFTPClient.SOCKS5_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.HTTP_DEFAULT_PORT );
       }
     } else {
       if ( Const.isEmpty( wProxyPort.getText() )
-          || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals( SFTPClient.HTTP_DEFAULT_PORT ) ) ) {
+        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort
+          .getText().equals( SFTPClient.HTTP_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.SOCKS5_DEFAULT_PORT );
       }
     }
@@ -1309,9 +1311,9 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 
   private void AfterFTPPutActivate() {
     boolean moveFile =
-        JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE;
+      JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE;
     boolean doNothing =
-        JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING;
+      JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING;
 
     wlDestinationFolder.setEnabled( moveFile );
     wDestinationFolder.setEnabled( moveFile );

@@ -56,13 +56,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a ping job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since Mar-2007
- * 
+ *
  */
 public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryPing.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryPing.class; // for i18n purposes, needed by Translator2!!
 
   private String hostname;
   private String timeout;
@@ -115,8 +115,8 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       String nbrPaquets;
       super.loadXML( entrynode, databases, slaveServers );
@@ -151,7 +151,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       hostname = rep.getJobEntryAttributeString( id_jobentry, "hostname" );
       nbrPackets = rep.getJobEntryAttributeString( id_jobentry, "nbr_packets" );
@@ -179,8 +179,8 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         }
       }
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'ping' exists from the repository for id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'ping' exists from the repository for id_jobentry=" + id_jobentry, dbe );
     }
   }
 
@@ -194,7 +194,8 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "timeout", timeout );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "pingtype", pingtype );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'ping' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type 'ping' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -258,11 +259,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         if ( status ) {
           if ( log.isDetailed() ) {
             log.logDetailed( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
-                PKG, "JobPing.OK.Label", hostname ) );
+              PKG, "JobPing.OK.Label", hostname ) );
           }
         } else {
           log.logError( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
-              PKG, "JobPing.NOK.Label", hostname ) );
+            PKG, "JobPing.NOK.Label", hostname ) );
         }
       }
       if ( ( ipingtype == iclassicPing ) || ( ipingtype == ibothPings && !status ) ) {
@@ -271,11 +272,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         if ( status ) {
           if ( log.isDetailed() ) {
             log.logDetailed( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
-                PKG, "JobPing.OK.Label", hostname ) );
+              PKG, "JobPing.OK.Label", hostname ) );
           }
         } else {
           log.logError( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
-              PKG, "JobPing.NOK.Label", hostname ) );
+            PKG, "JobPing.NOK.Label", hostname ) );
         }
       }
     } catch ( Exception ex ) {
@@ -375,8 +376,8 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "hostname", remarks, putValidators( notBlankValidator() ) );
   }
 

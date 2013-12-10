@@ -55,14 +55,13 @@ import org.w3c.dom.Node;
 /**
  * Symmetric algorithm Executes a SymmetricCryptoTrans on the values in the input stream. Selected calculated values can
  * then be put on the output stream.
- * 
+ *
  * @author Samatar
  * @since 5-apr-2003
- * 
+ *
  */
 public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SymmetricCryptoTransMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   /** Operations type */
   private int operationType;
@@ -71,8 +70,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-      BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Encrypt" ),
-      BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Decrypt" ) };
+    BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Encrypt" ),
+    BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Decrypt" ) };
 
   /**
    * The operations type codes
@@ -229,7 +228,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     this.messageField = fieldnamein;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -249,7 +249,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      operationType = getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
       algorithm = XMLHandler.getTagValue( stepnode, "algorithm" );
       schema = XMLHandler.getTagValue( stepnode, "schema" );
       secretKeyField = XMLHandler.getTagValue( stepnode, "secretKeyField" );
@@ -263,7 +264,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "SymmetricCryptoTransMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+        PKG, "SymmetricCryptoTransMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -281,7 +282,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !Const.isEmpty( getResultfieldname() ) ) {
       int type = ValueMeta.TYPE_STRING;
@@ -308,7 +309,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "secretKey", Encr.encryptPasswordIfNotUsingVariables( secretKey ) ) );
+      XMLHandler.addTagValue( "secretKey", Encr.encryptPasswordIfNotUsingVariables( secretKey ) ) );
 
     retval.append( "    " + XMLHandler.addTagValue( "secretKeyInField", secretKeyInField ) );
     retval.append( "    " + XMLHandler.addTagValue( "readKeyAsBinary", readKeyAsBinary ) );
@@ -320,7 +321,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
-      operationType = getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
       algorithm = rep.getStepAttributeString( id_step, "algorithm" );
       schema = rep.getStepAttributeString( id_step, "schema" );
       secretKeyField = rep.getStepAttributeString( id_step, "secretKeyField" );
@@ -334,7 +336,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SymmetricCryptoTransMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+        PKG, "SymmetricCryptoTransMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -357,32 +359,34 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
 
       rep.saveStepAttribute( id_transformation, id_step, "secretKey", Encr
-          .encryptPasswordIfNotUsingVariables( secretKey ) );
+        .encryptPasswordIfNotUsingVariables( secretKey ) );
       rep.saveStepAttribute( id_transformation, id_step, "secretKeyInField", secretKeyInField );
       rep.saveStepAttribute( id_transformation, id_step, "readKeyAsBinary", readKeyAsBinary );
       rep.saveStepAttribute( id_transformation, id_step, "outputResultAsBinary", outputResultAsBinary );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages
-          .getString( PKG, "SymmetricCryptoTransMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SymmetricCryptoTransMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SymmetricCryptoTransMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepinfo );
+        new CheckResult(
+          CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "SymmetricCryptoTransMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ),
+          stepinfo );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SymmetricCryptoTransMeta.CheckResult.NoInputReceived" ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SymmetricCryptoTransMeta.CheckResult.NoInputReceived" ), stepinfo );
 
     }
     remarks.add( cr );
@@ -391,15 +395,15 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     if ( getResultfieldname() == null ) {
       // Result Field is missing !
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SymmetricCryptoTransMeta.CheckResult.ErrorResultFieldNameMissing" ), stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SymmetricCryptoTransMeta.CheckResult.ErrorResultFieldNameMissing" ), stepinfo );
       remarks.add( cr );
 
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SymmetricCryptoTrans( stepMeta, stepDataInterface, cnr, transMeta, trans );
 
   }

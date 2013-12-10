@@ -34,9 +34,9 @@ import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * Regression test case for Jira PDI-10242: a csv input step does not recognize parameter in encoding
- * 
+ *
  * In the original problem this caused every other row to be skipped.
- * 
+ *
  * @author Kanstantsin Karneliuk
  */
 public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
@@ -67,7 +67,7 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
 
   /**
    * Test case for PDI 10242, that test the whole transformation run -- not just init step
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -79,12 +79,13 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
 
     ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "${P_ENCODING}" );
 
-    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+    createAndTestTrans(
+      registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }
 
   /**
    * Test case for PDI 10242, that test the whole transformation run -- not just init step
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -96,12 +97,13 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
 
     ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "%%${P_ENCODING}%%" );
 
-    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+    createAndTestTrans(
+      registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }
 
   /**
    * Test case for PDI 10242, that test the whole transformation run -- not just init step
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -109,7 +111,8 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
   public void testCSVException() throws Exception {
     try {
       ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "${P_ENCODING}" );
-      createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+      createAndTestTrans(
+        registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
       fail();
     } catch ( Exception ex ) {
       System.out.println( "Expected exception" );
@@ -118,7 +121,7 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
 
   /**
    * Test case for PDI 10242, that test the whole transformation run -- regression check
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -127,12 +130,13 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
 
     ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "UTF-8" );
 
-    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+    createAndTestTrans(
+      registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }
 
   /**
    * Test case for PDI 10242, that test the whole transformation run -- regression check
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -141,6 +145,7 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
 
     ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( null );
 
-    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+    createAndTestTrans(
+      registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }
 }

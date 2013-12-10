@@ -44,12 +44,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while previewing a transformation...
- * 
+ *
  * @author Matt
  * @since 13-jan-2006
  */
 public class TransPreviewProgressDialog {
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Shell shell;
   private TransMeta transMeta;
@@ -111,13 +111,13 @@ public class TransPreviewProgressDialog {
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transMeta = null;
     } catch ( InterruptedException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transMeta = null;
     }
 
@@ -125,8 +125,8 @@ public class TransPreviewProgressDialog {
   }
 
   private void doPreview( final IProgressMonitor progressMonitor ) {
-    progressMonitor
-        .beginTask( BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
+    progressMonitor.beginTask(
+      BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
 
     // This transformation is ready to run in preview!
     trans = new Trans( transMeta );
@@ -138,8 +138,8 @@ public class TransPreviewProgressDialog {
     } catch ( final KettleException e ) {
       shell.getDisplay().asyncExec( new Runnable() {
         public void run() {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-              PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+            .getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
         }
       } );
 
@@ -170,8 +170,8 @@ public class TransPreviewProgressDialog {
     } catch ( final KettleException e ) {
       shell.getDisplay().asyncExec( new Runnable() {
         public void run() {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-              PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+            .getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
         }
       } );
 
@@ -183,17 +183,18 @@ public class TransPreviewProgressDialog {
     int previousPct = 0;
     final List<String> previewComplete = new ArrayList<String>();
 
-    while ( previewComplete.size() < previewStepNames.length && !trans.isFinished() && !progressMonitor.isCanceled() ) {
+    while ( previewComplete.size() < previewStepNames.length
+      && !trans.isFinished() && !progressMonitor.isCanceled() ) {
       // We add a break-point that is called every time we have a step with a full preview row buffer
       // That makes it easy and fast to see if we have all the rows we need
       //
       transDebugMeta.addBreakPointListers( new BreakPointListener() {
         public void breakPointHit( TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta,
-            RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
+          RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
           String stepName = stepDebugMeta.getStepMeta().getName();
           previewComplete.add( stepName );
           progressMonitor.subTask( BaseMessages.getString(
-              PKG, "TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName ) );
+            PKG, "TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName ) );
         }
       } );
 
@@ -230,7 +231,8 @@ public class TransPreviewProgressDialog {
     trans.stopAll();
 
     // Capture preview activity to a String:
-    loggingText = KettleLogStore.getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), true ).toString();
+    loggingText =
+      KettleLogStore.getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), true ).toString();
 
     progressMonitor.done();
   }
@@ -288,7 +290,7 @@ public class TransPreviewProgressDialog {
   }
 
   /**
-   * 
+   *
    * @return The transformation object that executed the preview TransMeta
    */
   public Trans getTrans() {

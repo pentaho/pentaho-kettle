@@ -64,7 +64,7 @@ public class KettleDatabaseRepositoryTest extends TestCase {
     try {
       DatabaseMeta databaseMeta = new DatabaseMeta( "H2Repo", "H2", "JDBC", null, filename, null, null, null );
       repositoryMeta =
-          new KettleDatabaseRepositoryMeta( "KettleDatabaseRepository", "H2Repo", "H2 Repository", databaseMeta );
+        new KettleDatabaseRepositoryMeta( "KettleDatabaseRepository", "H2Repo", "H2 Repository", databaseMeta );
       repository = new KettleDatabaseRepository();
       repository.init( repositoryMeta );
       repository.connectionDelegate.connect( true, true );
@@ -85,7 +85,8 @@ public class KettleDatabaseRepositoryTest extends TestCase {
       //
       RepositoryDirectoryInterface fooDirectory = repository.createRepositoryDirectory( tree, "foo" );
       RepositoryDirectoryInterface barDirectory = repository.createRepositoryDirectory( fooDirectory, "bar" );
-      RepositoryDirectoryInterface samplesDirectory = repository.createRepositoryDirectory( fooDirectory, "samples" );
+      RepositoryDirectoryInterface samplesDirectory =
+        repository.createRepositoryDirectory( fooDirectory, "samples" );
 
       // Test directory path lookup
       RepositoryDirectoryInterface checkBar = tree.findDirectory( "/foo/bar" );
@@ -165,7 +166,8 @@ public class KettleDatabaseRepositoryTest extends TestCase {
 
     // Verify the number of stored files, see if we can find them all again.
     //
-    System.out.println( "Stored " + files.length + " transformation samples in folder " + samplesDirectory.getPath() );
+    System.out.println( "Stored "
+      + files.length + " transformation samples in folder " + samplesDirectory.getPath() );
     String[] transformationNames = repository.getTransformationNames( samplesDirectory.getObjectId(), false );
     assertEquals( files.length, transformationNames.length );
   }

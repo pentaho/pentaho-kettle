@@ -73,16 +73,16 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * Dialog that allows the user to launch SQL statements towards the database.
- * 
+ *
  * @author Matt
  * @since 13-10-2003
- * 
+ *
  */
 public class SQLEditor {
-  private static Class<?> PKG = SQLEditor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SQLEditor.class; // for i18n purposes, needed by Translator2!!
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
-      "SQL Editor", LoggingObjectType.SPOON, null );
+    "SQL Editor", LoggingObjectType.SPOON, null );
 
   private PropsUI props;
 
@@ -150,7 +150,8 @@ public class SQLEditor {
     fdlScript.top = new FormAttachment( 0, 0 );
     wlScript.setLayoutData( fdlScript );
     wScript =
-        new StyledTextComp( this.variables, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp(
+        this.variables, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     wScript.setText( "" );
     props.setLook( wScript, Props.WIDGET_STYLE_FIXED );
     fdScript = new FormData();
@@ -291,7 +292,8 @@ public class SQLEditor {
         DBCache.getInstance().clear( connection.getName() );
 
         mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
-        mb.setMessage( BaseMessages.getString( PKG, "SQLEditor.ConnectionCacheCleared.Message", connection.getName() ) );
+        mb.setMessage( BaseMessages.getString( PKG, "SQLEditor.ConnectionCacheCleared.Message", connection
+          .getName() ) );
         mb.setText( BaseMessages.getString( PKG, "SQLEditor.ConnectionCacheCleared.Title" ) );
         mb.open();
 
@@ -344,7 +346,7 @@ public class SQLEditor {
     PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
 
     for ( int partitionNr = 0; first
-        || ( partitioningInformation != null && partitionNr < partitioningInformation.length ); partitionNr++ ) {
+      || ( partitioningInformation != null && partitionNr < partitioningInformation.length ); partitionNr++ ) {
       first = false;
       String partitionId = null;
       if ( partitioningInformation != null && partitioningInformation.length > 0 ) {
@@ -352,7 +354,8 @@ public class SQLEditor {
       }
       try {
         db.connect( partitionId );
-        String sqlScript = Const.isEmpty( wScript.getSelectionText() ) ? wScript.getText() : wScript.getSelectionText();
+        String sqlScript =
+          Const.isEmpty( wScript.getSelectionText() ) ? wScript.getText() : wScript.getSelectionText();
 
         // Multiple statements in the script need to be split into individual
         // executable statements
@@ -370,8 +373,8 @@ public class SQLEditor {
               RowMetaInterface rowMeta = db.getReturnRowMeta();
               if ( rows.size() > 0 ) {
                 PreviewRowsDialog prd =
-                    new PreviewRowsDialog( shell, ci, SWT.NONE, BaseMessages.getString(
-                        PKG, "SQLEditor.ResultRows.Title", Integer.toString( nrstats ) ), rowMeta, rows );
+                  new PreviewRowsDialog( shell, ci, SWT.NONE, BaseMessages.getString(
+                    PKG, "SQLEditor.ResultRows.Title", Integer.toString( nrstats ) ), rowMeta, rows );
                 prd.open();
               } else {
                 MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
@@ -381,7 +384,7 @@ public class SQLEditor {
               }
             } catch ( KettleDatabaseException dbe ) {
               new ErrorDialog( shell, BaseMessages.getString( PKG, "SQLEditor.ErrorExecSQL.Title" ), BaseMessages
-                  .getString( PKG, "SQLEditor.ErrorExecSQL.Message", sql ), dbe );
+                .getString( PKG, "SQLEditor.ErrorExecSQL.Message", sql ), dbe );
             }
           } else {
             log.logDetailed( "launch DDL statement: " + Const.CR + sql );
@@ -410,15 +413,15 @@ public class SQLEditor {
               String error = BaseMessages.getString( PKG, "SQLEditor.Log.SQLExecError", sql, dbe.toString() );
               message.append( error ).append( Const.CR );
               ErrorDialog dialog =
-                  new ErrorDialog(
-                      shell, BaseMessages.getString( PKG, "SQLEditor.ErrorExecSQL.Title" ), error, dbe, true );
+                new ErrorDialog(
+                  shell, BaseMessages.getString( PKG, "SQLEditor.ErrorExecSQL.Title" ), error, dbe, true );
               if ( dialog.isCancelled() ) {
                 break;
               }
             } finally {
               int endLogLine = KettleLogStore.getLastBufferLineNr();
               sql.setLoggingText( KettleLogStore.getAppender().getLogBufferFromTo(
-                  db.getLogChannelId(), true, startLogLine, endLogLine ).toString() );
+                db.getLogChannelId(), true, startLogLine, endLogLine ).toString() );
               sql.setComplete( true );
               refreshExecutionResults();
             }
@@ -432,8 +435,8 @@ public class SQLEditor {
       } catch ( KettleDatabaseException dbe ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
         String error =
-            BaseMessages.getString( PKG, "SQLEditor.Error.CouldNotConnect.Message", ( connection == null
-                ? "" : connection.getName() ), dbe.getMessage() );
+          BaseMessages.getString( PKG, "SQLEditor.Error.CouldNotConnect.Message", ( connection == null
+            ? "" : connection.getName() ), dbe.getMessage() );
         message.append( error ).append( Const.CR );
         mb.setMessage( error );
         mb.setText( BaseMessages.getString( PKG, "SQLEditor.Error.CouldNotConnect.Title" ) );
@@ -445,8 +448,8 @@ public class SQLEditor {
     }
 
     EnterTextDialog dialog =
-        new EnterTextDialog( shell, BaseMessages.getString( PKG, "SQLEditor.Result.Title" ), BaseMessages.getString(
-            PKG, "SQLEditor.Result.Message" ), message.toString(), true );
+      new EnterTextDialog( shell, BaseMessages.getString( PKG, "SQLEditor.Result.Title" ), BaseMessages
+        .getString( PKG, "SQLEditor.Result.Message" ), message.toString(), true );
     dialog.open();
   }
 

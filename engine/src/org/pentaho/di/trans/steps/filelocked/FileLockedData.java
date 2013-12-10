@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2009
- * 
+ *
  */
 public class FileLockedData extends BaseStepData implements StepDataInterface {
   public int indexOfFileename;

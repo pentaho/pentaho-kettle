@@ -42,18 +42,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 10-06-2007
  */
 public class SalesforceInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SalesforceInputMeta meta;
   private SalesforceInputData data;
 
   public SalesforceInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -190,7 +190,8 @@ public class SalesforceInput extends BaseStep implements StepInterface {
         }
       }
       for ( int i = 0; i < data.nrfields; i++ ) {
-        String value = data.connection.getRecordValue( srvalue.getRecordValue(), meta.getInputFields()[i].getField() );
+        String value =
+          data.connection.getRecordValue( srvalue.getRecordValue(), meta.getInputFields()[i].getField() );
 
         // DO Trimming!
         switch ( meta.getInputFields()[i].getTrimType() ) {
@@ -257,7 +258,8 @@ public class SalesforceInput extends BaseStep implements StepInterface {
 
       data.previousRow = irow == null ? outputRowData : irow.cloneRow( outputRowData ); // copy it to make
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.Exception.CanNotReadFromSalesforce" ), e );
+      throw new KettleException( BaseMessages
+        .getString( PKG, "SalesforceInput.Exception.CanNotReadFromSalesforce" ), e );
     }
 
     return outputRowData;
@@ -312,7 +314,7 @@ public class SalesforceInput extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data.
-   * 
+   *
    * @return
    */
   private Object[] buildEmptyRow() {
@@ -392,7 +394,7 @@ public class SalesforceInput extends BaseStep implements StepInterface {
 
         // create a Salesforce connection
         data.connection =
-            new SalesforceConnection( log, realUrl, realUser, environmentSubstitute( meta.getPassword() ) );
+          new SalesforceConnection( log, realUrl, realUser, environmentSubstitute( meta.getPassword() ) );
         // set timeout
         data.connection.setTimeOut( Const.toInt( environmentSubstitute( meta.getTimeOut() ), 0 ) );
         // Do we use compression?
@@ -434,7 +436,7 @@ public class SalesforceInput extends BaseStep implements StepInterface {
         return true;
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceInput.Log.ErrorOccurredDuringStepInitialize" )
-            + ke.getMessage() );
+          + ke.getMessage() );
       }
 
       return true;

@@ -32,7 +32,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains HP Neoview specific information through static final members
- * 
+ *
  * @author Jens
  * @since 2008-04-18
  */
@@ -40,7 +40,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -70,7 +71,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
-   * 
+   *
    * @param tableName
    *          The name of the table to determine the layout for
    * @return The SQL to launch.
@@ -153,7 +154,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -170,13 +171,14 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ADD ( " + getFieldDefinition( v, tk, pk, use_autoinc, true, false ) + " ) ";
+    String pk, boolean semicolon ) {
+    return "ALTER TABLE "
+      + tablename + " ADD ( " + getFieldDefinition( v, tk, pk, use_autoinc, true, false ) + " ) ";
   }
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -193,13 +195,13 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP ( " + v.getName() + " ) " + Const.CR;
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -216,13 +218,13 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -245,7 +247,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           retval += "INTEGER NOT NULL PRIMARY KEY";
         } else {
@@ -309,47 +311,49 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
    */
   @Override
   public String[] getReservedWords() {
     return new String[] {
-        "ACTION", "FOR", "PROTOTYPE", "ADD", "FOREIGN", "PUBLIC", "ADMIN", "FOUND", "READ", "AFTER", "FRACTION",
-        "READS", "AGGREGATE", "FREE", "REAL", "ALIAS", "FROM", "RECURSIVE", "ALL", "FULL", "REF", "ALLOCATE",
-        "FUNCTION", "REFERENCES", "ALTER", "GENERAL", "REFERENCING", "AND", "GET", "RELATIVE", "ANY", "GLOBAL",
-        "REPLACE", "ARE", "GO", "RESIGNAL", "ARRAY", "GOTO", "RESTRICT", "AS", "GRANT", "RESULT", "ASC", "GROUP",
-        "RETURN", "ASSERTION", "GROUPING", "RETURNS", "ASYNC", "HAVING", "REVOKE", "AT", "HOST", "RIGHT",
-        "AUTHORIZATION", "HOUR", "ROLE", "AVG", "IDENTITY", "ROLLBACK", "BEFORE", "IF", "ROLLUP", "BEGIN", "IGNORE",
-        "ROUTINE", "BETWEEN", "IMMEDIATE", "ROW", "BINARY", "IN", "ROWS", "BIT", "INDICATOR", "SAVEPOINT",
-        "BIT_LENGTH", "INITIALLY", "SCHEMA", "BLOB", "INNER", "SCOPE", "BOOLEAN", "INOUT", "SCROLL", "BOTH", "INPUT",
-        "SEARCH", "BREADTH", "INSENSITIVE", "SECOND", "BY", "INSERT", "SECTION", "CALL", "INT", "SELECT", "CASE",
-        "INTEGER", "SENSITIVE", "CASCADE", "INTERSECT", "SESSION", "CASCADED", "INTERVAL", "SESSION_USER", "CAST",
-        "INTO", "SET", "CATALOG", "IS", "SETS", "CHAR", "ISOLATION", "SIGNAL", "CHAR_LENGTH", "ITERATE", "SIMILAR",
-        "CHARACTER", "JOIN", "SIZE", "CHARACTER_LENGTH", "KEY", "SMALLINT", "CHECK", "LANGUAGE", "SOME", "CLASS",
-        "LARGE", "CLOB", "LAST", "SPECIFIC", "CLOSE", "LATERAL", "SPECIFICTYPE", "COALESCE", "LEADING", "SQL",
-        "COLLATE", "LEAVE", "SQL_CHAR", "COLLATION", "LEFT", "SQL_DATE", "COLUMN", "LESS", "SQL_DECIMAL", "COMMIT",
-        "LEVEL", "SQL_DOUBLE", "COMPLETION", "LIKE", "SQL_FLOAT", "CONNECT", "LIMIT", "SQL_INT", "CONNECTION", "LOCAL",
-        "SQL_INTEGER", "CONSTRAINT", "LOCALTIME", "SQL_REAL", "CONSTRAINTS", "LOCALTIMESTAMP", "SQL_SMALLINT",
-        "CONSTRUCTOR", "LOCATOR", "SQL_TIME", "CONTINUE", "LOOP", "SQL_TIMESTAMP", "CONVERT", "LOWER", "SQL_VARCHAR",
-        "CORRESPONDING", "MAP", "SQLCODE", "COUNT", "MATCH", "SQLERROR", "CREATE", "MAX", "SQLEXCEPTION", "CROSS",
-        "MIN", "SQLSTATE", "CUBE", "MINUTE", "SQLWARNING", "CURRENT", "MODIFIES", "STRUCTURE", "CURRENT_DATE",
-        "MODIFY", "SUBSTRING", "CURRENT_PATH", "MODULE", "SUM", "CURRENT_ROLE", "MONTH", "SYSTEM_USER", "CURRENT_TIME",
-        "NAMES", "TABLE", "CURRENT_TIMESTAMP", "NATIONAL", "TEMPORARY", "CURRENT_USER", "NATURAL", "TERMINATE",
-        "CURSOR", "NCHAR", "TEST", "CYCLE", "NCLOB", "THAN", "DATE", "NEW", "THEN", "DATETIME", "NEXT", "THERE", "DAY",
-        "NO", "TIME", "DEALLOCATE", "NONE", "TIMESTAMP", "DEC", "NOT", "TIMEZONE_HOUR", "DECIMAL", "NULL",
-        "TIMEZONE_MINUTE", "DECLARE", "NULLIF", "TO", "DEFAULT", "NUMERIC", "TRAILING", "DEFERRABLE", "OBJECT",
-        "TRANSACTION", "DEFERRED", "OCTET_LENGTH", "TRANSLATE", "DELETE", "OF", "TRANSLATION", "DEPTH", "OFF",
-        "TRANSPOSE", "DEREF", "OID", "TREAT", "DESC", "OLD", "TRIGGER", "DESCRIBE", "ON", "TRIM", "DESCRIPTOR", "ONLY",
-        "TRUE", "DESTROY", "OPEN", "UNDER", "DESTRUCTOR", "OPERATORS", "UNION", "DETERMINISTIC", "OPTION", "UNIQUE",
-        "DIAGNOSTICS", "OR", "UNKNOWN", "DISTINCT", "ORDER", "UNNEST", "DICTIONARY", "ORDINALITY", "UPDATE",
-        "DISCONNECT", "OTHERS", "UPPER", "DOMAIN", "OUT", "UPSHIFT", "DOUBLE", "OUTER", "USAGE", "DROP", "OUTPUT",
-        "USER", "DYNAMIC", "OVERLAPS", "USING", "EACH", "PAD", "VALUE", "ELSE", "PARAMETER", "VALUES", "ELSEIF",
-        "PARAMETERS", "VARCHAR", "END", "PARTIAL", "VARIABLE", "END-EXEC", "PENDANT", "VARYING", "EQUALS", "POSITION",
-        "VIEW", "ESCAPE", "POSTFIX", "VIRTUAL", "EXCEPT", "PRECISION", "VISIBLE", "EXCEPTION", "PREFIX", "WAIT",
-        "EXEC", "PREORDER", "WHEN", "EXECUTE", "PREPARE", "WHENEVER", "EXISTS", "PRESERVE", "WHERE", "EXTERNAL",
-        "PRIMARY", "WHILE", "EXTRACT", "PRIOR", "WITH", "FALSE", "PRIVATE", "WITHOUT", "FETCH", "PRIVILEGES", "WORK",
-        "FIRST", "PROCEDURE", "WRITE", "FLOAT", "PROTECTED", "YEAR", "ZONE" };
+      "ACTION", "FOR", "PROTOTYPE", "ADD", "FOREIGN", "PUBLIC", "ADMIN", "FOUND", "READ", "AFTER", "FRACTION",
+      "READS", "AGGREGATE", "FREE", "REAL", "ALIAS", "FROM", "RECURSIVE", "ALL", "FULL", "REF", "ALLOCATE",
+      "FUNCTION", "REFERENCES", "ALTER", "GENERAL", "REFERENCING", "AND", "GET", "RELATIVE", "ANY", "GLOBAL",
+      "REPLACE", "ARE", "GO", "RESIGNAL", "ARRAY", "GOTO", "RESTRICT", "AS", "GRANT", "RESULT", "ASC", "GROUP",
+      "RETURN", "ASSERTION", "GROUPING", "RETURNS", "ASYNC", "HAVING", "REVOKE", "AT", "HOST", "RIGHT",
+      "AUTHORIZATION", "HOUR", "ROLE", "AVG", "IDENTITY", "ROLLBACK", "BEFORE", "IF", "ROLLUP", "BEGIN",
+      "IGNORE", "ROUTINE", "BETWEEN", "IMMEDIATE", "ROW", "BINARY", "IN", "ROWS", "BIT", "INDICATOR",
+      "SAVEPOINT", "BIT_LENGTH", "INITIALLY", "SCHEMA", "BLOB", "INNER", "SCOPE", "BOOLEAN", "INOUT", "SCROLL",
+      "BOTH", "INPUT", "SEARCH", "BREADTH", "INSENSITIVE", "SECOND", "BY", "INSERT", "SECTION", "CALL", "INT",
+      "SELECT", "CASE", "INTEGER", "SENSITIVE", "CASCADE", "INTERSECT", "SESSION", "CASCADED", "INTERVAL",
+      "SESSION_USER", "CAST", "INTO", "SET", "CATALOG", "IS", "SETS", "CHAR", "ISOLATION", "SIGNAL",
+      "CHAR_LENGTH", "ITERATE", "SIMILAR", "CHARACTER", "JOIN", "SIZE", "CHARACTER_LENGTH", "KEY", "SMALLINT",
+      "CHECK", "LANGUAGE", "SOME", "CLASS", "LARGE", "CLOB", "LAST", "SPECIFIC", "CLOSE", "LATERAL",
+      "SPECIFICTYPE", "COALESCE", "LEADING", "SQL", "COLLATE", "LEAVE", "SQL_CHAR", "COLLATION", "LEFT",
+      "SQL_DATE", "COLUMN", "LESS", "SQL_DECIMAL", "COMMIT", "LEVEL", "SQL_DOUBLE", "COMPLETION", "LIKE",
+      "SQL_FLOAT", "CONNECT", "LIMIT", "SQL_INT", "CONNECTION", "LOCAL", "SQL_INTEGER", "CONSTRAINT",
+      "LOCALTIME", "SQL_REAL", "CONSTRAINTS", "LOCALTIMESTAMP", "SQL_SMALLINT", "CONSTRUCTOR", "LOCATOR",
+      "SQL_TIME", "CONTINUE", "LOOP", "SQL_TIMESTAMP", "CONVERT", "LOWER", "SQL_VARCHAR", "CORRESPONDING",
+      "MAP", "SQLCODE", "COUNT", "MATCH", "SQLERROR", "CREATE", "MAX", "SQLEXCEPTION", "CROSS", "MIN",
+      "SQLSTATE", "CUBE", "MINUTE", "SQLWARNING", "CURRENT", "MODIFIES", "STRUCTURE", "CURRENT_DATE", "MODIFY",
+      "SUBSTRING", "CURRENT_PATH", "MODULE", "SUM", "CURRENT_ROLE", "MONTH", "SYSTEM_USER", "CURRENT_TIME",
+      "NAMES", "TABLE", "CURRENT_TIMESTAMP", "NATIONAL", "TEMPORARY", "CURRENT_USER", "NATURAL", "TERMINATE",
+      "CURSOR", "NCHAR", "TEST", "CYCLE", "NCLOB", "THAN", "DATE", "NEW", "THEN", "DATETIME", "NEXT", "THERE",
+      "DAY", "NO", "TIME", "DEALLOCATE", "NONE", "TIMESTAMP", "DEC", "NOT", "TIMEZONE_HOUR", "DECIMAL", "NULL",
+      "TIMEZONE_MINUTE", "DECLARE", "NULLIF", "TO", "DEFAULT", "NUMERIC", "TRAILING", "DEFERRABLE", "OBJECT",
+      "TRANSACTION", "DEFERRED", "OCTET_LENGTH", "TRANSLATE", "DELETE", "OF", "TRANSLATION", "DEPTH", "OFF",
+      "TRANSPOSE", "DEREF", "OID", "TREAT", "DESC", "OLD", "TRIGGER", "DESCRIBE", "ON", "TRIM", "DESCRIPTOR",
+      "ONLY", "TRUE", "DESTROY", "OPEN", "UNDER", "DESTRUCTOR", "OPERATORS", "UNION", "DETERMINISTIC", "OPTION",
+      "UNIQUE", "DIAGNOSTICS", "OR", "UNKNOWN", "DISTINCT", "ORDER", "UNNEST", "DICTIONARY", "ORDINALITY",
+      "UPDATE", "DISCONNECT", "OTHERS", "UPPER", "DOMAIN", "OUT", "UPSHIFT", "DOUBLE", "OUTER", "USAGE", "DROP",
+      "OUTPUT", "USER", "DYNAMIC", "OVERLAPS", "USING", "EACH", "PAD", "VALUE", "ELSE", "PARAMETER", "VALUES",
+      "ELSEIF", "PARAMETERS", "VARCHAR", "END", "PARTIAL", "VARIABLE", "END-EXEC", "PENDANT", "VARYING",
+      "EQUALS", "POSITION", "VIEW", "ESCAPE", "POSTFIX", "VIRTUAL", "EXCEPT", "PRECISION", "VISIBLE",
+      "EXCEPTION", "PREFIX", "WAIT", "EXEC", "PREORDER", "WHEN", "EXECUTE", "PREPARE", "WHENEVER", "EXISTS",
+      "PRESERVE", "WHERE", "EXTERNAL", "PRIMARY", "WHILE", "EXTRACT", "PRIOR", "WITH", "FALSE", "PRIVATE",
+      "WITHOUT", "FETCH", "PRIVILEGES", "WORK", "FIRST", "PROCEDURE", "WRITE", "FLOAT", "PROTECTED", "YEAR",
+      "ZONE" };
   }
 
   @Override
@@ -402,7 +406,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * This method allows a database dialect to convert database specific data types to Kettle data types.
-   * 
+   *
    * @param resultSet
    *          The result set to use
    * @param valueMeta
@@ -413,7 +417,8 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @throws KettleDatabaseException
    */
   @Override
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i )
+    throws KettleDatabaseException {
     Object data = null;
 
     try {
@@ -470,7 +475,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       }
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Unable to get value '"
-          + val.toStringMeta() + "' from database resultset, index " + i, e );
+        + val.toStringMeta() + "' from database resultset, index " + i, e );
     }
 
     return data;

@@ -53,19 +53,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Zip file *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class ZipFile extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ZipFileMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ZipFileMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ZipFileMeta meta;
   private ZipFileData data;
 
-  public ZipFile( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public ZipFile( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -85,7 +86,7 @@ public class ZipFile extends BaseStep implements StepInterface {
 
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, getTrans().getRepository(), getTrans()
-          .getMetaStore() );
+        .getMetaStore() );
 
       // Check is source filename field is provided
       if ( Const.isEmpty( meta.getDynamicSourceFileNameField() ) ) {
@@ -102,7 +103,7 @@ public class ZipFile extends BaseStep implements StepInterface {
         if ( data.indexOfSourceFilename < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Exception.CouldnotFindField", meta
-              .getDynamicSourceFileNameField() ) );
+            .getDynamicSourceFileNameField() ) );
         }
       }
 
@@ -110,7 +111,7 @@ public class ZipFile extends BaseStep implements StepInterface {
       if ( data.indexOfZipFilename < 0 ) {
         // The field is unreachable !
         throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Exception.CouldnotFindField", meta
-            .getDynamicTargetFileNameField() ) );
+          .getDynamicTargetFileNameField() ) );
       }
 
       if ( meta.isKeepSouceFolder() ) {
@@ -120,7 +121,7 @@ public class ZipFile extends BaseStep implements StepInterface {
           if ( data.indexOfBaseFolder < 0 ) {
             // The field is unreachable !
             throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Exception.CouldnotFindField", meta
-                .getBaseFolderField() ) );
+              .getBaseFolderField() ) );
           }
         }
       }
@@ -134,7 +135,7 @@ public class ZipFile extends BaseStep implements StepInterface {
         if ( data.indexOfMoveToFolder < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Exception.CouldnotFindField", meta
-              .getMoveToFolderField() ) );
+            .getMoveToFolderField() ) );
         }
       }
 
@@ -156,12 +157,17 @@ public class ZipFile extends BaseStep implements StepInterface {
       // Check sourcefile
       boolean skip = false;
       if ( !data.sourceFile.exists() ) {
-        log.logError( toString(), BaseMessages.getString( PKG, "ZipFile.Error.SourceFileNotExist", sourceFilename ) );
-        throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.SourceFileNotExist", sourceFilename ) );
+        log
+          .logError( toString(), BaseMessages
+            .getString( PKG, "ZipFile.Error.SourceFileNotExist", sourceFilename ) );
+        throw new KettleException( BaseMessages
+          .getString( PKG, "ZipFile.Error.SourceFileNotExist", sourceFilename ) );
       } else {
         if ( data.sourceFile.getType() != FileType.FILE ) {
-          log.logError( toString(), BaseMessages.getString( PKG, "ZipFile.Error.SourceFileNotFile", sourceFilename ) );
-          throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.SourceFileNotFile", sourceFilename ) );
+          log.logError( toString(), BaseMessages
+            .getString( PKG, "ZipFile.Error.SourceFileNotFile", sourceFilename ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "ZipFile.Error.SourceFileNotFile", sourceFilename ) );
         }
       }
 
@@ -190,7 +196,8 @@ public class ZipFile extends BaseStep implements StepInterface {
         data.zipFile = KettleVFS.getFileObject( targetFilename );
         if ( data.zipFile.exists() ) {
           if ( log.isDetailed() ) {
-            log.logDetailed( toString(), BaseMessages.getString( PKG, "ZipFile.Log.TargetFileExists", targetFilename ) );
+            log.logDetailed( toString(), BaseMessages.getString(
+              PKG, "ZipFile.Log.TargetFileExists", targetFilename ) );
           }
         } else {
           // let's check parent folder
@@ -200,7 +207,7 @@ public class ZipFile extends BaseStep implements StepInterface {
               // Parent folder not exist
               // So we will fail
               throw new KettleException( BaseMessages.getString(
-                  PKG, "ZipFile.Error.TargetParentFolderNotExists", parentFolder.toString() ) );
+                PKG, "ZipFile.Error.TargetParentFolderNotExists", parentFolder.toString() ) );
             } else {
               // Create parent folder
               parentFolder.createFolder();
@@ -279,7 +286,8 @@ public class ZipFile extends BaseStep implements StepInterface {
 
           // get target filename
           String targetfilename =
-              KettleVFS.getFilename( moveToFolder ) + Const.FILE_SEPARATOR + data.sourceFile.getName().getBaseName();
+            KettleVFS.getFilename( moveToFolder )
+              + Const.FILE_SEPARATOR + data.sourceFile.getName().getBaseName();
           file = KettleVFS.getFileObject( targetfilename );
 
           // Move file
@@ -312,13 +320,13 @@ public class ZipFile extends BaseStep implements StepInterface {
     if ( meta.isaddTargetFileNametoResult() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.zipFile, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.zipFile, getTransMeta().getName(), getStepname() );
       resultFile.setComment( BaseMessages.getString( PKG, "ZipFile.Log.FileAddedResult" ) );
       addResultFile( resultFile );
 
       if ( log.isDetailed() ) {
         log.logDetailed( toString(), BaseMessages.getString( PKG, "ZipFile.Log.FilenameAddResult", data.sourceFile
-            .toString() ) );
+          .toString() ) );
       }
     }
   }

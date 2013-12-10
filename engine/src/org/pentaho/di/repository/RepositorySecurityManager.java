@@ -28,7 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 
 /**
  * This interface defines any security management related APIs that are required for a repository.
- * 
+ *
  */
 public interface RepositorySecurityManager extends IRepositoryService {
 

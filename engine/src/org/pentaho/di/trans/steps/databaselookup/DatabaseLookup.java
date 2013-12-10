@@ -53,24 +53,24 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Looks up values in a database using keys from input streams.
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
  */
 public class DatabaseLookup extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DatabaseLookupMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseLookupMeta meta;
   private DatabaseLookupData data;
 
   public DatabaseLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Performs the lookup based on the meta-data and the input row.
-   * 
+   *
    * @param row
    *          The row to use as lookup data and the row to add the returned lookup fields to
    * @return the resulting row after the lookup values where added
@@ -129,9 +129,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
                                                                                              // operator)
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow1" )
-              + meta.getStreamKeyField1().length
-              + BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow2" )
-              + data.lookupMeta.getString( lookupRow ) );
+            + meta.getStreamKeyField1().length
+            + BaseMessages.getString( PKG, "DatabaseLookup.Log.AddedValuesToLookupRow2" )
+            + data.lookupMeta.getString( lookupRow ) );
         }
 
         data.db.setValuesLookup( data.lookupMeta, lookupRow );
@@ -371,13 +371,14 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       }
 
       data.db.setLookup(
-          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ), meta
-              .getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(),
-          meta.getOrderByClause(), meta.isFailingOnMultipleResults() );
+        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ), meta
+          .getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta
+          .getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults() );
 
       // lookup the values!
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "DatabaseLookup.Log.CheckingRow" ) + getInputRowMeta().getString( r ) );
+        logDetailed( BaseMessages.getString( PKG, "DatabaseLookup.Log.CheckingRow" )
+          + getInputRowMeta().getString( r ) );
       }
 
       data.keynrs = new int[meta.getStreamKeyField1().length];
@@ -386,27 +387,27 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
         data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getStreamKeyField1()[i] );
         if ( data.keynrs[i] < 0 && // couldn't find field!
-            !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
-            !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
+          !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
+          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
         ) {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "DatabaseLookup.ERROR0001.FieldRequired1.Exception" )
-              + meta.getStreamKeyField1()[i]
-              + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired2.Exception" ) );
+            PKG, "DatabaseLookup.ERROR0001.FieldRequired1.Exception" )
+            + meta.getStreamKeyField1()[i]
+            + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired2.Exception" ) );
         }
         data.keynrs2[i] = getInputRowMeta().indexOfValue( meta.getStreamKeyField2()[i] );
         if ( data.keynrs2[i] < 0 && // couldn't find field!
-            "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
+          "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
         ) {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "DatabaseLookup.ERROR0001.FieldRequired3.Exception" )
-              + meta.getStreamKeyField2()[i]
-              + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired4.Exception" ) );
+            PKG, "DatabaseLookup.ERROR0001.FieldRequired3.Exception" )
+            + meta.getStreamKeyField2()[i]
+            + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired4.Exception" ) );
         }
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex1" )
-              + meta.getStreamKeyField1()[i] + BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex2" )
-              + data.keynrs[i] );
+            + meta.getStreamKeyField1()[i] + BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex2" )
+            + data.keynrs[i] );
         }
       }
 
@@ -426,8 +427,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       // Determine the types...
       data.keytypes = new int[meta.getTableKeyField().length];
       String schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
-              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
       RowMetaInterface fields = data.db.getTableFields( schemaTable );
       if ( fields != null ) {
         // Fill in the types...
@@ -437,15 +438,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
             data.keytypes[i] = key.getType();
           } else {
             throw new KettleStepException( BaseMessages.getString(
-                PKG, "DatabaseLookup.ERROR0001.FieldRequired5.Exception" )
-                + meta.getTableKeyField()[i]
-                + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired6.Exception" ) );
+              PKG, "DatabaseLookup.ERROR0001.FieldRequired5.Exception" )
+              + meta.getTableKeyField()[i]
+              + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired6.Exception" ) );
           }
         }
       } else {
         throw new KettleStepException( BaseMessages.getString(
-            PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
-            + schemaTable + "]" );
+          PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
+          + schemaTable + "]" );
       }
 
       // Count the number of values in the lookup as well as the metadata to send along with it.
@@ -493,7 +494,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
     if ( log.isRowLevel() ) {
       logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.GotRowFromPreviousStep" )
-          + getInputRowMeta().getString( r ) );
+        + getInputRowMeta().getString( r ) );
     }
 
     try {
@@ -506,7 +507,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.WroteRowToNextStep" )
-              + getInputRowMeta().getString( r ) );
+            + getInputRowMeta().getString( r ) );
         }
         if ( checkFeedback( getLinesRead() ) ) {
           logBasic( "linenr " + getLinesRead() );
@@ -518,7 +519,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         errorMessage = e.toString();
       } else {
         logError( BaseMessages.getString( PKG, "DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing" )
-            + e.getMessage() );
+          + e.getMessage() );
         setErrors( 1 );
         stopAll();
         setOutputDone(); // signal end to receiver(s)
@@ -557,9 +558,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       // The schema/table
       //
       sql +=
-          " FROM "
-              + dbMeta.getQuotedSchemaTableCombination(
-                  environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
+        " FROM "
+          + dbMeta.getQuotedSchemaTableCombination(
+            environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
 
       // order by?
       if ( meta.getOrderByClause() != null && meta.getOrderByClause().length() != 0 ) {
@@ -644,7 +645,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         data.hasDBCondition = false;
         data.conditions = new int[meta.getKeyCondition().length];
         for ( int i = 0; i < meta.getKeyCondition().length; i++ ) {
-          data.conditions[i] = Const.indexOfString( meta.getKeyCondition()[i], DatabaseLookupMeta.conditionStrings );
+          data.conditions[i] =
+            Const.indexOfString( meta.getKeyCondition()[i], DatabaseLookupMeta.conditionStrings );
           if ( !( "=".equals( meta.getKeyCondition()[i] ) ) ) {
             data.allEquals = false;
           }
@@ -655,7 +657,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
         return true;
       } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "DatabaseLookup.ERROR0004.UnexpectedErrorDuringInit" ) + e.toString() );
+        logError( BaseMessages.getString( PKG, "DatabaseLookup.ERROR0004.UnexpectedErrorDuringInit" )
+          + e.toString() );
         if ( data.db != null ) {
           data.db.disconnect();
         }

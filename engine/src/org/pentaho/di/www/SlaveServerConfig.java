@@ -179,7 +179,7 @@ public class SlaveServerConfig {
       xml.append( "  " ).append( XMLHandler.addTagValue( "id", repositoryMeta.getId() ) );
       xml.append( "  " ).append( XMLHandler.addTagValue( "username", repositoryUsername ) );
       xml.append( "  " ).append(
-          XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( repositoryPassword ) ) );
+        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( repositoryPassword ) ) );
       xml.append( XMLHandler.closeTag( XML_TAG_REPOSITORY ) );
     }
 
@@ -225,7 +225,8 @@ public class SlaveServerConfig {
     Node autoSequenceNode = XMLHandler.getSubNode( node, XML_TAG_AUTOSEQUENCE );
     if ( autoSequenceNode != null ) {
       autoSequence = new SlaveSequence( autoSequenceNode, databases );
-      automaticCreationAllowed = "Y".equalsIgnoreCase( XMLHandler.getTagValue( autoSequenceNode, XML_TAG_AUTO_CREATE ) );
+      automaticCreationAllowed =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( autoSequenceNode, XML_TAG_AUTO_CREATE ) );
     }
 
     Node servicesNode = XMLHandler.getSubNode( node, XML_TAG_SERVICES );
@@ -277,11 +278,11 @@ public class SlaveServerConfig {
     try {
       DatabaseMeta databaseMeta = autoSequence.getDatabaseMeta();
       LoggingObjectInterface loggingInterface =
-          new SimpleLoggingObject( "auto-sequence", LoggingObjectType.GENERAL, null );
+        new SimpleLoggingObject( "auto-sequence", LoggingObjectType.GENERAL, null );
       database = new Database( loggingInterface, databaseMeta );
       database.connect();
       String schemaTable =
-          databaseMeta.getQuotedSchemaTableCombination( autoSequence.getSchemaName(), autoSequence.getTableName() );
+        databaseMeta.getQuotedSchemaTableCombination( autoSequence.getSchemaName(), autoSequence.getTableName() );
       String seqField = databaseMeta.quoteField( autoSequence.getSequenceNameField() );
       String valueField = databaseMeta.quoteField( autoSequence.getValueField() );
 
@@ -296,13 +297,13 @@ public class SlaveServerConfig {
           Long value = rowMeta.getInteger( row, valueField, null );
           if ( value != null ) {
             SlaveSequence slaveSequence =
-                new SlaveSequence( sequenceName, value, databaseMeta, autoSequence.getSchemaName(), autoSequence
-                    .getTableName(), autoSequence.getSequenceNameField(), autoSequence.getValueField() );
+              new SlaveSequence( sequenceName, value, databaseMeta, autoSequence.getSchemaName(), autoSequence
+                .getTableName(), autoSequence.getSequenceNameField(), autoSequence.getValueField() );
 
             slaveSequences.add( slaveSequence );
 
             LogChannel.GENERAL.logBasic( "Automatically created slave sequence '"
-                + slaveSequence.getName() + "' with start value " + slaveSequence.getStartValue() );
+              + slaveSequence.getName() + "' with start value " + slaveSequence.getStartValue() );
           }
         }
       }
@@ -330,12 +331,12 @@ public class SlaveServerConfig {
           //
           slaveServer.setName( slaveServer.getName() + "-" + newHostname );
           log.logBasic( "Hostname for slave server ["
-              + slaveServer.getName() + "] is set to [" + newHostname + "], information derived from network "
-              + networkInterfaceName );
+            + slaveServer.getName() + "] is set to [" + newHostname + "], information derived from network "
+            + networkInterfaceName );
         }
       } catch ( SocketException e ) {
         log.logError( "Unable to get the IP address for network interface "
-            + networkInterfaceName + " for slave server [" + slaveServer.getName() + "]", e );
+          + networkInterfaceName + " for slave server [" + slaveServer.getName() + "]", e );
       }
     }
 

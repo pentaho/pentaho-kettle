@@ -49,8 +49,8 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface {
   protected final UserDefinedJavaClassMeta meta;
   protected final UserDefinedJavaClassData data;
 
-  public UserDefinedJavaClass( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public UserDefinedJavaClass( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     meta = (UserDefinedJavaClassMeta) ( stepMeta.getStepMetaInterface() );
     data = (UserDefinedJavaClassData) stepDataInterface;
@@ -1020,7 +1020,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface {
   }
 
   public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-      String fieldNames, String errorCodes ) throws KettleStepException {
+    String fieldNames, String errorCodes ) throws KettleStepException {
     if ( child == null ) {
       putErrorImpl( rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes );
     } else {
@@ -1029,7 +1029,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface {
   }
 
   public void putErrorImpl( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-      String fieldNames, String errorCodes ) throws KettleStepException {
+    String fieldNames, String errorCodes ) throws KettleStepException {
     super.putError( rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes );
   }
 

@@ -45,18 +45,19 @@ import org.w3c.dom.NodeList;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 public class XMLInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private XMLInputMeta meta;
 
   private XMLInputData data;
 
-  public XMLInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public XMLInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -146,7 +147,7 @@ public class XMLInput extends BaseStep implements StepInterface {
               } else {
                 if ( log.isDebug() ) {
                   logDebug( BaseMessages.getString( PKG, "XMLInput.Log.UnableToFindPosition", pos.toString(), node
-                      .toString() ) );
+                    .toString() ) );
                 }
               }
               node = subNode;
@@ -162,7 +163,7 @@ public class XMLInput extends BaseStep implements StepInterface {
               } else {
                 if ( log.isDebug() ) {
                   logDebug( BaseMessages.getString( PKG, "XMLInput.Log.UnableToFindPosition", pos.toString(), node
-                      .toString() ) );
+                    .toString() ) );
                 }
               }
               node = subNode;
@@ -244,7 +245,7 @@ public class XMLInput extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
   private Object[] buildEmptyRow() {
@@ -275,11 +276,12 @@ public class XMLInput extends BaseStep implements StepInterface {
       }
 
       // Open the XML document
-      data.document = XMLHandler.loadXMLFile( data.file, baseURI, meta.isIgnoreEntities(), meta.isNamespaceAware() );
+      data.document =
+        XMLHandler.loadXMLFile( data.file, baseURI, meta.isIgnoreEntities(), meta.isNamespaceAware() );
 
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
       resultFile.setComment( "File was read by an XML input step" );
       addResultFile( resultFile );
 
@@ -299,8 +301,8 @@ public class XMLInput extends BaseStep implements StepInterface {
       data.itemCount = XMLHandler.countNodes( data.section, data.itemElement );
       data.itemPosition = meta.getNrRowsToSkip();
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e
-          .toString() ) );
+      logError( BaseMessages.getString( PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;

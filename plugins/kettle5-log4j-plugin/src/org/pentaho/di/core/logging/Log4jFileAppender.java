@@ -38,23 +38,23 @@ public class Log4jFileAppender implements Appender
 {
     private Layout layout;
     private Filter filter;
-    
+
     private FileObject file;
-    
+
     private String  name;
-    
+
     private OutputStream fileOutputStream;
-    
+
     public Log4jFileAppender(FileObject file) throws IOException
     {
         this.file = file;
-        
+
         fileOutputStream = KettleVFS.getOutputStream(file, false);
     }
     public Log4jFileAppender(FileObject file,boolean append) throws IOException
     {
         this.file = file;
-        
+
         fileOutputStream = KettleVFS.getOutputStream(file, append);
     }
     public void addFilter(Filter filter)

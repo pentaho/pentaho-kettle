@@ -115,10 +115,11 @@ public class MetricsPainter {
       areas.add( new MetricsDrawArea( new Rectangle( x, y, durationWidth, barHeight ), duration ) );
 
       LoggingObjectInterface loggingObject =
-          LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
+        LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
 
       String message =
-          duration.getDescription() + " - " + loggingObject.getObjectName() + " : " + duration.getDuration() + "ms";
+        duration.getDescription()
+          + " - " + loggingObject.getObjectName() + " : " + duration.getDuration() + "ms";
       if ( duration.getCount() > 1 ) {
         message += " " + duration.getCount() + " calls, avg=" + ( duration.getDuration() / duration.getCount() );
       }

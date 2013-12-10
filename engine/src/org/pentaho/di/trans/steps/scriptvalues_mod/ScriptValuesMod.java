@@ -58,12 +58,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Executes a JavaScript on the values in the input stream. Selected calculated values can then be put on the output
  * stream.
- * 
+ *
  * @author Matt
  * @since 5-April-2003
  */
 public class ScriptValuesMod extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!
 
   private ScriptValuesMetaMod meta;
 
@@ -98,7 +98,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
   public Script script;
 
   public ScriptValuesMod( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -128,7 +128,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       String valname = row.getValueMeta( i ).getName();
       if ( strTransformScript.indexOf( valname ) >= 0 ) {
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ScriptValuesMod.Log.UsedValueName", String.valueOf( i ), valname ) ); //$NON-NLS-3$
+          logDetailed( BaseMessages.getString(
+            PKG, "ScriptValuesMod.Log.UsedValueName", String.valueOf( i ), valname ) );
         }
         data.fields_used[nr] = i;
         nr++;
@@ -137,7 +138,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "ScriptValuesMod.Log.UsingValuesFromInputStream", String
-          .valueOf( data.fields_used.length ) ) );
+        .valueOf( data.fields_used.length ) ) );
     }
   }
 
@@ -163,12 +164,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           if ( data.replaceIndex[i] < 0 ) {
             if ( Const.isEmpty( meta.getFieldname()[i] ) ) {
               throw new KettleStepException( BaseMessages.getString(
-                  PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
+                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
             }
             data.replaceIndex[i] = rowMeta.indexOfValue( meta.getRename()[i] );
             if ( data.replaceIndex[i] < 0 ) {
               throw new KettleStepException( BaseMessages.getString(
-                  PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
+                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
             }
           }
         } else {
@@ -184,16 +185,16 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         if ( !Const.isEmpty( Const.trim( optimizationLevelAsString ) ) ) {
           data.cx.setOptimizationLevel( Integer.parseInt( optimizationLevelAsString.trim() ) );
           logBasic( BaseMessages.getString( PKG, "ScriptValuesMod.Optimization.Level", environmentSubstitute( meta
-              .getOptimizationLevel() ) ) );
+            .getOptimizationLevel() ) ) );
         } else {
           data.cx.setOptimizationLevel( Integer.parseInt( ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT ) );
           logBasic( BaseMessages.getString(
-              PKG, "ScriptValuesMod.Optimization.UsingDefault", ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT ) );
+            PKG, "ScriptValuesMod.Optimization.UsingDefault", ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT ) );
         }
       } catch ( NumberFormatException nfe ) {
         throw new KettleStepException( BaseMessages.getString(
-            PKG, "ScriptValuesMetaMod.Exception.NumberFormatException", environmentSubstitute( meta
-                .getOptimizationLevel() ) ) );
+          PKG, "ScriptValuesMetaMod.Exception.NumberFormatException", environmentSubstitute( meta
+            .getOptimizationLevel() ) ) );
       } catch ( IllegalArgumentException iae ) {
         throw new KettleException( iae.getMessage() );
       }
@@ -268,18 +269,19 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           }
         } catch ( Exception e ) {
           throw new KettleValueException( BaseMessages.getString(
-              PKG, "ScriptValuesMod.Log.CouldNotAttachAdditionalScripts" ), e );
+            PKG, "ScriptValuesMod.Log.CouldNotAttachAdditionalScripts" ), e );
         }
 
         // Adding some default JavaScriptFunctions to the System
         try {
           Context.javaToJS( ScriptValuesAddedFunctions.class, data.scope );
           ( (ScriptableObject) data.scope ).defineFunctionProperties(
-              ScriptValuesAddedFunctions.jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM );
+            ScriptValuesAddedFunctions.jsFunctionList, ScriptValuesAddedFunctions.class,
+            ScriptableObject.DONTENUM );
         } catch ( Exception ex ) {
           // System.out.println(ex.toString());
           throw new KettleValueException( BaseMessages.getString(
-              PKG, "ScriptValuesMod.Log.CouldNotAddDefaultFunctions" ), ex );
+            PKG, "ScriptValuesMod.Log.CouldNotAddDefaultFunctions" ), ex );
         }
 
         // Adding some Constants to the JavaScript
@@ -293,7 +295,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         } catch ( Exception ex ) {
           // System.out.println("Exception Adding the Constants " + ex.toString());
           throw new KettleValueException( BaseMessages.getString(
-              PKG, "ScriptValuesMod.Log.CouldNotAddDefaultConstants" ), ex );
+            PKG, "ScriptValuesMod.Log.CouldNotAddDefaultConstants" ), ex );
         }
 
         try {
@@ -311,15 +313,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           }
         } catch ( Exception es ) {
           // System.out.println("Exception processing StartScript " + es.toString());
-          throw new KettleValueException( BaseMessages
-              .getString( PKG, "ScriptValuesMod.Log.ErrorProcessingStartScript" ), es );
+          throw new KettleValueException( BaseMessages.getString(
+            PKG, "ScriptValuesMod.Log.ErrorProcessingStartScript" ), es );
 
         }
         // Now Compile our Script
         data.script = data.cx.compileString( strTransformScript, "script", 1, null );
       } catch ( Exception e ) {
-        throw new KettleValueException(
-            BaseMessages.getString( PKG, "ScriptValuesMod.Log.CouldNotCompileJavascript" ), e );
+        throw new KettleValueException( BaseMessages.getString(
+          PKG, "ScriptValuesMod.Log.CouldNotCompileJavascript" ), e );
       }
     }
 
@@ -542,7 +544,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
             case ValueMetaInterface.TYPE_STRING:
               if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" )
-                  || classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
+                || classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
                 // Is it a java Value class ?
                 try {
                   Value v = (Value) Context.jsToJava( result, Value.class );
@@ -567,7 +569,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                 if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeDate" ) ) {
                   dbl = Context.toNumber( result );
                 } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" )
-                    || classType.equalsIgnoreCase( "java.util.Date" ) ) {
+                  || classType.equalsIgnoreCase( "java.util.Date" ) ) {
                   // Is it a java Date() class ?
                   try {
                     Date dat = (Date) Context.jsToJava( result, java.util.Date.class );
@@ -646,7 +648,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
             }
             case ValueMetaInterface.TYPE_NONE: {
               throw new RuntimeException( "No data output data type was specified for new field ["
-                  + meta.getFieldname()[i] + "]" );
+                + meta.getFieldname()[i] + "]" );
             }
             default:
               return Context.jsToJava( result, Object.class );
@@ -696,7 +698,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.UnexpectedeError" ) + " : " + e.toString() );
         logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.ErrorStackTrace" )
-            + Const.CR + Const.getStackTracker( e ) );
+          + Const.CR + Const.getStackTracker( e ) );
         setErrors( 1 );
         stopAll();
       }
@@ -715,7 +717,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       String location = null;
       if ( e.getCause() instanceof EvaluatorException ) {
         EvaluatorException ee = (EvaluatorException) e.getCause();
-        location = "--> " + ee.lineNumber() + ":" + ee.columnNumber(); // $NON-NLS-1$
+        location = "--> " + ee.lineNumber() + ":" + ee.columnNumber();
       }
 
       if ( getStepMeta().isDoingErrorHandling() ) {

@@ -66,7 +66,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Loads and parses the specified WSDL file.
-   * 
+   *
    * @param wsdlURI
    *          URI of a WSDL file.
    * @param serviceQName
@@ -97,7 +97,8 @@ public final class Wsdl implements java.io.Serializable {
     } else {
       _service = _wsdlDefinition.getService( serviceQName );
       if ( _service == null ) {
-        throw new IllegalArgumentException( "Service: " + serviceQName + " is not defined in the WSDL file " + wsdlURI );
+        throw new IllegalArgumentException( "Service: "
+          + serviceQName + " is not defined in the WSDL file " + wsdlURI );
       }
     }
 
@@ -106,7 +107,8 @@ public final class Wsdl implements java.io.Serializable {
     } else {
       _port = _service.getPort( portName );
       if ( _port == null ) {
-        throw new IllegalArgumentException( "Port: " + portName + " is not defined in the service: " + serviceQName );
+        throw new IllegalArgumentException( "Port: "
+          + portName + " is not defined in the service: " + serviceQName );
       } else {
         _port = _service.getPort( portName );
       }
@@ -118,7 +120,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Returns the first Soap port from the passed collection of Ports.
-   * 
+   *
    * @param portCollection
    * @return
    */
@@ -137,7 +139,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Loads and parses the specified WSDL file.
-   * 
+   *
    * @param wsdlLocator
    *          A javax.wsdl.WSDLLocator instance.
    * @param serviceQName
@@ -181,7 +183,7 @@ public final class Wsdl implements java.io.Serializable {
   /**
    * Get the WsdlComplexTypes instance of this wsdl. WsdlComplex types provides type information for named complextypes
    * defined in the wsdl's &lt;types&gt; section.
-   * 
+   *
    * @return WsdlComplexTypes instance.
    */
   public WsdlComplexTypes getComplexTypes() {
@@ -190,7 +192,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Find the specified operation in the WSDL definition.
-   * 
+   *
    * @param operationName
    *          Name of operation to find.
    * @return A WsdlOperation instance, null if operation can not be found in WSDL.
@@ -213,7 +215,8 @@ public final class Wsdl implements java.io.Serializable {
         return wop;
       } catch ( KettleException kse ) {
         LogChannel.GENERAL.logError( "Could not retrieve WSDL Operator for operation name: " + operationName );
-        throw new KettleStepException( "Could not retrieve WSDL Operator for operation name: " + operationName, kse );
+        throw new KettleStepException(
+          "Could not retrieve WSDL Operator for operation name: " + operationName, kse );
       }
     }
     return null;
@@ -221,7 +224,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Get a list of all operations defined in this WSDL.
-   * 
+   *
    * @return List of WsdlOperations.
    */
   @SuppressWarnings( "unchecked" )
@@ -242,7 +245,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Get the name of the current port.
-   * 
+   *
    * @return Name of the current port.
    */
   public String getPortName() {
@@ -251,7 +254,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Get the PortType name for the service which has been specified by serviceName and portName at construction time.
-   * 
+   *
    * @return QName of the PortType.
    */
   public QName getPortTypeQName() {
@@ -262,7 +265,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Get the service endpoint.
-   * 
+   *
    * @return String containing the service endpoint.
    */
   public String getServiceEndpoint() {
@@ -271,7 +274,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Get the name of this service.
-   * 
+   *
    * @return Service name.
    */
   public String getServiceName() {
@@ -280,7 +283,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Get the target namespace for the WSDL.
-   * 
+   *
    * @return The targetNamespace
    */
   public String getTargetNamespace() {
@@ -289,7 +292,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Change the port of the service.
-   * 
+   *
    * @param portName
    *          The new port name.
    * @throws IllegalArgumentException
@@ -308,7 +311,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Get a WSDLReader.
-   * 
+   *
    * @return WSDLReader.
    * @throws WSDLException
    *           on error.
@@ -326,7 +329,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Load and parse the WSDL file using the wsdlLocator.
-   * 
+   *
    * @param wsdlLocator
    *          A WSDLLocator instance.
    * @param username
@@ -352,7 +355,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Load and parse the WSDL file at the specified URI.
-   * 
+   *
    * @param wsdlURI
    *          URI of the WSDL file.
    * @param username
@@ -396,7 +399,7 @@ public final class Wsdl implements java.io.Serializable {
 
   /**
    * Returns this objects WSDL types.
-   * 
+   *
    * @return WsdlTepes
    */
   public WsdlTypes getWsdlTypes() {

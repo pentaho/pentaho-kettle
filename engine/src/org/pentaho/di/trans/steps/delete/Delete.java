@@ -43,17 +43,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Delete data in a database table.
- * 
+ *
  * @author Tom
  * @since 28-March-2006
  */
 public class Delete extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DeleteMeta meta;
   private DeleteData data;
 
-  public Delete( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Delete( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -78,7 +79,7 @@ public class Delete extends BaseStep implements StepInterface {
 
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "Delete.Log.SetValuesForDelete", data.deleteParameterRowMeta
-          .getString( deleteRow ), rowMeta.getString( row ) ) );
+        .getString( deleteRow ), rowMeta.getString( row ) ) );
     }
 
     data.db.insertRow( data.prepStatementDelete );
@@ -107,8 +108,8 @@ public class Delete extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
-              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       // lookup the values!
       if ( log.isDetailed() ) {
@@ -120,18 +121,18 @@ public class Delete extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getKeyStream().length; i++ ) {
         data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getKeyStream()[i] );
         if ( data.keynrs[i] < 0 && // couldn't find field!
-            !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
-            !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
+          !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
+          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired", meta
-              .getKeyStream()[i] ) );
+            .getKeyStream()[i] ) );
         }
         data.keynrs2[i] = getInputRowMeta().indexOfValue( meta.getKeyStream2()[i] );
         if ( data.keynrs2[i] < 0 && // couldn't find field!
-            "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
+          "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "Delete.Exception.FieldRequired", meta
-              .getKeyStream2()[i] ) );
+            .getKeyStream2()[i] ) );
         }
 
         if ( log.isDebug() ) {
@@ -193,7 +194,7 @@ public class Delete extends BaseStep implements StepInterface {
         data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream()[i] ) );
         data.deleteParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream2()[i] ) );
       } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] )
-          || "IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
+        || "IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
         sql += " " + meta.getKeyCondition()[i] + " ";
       } else {
         sql += " " + meta.getKeyCondition()[i] + " ? ";
@@ -263,7 +264,7 @@ public class Delete extends BaseStep implements StepInterface {
         data.db.closeUpdate();
       } catch ( KettleDatabaseException e ) {
         logError( BaseMessages.getString( PKG, "Delete.Log.UnableToCommitUpdateConnection" )
-            + data.db + "] :" + e.toString() );
+          + data.db + "] :" + e.toString() );
         setErrors( 1 );
       } finally {
         data.db.disconnect();

@@ -56,7 +56,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FileExistsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private boolean gotPreviousFields = false;
   private Label wlFileName;
@@ -378,8 +378,8 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "FileExistsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "FileExistsDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "FileExistsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "FileExistsDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

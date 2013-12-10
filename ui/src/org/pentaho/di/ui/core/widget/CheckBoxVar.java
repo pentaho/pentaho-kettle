@@ -43,12 +43,12 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
  * A Widget that combines a Check Box widget with a Variable button that will insert an Environment variable.
- * 
+ *
  * @author Matt
  * @since 9-august-2006
  */
 public class CheckBoxVar extends Composite {
-  private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!!
 
   private static final PropsUI props = PropsUI.getInstance();
 
@@ -116,7 +116,7 @@ public class CheckBoxVar extends Composite {
     if ( !Const.isEmpty( variableName ) ) {
       wText.setText( variableName );
     } else {
-      wText.setText( "" ); // $NON-NLS-1$
+      wText.setText( "" );
     }
   }
 

@@ -31,7 +31,8 @@ public class FastloadControlBuilderTest extends TestCase {
   public void testErrorTablesBuilding() {
 
     FastloadControlBuilder fastloadControlBuilder = new FastloadControlBuilder();
-    String expectedResult = "BEGIN LOADING myTable ERRORFILES MyDB.error1,MyDB.error2;" + SystemUtils.LINE_SEPARATOR;
+    String expectedResult =
+      "BEGIN LOADING myTable ERRORFILES MyDB.error1,MyDB.error2;" + SystemUtils.LINE_SEPARATOR;
     fastloadControlBuilder.beginLoading( "MyDB", "myTable" );
     assertEquals( expectedResult, fastloadControlBuilder.toString() );
 

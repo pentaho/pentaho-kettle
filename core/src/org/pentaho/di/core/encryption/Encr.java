@@ -33,10 +33,10 @@ import org.pentaho.di.core.util.StringUtil;
 /**
  * This class handles basic encryption of passwords in Kettle. Note that it's not really encryption, it's more
  * obfuscation. Passwords are <b>difficult</b> to read, not impossible.
- * 
+ *
  * @author Matt
  * @since 17-12-2003
- * 
+ *
  */
 public class Encr {
   private static final int RADIX = 16;
@@ -130,7 +130,7 @@ public class Encr {
 
   /**
    * Encrypt the password, but only if the password doesn't contain any variables.
-   * 
+   *
    * @param password
    *          The password to encrypt
    * @return The encrypted password or the
@@ -150,7 +150,7 @@ public class Encr {
 
   /**
    * Decrypts a password if it contains the prefix "Encrypted "
-   * 
+   *
    * @param password
    *          The encrypted password
    * @return The decrypted password or the original value if the password doesn't start with "Encrypted "
@@ -164,7 +164,7 @@ public class Encr {
 
   /**
    * Create an encrypted password
-   * 
+   *
    * @param args
    *          the password to encrypt
    */
@@ -206,13 +206,14 @@ public class Encr {
     System.err.println( "  encr <-kettle|-carte> <password>" );
     System.err.println( "  Options:" );
     System.err.println( "    -kettle: generate an obfuscated password to include in Kettle XML files" );
-    System.err
-        .println( "    -carte: generate an obfuscated password to include in the carte password file 'pwd/kettle.pwd'" );
-    System.err.println( "\nThis command line tool obfuscates a plain text password for use in XML and password files." );
+    System.err.println( "    -carte: generate an obfuscated password to include in "
+      + "the carte password file 'pwd/kettle.pwd'" );
+    System.err.println( "\nThis command line tool obfuscates a plain text password for use "
+      + "in XML and password files." );
     System.err.println( "Make sure to also copy the '"
-        + PASSWORD_ENCRYPTED_PREFIX + "' prefix to indicate the obfuscated nature of the password." );
-    System.err
-        .println( "Kettle will then be able to make the distinction between regular plain text passwords and obfuscated ones." );
+      + PASSWORD_ENCRYPTED_PREFIX + "' prefix to indicate the obfuscated nature of the password." );
+    System.err.println( "Kettle will then be able to make the distinction between "
+      + "regular plain text passwords and obfuscated ones." );
     System.err.println();
   }
 }

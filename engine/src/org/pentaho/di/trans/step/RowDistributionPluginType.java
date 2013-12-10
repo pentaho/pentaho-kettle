@@ -35,9 +35,9 @@ import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 /**
  * This class represents the row distribution plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( RowDistributionInterface.class )
 @PluginAnnotationType( RowDistributionPlugin.class )
@@ -69,7 +69,7 @@ public class RowDistributionPluginType extends BasePluginType implements PluginT
 
   @Override
   public void handlePluginAnnotation( Class<?> clazz, Annotation annotation, List<String> libraries,
-      boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
+    boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
     super.handlePluginAnnotation( clazz, annotation, libraries, nativePluginType, pluginFolder );
   }
 

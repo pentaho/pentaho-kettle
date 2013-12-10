@@ -50,7 +50,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The salesforce url */
   private String targeturl;
@@ -220,7 +220,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
     this.targeturl = urlvalue;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -235,7 +236,7 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
     retval.append( "    " + XMLHandler.addTagValue( "targeturl", targeturl ) );
     retval.append( "    " + XMLHandler.addTagValue( "username", username ) );
     retval.append( "    "
-        + XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ), false ) );
+      + XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ), false ) );
     retval.append( "    " + XMLHandler.addTagValue( "module", module ) );
     retval.append( "    " + XMLHandler.addTagValue( "DeleteField", DeleteField ) );
     retval.append( "    " + XMLHandler.addTagValue( "batchSize", batchSize ) );
@@ -262,7 +263,7 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
       useCompression = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useCompression" ) );
       timeout = XMLHandler.getTagValue( stepnode, "timeout" );
       rollbackAllChangesOnError =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rollbackAllChangesOnError" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rollbackAllChangesOnError" ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
@@ -282,7 +283,7 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
 
   /* This function adds meta data to the rows being pushed out */
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
   }
 
@@ -299,8 +300,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
       timeout = rep.getStepAttributeString( id_step, "timeout" );
       rollbackAllChangesOnError = rep.getStepAttributeBoolean( id_step, "rollbackAllChangesOnError" );
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "SalesforceDeleteMeta.Exception.ErrorReadingRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SalesforceDeleteMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
@@ -318,67 +319,67 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
       rep.saveStepAttribute( id_transformation, id_step, "rollbackAllChangesOnError", rollbackAllChangesOnError );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SalesforceDeleteMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
+        PKG, "SalesforceDeleteMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.NoInputExpected" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.NoInputExpected" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.NoInput" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.NoInput" ), stepMeta );
     }
     remarks.add( cr );
 
     // check URL
     if ( Const.isEmpty( targeturl ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.NoURL" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.NoURL" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.URLOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.URLOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check username
     if ( Const.isEmpty( username ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.NoUsername" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.NoUsername" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.UsernameOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.UsernameOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check module
     if ( Const.isEmpty( module ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.NoModule" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.NoModule" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SalesforceDeleteMeta.CheckResult.ModuleOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.CheckResult.ModuleOk" ), stepMeta );
     }
     remarks.add( cr );
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SalesforceDelete( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

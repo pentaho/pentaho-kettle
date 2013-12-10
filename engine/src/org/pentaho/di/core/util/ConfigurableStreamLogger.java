@@ -33,7 +33,7 @@ import org.pentaho.di.core.logging.LogLevel;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
- * 
+ *
  *         Provides the ability to specify the desired logLevel on which the StreamLogger should write.
  */
 public class ConfigurableStreamLogger implements Runnable {
@@ -52,7 +52,7 @@ public class ConfigurableStreamLogger implements Runnable {
    *          the label for logger entries.
    */
   public ConfigurableStreamLogger( LogChannelInterface logChannel, final InputStream in, final LogLevel logLevel,
-      final String type ) {
+    final String type ) {
     this.log = logChannel;
     this.is = in;
     this.type = type;
@@ -61,7 +61,7 @@ public class ConfigurableStreamLogger implements Runnable {
 
   /**
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Runnable#run()
    */
   public void run() {

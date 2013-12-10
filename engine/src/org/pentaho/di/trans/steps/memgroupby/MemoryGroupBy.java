@@ -52,19 +52,19 @@ import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
 
 /**
  * Groups informations based on aggregation rules. (sum, count, ...)
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class MemoryGroupBy extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MemoryGroupByMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MemoryGroupByMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MemoryGroupByMeta meta;
 
   private MemoryGroupByData data;
 
   public MemoryGroupBy( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (MemoryGroupByMeta) getStepMeta().getStepMetaInterface();
@@ -107,7 +107,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         }
         if ( data.subjectnrs[i] < 0 ) {
           logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
-              .getSubjectField()[i] ) );
+            .getSubjectField()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -118,7 +118,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getGroupField().length; i++ ) {
         data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
         if ( data.groupnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
+          logError( BaseMessages.getString(
+            PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -203,8 +204,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       }
       for ( int i = 0; i < data.aggMeta.size(); i++ ) {
         if ( meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL
-            || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY
-            || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT ) {
+          || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY
+          || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT ) {
           outputRowData[index++] = Long.valueOf( 0L );
         } else {
           outputRowData[index++] = null;
@@ -418,8 +419,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       }
 
       if ( meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL
-          && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT
-          && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
+        && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT
+        && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
         vMeta.setLength( subjMeta.getLength(), subjMeta.getPrecision() );
       }
       if ( aggregate == null ) {
@@ -458,8 +459,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
             break;
           case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
             ag =
-                ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
-                    "c", ValueMetaInterface.TYPE_INTEGER ), new Long( aggregate.counts[i] ) );
+              ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
+                "c", ValueMetaInterface.TYPE_INTEGER ), new Long( aggregate.counts[i] ) );
             break;
           case MemoryGroupByMeta.TYPE_GROUP_MEDIAN:
           case MemoryGroupByMeta.TYPE_GROUP_PERCENTILE:

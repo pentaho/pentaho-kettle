@@ -31,7 +31,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Test class for the basic functionality of RowSet.
- * 
+ *
  * @author Sven Boden
  */
 public class RowSetTest extends TestCase {
@@ -111,7 +111,7 @@ public class RowSetTest extends TestCase {
     /*********************************************************************
      * This was made in more restrict in v2.5.0 with a new RowSet implementation. After v2.5.0 you may not try to put
      * more rows in a rowset then it can hold (this functionality was also never used in PDI anyway).
-     * 
+     *
      * // Add another row. State: 2 3 4 5 // Note that we can still add rows after the set is full. set.putRow(r5);
      * assertTrue(!set.isEmpty()); assertTrue(set.isFull()); assertEquals(4, set.size());
      *********************************************************************/

@@ -75,7 +75,7 @@ public interface RepositoryMeta {
 
   /**
    * Describes the capabilities of the repository
-   * 
+   *
    * @return The repository capabilities object
    */
   public RepositoryCapabilities getRepositoryCapabilities();

@@ -29,7 +29,7 @@ public class HL7Value {
   private String coordinate;
   private String dataType;
   private String description;
-  
+
   private String value;
 
   /**
@@ -54,7 +54,7 @@ public class HL7Value {
     this.description = description;
     this.value = value;
   }
-  
+
   @Override
   public String toString() {
     return version+" ("+parentGroup+") "+groupName+" "+structureName+" "+structureNumber+" : "+fieldName+" "+coordinate+" ("+dataType+" "+description+") : "+Const.NVL(value, "");

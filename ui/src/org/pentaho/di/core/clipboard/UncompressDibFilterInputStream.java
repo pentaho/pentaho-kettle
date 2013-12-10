@@ -27,14 +27,14 @@ import java.io.InputStream;
 
 /**
  * As of Eclipse 3.0 SWT does not recognize Bitmaps with BITMAPINFOHEADER.biCompression set to BI_BITFIELDS
- * 
+ *
  * So, this class converts a Bitmap with compression set to BI_BITFIELDS to one with compression set to BI_RGB (none)
- * 
+ *
  * See Definition of BITMAPINFOHEADER : msdn.microsoft.com/library/en-us/gdi/bitmaps_1rw2.asp
- * 
+ *
  * If you found this class useful (or made some improvements) drop me a line.
- * 
- * 
+ *
+ *
  * @author Philip Schatz ( www.philschatz.com )
  */
 class UncompressDibFilterInputStream extends InputStream {

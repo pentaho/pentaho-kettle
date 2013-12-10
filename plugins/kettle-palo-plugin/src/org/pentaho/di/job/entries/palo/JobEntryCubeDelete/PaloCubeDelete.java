@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 
 /**
  * Job to delete a cube in palo
- * 
+ *
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */

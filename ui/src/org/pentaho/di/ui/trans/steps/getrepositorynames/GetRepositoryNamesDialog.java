@@ -75,7 +75,7 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
   private static Class<?> PKG = GetRepositoryNamesMeta.class; // i18n
 
   private static final String[] YES_NO_COMBO = new String[] {
-      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ), };
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ), };
 
   private Composite comp;
   private ScrolledComposite sComp;
@@ -273,7 +273,8 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     wbdDirectory = new Button( comp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbdDirectory );
     wbdDirectory.setText( BaseMessages.getString( PKG, "GetRepositoryNamesDialog.DirectoryDelete.Button" ) );
-    wbdDirectory.setToolTipText( BaseMessages.getString( PKG, "GetRepositoryNamesDialog.DirectoryDelete.Tooltip" ) );
+    wbdDirectory
+      .setToolTipText( BaseMessages.getString( PKG, "GetRepositoryNamesDialog.DirectoryDelete.Tooltip" ) );
     FormData fdbdDirectory = new FormData();
     fdbdDirectory.right = new FormAttachment( 100, 0 );
     fdbdDirectory.top = new FormAttachment( wExcludeFilemask, 40 );
@@ -290,19 +291,19 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     wbeDirectory.setLayoutData( fdbeDirectory );
 
     ColumnInfo[] colinfo =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "GetRepositoryNamesDialog.Directory.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "GetRepositoryNamesDialog.NameWildcard.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "GetRepositoryNamesDialog.ExcludeNameWildcard.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "GetRepositoryNamesDialog.IncludeSubDirs.Column" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetRepositoryNamesDialog.Directory.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetRepositoryNamesDialog.NameWildcard.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetRepositoryNamesDialog.ExcludeNameWildcard.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetRepositoryNamesDialog.IncludeSubDirs.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ) };
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -312,8 +313,8 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     colinfo[3].setToolTip( BaseMessages.getString( PKG, "GetRepositoryNamesDialog.IncludeSubDirs.ToolTip" ) );
 
     wDirectoryList =
-        new TableView(
-            transMeta, comp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, colinfo.length, lsMod, props );
+      new TableView(
+        transMeta, comp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, colinfo.length, lsMod, props );
     props.setLook( wDirectoryList );
     FormData fdDirectoryList = new FormData();
     fdDirectoryList.left = new FormAttachment( middle, 0 );
@@ -324,7 +325,8 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
     // Filter File Type
     wlObjectTypeSelection = new Label( comp, SWT.RIGHT );
-    wlObjectTypeSelection.setText( BaseMessages.getString( PKG, "GetRepositoryNamesDialog.ObjectTypeSelection.Label" ) );
+    wlObjectTypeSelection.setText( BaseMessages.getString(
+      PKG, "GetRepositoryNamesDialog.ObjectTypeSelection.Label" ) );
     props.setLook( wlObjectTypeSelection );
     FormData fdlFilterFileType = new FormData();
     fdlFilterFileType.left = new FormAttachment( 0, 0 );
@@ -437,8 +439,8 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wDirectoryList
-            .add( new String[] { wDirectory.getText(), wNameMask.getText(), wExcludeFilemask.getText(), "Y", } );
+        wDirectoryList.add( new String[] {
+          wDirectory.getText(), wNameMask.getText(), wExcludeFilemask.getText(), "Y", } );
         wDirectory.setText( "" );
         wNameMask.setText( "" );
         wDirectoryList.removeEmptyRows();
@@ -509,7 +511,7 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
-   * 
+   *
    * @param meta
    *          The TextFileInputMeta object to obtain the data from.
    */
@@ -567,7 +569,7 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     }
 
     meta.setObjectTypeSelection( ObjectTypeSelection.getObjectTypeSelectionByDescription( wObjectTypeSelection
-        .getText() ) );
+      .getText() ) );
     meta.setIncludeRowNumber( wInclRownum.getSelection() );
     meta.setRowNumberField( wInclRownumField.getText() );
   }
@@ -578,18 +580,19 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     GetRepositoryNamesMeta oneMeta = new GetRepositoryNamesMeta();
     getInfo( oneMeta );
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta =
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
     previewMeta.setRepository( repository );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-            PKG, "GetRepositoryNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-            PKG, "GetRepositoryNamesDialog.PreviewSize.DialogMessage" ) );
+      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+        PKG, "GetRepositoryNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+        PKG, "GetRepositoryNamesDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog(
-              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+        new TransPreviewProgressDialog(
+          shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       if ( !progressDialog.isCancelled() ) {
@@ -598,17 +601,16 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-                  .getString( PKG, "GetRepositoryNamesDialog.ErrorInPreview.DialogMessage" ), loggingText, true );
+            new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+              .getString( PKG, "GetRepositoryNamesDialog.ErrorInPreview.DialogMessage" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
 
         PreviewRowsDialog prd =
-            new PreviewRowsDialog(
-                shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                    .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                loggingText );
+          new PreviewRowsDialog(
+            shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+              .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
         prd.open();
       }
     }
@@ -619,8 +621,8 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
     try {
 
       if ( repository == null ) {
-        throw new KettleException( BaseMessages
-            .getString( PKG, "GetRepositoryNames.Exception.NotConnectedToRepository" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "GetRepositoryNames.Exception.NotConnectedToRepository" ) );
       }
 
       SelectDirectoryDialog sdd = new SelectDirectoryDialog( shell, SWT.NONE, repository );
@@ -631,7 +633,7 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-          PKG, "GetRepositoryNames.ErrorGettingFolderds.DialogMessage" ), e );
+        PKG, "GetRepositoryNames.ErrorGettingFolderds.DialogMessage" ), e );
     }
   }
 }

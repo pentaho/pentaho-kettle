@@ -38,7 +38,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRepositoryBaseDelegate {
-  private static Class<?> PKG = RepositoryDirectory.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RepositoryDirectory.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryDirectoryDelegate( KettleDatabaseRepository repository ) {
     super( repository );
@@ -46,8 +46,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
   public RowMetaAndData getDirectory( ObjectId id_directory ) throws KettleException {
     return repository.connectionDelegate.getOneRow(
-        quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ),
-        quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ), id_directory );
+      quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ),
+      quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ), id_directory );
   }
 
   public RepositoryDirectoryInterface loadPathToRoot( ObjectId id_directory ) throws KettleException {
@@ -137,7 +137,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "Repository.LoadRepositoryDirectory.ErrorLoading.Exception" ), e );
+        PKG, "Repository.LoadRepositoryDirectory.ErrorLoading.Exception" ), e );
     }
   }
 
@@ -156,12 +156,13 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     String tablename = KettleDatabaseRepository.TABLE_R_DIRECTORY;
     RowMetaAndData table = new RowMetaAndData();
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), id );
+      KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
-        id_directory_parent );
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+      id_directory_parent );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), dir.getName() );
+      KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), dir.getName() );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), tablename );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
@@ -173,8 +174,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
   public synchronized void deleteDirectory( ObjectId id_directory ) throws KettleException {
     repository.connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " = ? ", id_directory );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " = ? ", id_directory );
   }
 
   public synchronized void deleteDirectory( RepositoryDirectoryInterface dir ) throws KettleException {
@@ -209,7 +210,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
   /**
    * Move / rename a directory in the repository
-   * 
+   *
    * @param id_directory
    *          Id of the directory to be moved/renamed
    * @param id_directory_parent
@@ -251,7 +252,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         additionalParameter = true;
         sql += quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ) + " = ?";
         r.addValue( new ValueMeta(
-            KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), newName );
+          KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), newName );
       }
       if ( id_directory_parent != null ) {
         // Add a parameter separator if the first parm was added
@@ -260,14 +261,14 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         }
         sql += quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ?";
         r.addValue(
-            new ValueMeta(
-                KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
-            id_directory_parent );
+          new ValueMeta(
+            KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+          id_directory_parent );
       }
 
       sql += " WHERE " + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " = ? ";
       r.addValue( new ValueMeta( "id_directory", ValueMetaInterface.TYPE_INTEGER ), Long.valueOf( id_directory
-          .toString() ) );
+        .toString() ) );
 
       repository.connectionDelegate.getDatabase().execStatement( sql, r.getRowMeta(), r.getData() );
     }
@@ -278,9 +279,9 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
     RowMetaAndData dirParRow = repository.connectionDelegate.getParameterMetaData( id_directory );
     String sql =
-        "SELECT COUNT(*) FROM "
-            + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
-            + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ? ";
+      "SELECT COUNT(*) FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ? ";
     RowMetaAndData r = repository.connectionDelegate.getOneRow( sql, dirParRow.getRowMeta(), dirParRow.getData() );
     if ( r != null ) {
       retval = (int) r.getInteger( 0, 0 );
@@ -291,10 +292,10 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
   public synchronized ObjectId[] getSubDirectoryIDs( ObjectId id_directory ) throws KettleException {
     return repository.connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ? ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ), id_directory );
+      + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ? ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ), id_directory );
   }
 
   public void saveRepositoryDirectory( RepositoryDirectoryInterface dir ) throws KettleException {
@@ -348,8 +349,9 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-    throws KettleException {
+  public ObjectId
+    renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
+      throws KettleException {
     ObjectId parentId = null;
     if ( newParentDir != null ) {
       parentId = newParentDir.getObjectId();
@@ -365,7 +367,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
   /**
    * Create a new directory, possibly by creating several sub-directies of / at the same time.
-   * 
+   *
    * @param parentDirectory
    *          the parent directory
    * @param directoryPath
@@ -375,7 +377,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
    *           In case something goes wrong
    */
   public RepositoryDirectoryInterface createRepositoryDirectory( RepositoryDirectoryInterface parentDirectory,
-      String directoryPath ) throws KettleException {
+    String directoryPath ) throws KettleException {
 
     // RepositoryDirectoryInterface refreshedParentDir =
     // repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());

@@ -51,7 +51,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
   private RowMetaInterface rowMetaInterface;
 
   public XulStepFieldsController( Shell aShell, DatabaseMeta aDatabaseMeta, String schemaTableCombo,
-      RowMetaInterface anInput ) {
+    RowMetaInterface anInput ) {
     this.shell = aShell;
     this.databaseMeta = aDatabaseMeta;
     this.schemaTableCombo = schemaTableCombo;
@@ -69,22 +69,24 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
     this.stepFieldsTree = (XulTree) super.document.getElementById( "step_fields_data" );
     this.stepFieldsTreeBinding = this.bf.createBinding( this.model, "stepFields", this.stepFieldsTree, "elements" );
     this.stepNameBinding = this.bf.createBinding( this.model, "stepName", "stepNameLabel", "value" );
-    this.acceptButtonBinding = this.bf.createBinding( this, "showAcceptButton", "stepFieldsDialog_accept", "visible" );
+    this.acceptButtonBinding =
+      this.bf.createBinding( this, "showAcceptButton", "stepFieldsDialog_accept", "visible" );
 
     if ( this.getShowAcceptButton() ) {
-      BindingConvertor<StepFieldNode, Boolean> isDisabledConvertor = new BindingConvertor<StepFieldNode, Boolean>() {
-        public Boolean sourceToTarget( StepFieldNode value ) {
-          return !( value != null );
-        }
+      BindingConvertor<StepFieldNode, Boolean> isDisabledConvertor =
+        new BindingConvertor<StepFieldNode, Boolean>() {
+          public Boolean sourceToTarget( StepFieldNode value ) {
+            return !( value != null );
+          }
 
-        public StepFieldNode targetToSource( Boolean value ) {
-          return null;
-        }
-      };
+          public StepFieldNode targetToSource( Boolean value ) {
+            return null;
+          }
+        };
 
       this.acceptButtonBinding =
-          this.bf.createBinding(
-              this.stepFieldsTree, "selectedItem", "stepFieldsDialog_accept", "disabled", isDisabledConvertor );
+        this.bf.createBinding(
+          this.stepFieldsTree, "selectedItem", "stepFieldsDialog_accept", "disabled", isDisabledConvertor );
     }
     fireBindings();
 
@@ -108,7 +110,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
     if ( this.rowMetaInterface == null ) {
       String theSql = this.databaseMeta.getSQLQueryFields( this.schemaTableCombo );
       GetQueryFieldsProgressDialog theProgressDialog =
-          new GetQueryFieldsProgressDialog( this.shell, this.databaseMeta, theSql );
+        new GetQueryFieldsProgressDialog( this.shell, this.databaseMeta, theSql );
       this.rowMetaInterface = theProgressDialog.open();
     }
 

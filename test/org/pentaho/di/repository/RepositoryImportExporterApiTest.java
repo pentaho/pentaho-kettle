@@ -33,7 +33,7 @@ public class RepositoryImportExporterApiTest extends TestCase {
 
   /**
    * Validate the the repository export api hasn't changed from what we use in example files.
-   * 
+   *
    * @see RepositoryExporter#exportAllObjects(ProgressMonitorListener, String, RepositoryDirectoryInterface, String)
    */
   public void testExportApi() throws Exception {
@@ -55,7 +55,7 @@ public class RepositoryImportExporterApiTest extends TestCase {
 
   /**
    * Validate the the repository import api hasn't changed from what we use in example files.
-   * 
+   *
    * @see RepositoryImporter#importAll(RepositoryImportFeedbackInterface, String, String[],
    *      RepositoryDirectoryInterface, boolean, boolean, String)
    */

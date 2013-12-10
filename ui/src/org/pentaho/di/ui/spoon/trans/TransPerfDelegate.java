@@ -74,7 +74,7 @@ import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.util.ImageUtil;
 
 public class TransPerfDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   // private static final LogWriter log = LogWriter.getInstance();
 
@@ -88,14 +88,14 @@ public class TransPerfDelegate extends SpoonDelegate {
   private static final int DATA_CHOICE_OUTPUT_BUFFER_SIZE = 7;
 
   private static String[] dataChoices = new String[] {
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Written" ),
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Read" ),
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Input" ),
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Output" ),
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Updated" ),
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Rejected" ),
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.InputBufferSize" ),
-      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.OutputBufferSize" ), };
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Written" ),
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Read" ),
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Input" ),
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Output" ),
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Updated" ),
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Rejected" ),
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.InputBufferSize" ),
+    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.OutputBufferSize" ), };
 
   private TransGraph transGraph;
 
@@ -174,7 +174,7 @@ public class TransPerfDelegate extends SpoonDelegate {
     // is called when the transgraph is not running, so we check
     // early to make sure it won't happen (see PDI-5009)
     if ( !transGraph.isRunning()
-        || transGraph.trans == null || !transGraph.trans.getTransMeta().isCapturingStepPerformanceSnapShots() ) {
+      || transGraph.trans == null || !transGraph.trans.getTransMeta().isCapturingStepPerformanceSnapShots() ) {
       showEmptyGraph();
       return; // TODO: display help text and rerty button
     }
@@ -227,8 +227,8 @@ public class TransPerfDelegate extends SpoonDelegate {
     dataListLabel.setLayoutData( fdDataListLabel );
 
     dataList =
-        new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI
-            | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
+      new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI
+        | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
     spoon.props.setLook( dataList );
     dataList.setItems( dataChoices );
     dataList.addSelectionListener( new SelectionAdapter() {
@@ -265,8 +265,8 @@ public class TransPerfDelegate extends SpoonDelegate {
     stepsListLabel.setLayoutData( fdStepsListLabel );
 
     stepsList =
-        new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI
-            | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
+      new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI
+        | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
     spoon.props.setLook( stepsList );
     stepsList.setItems( steps );
     stepsList.addSelectionListener( new SelectionAdapter() {
@@ -369,7 +369,7 @@ public class TransPerfDelegate extends SpoonDelegate {
     button.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent event ) {
         TransGraph.editProperties(
-            spoon.getActiveTransformation(), spoon, spoon.rep, true, TransDialog.Tabs.MONITOR_TAB );
+          spoon.getActiveTransformation(), spoon, spoon.rep, true, TransDialog.Tabs.MONITOR_TAB );
       }
     } );
 
@@ -404,8 +404,8 @@ public class TransPerfDelegate extends SpoonDelegate {
 
       public void run() {
         if ( perfComposite != null
-            && !perfComposite.isDisposed() && canvas != null && !canvas.isDisposed() && transPerfTab != null
-            && !transPerfTab.isDisposed() ) {
+          && !perfComposite.isDisposed() && canvas != null && !canvas.isDisposed() && transPerfTab != null
+          && !transPerfTab.isDisposed() ) {
           if ( transPerfTab.isShowing() ) {
             updateCanvas();
           }
@@ -451,9 +451,9 @@ public class TransPerfDelegate extends SpoonDelegate {
       List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get( stepNameCopy );
       if ( snapShotList != null && snapShotList.size() > 1 ) {
         totalTimeInSeconds =
-            (int) Math
-                .round( ( (double) ( snapShotList.get( snapShotList.size() - 1 ).getDate().getTime() - snapShotList
-                    .get( 0 ).getDate().getTime() ) ) / 1000 );
+          (int) Math
+            .round( ( (double) ( snapShotList.get( snapShotList.size() - 1 ).getDate().getTime() - snapShotList
+              .get( 0 ).getDate().getTime() ) ) / 1000 );
         for ( int i = 0; i < snapShotList.size(); i++ ) {
           StepPerformanceSnapShot snapShot = snapShotList.get( i );
           if ( snapShot.getTimeDifference() != 0 ) {
@@ -525,16 +525,16 @@ public class TransPerfDelegate extends SpoonDelegate {
       chartTitle += " (" + selectedSteps[0] + ")";
     }
     final JFreeChart chart =
-        ChartFactory.createLineChart( chartTitle, // chart title
-            BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer
-                .toString( totalTimeInSeconds ), Long.toString( timeDifference ) ), // domain axis label
-            BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.RowsPerSecond.Label" ), // range axis label
-            dataset, // data
-            PlotOrientation.VERTICAL, // orientation
-            true, // include legend
-            true, // tooltips
-            false // urls
-            );
+      ChartFactory.createLineChart( chartTitle, // chart title
+        BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer
+          .toString( totalTimeInSeconds ), Long.toString( timeDifference ) ), // domain axis label
+        BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.RowsPerSecond.Label" ), // range axis label
+        dataset, // data
+        PlotOrientation.VERTICAL, // orientation
+        true, // include legend
+        true, // tooltips
+        false // urls
+        );
     chart.setBackgroundPaint( Color.white );
     TextTitle title = new TextTitle( chartTitle );
     // title.setExpandToFitSpace(true);
@@ -568,7 +568,7 @@ public class TransPerfDelegate extends SpoonDelegate {
     renderer.setSeriesShape( 0, new Ellipse2D.Double( -3.0, -3.0, 6.0, 6.0 ) );
 
     BufferedImage bufferedImage =
-        chart.createBufferedImage( bounds.width, bounds.height, BufferedImage.TYPE_INT_RGB, null );
+      chart.createBufferedImage( bounds.width, bounds.height, BufferedImage.TYPE_INT_RGB, null );
     ImageData imageData = ImageUtil.convertToSWT( bufferedImage );
 
     // dispose previous image...

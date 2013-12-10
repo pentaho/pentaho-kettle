@@ -41,7 +41,8 @@ class KettleRecordPopulator {
     // assume row metadata is same for all rows
     if ( conv == null ) {
       if ( record.size() != rowMeta.size() ) {
-        throw new KettleException( "Number of columns passed to Infobright " + "doesn't match the table definition!" );
+        throw new KettleException( "Number of columns passed to Infobright "
+          + "doesn't match the table definition!" );
       }
       init( rowMeta );
     }

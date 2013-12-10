@@ -34,14 +34,13 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
 /**
- * 
- * 
+ *
+ *
  * @author Matt
  * @since 10-mrt-2005
  */
 public class SearchFieldsProgressDialog implements IRunnableWithProgress {
   private static Class<?> PKG = SearchFieldsProgressDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                  // $NON-NLS-1$
 
   private StepMeta stepInfo;
   private boolean before;
@@ -60,23 +59,23 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress {
 
     try {
       if ( before ) {
-        monitor.beginTask(
-            BaseMessages.getString( PKG, "SearchFieldsProgressDialog.Dialog.SearchInputFields.Message" ), size ); // Searching
-                                                                                                                  // for
-                                                                                                                  // input
-                                                                                                                  // fields...
+        monitor.beginTask( BaseMessages.getString(
+          PKG, "SearchFieldsProgressDialog.Dialog.SearchInputFields.Message" ), size ); // Searching
+                                                                                        // for
+                                                                                        // input
+                                                                                        // fields...
         fields = transMeta.getPrevStepFields( stepInfo, new ProgressMonitorAdapter( monitor ) );
       } else {
-        monitor.beginTask(
-            BaseMessages.getString( PKG, "SearchFieldsProgressDialog.Dialog.SearchOutputFields.Message" ), size ); // Searching
-                                                                                                                   // for
-                                                                                                                   // output
-                                                                                                                   // fields...
+        monitor.beginTask( BaseMessages.getString(
+          PKG, "SearchFieldsProgressDialog.Dialog.SearchOutputFields.Message" ), size ); // Searching
+                                                                                         // for
+                                                                                         // output
+                                                                                         // fields...
         fields = transMeta.getStepFields( stepInfo, new ProgressMonitorAdapter( monitor ) );
       }
     } catch ( KettleStepException kse ) {
       throw new InvocationTargetException( kse, BaseMessages.getString(
-          PKG, "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage() ) ); // "Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
+        PKG, "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage() ) );
     }
 
     monitor.done();

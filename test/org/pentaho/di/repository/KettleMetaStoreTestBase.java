@@ -141,8 +141,8 @@ public class KettleMetaStoreTestBase extends TestCase {
     assertEquals( 0, namespaces.size() );
   }
 
-  private IMetaStoreElement generateCustomerDimensionElement( IMetaStore metaStore, IMetaStoreElementType elementType )
-    throws MetaStoreException {
+  private IMetaStoreElement generateCustomerDimensionElement( IMetaStore metaStore,
+    IMetaStoreElementType elementType ) throws MetaStoreException {
     IMetaStoreElement element = metaStore.newElement();
     element.setElementType( elementType );
     element.setName( CUSTOMER_DIMENSION_NAME );
@@ -176,7 +176,7 @@ public class KettleMetaStoreTestBase extends TestCase {
     fieldsElement.addChild( fieldElement );
     fieldElement.addChild( metaStore.newAttribute( "field_name", "Customer ID" ) );
     fieldElement.addChild( metaStore.newAttribute(
-        "field_description", "Customer ID as a natural key of this dimension" ) );
+      "field_description", "Customer ID as a natural key of this dimension" ) );
     fieldElement.addChild( metaStore.newAttribute( "field_phyiscal_name", "customer_id" ) );
     fieldElement.addChild( metaStore.newAttribute( "field_kettle_type", "Integer" ) );
 
@@ -185,7 +185,8 @@ public class KettleMetaStoreTestBase extends TestCase {
     fieldElement = metaStore.newAttribute( "field_3", null );
     fieldsElement.addChild( fieldElement );
     fieldElement.addChild( metaStore.newAttribute( "field_name", "Start date" ) );
-    fieldElement.addChild( metaStore.newAttribute( "field_description", "Start of validity of this dimension entry" ) );
+    fieldElement.addChild( metaStore.newAttribute(
+      "field_description", "Start of validity of this dimension entry" ) );
     fieldElement.addChild( metaStore.newAttribute( "field_phyiscal_name", "start_date" ) );
     fieldElement.addChild( metaStore.newAttribute( "field_kettle_type", "Date" ) );
 
@@ -194,7 +195,8 @@ public class KettleMetaStoreTestBase extends TestCase {
     fieldElement = metaStore.newAttribute( "field_4", null );
     fieldsElement.addChild( fieldElement );
     fieldElement.addChild( metaStore.newAttribute( "field_name", "End date" ) );
-    fieldElement.addChild( metaStore.newAttribute( "field_description", "End of validity of this dimension entry" ) );
+    fieldElement
+      .addChild( metaStore.newAttribute( "field_description", "End of validity of this dimension entry" ) );
     fieldElement.addChild( metaStore.newAttribute( "field_phyiscal_name", "end_date" ) );
     fieldElement.addChild( metaStore.newAttribute( "field_kettle_type", "Date" ) );
 
@@ -217,7 +219,7 @@ public class KettleMetaStoreTestBase extends TestCase {
     //
     IMetaStoreElementOwner usersRole = metaStore.newElementOwner( "users", MetaStoreElementOwnerType.ROLE );
     MetaStoreOwnerPermissions usersRoleOwnerPermissions =
-        new MetaStoreOwnerPermissions( usersRole, MetaStoreObjectPermission.READ, MetaStoreObjectPermission.UPDATE );
+      new MetaStoreOwnerPermissions( usersRole, MetaStoreObjectPermission.READ, MetaStoreObjectPermission.UPDATE );
     element.getOwnerPermissionsList().add( usersRoleOwnerPermissions );
 
     return element;

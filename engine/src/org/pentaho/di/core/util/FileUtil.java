@@ -8,7 +8,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class FileUtil {
   public static boolean createParentFolder( Class<?> PKG, String filename, boolean createParentFolder,
-      LogChannelInterface log, VariableSpace vs ) {
+    LogChannelInterface log, VariableSpace vs ) {
     // Check for parent folder
     FileObject parentfolder = null;
     boolean resultat = true;
@@ -19,28 +19,28 @@ public class FileUtil {
         if ( createParentFolder ) {
           if ( log.isDebug() ) {
             log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder
-                .getName().toString() ) );
+              .getName().toString() ) );
           }
           parentfolder.createFolder();
           if ( log.isDebug() ) {
             log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderCreated", parentfolder
-                .getName().toString() ) );
+              .getName().toString() ) );
           }
         } else {
           log.logError( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder
-              .getName().toString() ) );
+            .getName().toString() ) );
           resultat = false;
         }
       } else {
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderExists", parentfolder
-              .getName().toString() ) );
+            .getName().toString() ) );
         }
       }
     } catch ( Exception e ) {
       resultat = false;
       log.logError( BaseMessages.getString( PKG, "JobTrans.Error.ChekingParentLogFolderTitle" ), BaseMessages
-          .getString( PKG, "JobTrans.Error.ChekingParentLogFolder", parentfolder.getName().toString() ), e );
+        .getString( PKG, "JobTrans.Error.ChekingParentLogFolder", parentfolder.getName().toString() ), e );
     } finally {
       if ( parentfolder != null ) {
         try {

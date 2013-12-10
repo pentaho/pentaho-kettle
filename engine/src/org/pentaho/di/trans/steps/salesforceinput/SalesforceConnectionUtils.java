@@ -28,7 +28,7 @@ public class SalesforceConnectionUtils {
 
   public static final int MAX_UPDATED_OBJECTS_IDS = 2000;
 
-  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String LIB_VERION = "21.0";
 
@@ -40,9 +40,9 @@ public class SalesforceConnectionUtils {
    * The records filter description
    */
   public static final String[] recordsFilterDesc = {
-      BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.All" ),
-      BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Updated" ),
-      BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Deleted" ) };
+    BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.All" ),
+    BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Updated" ),
+    BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Deleted" ) };
 
   /**
    * The records filter type codes

@@ -64,7 +64,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
   private static Class<?> PKG = PaloDimOutputMeta.class; // for i18n purposes,
                                                          // needed by
                                                          // Translator2!!
-                                                         // $NON-NLS-1$
+
 
   public static void main(String[] args) {
     try {
@@ -101,7 +101,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
   private Button                  buttonGetLevels;
   private Label                   labelStepName;
   private CCombo                  addConnectionLine;
-  
+
 
   public PaloDimOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
     super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -169,14 +169,14 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.right= new FormAttachment(middle, -margin);
     fd.top  = new FormAttachment(buttonCreateDimension, margin);
     labelRecreateDimension.setLayoutData(fd);
-    
+
     buttonRecreateDimension = new Button(shell, SWT.CHECK);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
     fd.right= new FormAttachment(100, 0);
     fd.top  = new FormAttachment(buttonCreateDimension, margin);
     buttonRecreateDimension.setLayoutData(fd);
-    
+
     labelClearDimension = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -190,7 +190,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(buttonRecreateDimension, margin);
     buttonClearDimension.setLayoutData(fd);
-    
+
     labelClearConsolidations = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -204,7 +204,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(buttonClearDimension, margin);
     buttonClearConsolidations.setLayoutData(fd);
-    
+
     labelEnableElementCache = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -218,7 +218,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(buttonClearConsolidations, margin);
     buttonEnableElementCache.setLayoutData(fd);
-    
+
     labelPreloadElementCache = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -232,7 +232,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(buttonEnableElementCache, margin);
     buttonPreloadElementCache.setLayoutData(fd);
-    
+
     labelDimension = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -261,7 +261,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.top = new FormAttachment(comboDimension, margin);
     comboElementType.setLayoutData(fd);
 
-    colinf = new ColumnInfo[] { new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+    colinf = new ColumnInfo[] { new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
     		new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
     		new ColumnInfo(getLocalizedColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true),
     		new ColumnInfo(getLocalizedColumn(3), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true),
@@ -345,7 +345,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
 			buttonClearConsolidations.setEnabled(!buttonClearDimension.getSelection());
 		}
 	});
-    
+
     buttonEnableElementCache.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent arg0) {
 			buttonPreloadElementCache.setEnabled(buttonEnableElementCache.getSelection());
@@ -360,7 +360,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     } catch (Exception e) {
 
     }
-    
+
     props.setLook(textStepName);
     props.setLook(comboDimension);
     props.setLook(comboElementType);
@@ -385,13 +385,13 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook(labelEnableElementCache);
     props.setLook(buttonPreloadElementCache);
     props.setLook(labelPreloadElementCache);
-    
+
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
         cancel();
       }
     });
-    
+
     meta.setChanged(changed);
     setSize();
     shell.open();
@@ -448,7 +448,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
       for (int i = 0; i < fieldNames.length; i++)
     	  if (fieldTypes[i].toLowerCase().indexOf("integer") >= 0 || fieldTypes[i].toLowerCase().indexOf("number") > 0)
     		  intFields.add(fieldNames[i]);
-      
+
       String [] fieldNamesDefault = intFields.toArray(new String [intFields.size()]);
       colinf[3] = new ColumnInfo(getLocalizedColumn(3), ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNamesDefault, true);
     }
@@ -550,7 +550,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     buttonEnableElementCache.setSelection(meta.getEnableElementCache());
     buttonPreloadElementCache.setSelection(meta.getPreloadElementCache());
     buttonRecreateDimension.setSelection(meta.getRecreateDimension());
-    
+
     buttonClearDimension.setEnabled(!buttonRecreateDimension.getSelection());
 	buttonClearConsolidations.setEnabled(!buttonRecreateDimension.getSelection());
 	buttonPreloadElementCache.setEnabled(buttonEnableElementCache.getSelection());
@@ -608,17 +608,17 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     myMeta.setLevels(levels);
     myMeta.setCreateNewDimension(this.buttonCreateDimension.getSelection());
     myMeta.setClearDimension(this.buttonClearDimension.getSelection());
-    
+
     if (this.buttonClearDimension.getSelection())
     	myMeta.setClearConsolidations(false);
     else myMeta.setClearConsolidations(buttonClearConsolidations.getSelection());
-    
+
     myMeta.setEnableElementCache(buttonEnableElementCache.getSelection());
-    
+
     if (!this.buttonEnableElementCache.getSelection())
     	myMeta.setPreloadElementCache(false);
     else myMeta.setPreloadElementCache(buttonPreloadElementCache.getSelection());
-    
+
     myMeta.setRecreateDimension(this.buttonRecreateDimension.getSelection());
     myMeta.setDimension(this.comboDimension.getText());
     myMeta.setElementType(this.comboElementType.getText());

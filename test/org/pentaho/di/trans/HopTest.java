@@ -44,7 +44,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the use of hops, specifically we want to check the copy and distribute mode.
- * 
+ *
  * @author Sven Boden
  */
 public class HopTest extends TestCase {
@@ -124,10 +124,10 @@ public class HopTest extends TestCase {
 
   /**
    * Test case for hop using copy.
-   * 
+   *
    * The transformation is as follows: an injector step links to a dummy step, which in turn links to 2 target dummy
    * steps.
-   * 
+   *
    * Both dummy1 and dummy2 should get all rows.
    */
   public void testCopyHops() throws Exception {
@@ -225,10 +225,10 @@ public class HopTest extends TestCase {
 
   /**
    * Test case for hop use.
-   * 
+   *
    * The transformation is as follows: an injector step links to a dummy step, which in turn links to 2 target dummy
    * steps.
-   * 
+   *
    * The default in the GUI of spoon is copy mode, but here it seems to be distribute.
    */
   public void testDefaultConfiguration() throws Exception {
@@ -343,10 +343,10 @@ public class HopTest extends TestCase {
 
   /**
    * Test case for hop use.
-   * 
+   *
    * The transformation is as follows: an injector step links to a dummy step, which in turn links to 2 target dummy
    * steps.
-   * 
+   *
    * This testcase uses distribute mode, so each hop in turn should get a row.
    */
   public void testDistributeHops() throws Exception {

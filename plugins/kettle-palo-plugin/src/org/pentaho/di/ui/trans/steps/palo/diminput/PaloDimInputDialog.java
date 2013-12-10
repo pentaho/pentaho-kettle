@@ -70,7 +70,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
                                                                // purposes,
                                                                // needed by
                                                                // Translator2!!
-                                                               // $NON-NLS-1$
+
 
   private final PaloDimInputMeta meta;
   private TableView              tableViewFields;
@@ -137,7 +137,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(addConnectionLine, margin);
     comboDimension.setLayoutData(fd);
-    
+
     labelBaseElementsOnly = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -248,7 +248,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     props.setLook(addConnectionLine);
     props.setLook(labelBaseElementsOnly);
     props.setLook(buttonBaseElementsOnly);
-    
+
 
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
@@ -305,9 +305,9 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
       comboDimension.add(meta.getDimension());
       comboDimension.select(0);
     }
-    
+
     buttonBaseElementsOnly.setSelection(meta.getBaseElementsOnly());
-    
+
     tableViewFields.table.removeAll();
     if (meta.getLevels().size() > 0) {
       for (PaloDimensionLevel level : meta.getLevels()) {
@@ -405,9 +405,9 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
 
     for (int i = 0; i < tableViewFields.table.getItemCount(); i++) {
       PaloDimensionLevel level = new PaloDimensionLevel(
-    		  tableViewFields.table.getItem(i).getText(1), 
-    		  Integer.parseInt(tableViewFields.table.getItem(i).getText(2)), 
-    		  tableViewFields.table.getItem(i).getText(3), 
+    		  tableViewFields.table.getItem(i).getText(1),
+    		  Integer.parseInt(tableViewFields.table.getItem(i).getText(2)),
+    		  tableViewFields.table.getItem(i).getText(3),
     		  tableViewFields.table.getItem(i).getText(4));
       levels.add(level);
     }

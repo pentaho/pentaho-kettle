@@ -66,7 +66,7 @@ public class AddXMLData extends BaseStepData implements StepDataInterface {
   public int[] fieldIndexes;
 
   /**
-     * 
+     *
      */
   public AddXMLData() {
     super();

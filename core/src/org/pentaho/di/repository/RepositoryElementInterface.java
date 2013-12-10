@@ -25,13 +25,13 @@ package org.pentaho.di.repository;
 /**
  * A repository element is an object that can be saved or loaded from the repository. As such, we need to be able to
  * identify it. It needs a RepositoryDirectory, a name and an ID.
- * 
+ *
  * We also need to identify the type of the element.
- * 
+ *
  * Finally, we need to be able to optionally identify the revision of the element.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public interface RepositoryElementInterface extends RepositoryObjectInterface {
 
@@ -47,28 +47,28 @@ public interface RepositoryElementInterface extends RepositoryObjectInterface {
 
   /**
    * Sets the name of the repository object.
-   * 
+   *
    * @param name
    */
   public void setName( String name );
 
   /**
    * Gets the description of the repository object.
-   * 
+   *
    * @return
    */
   public String getDescription();
 
   /**
    * Sets the description of the repository object.
-   * 
+   *
    * @param description
    */
   public void setDescription( String description );
 
   /**
    * Gets the database ID in the repository for this object.
-   * 
+   *
    * @return the database ID in the repository for this object
    */
   @Override
@@ -76,28 +76,28 @@ public interface RepositoryElementInterface extends RepositoryObjectInterface {
 
   /**
    * Sets the database ID in the repository for this object.
-   * 
+   *
    * @return the database ID in the repository for this object
    */
   public void setObjectId( ObjectId id );
 
   /**
    * Gets the repository element type for this object.
-   * 
+   *
    * @return the repository element type for this object
    */
   public RepositoryObjectType getRepositoryElementType();
 
   /**
    * Gets the object revision.
-   * 
+   *
    * @return the object revision
    */
   public ObjectRevision getObjectRevision();
 
   /**
    * Sets the object revision.
-   * 
+   *
    * @param objectRevision
    */
   public void setObjectRevision( ObjectRevision objectRevision );

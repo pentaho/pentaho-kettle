@@ -52,11 +52,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 15-jan-2009
- * 
+ *
  */
 
 public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!!
 
   // the timeout for waiting for data (milliseconds)
   public static final int DEFAULT_SOCKET_TIMEOUT = 10000;
@@ -312,7 +312,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldName = resultName;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -378,19 +379,20 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Const.isEmpty( fieldName ) ) {
       ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( fieldName ), ValueMeta.TYPE_STRING );
       inputRowMeta.addValueMeta( v );
     }
 
     if ( !Const.isEmpty( resultCodeFieldName ) ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultCodeFieldName ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( resultCodeFieldName ), ValueMeta.TYPE_INTEGER );
       inputRowMeta.addValueMeta( v );
     }
     if ( !Const.isEmpty( responseTimeFieldName ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( responseTimeFieldName ), ValueMeta.TYPE_INTEGER );
+        new ValueMeta( space.environmentSubstitute( responseTimeFieldName ), ValueMeta.TYPE_INTEGER );
       inputRowMeta.addValueMeta( v );
     }
   }
@@ -439,7 +441,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       postafile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "postafile" ) );
       encoding = XMLHandler.getTagValue( stepnode, "encoding" );
@@ -480,7 +483,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
       resultCodeFieldName = XMLHandler.getTagValue( stepnode, "result", "code" ); // Optional, can be null
       responseTimeFieldName = XMLHandler.getTagValue( stepnode, "result", "response_time" ); // Optional, can be null
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "HTTPPOSTMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "HTTPPOSTMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -522,8 +526,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
       resultCodeFieldName = rep.getStepAttributeString( id_step, "result_code" );
       responseTimeFieldName = rep.getStepAttributeString( id_step, "response_time" );
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "HTTPPOSTMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "HTTPPOSTMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -559,26 +563,26 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "result_code", resultCodeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "response_time", responseTimeFieldName );
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "HTTPPOSTMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
+      throw new KettleException( BaseMessages.getString( PKG, "HTTPPOSTMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "HTTPPOSTMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "HTTPPOSTMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "HTTPPOSTMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "HTTPPOSTMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -586,31 +590,31 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     if ( urlInField ) {
       if ( Const.isEmpty( urlField ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "HTTPPOSTMeta.CheckResult.UrlfieldMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "HTTPPOSTMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "HTTPPOSTMeta.CheckResult.UrlfieldOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "HTTPPOSTMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( url ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "HTTPPOSTMeta.CheckResult.UrlMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "HTTPPOSTMeta.CheckResult.UrlMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult(
-                CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "HTTPPOSTMeta.CheckResult.UrlOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "HTTPPOSTMeta.CheckResult.UrlOk" ), stepMeta );
       }
     }
     remarks.add( cr );
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new HTTPPOST( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -654,7 +658,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param proxyHost
    */
   public void setProxyHost( String proxyHost ) {
@@ -663,7 +667,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getProxyHost() {
@@ -672,7 +676,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param proxyPort
    */
   public void setProxyPort( String proxyPort ) {
@@ -681,7 +685,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getProxyPort() {
@@ -690,7 +694,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param httpLogin
    */
   public void setHttpLogin( String httpLogin ) {
@@ -699,7 +703,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getHttpLogin() {
@@ -708,7 +712,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param httpPassword
    */
   public void setHttpPassword( String httpPassword ) {
@@ -716,7 +720,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHttpPassword() {

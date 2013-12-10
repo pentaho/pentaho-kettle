@@ -433,7 +433,7 @@ public class SQLConditionTest extends TestCase {
 
   /**
    * Test precedence.
-   * 
+   *
    * @throws KettleSQLException
    */
   public void testCondition18() throws KettleSQLException {
@@ -781,7 +781,7 @@ public class SQLConditionTest extends TestCase {
     SQLFields fields = new SQLFields( "Service", rowMeta, fieldsClause );
 
     String conditionClause =
-        "(NOT((sum(\"Service\".\"sales_amount\") is null)) OR NOT((sum(\"Service\".\"products_sold\") is null)) )";
+      "(NOT((sum(\"Service\".\"sales_amount\") is null)) OR NOT((sum(\"Service\".\"products_sold\") is null)) )";
     SQLCondition sqlCondition = new SQLCondition( "Service", conditionClause, rowMeta, fields );
     Condition condition = sqlCondition.getCondition();
     assertNotNull( condition );
@@ -791,7 +791,7 @@ public class SQLConditionTest extends TestCase {
 
     RowMetaInterface rowMeta = SQLTest.generateServiceRowMeta();
     String fieldsClause =
-        "\"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\" from \"Service\" as \"Service\"";
+      "\"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\" from \"Service\" as \"Service\"";
     SQLFields fields = new SQLFields( "Service", rowMeta, fieldsClause );
 
     String conditionClause = "((not (\"Service\".\"Country\" = 'Belgium') or (\"Service\".\"Country\" is null)))";
@@ -805,7 +805,7 @@ public class SQLConditionTest extends TestCase {
 
     String fieldsClause = "CUSTOMERNAME";
     String conditionClause =
-        "\"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS, LTD', 'MEN ''R'' US RETAILERS, Ltd.' )";
+      "\"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS, LTD', 'MEN ''R'' US RETAILERS, Ltd.' )";
 
     // Correctness of the next statement is tested in SQLFieldsTest
     //
@@ -825,7 +825,7 @@ public class SQLConditionTest extends TestCase {
 
   /**
    * Test IN-clause with escaped quoting and semi-colons in them.
-   * 
+   *
    * @throws KettleSQLException
    */
   public void testCondition30() throws KettleSQLException {

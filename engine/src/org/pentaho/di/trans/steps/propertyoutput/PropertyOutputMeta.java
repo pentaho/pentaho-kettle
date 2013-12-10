@@ -56,13 +56,13 @@ import org.w3c.dom.Node;
 
 /**
  * Output rows to Properties file and create a file.
- * 
+ *
  * @author Samatar
  * @since 13-Apr-2008
  */
 
 public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String keyfield;
   private String valuefield;
@@ -102,7 +102,8 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
   /** Flag append in file **/
   private boolean append;
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -345,7 +346,8 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
       fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
 
-      createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
+      createparentfolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
       extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
       stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
       partNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "haspartno" ) );
@@ -450,47 +452,47 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
     // Now see what we can find as previous step...
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.NoFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check if filename is given
     if ( !Const.isEmpty( fileName ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.FilenameOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.FilenameOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.FilenameError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.FilenameError" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -499,13 +501,13 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     ValueMetaInterface v = prev.searchValueMeta( keyfield );
     if ( v == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.KeyFieldMissing" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.KeyFieldMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.KeyFieldOk" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.KeyFieldOk" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -514,13 +516,13 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     v = prev.searchValueMeta( valuefield );
     if ( v == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.ValueFieldMissing" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.ValueFieldMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "PropertyOutputMeta.CheckResult.ValueFieldOk" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PropertyOutputMeta.CheckResult.ValueFieldOk" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -561,7 +563,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new PropertyOutput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -574,7 +576,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -583,11 +585,11 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

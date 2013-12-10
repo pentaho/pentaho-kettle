@@ -37,7 +37,7 @@ public class OlapUtil {
 
     int z = 0;
     final AbstractBaseCell[][] bodyvalues =
-        new AbstractBaseCell[matrix.getMatrixHeight() - matrix.getOffset()][matrix.getMatrixWidth()];
+      new AbstractBaseCell[matrix.getMatrixHeight() - matrix.getOffset()][matrix.getMatrixWidth()];
     for ( int y = matrix.getOffset(); y < matrix.getMatrixHeight(); y++ ) {
 
       for ( int x = 0; x < matrix.getMatrixWidth(); x++ ) {

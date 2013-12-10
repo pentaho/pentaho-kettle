@@ -39,7 +39,7 @@ import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
 public class SpoonSlaveDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   public SpoonSlaveDelegate( Spoon spoon ) {
     super( spoon );
@@ -55,7 +55,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
       SpoonSlave spoonSlave = new SpoonSlave( tabfolder.getSwtTabset(), SWT.NONE, spoon, slaveServer );
       TabItem tabItem = new TabItem( tabfolder, tabName, tabName );
       tabItem.setToolTipText( "Status of slave server : "
-          + slaveServer.getName() + " : " + slaveServer.getServerAndPort() );
+        + slaveServer.getName() + " : " + slaveServer.getServerAndPort() );
       tabItem.setControl( spoonSlave );
 
       tabMapEntry = new TabMapEntry( tabItem, null, tabName, null, null, spoonSlave, ObjectType.SLAVE_SERVER );
@@ -93,12 +93,13 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
           if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
             spoon.rep.save( slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null );
           } else {
-            throw new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
           }
         } catch ( KettleException e ) {
           new ErrorDialog(
-              spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ), BaseMessages
-                  .getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
+            spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ), BaseMessages
+              .getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
         }
       }
 

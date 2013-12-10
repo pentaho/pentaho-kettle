@@ -51,7 +51,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
  * Widget to draw the character of a fixed length text-file in a graphical way.
- * 
+ *
  * @author Matt
  * @since 17-04-2004
  */
@@ -350,7 +350,7 @@ public class TableDraw extends Canvas {
         String str = rows.get( i );
         for ( int p = fromx; p < str.length() && p < tox; p++ ) {
           gc.drawText( "" + str.charAt( p ), LEFT + MARGIN + p * fontwidth + offset.x, TOP
-              + i * ( fontheight + 2 ) + offset.y, true );
+            + i * ( fontheight + 2 ) + offset.y, true );
         }
 
         if ( str.length() < tox ) {
@@ -379,15 +379,18 @@ public class TableDraw extends Canvas {
         int numsize = number.length() * fontwidth;
 
         if ( i > 0 && ( i % 10 ) == 0 ) {
-          gc.drawText( "" + i, LEFT + MARGIN + i * fontwidth - numsize / 2 + offset.x, linepos - 10 - fontheight, true );
+          gc.drawText(
+            "" + i, LEFT + MARGIN + i * fontwidth - numsize / 2 + offset.x, linepos - 10 - fontheight, true );
         }
 
         if ( i > 0 && ( i % 5 ) == 0 ) {
           gc.drawLine(
-              LEFT + MARGIN + i * fontwidth + offset.x, linepos, LEFT + MARGIN + i * fontwidth + offset.x, linepos - 5 );
+            LEFT + MARGIN + i * fontwidth + offset.x, linepos, LEFT + MARGIN + i * fontwidth + offset.x,
+            linepos - 5 );
         } else {
           gc.drawLine(
-              LEFT + MARGIN + i * fontwidth + offset.x, linepos, LEFT + MARGIN + i * fontwidth + offset.x, linepos - 3 );
+            LEFT + MARGIN + i * fontwidth + offset.x, linepos, LEFT + MARGIN + i * fontwidth + offset.x,
+            linepos - 3 );
         }
       }
 
@@ -402,7 +405,7 @@ public class TableDraw extends Canvas {
         int numsize = number.length() * fontwidth;
         gc.drawText( number, LEFT - 5 - numsize, TOP + i * ( fontheight + 2 ) + offset.y, true );
         gc.drawLine( LEFT, TOP + ( i + 1 ) * ( fontheight + 2 ) + offset.y, LEFT - 5, TOP
-            + ( i + 1 ) * ( fontheight + 2 ) + offset.y );
+          + ( i + 1 ) * ( fontheight + 2 ) + offset.y );
       }
 
       gc.dispose();
@@ -436,12 +439,14 @@ public class TableDraw extends Canvas {
 
   private void drawMarker( GC gc, int x, int maxy ) {
     int[] triangle =
-        new int[] {
-            LEFT + MARGIN + x * fontwidth + offset.x, TOP - 4, LEFT + MARGIN + x * fontwidth + offset.x + 3, TOP + 1,
-            LEFT + MARGIN + x * fontwidth + offset.x - 3, TOP + 1 };
+      new int[] {
+        LEFT + MARGIN + x * fontwidth + offset.x, TOP - 4, LEFT + MARGIN + x * fontwidth + offset.x + 3,
+        TOP + 1, LEFT + MARGIN + x * fontwidth + offset.x - 3, TOP + 1 };
     gc.fillPolygon( triangle );
     gc.drawPolygon( triangle );
-    gc.drawLine( LEFT + MARGIN + x * fontwidth + offset.x, TOP + 1, LEFT + MARGIN + x * fontwidth + offset.x, maxy );
+    gc
+      .drawLine(
+        LEFT + MARGIN + x * fontwidth + offset.x, TOP + 1, LEFT + MARGIN + x * fontwidth + offset.x, maxy );
   }
 
   private Point getOffset() {

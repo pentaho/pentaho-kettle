@@ -49,7 +49,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the "Get XML Data" step.
- * 
+ *
  * @author Sven Boden
  */
 public class GetXMLDataTest extends TestCase {
@@ -67,27 +67,27 @@ public class GetXMLDataTest extends TestCase {
 
   private static String getXML1() {
     String xml1 =
-        "<Level1>                                     "
-            + " <Level2>                                    " + "  <Props>                                    "
-            + "   <ObjectID>AAAAA</ObjectID>                " + "   <SAPIDENT>31-8200</SAPIDENT>              "
-            + "   <Quantity>1</Quantity>                    " + "   <Merkmalname>TX_B</Merkmalname>           "
-            + "   <Merkmalswert> 600</Merkmalswert>         " + "  </Props>                                   "
-            + "  <Props>                                    " + "   <ObjectID>BBBBB</ObjectID>                "
-            + "   <SAPIDENT>31-8201</SAPIDENT>              " + "   <Quantity>3</Quantity>                    "
-            + "   <Merkmalname>TX_C</Merkmalname>           " + "   <Merkmalswert> 900</Merkmalswert>         "
-            + "  </Props>                                   " + " </Level2>                                   "
-            + "</Level1>";
+      "<Level1>                                     "
+        + " <Level2>                                    " + "  <Props>                                    "
+        + "   <ObjectID>AAAAA</ObjectID>                " + "   <SAPIDENT>31-8200</SAPIDENT>              "
+        + "   <Quantity>1</Quantity>                    " + "   <Merkmalname>TX_B</Merkmalname>           "
+        + "   <Merkmalswert> 600</Merkmalswert>         " + "  </Props>                                   "
+        + "  <Props>                                    " + "   <ObjectID>BBBBB</ObjectID>                "
+        + "   <SAPIDENT>31-8201</SAPIDENT>              " + "   <Quantity>3</Quantity>                    "
+        + "   <Merkmalname>TX_C</Merkmalname>           " + "   <Merkmalswert> 900</Merkmalswert>         "
+        + "  </Props>                                   " + " </Level2>                                   "
+        + "</Level1>";
     return xml1;
   }
 
   private static String getXML2() {
     String xml2 =
-        "<Level1>                                 "
-            + " <Level2>                                    " + "  <Props>                                    "
-            + "   <ObjectID>CCCCC</ObjectID>                " + "   <SAPIDENT>11-8201</SAPIDENT>              "
-            + "   <Quantity>5</Quantity>                    " + "   <Merkmalname>TX_C</Merkmalname>           "
-            + "   <Merkmalswert> 700</Merkmalswert>         " + "  </Props>                                   "
-            + " </Level2>                                   " + "</Level1>";
+      "<Level1>                                 "
+        + " <Level2>                                    " + "  <Props>                                    "
+        + "   <ObjectID>CCCCC</ObjectID>                " + "   <SAPIDENT>11-8201</SAPIDENT>              "
+        + "   <Quantity>5</Quantity>                    " + "   <Merkmalname>TX_C</Merkmalname>           "
+        + "   <Merkmalswert> 700</Merkmalswert>         " + "  </Props>                                   "
+        + " </Level2>                                   " + "</Level1>";
     return xml2;
   }
 
@@ -109,11 +109,12 @@ public class GetXMLDataTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "objectid", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "sapident", ValueMeta.TYPE_STRING ), new ValueMeta( "quantity", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "merkmalname", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "merkmalswert", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "objectid", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "sapident", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "quantity", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "merkmalname", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "merkmalswert", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -124,7 +125,7 @@ public class GetXMLDataTest extends TestCase {
 
   /**
    * Create result data for test case 1.
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -145,7 +146,7 @@ public class GetXMLDataTest extends TestCase {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          set 1 of rows to compare
    * @param rows2
@@ -187,7 +188,7 @@ public class GetXMLDataTest extends TestCase {
 
   /**
    * Test case for Get XML Data step, very simple example.
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */

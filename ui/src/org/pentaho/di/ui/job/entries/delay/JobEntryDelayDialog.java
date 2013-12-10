@@ -56,12 +56,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the delay job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 21-02-2007
  */
 public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryDelay.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDelay.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
   private Text wName;
@@ -136,9 +136,9 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 
     // MaximumTimeout line
     wMaximumTimeout =
-        new LabelTextVar(
-            jobMeta, shell, BaseMessages.getString( PKG, "JobEntryDelay.MaximumTimeout.Label" ), BaseMessages
-                .getString( PKG, "JobEntryDelay.MaximumTimeout.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, shell, BaseMessages.getString( PKG, "JobEntryDelay.MaximumTimeout.Label" ), BaseMessages
+          .getString( PKG, "JobEntryDelay.MaximumTimeout.Tooltip" ) );
     props.setLook( wMaximumTimeout );
     wMaximumTimeout.addModifyListener( lsMod );
     fdMaximumTimeout = new FormData();

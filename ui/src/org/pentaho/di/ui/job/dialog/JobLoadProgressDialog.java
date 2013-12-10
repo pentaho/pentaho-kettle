@@ -37,8 +37,8 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
- * 
- * 
+ *
+ *
  * @author Matt
  * @since 13-mrt-2005
  */
@@ -55,7 +55,7 @@ public class JobLoadProgressDialog {
    * Creates a new dialog that will handle the wait while loading a job...
    */
   public JobLoadProgressDialog( Shell shell, Repository rep, String jobname, RepositoryDirectoryInterface repdir,
-      String versionLabel ) {
+    String versionLabel ) {
     this.shell = shell;
     this.rep = rep;
     this.jobname = jobname;

@@ -47,13 +47,13 @@ public class ExcelWriterStepTest {
     File xlsFile = File.createTempFile( "testXLSProtect", ".xls" );
     HSSFWorkbook wb = createWorkbook( xlsFile );
     StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> mockHelper =
-        new StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData>(
-            "Excel Writer Test", ExcelWriterStepMeta.class, ExcelWriterStepData.class );
+      new StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData>(
+        "Excel Writer Test", ExcelWriterStepMeta.class, ExcelWriterStepData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        mockHelper.logChannelInterface );
+      mockHelper.logChannelInterface );
     ExcelWriterStep step =
-        new ExcelWriterStep(
-            mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+      new ExcelWriterStep(
+        mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
 
     // test
     step.protectSheet( wb.getSheet( SHEET_NAME ), "aa" );

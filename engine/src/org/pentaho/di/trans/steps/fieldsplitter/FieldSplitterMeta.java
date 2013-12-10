@@ -68,7 +68,7 @@ import org.w3c.dom.Node;
         \/<t>        id[]          = <empty><p>
           <t>        idrem[]       = no, no, no, no<p>
            <t>       type[]        = Number, Number, Number, Number<p>
-            <t>      format[]      = ###.##, ###.##, ###.##, ###.##<p> 
+            <t>      format[]      = ###.##, ###.##, ###.##, ###.##<p>
             <t>      group[]       = <empty><p>
             <t>      decimal[]     = .<p>
             <t>      currency[]    = <empty><p>
@@ -88,21 +88,21 @@ import org.w3c.dom.Node;
         \/        id[]          = Sales1, Sales2, Sales3, Sales4<p>
                   idrem[]       = yes, yes, yes, yes (remove ID's from split field)<p>
                   type[]        = Number, Number, Number, Number<p>
-                  format[]      = ###.##, ###.##, ###.##, ###.##<p> 
+                  format[]      = ###.##, ###.##, ###.##, ###.##<p>
                   group[]       = <empty><p>
                   decimal[]     = .<p>
                   currency[]    = <empty><p>
                   length[]      = 3, 3, 3, 3<p>
                   precision[]   = 0, 0, 0, 0<p>
-<p>                  
+<p>
   DATUM;SALES1;SALES2;SALES3;SALES4<p>
   20031031;310,50;150,23<p>
-<p>      
+<p>
 
 </CODE>
  **/
 public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Field to split */
   private String splitField;
@@ -284,7 +284,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     this.fieldTrimType = fieldTrimType;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -366,7 +367,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "FieldSplitterMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+        PKG, "FieldSplitterMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -378,12 +379,12 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Remove the field to split
     int idx = r.indexOfValue( splitField );
     if ( idx < 0 ) { // not found
-      throw new RuntimeException( BaseMessages
-          .getString( PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit", splitField ) );
+      throw new RuntimeException( BaseMessages.getString(
+        PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit", splitField ) );
     }
 
     // Add the new fields at the place of the index --> replace!
@@ -439,7 +440,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
       retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", fieldNullIf[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "ifnull", fieldIfNull[i] ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "trimtype", ValueMeta.getTrimTypeCode( fieldTrimType[i] ) ) );
+        XMLHandler.addTagValue( "trimtype", ValueMeta.getTrimTypeCode( fieldTrimType[i] ) ) );
       retval.append( "      </field>" );
     }
     retval.append( "    </fields>" );
@@ -470,11 +471,12 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
         fieldNullIf[i] = rep.getStepAttributeString( id_step, i, "field_nullif" );
         fieldIfNull[i] = rep.getStepAttributeString( id_step, i, "field_ifnull" );
-        fieldTrimType[i] = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
+        fieldTrimType[i] =
+          ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "FieldSplitterMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+        PKG, "FieldSplitterMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -498,26 +500,26 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", fieldNullIf[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_ifnull", fieldIfNull[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_trimtype", ValueMeta
-            .getTrimTypeCode( fieldTrimType[i] ) );
+          .getTrimTypeCode( fieldTrimType[i] ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "FieldSplitterMeta.Exception.UnalbeToSaveStepInfoToRepository" )
-          + id_step, e );
+        PKG, "FieldSplitterMeta.Exception.UnalbeToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     String error_message = "";
     CheckResult cr;
 
     // Look up fields in the input stream <prev>
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "FieldSplitterMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FieldSplitterMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       error_message = "";
@@ -525,19 +527,20 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
       int i = prev.indexOfValue( splitField );
       if ( i < 0 ) {
         error_message =
-            BaseMessages.getString(
-                PKG, "FieldSplitterMeta.CheckResult.SplitedFieldNotPresentInInputStream", splitField );
+          BaseMessages.getString(
+            PKG, "FieldSplitterMeta.CheckResult.SplitedFieldNotPresentInInputStream", splitField );
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "FieldSplitterMeta.CheckResult.SplitedFieldFoundInInputStream", splitField ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "FieldSplitterMeta.CheckResult.SplitedFieldFoundInInputStream", splitField ), stepMeta );
         remarks.add( cr );
       }
     } else {
       error_message =
-          BaseMessages.getString( PKG, "FieldSplitterMeta.CheckResult.CouldNotReadFieldsFromPreviousStep" ) + Const.CR;
+        BaseMessages.getString( PKG, "FieldSplitterMeta.CheckResult.CouldNotReadFieldsFromPreviousStep" )
+          + Const.CR;
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );
     }
@@ -545,19 +548,19 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "FieldSplitterMeta.CheckResult.StepReceivingInfoFromOtherStep" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FieldSplitterMeta.CheckResult.StepReceivingInfoFromOtherStep" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "FieldSplitterMeta.CheckResult.NoInputReceivedFromOtherStep" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FieldSplitterMeta.CheckResult.NoInputReceivedFromOtherStep" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new FieldSplitter( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

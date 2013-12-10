@@ -41,13 +41,13 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * This class handles the logging.
- * 
+ *
  * @author Matt
  * @since 25-04-2003
  *
  */
 public class LogWriter {
-  // private static Class<?> PKG = LogWriter.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  // private static Class<?> PKG = LogWriter.class; // for i18n purposes, needed by Translator2!!
 
   private static LogWriter logWriter;
 
@@ -85,7 +85,7 @@ public class LogWriter {
     pentahoLogger.setAdditivity(false);
 
     // ensure all messages get logged in this logger since we filtered it above
-    // we do not set the level in the rootLogger so the rootLogger can decide by itself (e.g. in the platform) 
+    // we do not set the level in the rootLogger so the rootLogger can decide by itself (e.g. in the platform)
     //
     pentahoLogger.setLevel(Level.ALL);
 
@@ -117,7 +117,7 @@ public class LogWriter {
     // BELOW : This is covered in log4j.xml
     // Doing it here is not really the right location.
     //
-     
+
     // Get rid of the VFS info messages...
     //
     LogManager.getLogger("org.apache.commons.vfs").setLevel(Level.WARN);
@@ -131,7 +131,7 @@ public class LogWriter {
   }
 
   /**
-   * Get a new log instance for the specified file if it is not open yet! 
+   * Get a new log instance for the specified file if it is not open yet!
    * @param filename The log file to open
      * @param exact is this an exact filename (false: prefix of name in temp directory)
    * @return the LogWriter object
@@ -139,7 +139,7 @@ public class LogWriter {
   // synchronizing logWriter singleton instance PDI-6840
   synchronized public static final LogWriter getInstance(String filename, boolean exact) throws KettleException {
     if (logWriter != null) {
-      // OK, see if we have a file appender already for this 
+      // OK, see if we have a file appender already for this
       //
       if (logWriter.pentahoLogger.getAppender(LogWriter.createFileAppenderName(filename, exact)) == null) {
         logWriter.fileAppender = createFileAppender(filename, exact);
@@ -174,7 +174,7 @@ public class LogWriter {
   }
 
   /**
-   * Create a file appender 
+   * Create a file appender
    * @param filename The (VFS) filename (URL) to write to.
    * @param exact is this an exact filename of a filename to be stored in "java.io.tmp"
    * @return A new file appender
@@ -200,7 +200,7 @@ public class LogWriter {
   }
 
   /**
-   * Create a file appender 
+   * Create a file appender
    * @param filename The (VFS) filename (URL) to write to.
    * @param exact is this an exact filename of a filename to be stored in "java.io.tmp"
    * @param append
@@ -236,10 +236,10 @@ public class LogWriter {
   }
 
   /**
-   * 
+   *
    * @return a new String appender object capable of capturing the log stream.
    * It starts to work the instant you add this appender to the Kettle logger.
-   * 
+   *
    * @deprecated Please use {@link CentralLogStore.getAppender()} instead.  This uses a central logging buffer in stead of a distributed one.
    * It also supports incremental buffer gets, and much more.
    */
@@ -297,7 +297,7 @@ public class LogWriter {
   }
 
   /**
-   * 
+   *
    * @param logMessage
    * @param channelLogLevel
    */
@@ -418,7 +418,7 @@ public class LogWriter {
   public static Layout getLayout() {
     return layout;
   }
-  
+
   public Logger getPentahoLogger() {
     return pentahoLogger;
   }

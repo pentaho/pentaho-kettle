@@ -39,7 +39,7 @@ public class LdapSslProtocol extends LdapProtocol {
   private final String trustStorePassword;
 
   public LdapSslProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
-      Collection<String> binaryAttributes ) {
+    Collection<String> binaryAttributes ) {
     super( log, variableSpace, meta, binaryAttributes );
     String trustStorePath = null;
     String trustStorePassword = null;
@@ -71,15 +71,15 @@ public class LdapSslProtocol extends LdapProtocol {
   }
 
   @Override
-  protected void setupEnvironment( Map<String, String> env, String username, String password ) throws KettleException {
+  protected void setupEnvironment( Map<String, String> env, String username, String password )
+    throws KettleException {
     super.setupEnvironment( env, username, password );
     configureSslEnvironment( env );
     configureSocketFactory( trustAllCertificates, trustStorePath, trustStorePassword );
   }
 
-  protected void
-    configureSocketFactory( boolean trustAllCertificates, String trustStorePath, String trustStorePassword )
-      throws KettleException {
+  protected void configureSocketFactory( boolean trustAllCertificates, String trustStorePath,
+    String trustStorePassword ) throws KettleException {
     if ( trustAllCertificates ) {
       CustomSocketFactory.configure();
     } else {

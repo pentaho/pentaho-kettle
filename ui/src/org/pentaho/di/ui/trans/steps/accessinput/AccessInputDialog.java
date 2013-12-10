@@ -87,7 +87,7 @@ import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 
 public class AccessInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AccessInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AccessInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -474,26 +474,26 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinfo = new ColumnInfo[5];
     colinfo[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "AccessInputDialog.Files.Filename.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AccessInputDialog.Files.Filename.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinfo[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "AccessInputDialog.Files.Wildcard.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AccessInputDialog.Files.Wildcard.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinfo[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "AccessInputDialog.Files.ExcludeWildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AccessInputDialog.Files.ExcludeWildcard.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     colinfo[3] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "AccessInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            AccessInputMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AccessInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        AccessInputMeta.RequiredFilesDesc );
     colinfo[4] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "AccessInputDialog.IncludeSubDirs.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            AccessInputMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AccessInputDialog.IncludeSubDirs.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, AccessInputMeta.RequiredFilesDesc );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -504,7 +504,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     colinfo[4].setToolTip( BaseMessages.getString( PKG, "AccessInputDialog.IncludeSubDirs.Tooltip" ) );
 
     wFilenameList =
-        new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
+      new TableView(
+        transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
     props.setLook( wFilenameList );
 
     fdFilenameList = new FormData();
@@ -802,52 +803,52 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     final int FieldsRows = input.getInputFields().length;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Name.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Attribut.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Type.Column" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Format.Column" ),
-                ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Length.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Precision.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Currency.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Decimal.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Group.Column" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.TrimType.Column" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, AccessInputField.trimTypeDesc, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Repeat.Column" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] {
-                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
-                true ),
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Name.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Attribut.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Type.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Format.Column" ),
+          ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Length.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Precision.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Currency.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Decimal.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Group.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.TrimType.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, AccessInputField.trimTypeDesc, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Repeat.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
 
-        };
+      };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Name.Column.Tooltip" ) );
     colinf[1].setUsingVariables( true );
     colinf[1].setToolTip( BaseMessages.getString( PKG, "AccessInputDialog.FieldsTable.Attribut.Column.Tooltip" ) );
 
-    wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields =
+      new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -929,8 +930,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         wFilenameList.add( new String[] {
-            wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(), AccessInputMeta.RequiredFilesCode[0],
-            AccessInputMeta.RequiredFilesCode[0] } );
+          wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+          AccessInputMeta.RequiredFilesCode[0], AccessInputMeta.RequiredFilesCode[0] } );
         wFilename.setText( "" );
         wFilemask.setText( "" );
         wExcludeFilemask.setText( "" );
@@ -979,9 +980,9 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
           if ( files.length > 0 ) {
             EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                    PKG, "AccessInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                    PKG, "AccessInputDialog.FilesReadSelection.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                PKG, "AccessInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
+                PKG, "AccessInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -992,8 +993,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
           }
         } catch ( KettleException ex ) {
           new ErrorDialog(
-              shell, BaseMessages.getString( PKG, "AccessInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
-                  .getString( PKG, "AccessInputDialog.ErrorParsingData.DialogMessage" ), ex );
+            shell, BaseMessages.getString( PKG, "AccessInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "AccessInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1047,8 +1048,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
           }
 
           dialog.setFilterNames( new String[] {
-              BaseMessages.getString( PKG, "AccessInputDialog.FileType.AccessFiles" ),
-              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+            BaseMessages.getString( PKG, "AccessInputDialog.FileType.AccessFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
           if ( dialog.open() != null ) {
             String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -1103,8 +1104,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "AccessInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "AccessInputDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "AccessInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "AccessInputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1151,7 +1152,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-          PKG, "AccessInputDialog.ErrorReadingFile.DialogMessage", e.toString() ), e );
+        PKG, "AccessInputDialog.ErrorReadingFile.DialogMessage", e.toString() ), e );
     }
 
     if ( fields.size() > 0 ) {
@@ -1162,7 +1163,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       for ( int j = 0; j < fields.size(); j++ ) {
         ValueMetaInterface field = fields.getValueMeta( j );
         wFields.add( new String[] {
-            field.getName(), field.getName(), field.getTypeDesc(), "", "-1", "", "", "", "", "none", "N" } );
+          field.getName(), field.getName(), field.getTypeDesc(), "", "-1", "", "", "", "", "none", "N" } );
       }
       wFields.removeEmptyRows();
       wFields.setRowNums();
@@ -1226,7 +1227,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
-   * 
+   *
    * @param in
    *          The TextFileInputMeta object to obtain the data from.
    */
@@ -1235,11 +1236,10 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       wFilenameList.removeAll();
 
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList
-            .add( new String[] {
-                in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
-                in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-                in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+        wFilenameList.add( new String[] {
+          in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+          in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
@@ -1288,8 +1288,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
-                PKG, "System.Combo.No" );
+          field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+            PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1378,8 +1378,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       getInfo( input );
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "AccessInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "AccessInputDialog.ErrorParsingData.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "AccessInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "AccessInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1453,18 +1453,18 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       }
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-              PKG, "AccessInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-              PKG, "AccessInputDialog.NumberRows.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+          PKG, "AccessInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+          PKG, "AccessInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog(
-                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1473,25 +1473,25 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog(
-                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
-                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog(
-                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
-                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "AccessInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "AccessInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "AccessInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "AccessInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 
@@ -1526,7 +1526,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         if ( fileInputList.getFile( 0 ).exists() ) {
           // Open the file (only first file) in readOnly ...
           //
-          accessDatabase = Database.open( new File( AccessInputMeta.getFilename( fileInputList.getFile( 0 ) ) ), true );
+          accessDatabase =
+            Database.open( new File( AccessInputMeta.getFilename( fileInputList.getFile( 0 ) ) ), true );
 
           // Get user tables
           //
@@ -1540,9 +1541,9 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
           String[] tablenames = settables.toArray( new String[settables.size()] );
           Const.sortStrings( tablenames );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, tablenames, BaseMessages.getString(
-                  PKG, "AccessInputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString(
-                  PKG, "AccessInputDialog.Dialog.SelectATable.Message" ) );
+            new EnterSelectionDialog( shell, tablenames, BaseMessages.getString(
+              PKG, "AccessInputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString(
+              PKG, "AccessInputDialog.Dialog.SelectATable.Message" ) );
           String tablename = dialog.open();
           if ( tablename != null ) {
             wTable.setText( tablename );
@@ -1550,7 +1551,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         } else {
           // The file not exists !
           throw new KettleException( BaseMessages.getString(
-              PKG, "AccessInputMeta.Exception.FileDoesNotExist", KettleVFS.getFilename( fileInputList.getFile( 0 ) ) ) );
+            PKG, "AccessInputMeta.Exception.FileDoesNotExist", KettleVFS
+              .getFilename( fileInputList.getFile( 0 ) ) ) );
         }
       } else {
         // No file specified
@@ -1561,8 +1563,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       }
     } catch ( Throwable e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "AccessInputDialog.UnableToGetListOfTables.Title" ), BaseMessages
-              .getString( PKG, "AccessInputDialog.UnableToGetListOfTables.Message" ), e );
+        shell, BaseMessages.getString( PKG, "AccessInputDialog.UnableToGetListOfTables.Title" ), BaseMessages
+          .getString( PKG, "AccessInputDialog.UnableToGetListOfTables.Message" ), e );
     } finally {
       // Don't forget to close the bugger.
       try {
@@ -1687,8 +1689,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
     // LastModificationTimeName line
     wlLastModificationTimeName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
-    wlLastModificationTimeName.setText( BaseMessages
-        .getString( PKG, "AccessInputDialog.LastModificationTimeName.Label" ) );
+    wlLastModificationTimeName.setText( BaseMessages.getString(
+      PKG, "AccessInputDialog.LastModificationTimeName.Label" ) );
     props.setLook( wlLastModificationTimeName );
     fdlLastModificationTimeName = new FormData();
     fdlLastModificationTimeName.left = new FormAttachment( 0, 0 );

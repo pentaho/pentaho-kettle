@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * This class store undo and redo information...
- * 
+ *
  * Possible changes to a transformation:
  * <p>
  * step
@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepMeta;
  * <p>
  * connection
  * <p>
- * 
+ *
  * Build an Undo/Redo class containing:
  * <p>
  * Type of change
@@ -53,13 +53,13 @@ import org.pentaho.di.trans.step.StepMeta;
  * <p>
  * Link to previous infomation
  * <p>
- * 
+ *
  * @author Matt
  * @since 19-12-2003
- * 
+ *
  */
 public class TransAction {
-  private static Class<?> PKG = TransAction.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransAction.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_ACTION_NONE = 0;
   public static final int TYPE_ACTION_CHANGE_STEP = 1;
@@ -111,38 +111,38 @@ public class TransAction {
   public static final int TYPE_ACTION_DELETE_PARTITION = 41;
 
   public static final String[] desc_action = new String[] {
-      "", BaseMessages.getString( PKG, "TransAction.label.ChangeStep" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeConnection" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeHop" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeNote" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewStep" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewConnection" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewHop" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewNote" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteStep" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteConnection" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteHop" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteNote" ),
-      BaseMessages.getString( PKG, "TransAction.label.PositionStep" ),
-      BaseMessages.getString( PKG, "TransAction.label.PositionNote" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeJobEntry" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeJobHop" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewJobEntry" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewJobHop" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteJobEntry" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteJobHop" ),
-      BaseMessages.getString( PKG, "TransAction.label.PositionJobEntry" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeTableRow" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewTableRow" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteTableRow" ),
-      BaseMessages.getString( PKG, "TransAction.label.PositionTableRow" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeTable" ),
-      BaseMessages.getString( PKG, "TransAction.label.ChangeRelationship" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewTable" ),
-      BaseMessages.getString( PKG, "TransAction.label.NewRelationship" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteTable" ),
-      BaseMessages.getString( PKG, "TransAction.label.DeleteRelationship" ),
-      BaseMessages.getString( PKG, "TransAction.label.PositionTable" ) };
+    "", BaseMessages.getString( PKG, "TransAction.label.ChangeStep" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeConnection" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeHop" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeNote" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewStep" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewConnection" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewHop" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewNote" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteStep" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteConnection" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteHop" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteNote" ),
+    BaseMessages.getString( PKG, "TransAction.label.PositionStep" ),
+    BaseMessages.getString( PKG, "TransAction.label.PositionNote" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeJobEntry" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeJobHop" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewJobEntry" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewJobHop" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteJobEntry" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteJobHop" ),
+    BaseMessages.getString( PKG, "TransAction.label.PositionJobEntry" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeTableRow" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewTableRow" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteTableRow" ),
+    BaseMessages.getString( PKG, "TransAction.label.PositionTableRow" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeTable" ),
+    BaseMessages.getString( PKG, "TransAction.label.ChangeRelationship" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewTable" ),
+    BaseMessages.getString( PKG, "TransAction.label.NewRelationship" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteTable" ),
+    BaseMessages.getString( PKG, "TransAction.label.DeleteRelationship" ),
+    BaseMessages.getString( PKG, "TransAction.label.PositionTable" ) };
 
   private int type;
   private Object[] previous;
@@ -315,7 +315,7 @@ public class TransAction {
 
   /**
    * Indicate that the next operations needs to be undone too.
-   * 
+   *
    * @param nextAlso
    *          The nextAlso to set.
    */
@@ -325,7 +325,7 @@ public class TransAction {
 
   /**
    * Get the status of the nextAlso flag.
-   * 
+   *
    * @return true if the next operation needs to be done too.
    */
   public boolean getNextAlso() {

@@ -33,9 +33,9 @@ import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 /**
  * This plugin allows you to capture additional information concerning transformations
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( TransDialogPluginInterface.class )
 @PluginAnnotationType( TransDialogPlugin.class )

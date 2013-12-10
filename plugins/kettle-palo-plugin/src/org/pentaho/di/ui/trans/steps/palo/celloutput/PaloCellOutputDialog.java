@@ -69,7 +69,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
   private static Class<?> PKG = PaloCellOutputMeta.class; // for i18n purposes,
                                                           // needed by
                                                           // Translator2!!
-                                                          // $NON-NLS-1$
+
 
   public static void main(String[] args) {
     try {
@@ -107,7 +107,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
   private Button             buttonEnableDimensionCache;
   private CCombo             addConnectionLine;
   private ColumnInfo[]       colinf;
-  
+
   private PaloOptionCollection splashOptions = PaloHelper.getSplasModeOptions();
   private PaloOptionCollection updateOptions = PaloHelper.getUpdateModeOptions();
 
@@ -175,7 +175,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(comboCube, margin);
     comboMeasureType.setLayoutData(fd);
-    
+
     labelUpdateMode = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -189,7 +189,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(comboMeasureType, margin);
     comboUpdateMode.setLayoutData(fd);
-    
+
     labelSplashMode = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -203,7 +203,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(comboUpdateMode, margin);
     comboSplashMode.setLayoutData(fd);
-    
+
     labelCommitSize = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -231,7 +231,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(textCommitSize, margin);
     buttonClearCube.setLayoutData(fd);
-    
+
     labelEnableDimensionCache = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -245,7 +245,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(buttonClearCube, margin);
     buttonEnableDimensionCache.setLayoutData(fd);
-    
+
     labelPreloadDimensionCache = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -367,7 +367,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     props.setLook(buttonPreloadDimensionCache);
     props.setLook(labelEnableDimensionCache);
     props.setLook(buttonEnableDimensionCache);
-    
+
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
         cancel();
@@ -412,15 +412,15 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     labelCommitSize.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.CommitSize"));
     labelPreloadDimensionCache.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.PreloadDimensionCache"));
     labelEnableDimensionCache.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.EnableDimensionCache"));
-    
+
     for (PaloOption option : updateOptions){
     	option.setDescription(BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateOptions." + option.getCode()));
     }
-    
+
     for (PaloOption option : splashOptions){
     	option.setDescription(BaseMessages.getString(PKG, "PaloCellOutputDialog.SplashOptions." + option.getCode()));
     }
-    
+
   }
 
   private void fillStoredData() {
@@ -435,17 +435,17 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       comboCube.add(meta.getCube());
       comboCube.select(0);
     }
-    
+
     for (PaloOption option : updateOptions){
    		comboUpdateMode.add(option.getDescription());
     }
     comboUpdateMode.select(comboUpdateMode.indexOf(this.updateOptions.getDescription(meta.getUpdateMode())));
-    
+
     for (PaloOption option : splashOptions){
     	comboSplashMode.add(option.getDescription());
     }
     comboSplashMode.select(comboSplashMode.indexOf(this.splashOptions.getDescription(meta.getSplashMode())));
-    
+
     textCommitSize.setText(String.valueOf(meta.getCommitSize()));
     buttonEnableDimensionCache.setSelection(meta.getEnableDimensionCache());
     buttonPreloadDimensionCache.setSelection(meta.getPreloadDimensionCache());
@@ -474,7 +474,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       Collections.sort(fieldNameList);
     } catch (Exception e) {
     }
-    tableViewFields.setColumnInfo(1, new ColumnInfo("Field", ColumnInfo.COLUMN_TYPE_CCOMBO, 
+    tableViewFields.setColumnInfo(1, new ColumnInfo("Field", ColumnInfo.COLUMN_TYPE_CCOMBO,
     		(fieldNameList == null ? null : fieldNameList.toArray(new String[0]))
     		, true));
 
@@ -599,9 +599,9 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     if (this.updateOptions.getCode(comboUpdateMode.getText()) == "ADD"
     	&& this.splashOptions.getCode(comboSplashMode.getText()) == "SET")
     	{
-    		throw new KettleException(BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateSplashError", 
+    		throw new KettleException(BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateSplashError",
     				BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateMode"),
-    				comboUpdateMode.getText(), 
+    				comboUpdateMode.getText(),
     				BaseMessages.getString(PKG, "PaloCellOutputDialog.SplashMode"),
     				comboSplashMode.getText()));
     	}
@@ -627,8 +627,8 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       } else
         myMeta.setMeasureField(field);
     }
-    
-    
+
+
     myMeta.setCube(this.comboCube.getText());
     myMeta.setMeasureType(this.comboMeasureType.getText());
     myMeta.setUpdateMode(this.updateOptions.getCode(comboUpdateMode.getText()));

@@ -33,9 +33,9 @@ import org.pentaho.di.core.vfs.KettleVFS;
 /**
  * This class takes care of polling the central log store for new log messages belonging to a certain log channel ID
  * (and children). The log lines will be written to a logging file.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class LogChannelFileWriter {
   private String logChannelId;
@@ -50,7 +50,7 @@ public class LogChannelFileWriter {
 
   /**
    * Create a new log channel file writer
-   * 
+   *
    * @param logChannelId
    *          The log channel (+children) to write to the log file
    * @param logFile
@@ -59,7 +59,7 @@ public class LogChannelFileWriter {
    *          set to true if you want to append to an existing file
    * @param pollingInterval
    *          The polling interval in milliseconds.
-   * 
+   *
    * @throws KettleException
    *           in case the specified log file can't be created.
    */
@@ -82,14 +82,14 @@ public class LogChannelFileWriter {
 
   /**
    * Create a new log channel file writer
-   * 
+   *
    * @param logChannelId
    *          The log channel (+children) to write to the log file
    * @param logFile
    *          The logging file to write to
    * @param appending
    *          set to true if you want to append to an existing file
-   * 
+   *
    * @throws KettleException
    *           in case the specified log file can't be created.
    */

@@ -27,7 +27,7 @@ import org.pentaho.di.pan.Pan;
 
 /**
  * Executes a transformation calls transformation.xml from within a jar file.
- * 
+ *
  * @author Matt
  * @since
  */

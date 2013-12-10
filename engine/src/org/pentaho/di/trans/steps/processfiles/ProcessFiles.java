@@ -41,20 +41,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Copy, move or delete file *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class ProcessFiles extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ProcessFilesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ProcessFilesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ProcessFilesMeta meta;
   private ProcessFilesData data;
 
   public ProcessFiles( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -76,7 +76,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
       }
       // Check is target filename field is provided
       if ( meta.getOperationType() != ProcessFilesMeta.OPERATION_TYPE_DELETE
-          && Const.isEmpty( meta.getDynamicTargetFileNameField() ) ) {
+        && Const.isEmpty( meta.getDynamicTargetFileNameField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.TargetFilenameFieldMissing" ) );
       }
 
@@ -86,7 +86,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
         if ( data.indexOfSourceFilename < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Exception.CouldnotFindField", meta
-              .getDynamicSourceFileNameField() ) );
+            .getDynamicSourceFileNameField() ) );
         }
       }
       // cache the position of the source filename field
@@ -95,7 +95,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
         if ( data.indexOfTargetFilename < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Exception.CouldnotFindField", meta
-              .getDynamicTargetFileNameField() ) );
+            .getDynamicTargetFileNameField() ) );
         }
       }
 
@@ -117,12 +117,13 @@ public class ProcessFiles extends BaseStep implements StepInterface {
 
       if ( !data.sourceFile.exists() ) {
         logError( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileNotExist", sourceFilename ) );
-        throw new KettleException( BaseMessages
-            .getString( PKG, "ProcessFiles.Error.SourceFileNotExist", sourceFilename ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "ProcessFiles.Error.SourceFileNotExist", sourceFilename ) );
       }
       if ( data.sourceFile.getType() != FileType.FILE ) {
         logError( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileNotFile", sourceFilename ) );
-        throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileNotFile", sourceFilename ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "ProcessFiles.Error.SourceFileNotFile", sourceFilename ) );
       }
       String targetFilename = null;
       if ( meta.getOperationType() != ProcessFilesMeta.OPERATION_TYPE_DELETE ) {
@@ -142,7 +143,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
           if ( data.targetFile.getType() != FileType.FILE ) {
             logError( BaseMessages.getString( PKG, "ProcessFiles.Error.TargetFileNotFile", targetFilename ) );
             throw new KettleException( BaseMessages.getString(
-                PKG, "ProcessFiles.Error.TargetFileNotFile", targetFilename ) );
+              PKG, "ProcessFiles.Error.TargetFileNotFile", targetFilename ) );
           }
 
         } else {
@@ -151,7 +152,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
           if ( !parentFolder.exists() ) {
             if ( !meta.isCreateParentFolder() ) {
               throw new KettleException( BaseMessages.getString(
-                  PKG, "ProcessFiles.Error.TargetParentFolderNotExists", parentFolder.toString() ) );
+                PKG, "ProcessFiles.Error.TargetParentFolderNotExists", parentFolder.toString() ) );
             } else {
               parentFolder.createFolder();
             }
@@ -165,31 +166,31 @@ public class ProcessFiles extends BaseStep implements StepInterface {
       switch ( meta.getOperationType() ) {
         case ProcessFilesMeta.OPERATION_TYPE_COPY:
           if ( ( ( meta.isOverwriteTargetFile() && data.targetFile.exists() ) || !data.targetFile.exists() )
-              && !meta.simulate ) {
+            && !meta.simulate ) {
             data.targetFile.copyFrom( data.sourceFile, new TextOneToOneFileSelector() );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
-                  PKG, "ProcessFiles.Log.SourceFileCopied", sourceFilename, targetFilename ) );
+                PKG, "ProcessFiles.Log.SourceFileCopied", sourceFilename, targetFilename ) );
             }
           } else {
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
-                  PKG, "ProcessFiles.Log.TargetNotOverwritten", sourceFilename, targetFilename ) );
+                PKG, "ProcessFiles.Log.TargetNotOverwritten", sourceFilename, targetFilename ) );
             }
           }
           break;
         case ProcessFilesMeta.OPERATION_TYPE_MOVE:
           if ( ( ( meta.isOverwriteTargetFile() && data.targetFile.exists() ) || !data.targetFile.exists() )
-              && !meta.simulate ) {
+            && !meta.simulate ) {
             data.sourceFile.moveTo( KettleVFS.getFileObject( targetFilename, getTransMeta() ) );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
-                  PKG, "ProcessFiles.Log.SourceFileMoved", sourceFilename, targetFilename ) );
+                PKG, "ProcessFiles.Log.SourceFileMoved", sourceFilename, targetFilename ) );
             }
           } else {
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
-                  PKG, "ProcessFiles.Log.TargetNotOverwritten", sourceFilename, targetFilename ) );
+                PKG, "ProcessFiles.Log.TargetNotOverwritten", sourceFilename, targetFilename ) );
             }
           }
           break;
@@ -197,7 +198,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
           if ( !meta.simulate ) {
             if ( !data.sourceFile.delete() ) {
               throw new KettleException( BaseMessages.getString(
-                  PKG, "ProcessFiles.Error.CanNotDeleteFile", data.sourceFile.toString() ) );
+                PKG, "ProcessFiles.Error.CanNotDeleteFile", data.sourceFile.toString() ) );
             }
           }
           if ( log.isDetailed() ) {
@@ -211,16 +212,17 @@ public class ProcessFiles extends BaseStep implements StepInterface {
 
       // add filename to result filenames?
       if ( meta.isaddTargetFileNametoResult()
-          && meta.getOperationType() != ProcessFilesMeta.OPERATION_TYPE_DELETE
-          && data.sourceFile.getType() == FileType.FILE ) {
+        && meta.getOperationType() != ProcessFilesMeta.OPERATION_TYPE_DELETE
+        && data.sourceFile.getType() == FileType.FILE ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.targetFile, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.targetFile, getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "ProcessFiles.Log.FileAddedResult" ) );
         addResultFile( resultFile );
 
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ProcessFiles.Log.FilenameAddResult", data.sourceFile.toString() ) );
+          logDetailed( BaseMessages.getString( PKG, "ProcessFiles.Log.FilenameAddResult", data.sourceFile
+            .toString() ) );
         }
       }
 

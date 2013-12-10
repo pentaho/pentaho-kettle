@@ -31,13 +31,13 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 
 /**
- * 
- * 
+ *
+ *
  * @author Matt
  * @since 6-apr-2005
  */
 public class JobEntryJobRunner implements Runnable {
-  private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!
 
   private Job job;
   private Result result;
@@ -46,7 +46,7 @@ public class JobEntryJobRunner implements Runnable {
   private boolean finished;
 
   /**
-     * 
+     *
      */
   public JobEntryJobRunner( Job job, Result result, int entryNr, LogChannelInterface log ) {
     this.job = job;

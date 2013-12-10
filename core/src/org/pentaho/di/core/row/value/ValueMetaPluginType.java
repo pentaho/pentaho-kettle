@@ -45,9 +45,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the value meta plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 
 @PluginMainClassType( ValueMetaInterface.class )
@@ -94,12 +94,12 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
           inputStream = new FileInputStream( kettleValueMetaPluginsXmlFile );
         } catch ( Exception e ) {
           throw new KettlePluginException( "Unable to load native value meta plugins '"
-              + kettleValueMetaPluginsXmlFile + "'", e );
+            + kettleValueMetaPluginsXmlFile + "'", e );
         }
       }
       if ( inputStream == null ) {
         throw new KettlePluginException( "Unable to find native value meta plugins definition file: "
-            + Const.XML_FILE_KETTLE_STEPS );
+          + Const.XML_FILE_KETTLE_STEPS );
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
@@ -113,7 +113,7 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
 
     } catch ( KettleXMLException e ) {
       throw new KettlePluginException( "Unable to read the kettle metadata plugins XML config file: "
-          + kettleValueMetaPluginsXmlFile, e );
+        + kettleValueMetaPluginsXmlFile, e );
     }
   }
 
@@ -129,9 +129,8 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource(
-                  pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
-                      .getParent().getURL() );
+              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this
+                .getClass(), false, file.getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...

@@ -41,18 +41,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Reads data from an XBase (dBase, foxpro, ...) file.
- * 
+ *
  * @author Matt
  * @since 8-sep-2004
  */
 public class XBaseInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private XBaseInputMeta meta;
   private XBaseInputData data;
 
   public XBaseInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -83,7 +83,7 @@ public class XBaseInput extends BaseStep implements StepInterface {
             idx = fileRowMeta.indexOfValue( meta.getAcceptingField() );
             if ( idx < 0 ) {
               logError( BaseMessages.getString( PKG, "XBaseInput.Log.Error.UnableToFindFilenameField", meta
-                  .getAcceptingField() ) );
+                .getAcceptingField() ) );
               setErrors( 1 );
               stopAll();
               return false;
@@ -172,7 +172,8 @@ public class XBaseInput extends BaseStep implements StepInterface {
       }
       if ( meta.isAcceptingFilenames() ) {
         try {
-          if ( Const.isEmpty( meta.getAcceptingStepName() ) || findInputRowSet( meta.getAcceptingStepName() ) == null ) {
+          if ( Const.isEmpty( meta.getAcceptingStepName() )
+            || findInputRowSet( meta.getAcceptingStepName() ) == null ) {
             logError( BaseMessages.getString( PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName" ) );
             return false;
           }
@@ -210,18 +211,18 @@ public class XBaseInput extends BaseStep implements StepInterface {
         data.xbi.getReader().setCharactersetName( meta.getCharactersetName() );
       }
 
-      logBasic( BaseMessages.getString( PKG, "XBaseInput.Log.OpenedXBaseFile" ) + " : [" + data.xbi + "]" ); //$NON-NLS-3$
+      logBasic( BaseMessages.getString( PKG, "XBaseInput.Log.OpenedXBaseFile" ) + " : [" + data.xbi + "]" );
       data.fields = data.xbi.getFields();
 
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file_dbf, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file_dbf, getTransMeta().getName(), getStepname() );
       resultFile.setComment( BaseMessages.getString( PKG, "XBaseInput.ResultFile.Comment" ) );
       addResultFile( resultFile );
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile1" )
-          + data.file_dbf + BaseMessages.getString( PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile2" )
-          + e.getMessage() );
+        + data.file_dbf + BaseMessages.getString( PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile2" )
+        + e.getMessage() );
       throw new KettleException( e );
     }
   }

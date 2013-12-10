@@ -42,25 +42,25 @@ import org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm.SymmetricCr
 
 /**
  * Generate secret key. for symmetric algorithms
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */
 public class SecretKeyGenerator extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SecretKeyGeneratorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SecretKeyGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SecretKeyGeneratorMeta meta;
 
   private SecretKeyGeneratorData data;
 
-  public SecretKeyGenerator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public SecretKeyGenerator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -136,7 +136,7 @@ public class SecretKeyGenerator extends BaseStep implements StepInterface {
 
         if ( isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "SecretKeyGenerator.Log.ValueReturned", data.outputRowMeta
-              .getString( row ) ) );
+            .getString( row ) ) );
         }
 
         putRow( data.outputRowMeta, row );

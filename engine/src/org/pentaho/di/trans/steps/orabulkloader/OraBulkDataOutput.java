@@ -41,7 +41,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 /**
  * Does the opening of the output "stream". It's either a file or inter process communication which is transparant to
  * users of this class.
- * 
+ *
  * @author Sven Boden
  * @since 20-feb-2007
  */

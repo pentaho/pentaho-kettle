@@ -44,28 +44,28 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 /**
  * Tests setting the optimization level of ScriptValuesMetaMod. This unit test will call the ScriptValuesMetaMod.check()
  * to test the setting.
- * 
+ *
  * This class depends on JavaScriptSpecialTest for the creation of test data.
- * 
+ *
  * The java script optimization is described here: https://developer.mozilla.org/en/Rhino_Optimization
- * 
+ *
  * If Rhino's error message is changed in future releases then this unit test will break. In that case
  * RANGE_ERROR_MESSAGE_PREFIX will have to be modified accordingly.
- * 
+ *
  * @author sflatley
  */
 public class OptimizationLevelTest {
 
   /**
    * The error message that Rhino will give when an out or range optimization level is set will start with this.
-   * 
+   *
    * If we update Ketle with a version of Rhino
    */
   private static final String RANGE_ERROR_MESSAGE_PREFIX = "Optimization level outside [-1..9]";
 
   /**
    * Returns a true of the list of CheckResultInterface contains a message that starts with RANGE_ERROR_MESSAGE_PREFIX.
-   * 
+   *
    * @param checkResultInterfaces
    * @param thisString
    * @return boolean
@@ -108,7 +108,7 @@ public class OptimizationLevelTest {
   /**
    * Performs the JUnit assertEquals for the passed optimization level. The return value of testOptimizationLevel is
    * asserted with containsErrorMessage.
-   * 
+   *
    * @param optimizationLevel
    *          the optimization level to test
    * @param containsErrorMessage
@@ -126,7 +126,7 @@ public class OptimizationLevelTest {
 
   /**
    * Creates the transformation needed to test the java script step with an optimization level set.
-   * 
+   *
    * @param optimizationLevel
    * @return
    * @throws KettleException
@@ -156,8 +156,8 @@ public class OptimizationLevelTest {
     // Create the meta and populate
     ScriptValuesMetaMod scriptValuesMetaMod = new ScriptValuesMetaMod();
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var str = string;\n" + "var bool = LuhnCheck(str);" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var str = string;\n" + "var bool = LuhnCheck(str);" ) };
     scriptValuesMetaMod.setJSScripts( js );
     scriptValuesMetaMod.setFieldname( new String[] { "bool" } );
     scriptValuesMetaMod.setRename( new String[] { "" } );
@@ -201,7 +201,8 @@ public class OptimizationLevelTest {
 
       // .... and then call the scriptValuesMetaMod's check method
       scriptValuesMetaMod.check(
-          remarks, transMeta, javaScriptStep, rowMetaAndData.getRowMeta(), input, output, null, transMeta, null, null );
+        remarks, transMeta, javaScriptStep, rowMetaAndData.getRowMeta(), input, output, null, transMeta, null,
+        null );
     } else {
       fail( "No data in the inputList" );
     }

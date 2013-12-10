@@ -46,7 +46,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class LogSettingsDialog extends Dialog {
-  private static Class<?> PKG = LogSettingsDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LogSettingsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlLoglevel;
 
@@ -99,9 +99,9 @@ public class LogSettingsDialog extends Dialog {
      * fdlFilter.left = new FormAttachment(0, 0); fdlFilter.right = new FormAttachment(middle, -margin); fdlFilter.top =
      * new FormAttachment(0, margin); wlFilter.setLayoutData(fdlFilter); wFilter = new Text(shell, SWT.SINGLE |
      * SWT.BORDER);
-     * 
+     *
      * wFilter.setText("");
-     * 
+     *
      * props.setLook(wFilter); fdFilter = new FormData(); fdFilter.left = new FormAttachment(middle, 0); fdFilter.top =
      * new FormAttachment(0, margin); fdFilter.right = new FormAttachment(100, 0); wFilter.setLayoutData(fdFilter);
      */

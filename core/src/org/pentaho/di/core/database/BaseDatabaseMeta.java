@@ -46,7 +46,7 @@ import org.pentaho.di.repository.ObjectId;
 /**
  * This class contains the basic information on a database connection. It is not intended to be used other than the
  * inheriting classes such as OracleDatabaseInfo, ...
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -182,87 +182,87 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   public static final String SELECT_COUNT_STATEMENT = "select count(*) FROM";
 
   public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
-      new DatabaseConnectionPoolParameter(
-          "defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool." ),
-      new DatabaseConnectionPoolParameter(
-          "defaultReadOnly", null, "The default read-only state of connections created by this pool.\n"
-              + "If not set then the setReadOnly method will not be called.\n "
-              + "(Some drivers don't support read only mode, ex: Informix)" ),
-      new DatabaseConnectionPoolParameter(
-          "defaultTransactionIsolation", null,
-          "the default TransactionIsolation state of connections created by this pool. "
-              + "One of the following: (see javadoc)\n\n  * NONE\n  * "
-              + "READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ),
-      new DatabaseConnectionPoolParameter(
-          "defaultCatalog", null, "The default catalog of connections created by this pool." ),
+    new DatabaseConnectionPoolParameter(
+      "defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool." ),
+    new DatabaseConnectionPoolParameter(
+      "defaultReadOnly", null, "The default read-only state of connections created by this pool.\n"
+        + "If not set then the setReadOnly method will not be called.\n "
+        + "(Some drivers don't support read only mode, ex: Informix)" ),
+    new DatabaseConnectionPoolParameter(
+      "defaultTransactionIsolation", null,
+      "the default TransactionIsolation state of connections created by this pool. "
+        + "One of the following: (see javadoc)\n\n  * NONE\n  * "
+        + "READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ),
+    new DatabaseConnectionPoolParameter(
+      "defaultCatalog", null, "The default catalog of connections created by this pool." ),
 
-      new DatabaseConnectionPoolParameter(
-          "initialSize", "0", "The initial number of connections that are created when the pool is started." ),
-      new DatabaseConnectionPoolParameter(
-          "maxActive", "8",
-          "The maximum number of active connections that can be allocated from this pool at the same time, "
-              + "or non-positive for no limit." ),
-      new DatabaseConnectionPoolParameter(
-          "maxIdle", "8", "The maximum number of connections that can remain idle in the pool, "
-              + "without extra ones being released, or negative for no limit." ),
-      new DatabaseConnectionPoolParameter(
-          "minIdle", "0", "The minimum number of connections that can remain idle in the pool, "
-              + "without extra ones being created, or zero to create none." ),
-      new DatabaseConnectionPoolParameter(
-          "maxWait", "-1", "The maximum number of milliseconds that the pool will wait "
-              + "(when there are no available connections) for a connection to be returned "
-              + "before throwing an exception, or -1 to wait indefinitely." ),
+    new DatabaseConnectionPoolParameter(
+      "initialSize", "0", "The initial number of connections that are created when the pool is started." ),
+    new DatabaseConnectionPoolParameter(
+      "maxActive", "8",
+      "The maximum number of active connections that can be allocated from this pool at the same time, "
+        + "or non-positive for no limit." ),
+    new DatabaseConnectionPoolParameter(
+      "maxIdle", "8", "The maximum number of connections that can remain idle in the pool, "
+        + "without extra ones being released, or negative for no limit." ),
+    new DatabaseConnectionPoolParameter(
+      "minIdle", "0", "The minimum number of connections that can remain idle in the pool, "
+        + "without extra ones being created, or zero to create none." ),
+    new DatabaseConnectionPoolParameter(
+      "maxWait", "-1", "The maximum number of milliseconds that the pool will wait "
+        + "(when there are no available connections) for a connection to be returned "
+        + "before throwing an exception, or -1 to wait indefinitely." ),
 
-      new DatabaseConnectionPoolParameter(
-          "validationQuery", null, "The SQL query that will be used to validate connections from this pool "
-              + "before returning them to the caller.\n"
-              + "If specified, this query MUST be an SQL SELECT statement that returns at least one row." ),
-      new DatabaseConnectionPoolParameter(
-          "testOnBorrow", "true",
-          "The indication of whether objects will be validated before being borrowed from the pool.\n"
-              + "If the object fails to validate, it will be dropped from the pool, "
-              + "and we will attempt to borrow another.\n"
-              + "NOTE - for a true value to have any effect, the validationQuery parameter "
-              + "must be set to a non-null string." ),
-      new DatabaseConnectionPoolParameter(
-          "testOnReturn", "false",
-          "The indication of whether objects will be validated before being returned to the pool.\n"
-              + "NOTE - for a true value to have any effect, the validationQuery parameter must be set "
-              + "to a non-null string." ),
-      new DatabaseConnectionPoolParameter(
-          "testWhileIdle", "false",
-          "The indication of whether objects will be validated by the idle object evictor (if any). "
-              + "If an object fails to validate, it will be dropped from the pool.\n"
-              + "NOTE - for a true value to have any effect, the validationQuery parameter must be set to a "
-              + "non-null string." ),
-      new DatabaseConnectionPoolParameter(
-          "timeBetweenEvictionRunsMillis", null,
-          "The number of milliseconds to sleep between runs of the idle object evictor thread. "
-              + "When non-positive, no idle object evictor thread will be run." ),
+    new DatabaseConnectionPoolParameter(
+      "validationQuery", null, "The SQL query that will be used to validate connections from this pool "
+        + "before returning them to the caller.\n"
+        + "If specified, this query MUST be an SQL SELECT statement that returns at least one row." ),
+    new DatabaseConnectionPoolParameter(
+      "testOnBorrow", "true",
+      "The indication of whether objects will be validated before being borrowed from the pool.\n"
+        + "If the object fails to validate, it will be dropped from the pool, "
+        + "and we will attempt to borrow another.\n"
+        + "NOTE - for a true value to have any effect, the validationQuery parameter "
+        + "must be set to a non-null string." ),
+    new DatabaseConnectionPoolParameter(
+      "testOnReturn", "false",
+      "The indication of whether objects will be validated before being returned to the pool.\n"
+        + "NOTE - for a true value to have any effect, the validationQuery parameter must be set "
+        + "to a non-null string." ),
+    new DatabaseConnectionPoolParameter(
+      "testWhileIdle", "false",
+      "The indication of whether objects will be validated by the idle object evictor (if any). "
+        + "If an object fails to validate, it will be dropped from the pool.\n"
+        + "NOTE - for a true value to have any effect, the validationQuery parameter must be set to a "
+        + "non-null string." ),
+    new DatabaseConnectionPoolParameter(
+      "timeBetweenEvictionRunsMillis", null,
+      "The number of milliseconds to sleep between runs of the idle object evictor thread. "
+        + "When non-positive, no idle object evictor thread will be run." ),
 
-      new DatabaseConnectionPoolParameter(
-          "poolPreparedStatements", "false", "Enable prepared statement pooling for this pool." ),
-      new DatabaseConnectionPoolParameter(
-          "maxOpenPreparedStatements", "-1",
-          "The maximum number of open statements that can be allocated from the statement pool at the same time, "
-              + "or zero for no limit." ),
-      new DatabaseConnectionPoolParameter(
-          "accessToUnderlyingConnectionAllowed", "false",
-          "Controls if the PoolGuard allows access to the underlying connection." ),
-      new DatabaseConnectionPoolParameter(
-          "removeAbandoned", "false",
-          "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\n"
-              + "If set to true a connection is considered abandoned and eligible for removal "
-              + "if it has been idle longer than the removeAbandonedTimeout. "
-              + "Setting this to true can recover db connections from poorly written applications which "
-              + "fail to close a connection." ),
-      new DatabaseConnectionPoolParameter(
-          "removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed." ),
-      new DatabaseConnectionPoolParameter(
-          "logAbandoned", "false",
-          "Flag to log stack traces for application code which abandoned a Statement or Connection.\n"
-              + "Logging of abandoned Statements and Connections adds overhead for every Connection open or "
-              + "new Statement because a stack trace has to be generated." ), };
+    new DatabaseConnectionPoolParameter(
+      "poolPreparedStatements", "false", "Enable prepared statement pooling for this pool." ),
+    new DatabaseConnectionPoolParameter(
+      "maxOpenPreparedStatements", "-1",
+      "The maximum number of open statements that can be allocated from the statement pool at the same time, "
+        + "or zero for no limit." ),
+    new DatabaseConnectionPoolParameter(
+      "accessToUnderlyingConnectionAllowed", "false",
+      "Controls if the PoolGuard allows access to the underlying connection." ),
+    new DatabaseConnectionPoolParameter(
+      "removeAbandoned", "false",
+      "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\n"
+        + "If set to true a connection is considered abandoned and eligible for removal "
+        + "if it has been idle longer than the removeAbandonedTimeout. "
+        + "Setting this to true can recover db connections from poorly written applications which "
+        + "fail to close a connection." ),
+    new DatabaseConnectionPoolParameter(
+      "removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed." ),
+    new DatabaseConnectionPoolParameter(
+      "logAbandoned", "false",
+      "Flag to log stack traces for application code which abandoned a Statement or Connection.\n"
+        + "Logging of abandoned Statements and Connections adds overhead for every Connection open or "
+        + "new Statement because a stack trace has to be generated." ), };
 
   private static final String FIELDNAME_PROTECTOR = "_";
 
@@ -558,7 +558,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Set extra attributes on this database connection
-   * 
+   *
    * @param attributes
    *          The extra attributes to set on this database connection.
    */
@@ -599,7 +599,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * See if this database supports the setCharacterStream() method on a PreparedStatement.
-   * 
+   *
    * @return true if we can set a Stream on a field in a PreparedStatement. False if not.
    */
   @Override
@@ -627,7 +627,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Get the SQL to get the next value of a sequence. (Oracle/PGSQL only)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence. (Oracle/PGSQL only)
@@ -639,7 +639,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Get the current value of a database sequence
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The current value of a database sequence
@@ -651,7 +651,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Check if a sequence exists.
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The SQL to get the name of the sequence back from the databases data dictionary
@@ -663,7 +663,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -673,7 +673,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Indicates the need to insert a placeholder (0) for auto increment fields.
-   * 
+   *
    * @return true if we need a placeholder for auto increment fields in insert statements.
    */
   @Override
@@ -698,7 +698,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   }
 
   /**
-   * 
+   *
    * @return true when the database engine supports empty transaction. (for example Informix does not on a non-ANSI
    *         database type!)
    */
@@ -750,7 +750,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * Get the schema-table combination to query the right table. Usually that is SCHEMA.TABLENAME, however there are
    * exceptions to this rule...
-   * 
+   *
    * @param schema_name
    *          The schema name
    * @param table_part
@@ -765,11 +765,11 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * Checks for quotes before quoting schema and table. Many dialects had hardcoded quotes, they probably didn't get
    * updated properly when quoteFields() was introduced to DatabaseMeta.
-   * 
+   *
    * @param schemaPart
    * @param tablePart
    * @return quoted schema and table
-   * 
+   *
    * @deprecated we should phase this out in 5.0, but it's there to keep backwards compatibility in the 4.x releases.
    */
   @Deprecated
@@ -792,11 +792,11 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * Checks for quotes before quoting table. Many dialects had hardcoded quotes, they probably didn't get updated
    * properly when quoteFields() was introduced to DatabaseMeta.
-   * 
+   *
    * @param tablePart
-   * 
+   *
    * @return quoted table
-   * 
+   *
    * @deprecated we should phase this out in 5.0, but it's there to keep backwards compatibility in the 4.x releases.
    */
   @Deprecated
@@ -811,7 +811,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * Get the maximum length of a text field for this database connection. This includes optional CLOB, Memo and Text
    * fields. (the maximum!)
-   * 
+   *
    * @return The maximum text field length for this database type. (mostly CLOB_LENGTH)
    */
   @Override
@@ -821,7 +821,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Get the maximum length of a text field (VARCHAR) for this database connection. If this size is exceeded use a CLOB.
-   * 
+   *
    * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() -
    *         CLOB_LENGTH)
    */
@@ -864,7 +864,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -881,7 +881,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP " + v.getName() + Const.CR;
   }
 
@@ -1001,7 +1001,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
-   * 
+   *
    * @param tableName
    *          The name of the table to determine the layout for
    * @return The SQL to launch.
@@ -1013,7 +1013,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Most databases round number(7,2) 17.29999999 to 17.30, but some don't.
-   * 
+   *
    * @return true if the database supports roundinf of floating point data on update/insert
    */
   @Override
@@ -1087,7 +1087,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   }
 
   /**
-   * 
+   *
    * @param b
    *          Set to true if the database supports the Timestamp data type (nanosecond precision and all)
    */
@@ -1145,7 +1145,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Add an extra option to the attributes list
-   * 
+   *
    * @param databaseTypeCode
    *          The database type code for which the option applies
    * @param option
@@ -1256,7 +1256,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   @Override
   public int getMaximumPoolSize() {
     return Const.toInt(
-        attributes.getProperty( ATTRIBUTE_MAXIMUM_POOL_SIZE ), ConnectionPoolUtil.defaultMaximumNrOfConnections );
+      attributes.getProperty( ATTRIBUTE_MAXIMUM_POOL_SIZE ), ConnectionPoolUtil.defaultMaximumNrOfConnections );
   }
 
   /**
@@ -1274,7 +1274,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   @Override
   public int getInitialPoolSize() {
     return Const.toInt(
-        attributes.getProperty( ATTRIBUTE_INITIAL_POOL_SIZE ), ConnectionPoolUtil.defaultInitialNrOfConnections );
+      attributes.getProperty( ATTRIBUTE_INITIAL_POOL_SIZE ), ConnectionPoolUtil.defaultInitialNrOfConnections );
   }
 
   /**
@@ -1347,8 +1347,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
       attributes.put( ATTRIBUTE_CLUSTER_PORT_PREFIX + nr, Const.NVL( meta.getPort(), "" ) );
       attributes.put( ATTRIBUTE_CLUSTER_DBNAME_PREFIX + nr, Const.NVL( meta.getDatabaseName(), "" ) );
       attributes.put( ATTRIBUTE_CLUSTER_USERNAME_PREFIX + nr, Const.NVL( meta.getUsername(), "" ) );
-      attributes.put( ATTRIBUTE_CLUSTER_PASSWORD_PREFIX + nr, Const.NVL( Encr.encryptPasswordIfNotUsingVariables( meta
-          .getPassword() ), "" ) );
+      attributes.put( ATTRIBUTE_CLUSTER_PASSWORD_PREFIX + nr, Const.NVL( Encr
+        .encryptPasswordIfNotUsingVariables( meta.getPassword() ), "" ) );
     }
   }
 
@@ -1507,7 +1507,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * You can use this method to supply an alternate factory for the test method in the dialogs. This is useful for
    * plugins like SAP/R3 and PALO.
-   * 
+   *
    * @return the name of the database test factory to use.
    */
   @Override
@@ -1534,7 +1534,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Verifies on the specified database connection if an index exists on the fields with the specified name.
-   * 
+   *
    * @param database
    *          a connected database
    * @param schemaName
@@ -1613,7 +1613,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * @return true if the database requires you to cast a parameter to varchar before comparing to null. Only required
    *         for DB2 and Vertica
-   * 
+   *
    */
   @Override
   public boolean requiresCastToVariousForIsNull() {
@@ -1623,7 +1623,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * @return Handles the special case of DB2 where the display size returned is twice the precision. In that case, the
    *         length is the precision.
-   * 
+   *
    */
   @Override
   public boolean isDisplaySizeTwiceThePrecision() {
@@ -1632,7 +1632,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
-   * 
+   *
    * @return true if the database supports retrieval of query metadata from a prepared statement. False if the query
    *         needs to be executed first.
    */
@@ -1693,7 +1693,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Get the SQL to insert a new empty unknown record in a dimension.
-   * 
+   *
    * @param schemaTable
    *          the schema-table name to insert into
    * @param keyField
@@ -1738,7 +1738,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Build the SQL to count the number of rows in the passed table.
-   * 
+   *
    * @param tableName
    * @return
    */
@@ -1754,7 +1754,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Parse all possible statements from the provided SQL script.
-   * 
+   *
    * @param sqlScript
    *          Raw SQL Script to be parsed into executable statements.
    * @return List of parsed SQL statements to be executed separately.
@@ -1772,7 +1772,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Parse the statements in the provided SQL script, provide more information about where each was found in the script.
-   * 
+   *
    * @param sqlScript
    *          Raw SQL Script to be parsed into executable statements.
    * @return List of SQL script statements to be executed separately.
@@ -1905,7 +1905,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Returns a true of savepoints can be released, false if not.
-   * 
+   *
    * @return
    */
   @Override
@@ -1929,7 +1929,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
         rtn = rmad.getRowMeta().getInteger( rmad.getData(), 0 );
       } else {
         throw new KettleDatabaseException( "Unable to retrieve value of auto-generated technical key : "
-            + "no value found!" );
+          + "no value found!" );
       }
     } catch ( KettleValueException kve ) {
       throw new KettleDatabaseException( kve );
@@ -1946,7 +1946,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   }
 
   public Long getNextBatchIdUsingLockTables( DatabaseMeta dbm, Database ldb, String schemaName, String tableName,
-      String fieldName ) throws KettleDatabaseException {
+    String fieldName ) throws KettleDatabaseException {
     // The old way of doing things...
     Long rtn = null;
     // Make sure we lock that table to avoid concurrency issues
@@ -1972,8 +1972,9 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   }
 
   @Override
-  public Long getNextBatchId( DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName )
-    throws KettleDatabaseException {
+  public Long
+    getNextBatchId( DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName )
+      throws KettleDatabaseException {
     // Always take off autocommit.
     ldb.setCommit( 10 );
 
@@ -1998,13 +1999,13 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * Returns the tablespace DDL fragment for a "Data" tablespace. In most databases that use tablespaces this is where
    * the tables are to be created.
-   * 
+   *
    * @param VariableSpace
    *          variables used for possible substitution
    * @param DatabaseMeta
    *          databaseMeta the database meta used for possible string enclosure of the tablespace. This method needs
    *          this as this is done after environmental substitution.
-   * 
+   *
    * @return String the tablespace name for tables in the format "tablespace TABLESPACE_NAME". The TABLESPACE_NAME and
    *         the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
    */
@@ -2015,13 +2016,13 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * Returns the tablespace DDL fragment for a "Index" tablespace.
-   * 
+   *
    * @param VariableSpace
    *          variables used for possible substitution
    * @param DatabaseMeta
    *          databaseMeta the database meta used for possible string enclosure of the tablespace. This method needs
    *          this as this is done after environmental substitution.
-   * 
+   *
    * @return String the tablespace name for indices in the format "tablespace TABLESPACE_NAME". The TABLESPACE_NAME and
    *         the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
    */
@@ -2033,7 +2034,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   /**
    * Returns an empty string as most databases do not support tablespaces. Subclasses can override this method to
    * generate the DDL.
-   * 
+   *
    * @param VariableSpace
    *          variables needed for variable substitution.
    * @param DatabaseMeta
@@ -2042,7 +2043,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    *          be retuned.
    * @param String
    *          tablespaceName name of the tablespace.
-   * 
+   *
    * @return String an empty String as most databases do not use tablespaces.
    */
   public String getTablespaceDDL( VariableSpace variables, DatabaseMeta databaseMeta, String tablespaceName ) {
@@ -2051,7 +2052,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
 
   /**
    * This method allows a database dialect to convert database specific data types to Kettle data types.
-   * 
+   *
    * @param resultSet
    *          The result set to use
    * @param valueMeta
@@ -2062,7 +2063,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    * @throws KettleDatabaseException
    */
   @Override
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i )
+    throws KettleDatabaseException {
 
     return val.getValueFromResultSet( this, rs, i );
 
@@ -2141,7 +2143,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    * <li>Replaces spaces with underscores</li>
    * <li>Prefixes a string with underscore that begins with a number</li>
    * </ul>
-   * 
+   *
    * @param fieldname
    *          value to sanitize
    * @return

@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 
 public class TransFileListener implements FileListener {
 
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   public boolean open( Node transNode, String fname, boolean importfile ) throws KettleMissingPluginsException {
     final Spoon spoon = Spoon.getInstance();
@@ -49,25 +49,26 @@ public class TransFileListener implements FileListener {
     try {
       TransMeta transMeta = new TransMeta();
       transMeta.loadXML(
-          transNode, fname, spoon.getMetaStore(), spoon.getRepository(), true, new Variables(),
-          new OverwritePrompter() {
+        transNode, fname, spoon.getMetaStore(), spoon.getRepository(), true, new Variables(),
+        new OverwritePrompter() {
 
-            public boolean overwritePrompt( String message, String rememberText, String rememberPropertyName ) {
-              MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
-              Object[] res =
-                  spoon.messageDialogWithToggle(
-                      BaseMessages.getString( PKG, "System.Button.Yes" ), null, message, Const.WARNING, new String[] {
-                          BaseMessages.getString( PKG, "System.Button.Yes" ),
-                          BaseMessages.getString( PKG, "System.Button.No" ) }, 1, rememberText, !props
-                          .askAboutReplacingDatabaseConnections() );
-              int idx = ( (Integer) res[0] ).intValue();
-              boolean toggleState = ( (Boolean) res[1] ).booleanValue();
-              props.setAskAboutReplacingDatabaseConnections( !toggleState );
+          public boolean overwritePrompt( String message, String rememberText, String rememberPropertyName ) {
+            MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
+            Object[] res =
+              spoon.messageDialogWithToggle(
+                BaseMessages.getString( PKG, "System.Button.Yes" ), null, message, Const.WARNING,
+                new String[] {
+                  BaseMessages.getString( PKG, "System.Button.Yes" ),
+                  BaseMessages.getString( PKG, "System.Button.No" ) }, 1, rememberText, !props
+                  .askAboutReplacingDatabaseConnections() );
+            int idx = ( (Integer) res[0] ).intValue();
+            boolean toggleState = ( (Boolean) res[1] ).booleanValue();
+            props.setAskAboutReplacingDatabaseConnections( !toggleState );
 
-              return ( ( idx & 0xFF ) == 0 ); // Yes means: overwrite
-            }
+            return ( ( idx & 0xFF ) == 0 ); // Yes means: overwrite
+          }
 
-          } );
+        } );
       transMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( transMeta ) );
       transMeta.setRepository( spoon.getRepository() );
       transMeta.setMetaStore( spoon.getMetaStore() );
@@ -88,7 +89,8 @@ public class TransFileListener implements FileListener {
     } catch ( KettleMissingPluginsException e ) {
       throw e;
     } catch ( KettleException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ), BaseMessages
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ), BaseMessages
           .getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
           + fname, e );
     }

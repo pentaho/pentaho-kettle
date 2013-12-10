@@ -37,18 +37,18 @@ import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author jstairs,Samatar
  * @since 10-06-2007
  */
 public class SalesforceDelete extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SalesforceDeleteMeta meta;
   private SalesforceDeleteData data;
 
-  public SalesforceDelete( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public SalesforceDelete( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -87,7 +87,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
       if ( data.indexOfKeyField < 0 ) {
         // the field is unreachable!
         throw new KettleException( BaseMessages.getString(
-            PKG, "SalesforceDelete.Error.CanNotFindFDeleteKeyField", realFieldName ) );
+          PKG, "SalesforceDelete.Error.CanNotFindFDeleteKeyField", realFieldName ) );
       }
     }
 
@@ -104,7 +104,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
 
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "SalesforceDelete.Log.WriteToSalesforce", data.iBufferPos, meta
-            .getBatchSizeInt() ) );
+          .getBatchSizeInt() ) );
       }
 
       // if there is room in the buffer
@@ -124,7 +124,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceDelete.Error.WriteToSalesforce", e
-          .getMessage() ) );
+        .getMessage() ) );
     }
   }
 
@@ -143,7 +143,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
           if ( checkFeedback( getLinesInput() ) ) {
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "SalesforceDelete.log.LineRow", String
-                  .valueOf( getLinesInput() ) ) );
+                .valueOf( getLinesInput() ) ) );
             }
           }
 
@@ -158,8 +158,9 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
             }
 
             com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[0];
-            throw new KettleException( BaseMessages.getString( PKG, "SalesforceDelete.Error.FlushBuffer", new Integer(
-                j ), err.getStatusCode(), err.getMessage() ) );
+            throw new KettleException( BaseMessages
+              .getString( PKG, "SalesforceDelete.Error.FlushBuffer", new Integer( j ), err.getStatusCode(), err
+                .getMessage() ) );
 
           }
           String errorMessage = "";
@@ -168,8 +169,8 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
             // get the next error
             com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[i];
             errorMessage +=
-                BaseMessages.getString( PKG, "SalesforceDelete.Error.FlushBuffer", new Integer( j ), err
-                    .getStatusCode(), err.getMessage() );
+              BaseMessages.getString( PKG, "SalesforceDelete.Error.FlushBuffer", new Integer( j ), err
+                .getStatusCode(), err.getMessage() );
           }
           // Simply add this row to the error row
           if ( log.isDebug() ) {
@@ -187,7 +188,8 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
 
     } catch ( Exception e ) {
       if ( !getStepMeta().isDoingErrorHandling() ) {
-        throw new KettleException( BaseMessages.getString( PKG, "SalesforceDelete.FailedToDeleted", e.getMessage() ) );
+        throw new KettleException( BaseMessages
+          .getString( PKG, "SalesforceDelete.FailedToDeleted", e.getMessage() ) );
       }
       // Simply add this row to the error row
       if ( log.isDebug() ) {
@@ -230,7 +232,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
         data.realURL = environmentSubstitute( meta.getTargetURL() );
         // create a Salesforce connection
         data.connection =
-            new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
+          new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
         // set timeout
         data.connection.setTimeOut( Const.toInt( environmentSubstitute( meta.getTimeOut() ), 0 ) );
         // Do we use compression?
@@ -244,7 +246,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
         return true;
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceDelete.Log.ErrorOccurredDuringStepInitialize" )
-            + ke.getMessage() );
+          + ke.getMessage() );
       }
       return true;
     }

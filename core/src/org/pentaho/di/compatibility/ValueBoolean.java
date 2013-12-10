@@ -28,7 +28,7 @@ import java.util.Date;
 
 /**
  * This class contains a Value of type Boolean.
- * 
+ *
  * @author Matt Casters
  * @since 15-10-2004
  */
@@ -80,7 +80,8 @@ public class ValueBoolean implements ValueInterface, Cloneable {
 
   @Override
   public void setString( String string ) {
-    this.bool = "Y".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string ) || "YES".equalsIgnoreCase( string );
+    this.bool =
+      "Y".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string ) || "YES".equalsIgnoreCase( string );
   }
 
   @Override

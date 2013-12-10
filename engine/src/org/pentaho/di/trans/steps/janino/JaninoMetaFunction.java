@@ -54,7 +54,7 @@ public class JaninoMetaFunction implements Cloneable {
    * @param valuePrecision
    */
   public JaninoMetaFunction( String fieldName, String formula, int valueType, int valueLength, int valuePrecision,
-      String replaceField ) {
+    String replaceField ) {
     this.fieldName = fieldName;
     this.formula = formula;
     this.valueType = valueType;

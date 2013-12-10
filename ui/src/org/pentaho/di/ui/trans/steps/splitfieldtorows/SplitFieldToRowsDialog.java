@@ -53,7 +53,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = SplitFieldToRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SplitFieldToRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlSplitfield;
   private ComboVar wSplitfield;
@@ -196,7 +196,8 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
     fdlDelimiterIsRegex.right = new FormAttachment( middle, -margin );
     wlDelimiterIsRegex.setLayoutData( fdlDelimiterIsRegex );
     wDelimiterIsRegex = new Button( shell, SWT.CHECK );
-    wDelimiterIsRegex.setToolTipText( BaseMessages.getString( PKG, "SplitFieldToRowsDialog.DelimiterIsRegex.Tooltip" ) );
+    wDelimiterIsRegex.setToolTipText( BaseMessages.getString(
+      PKG, "SplitFieldToRowsDialog.DelimiterIsRegex.Tooltip" ) );
     props.setLook( wDelimiterIsRegex );
     FormData fdDelimiterIsRegex = new FormData();
     fdDelimiterIsRegex.left = new FormAttachment( middle, 0 );

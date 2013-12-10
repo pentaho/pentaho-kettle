@@ -59,7 +59,7 @@ public class SQLField {
    * @param valueMeta
    */
   public SQLField( String tableAlias, String field, String alias, SQLAggregation aggregation,
-      ValueMetaInterface valueMeta ) {
+    ValueMetaInterface valueMeta ) {
     this.tableAlias = tableAlias;
     this.field = field;
     this.alias = alias;
@@ -67,7 +67,8 @@ public class SQLField {
     this.valueMeta = valueMeta;
   }
 
-  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields ) throws KettleSQLException {
+  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields )
+    throws KettleSQLException {
     this( tableAlias, fieldClause, serviceFields, false );
   }
 
@@ -77,7 +78,7 @@ public class SQLField {
   }
 
   public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField,
-      SQLFields selectFields ) throws KettleSQLException {
+    SQLFields selectFields ) throws KettleSQLException {
     this.tableAlias = tableAlias;
     this.orderField = orderField;
     this.selectFields = selectFields;
@@ -124,11 +125,12 @@ public class SQLField {
             int openIndex = value.indexOf( '(', agg.getKeyWord().length() );
             if ( openIndex < 0 ) {
               throw new KettleSQLException( "No opening bracket found after keyword ["
-                  + aggregation.getKeyWord() + "] in clause [" + fieldClause + "]" );
+                + aggregation.getKeyWord() + "] in clause [" + fieldClause + "]" );
             }
             int closeIndex = value.indexOf( ')', openIndex );
             if ( closeIndex < 0 ) {
-              throw new KettleSQLException( "No closing bracket found after keyword [" + aggregation.getKeyWord() + "]" );
+              throw new KettleSQLException( "No closing bracket found after keyword ["
+                + aggregation.getKeyWord() + "]" );
             }
             field = ThinUtil.stripQuotes( Const.trim( value.substring( openIndex + 1, closeIndex ) ), '"' );
             field = ThinUtil.stripQuoteTableAlias( field, tableAlias );
@@ -165,7 +167,7 @@ public class SQLField {
         if ( strings.size() == 3 ) {
           if ( !"as".equalsIgnoreCase( strings.get( 1 ) ) ) {
             throw new KettleSQLException( "AS keyword expected between the field and the alias in field clause: ["
-                + fieldClause + "]" );
+              + fieldClause + "]" );
           }
           alias = ThinUtil.stripQuotes( Const.trim( strings.get( 2 ) ), '"' );
         }
@@ -215,8 +217,8 @@ public class SQLField {
           throw new KettleSQLException( "The IIF function requires exactly 3 arguments" );
         }
         iif =
-            new IifFunction( tableAlias, Const.trim( argsList.get( 0 ) ), Const.trim( argsList.get( 1 ) ), Const
-                .trim( argsList.get( 2 ) ), serviceFields );
+          new IifFunction( tableAlias, Const.trim( argsList.get( 0 ) ), Const.trim( argsList.get( 1 ) ), Const
+            .trim( argsList.get( 2 ) ), serviceFields );
 
       } else if ( field.toUpperCase().startsWith( "CASE WHEN " ) && field.toUpperCase().endsWith( "END" ) ) {
         // Same as IIF but with a different format.
@@ -252,7 +254,7 @@ public class SQLField {
             valueData = vmad.getValueData();
           } else {
             throw new KettleSQLException( "The field with name ["
-                + field + "] could not be found in the service output" );
+              + field + "] could not be found in the service output" );
           }
         }
       }

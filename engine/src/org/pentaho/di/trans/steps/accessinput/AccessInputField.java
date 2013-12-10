@@ -28,12 +28,12 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Describes an AccessInput field
- * 
+ *
  * @author Samatar Hassan
  * @since 24-05-2007
  */
 public class AccessInputField implements Cloneable {
-  private static Class<?> PKG = AccessInputField.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AccessInputField.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -43,10 +43,10 @@ public class AccessInputField implements Cloneable {
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
   public static final String[] trimTypeDesc = {
-      BaseMessages.getString( PKG, "AccessInputField.TrimType.None" ),
-      BaseMessages.getString( PKG, "AccessInputField.TrimType.Left" ),
-      BaseMessages.getString( PKG, "AccessInputField.TrimType.Right" ),
-      BaseMessages.getString( PKG, "AccessInputField.TrimType.Both" ) };
+    BaseMessages.getString( PKG, "AccessInputField.TrimType.None" ),
+    BaseMessages.getString( PKG, "AccessInputField.TrimType.Left" ),
+    BaseMessages.getString( PKG, "AccessInputField.TrimType.Right" ),
+    BaseMessages.getString( PKG, "AccessInputField.TrimType.Both" ) };
 
   private String name;
   private String Column;

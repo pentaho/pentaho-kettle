@@ -124,7 +124,7 @@ public class CheckSumTest extends TestCase {
 
   /**
    * Create, execute, and return the row listener attached to the output step with complete results from the execution.
-   * 
+   *
    * @param checkSumType
    *          Type of checksum to use (the array index of {@link CheckSumMeta#checksumtypeCodes})
    * @param compatibilityMode
@@ -133,7 +133,8 @@ public class CheckSumTest extends TestCase {
    *          String to calculate checksum for
    * @return RowListener with results.
    */
-  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, String input ) throws Exception {
+  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, String input )
+    throws Exception {
     Trans trans = buildHexadecimalChecksumTrans( checkSumType, compatibilityMode );
 
     trans.prepareExecution( null );

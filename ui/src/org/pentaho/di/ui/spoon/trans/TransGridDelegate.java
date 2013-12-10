@@ -64,7 +64,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
 public class TransGridDelegate extends SpoonDelegate implements XulEventHandler {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
 
@@ -114,7 +114,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   /**
    * Add a grid with the execution metrics per step in a table view
-   * 
+   *
    */
   public void addTransGrid() {
 
@@ -152,34 +152,36 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     toolbarControl.setParent( transGridComposite );
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Copynr" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Read" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Written" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Input" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Output" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Updated" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Rejected" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Errors" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Active" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Time" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.Speed" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransLog.Column.PriorityBufferSizes" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
+          true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Copynr" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Read" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Written" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Input" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Output" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Updated" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Rejected" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
+          true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Errors" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Active" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Time" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.Speed" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransLog.Column.PriorityBufferSizes" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ), };
 
     colinf[1].setAllignement( SWT.RIGHT );
     colinf[2].setAllignement( SWT.RIGHT );
@@ -195,11 +197,10 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     colinf[12].setAllignement( SWT.RIGHT );
 
     transGridView =
-        new TableView(
-            transGraph.getManagedObject(), transGridComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1,
-            true, // readonly!
-            null, // Listener
-            spoon.props );
+      new TableView( transGraph.getManagedObject(), transGridComposite, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
+      null, // Listener
+        spoon.props );
     FormData fdView = new FormData();
     fdView.left = new FormAttachment( 0, 0 );
     fdView.right = new FormAttachment( 100, 0 );
@@ -256,8 +257,8 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
       new ErrorDialog( transGridComposite.getShell(), BaseMessages.getString(
-          PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -370,8 +371,9 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
         // otherwise only those that have not STATUS_EMPTY
         //
         if ( showSelected
-            && ( hideInactiveSteps && ( isRunningLookup[i] || stepStatusLookup[i] != StepExecutionStatus.STATUS_FINISHED ) )
-            || ( !hideInactiveSteps && stepStatusLookup[i] != StepExecutionStatus.STATUS_EMPTY ) ) {
+          && ( hideInactiveSteps && ( isRunningLookup[i]
+          || stepStatusLookup[i] != StepExecutionStatus.STATUS_FINISHED ) )
+          || ( !hideInactiveSteps && stepStatusLookup[i] != StepExecutionStatus.STATUS_EMPTY ) ) {
           TableItem ti = null;
           if ( insert ) {
             ti = new TableItem( table, SWT.NONE );
@@ -452,7 +454,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -462,7 +464,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -471,7 +473,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -481,7 +483,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -491,7 +493,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -501,7 +503,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {

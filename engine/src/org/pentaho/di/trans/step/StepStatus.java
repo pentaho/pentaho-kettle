@@ -72,8 +72,8 @@ public class StepStatus {
     // Proc: nr of lines processed: input + output!
     long in_proc = Math.max( baseStep.getLinesInput(), baseStep.getLinesRead() );
     long out_proc =
-        Math.max( baseStep.getLinesOutput() + baseStep.getLinesUpdated(), baseStep.getLinesWritten()
-            + baseStep.getLinesRejected() );
+      Math.max( baseStep.getLinesOutput() + baseStep.getLinesUpdated(), baseStep.getLinesWritten()
+        + baseStep.getLinesRejected() );
 
     float lapsed = ( (float) baseStep.getRuntime() ) / 1000;
     double in_speed = 0;
@@ -99,7 +99,8 @@ public class StepStatus {
     this.statusDescription = baseStep.getStatus().getDescription();
     this.seconds = Math.floor( ( lapsed * 10 ) + 0.5 ) / 10;
     this.speed = lapsed == 0 ? "-" : " " + speedDf.format( speedNumber );
-    this.priority = baseStep.isRunning() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-3$ //$NON-NLS-4$
+    this.priority =
+      baseStep.isRunning() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-";
     this.stopped = baseStep.isStopped();
     this.paused = baseStep.isPaused();
   }
@@ -107,12 +108,12 @@ public class StepStatus {
   public String getHTMLTableRow( boolean urlInStepname ) {
     Encoder encoder = ESAPI.encoder();
     return "<tr> " + "<th>"
-        + ( urlInStepname ? stepname : encoder.encodeForHTML( stepname ) ) + "</th> " + "<th>" + copy + "</th> "
-        + "<th>" + linesRead + "</th> " + "<th>" + linesWritten + "</th> " + "<th>" + linesInput + "</th> " + "<th>"
-        + linesOutput + "</th> " + "<th>" + linesUpdated + "</th> " + "<th>" + linesRejected + "</th> " + "<th>"
-        + errors + "</th> " + "<th>" + encoder.encodeForHTML( statusDescription ) + "</th> " + "<th>" + seconds
-        + "</th> " + "<th>" + encoder.encodeForHTML( speed ) + "</th> " + "<th>" + encoder.encodeForHTML( priority )
-        + "</th> " + "</tr>";
+      + ( urlInStepname ? stepname : encoder.encodeForHTML( stepname ) ) + "</th> " + "<th>" + copy + "</th> "
+      + "<th>" + linesRead + "</th> " + "<th>" + linesWritten + "</th> " + "<th>" + linesInput + "</th> "
+      + "<th>" + linesOutput + "</th> " + "<th>" + linesUpdated + "</th> " + "<th>" + linesRejected + "</th> "
+      + "<th>" + errors + "</th> " + "<th>" + encoder.encodeForHTML( statusDescription ) + "</th> " + "<th>"
+      + seconds + "</th> " + "<th>" + encoder.encodeForHTML( speed ) + "</th> " + "<th>"
+      + encoder.encodeForHTML( priority ) + "</th> " + "</tr>";
   }
 
   public String getXML() throws KettleException {
@@ -199,12 +200,12 @@ public class StepStatus {
 
   public String[] getTransLogFields() {
     String[] fields =
-        new String[] {
-            "", // Row number
-            stepname, Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
-            Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
-            Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
-            speed, priority, };
+      new String[] {
+        "", // Row number
+        stepname, Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
+        Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
+        Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
+        speed, priority, };
 
     return fields;
   }
@@ -246,12 +247,12 @@ public class StepStatus {
 
   public String[] getPeekFields() {
     String[] fields =
-        new String[] {
+      new String[] {
 
-            Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
-            Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
-            Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
-            speed, priority, };
+        Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
+        Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
+        Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
+        speed, priority, };
 
     return fields;
 

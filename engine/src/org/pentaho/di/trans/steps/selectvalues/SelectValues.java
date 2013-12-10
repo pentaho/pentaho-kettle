@@ -45,19 +45,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Select, re-order, remove or change the meta-data of the fields in the inputstreams.
- * 
+ *
  * @author Matt
  * @since 5-apr-2003
- * 
+ *
  */
 public class SelectValues extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SelectValuesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SelectValuesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SelectValuesMeta meta;
   private SelectValuesData data;
 
   public SelectValues( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -68,12 +68,13 @@ public class SelectValues extends BaseStep implements StepInterface {
    * <p>
    * Change the meta-data information if needed...
    * <p>
-   * 
+   *
    * @param row
    *          The row to manipulate
    * @return true if everything went well, false if we need to stop because of an error!
    */
-  private synchronized Object[] selectValues( RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
+  private synchronized Object[] selectValues( RowMetaInterface rowMeta, Object[] rowData )
+    throws KettleValueException {
     if ( data.firstselect ) {
       data.firstselect = false;
 
@@ -183,7 +184,7 @@ public class SelectValues extends BaseStep implements StepInterface {
   /**
    * Remove the values that are no longer needed.
    * <p>
-   * 
+   *
    * @param row
    *          The row to manipulate
    * @return true if everything went well, false if we need to stop because of an error!
@@ -214,7 +215,7 @@ public class SelectValues extends BaseStep implements StepInterface {
 
           if ( cnt[i] > 1 ) {
             logError( BaseMessages.getString( PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2", meta
-                .getDeleteName()[i] ) );
+              .getDeleteName()[i] ) );
             setErrors( 1 );
             stopAll();
             return null;
@@ -238,7 +239,7 @@ public class SelectValues extends BaseStep implements StepInterface {
    * <p>
    * This, we can do VERY fast.
    * <p>
-   * 
+   *
    * @param row
    *          The row to manipulate
    * @return true if everything went well, false if we need to stop because of an error!
@@ -253,7 +254,8 @@ public class SelectValues extends BaseStep implements StepInterface {
       for ( int i = 0; i < data.metanrs.length; i++ ) {
         data.metanrs[i] = rowMeta.indexOfValue( meta.getMeta()[i].getName() );
         if ( data.metanrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "SelectValues.Log.CouldNotFindField", meta.getMeta()[i].getName() ) );
+          logError( BaseMessages
+            .getString( PKG, "SelectValues.Log.CouldNotFindField", meta.getMeta()[i].getName() ) );
           setErrors( 1 );
           stopAll();
           return null;
@@ -271,7 +273,7 @@ public class SelectValues extends BaseStep implements StepInterface {
 
           if ( cnt[i] > 1 ) {
             logError( BaseMessages.getString( PKG, "SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2", meta
-                .getMeta()[i].getName() ) );
+              .getMeta()[i].getName() ) );
             setErrors( 1 );
             stopAll();
             return null;
@@ -319,7 +321,7 @@ public class SelectValues extends BaseStep implements StepInterface {
       // If we need to change from BINARY_STRING storage type to NORMAL...
       //
       if ( fromMeta.isStorageBinaryString()
-          && meta.getMeta()[i].getStorageType() == ValueMetaInterface.STORAGE_TYPE_NORMAL ) {
+        && meta.getMeta()[i].getStorageType() == ValueMetaInterface.STORAGE_TYPE_NORMAL ) {
         rowData[index] = fromMeta.convertBinaryStringToNativeType( (byte[]) rowData[index] );
       }
       if ( meta.getMeta()[i].getType() != ValueMetaInterface.TYPE_NONE && fromMeta.getType() != toMeta.getType() ) {
@@ -348,7 +350,7 @@ public class SelectValues extends BaseStep implements StepInterface {
 
     if ( log.isRowLevel() ) {
       logRowlevel( BaseMessages.getString( PKG, "SelectValues.Log.GotRowFromPreviousStep" )
-          + getInputRowMeta().getString( rowData ) );
+        + getInputRowMeta().getString( rowData ) );
     }
 
     if ( first ) {
@@ -385,7 +387,7 @@ public class SelectValues extends BaseStep implements StepInterface {
       putRow( data.metadataRowMeta, outputData );
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "SelectValues.Log.WroteRowToNextStep" )
-            + data.metadataRowMeta.getString( outputData ) );
+          + data.metadataRowMeta.getString( outputData ) );
       }
 
     } catch ( KettleException e ) {

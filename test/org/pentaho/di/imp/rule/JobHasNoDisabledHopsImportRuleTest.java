@@ -83,17 +83,20 @@ public class JobHasNoDisabledHopsImportRuleTest extends TestCase {
     List<ImportValidationFeedback> feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has no disabled hops'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     jobMeta.getJobHop( 0 ).setEnabled( false );
 
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has no disabled hops'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setEnabled( false );
 
     feedback = rule.verifyRule( jobMeta );
-    assertTrue( "We didn't expect any feedback from the 'job has no disabled hops' while disabled", feedback.isEmpty() );
+    assertTrue( "We didn't expect any feedback from the 'job has no disabled hops' while disabled", feedback
+      .isEmpty() );
   }
 }

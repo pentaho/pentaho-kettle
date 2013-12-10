@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  */
 public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 
-  private static Class<?> PKG = RandomValueMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RandomValueMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_RANDOM_NONE = 0;
 
@@ -73,21 +73,21 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int TYPE_RANDOM_MAC_HMACSHA1 = 7;
 
   public static final RandomValueMetaFunction[] functions = new RandomValueMetaFunction[] {
-      null,
-      new RandomValueMetaFunction( TYPE_RANDOM_NUMBER, "random number", BaseMessages.getString(
-          PKG, "RandomValueMeta.TypeDesc.RandomNumber" ) ),
-      new RandomValueMetaFunction( TYPE_RANDOM_INTEGER, "random integer", BaseMessages.getString(
-          PKG, "RandomValueMeta.TypeDesc.RandomInteger" ) ),
-      new RandomValueMetaFunction( TYPE_RANDOM_STRING, "random string", BaseMessages.getString(
-          PKG, "RandomValueMeta.TypeDesc.RandomString" ) ),
-      new RandomValueMetaFunction( TYPE_RANDOM_UUID, "random uuid", BaseMessages.getString(
-          PKG, "RandomValueMeta.TypeDesc.RandomUUID" ) ),
-      new RandomValueMetaFunction( TYPE_RANDOM_UUID4, "random uuid4", BaseMessages.getString(
-          PKG, "RandomValueMeta.TypeDesc.RandomUUID4" ) ),
-      new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACMD5, "random machmacmd5", BaseMessages.getString(
-          PKG, "RandomValueMeta.TypeDesc.RandomHMACMD5" ) ),
-      new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACSHA1, "random machmacsha1", BaseMessages.getString(
-          PKG, "RandomValueMeta.TypeDesc.RandomHMACSHA1" ) ) };
+    null,
+    new RandomValueMetaFunction( TYPE_RANDOM_NUMBER, "random number", BaseMessages.getString(
+      PKG, "RandomValueMeta.TypeDesc.RandomNumber" ) ),
+    new RandomValueMetaFunction( TYPE_RANDOM_INTEGER, "random integer", BaseMessages.getString(
+      PKG, "RandomValueMeta.TypeDesc.RandomInteger" ) ),
+    new RandomValueMetaFunction( TYPE_RANDOM_STRING, "random string", BaseMessages.getString(
+      PKG, "RandomValueMeta.TypeDesc.RandomString" ) ),
+    new RandomValueMetaFunction( TYPE_RANDOM_UUID, "random uuid", BaseMessages.getString(
+      PKG, "RandomValueMeta.TypeDesc.RandomUUID" ) ),
+    new RandomValueMetaFunction( TYPE_RANDOM_UUID4, "random uuid4", BaseMessages.getString(
+      PKG, "RandomValueMeta.TypeDesc.RandomUUID4" ) ),
+    new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACMD5, "random machmacmd5", BaseMessages.getString(
+      PKG, "RandomValueMeta.TypeDesc.RandomHMACMD5" ) ),
+    new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACSHA1, "random machmacsha1", BaseMessages.getString(
+      PKG, "RandomValueMeta.TypeDesc.RandomHMACSHA1" ) ) };
 
   private String[] fieldName;
 
@@ -127,7 +127,8 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldType = fieldType;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -205,7 +206,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       ValueMetaInterface v;
 
@@ -249,7 +250,8 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "type", functions[fieldType[i]] != null ? functions[fieldType[i]].getCode() : "" ) );
+        XMLHandler
+          .addTagValue( "type", functions[fieldType[i]] != null ? functions[fieldType[i]].getCode() : "" ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
     retval.append( "    </fields>" + Const.CR );
@@ -279,7 +281,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < fieldName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", functions[fieldType[i]] != null
-            ? functions[fieldType[i]].getCode() : "" );
+          ? functions[fieldType[i]].getCode() : "" );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
@@ -287,29 +289,29 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     // See if we have input streams leading to this step!
     int nrRemarks = remarks.size();
     for ( int i = 0; i < fieldName.length; i++ ) {
       if ( fieldType[i] <= TYPE_RANDOM_NONE ) {
         CheckResult cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "RandomValueMeta.CheckResult.FieldHasNoType", fieldName[i] ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RandomValueMeta.CheckResult.FieldHasNoType", fieldName[i] ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "RandomValueMeta.CheckResult.AllTypesSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RandomValueMeta.CheckResult.AllTypesSpecified" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new RandomValue( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

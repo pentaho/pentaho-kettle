@@ -57,7 +57,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
   /**
    * Create operation parameters whose types do not need to be unwrapped. Typically used for RPC style parameters but
    * also may be used for DOCUMENT style when parameter style is BARE.
-   * 
+   *
    * @param name
    *          QName of the parameter.
    * @param xmlType
@@ -80,7 +80,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
   /**
    * Create a new WsdlOpParameter for a simple schema type. For pararmeters of simple type, the name of the parameter
    * corresponds to the name of the message part which defines it.
-   * 
+   *
    * @param name
    *          Name of the attribute, if a namespace ref is included it will be resolved.
    * @param e
@@ -96,7 +96,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Create a new WsdlOpParameter for a complex type.
-   * 
+   *
    * @param e
    *          The schema element which defines the XML type of this attribute.
    * @param wsdlTypes
@@ -134,7 +134,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Get the name of this parameter.
-   * 
+   *
    * @return QName.
    */
   public QName getName() {
@@ -143,7 +143,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Get the mode of this parameter.
-   * 
+   *
    * @return ParameterMode
    */
   public ParameterMode getMode() {
@@ -152,7 +152,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Is this paramter's name element form qualified?
-   * 
+   *
    * @return True if element form qualified.
    */
   public boolean isNameElementFormQualified() {
@@ -161,7 +161,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Is this parameter a SOAP header parameter?
-   * 
+   *
    * @return true if it is.
    */
   public boolean isHeader() {
@@ -177,7 +177,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Set the mode of this parameter (IN/OUT/INOUT).
-   * 
+   *
    * @param mode
    *          the mode to set.
    */
@@ -187,7 +187,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Set the name of this parameter.
-   * 
+   *
    * @param name
    *          parameter name.
    * @param wsdlTypes
@@ -200,7 +200,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Does this element represent an array type?
-   * 
+   *
    * @param e
    *          Element to check.
    * @return true if this element represents an array type.
@@ -227,7 +227,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Get the xml type of an element.
-   * 
+   *
    * @param element
    *          Element to determine the xml type of.
    * @param wsdlTypes
@@ -239,11 +239,11 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
     /*
      * Get the type of an element when the element is in the form of: <element name="foo"> <complexType> <sequence>
      * <element name="bar" ref="s:schema"/> </sequence> </complexType> </element>
-     * 
+     *
      * or
-     * 
+     *
      * <element name="foo"> <complexType> <sequence> <any/> </sequence> </complexType> </element>
-     * 
+     *
      * This code is extremely brittle, this is a construct used by dot net when DataTypes are employed. The code will
      * need to be enhanced if other samples of this construct arise.
      */
@@ -265,16 +265,14 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
       // no children / no type map to 'any'
       return new QName( "http://www.w3.org/2001/XMLSchema", "any" );
     }
-    return new QName( "http://www.w3.org/2001/XMLSchema", "String" ); // throw new
-                                                                      // RuntimeException("Cannot determine type of element: "
-                                                                      // + getName());
+    return new QName( "http://www.w3.org/2001/XMLSchema", "String" );
   }
 
   /**
    * This method differs from the isArray(e) method in that it is checking a schema type to see if it is an array type.
    * In order to be an array type it must be a complex type which includes a sequence of a single element which has it's
    * minoccurs and/or maxoccures attributes set to values which denote an array.
-   * 
+   *
    * @param type
    *          Either a complexType or a simpleType node from the schema.
    * @return The QName of the array's item type, null if the type is not an array,
@@ -300,7 +298,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Get an array items xml type from a sequence element.
-   * 
+   *
    * @param sequenceElement
    *          Sequence element.
    * @param wsdlTypes
@@ -321,7 +319,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Get an array items xml type from a complexContent element.
-   * 
+   *
    * @param ccElement
    *          Complex content element.
    * @param wsdlTypes
@@ -354,7 +352,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
 
   /**
    * Override the equals method.
-   * 
+   *
    * @param o
    *          Object to compare to.
    * @return true if equal

@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for counter functionality.
- * 
+ *
  * @author Sven Boden
  */
 public class CounterTest extends TestCase {

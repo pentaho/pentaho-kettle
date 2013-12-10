@@ -31,7 +31,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
 
 /**
  * Fails if a field's value is <code>null</code>.
- * 
+ *
  * @author mlowery
  */
 public class NotNullValidator implements JobEntryValidator {
@@ -40,14 +40,15 @@ public class NotNullValidator implements JobEntryValidator {
 
   private static final String VALIDATOR_NAME = "notNull";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context ) {
+  public boolean validate( CheckResultSourceInterface source, String propertyName,
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
     Object value = null;
     try {
       value = PropertyUtils.getProperty( source, propertyName );
       if ( null == value ) {
-        JobEntryValidatorUtils.addFailureRemark( source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils
-            .getLevelOnFail( context, VALIDATOR_NAME ) );
+        JobEntryValidatorUtils.addFailureRemark(
+          source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils.getLevelOnFail(
+            context, VALIDATOR_NAME ) );
         return false;
       } else {
         return true;

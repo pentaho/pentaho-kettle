@@ -29,7 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 /**
  * A simplified rowset for steps for single threaded execution. This row set has no limited size.
- * 
+ *
  * @author matt
  */
 public class QueueRowSet extends BaseRowSet implements Comparable<RowSet>, RowSet {

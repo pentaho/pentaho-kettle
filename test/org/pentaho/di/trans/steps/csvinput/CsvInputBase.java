@@ -54,7 +54,7 @@ public abstract class CsvInputBase extends TestCase {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          set 1 of rows to compare
    * @param rows2
@@ -99,7 +99,7 @@ public abstract class CsvInputBase extends TestCase {
   }
 
   protected Trans createAndTestTrans( PluginRegistry registry, TransMeta transMeta, StepMeta injectorStep,
-      StepMeta csvInputStep, String fileName, int numRows ) throws KettleException {
+    StepMeta csvInputStep, String fileName, int numRows ) throws KettleException {
     TransHopMeta hi = new TransHopMeta( injectorStep, csvInputStep );
     transMeta.addTransHop( hi );
 
@@ -149,7 +149,7 @@ public abstract class CsvInputBase extends TestCase {
   }
 
   public StepMeta createCsvInputStep( TransMeta transMeta, PluginRegistry registry, String enclosure,
-      boolean headerPresent ) {
+    boolean headerPresent ) {
     //
     // Create a Csv Input step
     //

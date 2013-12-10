@@ -125,7 +125,7 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
     retval.append( "  " ).append( XMLHandler.openTag( XML_TAG ) );
     retval.append( super.getXML() );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "connection", databaseMeta != null ? databaseMeta.getName() : null ) );
+      XMLHandler.addTagValue( "connection", databaseMeta != null ? databaseMeta.getName() : null ) );
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG ) );
 
     return retval.toString();

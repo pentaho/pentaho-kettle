@@ -29,9 +29,9 @@ public class DataCell extends AbstractBaseCell {
   private MemberCell parentColMember = null;
 
   /**
-   * 
+   *
    * Blank constructor for serialization purposes, don't use it.
-   * 
+   *
    */
   public DataCell() {
     super();
@@ -39,7 +39,7 @@ public class DataCell extends AbstractBaseCell {
 
   /**
    * Construct a Data Cell containing olap data.
-   * 
+   *
    * @param b
    * @param c
    */

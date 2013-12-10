@@ -49,11 +49,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
- * 
+ *
  */
 
 public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ProcessFilesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ProcessFilesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private boolean addresultfilenames;
   private boolean overwritetargetfile;
@@ -71,9 +71,9 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-      BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Copy" ),
-      BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Move" ),
-      BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Delete" ) };
+    BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Copy" ),
+    BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Move" ),
+    BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Delete" ) };
 
   /**
    * The operations type codes
@@ -181,7 +181,8 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
     return this.simulate;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -204,7 +205,8 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
 
     retval.append( "    " + XMLHandler.addTagValue( "sourcefilenamefield", sourcefilenamefield ) );
     retval.append( "    " + XMLHandler.addTagValue( "targetfilenamefield", targetfilenamefield ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "operation_type", getOperationTypeCode( operationType ) ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "operation_type", getOperationTypeCode( operationType ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "addresultfilenames", addresultfilenames ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "overwritetargetfile", overwritetargetfile ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "createparentfolder", createparentfolder ) );
@@ -220,18 +222,21 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
     return operationTypeCode[i];
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       sourcefilenamefield = XMLHandler.getTagValue( stepnode, "sourcefilenamefield" );
       targetfilenamefield = XMLHandler.getTagValue( stepnode, "targetfilenamefield" );
-      operationType = getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
       addresultfilenames = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addresultfilenames" ) );
       overwritetargetfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "overwritetargetfile" ) );
       createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "createparentfolder" ) );
       simulate = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "simulate" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "ProcessFilesMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages
+        .getString( PKG, "ProcessFilesMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -253,7 +258,8 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
     try {
       sourcefilenamefield = rep.getStepAttributeString( id_step, "sourcefilenamefield" );
       targetfilenamefield = rep.getStepAttributeString( id_step, "targetfilenamefield" );
-      operationType = getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
       addresultfilenames = rep.getStepAttributeBoolean( id_step, "addresultfilenames" );
       overwritetargetfile = rep.getStepAttributeBoolean( id_step, "overwritetargetfile" );
       createparentfolder = rep.getStepAttributeBoolean( id_step, "createparentfolder" );
@@ -261,7 +267,7 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "ProcessFilesMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+        PKG, "ProcessFilesMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -278,13 +284,13 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "ProcessFilesMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -311,20 +317,20 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ProcessFilesMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ProcessFilesMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "ProcessFilesMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ProcessFilesMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ProcessFiles( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

@@ -45,17 +45,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read LDAP Host, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 21-09-2007
  */
 public class LDAPInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private LDAPInputMeta meta;
   private LDAPInputData data;
 
-  public LDAPInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public LDAPInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -95,7 +96,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "LDAPInput.log.ReadRow" ), data.outputRowMeta
-            .getString( outputRowData ) );
+          .getString( outputRowData ) );
       }
 
       if ( checkFeedback( getLinesInput() ) ) {
@@ -169,7 +170,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
         if ( data.indexOfSearchBaseField < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "LDAPInput.Exception.CouldnotFindField", meta
-              .getDynamicSearchFieldName() ) );
+            .getDynamicSearchFieldName() ) );
         }
       }
       if ( meta.isDynamicFilter() ) {
@@ -177,7 +178,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
         if ( data.indexOfFilterField < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "LDAPInput.Exception.CouldnotFindField", meta
-              .getDynamicFilterFieldName() ) );
+            .getDynamicFilterFieldName() ) );
         }
       }
     } // end if
@@ -294,7 +295,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
 
     String retval = null;
     if ( field.getReturnType() == LDAPInputField.FETCH_ATTRIBUTE_AS_BINARY
-        && field.getType() == ValueMetaInterface.TYPE_STRING ) {
+      && field.getType() == ValueMetaInterface.TYPE_STRING ) {
       // Convert byte[] to string
       return LDAPConnection.extractBytesAndConvertToString( attr, field.isObjectSid() );
     }
@@ -390,7 +391,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 

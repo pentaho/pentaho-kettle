@@ -53,8 +53,8 @@ public class SwingTest {
 
     try {
       InputStream in =
-          DatabaseDialogHarness.class.getClassLoader().getResourceAsStream(
-              "org/pentaho/ui/database/databasedialog.xul" );
+        DatabaseDialogHarness.class.getClassLoader().getResourceAsStream(
+          "org/pentaho/ui/database/databasedialog.xul" );
       if ( in == null ) {
         System.out.println( "Invalid Input" );
         return;
@@ -75,7 +75,8 @@ public class SwingTest {
 
     XulDomContainer container = null;
     try {
-      container = new SwingXulLoader().loadXul( DatabaseConnectionDialog.DIALOG_DEFINITION_FILE, Messages.getBundle() );
+      container =
+        new SwingXulLoader().loadXul( DatabaseConnectionDialog.DIALOG_DEFINITION_FILE, Messages.getBundle() );
       if ( database != null ) {
         container.getEventHandler( "dataHandler" ).setData( database );
       }

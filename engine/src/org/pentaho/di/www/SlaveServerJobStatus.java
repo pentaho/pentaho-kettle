@@ -98,12 +98,13 @@ public class SlaveServerJobStatus {
     if ( !Const.isEmpty( loggingString64 ) ) {
       // This is a CDATA block with a Base64 encoded GZIP compressed stream of data.
       //
-      String dataString64 = loggingString64.substring( "<![CDATA[".length(), loggingString64.length() - "]]>".length() );
+      String dataString64 =
+        loggingString64.substring( "<![CDATA[".length(), loggingString64.length() - "]]>".length() );
       try {
         loggingString = HttpUtil.decodeBase64ZippedString( dataString64 );
       } catch ( IOException e ) {
         loggingString =
-            "Unable to decode logging from remote server : " + e.toString() + Const.CR + Const.getStackTracker( e );
+          "Unable to decode logging from remote server : " + e.toString() + Const.CR + Const.getStackTracker( e );
       }
     } else {
       loggingString = "";
@@ -116,7 +117,8 @@ public class SlaveServerJobStatus {
       try {
         result = new Result( resultNode );
       } catch ( KettleException e ) {
-        loggingString += "Unable to serialize result object as XML" + Const.CR + Const.getStackTracker( e ) + Const.CR;
+        loggingString +=
+          "Unable to serialize result object as XML" + Const.CR + Const.getStackTracker( e ) + Const.CR;
       }
     }
   }
@@ -189,7 +191,7 @@ public class SlaveServerJobStatus {
 
   public boolean isRunning() {
     return getStatusDescription().equalsIgnoreCase( Trans.STRING_RUNNING )
-        || getStatusDescription().equalsIgnoreCase( Trans.STRING_INITIALIZING );
+      || getStatusDescription().equalsIgnoreCase( Trans.STRING_INITIALIZING );
   }
 
   public boolean isWaiting() {

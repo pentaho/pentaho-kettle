@@ -32,13 +32,13 @@ public class Log4jConsoleAppender implements Appender
 {
     private Layout layout;
     private Filter filter;
-    
+
     private String  name;
-    
+
     public Log4jConsoleAppender()
     {
     }
-    
+
     public void addFilter(Filter filter)
     {
         this.filter = filter;

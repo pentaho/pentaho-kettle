@@ -20,7 +20,9 @@
  *
  ******************************************************************************/
 
-// $ANTLR 3.4 C:\\workspace-sts\\Kettle trunk - restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g 2012-12-06 11:16:38
+// $ANTLR 3.4 C:\\workspace-sts\\Kettle trunk -
+// restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+// FastSimpleGenericEdifactDirectXML.g 2012-12-06 11:16:38
 
 package org.pentaho.di.trans.steps.edi2xml.grammar;
 
@@ -65,7 +67,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
   }
 
   public String getGrammarFileName() {
-    return "C:\\workspace-sts\\Kettle trunk - restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g";
+    return "C:\\workspace-sts\\Kettle trunk - "
+      + "restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g";
   }
 
   // $ANTLR start "T__9"
@@ -146,11 +149,11 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     int _type = T__13;
     int _channel = DEFAULT_TOKEN_CHANNEL;
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:10:7:
-    // ( '\\r' )
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:10:7: ( '\\r' )
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:10:9:
-    // '\\r'
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:10:9: '\\r'
 
     match( '\r' );
     state.type = _type;
@@ -164,11 +167,11 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     int _type = T__14;
     int _channel = DEFAULT_TOKEN_CHANNEL;
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:11:7:
-    // ( '\\t' )
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:11:7:( '\\t' )
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:11:9:
-    // '\\t'
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:11:9:'\\t'
 
     match( '\t' );
     state.type = _type;
@@ -182,10 +185,12 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     int _type = RELEASE_CHARACTER;
     int _channel = DEFAULT_TOKEN_CHANNEL;
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:125:21:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:125:21:
     // ( '?' )
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:125:23:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:125:23:
     // '?'
 
     match( '?' );
@@ -200,10 +205,12 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     int _type = ELEMENT_SEPARATOR;
     int _channel = DEFAULT_TOKEN_CHANNEL;
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:126:21:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:126:21:
     // ( '+' )
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:126:23:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:126:23:
     // '+'
 
     match( '+' );
@@ -218,10 +225,12 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     int _type = SEGMENT_TERMINATOR;
     int _channel = DEFAULT_TOKEN_CHANNEL;
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:127:22:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:127:22:
     // ( '\\'' )
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:127:24:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:127:24:
     // '\\''
 
     match( '\'' );
@@ -236,10 +245,12 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     int _type = COMPLEX_ELEMENT_ITEM_SEPARATOR;
     int _channel = DEFAULT_TOKEN_CHANNEL;
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:128:33:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:128:33:
     // ( ':' )
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:128:35:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:128:35:
     // ':'
 
     match( ':' );
@@ -254,18 +265,21 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     int _type = TEXT_DATA;
     int _channel = DEFAULT_TOKEN_CHANNEL;
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:14:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:129:14:
     // ( (~ ( RELEASE_CHARACTER | SEGMENT_TERMINATOR | COMPLEX_ELEMENT_ITEM_SEPARATOR | ELEMENT_SEPARATOR ) | (
     // RELEASE_CHARACTER ELEMENT_SEPARATOR ) | ( RELEASE_CHARACTER RELEASE_CHARACTER ) | ( RELEASE_CHARACTER
     // COMPLEX_ELEMENT_ITEM_SEPARATOR ) | ( RELEASE_CHARACTER SEGMENT_TERMINATOR ) )+ )
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:16:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:129:16:
     // (~ ( RELEASE_CHARACTER | SEGMENT_TERMINATOR | COMPLEX_ELEMENT_ITEM_SEPARATOR | ELEMENT_SEPARATOR ) | (
     // RELEASE_CHARACTER ELEMENT_SEPARATOR ) | ( RELEASE_CHARACTER RELEASE_CHARACTER ) | ( RELEASE_CHARACTER
     // COMPLEX_ELEMENT_ITEM_SEPARATOR ) | ( RELEASE_CHARACTER SEGMENT_TERMINATOR ) )+
 
     // C:\\workspace-sts\\Kettle trunk -
-    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:16:
+    // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+    // FastSimpleGenericEdifactDirectXML.g:129:16:
     // (~ ( RELEASE_CHARACTER | SEGMENT_TERMINATOR | COMPLEX_ELEMENT_ITEM_SEPARATOR | ELEMENT_SEPARATOR ) | (
     // RELEASE_CHARACTER ELEMENT_SEPARATOR ) | ( RELEASE_CHARACTER RELEASE_CHARACTER ) | ( RELEASE_CHARACTER
     // COMPLEX_ELEMENT_ITEM_SEPARATOR ) | ( RELEASE_CHARACTER SEGMENT_TERMINATOR ) )+
@@ -275,7 +289,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
       int LA1_0 = input.LA( 1 );
 
       if ( ( ( LA1_0 >= '\u0000' && LA1_0 <= '&' )
-          || ( LA1_0 >= '(' && LA1_0 <= '*' ) || ( LA1_0 >= ',' && LA1_0 <= '9' ) || ( LA1_0 >= ';' && LA1_0 <= '>' ) || ( LA1_0 >= '@' && LA1_0 <= '\uFFFF' ) ) ) {
+        || ( LA1_0 >= '(' && LA1_0 <= '*' ) || ( LA1_0 >= ',' && LA1_0 <= '9' )
+        || ( LA1_0 >= ';' && LA1_0 <= '>' ) || ( LA1_0 >= '@' && LA1_0 <= '\uFFFF' ) ) ) {
         alt1 = 1;
       } else if ( ( LA1_0 == '?' ) ) {
         switch ( input.LA( 2 ) ) {
@@ -299,13 +314,15 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
       switch ( alt1 ) {
         case 1:
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:17:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:17:
           // ~ ( RELEASE_CHARACTER | SEGMENT_TERMINATOR | COMPLEX_ELEMENT_ITEM_SEPARATOR | ELEMENT_SEPARATOR )
 
           if ( ( input.LA( 1 ) >= '\u0000' && input.LA( 1 ) <= '&' )
-              || ( input.LA( 1 ) >= '(' && input.LA( 1 ) <= '*' ) || ( input.LA( 1 ) >= ',' && input.LA( 1 ) <= '9' )
-              || ( input.LA( 1 ) >= ';' && input.LA( 1 ) <= '>' )
-              || ( input.LA( 1 ) >= '@' && input.LA( 1 ) <= '\uFFFF' ) ) {
+            || ( input.LA( 1 ) >= '(' && input.LA( 1 ) <= '*' )
+            || ( input.LA( 1 ) >= ',' && input.LA( 1 ) <= '9' )
+            || ( input.LA( 1 ) >= ';' && input.LA( 1 ) <= '>' )
+            || ( input.LA( 1 ) >= '@' && input.LA( 1 ) <= '\uFFFF' ) ) {
             input.consume();
           } else {
             MismatchedSetException mse = new MismatchedSetException( null, input );
@@ -315,14 +332,17 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
           break;
         case 2:
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:106:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:106:
           // ( RELEASE_CHARACTER ELEMENT_SEPARATOR )
 
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:106:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:106:
           // ( RELEASE_CHARACTER ELEMENT_SEPARATOR )
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:107:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:107:
           // RELEASE_CHARACTER ELEMENT_SEPARATOR
 
           mRELEASE_CHARACTER();
@@ -330,14 +350,17 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
           break;
         case 3:
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:144:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:144:
           // ( RELEASE_CHARACTER RELEASE_CHARACTER )
 
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:144:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:144:
           // ( RELEASE_CHARACTER RELEASE_CHARACTER )
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:145:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:145:
           // RELEASE_CHARACTER RELEASE_CHARACTER
 
           mRELEASE_CHARACTER();
@@ -345,14 +368,17 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
           break;
         case 4:
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:182:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:182:
           // ( RELEASE_CHARACTER COMPLEX_ELEMENT_ITEM_SEPARATOR )
 
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:182:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:182:
           // ( RELEASE_CHARACTER COMPLEX_ELEMENT_ITEM_SEPARATOR )
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:183:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:183:
           // RELEASE_CHARACTER COMPLEX_ELEMENT_ITEM_SEPARATOR
 
           mRELEASE_CHARACTER();
@@ -360,7 +386,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
           break;
         case 5:
           // C:\\workspace-sts\\Kettle trunk -
-          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:129:233:
+          // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+          // FastSimpleGenericEdifactDirectXML.g:129:233:
           // ( RELEASE_CHARACTER SEGMENT_TERMINATOR )
 
           mRELEASE_CHARACTER();
@@ -394,7 +421,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
       int LA2_1 = input.LA( 2 );
 
       if ( ( ( LA2_1 >= '\u0000' && LA2_1 <= '&' )
-          || ( LA2_1 >= '(' && LA2_1 <= '*' ) || ( LA2_1 >= ',' && LA2_1 <= '9' ) || ( LA2_1 >= ';' && LA2_1 <= '\uFFFF' ) ) ) {
+        || ( LA2_1 >= '(' && LA2_1 <= '*' ) || ( LA2_1 >= ',' && LA2_1 <= '9' )
+        || ( LA2_1 >= ';' && LA2_1 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 1;
@@ -443,7 +471,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
       int LA2_3 = input.LA( 2 );
 
       if ( ( ( LA2_3 >= '\u0000' && LA2_3 <= '&' )
-          || ( LA2_3 >= '(' && LA2_3 <= '*' ) || ( LA2_3 >= ',' && LA2_3 <= '9' ) || ( LA2_3 >= ';' && LA2_3 <= '\uFFFF' ) ) ) {
+        || ( LA2_3 >= '(' && LA2_3 <= '*' ) || ( LA2_3 >= ',' && LA2_3 <= '9' )
+        || ( LA2_3 >= ';' && LA2_3 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 4;
@@ -452,7 +481,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
       int LA2_4 = input.LA( 2 );
 
       if ( ( ( LA2_4 >= '\u0000' && LA2_4 <= '&' )
-          || ( LA2_4 >= '(' && LA2_4 <= '*' ) || ( LA2_4 >= ',' && LA2_4 <= '9' ) || ( LA2_4 >= ';' && LA2_4 <= '\uFFFF' ) ) ) {
+        || ( LA2_4 >= '(' && LA2_4 <= '*' ) || ( LA2_4 >= ',' && LA2_4 <= '9' )
+        || ( LA2_4 >= ';' && LA2_4 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 5;
@@ -461,7 +491,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
       int LA2_5 = input.LA( 2 );
 
       if ( ( ( LA2_5 >= '\u0000' && LA2_5 <= '&' )
-          || ( LA2_5 >= '(' && LA2_5 <= '*' ) || ( LA2_5 >= ',' && LA2_5 <= '9' ) || ( LA2_5 >= ';' && LA2_5 <= '\uFFFF' ) ) ) {
+        || ( LA2_5 >= '(' && LA2_5 <= '*' ) || ( LA2_5 >= ',' && LA2_5 <= '9' )
+        || ( LA2_5 >= ';' && LA2_5 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 6;
@@ -481,9 +512,11 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     } else if ( ( LA2_0 == ':' ) ) {
       alt2 = 10;
     } else if ( ( ( LA2_0 >= '\u0000' && LA2_0 <= '\b' )
-        || ( LA2_0 >= '\u000B' && LA2_0 <= '\f' ) || ( LA2_0 >= '\u000E' && LA2_0 <= '\u001F' )
-        || ( LA2_0 >= '!' && LA2_0 <= '&' ) || ( LA2_0 >= '(' && LA2_0 <= '*' ) || ( LA2_0 >= ',' && LA2_0 <= '9' )
-        || ( LA2_0 >= ';' && LA2_0 <= '>' ) || ( LA2_0 >= '@' && LA2_0 <= 'T' ) || ( LA2_0 >= 'V' && LA2_0 <= '\uFFFF' ) ) ) {
+      || ( LA2_0 >= '\u000B' && LA2_0 <= '\f' ) || ( LA2_0 >= '\u000E' && LA2_0 <= '\u001F' )
+      || ( LA2_0 >= '!' && LA2_0 <= '&' ) || ( LA2_0 >= '(' && LA2_0 <= '*' )
+      || ( LA2_0 >= ',' && LA2_0 <= '9' )
+      || ( LA2_0 >= ';' && LA2_0 <= '>' ) || ( LA2_0 >= '@' && LA2_0 <= 'T' )
+      || ( LA2_0 >= 'V' && LA2_0 <= '\uFFFF' ) ) ) {
       alt2 = 11;
     } else {
       NoViableAltException nvae = new NoViableAltException( "", 2, 0, input );
@@ -494,77 +527,88 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     switch ( alt2 ) {
       case 1:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:10:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:10:
         // T__9
 
         mT__9();
         break;
       case 2:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:15:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:15:
         // T__10
 
         mT__10();
         break;
       case 3:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:21:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:21:
         // T__11
 
         mT__11();
         break;
       case 4:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:27:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:27:
         // T__12
 
         mT__12();
         break;
       case 5:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:33:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:33:
         // T__13
 
         mT__13();
         break;
       case 6:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:39:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:39:
         // T__14
 
         mT__14();
         break;
       case 7:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:45:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:45:
         // RELEASE_CHARACTER
 
         mRELEASE_CHARACTER();
         break;
       case 8:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:63:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:63:
         // ELEMENT_SEPARATOR
 
         mELEMENT_SEPARATOR();
         break;
       case 9:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:81:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:81:
         // SEGMENT_TERMINATOR
 
         mSEGMENT_TERMINATOR();
         break;
       case 10:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:100:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:100:
         // COMPLEX_ELEMENT_ITEM_SEPARATOR
 
         mCOMPLEX_ELEMENT_ITEM_SEPARATOR();
         break;
       case 11:
         // C:\\workspace-sts\\Kettle trunk -
-        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:1:131:
+        // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\
+        // FastSimpleGenericEdifactDirectXML.g:1:131:
         // TEXT_DATA
 
         mTEXT_DATA();

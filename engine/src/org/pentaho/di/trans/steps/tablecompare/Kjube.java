@@ -29,7 +29,7 @@ public class Kjube {
   public static final String DEFAULT_LIFECYCLE_PARAMETER = "KJUBE_LIFECYCLE";
 
   public static final String DEFAULT_CONFIG_FILE_PATH =
-      "/kjube/projects/${KJUBE_CUSTOMER}/${KJUBE_APPLICATION}/config/configuration_${KJUBE_LIFECYCLE}.properties";
+    "/kjube/projects/${KJUBE_CUSTOMER}/${KJUBE_APPLICATION}/config/configuration_${KJUBE_LIFECYCLE}.properties";
 
   public static final String DEFAULT_BATCH_ID_CONNECTION = "${KJUBE_BATCH_ID_CONNECTION}";
   public static final String DEFAULT_BATCH_ID_SCHEMA = "${KJUBE_BATCH_ID_SCHEMA}";
@@ -52,7 +52,7 @@ public class Kjube {
   /**
    * Determines whether or not a character is considered a space. A character is considered a space in Kettle if it is a
    * space, a tab, a newline or a cariage return.
-   * 
+   *
    * @param c
    *          The character to verify if it is a space.
    * @return true if the character is a space. false otherwise.
@@ -63,7 +63,7 @@ public class Kjube {
 
   /**
    * Left trim: remove spaces to the left of a String.
-   * 
+   *
    * @param str
    *          The String to left trim
    * @return The left trimmed String
@@ -82,7 +82,7 @@ public class Kjube {
 
   /**
    * Right trim: remove spaces to the right of a string
-   * 
+   *
    * @param str
    *          The string to right trim
    * @return The trimmed string.
@@ -102,7 +102,7 @@ public class Kjube {
 
   /**
    * Trims a string: removes the leading and trailing spaces of a String.
-   * 
+   *
    * @param str
    *          The string to trim
    * @return The trimmed string.

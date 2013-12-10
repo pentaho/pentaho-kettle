@@ -24,7 +24,7 @@ package org.pentaho.di.core.database;
 
 /**
  * Contains the information that's stored in a single schema.
- * 
+ *
  * @author Matt
  * @since 7-apr-2005
  */

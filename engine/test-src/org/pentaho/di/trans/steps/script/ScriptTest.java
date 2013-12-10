@@ -32,10 +32,10 @@ public class ScriptTest {
   public void setUp() throws Exception {
     helper = new StepMockHelper<ScriptMeta, ScriptData>( "test-script", ScriptMeta.class, ScriptData.class );
     when( helper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        helper.logChannelInterface );
+      helper.logChannelInterface );
     when( helper.trans.isRunning() ).thenReturn( true );
     when( helper.initStepMetaInterface.getJSScripts() ).thenReturn(
-        new ScriptValuesScript[] { new ScriptValuesScript( ScriptValuesScript.NORMAL_SCRIPT, "", "var i = 0;" ) } );
+      new ScriptValuesScript[] { new ScriptValuesScript( ScriptValuesScript.NORMAL_SCRIPT, "", "var i = 0;" ) } );
   }
 
   @After

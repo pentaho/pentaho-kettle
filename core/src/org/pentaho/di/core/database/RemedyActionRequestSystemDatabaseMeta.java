@@ -25,7 +25,7 @@ package org.pentaho.di.core.database;
 /**
  * Contains Database Connection information through static final members for a BMW Remedy Action Request System. These
  * connections are typically read-only ODBC only.
- * 
+ *
  * @author Matt
  * @since 11-Sep-2007
  */
@@ -56,7 +56,7 @@ public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta i
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override

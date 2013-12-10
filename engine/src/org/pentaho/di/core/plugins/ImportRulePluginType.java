@@ -38,9 +38,9 @@ import org.w3c.dom.Node;
 
 /**
  * This is the import rule plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( ImportRuleInterface.class )
 @PluginAnnotationType( ImportRulePlugin.class )
@@ -77,7 +77,7 @@ public class ImportRulePluginType extends BasePluginType implements PluginTypeIn
       }
       if ( inputStream == null ) {
         throw new KettlePluginException( "Unable to find native import rules definition file: "
-            + Const.XML_FILE_KETTLE_IMPORT_RULES );
+          + Const.XML_FILE_KETTLE_IMPORT_RULES );
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
@@ -90,8 +90,8 @@ public class ImportRulePluginType extends BasePluginType implements PluginTypeIn
       }
 
     } catch ( KettleXMLException e ) {
-      throw new KettlePluginException(
-          "Unable to read the kettle steps XML config file: " + kettleImportRulesXmlFile, e );
+      throw new KettlePluginException( "Unable to read the kettle steps XML config file: "
+        + kettleImportRulesXmlFile, e );
     }
   }
 

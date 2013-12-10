@@ -40,7 +40,7 @@ public final class WsdlComplexTypes implements java.io.Serializable {
 
   /**
    * Create a new instance, parse the WSDL file for named complex types.
-   * 
+   *
    * @param wsdlTypes
    *          Name space resolver.
    */
@@ -60,7 +60,7 @@ public final class WsdlComplexTypes implements java.io.Serializable {
 
   /**
    * Get the complex type specified by complexTypeName.
-   * 
+   *
    * @param complexTypeName
    *          Name of complex type.
    * @return ComplexType instance, null if complex type was not defined in the wsdl file.

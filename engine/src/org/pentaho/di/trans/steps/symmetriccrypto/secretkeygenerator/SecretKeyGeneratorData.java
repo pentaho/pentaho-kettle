@@ -29,7 +29,7 @@ import org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm.SymmetricCr
 
 /**
  * Generate secret key. for symmetric algorithms
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */

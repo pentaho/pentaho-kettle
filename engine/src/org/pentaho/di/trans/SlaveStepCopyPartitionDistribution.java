@@ -38,9 +38,9 @@ import org.w3c.dom.Node;
  * This distribution is created BEFORE the slave transformations are sent to the slave servers. As such, it will be easy
  * to link a step copy on a certain slave server uniquely to a certain partition. That is to say, it will be done the
  * same way accross the complete cluster.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SlaveStepCopyPartitionDistribution {
 
@@ -68,12 +68,13 @@ public class SlaveStepCopyPartitionDistribution {
     public boolean equals( Object obj ) {
       SlaveStepCopy copy = (SlaveStepCopy) obj;
       return slaveServerName.equals( copy.slaveServerName )
-          && partitionSchemaName.equals( copy.partitionSchemaName ) && stepCopyNr == copy.stepCopyNr;
+        && partitionSchemaName.equals( copy.partitionSchemaName ) && stepCopyNr == copy.stepCopyNr;
     }
 
     public int hashCode() {
       try {
-        return slaveServerName.hashCode() ^ partitionSchemaName.hashCode() ^ Integer.valueOf( stepCopyNr ).hashCode();
+        return slaveServerName.hashCode()
+          ^ partitionSchemaName.hashCode() ^ Integer.valueOf( stepCopyNr ).hashCode();
       } catch ( NullPointerException e ) {
         throw new RuntimeException( e );
       }
@@ -148,7 +149,7 @@ public class SlaveStepCopyPartitionDistribution {
 
   /**
    * Add a partition number to the distribution for re-use at runtime.
-   * 
+   *
    * @param slaveServerName
    * @param partitionSchemaName
    * @param stepCopyNr
@@ -160,7 +161,7 @@ public class SlaveStepCopyPartitionDistribution {
 
   /**
    * Add a partition number to the distribution if it doesn't already exist.
-   * 
+   *
    * @param slaveServerName
    * @param partitionSchemaName
    * @param stepCopyNr
@@ -208,7 +209,9 @@ public class SlaveStepCopyPartitionDistribution {
 
       xml.append( "  " ).append( XMLHandler.openTag( "entry" ) );
       xml.append( "  " ).append( XMLHandler.addTagValue( "slavename", copy.slaveServerName, false ) );
-      xml.append( "  " ).append( XMLHandler.addTagValue( "partition_schema_name", copy.partitionSchemaName, false ) );
+      xml
+        .append( "  " ).append(
+          XMLHandler.addTagValue( "partition_schema_name", copy.partitionSchemaName, false ) );
       xml.append( "  " ).append( XMLHandler.addTagValue( "stepcopy", copy.stepCopyNr, false ) );
       xml.append( "  " ).append( XMLHandler.addTagValue( "partition", partition, false ) );
 

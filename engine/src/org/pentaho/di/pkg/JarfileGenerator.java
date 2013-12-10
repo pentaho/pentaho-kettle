@@ -85,16 +85,16 @@ public class JarfileGenerator {
 
       // Execute the jar command...
       executeJarCommand( kar, karFile, new File( "manifest.mf" ), new File( TRANSFORMATION_FILENAME ), deps
-          .getLibraryFiles() );
+        .getLibraryFiles() );
     } catch ( Exception e ) {
       log.logError( JarfileGenerator.class.getName(), "Error zipping files into archive ["
-          + karFile.getPath() + "] : " + e.toString() );
+        + karFile.getPath() + "] : " + e.toString() );
       log.logError( JarfileGenerator.class.getName(), Const.getStackTracker( e ) );
     }
   }
 
   private static final void executeJarCommand( File karDirectory, File karFile, File manifestFile, File transFile,
-      String[] libs ) throws IOException, InterruptedException {
+    String[] libs ) throws IOException, InterruptedException {
     for ( int i = 0; i < libs.length; i++ ) {
       List<String> commands = new ArrayList<String>();
       commands.add( "jar" );

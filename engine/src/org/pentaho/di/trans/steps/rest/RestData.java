@@ -34,7 +34,7 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 /**
  * @author Samatar
  * @since 16-jan-2011
- * 
+ *
  */
 public class RestData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;

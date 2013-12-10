@@ -35,10 +35,10 @@ import org.w3c.dom.Node;
 /**
  * This class contains code to help you drag data from one part of a GUI to another by using XML as an intermediate
  * step.
- * 
+ *
  * @author matt
  * @since 2006-04-16
- * 
+ *
  */
 public class DragAndDropContainer implements XMLInterface {
   public static final int TYPE_STEP = 1;
@@ -57,8 +57,9 @@ public class DragAndDropContainer implements XMLInterface {
   public static final int TYPE_BUSINESS_MODEL = 14;
 
   private static final String[] typeCodes = {
-      "", "Step", "BaseStep", "DatabaseConnection", "TransHop", "Text", "Jobentry", "BaseJobentry", "PhysicalTable",
-      "PhysicalColumn", "BusinessView", "BusinessTable", "BusinessColumn", "Relationship", "Business Model" };
+    "", "Step", "BaseStep", "DatabaseConnection", "TransHop", "Text", "Jobentry", "BaseJobentry",
+    "PhysicalTable", "PhysicalColumn", "BusinessView", "BusinessTable", "BusinessColumn", "Relationship",
+    "Business Model" };
   private static final String XML_TAG = "DragAndDrop";
 
   private int type;
@@ -66,7 +67,7 @@ public class DragAndDropContainer implements XMLInterface {
 
   /**
    * Create a new DragAndDropContainer
-   * 
+   *
    * @param type
    *          The type of drag&drop to perform
    * @param data
@@ -119,7 +120,8 @@ public class DragAndDropContainer implements XMLInterface {
       xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
       xml.append( "  " ).append( XMLHandler.addTagValue( "DragType", getTypeCode() ) );
       xml.append( "  " ).append(
-          XMLHandler.addTagValue( "Data", new String( Base64.encodeBase64( data.getBytes( Const.XML_ENCODING ) ) ) ) );
+        XMLHandler
+          .addTagValue( "Data", new String( Base64.encodeBase64( data.getBytes( Const.XML_ENCODING ) ) ) ) );
       xml.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
       return xml.toString();
@@ -130,7 +132,7 @@ public class DragAndDropContainer implements XMLInterface {
 
   /**
    * Construct a Drag and drop container from an XML String
-   * 
+   *
    * @param xml
    *          The XML string to convert from
    */
@@ -140,7 +142,8 @@ public class DragAndDropContainer implements XMLInterface {
       Node dnd = XMLHandler.getSubNode( doc, XML_TAG );
 
       type = getType( XMLHandler.getTagValue( dnd, "DragType" ) );
-      data = new String( Base64.decodeBase64( XMLHandler.getTagValue( dnd, "Data" ).getBytes() ), Const.XML_ENCODING );
+      data =
+        new String( Base64.decodeBase64( XMLHandler.getTagValue( dnd, "Data" ).getBytes() ), Const.XML_ENCODING );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unexpected error parsing Drag & Drop XML fragment: " + xml, e );
     }

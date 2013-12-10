@@ -34,12 +34,12 @@ import org.pentaho.di.i18n.BaseMessages;
  * [...]
  * private static final PluginMessages MESSAGES = PluginMessages.getMessages([class]).
  * [...]
- * 
+ *
  * MESSAGES.getString([key])
  * </code>
- * 
+ *
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public final class PluginMessages {
 
@@ -47,7 +47,7 @@ public final class PluginMessages {
 
   /**
    * Factory method.
-   * 
+   *
    * @param packageName
    *          package name.
    * @return messages.
@@ -67,7 +67,7 @@ public final class PluginMessages {
 
   /**
    * Factory method.
-   * 
+   *
    * @param someClassInPackage
    *          some class in package.
    * @return messages.
@@ -97,7 +97,7 @@ public final class PluginMessages {
   }
 
   /**
-   * 
+   *
    * @param key
    *          the key.
    * @return the message.
@@ -107,7 +107,7 @@ public final class PluginMessages {
   }
 
   /**
-   * 
+   *
    * @param key
    *          the key.
    * @param param1
@@ -119,7 +119,7 @@ public final class PluginMessages {
   }
 
   /**
-   * 
+   *
    * @param key
    *          the key.
    * @param param1
@@ -148,7 +148,7 @@ public final class PluginMessages {
   }
 
   /**
-   * 
+   *
    * @param key
    *          the key.
    * @param param1
@@ -162,12 +162,12 @@ public final class PluginMessages {
    * @return the message.
    */
   public String getString( final String key, final String param1, final String param2, final String param3,
-      final String param4 ) {
+    final String param4 ) {
     return BaseMessages.getString( this.packageName, key, param1, param2, param3, param4 );
   }
 
   /**
-   * 
+   *
    * @param key
    *          the key.
    * @param param1
@@ -183,12 +183,12 @@ public final class PluginMessages {
    * @return the message.
    */
   public String getString( final String key, final String param1, final String param2, final String param3,
-      final String param4, final String param5 ) {
+    final String param4, final String param5 ) {
     return BaseMessages.getString( this.packageName, key, param1, param2, param3, param4, param5 );
   }
 
   /**
-   * 
+   *
    * @param key
    *          the key.
    * @param param1
@@ -206,13 +206,13 @@ public final class PluginMessages {
    * @return the message.
    */
   public String getString( final String key, final String param1, final String param2, final String param3,
-      final String param4, final String param5, final String param6 ) {
+    final String param4, final String param5, final String param6 ) {
     return BaseMessages.getString( this.packageName, key, param1, param2, param3, param4, param5, param6 );
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

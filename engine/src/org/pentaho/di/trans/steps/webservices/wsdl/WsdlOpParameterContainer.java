@@ -41,7 +41,7 @@ public class WsdlOpParameterContainer implements WsdlParamContainer {
     if ( parameter.isArray() ) {
       if ( parameter.getItemComplexType() != null ) {
         return parameter.getItemComplexType().getElementNames().toArray(
-            new String[parameter.getItemComplexType().getElementNames().size()] );
+          new String[parameter.getItemComplexType().getElementNames().size()] );
       } else {
         if ( parameter.getItemXmlType() != null ) {
           return new String[] { parameter.getItemXmlType().getLocalPart() };
@@ -76,7 +76,7 @@ public class WsdlOpParameterContainer implements WsdlParamContainer {
   public String getItemName() {
     if ( parameter.isArray() ) {
       if ( parameter.getItemXmlType() != null
-          && !WebServiceMeta.XSD_NS_URI.equals( parameter.getItemXmlType().getNamespaceURI() ) ) {
+        && !WebServiceMeta.XSD_NS_URI.equals( parameter.getItemXmlType().getNamespaceURI() ) ) {
         return parameter.getItemXmlType().getLocalPart();
       } else {
         return null;

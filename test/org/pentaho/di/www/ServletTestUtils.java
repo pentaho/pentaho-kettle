@@ -33,9 +33,9 @@ public class ServletTestUtils {
 
   public static boolean hasBadText( String value ) {
     return value.indexOf( '!' ) != -1
-        || value.indexOf( '@' ) != -1 || value.indexOf( '$' ) != -1 || value.indexOf( '%' ) != -1
-        || value.indexOf( '^' ) != -1 || value.indexOf( '*' ) != -1 || value.indexOf( '(' ) != -1
-        || value.indexOf( ')' ) != -1 || value.indexOf( '<' ) != -1 || value.indexOf( '>' ) != -1
-        || value.indexOf( '/' ) != -1;
+      || value.indexOf( '@' ) != -1 || value.indexOf( '$' ) != -1 || value.indexOf( '%' ) != -1
+      || value.indexOf( '^' ) != -1 || value.indexOf( '*' ) != -1 || value.indexOf( '(' ) != -1
+      || value.indexOf( ')' ) != -1 || value.indexOf( '<' ) != -1 || value.indexOf( '>' ) != -1
+      || value.indexOf( '/' ) != -1;
   }
 }

@@ -34,7 +34,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of Value.
- * 
+ *
  * @author Sven Boden
  */
 public class ValueTest extends TestCase {
@@ -687,7 +687,7 @@ public class ValueTest extends TestCase {
 
   /**
    * Test of getStringLength().
-   * 
+   *
    */
   public void testGetStringLength() {
     int result = 0;
@@ -716,8 +716,8 @@ public class ValueTest extends TestCase {
     vs1.setPrecision( 2 );
     result = vs1.getXML();
     assertEquals(
-        "<value><name>Name</name><type>String</type><text>test</text><length>4</length><precision>-1</precision><isnull>N</isnull></value>",
-        result );
+      "<value><name>Name</name><type>String</type><text>test</text><length>4</length><precision>-1</precision><isnull>N</isnull></value>",
+      result );
 
     Value vs2 = new Value( "Name", Value.VALUE_TYPE_BOOLEAN );
     vs2.setValue( false );
@@ -725,8 +725,8 @@ public class ValueTest extends TestCase {
     vs2.setPrecision( 2 );
     result = vs2.getXML();
     assertEquals(
-        "<value><name>Name</name><type>Boolean</type><text>false</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>",
-        result );
+      "<value><name>Name</name><type>Boolean</type><text>false</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>",
+      result );
 
     Value vs3 = new Value( "Name", Value.VALUE_TYPE_INTEGER );
     vs3.setValue( 10 );
@@ -734,8 +734,8 @@ public class ValueTest extends TestCase {
     vs3.setPrecision( 2 );
     result = vs3.getXML();
     assertEquals(
-        "<value><name>Name</name><type>Integer</type><text>10</text><length>4</length><precision>0</precision><isnull>N</isnull></value>",
-        result );
+      "<value><name>Name</name><type>Integer</type><text>10</text><length>4</length><precision>0</precision><isnull>N</isnull></value>",
+      result );
 
     Value vs4 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs4.setValue( 10.0D );
@@ -743,8 +743,8 @@ public class ValueTest extends TestCase {
     vs4.setPrecision( 2 );
     result = vs4.getXML();
     assertEquals(
-        "<value><name>Name</name><type>Number</type><text>10.0</text><length>4</length><precision>2</precision><isnull>N</isnull></value>",
-        result );
+      "<value><name>Name</name><type>Number</type><text>10.0</text><length>4</length><precision>2</precision><isnull>N</isnull></value>",
+      result );
 
     Value vs5 = new Value( "Name", Value.VALUE_TYPE_BIGNUMBER );
     vs5.setValue( new BigDecimal( 10 ) );
@@ -752,8 +752,8 @@ public class ValueTest extends TestCase {
     vs5.setPrecision( 2 );
     result = vs5.getXML();
     assertEquals(
-        "<value><name>Name</name><type>BigNumber</type><text>10</text><length>4</length><precision>2</precision><isnull>N</isnull></value>",
-        result );
+      "<value><name>Name</name><type>BigNumber</type><text>10</text><length>4</length><precision>2</precision><isnull>N</isnull></value>",
+      result );
 
     SimpleDateFormat df = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     Date dt = df.parse( "2006/03/01 17:01:02.005", new ParsePosition( 0 ) );
@@ -763,8 +763,8 @@ public class ValueTest extends TestCase {
     vs6.setPrecision( 2 );
     result = vs6.getXML();
     assertEquals(
-        "<value><name>Name</name><type>Date</type><text>2006&#x2f;03&#x2f;01 17&#x3a;01&#x3a;02.005</text><length>-1</length><precision>2</precision><isnull>N</isnull></value>",
-        result );
+      "<value><name>Name</name><type>Date</type><text>2006&#x2f;03&#x2f;01 17&#x3a;01&#x3a;02.005</text><length>-1</length><precision>2</precision><isnull>N</isnull></value>",
+      result );
   }
 
   /**

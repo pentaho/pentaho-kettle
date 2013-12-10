@@ -55,15 +55,14 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the webservice available job entry.
- * 
+ *
  * @author Samatar
  * @since 05-11-2009
- * 
+ *
  */
 
 public class JobEntryWebServiceAvailableDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryWebServiceAvailable.class; // for i18n purposes, needed by Translator2!!
-                                                                   // $NON-NLS-1$
 
   private Label wlName;
 
@@ -101,7 +100,8 @@ public class JobEntryWebServiceAvailableDialog extends JobEntryDialog implements
 
   private boolean changed;
 
-  public JobEntryWebServiceAvailableDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntryWebServiceAvailableDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryWebServiceAvailable) jobEntryInt;
     if ( this.jobEntry.getName() == null ) {
@@ -189,8 +189,8 @@ public class JobEntryWebServiceAvailableDialog extends JobEntryDialog implements
     wlConnectTimeOut.setLayoutData( fdlConnectTimeOut );
 
     wConnectTimeOut = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wConnectTimeOut
-        .setToolTipText( BaseMessages.getString( PKG, "JobEntryWebServiceAvailable.ConnectTimeOut.Tooltip" ) );
+    wConnectTimeOut.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryWebServiceAvailable.ConnectTimeOut.Tooltip" ) );
     props.setLook( wConnectTimeOut );
     wConnectTimeOut.addModifyListener( lsMod );
     fdConnectTimeOut = new FormData();

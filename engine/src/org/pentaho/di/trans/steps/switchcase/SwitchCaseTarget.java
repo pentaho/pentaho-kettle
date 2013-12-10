@@ -26,9 +26,9 @@ import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * Utility class that contains the case value, the target step name and the resolved target step
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SwitchCaseTarget {
   /** The value to switch over */

@@ -56,15 +56,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Delete File job entry settings.
- * 
+ *
  * @author Sven Boden
  * @since 10-02-2007
  */
 public class JobEntryDeleteFileDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryDeleteFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDeleteFile.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] FILETYPES =
-      new String[] { BaseMessages.getString( PKG, "JobDeleteFile.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "JobDeleteFile.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;

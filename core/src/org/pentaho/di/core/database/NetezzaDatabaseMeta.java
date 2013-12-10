@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains Netezza specific information through static final members
- * 
+ *
  * @author Biswapesh
  * @since 16-oct-2006
  */
@@ -53,7 +53,8 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -84,7 +85,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -147,7 +148,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Get the SQL to get the next value of a sequence. (Netezza version)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence.
@@ -159,7 +160,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Get the SQL to get the current value of a sequence. (Netezza version)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the current value of a sequence.
@@ -171,7 +172,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Check if a sequence exists.
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The SQL to get the name of the sequence back from the databases data dictionary
@@ -184,7 +185,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   /**
    * Generates the SQL statement to add a column to the specified table Note: Netezza does not allow adding columns to
    * tables
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -201,14 +202,14 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return null;
   }
 
   /**
    * Generates the SQL statement to drop a column from the specified table Note: Netezza does not allow
    * addition/deletion of columns to tables
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -225,14 +226,14 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return null;
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table. Note: Support for this in Netezza is
    * incomplete since Netezza allows very limited table/column modifications post-creation
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -249,7 +250,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     String retval = "";
     retval += "ALTER TABLE " + tablename + " MODIFY COLUMN " + v.getName() + Const.CR + ";" + Const.CR;
     return retval;
@@ -257,7 +258,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -333,58 +334,60 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
    */
   @Override
   public String[] getReservedWords() {
     return new String[] {
-        // As per the user manual
-        "ABORT", "ADMIN", "AGGREGATE", "ALIGN", "ALL", "ALLOCATE", "ANALYSE", "ANALYZE", "AND", "ANY", "AS", "ASC",
-        "BETWEEN", "BINARY", "BIT", "BOTH", "CASE", "CAST", "CHAR", "CHARACTER", "CHECK", "CLUSTER", "COALESCE",
-        "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "COPY", "CROSS", "CURRENT", "CURRENT_CATALOG", "CURRENT_DATE",
-        "CURRENT_DB", "CURRENT_SCHEMA", "CURRENT_SID", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER",
-        "CURRENT_USERID", "CURRENT_USEROID", "DEALLOCATE", "DEC", "DECIMAL", "DECODE", "DEFAULT", "DEFERRABLE", "DESC",
-        "DISTINCT", "DISTRIBUTE", "DO", "ELSE", "END", "EXCEPT", "EXCLUDE", "EXISTS", "EXPLAIN", "EXPRESS", "EXTEND",
-        "EXTRACT", "FALSE", "FIRST", "FLOAT", "FOLLOWING", "FOR", "FOREIGN", "FROM", "FULL", "FUNCTION", "GENSTATS",
-        "GLOBAL", "GROUP", "HAVING", "ILIKE", "IN", "INDEX", "INITIALLY", "INNER", "INOUT", "INTERSECT", "INTERVAL",
-        "INTO", "IS", "ISNULL", "JOIN", "LAST", "LEADING", "LEFT", "LIKE", "LIMIT", "LISTEN", "LOAD", "LOCAL", "LOCK",
-        "MATERIALIZED", "MINUS", "MOVE", "NATURAL", "NCHAR", "NEW", "NOT", "NOTNULL", "NULL", "NULLIF", "NULLS",
-        "NUMERIC", "NVL", "NVL2", "OFF", "OFFSET", "OLD", "ON", "ONLINE", "ONLY", "OR", "ORDER", "OTHERS", "OUT",
-        "OUTER", "OVER", "OVERLAPS", "PARTITION", "POSITION", "PRECEDING", "PRECISION", "PRESERVE", "PRIMARY",
-        "PUBLIC", "RANGE", "RECLAIM", "REFERENCES", "RESET", "REUSE", "RIGHT", "ROWS", "ROWSETLIMIT", "RULE", "SEARCH",
-        "SELECT", "SEQUENCE", "SESSION_USER", "SETOF", "SHOW", "SOME", "SUBSTRING", "SYSTEM", "TABLE", "THEN", "TIES",
-        "TIME", "TIMESTAMP", "TO", "TRAILING", "TRANSACTION", "TRIGGER", "TRIM", "TRUE", "UNBOUNDED", "UNION",
-        "UNIQUE", "USER", "USING", "VACUUM", "VARCHAR", "VERBOSE", "VIEW", "WHEN", "WHERE", "WITH", "WRITE",
-        "ABSOLUTE", "ACTION", "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALTER", "AND", "ANY",
-        "ARE", "ARRAY", "AS", "ASC", "ASSERTION", "AT", "AUTHORIZATION", "BEFORE", "BEGIN", "BINARY", "BIT", "BLOB",
-        "BOOLEAN", "BOTH", "BREADTH", "BY", "CALL", "CASCADE", "CASCADED", "CASE", "CAST", "CATALOG", "CHAR",
-        "CHARACTER", "CHECK", "CLASS", "CLOB", "CLOSE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "COMPLETION",
-        "CONNECT", "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR", "CONTINUE", "CORRESPONDING", "CREATE",
-        "CROSS", "CUBE", "CURRENT", "CURRENT_DATE", "CURRENT_PATH", "CURRENT_ROLE", "CURRENT_TIME", "CURRENT_",
-        "TIMESTAMP", "CURRENT_USER", "CURSOR", "CYCLE", "DATA", "DATE", "DAY", "DEALLOCATE", "DEC", "DECIMAL",
-        "DECLARE", "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DEPTH", "DEREF", "DESC", "DESCRIBE", "DESCRIPTOR",
-        "DESTROY", "DESTRUCTOR", "DETERMINISTIC", "DIAGNOSTICS", "DICTIONARY", "DISCONNECT", "DISTINCT", "DOMAIN",
-        "DOUBLE", "DROP", "DYNAMIC", "EACH", "ELSE", "END_EXEC", "END", "EQUALS", "ESCAPE", "EVERY", "EXCEPT",
-        "EXCEPTION", "EXEC", "EXECUTE", "EXTERNAL", "FALSE", "FETCH", "FIRST", "FLOAT", "FOR", "FOREIGN", "FOUND",
-        "FREE", "FROM", "FULL", "FUNCTION", "GENERAL", "GET", "GLOBAL", "GO", "GOTO", "GRANT", "GROUP", "GROUPING",
-        "HAVING", "HOST", "HOUR", "IDENTITY", "IGNORE", "IMMEDIATE", "IN", "INDICATOR", "INITIALIZE", "INITIALLY",
-        "INNER", "INOUT", "INPUT", "INSERT", "INT", "INTEGER", "INTERSECT", "INTERVAL", "INTO", "IS", "ISOLATION",
-        "ITERATE", "JOIN", "KEY", "LANGUAGE", "LARGE", "LAST", "LATERAL", "LEADING", "LEFT", "LESS", "LEVEL", "LIKE",
-        "LIMIT", "LOCAL", "LOCALTIME", "LOCALTIMESTAMP", "LOCATOR", "MAP", "MATCH", "MINUTE", "MODIFIES", "MODIFY",
-        "MODULE", "MONTH", "NAMES", "NATIONAL", "NATURAL", "NCHAR", "NCLOB", "NEW", "NEXT", "NO", "NONE", "NOT",
-        "NULL", "NUMERIC", "OBJECT", "OF", "OFF", "OLD", "ON", "ONLY", "OPEN", "OPERATION", "OPTION", "OR", "ORDER",
-        "ORDINALITY", "OUT", "OUTER", "OUTPUT", "PAD", "PARAMETER", "PARAMETERS", "PARTIAL", "PATH", "POSTFIX",
-        "PRECISION", "PREFIX", "PREORDER", "PREPARE", "PRESERVE", "PRIMARY", "PRIOR", "PRIVILEGES", "PROCEDURE",
-        "PUBLIC", "READ", "READS", "REAL", "RECURSIVE", "REF", "REFERENCES", "REFERENCING", "RELATIVE", "RESTRICT",
-        "RESULT", "RETURN", "RETURNS", "REVOKE", "RIGHT", "ROLE", "ROLLBACK", "ROLLUP", "ROUTINE", "ROW", "ROWS",
-        "SAVEPOINT", "SCHEMA", "SCOPE", "SCROLL", "SEARCH", "SECOND", "SECTION", "SELECT", "SEQUENCE", "SESSION",
-        "SESSION_USER", "SET", "SETS", "SIZE", "SMALLINT", "SOME", "SPACE", "SPECIFIC", "SPECIFICTYPE", "SQL",
-        "SQLEXCEPTION", "SQLSTATE", "SQLWARNING", "START", "STATE", "STATEMENT", "STATIC", "STRUCTURE", "SYSTEM_USER",
-        "TABLE", "TEMPORARY", "TERMINATE", "THAN", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE",
-        "TO", "TRAILING", "TRANSACTION", "TRANSLATION", "TREAT", "TRIGGER", "TRUE", "UNDER", "UNION", "UNIQUE",
-        "UNKNOWN", "UNNEST", "UPDATE", "USAGE", "USER", "USING", "VALUE", "VALUES", "VARCHAR", "VARIABLE", "VARYING",
-        "VIEW", "WHEN", "WHENEVER", "WHERE", "WITH", "WITHOUT", "WORK", "WRITE", "YEAR", "ZONE" };
+      // As per the user manual
+      "ABORT", "ADMIN", "AGGREGATE", "ALIGN", "ALL", "ALLOCATE", "ANALYSE", "ANALYZE", "AND", "ANY", "AS",
+      "ASC", "BETWEEN", "BINARY", "BIT", "BOTH", "CASE", "CAST", "CHAR", "CHARACTER", "CHECK", "CLUSTER",
+      "COALESCE", "COLLATE", "COLLATION", "COLUMN", "CONSTRAINT", "COPY", "CROSS", "CURRENT", "CURRENT_CATALOG",
+      "CURRENT_DATE", "CURRENT_DB", "CURRENT_SCHEMA", "CURRENT_SID", "CURRENT_TIME", "CURRENT_TIMESTAMP",
+      "CURRENT_USER", "CURRENT_USERID", "CURRENT_USEROID", "DEALLOCATE", "DEC", "DECIMAL", "DECODE", "DEFAULT",
+      "DEFERRABLE", "DESC", "DISTINCT", "DISTRIBUTE", "DO", "ELSE", "END", "EXCEPT", "EXCLUDE", "EXISTS",
+      "EXPLAIN", "EXPRESS", "EXTEND", "EXTRACT", "FALSE", "FIRST", "FLOAT", "FOLLOWING", "FOR", "FOREIGN",
+      "FROM", "FULL", "FUNCTION", "GENSTATS", "GLOBAL", "GROUP", "HAVING", "ILIKE", "IN", "INDEX", "INITIALLY",
+      "INNER", "INOUT", "INTERSECT", "INTERVAL", "INTO", "IS", "ISNULL", "JOIN", "LAST", "LEADING", "LEFT",
+      "LIKE", "LIMIT", "LISTEN", "LOAD", "LOCAL", "LOCK", "MATERIALIZED", "MINUS", "MOVE", "NATURAL", "NCHAR",
+      "NEW", "NOT", "NOTNULL", "NULL", "NULLIF", "NULLS", "NUMERIC", "NVL", "NVL2", "OFF", "OFFSET", "OLD",
+      "ON", "ONLINE", "ONLY", "OR", "ORDER", "OTHERS", "OUT", "OUTER", "OVER", "OVERLAPS", "PARTITION",
+      "POSITION", "PRECEDING", "PRECISION", "PRESERVE", "PRIMARY", "PUBLIC", "RANGE", "RECLAIM", "REFERENCES",
+      "RESET", "REUSE", "RIGHT", "ROWS", "ROWSETLIMIT", "RULE", "SEARCH", "SELECT", "SEQUENCE", "SESSION_USER",
+      "SETOF", "SHOW", "SOME", "SUBSTRING", "SYSTEM", "TABLE", "THEN", "TIES", "TIME", "TIMESTAMP", "TO",
+      "TRAILING", "TRANSACTION", "TRIGGER", "TRIM", "TRUE", "UNBOUNDED", "UNION", "UNIQUE", "USER", "USING",
+      "VACUUM", "VARCHAR", "VERBOSE", "VIEW", "WHEN", "WHERE", "WITH", "WRITE", "ABSOLUTE", "ACTION", "ADD",
+      "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALTER", "AND", "ANY", "ARE", "ARRAY", "AS",
+      "ASC", "ASSERTION", "AT", "AUTHORIZATION", "BEFORE", "BEGIN", "BINARY", "BIT", "BLOB", "BOOLEAN", "BOTH",
+      "BREADTH", "BY", "CALL", "CASCADE", "CASCADED", "CASE", "CAST", "CATALOG", "CHAR", "CHARACTER", "CHECK",
+      "CLASS", "CLOB", "CLOSE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "COMPLETION", "CONNECT",
+      "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR", "CONTINUE", "CORRESPONDING", "CREATE", "CROSS",
+      "CUBE", "CURRENT", "CURRENT_DATE", "CURRENT_PATH", "CURRENT_ROLE", "CURRENT_TIME", "CURRENT_",
+      "TIMESTAMP", "CURRENT_USER", "CURSOR", "CYCLE", "DATA", "DATE", "DAY", "DEALLOCATE", "DEC", "DECIMAL",
+      "DECLARE", "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DEPTH", "DEREF", "DESC", "DESCRIBE",
+      "DESCRIPTOR", "DESTROY", "DESTRUCTOR", "DETERMINISTIC", "DIAGNOSTICS", "DICTIONARY", "DISCONNECT",
+      "DISTINCT", "DOMAIN", "DOUBLE", "DROP", "DYNAMIC", "EACH", "ELSE", "END_EXEC", "END", "EQUALS", "ESCAPE",
+      "EVERY", "EXCEPT", "EXCEPTION", "EXEC", "EXECUTE", "EXTERNAL", "FALSE", "FETCH", "FIRST", "FLOAT", "FOR",
+      "FOREIGN", "FOUND", "FREE", "FROM", "FULL", "FUNCTION", "GENERAL", "GET", "GLOBAL", "GO", "GOTO", "GRANT",
+      "GROUP", "GROUPING", "HAVING", "HOST", "HOUR", "IDENTITY", "IGNORE", "IMMEDIATE", "IN", "INDICATOR",
+      "INITIALIZE", "INITIALLY", "INNER", "INOUT", "INPUT", "INSERT", "INT", "INTEGER", "INTERSECT", "INTERVAL",
+      "INTO", "IS", "ISOLATION", "ITERATE", "JOIN", "KEY", "LANGUAGE", "LARGE", "LAST", "LATERAL", "LEADING",
+      "LEFT", "LESS", "LEVEL", "LIKE", "LIMIT", "LOCAL", "LOCALTIME", "LOCALTIMESTAMP", "LOCATOR", "MAP",
+      "MATCH", "MINUTE", "MODIFIES", "MODIFY", "MODULE", "MONTH", "NAMES", "NATIONAL", "NATURAL", "NCHAR",
+      "NCLOB", "NEW", "NEXT", "NO", "NONE", "NOT", "NULL", "NUMERIC", "OBJECT", "OF", "OFF", "OLD", "ON",
+      "ONLY", "OPEN", "OPERATION", "OPTION", "OR", "ORDER", "ORDINALITY", "OUT", "OUTER", "OUTPUT", "PAD",
+      "PARAMETER", "PARAMETERS", "PARTIAL", "PATH", "POSTFIX", "PRECISION", "PREFIX", "PREORDER", "PREPARE",
+      "PRESERVE", "PRIMARY", "PRIOR", "PRIVILEGES", "PROCEDURE", "PUBLIC", "READ", "READS", "REAL", "RECURSIVE",
+      "REF", "REFERENCES", "REFERENCING", "RELATIVE", "RESTRICT", "RESULT", "RETURN", "RETURNS", "REVOKE",
+      "RIGHT", "ROLE", "ROLLBACK", "ROLLUP", "ROUTINE", "ROW", "ROWS", "SAVEPOINT", "SCHEMA", "SCOPE", "SCROLL",
+      "SEARCH", "SECOND", "SECTION", "SELECT", "SEQUENCE", "SESSION", "SESSION_USER", "SET", "SETS", "SIZE",
+      "SMALLINT", "SOME", "SPACE", "SPECIFIC", "SPECIFICTYPE", "SQL", "SQLEXCEPTION", "SQLSTATE", "SQLWARNING",
+      "START", "STATE", "STATEMENT", "STATIC", "STRUCTURE", "SYSTEM_USER", "TABLE", "TEMPORARY", "TERMINATE",
+      "THAN", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO", "TRAILING", "TRANSACTION",
+      "TRANSLATION", "TREAT", "TRIGGER", "TRUE", "UNDER", "UNION", "UNIQUE", "UNKNOWN", "UNNEST", "UPDATE",
+      "USAGE", "USER", "USING", "VALUE", "VALUES", "VARCHAR", "VARIABLE", "VARYING", "VIEW", "WHEN", "WHENEVER",
+      "WHERE", "WITH", "WITHOUT", "WORK", "WRITE", "YEAR", "ZONE" };
   }
 
   /**

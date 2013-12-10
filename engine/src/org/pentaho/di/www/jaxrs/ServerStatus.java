@@ -58,7 +58,8 @@ public class ServerStatus {
   private String osArchitecture;
 
   public ServerStatus() {
-    OperatingSystemMXBean operatingSystemMXBean = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+    OperatingSystemMXBean operatingSystemMXBean =
+      java.lang.management.ManagementFactory.getOperatingSystemMXBean();
     ThreadMXBean threadMXBean = java.lang.management.ManagementFactory.getThreadMXBean();
     RuntimeMXBean runtimeMXBean = java.lang.management.ManagementFactory.getRuntimeMXBean();
 

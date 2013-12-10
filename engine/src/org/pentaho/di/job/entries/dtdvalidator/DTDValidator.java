@@ -43,7 +43,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 public class DTDValidator {
-  private static Class<?> PKG = JobEntryDTDValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDTDValidator.class; // for i18n purposes, needed by Translator2!!
 
   private String xmlfilename;
   private String xsdfilename;
@@ -165,11 +165,11 @@ public class DTDValidator {
           if ( isInternDTD() ) {
             // DTD find in the XML document
             if ( xmlStartDTD != -1 ) {
-              log
-                  .logBasic( BaseMessages.getString( PKG, "JobEntryDTDValidator.ERRORDTDFound.Label", getXMLFilename() ) );
+              log.logBasic( BaseMessages.getString(
+                PKG, "JobEntryDTDValidator.ERRORDTDFound.Label", getXMLFilename() ) );
             } else {
               setErrorMessage( BaseMessages.getString(
-                  PKG, "JobEntryDTDValidator.ERRORDTDNotFound.Label", getXMLFilename() ) );
+                PKG, "JobEntryDTDValidator.ERRORDTDNotFound.Label", getXMLFilename() ) );
             }
 
           } else {
@@ -187,16 +187,18 @@ public class DTDValidator {
               String xmlRootnodeDTD = xmlDocDTD.getDocumentElement().getNodeName();
 
               String RefDTD =
-                  "<?xml version='"
-                      + xmlDocDTD.getXmlVersion() + "' encoding='" + encoding + "'?>\n<!DOCTYPE " + xmlRootnodeDTD
-                      + " SYSTEM '" + KettleVFS.getFilename( DTDfile ) + "'>\n";
+                "<?xml version='"
+                  + xmlDocDTD.getXmlVersion() + "' encoding='" + encoding + "'?>\n<!DOCTYPE " + xmlRootnodeDTD
+                  + " SYSTEM '" + KettleVFS.getFilename( DTDfile ) + "'>\n";
 
               int xmloffsetDTD = xmlStringbuffer.indexOf( "<" + xmlRootnodeDTD );
               xmlStringbuffer.replace( 0, xmloffsetDTD, RefDTD );
             } else {
-              log.logError(
-                  BaseMessages.getString( PKG, "JobEntryDTDValidator.ERRORDTDFileNotExists.Subject" ), BaseMessages
-                      .getString( PKG, "JobEntryDTDValidator.ERRORDTDFileNotExists.Msg", getDTDFilename() ) );
+              log
+                .logError(
+                  BaseMessages.getString( PKG, "JobEntryDTDValidator.ERRORDTDFileNotExists.Subject" ),
+                  BaseMessages.getString(
+                    PKG, "JobEntryDTDValidator.ERRORDTDFileNotExists.Msg", getDTDFilename() ) );
             }
           }
 
@@ -212,7 +214,8 @@ public class DTDValidator {
             xmlDocDTD = DocBuilder.parse( ba );
 
             if ( error.errorMessage == null ) {
-              log.logBasic( BaseMessages.getString( PKG, "JobEntryDTDValidator.DTDValidatorOK.Subject" ), BaseMessages
+              log.logBasic(
+                BaseMessages.getString( PKG, "JobEntryDTDValidator.DTDValidatorOK.Subject" ), BaseMessages
                   .getString( PKG, "JobEntryDTDValidator.DTDValidatorOK.Label", getXMLFilename() ) );
 
               // Everything is OK
@@ -220,15 +223,17 @@ public class DTDValidator {
             } else {
               // Invalid DTD
               setNrErrors( error.nrErrors );
-              setErrorMessage( BaseMessages.getString(
-                  PKG, "JobEntryDTDValidator.DTDValidatorKO", getXMLFilename(), error.nrErrors, error.errorMessage ) );
+              setErrorMessage( BaseMessages
+                .getString(
+                  PKG, "JobEntryDTDValidator.DTDValidatorKO", getXMLFilename(), error.nrErrors,
+                  error.errorMessage ) );
             }
           }
 
         } else {
           if ( !xmlfile.exists() ) {
             setErrorMessage( BaseMessages.getString(
-                PKG, "JobEntryDTDValidator.FileDoesNotExist.Label", getXMLFilename() ) );
+              PKG, "JobEntryDTDValidator.FileDoesNotExist.Label", getXMLFilename() ) );
           }
         }
       } else {
@@ -236,7 +241,7 @@ public class DTDValidator {
       }
     } catch ( Exception e ) {
       setErrorMessage( BaseMessages.getString(
-          PKG, "JobEntryDTDValidator.ErrorDTDValidator.Label", getXMLFilename(), getDTDFilename(), e.getMessage() ) );
+        PKG, "JobEntryDTDValidator.ErrorDTDValidator.Label", getXMLFilename(), getDTDFilename(), e.getMessage() ) );
     } finally {
       try {
         if ( xmlfile != null ) {
@@ -295,11 +300,11 @@ public class DTDValidator {
           break;
       }
       errorMessage +=
-          ")"
-              + Const.CR + "              Public ID: " + e.getPublicId() + Const.CR + "              System ID: "
-              + e.getSystemId() + Const.CR + "              Line number: " + e.getLineNumber() + Const.CR
-              + "              Column number: " + e.getColumnNumber() + Const.CR + "              Message: "
-              + e.getMessage();
+        ")"
+          + Const.CR + "              Public ID: " + e.getPublicId() + Const.CR + "              System ID: "
+          + e.getSystemId() + Const.CR + "              Line number: " + e.getLineNumber() + Const.CR
+          + "              Column number: " + e.getColumnNumber() + Const.CR + "              Message: "
+          + e.getMessage();
     }
   }
 

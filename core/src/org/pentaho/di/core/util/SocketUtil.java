@@ -32,7 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 public class SocketUtil {
   /**
    * Attempts to connect to the specified host, wrapping any exceptions in a KettleException
-   * 
+   *
    * @param host
    *          the host to connect to
    * @param port

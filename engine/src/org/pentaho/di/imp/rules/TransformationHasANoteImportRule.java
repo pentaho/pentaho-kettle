@@ -55,10 +55,10 @@ public class TransformationHasANoteImportRule extends BaseImportRule implements 
 
     if ( transMeta.nrNotes() == 0 ) {
       feedback.add( new ImportValidationFeedback(
-          this, ImportValidationResultType.ERROR, "There is not even a single note in the transformation." ) );
+        this, ImportValidationResultType.ERROR, "There is not even a single note in the transformation." ) );
     } else {
       feedback.add( new ImportValidationFeedback(
-          this, ImportValidationResultType.APPROVAL, "At least one not is present in the transformation." ) );
+        this, ImportValidationResultType.APPROVAL, "At least one not is present in the transformation." ) );
     }
 
     return feedback;

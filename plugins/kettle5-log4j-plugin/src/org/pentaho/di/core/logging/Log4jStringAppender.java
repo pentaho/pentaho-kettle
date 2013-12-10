@@ -36,7 +36,7 @@ import org.pentaho.di.core.logging.BufferChangedListener;
 /**
  * @deprecated please use the centralized CentralLogStore to get your log lines from.
  * Pass the log channel id of the parent object that you want the log for.
- * 
+ *
  * @author matt
  *
  */
@@ -45,17 +45,17 @@ public class Log4jStringAppender implements Appender
 {
     private Layout layout;
     private Filter filter;
-    
+
     private String  name;
-    
+
     private StringBuffer buffer;
-    
+
     private int nrLines;
-    
+
     private int maxNrLines;
-    
+
     private List<BufferChangedListener> bufferChangedListeners;
-    
+
     public Log4jStringAppender()
     {
         buffer = new StringBuffer();
@@ -63,11 +63,11 @@ public class Log4jStringAppender implements Appender
         maxNrLines = -1;
         bufferChangedListeners=new ArrayList<BufferChangedListener>();
     }
-    
+
     public String toString() {
     	return buffer.toString();
     }
-    
+
     public void addFilter(Filter filter)
     {
         this.filter = filter;
@@ -99,7 +99,7 @@ public class Log4jStringAppender implements Appender
         	buffer.delete(0, line.length());
         	nrLines--;
         }
-        
+
         for (BufferChangedListener listener : bufferChangedListeners)
         {
         	listener.contentWasAdded(buffer, line, nrLines);
@@ -144,12 +144,12 @@ public class Log4jStringAppender implements Appender
     {
         this.filter = filter;
     }
-    
+
     public StringBuffer getBuffer()
     {
         return buffer;
     }
-    
+
     public void setBuffer(StringBuffer buffer)
     {
         this.buffer = buffer;

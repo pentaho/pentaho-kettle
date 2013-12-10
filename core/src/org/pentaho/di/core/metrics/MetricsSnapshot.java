@@ -40,7 +40,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
 
   /**
    * Create a new metrics snapshot
-   * 
+   *
    * @param type
    * @param metric
    *          the metric to use (ex. Connect to database)
@@ -58,7 +58,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
 
   /**
    * Create a new metrics snapshot without a subject
-   * 
+   *
    * @param type
    * @param description
    * @param logChannelId
@@ -69,7 +69,7 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
 
   /**
    * Create a snapshot metric with a value.
-   * 
+   *
    * @param type
    *          The type. For metrics with a value it is usually MIN, MAX, SUM, COUNT, ...
    * @param metric
@@ -82,14 +82,14 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
    *          The logging channel to reference.
    */
   public MetricsSnapshot( MetricsSnapshotType type, MetricsInterface metric, String subject, long value,
-      String logChannelId ) {
+    String logChannelId ) {
     this( type, metric, subject, logChannelId );
     this.value = value;
   }
 
   /**
    * Create a snapshot metric with a value.
-   * 
+   *
    * @param type
    *          The type. For metrics with a value it is usually MIN, MAX, SUM, COUNT, ...
    * @param description
@@ -130,7 +130,8 @@ public class MetricsSnapshot implements MetricsSnapshotInterface {
       subject = "-";
     }
 
-    return subject + " - " + getKey() + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : " + type.toString();
+    return subject
+      + " - " + getKey() + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : " + type.toString();
 
   }
 

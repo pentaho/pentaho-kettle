@@ -77,9 +77,10 @@ public class SwitchCaseTest {
   @Before
   public void setUp() throws Exception {
     mockHelper =
-        new StepMockHelper<SwitchCaseMeta, SwitchCaseData>( "Switch Case", SwitchCaseMeta.class, SwitchCaseData.class );
+      new StepMockHelper<SwitchCaseMeta, SwitchCaseData>(
+        "Switch Case", SwitchCaseMeta.class, SwitchCaseData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        mockHelper.logChannelInterface );
+      mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -91,7 +92,7 @@ public class SwitchCaseTest {
   /**
    * PDI 6900. Test that process row works correctly. Simulate step workload when input and output row sets already
    * created and mapped to specified case values.
-   * 
+   *
    * @throws KettleException
    */
   @Test
@@ -139,17 +140,17 @@ public class SwitchCaseTest {
 
     // now - check the data is correct in every row set:
     Assert.assertEquals( "First row set contains only 3: ", true, isRowSetContainsValue(
-        rowSetOne, new Object[] { 3 }, new Object[] {} ) );
+      rowSetOne, new Object[] { 3 }, new Object[] {} ) );
     Assert.assertEquals( "Second row set contains only 3: ", true, isRowSetContainsValue(
-        rowSetTwo, new Object[] { 3 }, new Object[] {} ) );
+      rowSetTwo, new Object[] { 3 }, new Object[] {} ) );
 
     Assert.assertEquals( "First null row set contains only null: ", true, isRowSetContainsValue(
-        rowSetNullOne, new Object[] { null }, new Object[] {} ) );
+      rowSetNullOne, new Object[] { null }, new Object[] {} ) );
     Assert.assertEquals( "Second null row set contains only null: ", true, isRowSetContainsValue(
-        rowSetNullTwo, new Object[] { null }, new Object[] {} ) );
+      rowSetNullTwo, new Object[] { null }, new Object[] {} ) );
 
     Assert.assertEquals( "Default row set do not contains null or 3, but other", true, isRowSetContainsValue(
-        def, new Object[] { 1, 2, 4, 5 }, new Object[] { 3, null } ) );
+      def, new Object[] { 1, 2, 4, 5 }, new Object[] { 3, null } ) );
   }
 
   private boolean isRowSetContainsValue( RowSet rowSet, Object[] allowed, Object[] illegal ) {
@@ -174,7 +175,7 @@ public class SwitchCaseTest {
 
   /**
    * PDI-6900 Check that SwichCase step can correctly set up input values to output rowsets.
-   * 
+   *
    * @throws KettleException
    * @throws URISyntaxException
    * @throws ParserConfigurationException
@@ -182,8 +183,8 @@ public class SwitchCaseTest {
    * @throws IOException
    */
   @Test
-  public void testCreateOutputValueMapping() throws KettleException, URISyntaxException, ParserConfigurationException,
-    SAXException, IOException {
+  public void testCreateOutputValueMapping() throws KettleException, URISyntaxException,
+    ParserConfigurationException, SAXException, IOException {
     SwitchCaseCustom krasavez = new SwitchCaseCustom( mockHelper );
 
     // load step info value-case mapping from xml.
@@ -251,7 +252,7 @@ public class SwitchCaseTest {
 
   /**
    * Load local xml data for case-value mapping, step info.
-   * 
+   *
    * @return
    * @throws URISyntaxException
    * @throws ParserConfigurationException
@@ -273,7 +274,7 @@ public class SwitchCaseTest {
 
   /**
    * Switch case step ancestor with overridden methods to have ability to simulate normal transformation execution.
-   * 
+   *
    */
   private class SwitchCaseCustom extends SwitchCase {
 
@@ -293,17 +294,18 @@ public class SwitchCaseTest {
 
       // call to convert value will returns same value.
       data.valueMeta = mock( ValueMetaInterface.class );
-      when( data.valueMeta.convertData( any( ValueMetaInterface.class ), any() ) ).thenAnswer( new Answer<Object>() {
-        @Override
-        public Object answer( InvocationOnMock invocation ) throws Throwable {
-          Object[] objArr = invocation.getArguments();
-          return ( objArr != null && objArr.length > 1 ) ? objArr[1] : null;
-        }
-      } );
+      when( data.valueMeta.convertData( any( ValueMetaInterface.class ), any() ) ).thenAnswer(
+        new Answer<Object>() {
+          @Override
+          public Object answer( InvocationOnMock invocation ) throws Throwable {
+            Object[] objArr = invocation.getArguments();
+            return ( objArr != null && objArr.length > 1 ) ? objArr[1] : null;
+          }
+        } );
       // same when call to convertDataFromString
       when(
-          data.valueMeta.convertDataFromString( Mockito.anyString(), any( ValueMetaInterface.class ), Mockito
-              .anyString(), Mockito.anyString(), Mockito.anyInt() ) ).thenAnswer( new Answer<Object>() {
+        data.valueMeta.convertDataFromString( Mockito.anyString(), any( ValueMetaInterface.class ), Mockito
+          .anyString(), Mockito.anyString(), Mockito.anyInt() ) ).thenAnswer( new Answer<Object>() {
         @Override
         public Object answer( InvocationOnMock invocation ) throws Throwable {
           Object[] objArr = invocation.getArguments();
@@ -324,7 +326,7 @@ public class SwitchCaseTest {
 
     /**
      * used for input row generation
-     * 
+     *
      * @param start
      * @param finish
      * @param copy
@@ -341,7 +343,7 @@ public class SwitchCaseTest {
 
     /**
      * useful to see generated data as String
-     * 
+     *
      * @return
      */
     @SuppressWarnings( "unused" )
@@ -363,7 +365,7 @@ public class SwitchCaseTest {
 
     /**
      * simulate concurrent execution
-     * 
+     *
      * @throws KettleException
      */
     public void processRow() throws KettleException {

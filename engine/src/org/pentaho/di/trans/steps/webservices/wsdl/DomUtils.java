@@ -38,7 +38,7 @@ public final class DomUtils {
    * <p>
    * Returns the first child element with the given name. Returns <code>null</code> if not found.
    * </p>
-   * 
+   *
    * @param parent
    *          parent element
    * @param localName
@@ -64,7 +64,7 @@ public final class DomUtils {
    * <p>
    * Returns a list of child elements with the given name. Returns an empty list if there are no such child elements.
    * </p>
-   * 
+   *
    * @param parent
    *          parent element
    * @param localName

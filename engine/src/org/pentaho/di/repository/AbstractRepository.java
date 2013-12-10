@@ -49,7 +49,8 @@ public abstract class AbstractRepository implements Repository {
   }
 
   @Override
-  public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, String code, boolean def ) throws KettleException {
+  public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, String code, boolean def )
+    throws KettleException {
     return getJobEntryAttributeBoolean( id_jobentry, 0, code, def );
   }
 
@@ -125,19 +126,20 @@ public abstract class AbstractRepository implements Repository {
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, String idCode,
-      List<DatabaseMeta> databases ) throws KettleException {
+    List<DatabaseMeta> databases ) throws KettleException {
     return loadDatabaseMetaFromJobEntryAttribute( id_jobentry, nameCode, 0, idCode, databases );
   }
 
   @Override
-  public void save( RepositoryElementInterface repoElement, String versionComment, ProgressMonitorListener monitor )
-    throws KettleException {
+  public void
+    save( RepositoryElementInterface repoElement, String versionComment, ProgressMonitorListener monitor )
+      throws KettleException {
     save( repoElement, versionComment, monitor, false );
   }
 
   @Override
-  public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode,
-      DatabaseMeta database ) throws KettleException {
+  public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String nameCode,
+    String idCode, DatabaseMeta database ) throws KettleException {
     saveDatabaseMetaJobEntryAttribute( id_job, id_jobentry, 0, nameCode, idCode, database );
   }
 }

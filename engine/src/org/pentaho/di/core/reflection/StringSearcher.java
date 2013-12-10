@@ -43,7 +43,7 @@ public class StringSearcher {
   private static List<String> jobEntryPluginPackages;
 
   public static final void findMetaData( Object object, int level, List<StringSearchResult> stringList,
-      Object parentObject, Object grandParentObject ) {
+    Object parentObject, Object grandParentObject ) {
     // System.out.println(Const.rightPad(" ", level)+"Finding strings in "+object.toString());
 
     if ( level > 5 ) {
@@ -135,7 +135,7 @@ public class StringSearcher {
   }
 
   private static void stringSearchInObject( Object obj, int level, List<StringSearchResult> stringList,
-      Object parentObject, Object grandParentObject, Field field ) {
+    Object parentObject, Object grandParentObject, Field field ) {
     if ( obj instanceof String ) {
       // OK, let's add the String
       stringList.add( new StringSearchResult( (String) obj, parentObject, grandParentObject, field.getName() ) );
@@ -144,24 +144,24 @@ public class StringSearcher {
       for ( int x = 0; x < array.length; x++ ) {
         if ( array[x] != null ) {
           stringList.add( new StringSearchResult( array[x], parentObject, grandParentObject, field.getName()
-              + " #" + ( x + 1 ) ) );
+            + " #" + ( x + 1 ) ) );
         }
       }
     } else if ( obj instanceof Boolean ) {
       // OK, let's add the String
       stringList.add( new StringSearchResult( ( (Boolean) obj ).toString(), parentObject, grandParentObject, field
-          .getName()
-          + " (Boolean)" ) );
+        .getName()
+        + " (Boolean)" ) );
     } else if ( obj instanceof Condition ) {
-      stringList.add( new StringSearchResult( ( (Condition) obj ).toString(), parentObject, grandParentObject, field
-          .getName()
-          + " (Condition)" ) );
+      stringList.add( new StringSearchResult(
+        ( (Condition) obj ).toString(), parentObject, grandParentObject, field.getName() + " (Condition)" ) );
     } else if ( obj instanceof DatabaseInterface ) {
       // Make sure we read the attributes. This is not picked up by default. (getDeclaredFields doesn't pick up
       // inherited fields)
       //
       DatabaseInterface databaseInterface = (DatabaseInterface) obj;
-      findMapMetaData( databaseInterface.getAttributes(), level + 1, stringList, parentObject, grandParentObject, field );
+      findMapMetaData(
+        databaseInterface.getAttributes(), level + 1, stringList, parentObject, grandParentObject, field );
       findMetaData( obj, level + 1, stringList, parentObject, grandParentObject );
     } else if ( obj instanceof Map ) {
       findMapMetaData( (Map<?, ?>) obj, level, stringList, parentObject, grandParentObject, field );
@@ -175,17 +175,17 @@ public class StringSearcher {
   }
 
   private static void findMapMetaData( Map<?, ?> map, int level, List<StringSearchResult> stringList,
-      Object parentObject, Object grandParentObject, Field field ) {
+    Object parentObject, Object grandParentObject, Field field ) {
 
     for ( Object key : map.keySet() ) {
       Object value = map.get( key );
       if ( key != null ) {
         stringList.add( new StringSearchResult( key.toString(), parentObject, grandParentObject, field.getName()
-            + " (Map key)" ) );
+          + " (Map key)" ) );
       }
       if ( value != null ) {
         stringList.add( new StringSearchResult( value.toString(), parentObject, grandParentObject, field.getName()
-            + " (Map value)" ) );
+          + " (Map value)" ) );
       }
     }
   }

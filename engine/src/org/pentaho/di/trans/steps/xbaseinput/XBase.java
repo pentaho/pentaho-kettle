@@ -41,10 +41,10 @@ import com.linuxense.javadbf.DBFReader;
 
 /**
  * Handles file reading from XBase (DBF) type of files.
- * 
+ *
  * @author Matt
  * @since 12-08-2004
- * 
+ *
  */
 
 public class XBase {
@@ -183,8 +183,8 @@ public class XBase {
                 r[i] = ( (Integer) rowobj[i] ).doubleValue();
               }
             } catch ( NumberFormatException e ) {
-              throw new KettleException(
-                  "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
+              throw new KettleException( "Error parsing field #"
+                + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
             }
             break;
           case DBFField.FIELD_TYPE_N: // Numeric
@@ -194,8 +194,8 @@ public class XBase {
                 r[i] = rowobj[i];
               }
             } catch ( NumberFormatException e ) {
-              throw new KettleException(
-                  "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
+              throw new KettleException( "Error parsing field #"
+                + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
             }
             break;
           case DBFField.FIELD_TYPE_F: // Float
@@ -205,8 +205,8 @@ public class XBase {
                 r[i] = new Double( (Float) rowobj[i] );
               }
             } catch ( NumberFormatException e ) {
-              throw new KettleException(
-                  "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
+              throw new KettleException( "Error parsing field #"
+                + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
             }
             break;
           case DBFField.FIELD_TYPE_L: // Logical
@@ -270,7 +270,7 @@ public class XBase {
   /*
    * public boolean setMemo(String memo_file) { try { if (reader.hasMemo()) { RandomAccessFile raf = new
    * RandomAccessFile(memo_file, "r"); reader.setMemoFile(raf);
-   * 
+   *
    * // System.out.println("Memo set! "); } return true; } catch(Exception e) { return false; } }
    */
 

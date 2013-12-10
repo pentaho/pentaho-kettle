@@ -60,13 +60,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Allows you to edit/enter the transformation debugging information
- * 
+ *
  * @author matt
  * @since 2007-09-14
  * @since version 3.0 RC1
  */
 public class TransDebugDialog extends Dialog {
-  private static Class<?> PKG = TransDebugDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDebugDialog.class; // for i18n purposes, needed by Translator2!!
 
   public static final int DEBUG_CANCEL = 0;
   public static final int DEBUG_LAUNCH = 1;
@@ -115,7 +115,8 @@ public class TransDebugDialog extends Dialog {
   public int open() {
 
     display = parent.getDisplay();
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    shell =
+      new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
     shell.setImage( GUIResource.getInstance().getImageTransGraph() );
 
@@ -159,17 +160,18 @@ public class TransDebugDialog extends Dialog {
     // Add the list of steps
     //
     ColumnInfo[] stepColumns =
-        { new ColumnInfo(
-            BaseMessages.getString( PKG, "TransDebugDialog.Column.StepName" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // name,
-                                                                                                                           // non-numeric,
-                                                                                                                           // readonly
-        };
+    { new ColumnInfo(
+      BaseMessages.getString( PKG, "TransDebugDialog.Column.StepName" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
+      true ), // name,
+              // non-numeric,
+              // readonly
+    };
 
     int nrSteps = transDebugMeta.getTransMeta().nrSteps();
     wSteps =
-        new TableView(
-            transDebugMeta.getTransMeta(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, stepColumns, nrSteps,
-            true, null, props );
+      new TableView(
+        transDebugMeta.getTransMeta(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, stepColumns,
+        nrSteps, true, null, props );
     FormData fdSteps = new FormData();
     fdSteps.left = new FormAttachment( 0, 0 );
     fdSteps.right = new FormAttachment( middle, -margin );
@@ -366,8 +368,8 @@ public class TransDebugDialog extends Dialog {
     // The row count (e.g. number of rows to keep)
     //
     wRowCount =
-        new LabelText( wComposite, BaseMessages.getString( PKG, "TransDebugDialog.RowCount.Label" ), BaseMessages
-            .getString( PKG, "TransDebugDialog.RowCount.ToolTip" ) );
+      new LabelText( wComposite, BaseMessages.getString( PKG, "TransDebugDialog.RowCount.Label" ), BaseMessages
+        .getString( PKG, "TransDebugDialog.RowCount.ToolTip" ) );
     FormData fdRowCount = new FormData();
     fdRowCount.left = new FormAttachment( 0, 0 );
     fdRowCount.right = new FormAttachment( 100, 0 );

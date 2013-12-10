@@ -49,17 +49,18 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 
 /**
  * Execute a mapping: a re-usuable transformation
- * 
+ *
  * @author Matt
  * @since 22-nov-2005
  */
 public class Mapping extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MappingMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MappingMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MappingMeta meta;
   private MappingData data;
 
-  public Mapping( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Mapping( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -97,7 +98,8 @@ public class Mapping extends BaseStep implements StepInterface {
                 // comes from.
                 //
                 throw new KettleException(
-                    "Unsupported situation detected where more than one Mapping Input step needs to be handled.  To solve it, insert a dummy step before the mapping step." );
+                  "Unsupported situation detected where more than one Mapping Input step needs to be handled.  "
+                    + "To solve it, insert a dummy step before the mapping step." );
               }
             }
             getInputRowSets().clear();
@@ -126,7 +128,9 @@ public class Mapping extends BaseStep implements StepInterface {
                 // it comes from.
                 //
                 throw new KettleException(
-                    "Unsupported situation detected where a remote input step is expecting data to end up in a particular Mapping Input step of a sub-transformation.  To solve it, insert a dummy step before the mapping." );
+                  "Unsupported situation detected where a remote input step is expecting data "
+                    + "to end up in a particular Mapping Input step of a sub-transformation.  "
+                    + "To solve it, insert a dummy step before the mapping." );
               }
             }
             getRemoteInputSteps().clear();
@@ -149,7 +153,8 @@ public class Mapping extends BaseStep implements StepInterface {
                 // comes from.
                 //
                 throw new KettleException(
-                    "Unsupported situation detected where more than one Mapping Output step needs to be handled.  To solve it, insert a dummy step after the mapping step." );
+                  "Unsupported situation detected where more than one Mapping Output step needs to be handled.  "
+                    + "To solve it, insert a dummy step after the mapping step." );
               }
             }
             getOutputRowSets().clear();
@@ -178,7 +183,9 @@ public class Mapping extends BaseStep implements StepInterface {
                 // it comes from.
                 //
                 throw new KettleException(
-                    "Unsupported situation detected where a remote output step is expecting data to end up in a particular Mapping Output step of a sub-transformation.  To solve it, insert a dummy step after the mapping." );
+                  "Unsupported situation detected where a remote output step is expecting data "
+                    + "to end up in a particular Mapping Output step of a sub-transformation.  "
+                    + "To solve it, insert a dummy step after the mapping." );
               }
             }
             getRemoteOutputSteps().clear();
@@ -214,7 +221,7 @@ public class Mapping extends BaseStep implements StepInterface {
 
           if ( mappingInputs.length > 1 || mappingOutputs.length > 1 ) {
             throw new KettleException(
-                "Multiple input or output steps are not supported for a single threaded mapping." );
+              "Multiple input or output steps are not supported for a single threaded mapping." );
           }
 
           // Object[] row = getRow();
@@ -245,8 +252,8 @@ public class Mapping extends BaseStep implements StepInterface {
 
         default:
           throw new KettleException( "Transformation type '"
-              + data.mappingTransMeta.getTransformationType().getDescription()
-              + "' is an unsupported transformation type for a mapping" );
+            + data.mappingTransMeta.getTransformationType().getDescription()
+            + "' is an unsupported transformation type for a mapping" );
       }
     } catch ( Throwable t ) {
       // Some unexpected situation occurred.
@@ -343,8 +350,8 @@ public class Mapping extends BaseStep implements StepInterface {
     try {
       data.mappingTrans.prepareExecution( getTrans().getArguments() );
     } catch ( KettleException e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping" ), e );
     }
 
     // Extra optional work to do for alternative execution engines...
@@ -358,7 +365,7 @@ public class Mapping extends BaseStep implements StepInterface {
         data.singleThreadedTransExcecutor = new SingleThreadedTransExecutor( data.mappingTrans );
         if ( !data.singleThreadedTransExcecutor.init() ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "Mapping.Exception.UnableToInitSingleThreadedTransformation" ) );
+            PKG, "Mapping.Exception.UnableToInitSingleThreadedTransformation" ) );
         }
         break;
       default:
@@ -399,7 +406,7 @@ public class Mapping extends BaseStep implements StepInterface {
         StepInterface sourceStep = getTrans().findRunThread( inputDefinition.getInputStepname() );
         if ( sourceStep == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname() ) );
+            PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname() ) );
         }
         sourceSteps = new StepInterface[] { sourceStep, };
       } else {
@@ -430,12 +437,12 @@ public class Mapping extends BaseStep implements StepInterface {
         // That means we only expect one "mapping input" step in the mapping...
 
         if ( mappingInputSteps.length == 0 ) {
-          throw new KettleException( BaseMessages
-              .getString( PKG, "MappingDialog.Exception.OneMappingInputStepRequired" ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "MappingDialog.Exception.OneMappingInputStepRequired" ) );
         }
         if ( mappingInputSteps.length > 1 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + mappingInputSteps.length ) );
+            PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + mappingInputSteps.length ) );
         }
 
         mappingInputTarget = mappingInputSteps[0];
@@ -449,7 +456,7 @@ public class Mapping extends BaseStep implements StepInterface {
         // If we still didn't find it it's a drag.
         if ( mappingInputTarget == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getOutputStepname() ) );
+            PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getOutputStepname() ) );
         }
       }
 
@@ -478,7 +485,7 @@ public class Mapping extends BaseStep implements StepInterface {
       // What step are we reading from here?
       //
       MappingOutput mappingOutputSource =
-          (MappingOutput) data.mappingTrans.findRunThread( outputDefinition.getInputStepname() );
+        (MappingOutput) data.mappingTrans.findRunThread( outputDefinition.getInputStepname() );
       if ( mappingOutputSource == null ) {
         // No source step was specified: we're reading from a single Mapping
         // Output step.
@@ -488,11 +495,11 @@ public class Mapping extends BaseStep implements StepInterface {
 
         if ( mappingOutputSteps.length == 0 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.OneMappingOutputStepRequired" ) );
+            PKG, "MappingDialog.Exception.OneMappingOutputStepRequired" ) );
         }
         if ( mappingOutputSteps.length > 1 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", "" + mappingOutputSteps.length ) );
+            PKG, "MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", "" + mappingOutputSteps.length ) );
         }
 
         mappingOutputSource = mappingOutputSteps[0];
@@ -508,7 +515,7 @@ public class Mapping extends BaseStep implements StepInterface {
         StepInterface target = getTrans().findRunThread( outputDefinition.getOutputStepname() );
         if ( target == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname() ) );
+            PKG, "MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname() ) );
         }
         targetSteps = new StepInterface[] { target, };
       } else {
@@ -530,7 +537,8 @@ public class Mapping extends BaseStep implements StepInterface {
       // Now tell the mapping output step where to look...
       // Also explain the mapping output steps how to rename the values back...
       //
-      mappingOutputSource.setConnectorSteps( targetSteps, data.inputRenameList, outputDefinition.getValueRenames() );
+      mappingOutputSource
+        .setConnectorSteps( targetSteps, data.inputRenameList, outputDefinition.getValueRenames() );
 
       // Is this mapping copying or distributing?
       // Make sure the mapping output step mimics this behavior:
@@ -563,7 +571,8 @@ public class Mapping extends BaseStep implements StepInterface {
         //
         meta.setRepository( getTransMeta().getRepository() );
 
-        data.mappingTransMeta = MappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
+        data.mappingTransMeta =
+          MappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
         if ( data.mappingTransMeta != null ) {
           // Do we have a mapping at all?
 
@@ -747,8 +756,8 @@ public class Mapping extends BaseStep implements StepInterface {
     /*
      * if (mappingOutputs.length==1) { mappingOutputs[0].addRowListener(rowListener); } else { // Find the main data
      * path... //
-     * 
-     * 
+     *
+     *
      * }
      */
 

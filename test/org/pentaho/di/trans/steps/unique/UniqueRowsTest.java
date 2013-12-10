@@ -54,10 +54,10 @@ import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 
 /**
  * Test class for the Unique step.
- * 
+ *
  * These tests only cover the case (in)sensitive comparison of a single key field, and to ensure the first row is not
  * treated as both duplicate and unique.
- * 
+ *
  * @author Daniel Einspanjer
  */
 public class UniqueRowsTest extends TestCase {

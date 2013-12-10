@@ -48,9 +48,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id = "OpenERPObjectInput", 
-		image = "OpenERPObjectInput.png", 
-		i18nPackageName="org.pentaho.di.trans.steps.openerp.objectinput", 
+@Step(id = "OpenERPObjectInput",
+		image = "OpenERPObjectInput.png",
+		i18nPackageName="org.pentaho.di.trans.steps.openerp.objectinput",
 		name = "OpenERPObjectInput.TransName",
 		description="OpenERPObjectInput.TransDescription",
 		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP")
@@ -62,11 +62,11 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 	private ArrayList<ReadFilter> filterList = new ArrayList<ReadFilter>();
 	private ArrayList<FieldMapping> mappings = new ArrayList<FieldMapping>();
 
-	public void getFields(final RowMetaInterface row, final String origin, 
-			final RowMetaInterface[] info, final StepMeta nextStep, 
+	public void getFields(final RowMetaInterface row, final String origin,
+			final RowMetaInterface[] info, final StepMeta nextStep,
 			final VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 
-		if (databaseMeta == null) 
+		if (databaseMeta == null)
 			throw new KettleStepException("There is no OpenERP database server connection defined");
 
 		final OpenERPHelper helper = new OpenERPHelper(databaseMeta);
@@ -125,7 +125,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             retval.append("      </mapping>").append(Const.CR);
         }
         retval.append("    </mappings>").append(Const.CR);
-        
+
         retval.append("    <filters>").append(Const.CR);
         for (ReadFilter filter : this.getFilterList()) {
             retval.append("      <filter>").append(Const.CR);
@@ -155,7 +155,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 			this.readBatchSize = Integer.parseInt(rep.getStepAttributeString(idStep, "readBatchSize"));
 			
 			int nrMappings = rep.countNrStepAttributes(idStep, "source_model");
-            
+
             for (int i=0;i<nrMappings;i++) {
             	FieldMapping map = new FieldMapping();
             	
@@ -165,11 +165,11 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             	map.target_model = rep.getStepAttributeString (idStep, i, "target_model");
             	map.target_field = rep.getStepAttributeString (idStep, i, "target_field");
             	map.target_field_label = rep.getStepAttributeString (idStep, i, "target_field_label");
-            	map.target_field_type = Integer.valueOf(rep.getStepAttributeString (idStep, i, "target_field_type")); 
+            	map.target_field_type = Integer.valueOf(rep.getStepAttributeString (idStep, i, "target_field_type"));
             	
             	this.getMappings().add(map);
             }
-            
+
             int nrFilters = rep.countNrStepAttributes(idStep, "field_name");
             for (int i=0;i<nrFilters;i++) {
             	ReadFilter filter = new ReadFilter();
@@ -181,7 +181,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             	
             	this.getFilterList().add(filter);
             }
-            
+
 		} catch (Exception e) {
 			throw new KettleException("Unexpected error reading step information from the repository", e);
 		}
@@ -233,7 +233,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 			this.readBatchSize = Integer.parseInt(XMLHandler.getTagValue(stepnode, "readBatchSize"));
 			
 			this.setMappings(new ArrayList <FieldMapping>());
-            
+
             Node mappings = XMLHandler.getSubNode(stepnode,"mappings");
             int nrLevels = XMLHandler.countNodes(mappings,"mapping");
 
@@ -248,11 +248,11 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             	map.target_model = XMLHandler.getTagValue(fnode, "target_model");
             	map.target_field = XMLHandler.getTagValue(fnode, "target_field");
             	map.target_field_label = XMLHandler.getTagValue(fnode, "target_field_label");
-            	map.target_field_type = Integer.parseInt(XMLHandler.getTagValue(fnode, "target_field_type")); 
+            	map.target_field_type = Integer.parseInt(XMLHandler.getTagValue(fnode, "target_field_type"));
 
             	this.getMappings().add(map);
             }
-            
+
             Node filters = XMLHandler.getSubNode(stepnode,"filters");
             int nrFilters = XMLHandler.countNodes(filters,"filter");
 
@@ -268,7 +268,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             	
             	this.getFilterList().add(filter);
             }
-            
+
 		} catch (Exception e) {
 			throw new KettleXMLException("Unable to load step info from XML", e);
 		}

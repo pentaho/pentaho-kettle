@@ -38,17 +38,17 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Reads results from a previous transformation in a Job
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class FilesFromResult extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FilesFromResult.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FilesFromResult.class; // for i18n purposes, needed by Translator2!!
 
   private FilesFromResultData data;
 
   public FilesFromResult( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     data = (FilesFromResultData) stepDataInterface;

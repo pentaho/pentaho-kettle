@@ -122,19 +122,18 @@ import org.w3c.dom.Document;
 /**
  * This dialog displays the content of the repository in a Windows explorer like fashion. The user can manipulate the
  * objects in the repository as well as administer users, profiles, etc.
- * 
+ *
  * @author Matt
  * @since 18-mei-2003
- * 
+ *
  */
 public class RepositoryExplorerDialog extends Dialog {
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   public interface RepositoryExplorerCallback {
     /**
      * request that specified object be opened in 'Spoon' display
-     * 
+     *
      * @param object
      * @return boolean indicating if repository explorer dialog should close
      */
@@ -143,9 +142,9 @@ public class RepositoryExplorerDialog extends Dialog {
 
   /**
    * capture a reference to an object in the repository
-   * 
+   *
    * @author jgoldman
-   * 
+   *
    */
   public class RepositoryObjectReference {
     private RepositoryObjectType type; // Type of object
@@ -158,7 +157,7 @@ public class RepositoryExplorerDialog extends Dialog {
     }
 
     public RepositoryObjectReference( RepositoryObjectType type, RepositoryDirectoryInterface dir, String name,
-        String versionLabel ) {
+      String versionLabel ) {
       this.type = type;
       this.directory = dir;
       this.name = name;
@@ -183,17 +182,19 @@ public class RepositoryExplorerDialog extends Dialog {
   }
 
   private static final String STRING_DATABASES = BaseMessages.getString(
-      PKG, "RepositoryExplorerDialog.Tree.String.Connections" );
+    PKG, "RepositoryExplorerDialog.Tree.String.Connections" );
   private static final String STRING_PARTITIONS = BaseMessages.getString(
-      PKG, "RepositoryExplorerDialog.Tree.String.Partitions" );
+    PKG, "RepositoryExplorerDialog.Tree.String.Partitions" );
   private static final String STRING_SLAVES = BaseMessages.getString(
-      PKG, "RepositoryExplorerDialog.Tree.String.Slaves" );
+    PKG, "RepositoryExplorerDialog.Tree.String.Slaves" );
   private static final String STRING_CLUSTERS = BaseMessages.getString(
-      PKG, "RepositoryExplorerDialog.Tree.String.Clusters" );
+    PKG, "RepositoryExplorerDialog.Tree.String.Clusters" );
   public static final String STRING_TRANSFORMATIONS = BaseMessages.getString(
-      PKG, "RepositoryExplorerDialog.Tree.String.Transformations" );
-  public static final String STRING_JOBS = BaseMessages.getString( PKG, "RepositoryExplorerDialog.Tree.String.Jobs" );
-  private static final String STRING_USERS = BaseMessages.getString( PKG, "RepositoryExplorerDialog.Tree.String.Users" );
+    PKG, "RepositoryExplorerDialog.Tree.String.Transformations" );
+  public static final String STRING_JOBS = BaseMessages.getString(
+    PKG, "RepositoryExplorerDialog.Tree.String.Jobs" );
+  private static final String STRING_USERS = BaseMessages.getString(
+    PKG, "RepositoryExplorerDialog.Tree.String.Users" );
 
   private static final int ITEM_CATEGORY_NONE = 0;
   private static final int ITEM_CATEGORY_ROOT = 1;
@@ -275,7 +276,7 @@ public class RepositoryExplorerDialog extends Dialog {
   }
 
   public RepositoryExplorerDialog( Shell par, int style, Repository rep, RepositoryExplorerCallback callback,
-      VariableSpace variableSpace ) {
+    VariableSpace variableSpace ) {
     this( par, style, rep, variableSpace );
     this.callback = callback;
   }
@@ -322,30 +323,33 @@ public class RepositoryExplorerDialog extends Dialog {
       exportToXML = new ToolItem( treeTb, SWT.PUSH );
       exportToXML.setImage( GUIResource.getInstance().getImageExport() );
       exportToXML.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ExportToXML.Label" ) );
-      exportToXML
-          .setToolTipText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ExportToXML.Tooltip" ) );
+      exportToXML.setToolTipText( BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.ToolItem.ExportToXML.Tooltip" ) );
       importFromXML = new ToolItem( treeTb, SWT.PUSH );
       importFromXML.setImage( GUIResource.getInstance().getImageImport() );
-      importFromXML.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ImportFromXML.Label" ) );
+      importFromXML
+        .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ImportFromXML.Label" ) );
       importFromXML.setToolTipText( BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.ToolItem.ImportFromXML.Tooltip" ) );
+        PKG, "RepositoryExplorerDialog.ToolItem.ImportFromXML.Tooltip" ) );
       new ToolItem( treeTb, SWT.SEPARATOR );
       showHideDeleted = new ToolItem( treeTb, SWT.PUSH );
       showHideDeleted.setImage( GUIResource.getInstance().getImageShowDeleted() );
-      showHideDeleted.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Label" ) );
+      showHideDeleted
+        .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Label" ) );
       showHideDeleted.setToolTipText( BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Tooltip" ) );
+        PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Tooltip" ) );
       showHideDeleted.setEnabled( rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions() );
       new ToolItem( treeTb, SWT.SEPARATOR );
       expandAll = new ToolItem( treeTb, SWT.PUSH );
       expandAll.setImage( GUIResource.getInstance().getImageExpandAll() );
       expandAll.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ExpandAll.Label" ) );
-      expandAll.setToolTipText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.ExpandAll.Tooltip" ) );
+      expandAll.setToolTipText( BaseMessages
+        .getString( PKG, "RepositoryExplorerDialog.ToolItem.ExpandAll.Tooltip" ) );
       collapseAll = new ToolItem( treeTb, SWT.PUSH );
       collapseAll.setImage( GUIResource.getInstance().getImageCollapseAll() );
       collapseAll.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.CollapseAll.Label" ) );
-      collapseAll
-          .setToolTipText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.ToolItem.CollapseAll.Tooltip" ) );
+      collapseAll.setToolTipText( BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.ToolItem.CollapseAll.Tooltip" ) );
 
       // Tree
       wTree = new Tree( shell, SWT.MULTI | SWT.BORDER );
@@ -492,15 +496,15 @@ public class RepositoryExplorerDialog extends Dialog {
         public void widgetSelected( SelectionEvent event ) {
           includeDeleted = !includeDeleted;
           if ( includeDeleted ) {
-            showHideDeleted.setText( BaseMessages
-                .getString( PKG, "RepositoryExplorerDialog.ToolItem.HideDeleted.Label" ) );
+            showHideDeleted.setText( BaseMessages.getString(
+              PKG, "RepositoryExplorerDialog.ToolItem.HideDeleted.Label" ) );
             showHideDeleted.setToolTipText( BaseMessages.getString(
-                PKG, "RepositoryExplorerDialog.ToolItem.HideDeleted.Tooltip" ) );
+              PKG, "RepositoryExplorerDialog.ToolItem.HideDeleted.Tooltip" ) );
           } else {
-            showHideDeleted.setText( BaseMessages
-                .getString( PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Label" ) );
+            showHideDeleted.setText( BaseMessages.getString(
+              PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Label" ) );
             showHideDeleted.setToolTipText( BaseMessages.getString(
-                PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Tooltip" ) );
+              PKG, "RepositoryExplorerDialog.ToolItem.ShowDeleted.Tooltip" ) );
           }
           refreshTree();
         }
@@ -622,10 +626,9 @@ public class RepositoryExplorerDialog extends Dialog {
                   } else {
                     MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
                     mb.setMessage( BaseMessages.getString(
-                        PKG, "RepositoryExplorerDialog.Trans.Move.UnableToMove.Message" ) );
-                    mb
-                        .setText( BaseMessages
-                            .getString( PKG, "RepositoryExplorerDialog.Trans.Move.UnableToMove.Title" ) );
+                      PKG, "RepositoryExplorerDialog.Trans.Move.UnableToMove.Message" ) );
+                    mb.setText( BaseMessages.getString(
+                      PKG, "RepositoryExplorerDialog.Trans.Move.UnableToMove.Title" ) );
                     mb.open();
                   }
                 }
@@ -640,24 +643,30 @@ public class RepositoryExplorerDialog extends Dialog {
                   } else {
                     MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
                     mb.setMessage( BaseMessages.getString(
-                        PKG, "RepositoryExplorerDialog.Job.Move.UnableToMove.Message" ) );
-                    mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.UnableToMove.Title" ) );
+                      PKG, "RepositoryExplorerDialog.Job.Move.UnableToMove.Message" ) );
+                    mb.setText( BaseMessages.getString(
+                      PKG, "RepositoryExplorerDialog.Job.Move.UnableToMove.Title" ) );
                     mb.open();
                   }
                 }
               } else {
                 MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
                 mb.setMessage( BaseMessages.getString(
-                    PKG, "RepositoryExplorerDialog.Trans.Move.SorryOneItemAtATime.Message" ) );
+                  PKG, "RepositoryExplorerDialog.Trans.Move.SorryOneItemAtATime.Message" ) );
                 mb.setText( BaseMessages.getString(
-                    PKG, "RepositoryExplorerDialog.Trans.Move.SorryOneItemAtATime.Title" ) );
+                  PKG, "RepositoryExplorerDialog.Trans.Move.SorryOneItemAtATime.Title" ) );
                 mb.open();
               }
             }
           } catch ( Throwable e ) {
             new ErrorDialog(
-                shell,
-                BaseMessages.getString( PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Message1" ) + debug + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Message2" ), e ); //$NON-NLS-3$ //$NON-NLS-4$
+              shell,
+              BaseMessages.getString( PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Title" ), BaseMessages
+                .getString( PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Message1" )
+                + debug
+                + "]"
+                + Const.CR
+                + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Message2" ), e );
           }
         }
 
@@ -687,8 +696,15 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( Throwable e ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Message1" ) + debug + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Message2" ) + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Message3" ), e ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Title" ), BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Message1" )
+          + debug
+          + "]"
+          + Const.CR
+          + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Message2" )
+          + Const.CR
+          + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Main.UnexpectedError.Message3" ), e );
     }
     return lastOpened;
 
@@ -698,7 +714,7 @@ public class RepositoryExplorerDialog extends Dialog {
     for ( TreeItem item : treeitems ) {
       item.setExpanded( expand );
       TreeMemory.getInstance().storeExpanded(
-          STRING_REPOSITORY_EXPLORER_TREE_NAME, ConstUI.getTreeStrings( item ), expand );
+        STRING_REPOSITORY_EXPLORER_TREE_NAME, ConstUI.getTreeStrings( item ), expand );
       if ( item.getItemCount() > 0 ) {
         expandAllItems( item.getItems(), expand );
       }
@@ -784,8 +800,10 @@ public class RepositoryExplorerDialog extends Dialog {
 
       int cat = getItemCategory( ti );
       if ( ( level >= 2 )
-          && ( ( cat == ITEM_CATEGORY_JOB_DIRECTORY )
-              || ( cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY ) || ( cat == ITEM_CATEGORY_JOB ) || ( cat == ITEM_CATEGORY_TRANSFORMATION ) ) ) {
+        && ( ( cat == ITEM_CATEGORY_JOB_DIRECTORY )
+          || ( cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY )
+          || ( cat == ITEM_CATEGORY_JOB )
+          || ( cat == ITEM_CATEGORY_TRANSFORMATION ) ) ) {
         String[] realpath;
         if ( ( cat == ITEM_CATEGORY_JOB_DIRECTORY ) || ( cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY ) ) {
           // The first levels of path[] don't belong to the path to this directory!
@@ -865,7 +883,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
           // Export transMeta
           MenuItem miTrans = new MenuItem( mTree, SWT.PUSH );
-          miTrans.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans" ) );
+          miTrans
+            .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans" ) );
           SelectionAdapter lsTrans = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               exportTransformations( directoryTree );
@@ -1002,7 +1021,8 @@ public class RepositoryExplorerDialog extends Dialog {
           miNew.setEnabled( !readonly );
           // Edit partition schema
           miEdit = new MenuItem( mTree, SWT.PUSH );
-          miEdit.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Edit" ) );
+          miEdit
+            .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Edit" ) );
           lsEdit = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               editPartitionSchema( item );
@@ -1012,7 +1032,8 @@ public class RepositoryExplorerDialog extends Dialog {
           miEdit.setEnabled( !readonly );
           // Delete partition schema
           miDel = new MenuItem( mTree, SWT.PUSH );
-          miDel.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Delete" ) );
+          miDel
+            .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Delete" ) );
           lsDel = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               delPartitionSchema( item );
@@ -1079,8 +1100,8 @@ public class RepositoryExplorerDialog extends Dialog {
               if ( !repositoryObject.isDeleted() ) {
                 // Open transformation...
                 MenuItem miOpen = new MenuItem( mTree, SWT.PUSH );
-                miOpen
-                    .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Open" ) );
+                miOpen.setText( BaseMessages.getString(
+                  PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Open" ) );
                 miOpen.addSelectionListener( new SelectionAdapter() {
                   public void widgetSelected( SelectionEvent e ) {
                     openTransformation( item, repdir );
@@ -1088,8 +1109,8 @@ public class RepositoryExplorerDialog extends Dialog {
                 } );
                 // Rename transformation
                 MenuItem miRen = new MenuItem( mTree, SWT.PUSH );
-                miRen.setText( BaseMessages
-                    .getString( PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Rename" ) );
+                miRen.setText( BaseMessages.getString(
+                  PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Rename" ) );
                 miRen.addSelectionListener( new SelectionAdapter() {
                   public void widgetSelected( SelectionEvent e ) {
                     renameTransformation( item, repdir );
@@ -1104,7 +1125,7 @@ public class RepositoryExplorerDialog extends Dialog {
                 // Restore transformation
                 MenuItem miRestore = new MenuItem( mTree, SWT.PUSH );
                 miRestore.setText( BaseMessages.getString(
-                    PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Restore" ) );
+                  PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Restore" ) );
                 miRestore.addSelectionListener( new SelectionAdapter() {
                   public void widgetSelected( SelectionEvent e ) {
                     restoreSelectedObjects();
@@ -1114,8 +1135,8 @@ public class RepositoryExplorerDialog extends Dialog {
             } else {
               // Delete transformation
               miDel = new MenuItem( mTree, SWT.PUSH );
-              miDel
-                  .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Delete" ) );
+              miDel.setText( BaseMessages.getString(
+                PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Delete" ) );
               miDel.addSelectionListener( new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
                   delSelectedObjects();
@@ -1152,7 +1173,8 @@ public class RepositoryExplorerDialog extends Dialog {
             if ( cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY ) {
               // Export transMeta
               miTrans = new MenuItem( mTree, SWT.PUSH );
-              miTrans.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans" ) );
+              miTrans.setText( BaseMessages.getString(
+                PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans" ) );
               lsTrans = new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
                   exportTransformations( repdir );
@@ -1164,7 +1186,8 @@ public class RepositoryExplorerDialog extends Dialog {
             if ( cat == ITEM_CATEGORY_JOB_DIRECTORY ) {
               // Export jobs
               miJobs = new MenuItem( mTree, SWT.PUSH );
-              miJobs.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportJob" ) );
+              miJobs
+                .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportJob" ) );
               lsJobs = new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
                   exportJobs( repdir );
@@ -1175,8 +1198,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
             // create directory...
             MenuItem miCreate = new MenuItem( mTree, SWT.PUSH );
-            miCreate
-                .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.TransDirectory.Create" ) );
+            miCreate.setText( BaseMessages.getString(
+              PKG, "RepositoryExplorerDialog.PopupMenu.TransDirectory.Create" ) );
             miCreate.addSelectionListener( new SelectionAdapter() {
               public void widgetSelected( SelectionEvent e ) {
                 createDirectory( ti, repdir );
@@ -1187,8 +1210,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
               // Rename directory
               MenuItem miRename = new MenuItem( mTree, SWT.PUSH );
-              miRename.setText( BaseMessages
-                  .getString( PKG, "RepositoryExplorerDialog.PopupMenu.TransDirectory.Rename" ) );
+              miRename.setText( BaseMessages.getString(
+                PKG, "RepositoryExplorerDialog.PopupMenu.TransDirectory.Rename" ) );
               miRename.addSelectionListener( new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
                   renameDirectory( ti, repdir );
@@ -1196,8 +1219,8 @@ public class RepositoryExplorerDialog extends Dialog {
               } );
               // Delete directory
               MenuItem miDelete = new MenuItem( mTree, SWT.PUSH );
-              miDelete.setText( BaseMessages
-                  .getString( PKG, "RepositoryExplorerDialog.PopupMenu.TransDirectory.Delete" ) );
+              miDelete.setText( BaseMessages.getString(
+                PKG, "RepositoryExplorerDialog.PopupMenu.TransDirectory.Delete" ) );
               miDelete.addSelectionListener( new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
                   delDirectory( ti, repdir );
@@ -1238,7 +1261,8 @@ public class RepositoryExplorerDialog extends Dialog {
               if ( capabilities.supportsRevisions() ) {
                 // Restore job
                 MenuItem miRestore = new MenuItem( mTree, SWT.PUSH );
-                miRestore.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Restore" ) );
+                miRestore
+                  .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Restore" ) );
                 miRestore.addSelectionListener( new SelectionAdapter() {
                   public void widgetSelected( SelectionEvent e ) {
                     restoreSelectedObjects();
@@ -1516,7 +1540,7 @@ public class RepositoryExplorerDialog extends Dialog {
       newCat.setImage( GUIResource.getInstance().getImageLogoSmall() );
       Color dircolor = GUIResource.getInstance().getColorDirectory();
       RepositoryDirectoryUI.getTreeWithNames(
-          newCat, rep, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null, null );
+        newCat, rep, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null, null );
 
       // The Jobs...
       TreeItem tiJob = new TreeItem( tiTree, SWT.NONE );
@@ -1526,7 +1550,7 @@ public class RepositoryExplorerDialog extends Dialog {
       TreeItem newJob = new TreeItem( tiJob, SWT.NONE );
       newJob.setImage( GUIResource.getInstance().getImageLogoSmall() );
       RepositoryDirectoryUI.getTreeWithNames(
-          newJob, rep, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null, null );
+        newJob, rep, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null, null );
 
       //
       // Add the users or only yourself
@@ -1564,15 +1588,15 @@ public class RepositoryExplorerDialog extends Dialog {
 
       // Always expand the top level entry...
       TreeMemory.getInstance().storeExpanded(
-          STRING_REPOSITORY_EXPLORER_TREE_NAME, new String[] { tiTree.getText() }, true );
+        STRING_REPOSITORY_EXPLORER_TREE_NAME, new String[] { tiTree.getText() }, true );
 
       // Set the expanded flags based on the TreeMemory
       TreeMemory.setExpandedFromMemory( wTree, STRING_REPOSITORY_EXPLORER_TREE_NAME );
 
     } catch ( KettleException dbe ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Message" ), dbe );
+        PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Message" ), dbe );
     }
   }
 
@@ -1604,7 +1628,11 @@ public class RepositoryExplorerDialog extends Dialog {
 
     MessageBox mb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
     mb
-        .setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message1" ) + ( items.length > 1 ? BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message2" ) + items.length + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message3" ) : BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message4" ) ) ); //$NON-NLS-3$ //$NON-NLS-4$
+      .setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message1" )
+        + ( items.length > 1
+          ? BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message2" )
+            + items.length + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message3" )
+          : BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Message4" ) ) );
     mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.Confirm.Title" ) );
     int answer = mb.open();
 
@@ -1629,8 +1657,10 @@ public class RepositoryExplorerDialog extends Dialog {
           }
         } catch ( Exception e ) {
           new ErrorDialog(
-              shell,
-              BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Message" ) + repositoryObject.getName() + "]", e ); //$NON-NLS-3$
+            shell,
+            BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Title" ), BaseMessages
+              .getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Message" )
+              + repositoryObject.getName() + "]", e );
           error = true;
         }
       }
@@ -1651,8 +1681,9 @@ public class RepositoryExplorerDialog extends Dialog {
           rep.undeleteObject( repositoryObject );
         } catch ( Exception e ) {
           new ErrorDialog(
-              shell,
-              BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Message" ), e ); //$NON-NLS-3$
+            shell,
+            BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Title" ), BaseMessages
+              .getString( PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Message" ), e );
           error = true;
         }
       }
@@ -1721,7 +1752,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
     try {
       if ( Const.isEmpty( newname ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
       if ( !name.equals( newname ) ) {
         ObjectId id = rep.getTransformationID( name, repdir );
@@ -1733,14 +1765,19 @@ public class RepositoryExplorerDialog extends Dialog {
       } else {
         MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
         mb
-            .setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Message1" ) + name + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Message2" ) ); //$NON-NLS-3$
+          .setMessage( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Message1" )
+            + name + "]" + Const.CR
+            + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Message2" ) );
         mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Title" ) );
         mb.open();
       }
     } catch ( KettleException dbe ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorRenaming.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorRenaming.Message" ) + name + "]!", dbe ); //$NON-NLS-3$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorRenaming.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Trans.Rename.ErrorRenaming.Message" )
+          + name + "]!", dbe );
     }
 
     return retval;
@@ -1773,23 +1810,23 @@ public class RepositoryExplorerDialog extends Dialog {
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString(
-                PKG, "RepositoryExplorerDialog.Trans.Move.ErrorDuplicate.Message", transname )
-                + Const.CR );
+              PKG, "RepositoryExplorerDialog.Trans.Move.ErrorDuplicate.Message", transname )
+              + Const.CR );
             mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.ErrorDuplicate.Title" ) );
             mb.open();
           }
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.ErrorMoving.Message" )
-              + dirname + "]" + Const.CR );
+            + dirname + "]" + Const.CR );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.ErrorMoving.Title" ) );
           mb.open();
         }
       }
     } catch ( Exception dbe ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Title" ),
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
     }
 
     return retval;
@@ -1822,23 +1859,23 @@ public class RepositoryExplorerDialog extends Dialog {
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString(
-                PKG, "RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Message", jobname )
-                + Const.CR );
+              PKG, "RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Message", jobname )
+              + Const.CR );
             mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Title" ) );
             mb.open();
           }
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorMoving.Message" )
-              + dirname + "]" + Const.CR );
+            + dirname + "]" + Const.CR );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorMoving.Title" ) );
           mb.open();
         }
       }
     } catch ( Exception dbe ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Title" ), BaseMessages
-              .getString( PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
     }
 
     return retval;
@@ -1904,7 +1941,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
     try {
       if ( Const.isEmpty( newname ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
       if ( !name.equals( newname ) ) {
         ObjectId id = rep.getJobId( name, repdir );
@@ -1916,14 +1954,18 @@ public class RepositoryExplorerDialog extends Dialog {
       } else {
         MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
         mb
-            .setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorFinding.Message1" ) + name + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorFinding.Message2" ) ); //$NON-NLS-3$
+          .setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorFinding.Message1" )
+            + name + "]" + Const.CR
+            + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorFinding.Message2" ) );
         mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.ErrorFinding.Title" ) );
         mb.open();
       }
     } catch ( KettleException dbe ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Message" ) + name + "]", dbe ); //$NON-NLS-3$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Message" )
+          + name + "]", dbe );
     }
 
     return retval;
@@ -1983,7 +2025,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
     try {
       if ( Const.isEmpty( newname ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
       if ( !name.equals( newname ) ) {
         ObjectId id = rep.getJobId( name, repdir );
@@ -1994,15 +2037,20 @@ public class RepositoryExplorerDialog extends Dialog {
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb
-              .setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Rename.ErrorFinding.Message1" ) + name + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Rename.ErrorFinding.Message2" ) ); //$NON-NLS-3$
+            .setMessage( BaseMessages.getString(
+              PKG, "RepositoryExplorerDialog.Job.Rename.ErrorFinding.Message1" )
+              + name + "]" + Const.CR
+              + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Rename.ErrorFinding.Message2" ) );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Rename.ErrorFinding.Title" ) );
           mb.open();
         }
       }
     } catch ( KettleException dbe ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Rename.UnexpectedError.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Rename.UnexpectedError.Message" ) + name + "]", dbe ); //$NON-NLS-3$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Rename.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Job.Rename.UnexpectedError.Message" )
+          + name + "]", dbe );
     }
 
     return retval;
@@ -2029,8 +2077,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2040,7 +2088,7 @@ public class RepositoryExplorerDialog extends Dialog {
     if ( ui != null ) {
       /***************************
        * Removed by sboden as the user dialog already saves the id on pressing ok. Related defect #4228 on javaforge.
-       * 
+       *
        * // See if this user already exists... long uid = rep.getUserID(ui.getLogin()); if (uid<=0) { ui.saveRep(rep); }
        * else { MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
        * mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.User.New.AlreadyExists.Message"));
@@ -2058,9 +2106,9 @@ public class RepositoryExplorerDialog extends Dialog {
         securityManager.delUser( idUser );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Message" ), e );
     }
 
     refreshTree();
@@ -2123,7 +2171,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
     try {
       if ( Const.isEmpty( newname ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
       if ( !name.equals( newname ) ) {
         ObjectId id = securityManager.getUserID( name );
@@ -2134,15 +2183,20 @@ public class RepositoryExplorerDialog extends Dialog {
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb
-              .setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Rename.ErrorFinding.Message1" ) + name + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Rename.ErrorFinding.Message2" ) ); //$NON-NLS-3$
+            .setMessage( BaseMessages.getString(
+              PKG, "RepositoryExplorerDialog.User.Rename.ErrorFinding.Message1" )
+              + name + "]" + Const.CR
+              + BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Rename.ErrorFinding.Message2" ) );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Rename.ErrorFinding.Title" ) );
           mb.open();
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Rename.UnexpectedError.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Rename.UnexpectedError.Message" ) + name + "]", e ); //$NON-NLS-3$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Rename.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.User.Rename.UnexpectedError.Message" )
+          + name + "]", e );
     }
 
     return retval;
@@ -2158,11 +2212,13 @@ public class RepositoryExplorerDialog extends Dialog {
       String name = getDatabaseDialog().open();
       if ( name != null ) {
         if ( !readonly ) {
-          rep.insertLogEntry( "Updating database connection '" + getDatabaseDialog().getDatabaseMeta().getName() + "'" );
+          rep.insertLogEntry( "Updating database connection '"
+            + getDatabaseDialog().getDatabaseMeta().getName() + "'" );
           rep.save( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null );
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_WARNING | SWT.OK );
-          mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Edit.NotAllowed.Message" ) );
+          mb.setMessage( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Connection.Edit.NotAllowed.Message" ) );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Edit.NotAllowed.Title" ) );
           mb.open();
         }
@@ -2172,8 +2228,10 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message" ) + databasename + "]", e ); //$NON-NLS-3$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message" )
+          + databasename + "]", e );
     }
   }
 
@@ -2193,8 +2251,9 @@ public class RepositoryExplorerDialog extends Dialog {
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb.setMessage( BaseMessages.getString(
-              PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message" ) );
-          mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title" ) );
+            PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message" ) );
+          mb.setText( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title" ) );
           mb.open();
         }
         // Refresh tree...
@@ -2202,8 +2261,8 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2214,8 +2273,8 @@ public class RepositoryExplorerDialog extends Dialog {
       refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2279,7 +2338,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
     try {
       if ( Const.isEmpty( newname ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
 
       if ( !name.equals( newname ) ) {
@@ -2287,22 +2347,26 @@ public class RepositoryExplorerDialog extends Dialog {
         if ( id != null ) {
           DatabaseMeta databaseMeta = rep.loadDatabaseMeta( id, null ); // reads last version
           databaseMeta.setName( newname );
-          rep.insertLogEntry( "Renaming database connection '" + getDatabaseDialog().getDatabaseMeta().getName() + "'" );
+          rep.insertLogEntry( "Renaming database connection '"
+            + getDatabaseDialog().getDatabaseMeta().getName() + "'" );
           rep.save( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null );
           retval = true;
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb
-              .setMessage( BaseMessages.getString(
-                  PKG, "RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Message1" ) + name + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Message2" ) ); //$NON-NLS-3$
-          mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Title" ) );
+            .setMessage( BaseMessages.getString(
+              PKG, "RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Message1" )
+              + name + "]" + Const.CR
+              + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Message2" ) );
+          mb.setText( BaseMessages
+            .getString( PKG, "RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Title" ) );
           mb.open();
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Message" ), e );
     }
 
     return retval;
@@ -2362,7 +2426,8 @@ public class RepositoryExplorerDialog extends Dialog {
 
     try {
       if ( Const.isEmpty( newname ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
       if ( !name.equals( newname ) ) {
         repdir.setName( newname );
@@ -2372,16 +2437,18 @@ public class RepositoryExplorerDialog extends Dialog {
         } catch ( Exception exception ) {
           retval = false;
           new ErrorDialog(
-              shell,
-              BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1" ) + name + "]" + Const.CR + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2" ), //$NON-NLS-3$
-              BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ),
-              exception );
+            shell,
+            BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1" )
+              + name + "]" + Const.CR
+              + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2" ),
+            BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ),
+            exception );
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message" ), e );
     }
 
     return retval;
@@ -2389,9 +2456,11 @@ public class RepositoryExplorerDialog extends Dialog {
 
   public void createDirectory( TreeItem ti, RepositoryDirectoryInterface repdir ) {
     EnterStringDialog esd =
-        new EnterStringDialog(
-            shell,
-            BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Default" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Message" ) ); //$NON-NLS-3$
+      new EnterStringDialog(
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Default" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Title" ), BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Message" ) );
     String newdir = esd.open();
     if ( newdir != null ) {
       RepositoryDirectoryInterface rd = new RepositoryDirectory( repdir, newdir );
@@ -2403,18 +2472,26 @@ public class RepositoryExplorerDialog extends Dialog {
           rep.saveRepositoryDirectory( rd );
         } catch ( Exception exception ) {
           new ErrorDialog(
-              shell,
-              BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message1" ) + newdir + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message2" ) + repdir.getPath() + "]", //$NON-NLS-3$
-              BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Title" ),
-              exception );
+            shell,
+            BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message1" )
+              + newdir
+              + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message2" )
+              + repdir.getPath() + "]",
+            BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.UnexpectedError.Title" ),
+            exception );
 
         }
       } else {
         MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
         mb
-            .setMessage( BaseMessages.getString(
-                PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message1" ) + newdir + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message2" ) + repdir.getPath() + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message3" ) ); //$NON-NLS-3$
-        mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Title" ) );
+          .setMessage( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message1" )
+            + newdir + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message2" )
+            + repdir.getPath()
+            + BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message3" ) );
+        mb
+          .setText( BaseMessages
+            .getString( PKG, "RepositoryExplorerDialog.Directory.Create.AlreadyExists.Title" ) );
         mb.open();
       }
     }
@@ -2426,8 +2503,8 @@ public class RepositoryExplorerDialog extends Dialog {
       refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1" ), e );
+        PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1" ), e );
     }
   }
 
@@ -2446,18 +2523,20 @@ public class RepositoryExplorerDialog extends Dialog {
           File dir = new File( directory + repdir.getPath() );
           if ( !dir.exists() ) {
             dir.mkdir();
-            log.logBasic( "Exporting transformation", "Created directory [" + dir.getName() + "]" ); //$NON-NLS-3$
+            log.logBasic( "Exporting transformation", "Created directory [" + dir.getName() + "]" );
           }
 
           for ( int i = 0; i < trans.length; i++ ) {
             TransMeta ti = rep.loadTransformation( trans[i], repdir, null, true, null ); // reads last version
             if ( log.isBasic() ) {
-              log.logBasic( "Exporting transformation", "[" + trans[i] + "] in directory [" + repdir.getPath() + "]" ); //$NON-NLS-3$ //$NON-NLS-4$
+              log.logBasic(
+                "Exporting transformation", "[" + trans[i] + "] in directory [" + repdir.getPath() + "]" );
             }
 
             String xml = XMLHandler.getXMLHeader() + ti.getXML();
 
-            String filename = directory + repdir.getPath() + Const.FILE_SEPARATOR + fixFileName( trans[i] ) + ".ktr";
+            String filename =
+              directory + repdir.getPath() + Const.FILE_SEPARATOR + fixFileName( trans[i] ) + ".ktr";
             File f = new File( filename );
             try {
               FileOutputStream fos = new FileOutputStream( f );
@@ -2470,9 +2549,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Message" ), e );
     }
 
   }
@@ -2505,11 +2584,12 @@ public class RepositoryExplorerDialog extends Dialog {
 
           for ( int i = 0; i < jobs.length; i++ ) {
             JobMeta ji = rep.loadJob( jobs[i], repdir, null, null ); // reads last version
-            log.logBasic( "Exporting Jobs", "[" + jobs[i] + "] in directory [" + repdir.getPath() + "]" ); //$NON-NLS-3$ //$NON-NLS-4$
+            log.logBasic( "Exporting Jobs", "[" + jobs[i] + "] in directory [" + repdir.getPath() + "]" );
 
             String xml = XMLHandler.getXMLHeader() + ji.getXML();
 
-            String filename = directory + repdir.getPath() + Const.FILE_SEPARATOR + fixFileName( jobs[i] ) + ".kjb";
+            String filename =
+              directory + repdir.getPath() + Const.FILE_SEPARATOR + fixFileName( jobs[i] ) + ".kjb";
             File f = new File( filename );
             try {
               FileOutputStream fos = new FileOutputStream( f );
@@ -2522,9 +2602,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( Exception e ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Title" ),
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2533,7 +2613,7 @@ public class RepositoryExplorerDialog extends Dialog {
     if ( dialog.open() != null ) {
       String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
       if ( log.isBasic() ) {
-        log.logBasic( "Exporting All", "Export objects to file [" + filename + "]" ); //$NON-NLS-3$
+        log.logBasic( "Exporting All", "Export objects to file [" + filename + "]" );
       }
 
       RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog( shell, rep, dir, filename );
@@ -2555,13 +2635,13 @@ public class RepositoryExplorerDialog extends Dialog {
         boolean versionOk = false;
         while ( !versionOk ) {
           versionComment =
-              RepositorySecurityUI.getVersionComment( shell, rep, "Import of files into ["
-                  + baseDirectory.getPath() + "]" );
+            RepositorySecurityUI.getVersionComment( shell, rep, "Import of files into ["
+              + baseDirectory.getPath() + "]" );
 
           // if the version comment is null, the user hit cancel, exit.
           if ( rep != null
-              && rep.getSecurityProvider() != null && rep.getSecurityProvider().allowsVersionComments()
-              && versionComment == null ) {
+            && rep.getSecurityProvider() != null && rep.getSecurityProvider().allowsVersionComments()
+            && versionComment == null ) {
             return;
           }
           if ( Const.isEmpty( versionComment ) && rep.getSecurityProvider().isVersionCommentMandatory() ) {
@@ -2576,8 +2656,8 @@ public class RepositoryExplorerDialog extends Dialog {
         String[] filenames = dialog.getFileNames();
         if ( filenames.length > 0 ) {
           RepositoryImportProgressDialog ripd =
-              new RepositoryImportProgressDialog(
-                  shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory, versionComment );
+            new RepositoryImportProgressDialog(
+              shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory, versionComment );
           ripd.open();
 
           refreshTree();
@@ -2666,7 +2746,8 @@ public class RepositoryExplorerDialog extends Dialog {
           rep.save( slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null );
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-          mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.AlreadyExists.Message" ) );
+          mb.setMessage( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Slave.Create.AlreadyExists.Message" ) );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.AlreadyExists.Title" ) );
           mb.open();
         }
@@ -2675,8 +2756,8 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2695,8 +2776,10 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Title" ), BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message" ) + slaveName + "]", e ); //$NON-NLS-3$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message" )
+          + slaveName + "]", e );
     }
   }
 
@@ -2710,15 +2793,16 @@ public class RepositoryExplorerDialog extends Dialog {
       refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" ), e );
     }
   }
 
   public void newPartitionSchema() {
     try {
       PartitionSchema partitionSchema = new PartitionSchema();
-      PartitionSchemaDialog dd = new PartitionSchemaDialog( shell, partitionSchema, rep.readDatabases(), variableSpace );
+      PartitionSchemaDialog dd =
+        new PartitionSchemaDialog( shell, partitionSchema, rep.readDatabases(), variableSpace );
       if ( dd.open() ) {
         // See if this slave server already exists...
         ObjectId idPartitionSchema = rep.getPartitionSchemaID( partitionSchema.getName() );
@@ -2728,9 +2812,9 @@ public class RepositoryExplorerDialog extends Dialog {
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb.setMessage( BaseMessages.getString(
-              PKG, "RepositoryExplorerDialog.PartitionSchema.Create.AlreadyExists.Message" ) );
+            PKG, "RepositoryExplorerDialog.PartitionSchema.Create.AlreadyExists.Message" ) );
           mb.setText( BaseMessages.getString(
-              PKG, "RepositoryExplorerDialog.PartitionSchema.Create.AlreadyExists.Title" ) );
+            PKG, "RepositoryExplorerDialog.PartitionSchema.Create.AlreadyExists.Title" ) );
           mb.open();
         }
         // Refresh tree...
@@ -2738,8 +2822,8 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2748,7 +2832,8 @@ public class RepositoryExplorerDialog extends Dialog {
       ObjectId id = rep.getPartitionSchemaID( partitionSchemaName );
       PartitionSchema partitionSchema = rep.loadPartitionSchema( id, null ); // Load the last version
 
-      PartitionSchemaDialog dd = new PartitionSchemaDialog( shell, partitionSchema, rep.readDatabases(), variableSpace );
+      PartitionSchemaDialog dd =
+        new PartitionSchemaDialog( shell, partitionSchema, rep.readDatabases(), variableSpace );
       if ( dd.open() ) {
         rep.insertLogEntry( "Updating partition schema '" + partitionSchema.getName() + "'" );
         rep.save( partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null );
@@ -2757,9 +2842,11 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Message" ) + partitionSchemaName + "]", e ); //$NON-NLS-3$
+      new ErrorDialog(
+        shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Message" )
+          + partitionSchemaName + "]", e );
     }
   }
 
@@ -2773,8 +2860,8 @@ public class RepositoryExplorerDialog extends Dialog {
       refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2790,10 +2877,11 @@ public class RepositoryExplorerDialog extends Dialog {
           rep.save( cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null );
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
+          mb.setMessage( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Message" ) );
           mb
-              .setMessage( BaseMessages
-                  .getString( PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Message" ) );
-          mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Title" ) );
+            .setText( BaseMessages
+              .getString( PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Title" ) );
           mb.open();
         }
         // Refresh tree...
@@ -2801,8 +2889,8 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2821,8 +2909,8 @@ public class RepositoryExplorerDialog extends Dialog {
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message" ) + clusterName + "]", e ); //$NON-NLS-3$
+        PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message" ) + clusterName + "]", e );
     }
   }
 
@@ -2836,26 +2924,27 @@ public class RepositoryExplorerDialog extends Dialog {
       refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message" ), e );
+        PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Title" ), BaseMessages.getString(
+        PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message" ), e );
     }
   }
 
-  protected RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog( final RepositoryElementInterface element )
-    throws Exception {
+  protected RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog(
+    final RepositoryElementInterface element ) throws Exception {
     return getVersionBrowserDialog( shell, rep, element );
   }
 
   public static final RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog( Shell shell,
-      Repository repository, final RepositoryElementInterface element ) throws Exception {
+    Repository repository, final RepositoryElementInterface element ) throws Exception {
 
     String className = repository.getRepositoryMeta().getRevisionBrowserDialogClassName();
     PluginRegistry registry = PluginRegistry.getInstance();
-    PluginInterface plugin = registry.getPlugin( RepositoryPluginType.class, repository.getRepositoryMeta().getId() );
+    PluginInterface plugin =
+      registry.getPlugin( RepositoryPluginType.class, repository.getRepositoryMeta().getId() );
     Class<? extends RepositoryRevisionBrowserDialogInterface> dialogClass = registry.getClass( plugin, className );
     Constructor<?> constructor =
-        dialogClass.getConstructor( Shell.class, Integer.TYPE, Repository.class, RepositoryElementInterface.class );
+      dialogClass.getConstructor( Shell.class, Integer.TYPE, Repository.class, RepositoryElementInterface.class );
     return (RepositoryRevisionBrowserDialogInterface) constructor.newInstance( new Object[] {
-        shell, Integer.valueOf( SWT.NONE ), repository, element, } );
+      shell, Integer.valueOf( SWT.NONE ), repository, element, } );
   }
 }

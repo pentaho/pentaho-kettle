@@ -33,7 +33,7 @@ public interface IKettleFileSystemConfigBuilder {
 
   /**
    * Extract the FileSystemOptions parameter name from a Kettle variable
-   * 
+   *
    * @param parameter
    * @return
    */
@@ -42,6 +42,6 @@ public interface IKettleFileSystemConfigBuilder {
   /**
    * Publicly expose a generic way to set parameters
    */
-  public void setParameter( FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl )
-    throws IOException;
+  public void setParameter( FileSystemOptions opts, String name, String value, String fullParameterName,
+    String vfsUrl ) throws IOException;
 }

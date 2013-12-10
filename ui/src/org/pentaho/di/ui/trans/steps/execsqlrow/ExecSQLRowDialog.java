@@ -56,7 +56,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private boolean gotPreviousFields = false;
   private CCombo wConnection;
@@ -476,8 +476,8 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

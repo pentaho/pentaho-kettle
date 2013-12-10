@@ -53,13 +53,13 @@ import org.w3c.dom.Node;
 
 /**
  * This class knows how to handle the MetaData for the Json output step
- * 
+ *
  * @since 14-june-2010
- * 
+ *
  */
 
 public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = JsonOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JsonOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Operations type */
   private int operationType;
@@ -68,9 +68,9 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-      BaseMessages.getString( PKG, "JsonOutputMeta.operationType.OutputValue" ),
-      BaseMessages.getString( PKG, "JsonOutputMeta.operationType.WriteToFile" ),
-      BaseMessages.getString( PKG, "JsonOutputMeta.operationType.Both" ) };
+    BaseMessages.getString( PKG, "JsonOutputMeta.operationType.OutputValue" ),
+    BaseMessages.getString( PKG, "JsonOutputMeta.operationType.WriteToFile" ),
+    BaseMessages.getString( PKG, "JsonOutputMeta.operationType.Both" ) };
 
   /**
    * The operations type codes
@@ -299,7 +299,8 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     this.outputFields = outputFields;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -333,20 +334,23 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
       outputValue = XMLHandler.getTagValue( stepnode, "outputValue" );
       jsonBloc = XMLHandler.getTagValue( stepnode, "jsonBloc" );
       nrRowsInBloc = XMLHandler.getTagValue( stepnode, "nrRowsInBloc" );
-      operationType = getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
       compatibilityMode = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "compatibility_mode" ) );
 
       encoding = XMLHandler.getTagValue( stepnode, "encoding" );
       AddToResult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "AddToResult" ) );
       fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
-      createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
+      createparentfolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
       extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
       fileAppended = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "append" ) );
       stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
       partNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "haspartno" ) );
       dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
       timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
-      DoNotOpenNewFileInit = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "DoNotOpenNewFileInit" ) );
+      DoNotOpenNewFileInit =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "DoNotOpenNewFileInit" ) );
       servletOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "servlet_output" ) );
 
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
@@ -385,11 +389,11 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( getOperationType() != OPERATION_TYPE_WRITE_TO_FILE ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( this.getOutputValue() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( this.getOutputValue() ), ValueMetaInterface.TYPE_STRING );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
@@ -401,7 +405,8 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "outputValue", outputValue ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "jsonBloc", jsonBloc ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "nrRowsInBloc", nrRowsInBloc ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "operation_type", getOperationTypeCode( operationType ) ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "operation_type", getOperationTypeCode( operationType ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "compatibility_mode", compatibilityMode ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "addtoresult", AddToResult ) );
@@ -440,7 +445,8 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
       jsonBloc = rep.getStepAttributeString( id_step, "jsonBloc" );
       nrRowsInBloc = rep.getStepAttributeString( id_step, "nrRowsInBloc" );
 
-      operationType = getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
       compatibilityMode = rep.getStepAttributeBoolean( id_step, "compatibility_mode" );
       encoding = rep.getStepAttributeString( id_step, "encoding" );
       AddToResult = rep.getStepAttributeBoolean( id_step, "addtoresult" );
@@ -577,31 +583,31 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
     if ( getOperationType() != JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE ) {
       // We need to have output field name
       if ( Const.isEmpty( transMeta.environmentSubstitute( getOutputValue() ) ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "JsonOutput.Error.MissingOutputFieldName" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "JsonOutput.Error.MissingOutputFieldName" ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( Const.isEmpty( transMeta.environmentSubstitute( getFileName() ) ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "JsonOutput.Error.MissingTargetFilename" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "JsonOutput.Error.MissingTargetFilename" ), stepMeta );
       remarks.add( cr );
     }
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JsonOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JsonOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -621,8 +627,8 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "JsonOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "JsonOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -630,24 +636,24 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JsonOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JsonOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "JsonOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "JsonOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
-            PKG, "JsonOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
+      new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "JsonOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new JsonOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

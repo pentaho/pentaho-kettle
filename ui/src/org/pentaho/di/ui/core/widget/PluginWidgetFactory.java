@@ -35,7 +35,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class PluginWidgetFactory {
 
@@ -63,7 +63,7 @@ public class PluginWidgetFactory {
 
   /**
    * Constructor.
-   * 
+   *
    * @param shell
    *          the shell to set.
    * @param varSpace
@@ -111,7 +111,7 @@ public class PluginWidgetFactory {
 
   /**
    * Create label.
-   * 
+   *
    * @param text
    *          text to set.
    * @return new label.
@@ -122,7 +122,7 @@ public class PluginWidgetFactory {
 
   /**
    * Create label.
-   * 
+   *
    * @param style
    *          style to use.
    * @param text
@@ -137,7 +137,7 @@ public class PluginWidgetFactory {
 
   /**
    * Convenience method to create FormData for labels.
-   * 
+   *
    * @param topControl
    *          the control which is above the current label, or null if none above.
    * @return layoutData.
@@ -157,7 +157,7 @@ public class PluginWidgetFactory {
 
   /**
    * Convenience method to create FormData for Controls beside a label.
-   * 
+   *
    * @param topControl
    *          the control which is above the current label, or null if none above.
    * @return layoutData.

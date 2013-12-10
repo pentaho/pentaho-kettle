@@ -46,7 +46,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class FTPSConnection implements FTPListener {
 
-  private static Class<?> PKG = JobEntryFTPSGet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFTPSGet.class; // for i18n purposes, needed by Translator2!!
 
   public static final String HOME_FOLDER = "/";
   public static final String COMMAND_SUCCESSUL = "COMMAND SUCCESSFUL";
@@ -60,18 +60,18 @@ public class FTPSConnection implements FTPListener {
   public static final int CONNECTION_TYPE_FTP_IMPLICIT_TLS_WITH_CRYPTED = 6;
 
   public static final String[] connection_type_Desc = new String[] {
-      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.FTP" ),
-      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSL" ),
-      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthSSL" ),
-      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSLCrypted" ),
-      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthTLS" ),
-      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLS" ),
-      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLSCrypted" ) };
+    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.FTP" ),
+    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSL" ),
+    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthSSL" ),
+    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSLCrypted" ),
+    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthTLS" ),
+    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLS" ),
+    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLSCrypted" ) };
 
   public static final String[] connection_type_Code = new String[] {
-      "FTP_CONNECTION", "IMPLICIT_SSL_FTP_CONNECTION", "AUTH_SSL_FTP_CONNECTION",
-      "IMPLICIT_SSL_WITH_CRYPTED_DATA_FTP_CONNECTION", "AUTH_TLS_FTP_CONNECTION", "IMPLICIT_TLS_FTP_CONNECTION",
-      "IMPLICIT_TLS_WITH_CRYPTED_DATA_FTP_CONNECTION" };
+    "FTP_CONNECTION", "IMPLICIT_SSL_FTP_CONNECTION", "AUTH_SSL_FTP_CONNECTION",
+    "IMPLICIT_SSL_WITH_CRYPTED_DATA_FTP_CONNECTION", "AUTH_TLS_FTP_CONNECTION", "IMPLICIT_TLS_FTP_CONNECTION",
+    "IMPLICIT_TLS_WITH_CRYPTED_DATA_FTP_CONNECTION" };
 
   private FTPConnection connection = null;
   private ArrayList<String> replies = new ArrayList<String>();
@@ -99,9 +99,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to set the proxy host
-   * 
+   *
    * @param type
    *          true: proxy host
    */
@@ -110,9 +110,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to set the proxy port
-   * 
+   *
    * @param type
    *          true: proxy port
    */
@@ -121,9 +121,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to set the proxy username
-   * 
+   *
    * @param type
    *          true: proxy username
    */
@@ -132,9 +132,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to set the proxy password
-   * 
+   *
    * @param type
    *          true: proxy password
    */
@@ -143,16 +143,16 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to connect to a remote host
-   * 
+   *
    * @throws KettleException
    */
   public void connect() throws KettleException {
     try {
       connection =
-          FTPConnectionFactory.getInstance( getProperties(
-              hostName, portNumber, userName, passWord, connectionType, timeOut, passiveMode ) );
+        FTPConnectionFactory.getInstance( getProperties(
+          hostName, portNumber, userName, passWord, connectionType, timeOut, passiveMode ) );
       connection.addFTPStatusListener( this );
       connection.connect();
     } catch ( Exception e ) {
@@ -160,8 +160,8 @@ public class FTPSConnection implements FTPListener {
     }
   }
 
-  private Properties getProperties( String hostname, int port, String username, String password, int connectionType,
-      int timeout, boolean passiveMode ) {
+  private Properties getProperties( String hostname, int port, String username, String password,
+    int connectionType, int timeout, boolean passiveMode ) {
     Properties pt = new Properties();
     pt.setProperty( "connection.host", hostname );
     pt.setProperty( "connection.port", String.valueOf( port ) );
@@ -256,9 +256,9 @@ public class FTPSConnection implements FTPListener {
 
   /**
    * public void setBinaryMode(boolean type)
-   * 
+   *
    * this method is used to set the transfer type to binary
-   * 
+   *
    * @param type
    *          true: Binary
    * @throws KettleException
@@ -272,9 +272,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to set the mode to passive
-   * 
+   *
    * @param type
    *          true: passive mode
    */
@@ -283,33 +283,33 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to return the passive mode
-   * 
+   *
    * @return TRUE if we use passive mode
-   * 
+   *
    */
   public boolean isPassiveMode() {
     return this.passiveMode;
   }
 
   /**
-   * 
+   *
    * this method is used to set the timeout
-   * 
+   *
    * @param timeout
-   * 
+   *
    */
   public void setTimeOut( int timeout ) {
     this.timeOut = timeout;
   }
 
   /**
-   * 
+   *
    * this method is used to return the timeout
-   * 
+   *
    * @return timeout
-   * 
+   *
    */
   public int getTimeOut() {
     return this.timeOut;
@@ -320,9 +320,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to set the connection type
-   * 
+   *
    * @param type
    *          true: connection type
    */
@@ -351,9 +351,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method change FTP working directory
-   * 
+   *
    * @param directory
    *          change the working directory
    * @throws KettleException
@@ -367,9 +367,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to create a directory in remote host
-   * 
+   *
    * @param directory
    *          directory name on remote host
    * @throws KettleException
@@ -396,9 +396,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to download a file from a remote host
-   * 
+   *
    * @param file
    *          remote file to download
    * @param localFilename
@@ -429,9 +429,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to upload a file to a remote host
-   * 
+   *
    * @param localFileName
    *          Local full filename
    * @param shortFileName
@@ -458,9 +458,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to return filenames in working directory
-   * 
+   *
    * @return filenames
    * @throws KettleException
    */
@@ -483,9 +483,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to delete a file in remote host
-   * 
+   *
    * @param file
    *          File on remote host to delete
    * @throws KettleException
@@ -499,9 +499,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to delete a file in remote host
-   * 
+   *
    * @param filename
    *          Name of file on remote host to delete
    * @throws KettleException
@@ -515,9 +515,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to move a file to remote directory
-   * 
+   *
    * @param fromFile
    *          File on remote host to move
    * @param targetFoldername
@@ -528,17 +528,17 @@ public class FTPSConnection implements FTPListener {
     try {
       this.connection.renameFile( fromFile, new FTPFile( targetFoldername, fromFile.getName() ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-          PKG, "JobFTPS.Error.MovingFileToFolder", fromFile.getName(), targetFoldername ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.MovingFileToFolder", fromFile
+        .getName(), targetFoldername ), e );
     }
   }
 
   /**
-   * 
+   *
    * Checks if a directory exists
-   * 
+   *
    * @return true if the directory exists
-   * 
+   *
    */
   public boolean isDirectoryExists( String directory ) {
     String currectDirectory = null;
@@ -565,13 +565,13 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * Checks if a file exists on remote host
-   * 
+   *
    * @param filename
    *          the name of the file to check
    * @return true if the file exists
-   * 
+   *
    */
   public boolean isFileExists( String filename ) {
     boolean retval = false;
@@ -587,9 +587,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * Returns the working directory
-   * 
+   *
    * @return working directory
    * @throws Exception
    */
@@ -598,9 +598,9 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
-   * 
+   *
    * this method is used to disconnect the connection
-   * 
+   *
    */
   public void disconnect() {
     if ( this.connection != null ) {

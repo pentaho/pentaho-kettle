@@ -48,7 +48,7 @@ public interface ResourceHolderInterface {
 
   /**
    * Gets the high-level type of resource holder.
-   * 
+   *
    * @return JOBENTRY, STEP, etc.
    */
   public String getHolderType();

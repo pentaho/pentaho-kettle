@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of ValueNumber.
- * 
+ *
  * @author Sven Boden
  */
 public class ValueBigNumberTest extends TestCase {

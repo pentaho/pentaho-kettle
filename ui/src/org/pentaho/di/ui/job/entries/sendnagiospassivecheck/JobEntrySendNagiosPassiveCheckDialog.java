@@ -63,14 +63,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the SendNagiosPassiveCheck job entry settings.
- * 
+ *
  * @author Samatar
  * @since 01-10-2011
  */
 
 public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntrySendNagiosPassiveCheck.class; // for i18n purposes, needed by Translator2!!
-                                                                      // $NON-NLS-1$
 
   private LabelText wName;
 
@@ -150,7 +149,7 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
   private FormData fdlLevelMode, fdLevelMode;
 
   public JobEntrySendNagiosPassiveCheckDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
-      JobMeta jobMeta ) {
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntrySendNagiosPassiveCheck) jobEntryInt;
     if ( this.jobEntry.getName() == null ) {
@@ -185,8 +184,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // Job entry name line
     wName =
-        new LabelText( shell, BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.Name.Label" ), BaseMessages
-            .getString( PKG, "JobSendNagiosPassiveCheck.Name.Tooltip" ) );
+      new LabelText( shell, BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.Name.Label" ), BaseMessages
+        .getString( PKG, "JobSendNagiosPassiveCheck.Name.Tooltip" ) );
     wName.addModifyListener( lsMod );
     fdName = new FormData();
     fdName.top = new FormAttachment( 0, 0 );
@@ -217,7 +216,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     // /
     wServerSettings = new Group( wGeneralComp, SWT.SHADOW_NONE );
     props.setLook( wServerSettings );
-    wServerSettings.setText( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.ServerSettings.Group.Label" ) );
+    wServerSettings
+      .setText( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.ServerSettings.Group.Label" ) );
 
     FormLayout ServerSettingsgroupLayout = new FormLayout();
     ServerSettingsgroupLayout.marginWidth = 10;
@@ -227,9 +227,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // ServerName line
     wServerName =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.Server.Label" ), BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.Server.Tooltip" ) );
+      new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.Server.Label" ), BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -240,9 +240,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // Server port line
     wPort =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages
-            .getString( PKG, "JobSendNagiosPassiveCheck.Port.Label" ), BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.Port.Tooltip" ) );
+      new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.Port.Label" ), BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -253,9 +253,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // Password String line
     wPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.Password.Label" ), BaseMessages
-            .getString( "JobSendNagiosPassiveCheck.Password.Tooltip" ) );
+      new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.Password.Label" ), BaseMessages
+        .getString( "JobSendNagiosPassiveCheck.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -268,9 +268,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // Server wConnectionTimeOut line
     wConnectionTimeOut =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.ConnectionTimeOut.Label" ), BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.ConnectionTimeOut.Tooltip" ) );
+      new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.ConnectionTimeOut.Label" ), BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.ConnectionTimeOut.Tooltip" ) );
     props.setLook( wConnectionTimeOut );
     wConnectionTimeOut.addModifyListener( lsMod );
     fdwConnectionTimeOut = new FormData();
@@ -281,9 +281,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // ResponseTimeOut line
     wResponseTimeOut =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.ResponseTimeOut.Label" ), BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.ResponseTimeOut.Tooltip" ) );
+      new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.ResponseTimeOut.Label" ), BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.ResponseTimeOut.Tooltip" ) );
     props.setLook( wResponseTimeOut );
     wResponseTimeOut.addModifyListener( lsMod );
     fdResponseTimeOut = new FormData();
@@ -316,7 +316,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     // /
     wSenderSettings = new Group( wGeneralComp, SWT.SHADOW_NONE );
     props.setLook( wSenderSettings );
-    wSenderSettings.setText( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.SenderSettings.Group.Label" ) );
+    wSenderSettings
+      .setText( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.SenderSettings.Group.Label" ) );
     FormLayout SenderSettingsgroupLayout = new FormLayout();
     SenderSettingsgroupLayout.marginWidth = 10;
     SenderSettingsgroupLayout.marginHeight = 10;
@@ -324,9 +325,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // SenderServerName line
     wSenderServerName =
-        new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.SenderServerName.Label" ), BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.SenderServerName.Tooltip" ) );
+      new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.SenderServerName.Label" ), BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.SenderServerName.Tooltip" ) );
     props.setLook( wSenderServerName );
     wSenderServerName.addModifyListener( lsMod );
     fdSenderServerName = new FormData();
@@ -337,9 +338,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // SenderServiceName line
     wSenderServiceName =
-        new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.SenderServiceName.Label" ), BaseMessages.getString(
-            PKG, "JobSendNagiosPassiveCheck.SenderServiceName.Tooltip" ) );
+      new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.SenderServiceName.Label" ), BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.SenderServiceName.Tooltip" ) );
     props.setLook( wSenderServiceName );
     wSenderServiceName.addModifyListener( lsMod );
     fdSenderServiceName = new FormData();
@@ -427,7 +428,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     wlMessage.setLayoutData( fdlMessage );
 
     wMessage =
-        new StyledTextComp( jobMeta, wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( jobMeta, wMessageGroup, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wMessage );
     wMessage.addModifyListener( lsMod );
     fdMessage = new FormData();
@@ -534,8 +536,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     String errMsg = null;
     String hostname = jobMeta.environmentSubstitute( wServerName.getText() );
     int nrPort =
-        Const
-            .toInt( jobMeta.environmentSubstitute( "" + wPort.getText() ), JobEntrySendNagiosPassiveCheck.DEFAULT_PORT );
+      Const.toInt(
+        jobMeta.environmentSubstitute( "" + wPort.getText() ), JobEntrySendNagiosPassiveCheck.DEFAULT_PORT );
     int realConnectionTimeOut = Const.toInt( jobMeta.environmentSubstitute( wConnectionTimeOut.getText() ), -1 );
 
     try {
@@ -551,8 +553,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
       mb.open();
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.Connected.NOK.ConnectionBad", hostname )
-          + Const.CR + errMsg + Const.CR );
+      mb.setMessage( BaseMessages.getString(
+        PKG, "JobSendNagiosPassiveCheck.Connected.NOK.ConnectionBad", hostname )
+        + Const.CR + errMsg + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -608,7 +611,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     jobEntry.setSenderServerName( wSenderServerName.getText() );
     jobEntry.setSenderServiceName( wSenderServiceName.getText() );
     jobEntry.setMessage( wMessage.getText() );
-    jobEntry.setEncryptionMode( JobEntrySendNagiosPassiveCheck.getEncryptionModeByDesc( wEncryptionMode.getText() ) );
+    jobEntry
+      .setEncryptionMode( JobEntrySendNagiosPassiveCheck.getEncryptionModeByDesc( wEncryptionMode.getText() ) );
     jobEntry.setLevel( JobEntrySendNagiosPassiveCheck.getLevelByDesc( wLevelMode.getText() ) );
     jobEntry.setPassword( wPassword.getText() );
 

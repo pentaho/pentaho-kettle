@@ -26,7 +26,7 @@ public interface ResourceXmlPropertyEmitterInterface {
 
   /**
    * Allows injection of additional relevant properties in the to-xml of the Resource Reference.
-   * 
+   *
    * @param ref
    *          The Resource Reference Holder (a step, or a job entry)
    * @param indention

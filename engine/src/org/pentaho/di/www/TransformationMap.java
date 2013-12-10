@@ -36,9 +36,9 @@ import org.pentaho.di.trans.TransConfiguration;
 
 /**
  * This is a map between the transformation name and the (running/waiting/finished) transformation.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class TransformationMap {
   private Map<CarteObjectEntry, Trans> transformationMap;
@@ -57,7 +57,7 @@ public class TransformationMap {
 
   /**
    * Add a transformation to the map
-   * 
+   *
    * @param transformationName
    *          The name of the transformation to add
    * @param containerObjectId
@@ -68,7 +68,7 @@ public class TransformationMap {
    *          the transformation configuration to add
    */
   public synchronized void addTransformation( String transformationName, String containerObjectId, Trans trans,
-      TransConfiguration transConfiguration ) {
+    TransConfiguration transConfiguration ) {
     CarteObjectEntry entry = new CarteObjectEntry( transformationName, containerObjectId );
     transformationMap.put( entry, trans );
     configurationMap.put( entry, transConfiguration );
@@ -83,7 +83,7 @@ public class TransformationMap {
 
   /**
    * Find the first transformation in the list that comes to mind!
-   * 
+   *
    * @param transformationName
    * @return the first transformation with the specified name
    */
@@ -128,7 +128,7 @@ public class TransformationMap {
   }
 
   /**
-   * 
+   *
    * @param entry
    *          the Carte object entry
    */
@@ -159,7 +159,7 @@ public class TransformationMap {
   /**
    * This is the meat of the whole problem. We'll allocate a port for a given slave, transformation and step copy,
    * always on the same host. Algorithm: 1) Search for the right map in the hostPortMap
-   * 
+   *
    * @param portRangeStart
    *          the start of the port range as described in the used cluster schema
    * @param hostname
@@ -172,49 +172,51 @@ public class TransformationMap {
    * @return
    */
   public synchronized SocketPortAllocation allocateServerSocketPort( int portRangeStart, String hostname,
-      String clusteredRunId, String transformationName, String sourceSlaveName, String sourceStepName,
-      String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy ) {
+    String clusteredRunId, String transformationName, String sourceSlaveName, String sourceStepName,
+    String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy ) {
 
     // Do some validations first...
     //
     if ( Const.isEmpty( clusteredRunId ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a cluster run ID but it was empty" );
+        "A server socket allocation always has to accompanied by a cluster run ID but it was empty" );
     }
     if ( portRangeStart <= 0 ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by port range start > 0 but it was " + portRangeStart );
+        "A server socket allocation always has to accompanied by port range start > 0 but it was "
+          + portRangeStart );
     }
     if ( Const.isEmpty( hostname ) ) {
-      throw new RuntimeException( "A server socket allocation always has to accompanied by a hostname but it was empty" );
+      throw new RuntimeException(
+        "A server socket allocation always has to accompanied by a hostname but it was empty" );
     }
     if ( Const.isEmpty( transformationName ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a transformation name but it was empty" );
+        "A server socket allocation always has to accompanied by a transformation name but it was empty" );
     }
     if ( Const.isEmpty( sourceSlaveName ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a source slave server name but it was empty" );
+        "A server socket allocation always has to accompanied by a source slave server name but it was empty" );
     }
     if ( Const.isEmpty( targetSlaveName ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a target slave server name but it was empty" );
+        "A server socket allocation always has to accompanied by a target slave server name but it was empty" );
     }
     if ( Const.isEmpty( sourceStepName ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a source step name but it was empty" );
+        "A server socket allocation always has to accompanied by a source step name but it was empty" );
     }
     if ( Const.isEmpty( targetStepName ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a target step name but it was empty" );
+        "A server socket allocation always has to accompanied by a target step name but it was empty" );
     }
     if ( Const.isEmpty( sourceStepCopy ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a source step copy but it was empty" );
+        "A server socket allocation always has to accompanied by a source step copy but it was empty" );
     }
     if ( Const.isEmpty( targetStepCopy ) ) {
       throw new RuntimeException(
-          "A server socket allocation always has to accompanied by a target step copy but it was empty" );
+        "A server socket allocation always has to accompanied by a target step copy but it was empty" );
     }
 
     synchronized ( hostServerSocketPortsMap ) {
@@ -238,13 +240,13 @@ public class TransformationMap {
           }
 
           if ( spa.getClusterRunId().equalsIgnoreCase( clusteredRunId )
-              && spa.getSourceSlaveName().equalsIgnoreCase( sourceSlaveName )
-              && spa.getTargetSlaveName().equalsIgnoreCase( targetSlaveName )
-              && spa.getTransformationName().equalsIgnoreCase( transformationName )
-              && spa.getSourceStepName().equalsIgnoreCase( sourceStepName )
-              && spa.getSourceStepCopy().equalsIgnoreCase( sourceStepCopy )
-              && spa.getTargetStepName().equalsIgnoreCase( targetStepName )
-              && spa.getTargetStepCopy().equalsIgnoreCase( targetStepCopy ) ) {
+            && spa.getSourceSlaveName().equalsIgnoreCase( sourceSlaveName )
+            && spa.getTargetSlaveName().equalsIgnoreCase( targetSlaveName )
+            && spa.getTransformationName().equalsIgnoreCase( transformationName )
+            && spa.getSourceStepName().equalsIgnoreCase( sourceStepName )
+            && spa.getSourceStepCopy().equalsIgnoreCase( sourceStepCopy )
+            && spa.getTargetStepName().equalsIgnoreCase( targetStepName )
+            && spa.getTargetStepCopy().equalsIgnoreCase( targetStepCopy ) ) {
             // This is the port we want, return it. Make sure it's allocated.
             //
             spa.setAllocated( true );
@@ -263,11 +265,11 @@ public class TransformationMap {
               // Otherwise, we keep on searching.
               //
               if ( spa.getSourceSlaveName().equalsIgnoreCase( sourceSlaveName )
-                  && spa.getTargetSlaveName().equalsIgnoreCase( targetSlaveName ) ) {
+                && spa.getTargetSlaveName().equalsIgnoreCase( targetSlaveName ) ) {
                 socketPortAllocation =
-                    new SocketPortAllocation(
-                        spa.getPort(), new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName,
-                        sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
+                  new SocketPortAllocation(
+                    spa.getPort(), new Date(), clusteredRunId, transformationName, sourceSlaveName,
+                    sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
                 serverSocketPortsMap.set( index, socketPortAllocation );
                 break;
               }
@@ -280,9 +282,9 @@ public class TransformationMap {
           // Normally this list should stay sorted on port number this way
           //
           socketPortAllocation =
-              new SocketPortAllocation(
-                  maxPort + 1, new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName,
-                  sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
+            new SocketPortAllocation(
+              maxPort + 1, new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName,
+              sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
           serverSocketPortsMap.add( socketPortAllocation );
         }
 
@@ -305,7 +307,7 @@ public class TransformationMap {
 
   /**
    * Deallocate all the ports for the given transformation name, across all hosts.
-   * 
+   *
    * @param transName
    *          the transformation name to release
    * @param carteObjectId
@@ -318,7 +320,7 @@ public class TransformationMap {
         synchronized ( spas ) {
           for ( SocketPortAllocation spa : spas ) {
             if ( spa.getTransformationName().equalsIgnoreCase( transName )
-                && ( Const.isEmpty( carteObjectId ) || spa.getClusterRunId().equals( carteObjectId ) ) ) {
+              && ( Const.isEmpty( carteObjectId ) || spa.getClusterRunId().equals( carteObjectId ) ) ) {
               spa.setAllocated( false );
             }
           }
@@ -329,7 +331,7 @@ public class TransformationMap {
 
   /**
    * Deallocate all the ports for the given transformation entry, across all hosts.
-   * 
+   *
    * @param entry
    *          the transformation object entry name to release the sockets for
    */
@@ -412,13 +414,13 @@ public class TransformationMap {
   public SlaveSequence createSlaveSequence( String name ) throws KettleException {
     SlaveSequence auto = slaveServerConfig.getAutoSequence();
     if ( auto == null ) {
-      throw new KettleException(
-          "No auto-sequence information found in the slave server config.  Slave sequence could not be created automatically." );
+      throw new KettleException( "No auto-sequence information found in the slave server config.  "
+        + "Slave sequence could not be created automatically." );
     }
 
     SlaveSequence slaveSequence =
-        new SlaveSequence( name, auto.getStartValue(), auto.getDatabaseMeta(), auto.getSchemaName(), auto
-            .getTableName(), auto.getSequenceNameField(), auto.getValueField() );
+      new SlaveSequence( name, auto.getStartValue(), auto.getDatabaseMeta(), auto.getSchemaName(), auto
+        .getTableName(), auto.getSequenceNameField(), auto.getValueField() );
 
     slaveServerConfig.getSlaveSequences().add( slaveSequence );
 

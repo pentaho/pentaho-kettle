@@ -36,12 +36,12 @@ import org.pentaho.di.cluster.SlaveConnectionManager;
 
 /**
  * HTTP
- * 
+ *
  * This class contains HTTP protocol properties such as request headers. Response headers and other properties of the
  * HTTP protocol can be added to this class.
- * 
+ *
  * @author sflatley
- * 
+ *
  */
 public class HTTPProtocol {
 
@@ -60,12 +60,12 @@ public class HTTPProtocol {
 
   /**
    * Performs a get on urlAsString using username and password as credentials.
-   * 
+   *
    * If the status code returned not -1 and 401 then the contents are returned. If the status code is 401 an
    * AuthenticationException is thrown.
-   * 
+   *
    * All other values of status code are not dealt with but logic can be added as needed.
-   * 
+   *
    * @param urlAsString
    * @param username
    * @param password
@@ -74,8 +74,8 @@ public class HTTPProtocol {
    * @throws MalformedURLException
    * @throws IOException
    */
-  public String get( String urlAsString, String username, String password ) throws MalformedURLException, IOException,
-    AuthenticationException {
+  public String get( String urlAsString, String username, String password ) throws MalformedURLException,
+    IOException, AuthenticationException {
 
     HttpClient httpClient = SlaveConnectionManager.getInstance().createHttpClient();
     GetMethod getMethod = new GetMethod( urlAsString );

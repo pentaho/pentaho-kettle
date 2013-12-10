@@ -38,12 +38,12 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.metastore.api.IMetaStore;
 
 public class SharedDatabaseUtil {
-  
+
   /**
    * Add a database to the list of shared databases in ~/.kettle/shared.xml
-   * 
+   *
    * @param databaseMeta
-   * @throws KettleException in case there is an error 
+   * @throws KettleException in case there is an error
    * @throws KettleObjectExistsException if a database with the same name already exists
    */
   public static void addSharedDatabase(DatabaseMeta databaseMeta) throws KettleObjectExistsException, KettleException {
@@ -62,7 +62,7 @@ public class SharedDatabaseUtil {
       throw new KettleException("It was not possible to add database '"+databaseMeta.getName()+"' to the shared.xml file");
     }
   }
-  
+
   public static List<DatabaseMeta> getDatabaseMetaList(IMetaStore metaStore) {
     try {
       return DatabaseMetaStoreUtil.getDatabaseElements(metaStore);
@@ -84,16 +84,16 @@ public class SharedDatabaseUtil {
     } catch(Exception e) {
       LogChannel.GENERAL.logError("Unable to load shared objects", e);
     }
-    
+
     return sharedDatabases;
   }
-  
+
   public static String[] getSortedDatabaseNames(List<DatabaseMeta> sharedDatabases) {
-    
+
     String[] databaseNames = new String[sharedDatabases.size()];
     for (int i=0;i<sharedDatabases.size();i++) databaseNames[i] = sharedDatabases.get(i).getName();
     Arrays.sort(databaseNames);
 
     return databaseNames;
-  }  
+  }
 }

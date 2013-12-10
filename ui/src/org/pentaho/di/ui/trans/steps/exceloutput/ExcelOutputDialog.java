@@ -79,7 +79,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -387,7 +387,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdlCreateParentFolder.right = new FormAttachment( middle, -margin );
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wFileComp, SWT.CHECK );
-    wCreateParentFolder.setToolTipText( BaseMessages.getString( PKG, "ExcelOutputDialog.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder.setToolTipText( BaseMessages.getString(
+      PKG, "ExcelOutputDialog.CreateParentFolder.Tooltip" ) );
     props.setLook( wCreateParentFolder );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -410,8 +411,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( wFileComp, SWT.CHECK );
-    wDoNotOpenNewFileInit.setToolTipText( BaseMessages
-        .getString( PKG, "ExcelOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+      PKG, "ExcelOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
@@ -571,9 +572,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                  PKG, "ExcelOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-                  PKG, "ExcelOutputDialog.SelectOutputFiles.DialogMessage" ) );
+            new EnterSelectionDialog( shell, files, BaseMessages.getString(
+              PKG, "ExcelOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+              PKG, "ExcelOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -1147,7 +1148,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // Font header orientation
     wlHeaderFontOrientation = new Label( wFontHeaderGroup, SWT.RIGHT );
-    wlHeaderFontOrientation.setText( BaseMessages.getString( PKG, "ExcelOutputDialog.HeaderFontOrientation.Label" ) );
+    wlHeaderFontOrientation
+      .setText( BaseMessages.getString( PKG, "ExcelOutputDialog.HeaderFontOrientation.Label" ) );
     props.setLook( wlHeaderFontOrientation );
     fdlHeaderFontOrientation = new FormData();
     fdlHeaderFontOrientation.left = new FormAttachment( 0, 0 );
@@ -1185,7 +1187,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // Font header background color
     wlHeaderBackGroundColor = new Label( wFontHeaderGroup, SWT.RIGHT );
-    wlHeaderBackGroundColor.setText( BaseMessages.getString( PKG, "ExcelOutputDialog.HeaderBackGroundColor.Label" ) );
+    wlHeaderBackGroundColor
+      .setText( BaseMessages.getString( PKG, "ExcelOutputDialog.HeaderBackGroundColor.Label" ) );
     props.setLook( wlHeaderBackGroundColor );
     fdlHeaderBackGroundColor = new FormData();
     fdlHeaderBackGroundColor.left = new FormAttachment( 0, 0 );
@@ -1256,8 +1259,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
           dialog.setFileName( transMeta.environmentSubstitute( wImage.getText() ) );
         }
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "ExcelOutputDialog.FileType.PNGFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "ExcelOutputDialog.FileType.PNGFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wImage.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
@@ -1430,35 +1433,35 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // Prepare a list of possible formats...
     String[] formats =
-        new String[] {
-            // Numbers
-            "#", "0", "0.00", "#,##0", "#,##0.00", "$#,##0;($#,##0)", "$#,##0;($#,##0)", "$#,##0;($#,##0)",
-            "$#,##0;($#,##0)", "0%", "0.00%", "0.00E00", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)",
-            "#,##0.00;(#,##0.00)", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)", "#,##0.00;(#,##0.00)",
-            "#,##0.00;(#,##0.00)", "##0.0E0",
+      new String[] {
+        // Numbers
+        "#", "0", "0.00", "#,##0", "#,##0.00", "$#,##0;($#,##0)", "$#,##0;($#,##0)", "$#,##0;($#,##0)",
+        "$#,##0;($#,##0)", "0%", "0.00%", "0.00E00", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)",
+        "#,##0.00;(#,##0.00)", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)", "#,##0.00;(#,##0.00)",
+        "#,##0.00;(#,##0.00)", "##0.0E0",
 
-            // Forces text
-            "@",
+        // Forces text
+        "@",
 
-            // Dates
-            "M/d/yy", "d-MMM-yy", "d-MMM", "MMM-yy", "h:mm a", "h:mm:ss a", "H:mm", "H:mm:ss", "M/d/yy H:mm", "mm:ss",
-            "H:mm:ss", "H:mm:ss", };
+        // Dates
+        "M/d/yy", "d-MMM-yy", "d-MMM", "MMM-yy", "h:mm a", "h:mm:ss a", "H:mm", "H:mm:ss", "M/d/yy H:mm",
+        "mm:ss", "H:mm:ss", "H:mm:ss", };
 
     colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "ExcelOutputDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "ExcelOutputDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.getTypes() ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "ExcelOutputDialog.FormatColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                formats ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ExcelOutputDialog.NameColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ExcelOutputDialog.TypeColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ExcelOutputDialog.FormatColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, formats ), };
 
     wFields =
-        new TableView(
-            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1572,10 +1575,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
-          wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
+          wFilename.setText( dialog.getFilterPath()
+            + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );
@@ -1588,11 +1592,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
           dialog.setFileName( transMeta.environmentSubstitute( wTemplateFilename.getText() ) );
         }
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wTemplateFilename.setText( dialog.getFilterPath()
-              + System.getProperty( "file.separator" ) + dialog.getFileName() );
+            + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );
@@ -1932,14 +1936,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }
 
   /**
    * Sets the output width to minimal width...
-   * 
+   *
    */
   public void setMinimalWidth() {
     int nrNonEmptyFields = wFields.nrNonEmpty();

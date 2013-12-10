@@ -50,12 +50,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog to enter a text. (descriptions etc.)
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class EnterTextDialog extends Dialog {
-  private static Class<?> PKG = EnterTextDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterTextDialog.class; // for i18n purposes, needed by Translator2!!
 
   private String title, message;
 
@@ -76,7 +76,7 @@ public class EnterTextDialog extends Dialog {
 
   /**
    * Dialog to allow someone to show or enter a text
-   * 
+   *
    * @param parent
    *          The parent shell to use
    * @param title
@@ -95,7 +95,7 @@ public class EnterTextDialog extends Dialog {
 
   /**
    * Dialog to allow someone to show or enter a text in variable width font
-   * 
+   *
    * @param parent
    *          The parent shell to use
    * @param title
@@ -135,8 +135,8 @@ public class EnterTextDialog extends Dialog {
     modal |= Const.isLinux(); // On Linux, this dialog seems to behave strangely except when shown modal
 
     shell =
-        new Shell( parent, SWT.DIALOG_TRIM
-            | SWT.RESIZE | SWT.MAX | SWT.MIN | ( modal ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) );
+      new Shell( parent, SWT.DIALOG_TRIM
+        | SWT.RESIZE | SWT.MAX | SWT.MIN | ( modal ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) );
     props.setLook( shell );
     shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
@@ -287,9 +287,10 @@ public class EnterTextDialog extends Dialog {
     dispose();
   }
 
-  public static final void editDescription( Shell shell, DescriptionInterface descriptionInterface, String shellText,
-      String message ) {
-    EnterTextDialog textDialog = new EnterTextDialog( shell, shellText, message, descriptionInterface.getDescription() );
+  public static final void editDescription( Shell shell, DescriptionInterface descriptionInterface,
+    String shellText, String message ) {
+    EnterTextDialog textDialog =
+      new EnterTextDialog( shell, shellText, message, descriptionInterface.getDescription() );
     String description = textDialog.open();
     if ( description != null ) {
       descriptionInterface.setDescription( description );

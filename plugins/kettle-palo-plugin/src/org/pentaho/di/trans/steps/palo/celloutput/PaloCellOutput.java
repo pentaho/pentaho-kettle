@@ -35,7 +35,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
 
   private PaloCellOutputMeta meta;
   private PaloCellOutputData data;
-  
+
   public PaloCellOutput(final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr, final TransMeta transMeta, final Trans trans) {
     super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
   }
@@ -97,7 +97,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
     } catch (Exception e) {
       throw new KettleException("Failed to add Cell Row: " + row, e);
     }
-    
+
     return true;
   }
 
@@ -139,7 +139,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
 		  data.helper.clearCubeCache();
 		  data.helper.disconnect();
 	  }
-    
+
     super.dispose(smi, sdi);
   }
 }

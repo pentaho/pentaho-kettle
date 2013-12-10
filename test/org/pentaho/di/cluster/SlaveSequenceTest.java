@@ -62,7 +62,8 @@ public class SlaveSequenceTest extends TestCase {
     slaveConfig.getSlaveServer().setUsername( "cluster" );
     slaveConfig.getSlaveServer().setPassword( "cluster" );
 
-    String dbDir = System.getProperty( "java.io.tmpdir" ) + "/" + UUID.randomUUID().toString() + "-slaveSeqTest-H2-DB";
+    String dbDir =
+      System.getProperty( "java.io.tmpdir" ) + "/" + UUID.randomUUID().toString() + "-slaveSeqTest-H2-DB";
     DatabaseMeta databaseMeta = new DatabaseMeta( "H2", "H2", "Native", null, dbDir, null, null, null );
     slaveConfig.getDatabases().add( databaseMeta );
 
@@ -71,7 +72,7 @@ public class SlaveSequenceTest extends TestCase {
     String valueField = "SEQ_VALUE";
 
     SlaveSequence slaveSequence =
-        new SlaveSequence( SLAVE_SEQUENCE_NAME, 1L, databaseMeta, null, table, nameField, valueField );
+      new SlaveSequence( SLAVE_SEQUENCE_NAME, 1L, databaseMeta, null, table, nameField, valueField );
     slaveConfig.getSlaveSequences().add( slaveSequence );
 
     Database db = new Database( loggingObject, databaseMeta );
@@ -131,7 +132,8 @@ public class SlaveSequenceTest extends TestCase {
     slaveConfig.getSlaveServer().setUsername( "cluster" );
     slaveConfig.getSlaveServer().setPassword( "cluster" );
 
-    String dbDir = System.getProperty( "java.io.tmpdir" ) + "/" + UUID.randomUUID().toString() + "-slaveSeqTest-H2-DB";
+    String dbDir =
+      System.getProperty( "java.io.tmpdir" ) + "/" + UUID.randomUUID().toString() + "-slaveSeqTest-H2-DB";
     DatabaseMeta databaseMeta = new DatabaseMeta( "H2", "H2", "Native", null, dbDir, null, null, null );
     slaveConfig.getDatabases().add( databaseMeta );
 
@@ -140,7 +142,7 @@ public class SlaveSequenceTest extends TestCase {
     String valueField = "SEQ_VALUE";
 
     SlaveSequence slaveSequence =
-        new SlaveSequence( SLAVE_SEQUENCE_NAME, 1L, databaseMeta, null, table, nameField, valueField );
+      new SlaveSequence( SLAVE_SEQUENCE_NAME, 1L, databaseMeta, null, table, nameField, valueField );
     slaveConfig.setAutomaticCreationAllowed( true );
     slaveConfig.setAutoSequence( slaveSequence );
 

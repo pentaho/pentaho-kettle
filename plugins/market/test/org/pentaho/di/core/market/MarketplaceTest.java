@@ -21,7 +21,7 @@
 ******************************************************************************/
 
 /**
- * 
+ *
  */
 
 package org.pentaho.di.core.market;
@@ -37,7 +37,7 @@ import org.pentaho.di.core.xml.XMLHandler;
  *
  */
 public class MarketplaceTest extends TestCase {
-  
+
   private static final String ID = "DummyPlugin";
   private static final MarketEntryType type = MarketEntryType.Step;
   private static final String name = "Dummy Plugin";
@@ -59,10 +59,10 @@ public class MarketplaceTest extends TestCase {
   private static final String maxPdiVersion = "4.9";
 
   public void testMarketEntryCreation() throws Exception {
-    MarketEntry entry = new MarketEntry(ID, type, name, version, author, description, 
-        documentationUrl, sourceUrl, forumUrl, casesUrl, packageUrl, 
+    MarketEntry entry = new MarketEntry(ID, type, name, version, author, description,
+        documentationUrl, sourceUrl, forumUrl, casesUrl, packageUrl,
         licenseName, licenseText, supportLevel, supportMessage, supportOrganization, supportUrl, minPdiVersion, maxPdiVersion);
-    
+
     assertEquals(ID, entry.getId());
     assertEquals(type, entry.getType());
     assertEquals(name, entry.getName());
@@ -83,18 +83,18 @@ public class MarketplaceTest extends TestCase {
     assertEquals(minPdiVersion, entry.getMinPdiVersion());
     assertEquals(maxPdiVersion, entry.getMaxPdiVersion());
   }
-  
+
   public void testMarketEntrySerialization() throws Exception {
-    MarketEntry originalEntry = new MarketEntry(ID, type, name, version, author, description, 
-        documentationUrl, sourceUrl, forumUrl, casesUrl, packageUrl, 
+    MarketEntry originalEntry = new MarketEntry(ID, type, name, version, author, description,
+        documentationUrl, sourceUrl, forumUrl, casesUrl, packageUrl,
         licenseName, licenseText, supportLevel, supportMessage, supportOrganization, supportUrl, minPdiVersion, maxPdiVersion);
-    
+
     // Serialize & de-serialize and then see if we still have the same content.
     //
     String xml = originalEntry.getXML();
     System.out.println(xml);
     MarketEntry entry = new MarketEntry(XMLHandler.loadXMLString(xml, MarketEntry.XML_TAG));
-    
+
     assertEquals(ID, entry.getId());
     assertEquals(type, entry.getType());
     assertEquals(name, entry.getName());

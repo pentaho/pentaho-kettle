@@ -53,54 +53,56 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 /**
  * Test class for tableinput. H2 is used as database in memory to get an easy playground for database tests. H2 does not
  * support all SQL features but it should proof enough for most of our tests.
- * 
+ *
  * @author Sven Boden
  */
 public class TableInputTest extends TestCase {
   public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>", };
+    + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+    + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+    + "<password></password>" + "</connection>", };
 
   private static String source_table = "table_source1";
 
   private static String[] insertStatement = {
-      // New rows for the source
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (1, 100)",
+    // New rows for the source
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (1, 100)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (2, 100)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (2, 100)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (3, 100)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (3, 100)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (4, 100)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (4, 100)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (5, 101)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (5, 101)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (6, 101)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (6, 101)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (7, 101)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (7, 101)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (8, 101)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (8, 101)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (9,  102)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (9,  102)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (10, 102)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (10, 102)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (11, 102)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (11, 102)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (12, 102)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (12, 102)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (13, 103)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (13, 103)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (14, 103)",
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (14, 103)",
 
-      "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (15, 103)" };
+    "INSERT INTO " + source_table + "(ID, CODE) " + "VALUES (15, 103)" };
 
   public RowMetaInterface createSourceRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ), new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ), };
+    {
+      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -113,7 +115,8 @@ public class TableInputTest extends TestCase {
    * Create source table.
    */
   public void createTables( Database db ) throws Exception {
-    String source = db.getCreateTableStatement( source_table, createSourceRowMetaInterface(), null, false, null, true );
+    String source =
+      db.getCreateTableStatement( source_table, createSourceRowMetaInterface(), null, false, null, true );
     try {
       db.execStatement( source );
     } catch ( KettleException ex ) {
@@ -123,7 +126,7 @@ public class TableInputTest extends TestCase {
 
   /**
    * Insert data in the source table.
-   * 
+   *
    * @param db
    *          database to use.
    */
@@ -238,7 +241,7 @@ public class TableInputTest extends TestCase {
 
   /**
    * Test case for table input which is taking its input from a hop. This is a regression test case for JIRA PDI-588.
-   * 
+   *
    * The query in the table input step has one '?' and this parameter is filled by values read from an input hop.
    */
   public void testTableInputWithParam() throws Exception {

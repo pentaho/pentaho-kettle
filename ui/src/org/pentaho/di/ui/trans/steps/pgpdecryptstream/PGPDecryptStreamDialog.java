@@ -61,7 +61,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = PGPDecryptStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGPDecryptStreamMeta.class; // for i18n purposes, needed by Translator2!!
   private boolean gotPreviousFields = false;
 
   private Label wlGPGLocation;
@@ -97,7 +97,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
   private FormData fdlPassphraseFieldName, fdPassphraseFieldName;
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString(
-      PKG, "PGPDecryptStreamDialog.Filetype.All" ) };
+    PKG, "PGPDecryptStreamDialog.Filetype.All" ) };
 
   public PGPDecryptStreamDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -232,7 +232,8 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     } );
 
     wlPassphraseFromField = new Label( wGPGGroup, SWT.RIGHT );
-    wlPassphraseFromField.setText( BaseMessages.getString( PKG, "PGPDecryptStreamDialog.PassphraseFromField.Label" ) );
+    wlPassphraseFromField.setText( BaseMessages
+      .getString( PKG, "PGPDecryptStreamDialog.PassphraseFromField.Label" ) );
     props.setLook( wlPassphraseFromField );
     fdlPassphraseFromField = new FormData();
     fdlPassphraseFromField.left = new FormAttachment( 0, 0 );
@@ -242,7 +243,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     wPassphraseFromField = new Button( wGPGGroup, SWT.CHECK );
     props.setLook( wPassphraseFromField );
     wPassphraseFromField.setToolTipText( BaseMessages.getString(
-        PKG, "PGPDecryptStreamDialog.PassphraseFromField.Tooltip" ) );
+      PKG, "PGPDecryptStreamDialog.PassphraseFromField.Tooltip" ) );
     fdPassphraseFromField = new FormData();
     fdPassphraseFromField.left = new FormAttachment( middle, 0 );
     fdPassphraseFromField.top = new FormAttachment( wPassphrase, margin );
@@ -256,7 +257,8 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 
     // Passphrase field
     wlPassphraseFieldName = new Label( wGPGGroup, SWT.RIGHT );
-    wlPassphraseFieldName.setText( BaseMessages.getString( PKG, "PGPDecryptStreamDialog.PassphraseFieldName.Label" ) );
+    wlPassphraseFieldName.setText( BaseMessages
+      .getString( PKG, "PGPDecryptStreamDialog.PassphraseFieldName.Label" ) );
     props.setLook( wlPassphraseFieldName );
     fdlPassphraseFieldName = new FormData();
     fdlPassphraseFieldName.left = new FormAttachment( 0, 0 );
@@ -475,9 +477,9 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+          PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

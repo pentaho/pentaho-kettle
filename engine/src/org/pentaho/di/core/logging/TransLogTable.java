@@ -46,13 +46,13 @@ import org.w3c.dom.Node;
 
 /**
  * This class describes a transformation logging table
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class TransLogTable extends BaseLogTable implements Cloneable, LogTableInterface {
 
-  private static Class<?> PKG = TransLogTable.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransLogTable.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "trans-log-table";
 
@@ -62,10 +62,10 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
   public enum ID {
 
     ID_BATCH( "ID_BATCH" ), CHANNEL_ID( "CHANNEL_ID" ), TRANSNAME( "TRANSNAME" ), STATUS( "STATUS" ), LINES_READ(
-        "LINES_READ" ), LINES_WRITTEN( "LINES_WRITTEN" ), LINES_UPDATED( "LINES_UPDATED" ),
-    LINES_INPUT( "LINES_INPUT" ), LINES_OUTPUT( "LINES_OUTPUT" ), LINES_REJECTED( "LINES_REJECTED" ),
-    ERRORS( "ERRORS" ), STARTDATE( "STARTDATE" ), ENDDATE( "ENDDATE" ), LOGDATE( "LOGDATE" ), DEPDATE( "DEPDATE" ),
-    REPLAYDATE( "REPLAYDATE" ), LOG_FIELD( "LOG_FIELD" ), EXECUTING_SERVER( "EXECUTING_SERVER" ), EXECUTING_USER(
+      "LINES_READ" ), LINES_WRITTEN( "LINES_WRITTEN" ), LINES_UPDATED( "LINES_UPDATED" ), LINES_INPUT(
+      "LINES_INPUT" ), LINES_OUTPUT( "LINES_OUTPUT" ), LINES_REJECTED( "LINES_REJECTED" ), ERRORS( "ERRORS" ),
+      STARTDATE( "STARTDATE" ), ENDDATE( "ENDDATE" ), LOGDATE( "LOGDATE" ), DEPDATE( "DEPDATE" ), REPLAYDATE(
+        "REPLAYDATE" ), LOG_FIELD( "LOG_FIELD" ), EXECUTING_SERVER( "EXECUTING_SERVER" ), EXECUTING_USER(
         "EXECUTING_USER" ), CLIENT( "CLIENT" );
 
     private String id;
@@ -108,7 +108,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
     StringBuffer retval = new StringBuffer();
 
     retval.append( XMLHandler.openTag( XML_TAG ) );
-    retval.append( XMLHandler.addTagValue( "connection", connectionName ) ); //$NON-NLS-3$
+    retval.append( XMLHandler.addTagValue( "connection", connectionName ) );
     retval.append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( XMLHandler.addTagValue( "table", tableName ) );
     retval.append( XMLHandler.addTagValue( "size_limit_lines", logSizeLimit ) );
@@ -192,69 +192,72 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
   }
 
   public static TransLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface,
-      List<StepMeta> steps ) {
+    List<StepMeta> steps ) {
     TransLogTable table = new TransLogTable( space, databasesInterface, steps );
 
     table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.BatchID" ), BaseMessages
-        .getString( PKG, "TransLogTable.FieldDescription.BatchID" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
+      PKG, "TransLogTable.FieldName.BatchID" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.BatchID" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
     table.fields.add( new LogTableField( ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.ChannelID" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.ChannelID" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+      PKG, "TransLogTable.FieldName.ChannelID" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.ChannelID" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField( ID.TRANSNAME.id, true, false, "TRANSNAME", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.TransName" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.TransName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField(
-        ID.STATUS.id, true, false, "STATUS", BaseMessages.getString( PKG, "TransLogTable.FieldName.Status" ),
-        BaseMessages.getString( PKG, "TransLogTable.FieldDescription.Status" ), ValueMetaInterface.TYPE_STRING, 15 ) );
+      PKG, "TransLogTable.FieldName.TransName" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.TransName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.STATUS.id, true, false, "STATUS", BaseMessages.getString(
+      PKG, "TransLogTable.FieldName.Status" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.Status" ), ValueMetaInterface.TYPE_STRING, 15 ) );
     table.fields.add( new LogTableField( ID.LINES_READ.id, true, true, "LINES_READ", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LinesRead" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.LinesRead" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+      PKG, "TransLogTable.FieldName.LinesRead" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.LinesRead" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_WRITTEN.id, true, true, "LINES_WRITTEN", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LinesWritten" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.LinesWritten" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+      PKG, "TransLogTable.FieldName.LinesWritten" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.LinesWritten" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_UPDATED.id, true, true, "LINES_UPDATED", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LinesUpdated" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.LinesUpdated" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+      PKG, "TransLogTable.FieldName.LinesUpdated" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.LinesUpdated" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_INPUT.id, true, true, "LINES_INPUT", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LinesInput" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.LinesInput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+      PKG, "TransLogTable.FieldName.LinesInput" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.LinesInput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_OUTPUT.id, true, true, "LINES_OUTPUT", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LinesOutput" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.LinesOutput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
-    table.fields.add( new LogTableField( ID.LINES_REJECTED.id, true, true, "LINES_REJECTED", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LinesRejected" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.LinesRejected" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
-    table.fields.add( new LogTableField(
-        ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString( PKG, "TransLogTable.FieldName.Errors" ),
-        BaseMessages.getString( PKG, "TransLogTable.FieldDescription.Errors" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+      PKG, "TransLogTable.FieldName.LinesOutput" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.LinesOutput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+    table.fields.add( new LogTableField( ID.LINES_REJECTED.id, true, true, "LINES_REJECTED", BaseMessages
+      .getString( PKG, "TransLogTable.FieldName.LinesRejected" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.LinesRejected" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+    table.fields.add( new LogTableField( ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString(
+      PKG, "TransLogTable.FieldName.Errors" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.Errors" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.STARTDATE.id, true, false, "STARTDATE", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.StartDateRange" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.StartDateRange" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+      PKG, "TransLogTable.FieldName.StartDateRange" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.StartDateRange" ), ValueMetaInterface.TYPE_DATE, -1 ) );
     table.fields.add( new LogTableField( ID.ENDDATE.id, true, false, "ENDDATE", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.EndDateRange" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.EndDateRange" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+      PKG, "TransLogTable.FieldName.EndDateRange" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.EndDateRange" ), ValueMetaInterface.TYPE_DATE, -1 ) );
     table.fields.add( new LogTableField( ID.LOGDATE.id, true, false, "LOGDATE", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LogDate" ), BaseMessages
-        .getString( PKG, "TransLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+      PKG, "TransLogTable.FieldName.LogDate" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
     table.fields.add( new LogTableField( ID.DEPDATE.id, true, false, "DEPDATE", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.DepDate" ), BaseMessages
-        .getString( PKG, "TransLogTable.FieldDescription.DepDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+      PKG, "TransLogTable.FieldName.DepDate" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.DepDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
     table.fields.add( new LogTableField( ID.REPLAYDATE.id, true, false, "REPLAYDATE", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.ReplayDate" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.ReplayDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
-    table.fields.add( new LogTableField( ID.LOG_FIELD.id, true, false, "LOG_FIELD", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.LogField" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.LogField" ), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH ) );
+      PKG, "TransLogTable.FieldName.ReplayDate" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.ReplayDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+    table.fields
+      .add( new LogTableField(
+        ID.LOG_FIELD.id, true, false, "LOG_FIELD", BaseMessages.getString(
+          PKG, "TransLogTable.FieldName.LogField" ), BaseMessages.getString(
+          PKG, "TransLogTable.FieldDescription.LogField" ), ValueMetaInterface.TYPE_STRING,
+        DatabaseMeta.CLOB_LENGTH ) );
     table.fields.add( new LogTableField( ID.EXECUTING_SERVER.id, false, false, "EXECUTING_SERVER", BaseMessages
-        .getString( PKG, "TransLogTable.FieldName.ExecutingServer" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.ExecutingServer" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.EXECUTING_USER.id, false, false, "EXECUTING_USER", BaseMessages.getString(
-        PKG, "TransLogTable.FieldName.ExecutingUser" ), BaseMessages.getString(
-        PKG, "TransLogTable.FieldDescription.ExecutingUser" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField(
-        ID.CLIENT.id, false, false, "CLIENT", BaseMessages.getString( PKG, "TransLogTable.FieldName.Client" ),
-        BaseMessages.getString( PKG, "TransLogTable.FieldDescription.Client" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+      .getString( PKG, "TransLogTable.FieldName.ExecutingServer" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.ExecutingServer" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.EXECUTING_USER.id, false, false, "EXECUTING_USER", BaseMessages
+      .getString( PKG, "TransLogTable.FieldName.ExecutingUser" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.ExecutingUser" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.CLIENT.id, false, false, "CLIENT", BaseMessages.getString(
+      PKG, "TransLogTable.FieldName.Client" ), BaseMessages.getString(
+      PKG, "TransLogTable.FieldDescription.Client" ), ValueMetaInterface.TYPE_STRING, 255 ) );
 
     table.findField( ID.ID_BATCH ).setKey( true );
     table.findField( ID.LOGDATE ).setLogDateField( true );
@@ -346,7 +349,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
   /**
    * Sets the logging interval in seconds. Disabled if the logging interval is <=0.
-   * 
+   *
    * @param logInterval
    *          The log interval value. A value higher than 0 means that the log table is updated every 'logInterval'
    *          seconds.
@@ -358,7 +361,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
   /**
    * Get the logging interval in seconds. Disabled if the logging interval is <=0. A value higher than 0 means that the
    * log table is updated every 'logInterval' seconds.
-   * 
+   *
    * @param logInterval
    *          The log interval,
    */
@@ -383,7 +386,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
   /**
    * This method calculates all the values that are required
-   * 
+   *
    * @param id
    *          the id to use or -1 if no id is needed
    * @param status
@@ -466,8 +469,8 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
                 break;
               case CLIENT:
                 value =
-                    KettleClientEnvironment.getInstance().getClient() != null ? KettleClientEnvironment
-                        .getInstance().getClient().toString() : "unknown";
+                  KettleClientEnvironment.getInstance().getClient() != null ? KettleClientEnvironment
+                    .getInstance().getClient().toString() : "unknown";
                 break;
               default:
                 break;

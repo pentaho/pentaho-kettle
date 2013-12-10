@@ -29,9 +29,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * 
+ *
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  * @param <T>
  *          type of value
  */
@@ -58,7 +58,7 @@ public class KeyValue<T> implements Serializable {
 
   /**
    * Constructor. Key will be converted to lower case.
-   * 
+   *
    * @param key
    *          key to set.
    * @param value
@@ -75,7 +75,7 @@ public class KeyValue<T> implements Serializable {
 
   /**
    * Constructor. Key will be converted to lower case. Value is null.
-   * 
+   *
    * @param key
    *          key to set.
    * @throws IllegalArgumentException
@@ -95,7 +95,7 @@ public class KeyValue<T> implements Serializable {
     Assert.assertNotEmpty( lowerKey, "Key cannot be null or empty" );
     if ( !StringUtils.containsOnly( lowerKey, VALID_KEY_CHARS ) ) {
       throw new IllegalArgumentException( "Key contains invalid characters [validKeyCharacters="
-          + VALID_KEY_CHARS + "]" );
+        + VALID_KEY_CHARS + "]" );
     }
     if ( lowerKey.charAt( 0 ) == '-' ) {
       throw new IllegalArgumentException( "Key must not start with '-'" );
@@ -188,7 +188,7 @@ public class KeyValue<T> implements Serializable {
 
   /**
    * Uses DEFAULT_TRUE_VALUES, ignore case.
-   * 
+   *
    * @return boolean value or null if value is null.
    */
   public Boolean booleanValue() {
@@ -373,7 +373,7 @@ public class KeyValue<T> implements Serializable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

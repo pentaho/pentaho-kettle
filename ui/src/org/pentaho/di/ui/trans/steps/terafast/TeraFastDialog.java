@@ -77,13 +77,13 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * TODO BaseStepDialog should replaced by something like AbstractStepDialog (BaseStepDialog is ... - asc042, 13.05.2009)
- * 
+ *
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
- * 
+ *
  */
 public class TeraFastDialog extends BaseStepDialog implements StepDialogInterface {
 
-  private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final int FORM_ATTACHMENT_OFFSET = 100;
 
@@ -174,7 +174,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
   /**
    * Constructor.
-   * 
+   *
    * @param parent
    *          parent shell.
    * @param baseStepMeta
@@ -184,7 +184,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
    * @param stepname
    *          name of step.
    */
-  public TeraFastDialog( final Shell parent, final Object baseStepMeta, final TransMeta transMeta, final String stepname ) {
+  public TeraFastDialog( final Shell parent, final Object baseStepMeta, final TransMeta transMeta,
+    final String stepname ) {
     super( parent, (BaseStepMeta) baseStepMeta, transMeta, stepname );
     this.meta = (TeraFastMeta) baseStepMeta;
   }
@@ -215,7 +216,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepDialogInterface#open()
    */
   public String open() {
@@ -245,7 +246,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
     final Runnable runnable = new Runnable() {
       public void run() {
-        final StepMeta stepMetaSearchFields = TeraFastDialog.this.transMeta.findStep( TeraFastDialog.this.stepname );
+        final StepMeta stepMetaSearchFields =
+          TeraFastDialog.this.transMeta.findStep( TeraFastDialog.this.stepname );
         if ( stepMetaSearchFields == null ) {
           return;
         }
@@ -378,9 +380,11 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     this.wGetLU.addListener( SWT.Selection, this.lsGetLU );
     this.wStepname.addSelectionListener( this.lsDef );
     final String allFileTypes = BaseMessages.getString( PKG, "TeraFastDialog.Filetype.All" );
-    this.wbControlFile.addSelectionListener( new SimpleFileSelection( this.shell, this.wControlFile, allFileTypes ) );
+    this.wbControlFile
+      .addSelectionListener( new SimpleFileSelection( this.shell, this.wControlFile, allFileTypes ) );
     this.wbDataFile.addSelectionListener( new SimpleFileSelection( this.shell, this.wDataFile, allFileTypes ) );
-    this.wbFastLoadPath.addSelectionListener( new SimpleFileSelection( this.shell, this.wFastLoadPath, allFileTypes ) );
+    this.wbFastLoadPath.addSelectionListener( new SimpleFileSelection(
+      this.shell, this.wFastLoadPath, allFileTypes ) );
     this.wbLogFile.addSelectionListener( new SimpleFileSelection( this.shell, this.wLogFile, allFileTypes ) );
 
     this.wDoMapping.addListener( SWT.Selection, new Listener() {
@@ -419,8 +423,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
       sourceFields = this.transMeta.getPrevStepFields( this.stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( this.shell, BaseMessages.getString(
-          PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-          PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+        PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+        PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh fields
@@ -429,8 +433,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
       targetFields = this.meta.getRequiredFields( this.transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( this.shell, BaseMessages.getString(
-          PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-          PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+        PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+        PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -469,8 +473,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     }
 
     EnterMappingDialog d =
-        new EnterMappingDialog(
-            TeraFastDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(), mappings );
+      new EnterMappingDialog( TeraFastDialog.this.shell, sourceFields.getFieldNames(), targetFields
+        .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -504,12 +508,13 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( row, this.wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
+        BaseStepDialog.getFieldsFromPrevious(
+          row, this.wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          this.shell, BaseMessages.getString( PKG, "TeraFastDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "TeraFastDialog.FailedToGetFields.DialogMessage" ), ke );
+        this.shell, BaseMessages.getString( PKG, "TeraFastDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "TeraFastDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -537,7 +542,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     this.meta.getSessions().setValue( Const.toInt( this.wSessions.getText(), TeraFastMeta.DEFAULT_SESSIONS ) );
     this.meta.getTargetTable().setValue( this.wTable.getText() );
     this.meta.getConnectionName().setValue( this.wConnection.getText() );
-    this.meta.getTruncateTable().setValue( this.wbTruncateTable.getSelection() && this.wbTruncateTable.getEnabled() );
+    this.meta.getTruncateTable().setValue(
+      this.wbTruncateTable.getSelection() && this.wbTruncateTable.getEnabled() );
     this.meta.setDbMeta( this.transMeta.findDatabase( this.wConnection.getText() ) );
 
     this.meta.getTableFieldList().getValue().clear();
@@ -570,9 +576,9 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     this.wbeConnection = new Button( this.shell, SWT.PUSH );
     this.wlConnection = new Label( this.shell, SWT.RIGHT );
     this.wConnection =
-        addConnectionLine(
-            this.shell, this.wLogFile, factory.getMiddle(), factory.getMargin(), this.wlConnection, this.wbwConnection,
-            this.wbnConnection, this.wbeConnection, TeradataDatabaseMeta.class );
+      addConnectionLine(
+        this.shell, this.wLogFile, factory.getMiddle(), factory.getMargin(), this.wlConnection,
+        this.wbwConnection, this.wbnConnection, this.wbeConnection, TeradataDatabaseMeta.class );
     this.buildTableLine( factory );
     this.buildTruncateTableLine( factory );
     this.buildDataFileLine( factory );
@@ -594,7 +600,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
   protected void buildControlFileLine( final PluginWidgetFactory factory ) {
     final Control topControl = this.wUseControlFile;
 
-    this.wlControlFile = factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.ControlFile.Label" ) );
+    this.wlControlFile =
+      factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.ControlFile.Label" ) );
     this.props.setLook( this.wlControlFile );
     this.wlControlFile.setLayoutData( factory.createLabelLayoutData( topControl ) );
 
@@ -618,7 +625,8 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
   protected void buildFastloadLine( final PluginWidgetFactory factory ) {
     final Control topControl = this.wVariableSubstitution;
 
-    this.wlFastLoadPath = factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.FastloadPath.Label" ) );
+    this.wlFastLoadPath =
+      factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.FastloadPath.Label" ) );
     this.props.setLook( this.wlFastLoadPath );
     this.wlFastLoadPath.setLayoutData( factory.createLabelLayoutData( topControl ) );
 
@@ -643,7 +651,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     final Control topControl = this.wStepname;
 
     this.wlUseControlFile =
-        factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.UseControlFile.Label" ) );
+      factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.UseControlFile.Label" ) );
     this.props.setLook( this.wlUseControlFile );
     this.wlUseControlFile.setLayoutData( factory.createLabelLayoutData( topControl ) );
 
@@ -667,7 +675,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     final Control topControl = this.wControlFile;
 
     this.wlVariableSubstitution =
-        factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.VariableSubstitution.Label" ) );
+      factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.VariableSubstitution.Label" ) );
     this.props.setLook( this.wlVariableSubstitution );
     this.wlVariableSubstitution.setLayoutData( factory.createLabelLayoutData( topControl ) );
 
@@ -702,7 +710,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
   /**
    * Build step name line.
-   * 
+   *
    * @param factory
    *          factory to use.
    */
@@ -749,7 +757,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     final Control topControl = this.wTable;
 
     this.wlTruncateTable =
-        factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.TruncateTable.Label" ) );
+      factory.createRightLabel( BaseMessages.getString( PKG, "TeraFastDialog.TruncateTable.Label" ) );
     this.props.setLook( this.wlTruncateTable );
     this.wlTruncateTable.setLayoutData( factory.createLabelLayoutData( topControl ) );
 
@@ -849,17 +857,18 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
     this.ciReturn = new ColumnInfo[upInsCols];
     this.ciReturn[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TeraFastDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TeraFastDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     this.ciReturn[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TeraFastDialog.ColumnInfo.StreamField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TeraFastDialog.ColumnInfo.StreamField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     this.tableFieldColumns.add( this.ciReturn[0] );
     this.wReturn =
-        new TableView( this.transMeta, this.shell, SWT.BORDER
-            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, this.ciReturn, upInsRows, null, this.props );
+      new TableView(
+        this.transMeta, this.shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+        this.ciReturn, upInsRows, null, this.props );
 
     this.wGetLU = factory.createPushButton( BaseMessages.getString( PKG, "TeraFastDialog.GetFields.Label" ) );
     this.fdGetLU = new FormData();
@@ -962,7 +971,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   private static final class FieldLoader extends Thread {
 
@@ -970,7 +979,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
     /**
      * Constructor.
-     * 
+     *
      * @param dialog
      *          dialog to set.
      */
@@ -980,7 +989,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Runnable#run()
      */
     @Override

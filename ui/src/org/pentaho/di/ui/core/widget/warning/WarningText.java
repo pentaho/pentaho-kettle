@@ -46,12 +46,12 @@ import org.pentaho.di.ui.core.widget.CheckBoxVar;
 /**
  * A Widget that combines a Text widget with a "Warning" image to the left. It's shown when there is a warning condition
  * in the text field.
- * 
+ *
  * @author Matt
  * @since 25-FEB-2009
  */
 public class WarningText extends Composite implements SupportsWarningInterface {
-  private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!!
 
   private ControlDecoration warningControlDecoration;
 
@@ -92,7 +92,7 @@ public class WarningText extends Composite implements SupportsWarningInterface {
         boolean foundOne = false;
         for ( WarningInterface warningInterface : warningInterfaces ) {
           WarningMessageInterface warningSituation =
-              warningInterface.getWarningSituation( wText.getText(), wText, this );
+            warningInterface.getWarningSituation( wText.getText(), wText, this );
           if ( warningSituation.isWarning() ) {
             foundOne = true;
             warningControlDecoration.show();
@@ -134,7 +134,7 @@ public class WarningText extends Composite implements SupportsWarningInterface {
 
   /**
    * Add a modify listener to the text widget
-   * 
+   *
    * @param modifyListener
    */
   public void addModifyListener( ModifyListener modifyListener ) {

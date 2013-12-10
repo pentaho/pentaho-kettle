@@ -44,9 +44,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the logging plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( LoggingPluginInterface.class )
 @PluginAnnotationType( LoggingPlugin.class )
@@ -92,12 +92,12 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
           inputStream = new FileInputStream( kettleLoggingPluginsXmlFile );
         } catch ( Exception e ) {
           throw new KettlePluginException( "Unable to load native logging plugins '"
-              + kettleLoggingPluginsXmlFile + "'", e );
+            + kettleLoggingPluginsXmlFile + "'", e );
         }
       }
       if ( inputStream == null ) {
         throw new KettlePluginException( "Unable to find native logging plugins definition file: "
-            + Const.XML_FILE_KETTLE_LOGGING_PLUGINS );
+          + Const.XML_FILE_KETTLE_LOGGING_PLUGINS );
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
@@ -109,7 +109,7 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
 
     } catch ( KettleXMLException e ) {
       throw new KettlePluginException( "Unable to read the kettle logging plugins XML config file: "
-          + kettleLoggingPluginsXmlFile, e );
+        + kettleLoggingPluginsXmlFile, e );
     }
   }
 
@@ -125,9 +125,8 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource(
-                  pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
-                      .getParent().getURL() );
+              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this
+                .getClass(), false, file.getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...

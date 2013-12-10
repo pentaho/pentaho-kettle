@@ -41,14 +41,14 @@ public class StarModelPainter {
   private Point area;
   private String locale;
   private List<LogicalRelationship> logicalRelationships;
-  
+
   /**
-   * @param gc The graphical context to draw the logical model on 
+   * @param gc The graphical context to draw the logical model on
    * @param logicalModel The model to depict
-   * @param logicalRelationships 
+   * @param logicalRelationships
    * @param relationships the relationships (dynamically derived from a UI)
    * @param locale the locale to use to draw names of tables.
-   * 
+   *
    */
   public StarModelPainter(GCInterface gc, LogicalModel logicalModel, List<LogicalRelationship> logicalRelationships, String locale) {
     this.gc = gc;
@@ -57,20 +57,20 @@ public class StarModelPainter {
     this.logicalRelationships = logicalRelationships;
     this.locale = locale;
   }
-  
+
   public void draw() {
     gc.setAntialias(true);
-    
+
     Point center = new Point(area.x/2, area.y/2);
     gc.setBackground(EColor.BACKGROUND);
     gc.setForeground(EColor.BLACK);
     gc.fillRectangle(0,0,area.x, area.y);
-    
+
     // gc.drawText("bounds: x="+rect.x+", y="+rect.y+", height="+rect.height+", width="+rect.width, 10, 10);
-    
+
     List<LogicalTable> tableList = new ArrayList<LogicalTable>();
     tableList.addAll(logicalModel.getLogicalTables());
-    
+
     // Find the fact...
     //
     LogicalTable fact = null;
@@ -82,7 +82,7 @@ public class StarModelPainter {
     if (fact!=null) {
       tableList.remove(fact);
     }
-    
+
     int maxWidth = Integer.MIN_VALUE;
     for (LogicalTable table : tableList) {
       String name = table.getName(locale);
@@ -91,12 +91,12 @@ public class StarModelPainter {
         if (p.x>maxWidth) maxWidth=p.x;
       }
     }
-    
+
     List<TablePoint> points = new ArrayList<TablePoint>();
     if (fact!=null) {
       points.add(new TablePoint(fact, center));
     }
-    
+
     // Draw the other dimensions around the fact...
     //
     if (!tableList.isEmpty()) {
@@ -115,7 +115,7 @@ public class StarModelPainter {
         gc.drawLine(from.x, from.y, to.x, to.y);
       }
     }
-    
+
     // Then fill and draw all the ovals.
     //
     for (TablePoint tablePoint : points) {
@@ -125,7 +125,7 @@ public class StarModelPainter {
     }
 
   }
-  
+
   private class TablePoint {
     public LogicalTable logicalTable;
     public Point point;
@@ -134,7 +134,7 @@ public class StarModelPainter {
       this.point = point;
     }
   }
-  
+
   private List<TablePoint> getCirclePoints(Point center, int width, int heigth, List<LogicalTable> tableList) {
     List<TablePoint> points = new ArrayList<TablePoint>();
     int nrPoints = tableList.size();
@@ -144,10 +144,10 @@ public class StarModelPainter {
       Point point = new Point(center.x, center.y);
       point.x += (int)Math.round(Math.cos(tetha)*width);
       point.y += (int)Math.round(Math.sin(tetha)*(heigth-5));
-      
+
       points.add(new TablePoint(tableList.get(i), point));
     }
-    
+
     return points;
   }
 
@@ -159,7 +159,7 @@ public class StarModelPainter {
     }
     return null;
   }
-  
+
   private void drawCircleName(Point center, LogicalTable logicalTable) {
     String name = ConceptUtil.getName(logicalTable, locale);
     if (!Const.isEmpty(name)) {
@@ -173,19 +173,19 @@ public class StarModelPainter {
         bg = EColor.LIGHTGRAY;
       }
       gc.setBackground(bg);
-      
+
       gc.fillRoundRectangle(center.x-nameSize.x/2, center.y-nameSize.y/2, nameSize.x, nameSize.y, 20, 20);
       gc.drawRoundRectangle(center.x-nameSize.x/2, center.y-nameSize.y/2, nameSize.x, nameSize.y, 20, 20);
       gc.drawText(name, center.x-nameSize.x/2+margin/2, center.y-nameSize.y/2+margin/2, true);
       gc.setBackground(EColor.BACKGROUND);
     }
   }
-    
 
 
-  
-  
-  
+
+
+
+
   /**
    * @return the logicalModel
    */

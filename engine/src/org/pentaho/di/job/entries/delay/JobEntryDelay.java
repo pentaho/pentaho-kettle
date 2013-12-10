@@ -50,12 +50,12 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry type to sleep for a time. It uses a piece of javascript to do this.
- * 
+ *
  * @author Samatar
  * @since 21-02-2007
  */
 public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryDelay.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDelay.class; // for i18n purposes, needed by Translator2!!
 
   private static String DEFAULT_MAXIMUM_TIMEOUT = "0";
 
@@ -87,8 +87,8 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       maximumTimeout = XMLHandler.getTagValue( entrynode, "maximumTimeout" );
@@ -99,13 +99,13 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       maximumTimeout = rep.getJobEntryAttributeString( id_jobentry, "maximumTimeout" );
       scaleTime = (int) rep.getJobEntryAttributeInteger( id_jobentry, "scaletime" );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryDelay.UnableToLoadFromRepo.Label" )
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -117,14 +117,15 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "maximumTimeout", maximumTimeout );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "scaletime", scaleTime );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryDelay.UnableToSaveToRepo.Label" ) + id_job, dbe );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "JobEntryDelay.UnableToSaveToRepo.Label" ) + id_job, dbe );
     }
   }
 
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param previousResult
    *          The result of the previous execution
    * @return The Result of the execution.
@@ -170,9 +171,8 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       //
       if ( iMaximumTimeout < 0 ) {
         iMaximumTimeout = Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 );
-        logBasic( BaseMessages
-            .getString( PKG, "JobEntryDelay.MaximumTimeReset.Label", String.valueOf( iMaximumTimeout ), String
-                .valueOf( Waitscale ) ) );
+        logBasic( BaseMessages.getString( PKG, "JobEntryDelay.MaximumTimeReset.Label", String
+          .valueOf( iMaximumTimeout ), String.valueOf( Waitscale ) ) );
       }
 
       // Loop until the delay time has expired.
@@ -228,8 +228,8 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     maximumTimeout = s;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "maximumTimeout", remarks, putValidators( longValidator() ) );
     andValidator().validate( this, "scaleTime", remarks, putValidators( integerValidator() ) );
   }

@@ -56,15 +56,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Create File job entry settings.
- * 
+ *
  * @author Sven Boden
  * @since 28-01-2007
  */
 public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryCreateFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryCreateFile.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] FILETYPES =
-      new String[] { BaseMessages.getString( PKG, "JobCreateFile.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "JobCreateFile.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -224,7 +224,8 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
     fdlAddFilenameToResult.right = new FormAttachment( middle, -margin );
     wlAddFilenameToResult.setLayoutData( fdlAddFilenameToResult );
     wAddFilenameToResult = new Button( shell, SWT.CHECK );
-    wAddFilenameToResult.setToolTipText( BaseMessages.getString( PKG, "JobCreateFile.AddFilenameToResult.Tooltip" ) );
+    wAddFilenameToResult
+      .setToolTipText( BaseMessages.getString( PKG, "JobCreateFile.AddFilenameToResult.Tooltip" ) );
     props.setLook( wAddFilenameToResult );
     fdAddFilenameToResult = new FormData();
     fdAddFilenameToResult.left = new FormAttachment( middle, 0 );

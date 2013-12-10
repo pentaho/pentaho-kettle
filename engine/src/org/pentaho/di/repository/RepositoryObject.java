@@ -29,9 +29,9 @@ import java.util.List;
 
 /**
  * Contains some common object details, extracted from a repository
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class RepositoryObject implements RepositoryElementMetaInterface {
 
@@ -58,7 +58,7 @@ public class RepositoryObject implements RepositoryElementMetaInterface {
    * @param modifiedDate
    */
   public RepositoryObject( ObjectId objectId, String name, RepositoryDirectoryInterface repositoryDirectory,
-      String modifiedUser, Date modifiedDate, RepositoryObjectType objectType, String description, boolean deleted ) {
+    String modifiedUser, Date modifiedDate, RepositoryObjectType objectType, String description, boolean deleted ) {
     this();
     this.objectId = objectId;
     this.name = name;
@@ -141,8 +141,8 @@ public class RepositoryObject implements RepositoryElementMetaInterface {
     return one.compareTo( two );
   }
 
-  public static final void sortRepositoryObjects( List<RepositoryElementMetaInterface> objects, final int sortPosition,
-      final boolean ascending ) {
+  public static final void sortRepositoryObjects( List<RepositoryElementMetaInterface> objects,
+    final int sortPosition, final boolean ascending ) {
     Collections.sort( objects, new Comparator<RepositoryElementMetaInterface>() {
       public int compare( RepositoryElementMetaInterface r1, RepositoryElementMetaInterface r2 ) {
         int result = 0;
@@ -152,7 +152,8 @@ public class RepositoryObject implements RepositoryElementMetaInterface {
             result = compareStrings( r1.getName(), r2.getName() );
             break;
           case 1:
-            result = compareStrings( r1.getObjectType().getTypeDescription(), r2.getObjectType().getTypeDescription() );
+            result =
+              compareStrings( r1.getObjectType().getTypeDescription(), r2.getObjectType().getTypeDescription() );
             break;
           case 2:
             result = compareStrings( r1.getModifiedUser(), r2.getModifiedUser() );

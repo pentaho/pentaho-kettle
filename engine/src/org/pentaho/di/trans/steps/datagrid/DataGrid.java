@@ -40,17 +40,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Generates a number of (empty or the same) rows
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 public class DataGrid extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DataGridMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DataGridMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DataGridMeta meta;
   private DataGridData data;
 
-  public DataGrid( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public DataGrid( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (DataGridMeta) getStepMeta().getStepMetaInterface();
@@ -101,7 +102,7 @@ public class DataGrid extends BaseStep implements StepInterface {
 
     if ( log.isRowLevel() ) {
       log.logRowlevel( toString(), BaseMessages.getString( PKG, "DataGrid.Log.Wrote.Row", Long
-          .toString( getLinesWritten() ), data.outputRowMeta.getString( outputRowData ) ) );
+        .toString( getLinesWritten() ), data.outputRowMeta.getString( outputRowData ) ) );
     }
 
     if ( checkFeedback( getLinesWritten() ) ) {

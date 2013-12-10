@@ -127,7 +127,7 @@ public class ResourceDependencyTest extends TestCase {
 
   /**
    * Private method for displaying what's coming back from the dependency call.
-   * 
+   *
    * @param resourceReferences
    */
   protected void printResourceReferences( List<ResourceReference> resourceReferences ) {

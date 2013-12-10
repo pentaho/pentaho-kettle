@@ -36,13 +36,13 @@ public class StarModelerSpoonPlugin implements SpoonPluginInterface {
 
   public StarModelerSpoonPlugin() {
   }
-  
+
   public void applyToContainer(String category, XulDomContainer container) throws XulException {
     container.registerClassLoader(getClass().getClassLoader());
     if(category.equals("spoon")){
       container.loadOverlay("org/pentaho/di/starmodeler/xul/spoon_overlays.xul");
       container.addEventHandler(ModelerHelper.getInstance());
-    } 
+    }
   }
 
   public SpoonLifecycleListener getLifecycleListener() {
@@ -52,6 +52,6 @@ public class StarModelerSpoonPlugin implements SpoonPluginInterface {
   public SpoonPerspective getPerspective() {
     return StarModelerPerspective.getInstance();
   }
-  
-  
+
+
 }

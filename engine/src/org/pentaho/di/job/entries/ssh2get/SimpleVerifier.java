@@ -27,7 +27,7 @@ import com.trilead.ssh2.ServerHostKeyVerifier;
 
 /**
  * This example hostkey verifier is used by the UsingKnownHosts.java example.
- * 
+ *
  * @author Christian Plattner, plattner@trilead.com
  * @version $Id: SimpleVerifier.java,v 1.4 2007/10/15 12:49:57 cplattne Exp $
  */
@@ -42,8 +42,8 @@ class SimpleVerifier implements ServerHostKeyVerifier {
     this.database = database;
   }
 
-  public boolean verifyServerHostKey( String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey )
-    throws Exception {
+  public boolean verifyServerHostKey( String hostname, int port, String serverHostKeyAlgorithm,
+    byte[] serverHostKey ) throws Exception {
     int result = database.verifyHostkey( hostname, serverHostKeyAlgorithm, serverHostKey );
 
     switch ( result ) {

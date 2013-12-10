@@ -64,7 +64,7 @@ public class DataOverrideHandler extends DataHandler {
     }
   }
 
-  private static Class<?> PKG = DataOverrideHandler.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DataOverrideHandler.class; // for i18n purposes, needed by Translator2!!
 
   private java.util.List<DatabaseMeta> databases;
 
@@ -90,7 +90,7 @@ public class DataOverrideHandler extends DataHandler {
       }
     } catch ( Exception e ) {
       new ErrorDialog( parent, BaseMessages.getString( PKG, "DatabaseDialog.ErrorParameters.title" ), BaseMessages
-          .getString( PKG, "DatabaseDialog.ErrorParameters.description" ), e );
+        .getString( PKG, "DatabaseDialog.ErrorParameters.description" ), e );
     }
   }
 
@@ -125,13 +125,14 @@ public class DataOverrideHandler extends DataHandler {
         }
 
         PreviewRowsDialog prd = new PreviewRowsDialog( parent, dbinfo, SWT.NONE, null, rowMeta, rowData );
-        prd.setTitleMessage( BaseMessages.getString( PKG, "DatabaseDialog.FeatureList.title" ), BaseMessages.getString(
-            PKG, "DatabaseDialog.FeatureList.title" ) );
+        prd.setTitleMessage( BaseMessages.getString( PKG, "DatabaseDialog.FeatureList.title" ), BaseMessages
+          .getString( PKG, "DatabaseDialog.FeatureList.title" ) );
         prd.open();
       }
     } catch ( Exception e ) {
-      new ErrorDialog( parent, BaseMessages.getString( PKG, "DatabaseDialog.FeatureListError.title" ), BaseMessages
-          .getString( PKG, "DatabaseDialog.FeatureListError.description" ), e );
+      new ErrorDialog(
+        parent, BaseMessages.getString( PKG, "DatabaseDialog.FeatureListError.title" ), BaseMessages.getString(
+          PKG, "DatabaseDialog.FeatureListError.description" ), e );
     }
   }
 
@@ -141,9 +142,10 @@ public class DataOverrideHandler extends DataHandler {
     super.getControls();
 
     XulTextbox[] boxes =
-        new XulTextbox[] {
-            hostNameBox, databaseNameBox, portNumberBox, userNameBox, passwordBox, customDriverClassBox, customUrlBox,
-            dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox, languageBox, systemNumberBox, clientBox };
+      new XulTextbox[] {
+        hostNameBox, databaseNameBox, portNumberBox, userNameBox, passwordBox, customDriverClassBox,
+        customUrlBox, dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox, languageBox,
+        systemNumberBox, clientBox };
 
     for ( int i = 0; i < boxes.length; i++ ) {
       XulTextbox xulTextbox = boxes[i];
@@ -176,8 +178,8 @@ public class DataOverrideHandler extends DataHandler {
     Shell parent = getShell();
 
     ShowMessageDialog msgDialog =
-        new ShowMessageDialog( parent, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(
-            PKG, "DatabaseDialog.DatabaseConnectionTest.title" ), message, scroll );
+      new ShowMessageDialog( parent, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(
+        PKG, "DatabaseDialog.DatabaseConnectionTest.title" ), message, scroll );
     msgDialog.open();
   }
 

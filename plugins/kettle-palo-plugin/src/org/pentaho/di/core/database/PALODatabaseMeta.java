@@ -25,8 +25,8 @@ import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 /**
  * Contains Database Connection information through static final members for a PALO database.
  * These connections are typically custom-made.
- * That means that reading, writing, etc, is not done through JDBC. 
- * 
+ * That means that reading, writing, etc, is not done through JDBC.
+ *
  * @author Matt
  * @since  18-Sep-2007
  */

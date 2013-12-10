@@ -59,13 +59,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an SQL job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
- * 
+ *
  */
 public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntrySQL.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySQL.class; // for i18n purposes, needed by Translator2!!
 
   private String sql;
   private DatabaseMeta connection;
@@ -97,19 +97,19 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "sql", sql ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "useVariableSubstitution", useVariableSubstitution ? "T" : "F" ) );
+      XMLHandler.addTagValue( "useVariableSubstitution", useVariableSubstitution ? "T" : "F" ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sqlfromfile", sqlfromfile ? "T" : "F" ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sqlfilename", sqlfilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sendOneStatement", sendOneStatement ? "T" : "F" ) );
 
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
+      XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       sql = XMLHandler.getTagValue( entrynode, "sql" );
@@ -139,7 +139,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       sql = rep.getJobEntryAttributeString( id_jobentry, "sql" );
       String sSubs = rep.getJobEntryAttributeString( id_jobentry, "useVariableSubstitution" );
@@ -162,7 +162,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'sql' from the repository with id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -173,12 +173,14 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), "connection", "id_database", connection );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sql", sql );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "useVariableSubstitution", useVariableSubstitution ? "T" : "F" );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "useVariableSubstitution", useVariableSubstitution
+        ? "T" : "F" );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sqlfromfile", sqlfromfile ? "T" : "F" );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sqlfilename", sqlfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sendOneStatement", sendOneStatement ? "T" : "F" );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'sql' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type 'sql' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -251,7 +253,8 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
             SQLfile = KettleVFS.getFileObject( realfilename, this );
             if ( !SQLfile.exists() ) {
               logError( BaseMessages.getString( PKG, "JobSQL.SQLFileNotExist", realfilename ) );
-              throw new KettleDatabaseException( BaseMessages.getString( PKG, "JobSQL.SQLFileNotExist", realfilename ) );
+              throw new KettleDatabaseException( BaseMessages.getString(
+                PKG, "JobSQL.SQLFileNotExist", realfilename ) );
             }
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobSQL.SQLFileExists", realfilename ) );
@@ -349,8 +352,8 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "SQL", remarks, putValidators( notBlankValidator() ) );
   }
 

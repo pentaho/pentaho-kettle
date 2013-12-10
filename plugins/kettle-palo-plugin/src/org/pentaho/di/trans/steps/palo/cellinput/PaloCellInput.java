@@ -53,7 +53,7 @@ public class PaloCellInput extends BaseStep implements StepInterface {
 
     this.logBasic("Number of fields:" + meta.getFields().size());
     this.logBasic("Row Meta Size: " + rowMeta.size());
-    
+
     this.logBasic("Creating Listener.");
     listener = new ListenerWithException() {
       private boolean stop   = false;
@@ -116,7 +116,7 @@ public class PaloCellInput extends BaseStep implements StepInterface {
     this.listener.resume();
     this.logDebug("Process Resumed");
   }
-  
+
   public final boolean init(StepMetaInterface smi, StepDataInterface sdi) {
     meta = (PaloCellInputMeta) smi;
     data = (PaloCellInputData) sdi;
@@ -135,7 +135,7 @@ public class PaloCellInput extends BaseStep implements StepInterface {
     }
     return false;
   }
-  
+
   public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
     data.helper.disconnect();
     super.dispose(smi, sdi);

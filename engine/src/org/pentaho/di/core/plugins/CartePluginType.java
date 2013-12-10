@@ -41,9 +41,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the carte plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( CartePluginInterface.class )
 @PluginAnnotationType( CarteServlet.class )
@@ -87,12 +87,13 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
         try {
           inputStream = new FileInputStream( kettleServletsXmlFile );
         } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native servlet plugins '" + kettleServletsXmlFile + "'", e );
+          throw new KettlePluginException(
+            "Unable to load native servlet plugins '" + kettleServletsXmlFile + "'", e );
         }
       }
       if ( inputStream == null ) {
         throw new KettlePluginException( "Unable to find native servlets definition file: '"
-            + kettleServletsXmlFile + "'" );
+          + kettleServletsXmlFile + "'" );
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
@@ -106,7 +107,7 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
 
     } catch ( KettleXMLException e ) {
       throw new KettlePluginException( "Unable to read the kettle servlets XML config file: '"
-          + kettleServletsXmlFile + "'", e );
+        + kettleServletsXmlFile + "'", e );
     }
   }
 
@@ -121,9 +122,8 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource(
-                  pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
-                      .getParent().getURL() );
+              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this
+                .getClass(), false, file.getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or

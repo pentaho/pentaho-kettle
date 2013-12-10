@@ -35,9 +35,9 @@ import org.pentaho.di.trans.TransformationTestCase;
 
 /**
  * Test class for the RegexEval step.
- * 
+ *
  * Needs a lot more cases.
- * 
+ *
  * @author Sven Boden
  * @author Daniel Einspanjer
  * @since 05-05-2008
@@ -65,35 +65,35 @@ public class RegexEvalTest extends TransformationTestCase {
 
   public RowMetaInterface createResultRowMetaInterface3() {
     return createRowMetaInterface( new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta(
-        "res", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "cap", ValueMeta.TYPE_STRING ), new ValueMeta(
-        "capIfNull", ValueMeta.TYPE_STRING ), new ValueMeta( "capNullIf", ValueMeta.TYPE_STRING ), new ValueMeta(
-        "capIfNullNullIf", ValueMeta.TYPE_INTEGER ) );
+      "res", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "cap", ValueMeta.TYPE_STRING ), new ValueMeta(
+      "capIfNull", ValueMeta.TYPE_STRING ), new ValueMeta( "capNullIf", ValueMeta.TYPE_STRING ), new ValueMeta(
+      "capIfNullNullIf", ValueMeta.TYPE_INTEGER ) );
   }
 
   public List<RowMetaAndData> createSourceData() {
     return createData( createSourceRowMetaInterface(), new Object[][] {
-        new Object[] { "abc" }, new Object[] { "ABC" }, new Object[] { "123" }, new Object[] { "abc" } } );
+      new Object[] { "abc" }, new Object[] { "ABC" }, new Object[] { "123" }, new Object[] { "abc" } } );
   }
 
   public List<RowMetaAndData> createResultData1() {
     return createData( createResultRowMetaInterface1(), new Object[][] {
-        new Object[] { "abc", Boolean.valueOf( true ) }, new Object[] { "ABC", Boolean.valueOf( false ) },
-        new Object[] { "123", Boolean.valueOf( false ) }, new Object[] { "abc", Boolean.valueOf( true ) } } );
+      new Object[] { "abc", Boolean.valueOf( true ) }, new Object[] { "ABC", Boolean.valueOf( false ) },
+      new Object[] { "123", Boolean.valueOf( false ) }, new Object[] { "abc", Boolean.valueOf( true ) } } );
   }
 
   public List<RowMetaAndData> createResultData2() {
     return createData( createResultRowMetaInterface2(), new Object[][] {
-        new Object[] { "abc", Boolean.valueOf( false ) }, new Object[] { "ABC", Boolean.valueOf( false ) },
-        new Object[] { "123", Boolean.valueOf( true ), Long.valueOf( 2 ) },
-        new Object[] { "abc", Boolean.valueOf( false ) } } );
+      new Object[] { "abc", Boolean.valueOf( false ) }, new Object[] { "ABC", Boolean.valueOf( false ) },
+      new Object[] { "123", Boolean.valueOf( true ), Long.valueOf( 2 ) },
+      new Object[] { "abc", Boolean.valueOf( false ) } } );
   }
 
   public List<RowMetaAndData> createResultData3() {
     return createData( createResultRowMetaInterface3(), new Object[][] { // ((a)|([A1]))([B2]?).*
-        new Object[] { "abc", Boolean.valueOf( true ), "a", "a", null, Long.valueOf( 0 ) },
-        new Object[] { "ABC", Boolean.valueOf( true ), "A", "x", "A", Long.valueOf( 0 ) },
-        new Object[] { "123", Boolean.valueOf( true ), "1", "x", null, Long.valueOf( 2 ) },
-        new Object[] { "abc", Boolean.valueOf( true ), "a", "a", null, Long.valueOf( 0 ) } } );
+    new Object[] { "abc", Boolean.valueOf( true ), "a", "a", null, Long.valueOf( 0 ) },
+      new Object[] { "ABC", Boolean.valueOf( true ), "A", "x", "A", Long.valueOf( 0 ) },
+      new Object[] { "123", Boolean.valueOf( true ), "1", "x", null, Long.valueOf( 2 ) },
+      new Object[] { "abc", Boolean.valueOf( true ), "a", "a", null, Long.valueOf( 0 ) } } );
   }
 
   public void testRegexEval1() throws Exception {
@@ -104,14 +104,15 @@ public class RegexEvalTest extends TransformationTestCase {
     regexEvalMeta.setMatcher( "field1" );
     regexEvalMeta.setResultFieldName( "res" );
 
-    TransMeta transMeta = TransTestFactory.generateTestTransformation( new Variables(), regexEvalMeta, regexStepName );
+    TransMeta transMeta =
+      TransTestFactory.generateTestTransformation( new Variables(), regexEvalMeta, regexStepName );
 
     // Now execute the transformation and get the result from the dummy step.
     //
     List<RowMetaAndData> result =
-        TransTestFactory.executeTestTransformation(
-            transMeta, TransTestFactory.INJECTOR_STEPNAME, regexStepName, TransTestFactory.DUMMY_STEPNAME,
-            createSourceData() );
+      TransTestFactory.executeTestTransformation(
+        transMeta, TransTestFactory.INJECTOR_STEPNAME, regexStepName, TransTestFactory.DUMMY_STEPNAME,
+        createSourceData() );
 
     checkRows( createResultData1(), result );
   }
@@ -128,14 +129,15 @@ public class RegexEvalTest extends TransformationTestCase {
     regexEvalMeta.getFieldName()[0] = "cap";
     regexEvalMeta.getFieldType()[0] = ValueMeta.TYPE_INTEGER;
 
-    TransMeta transMeta = TransTestFactory.generateTestTransformation( new Variables(), regexEvalMeta, regexStepName );
+    TransMeta transMeta =
+      TransTestFactory.generateTestTransformation( new Variables(), regexEvalMeta, regexStepName );
 
     // Now execute the transformation and get the result from the dummy step.
     //
     List<RowMetaAndData> result =
-        TransTestFactory.executeTestTransformation(
-            transMeta, TransTestFactory.INJECTOR_STEPNAME, regexStepName, TransTestFactory.DUMMY_STEPNAME,
-            createSourceData() );
+      TransTestFactory.executeTestTransformation(
+        transMeta, TransTestFactory.INJECTOR_STEPNAME, regexStepName, TransTestFactory.DUMMY_STEPNAME,
+        createSourceData() );
 
     checkRows( createResultData2(), result );
   }
@@ -167,14 +169,15 @@ public class RegexEvalTest extends TransformationTestCase {
     regexEvalMeta.getFieldIfNull()[3] = "0";
     regexEvalMeta.getFieldNullIf()[3] = "B";
 
-    TransMeta transMeta = TransTestFactory.generateTestTransformation( new Variables(), regexEvalMeta, regexStepName );
+    TransMeta transMeta =
+      TransTestFactory.generateTestTransformation( new Variables(), regexEvalMeta, regexStepName );
 
     // Now execute the transformation and get the result from the dummy step.
     //
     List<RowMetaAndData> result =
-        TransTestFactory.executeTestTransformation(
-            transMeta, TransTestFactory.INJECTOR_STEPNAME, regexStepName, TransTestFactory.DUMMY_STEPNAME,
-            createSourceData() );
+      TransTestFactory.executeTestTransformation(
+        transMeta, TransTestFactory.INJECTOR_STEPNAME, regexStepName, TransTestFactory.DUMMY_STEPNAME,
+        createSourceData() );
 
     checkRows( createResultData3(), result );
   }

@@ -31,18 +31,18 @@ import org.pentaho.di.trans.TransMeta;
 
 public class KettleDependencies {
   public static final String[] generalLibs = new String[] {
-      // see PDI-1859: this was a proof of concept and is no longer valid
-      "log4j-1.2.8.jar", // Logging
-      "js.jar", // JavaScript / Rhino
-      "pentaho-1.2.0.jar", // JNDI database connections
-      "simple-jndi-0.11.1.jar", // JNDI database connections
-      "commons-logging.jar", // Apache commons: Logging
-      "commons-pool-1.3.jar", // Apache commons: Object pooling
-      "commons-dbcp-1.2.1.jar", // Apache commons: Database Connection Pooling
-      "edtftpj-1.5.3.jar", // EnterpriseDT FTP for JobEntryFTP
-      "activation.jar", // JobEntryMail
-      "mail.jar", // JobEntryMail
-      "jsch-0.1.24.jar", // JobEntrySFTP
+    // see PDI-1859: this was a proof of concept and is no longer valid
+    "log4j-1.2.8.jar", // Logging
+    "js.jar", // JavaScript / Rhino
+    "pentaho-1.2.0.jar", // JNDI database connections
+    "simple-jndi-0.11.1.jar", // JNDI database connections
+    "commons-logging.jar", // Apache commons: Logging
+    "commons-pool-1.3.jar", // Apache commons: Object pooling
+    "commons-dbcp-1.2.1.jar", // Apache commons: Database Connection Pooling
+    "edtftpj-1.5.3.jar", // EnterpriseDT FTP for JobEntryFTP
+    "activation.jar", // JobEntryMail
+    "mail.jar", // JobEntryMail
+    "jsch-0.1.24.jar", // JobEntrySFTP
   };
 
   private String[] libraryFiles;
@@ -75,7 +75,7 @@ public class KettleDependencies {
 
       // Used connections
       DatabaseMeta[] usedDatabaseConnections =
-          transMeta.getStep( s ).getStepMetaInterface().getUsedDatabaseConnections();
+        transMeta.getStep( s ).getStepMetaInterface().getUsedDatabaseConnections();
       for ( int c = 0; c < usedDatabaseConnections.length; c++ ) {
         String[] dbLibs = usedDatabaseConnections[c].getDatabaseInterface().getUsedLibraries();
         if ( dbLibs != null ) {

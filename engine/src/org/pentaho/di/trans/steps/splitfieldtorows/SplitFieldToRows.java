@@ -39,13 +39,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class SplitFieldToRows extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SplitFieldToRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SplitFieldToRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SplitFieldToRowsMeta meta;
   private SplitFieldToRowsData data;
 
-  public SplitFieldToRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public SplitFieldToRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -66,7 +66,8 @@ public class SplitFieldToRows extends BaseStep implements StepInterface {
       }
 
       if ( data.fieldnr < 0 ) {
-        logError( BaseMessages.getString( PKG, "SplitFieldToRows.Log.CouldNotFindFieldToSplit", realSplitFieldName ) );
+        logError( BaseMessages
+          .getString( PKG, "SplitFieldToRows.Log.CouldNotFindFieldToSplit", realSplitFieldName ) );
         numErrors++;
       }
 

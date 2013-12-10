@@ -114,7 +114,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.commentfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentField() );
         if ( data.commentfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getCommentField() ) ) {
           logError( "Comment Field ["
-              + meta.getOutputFields()[i].getCommentField() + "] couldn't be found in the input stream!" );
+            + meta.getOutputFields()[i].getCommentField() + "] couldn't be found in the input stream!" );
           setErrors( 1 );
           stopAll();
           return false;
@@ -125,10 +125,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       data.commentauthorfieldnrs = new int[meta.getOutputFields().length];
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.commentauthorfieldnrs[i] =
-            data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentAuthorField() );
-        if ( data.commentauthorfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getCommentAuthorField() ) ) {
+          data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentAuthorField() );
+        if ( data.commentauthorfieldnrs[i] < 0
+          && !Const.isEmpty( meta.getOutputFields()[i].getCommentAuthorField() ) ) {
           logError( "Comment Author Field ["
-              + meta.getOutputFields()[i].getCommentAuthorField() + "] couldn't be found in the input stream!" );
+            + meta.getOutputFields()[i].getCommentAuthorField() + "] couldn't be found in the input stream!" );
           setErrors( 1 );
           stopAll();
           return false;
@@ -141,7 +142,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.linkfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getHyperlinkField() );
         if ( data.linkfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getHyperlinkField() ) ) {
           logError( "Link Field ["
-              + meta.getOutputFields()[i].getHyperlinkField() + "] couldn't be found in the input stream!" );
+            + meta.getOutputFields()[i].getHyperlinkField() + "] couldn't be found in the input stream!" );
           setErrors( 1 );
           stopAll();
           return false;
@@ -154,7 +155,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
       // File Splitting Feature, is it time to create a new file?
       if ( !meta.isAppendLines()
-          && meta.getSplitEvery() > 0 && data.datalines > 0 && data.datalines % meta.getSplitEvery() == 0 ) {
+        && meta.getSplitEvery() > 0 && data.datalines > 0 && data.datalines % meta.getSplitEvery() == 0 ) {
         closeOutputFile();
         prepareNextOutputFile();
       }
@@ -297,8 +298,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           v = r[data.fieldnrs[i]];
           writeField(
-              v, data.inputRowMeta.getValueMeta( data.fieldnrs[i] ), meta.getOutputFields()[i], xlsRow, data.posX++, r,
-              i, false );
+            v, data.inputRowMeta.getValueMeta( data.fieldnrs[i] ), meta.getOutputFields()[i], xlsRow,
+            data.posX++, r, i, false );
         }
 
         // go to the next line
@@ -361,8 +362,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   }
 
-  private void writeField( Object v, ValueMetaInterface vMeta, ExcelWriterStepField excelField, Row xlsRow, int posX,
-      Object[] row, int fieldNr, boolean isTitle ) throws KettleException {
+  private void writeField( Object v, ValueMetaInterface vMeta, ExcelWriterStepField excelField, Row xlsRow,
+    int posX, Object[] row, int fieldNr, boolean isTitle ) throws KettleException {
 
     try {
 
@@ -403,8 +404,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
           // set cell format as specified, specific format overrides cell specification
           if ( !isTitle
-              && excelField != null && !Const.isEmpty( excelField.getFormat() )
-              && !excelField.getFormat().startsWith( "Image" ) ) {
+            && excelField != null && !Const.isEmpty( excelField.getFormat() )
+            && !excelField.getFormat().startsWith( "Image" ) ) {
             DataFormat format = data.wb.createDataFormat();
             short formatIndex = format.getFormat( excelField.getFormat() );
             CellUtil.setCellStyleProperty( cell, data.wb, CellUtil.DATA_FORMAT, formatIndex );
@@ -421,7 +422,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( !isTitle && excelField != null && data.linkfieldnrs[fieldNr] >= 0 ) {
 
         String link =
-            data.inputRowMeta.getValueMeta( data.linkfieldnrs[fieldNr] ).getString( row[data.linkfieldnrs[fieldNr]] );
+          data.inputRowMeta.getValueMeta( data.linkfieldnrs[fieldNr] ).getString(
+            row[data.linkfieldnrs[fieldNr]] );
         if ( !Const.isEmpty( link ) ) {
 
           CreationHelper ch = data.wb.getCreationHelper();
@@ -476,13 +478,13 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( !isTitle && excelField != null && data.commentfieldnrs[fieldNr] >= 0 && data.wb instanceof XSSFWorkbook ) {
 
         String comment =
-            data.inputRowMeta.getValueMeta( data.commentfieldnrs[fieldNr] ).getString(
-                row[data.commentfieldnrs[fieldNr]] );
+          data.inputRowMeta.getValueMeta( data.commentfieldnrs[fieldNr] ).getString(
+            row[data.commentfieldnrs[fieldNr]] );
         if ( !Const.isEmpty( comment ) ) {
           String author =
-              data.commentauthorfieldnrs[fieldNr] >= 0
-                  ? data.inputRowMeta.getValueMeta( data.commentauthorfieldnrs[fieldNr] ).getString(
-                      row[data.commentauthorfieldnrs[fieldNr]] ) : "Kettle PDI";
+            data.commentauthorfieldnrs[fieldNr] >= 0
+              ? data.inputRowMeta.getValueMeta( data.commentauthorfieldnrs[fieldNr] ).getString(
+                row[data.commentauthorfieldnrs[fieldNr]] ) : "Kettle PDI";
           cell.setCellComment( createCellComment( author, comment ) );
         }
       }
@@ -537,7 +539,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   /**
    * Returns the output filename that belongs to this step observing the file split feature
-   * 
+   *
    * @return current output filename to write to
    */
   public String buildFilename( int splitNr ) {
@@ -546,7 +548,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   /**
    * Copies a VFS File
-   * 
+   *
    * @param in
    *          the source file object
    * @param out
@@ -598,7 +600,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
       // clear style cache
       int numOfFields =
-          meta.getOutputFields() != null && meta.getOutputFields().length > 0 ? meta.getOutputFields().length : 0;
+        meta.getOutputFields() != null && meta.getOutputFields().length > 0 ? meta.getOutputFields().length : 0;
       if ( numOfFields == 0 ) {
         numOfFields = data.inputRowMeta != null ? data.inputRowMeta.size() : 0;
       }
@@ -628,7 +630,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( meta.isAddToResultFiles() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
         resultFile.setComment( "This file was created with an Excel writer step by Pentaho Data Integration" );
         addResultFile( resultFile );
       }
@@ -646,8 +648,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           String templateExt = KettleVFS.getFileObject( data.realTemplateFileName ).getName().getExtension();
           if ( !meta.getExtension().equalsIgnoreCase( templateExt ) ) {
             throw new KettleException( "Template Format Mismatch: Template has extension: "
-                + templateExt + ", but output file has extension: " + meta.getExtension()
-                + ". Template and output file must share the same format!" );
+              + templateExt + ", but output file has extension: " + meta.getExtension()
+              + ". Template and output file must share the same format!" );
           }
 
           if ( KettleVFS.getFileObject( data.realTemplateFileName ).exists() ) {
@@ -656,7 +658,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           } else {
             // template is missing, log it and get out
             if ( log.isBasic() ) {
-              logBasic( BaseMessages.getString( PKG, "ExcelWriterStep.Log.TemplateMissing", data.realTemplateFileName ) );
+              logBasic( BaseMessages.getString(
+                PKG, "ExcelWriterStep.Log.TemplateMissing", data.realTemplateFileName ) );
             }
             setErrors( 1 );
             throw new KettleException( "Template file missing: " + data.realTemplateFileName );
@@ -826,8 +829,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           String fieldName =
-              !Const.isEmpty( meta.getOutputFields()[i].getTitle() ) ? meta.getOutputFields()[i].getTitle() : meta
-                  .getOutputFields()[i].getName();
+            !Const.isEmpty( meta.getOutputFields()[i].getTitle() ) ? meta.getOutputFields()[i].getTitle() : meta
+              .getOutputFields()[i].getName();
 
           ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
 
@@ -853,10 +856,10 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   /**
    * transformation run initialize, may create the output file if specified by user options
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStep#init(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
-   * 
+   *
    */
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelWriterStepMeta) smi;
@@ -900,10 +903,10 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   /**
    * transformation run end
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStep#dispose(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
-   * 
+   *
    */
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelWriterStepMeta) smi;

@@ -36,7 +36,8 @@ public class UISupportRegistery {
   private static Map<Class<? extends IRepositoryService>, Class<? extends IRepositoryExplorerUISupport>> uiSupportMap;
 
   private UISupportRegistery() {
-    uiSupportMap = new HashMap<Class<? extends IRepositoryService>, Class<? extends IRepositoryExplorerUISupport>>();
+    uiSupportMap =
+      new HashMap<Class<? extends IRepositoryService>, Class<? extends IRepositoryExplorerUISupport>>();
   }
 
   public static UISupportRegistery getInstance() {
@@ -47,7 +48,7 @@ public class UISupportRegistery {
   }
 
   public void registerUISupport( Class<? extends IRepositoryService> service,
-      Class<? extends IRepositoryExplorerUISupport> supportClass ) {
+    Class<? extends IRepositoryExplorerUISupport> supportClass ) {
     uiSupportMap.put( service, supportClass );
   }
 

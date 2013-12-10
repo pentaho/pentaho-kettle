@@ -58,13 +58,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntry Connected to repository object.
- * 
+ *
  * @author Samatar
  * @since 23-06-2008
  */
 public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryConnectedToRepository.class; // for i18n purposes, needed by Translator2!!
-                                                                     // $NON-NLS-1$
 
   private Label wlName;
 
@@ -104,7 +103,7 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
   private FormData fdbRepositoryname;
 
   public JobEntryConnectedToRepositoryDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
-      JobMeta jobMeta ) {
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryConnectedToRepository) jobEntryInt;
     if ( this.jobEntry.getName() == null ) {
@@ -166,8 +165,8 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
     wlspecificRep.setLayoutData( fdlspecificRep );
     wspecificRep = new Button( shell, SWT.CHECK );
     props.setLook( wspecificRep );
-    wspecificRep.setToolTipText( BaseMessages
-        .getString( PKG, "JobEntryConnectedToRepositoryDialog.specificRep.Tooltip" ) );
+    wspecificRep.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryConnectedToRepositoryDialog.specificRep.Tooltip" ) );
     fdspecificRep = new FormData();
     fdspecificRep.left = new FormAttachment( middle, 0 );
     fdspecificRep.top = new FormAttachment( wName, margin );
@@ -192,10 +191,10 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 
     wbRepositoryname = new Button( shell, SWT.PUSH | SWT.CENTER );
     props.setLook( wbRepositoryname );
-    wbRepositoryname.setText( BaseMessages
-        .getString( PKG, "JobEntryConnectedToRepositoryDialog.ListRepositories.Label" ) );
+    wbRepositoryname.setText( BaseMessages.getString(
+      PKG, "JobEntryConnectedToRepositoryDialog.ListRepositories.Label" ) );
     wbRepositoryname.setToolTipText( BaseMessages.getString(
-        PKG, "JobEntryConnectedToRepositoryDialog.ListRepositories.Tooltip" ) );
+      PKG, "JobEntryConnectedToRepositoryDialog.ListRepositories.Tooltip" ) );
     fdbRepositoryname = new FormData();
     fdbRepositoryname.right = new FormAttachment( 100, 0 );
     fdbRepositoryname.top = new FormAttachment( wspecificRep, 0 );
@@ -218,7 +217,8 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 
     // Connected to a specific user?
     wlspecificUser = new Label( shell, SWT.RIGHT );
-    wlspecificUser.setText( BaseMessages.getString( PKG, "JobEntryConnectedToRepositoryDialog.specificUser.Label" ) );
+    wlspecificUser
+      .setText( BaseMessages.getString( PKG, "JobEntryConnectedToRepositoryDialog.specificUser.Label" ) );
     props.setLook( wlspecificUser );
     fdlspecificUser = new FormData();
     fdlspecificUser.left = new FormAttachment( 0, 0 );
@@ -228,7 +228,7 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
     wspecificUser = new Button( shell, SWT.CHECK );
     props.setLook( wspecificUser );
     wspecificUser.setToolTipText( BaseMessages.getString(
-        PKG, "JobEntryConnectedToRepositoryDialog.specificUser.Tooltip" ) );
+      PKG, "JobEntryConnectedToRepositoryDialog.specificUser.Tooltip" ) );
     fdspecificUser = new FormData();
     fdspecificUser.left = new FormAttachment( middle, 0 );
     fdspecificUser.top = new FormAttachment( wRepName, margin );
@@ -253,7 +253,8 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
     // Username
     wUserName = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wUserName );
-    wUserName.setToolTipText( BaseMessages.getString( PKG, "JobEntryConnectedToUserositoryDialog.UserName.Tooltip" ) );
+    wUserName.setToolTipText( BaseMessages
+      .getString( PKG, "JobEntryConnectedToUserositoryDialog.UserName.Tooltip" ) );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
     fdUserName.left = new FormAttachment( middle, 0 );
@@ -390,7 +391,7 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 
   /**
    * Get a list of repositories defined in this system, allow the user to select from it.
-   * 
+   *
    */
   private void getListRepositories() {
     RepositoriesMeta reps_info = null;
@@ -403,7 +404,7 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
         int nrRepositories = reps_info.nrRepositories();
         if ( nrRepositories == 0 ) {
           displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-              PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRep.DialogMessage" ), true );
+            PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRep.DialogMessage" ), true );
         } else {
           String[] available = new String[nrRepositories];
 
@@ -416,9 +417,9 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
           source[0] = wRepName.getText();
           int[] idxSource = Const.indexsOfStrings( source, available );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, available, BaseMessages.getString(
-                  PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Title" ), BaseMessages.getString(
-                  PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Message" ) );
+            new EnterSelectionDialog( shell, available, BaseMessages.getString(
+              PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Title" ), BaseMessages.getString(
+              PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Message" ) );
           dialog.setMulti( false );
           dialog.setAvoidQuickSearch();
           dialog.setSelectedNrs( idxSource );
@@ -429,13 +430,13 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
         }
       } catch ( Exception e ) {
         displayMsg(
-            BaseMessages.getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefined" ), BaseMessages
-                .getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefinedMsg" ), true );
+          BaseMessages.getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefined" ), BaseMessages
+            .getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefinedMsg" ), true );
       }
     } catch ( Exception e ) {
       displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-          PKG, "JobEntryConnectedToRepositoryDialog.ErrorGettingRepositories.DialogMessage" )
-          + Const.CR + ":" + e.getMessage(), true );
+        PKG, "JobEntryConnectedToRepositoryDialog.ErrorGettingRepositories.DialogMessage" )
+        + Const.CR + ":" + e.getMessage(), true );
     } finally {
       reps_info.clear();
     }

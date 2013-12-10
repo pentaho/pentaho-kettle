@@ -53,7 +53,7 @@ public class SerializationHelper {
    * This method will perform the work that used to be done by hand in each kettle input meta for: readData(Node
    * stepnode). We handle all primitive types, complex user types, arrays, lists and any number of nested object levels,
    * via recursion of this method.
-   * 
+   *
    * @param object
    *          The object to be persisted
    * @param node
@@ -67,7 +67,7 @@ public class SerializationHelper {
 
       // ignore fields which are final, static or transient
       if ( Modifier.isFinal( field.getModifiers() )
-          || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
+        || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
         continue;
       }
 
@@ -187,7 +187,7 @@ public class SerializationHelper {
 
             // create an instance of 'fieldClassName'
             if ( String.class.isAssignableFrom( clazz )
-                || Number.class.isAssignableFrom( clazz ) || Boolean.class.isAssignableFrom( clazz ) ) {
+              || Number.class.isAssignableFrom( clazz ) || Boolean.class.isAssignableFrom( clazz ) ) {
               Constructor<?> constructor = clazz.getConstructor( String.class );
               Object instance = constructor.newInstance( XMLHandler.getTagAttribute( child, "value" ) );
               list.add( instance );
@@ -232,7 +232,7 @@ public class SerializationHelper {
                 field.set( object, "true".equalsIgnoreCase( value.toString() ) );
               }
             } else if ( String.class.isAssignableFrom( field.getType() )
-                || Number.class.isAssignableFrom( field.getType() ) ) {
+              || Number.class.isAssignableFrom( field.getType() ) ) {
               Constructor<?> constructor = field.getType().getConstructor( String.class );
               Object instance = constructor.newInstance( value );
               field.set( object, instance );
@@ -263,7 +263,7 @@ public class SerializationHelper {
    * This method will perform the work that used to be done by hand in each kettle input meta for: getXML(). We handle
    * all primitive types, complex user types, arrays, lists and any number of nested object levels, via recursion of
    * this method.
-   * 
+   *
    * @param object
    * @param buffer
    */
@@ -281,7 +281,7 @@ public class SerializationHelper {
 
       // ignore fields which are final, static or transient
       if ( Modifier.isFinal( field.getModifiers() )
-          || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
+        || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
         continue;
       }
 
@@ -298,7 +298,7 @@ public class SerializationHelper {
           continue;
         }
         if ( field.getType().isPrimitive()
-            || String.class.isAssignableFrom( field.getType() ) || Number.class.isAssignableFrom( field.getType() ) ) {
+          || String.class.isAssignableFrom( field.getType() ) || Number.class.isAssignableFrom( field.getType() ) ) {
           indent( buffer, indentLevel );
           buffer.append( XMLHandler.addTagValue( field.getName(), fieldValue.toString() ) );
         } else if ( field.getType().isArray() ) {
@@ -308,19 +308,20 @@ public class SerializationHelper {
           // open node (add class name attribute)
           indent( buffer, indentLevel );
           buffer
-              .append( "<" + field.getName() + " class=\"" + fieldValue.getClass().getComponentType().getName() + "\">" )
-              .append( Const.CR );
+            .append(
+              "<" + field.getName() + " class=\"" + fieldValue.getClass().getComponentType().getName() + "\">" )
+            .append( Const.CR );
 
           for ( int i = 0; i < length; i++ ) {
             Object childObject = Array.get( fieldValue, i );
             // handle all strings/numbers
             if ( String.class.isAssignableFrom( childObject.getClass() )
-                || Number.class.isAssignableFrom( childObject.getClass() ) ) {
+              || Number.class.isAssignableFrom( childObject.getClass() ) ) {
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( fieldValue.getClass().getComponentType().getSimpleName() );
               buffer.append( " value=\"" + childObject.toString() + "\"/>" ).append( Const.CR );
             } else if ( Boolean.class.isAssignableFrom( childObject.getClass() )
-                || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
+              || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
               // handle booleans (special case)
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( fieldValue.getClass().getComponentType().getSimpleName() );
@@ -328,10 +329,12 @@ public class SerializationHelper {
             } else {
               // array element is a user defined/complex type, recurse into it
               indent( buffer, indentLevel + 1 );
-              buffer.append( "<" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append( Const.CR );
+              buffer.append( "<" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append(
+                Const.CR );
               write( childObject, indentLevel + 1, buffer );
               indent( buffer, indentLevel + 1 );
-              buffer.append( "</" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append( Const.CR );
+              buffer.append( "</" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append(
+                Const.CR );
             }
           }
           // close node
@@ -351,12 +354,12 @@ public class SerializationHelper {
           for ( Object childObject : list ) {
             // handle all strings/numbers
             if ( String.class.isAssignableFrom( childObject.getClass() )
-                || Number.class.isAssignableFrom( childObject.getClass() ) ) {
+              || Number.class.isAssignableFrom( childObject.getClass() ) ) {
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( listClass.getSimpleName() );
               buffer.append( " value=\"" + childObject.toString() + "\"/>" ).append( Const.CR );
             } else if ( Boolean.class.isAssignableFrom( childObject.getClass() )
-                || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
+              || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
               // handle booleans (special case)
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( listClass.getSimpleName() );
@@ -378,7 +381,7 @@ public class SerializationHelper {
           // open node (add class name attribute)
           indent( buffer, indentLevel );
           buffer.append( "<" + field.getName() + " class=\"" + fieldValue.getClass().getName() + "\">" ).append(
-              Const.CR );
+            Const.CR );
           write( fieldValue, indentLevel + 1, buffer );
           // close node
           indent( buffer, indentLevel );
@@ -395,7 +398,7 @@ public class SerializationHelper {
   /**
    * Handle saving of the input (object) to the kettle repository using the most simple method available, by calling
    * write and then saving the job-xml as a job attribute.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_transformation
@@ -412,7 +415,7 @@ public class SerializationHelper {
   /**
    * Handle reading of the input (object) from the kettle repository by getting the job-xml from the repository step
    * attribute string and then re-hydrate the job entry (object) with our already existing read method.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_step
@@ -438,7 +441,7 @@ public class SerializationHelper {
   /**
    * Handle saving of the input (object) to the kettle repository using the most simple method available, by calling
    * write and then saving the step-xml as a step attribute.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_transformation
@@ -455,7 +458,7 @@ public class SerializationHelper {
   /**
    * Handle reading of the input (object) from the kettle repository by getting the step-xml from the repository step
    * attribute string and then re-hydrate the step (object) with our already existing read method.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_step

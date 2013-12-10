@@ -28,7 +28,7 @@ import org.junit.Test;
 
 /**
  * Test class for the basic functionality of Const.
- * 
+ *
  */
 public class ConstTest extends TestCase {
   protected boolean isArraySorted( String[] arr ) {
@@ -325,7 +325,8 @@ public class ConstTest extends TestCase {
     assertEquals( result.length, 4 );
 
     // Check for multiple-character strings
-    result = Const.splitString( "html this is a web page html</newpage>html and so is this html", "</newpage>", "html" );
+    result =
+      Const.splitString( "html this is a web page html</newpage>html and so is this html", "</newpage>", "html" );
     assertNotNull( result );
     assertEquals( result.length, 2 );
     assertEquals( result[0], "html this is a web page html" );

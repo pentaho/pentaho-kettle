@@ -111,7 +111,7 @@ public class RulesAccumulatorMetaMapper extends XulEventSourceAdapter {
 
   /**
    * Load data into the MetaMapper from the RulesMeta
-   * 
+   *
    * @param meta
    */
   public void loadMeta( RulesAccumulatorMeta meta ) {
@@ -130,23 +130,23 @@ public class RulesAccumulatorMetaMapper extends XulEventSourceAdapter {
 
   /**
    * Save data from the MetaMapper into the RulesMeta
-   * 
+   *
    * @param meta
    */
   @SuppressWarnings( "deprecation" )
   public void saveMeta( RulesAccumulatorMeta meta ) {
     if ( ruleSource != null && ruleSource.equalsIgnoreCase( "file" ) ) {
       if ( meta.getRuleFile() != null
-          && !meta.getRuleFile().equals( getRuleFile() ) || ( meta.getRuleFile() != getRuleFile() )
-          || meta.getRuleDefinition() != null ) {
+        && !meta.getRuleFile().equals( getRuleFile() ) || ( meta.getRuleFile() != getRuleFile() )
+        || meta.getRuleDefinition() != null ) {
         meta.setRuleFile( getRuleFile() );
         meta.setRuleDefinition( null );
         meta.setChanged();
       }
     } else if ( ruleSource != null && ruleSource.equalsIgnoreCase( "definition" ) ) {
       if ( meta.getRuleDefinition() != null
-          && !meta.getRuleDefinition().equals( getRuleDefinition() )
-          || ( meta.getRuleDefinition() != getRuleDefinition() ) || meta.getRuleFile() != null ) {
+        && !meta.getRuleDefinition().equals( getRuleDefinition() )
+        || ( meta.getRuleDefinition() != getRuleDefinition() ) || meta.getRuleFile() != null ) {
         meta.setRuleDefinition( getRuleDefinition() );
         meta.setRuleFile( null );
         meta.setChanged();
@@ -171,7 +171,8 @@ public class RulesAccumulatorMetaMapper extends XulEventSourceAdapter {
             vm.setName( c.getName() );
             meta.setChanged();
           }
-          if ( c.getType() != null && !c.getType().equals( vm.getTypeDesc() ) || ( c.getType() != vm.getTypeDesc() ) ) {
+          if ( c.getType() != null
+            && !c.getType().equals( vm.getTypeDesc() ) || ( c.getType() != vm.getTypeDesc() ) ) {
             vm.setType( ValueMeta.getType( c.getType() ) );
             meta.setChanged();
           }

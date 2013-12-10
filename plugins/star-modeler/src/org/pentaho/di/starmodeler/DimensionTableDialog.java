@@ -70,13 +70,13 @@ import org.w3c.dom.Node;
 
 /**
  * Allows you to edit the Job settings.  Just pass a JobInfo object.
- * 
+ *
  * @author Matt Casters
  * @since  02-jul-2003
  */
 public class DimensionTableDialog extends Dialog
 {
-	private static Class<?> PKG = DimensionTableDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = DimensionTableDialog.class; // for i18n purposes, needed by Translator2!!
 
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
@@ -103,7 +103,7 @@ public class DimensionTableDialog extends Dialog
 	private Shell  shell;
 	
 	private SelectionAdapter lsDef;
-	    
+	
   // fields tab
 	private TableView    wAttributes;
 
@@ -193,8 +193,8 @@ public class DimensionTableDialog extends Dialog
 	private void addTableTab()
 	{
 		wTableTab=new CTabItem(wTabFolder, SWT.NONE);
-		wTableTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.TableTab.Label")); 
-        
+		wTableTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.TableTab.Label"));
+
 		Composite wTableComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wTableComp);
 
@@ -240,7 +240,7 @@ public class DimensionTableDialog extends Dialog
 		fdTableDescription.right= new FormAttachment(100, 0);
 		wTableDescription.setLayoutData(fdTableDescription);
 		lastControl = wTableDescription;
-    
+
     // Dimension type
     //
     Label wlDimensionType = new Label(wTableComp, SWT.RIGHT);
@@ -282,7 +282,7 @@ public class DimensionTableDialog extends Dialog
     wPhysicalName.setLayoutData(fdPhysicalName);
     lastControl = wPhysicalName;
 
-    
+
 		FormData fdTableComp = new FormData();
 		fdTableComp.left  = new FormAttachment(0, 0);
 		fdTableComp.top   = new FormAttachment(0, 0);
@@ -296,34 +296,34 @@ public class DimensionTableDialog extends Dialog
     private void addAttributesTab()
     {
         wTablesTab=new CTabItem(wTabFolder, SWT.NONE);
-        wTablesTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.AttributesTab.Label")); 
+        wTablesTab.setText(BaseMessages.getString(PKG, "DimensionTableDialog.AttributesTab.Label"));
 
         FormLayout paramLayout = new FormLayout ();
         paramLayout.marginWidth  = Const.MARGIN;
         paramLayout.marginHeight = Const.MARGIN;
-        
+
         Composite wTablesComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(wTablesComp);
         wTablesComp.setLayout(paramLayout);
-        
+
         Button wAddDefaultFields = new Button(wTablesComp, SWT.PUSH);
         wAddDefaultFields.setText(BaseMessages.getString(PKG, "DimensionTableDialog.AddDefaultFieldsButton.Label"));
         BaseStepDialog.positionBottomButtons(wTablesComp, new Button[] { wAddDefaultFields, }, margin, null);
         wAddDefaultFields.addSelectionListener(new SelectionAdapter() {  public void widgetSelected(SelectionEvent e) { addDefaultAttributes(); }});
 
         Label wlAtrributes = new Label(wTablesComp, SWT.RIGHT);
-        wlAtrributes.setText(BaseMessages.getString(PKG, "DimensionTableDialog.Attributes.Label")); 
+        wlAtrributes.setText(BaseMessages.getString(PKG, "DimensionTableDialog.Attributes.Label"));
         props.setLook(wlAtrributes);
         FormData fdlAttributes = new FormData();
         fdlAttributes.left = new FormAttachment(0, 0);
         fdlAttributes.top  = new FormAttachment(0, 0);
         wlAtrributes.setLayoutData(fdlAttributes);
-        
+
         final int FieldsRows=logicalTable.getLogicalColumns().size();
-        
+
         List<DatabaseMeta> sharedDatabases= SharedDatabaseUtil.loadSharedDatabases();
         String[] databaseNames = SharedDatabaseUtil.getSortedDatabaseNames(sharedDatabases);
-        
+
         // data types
         //
         String[] dataTypes = new String[DataType.values().length];
@@ -338,31 +338,31 @@ public class DimensionTableDialog extends Dialog
           attributeTypes[i] = AttributeType.values()[i].name();
         }
 
-        
-        //  name, description, field type, physical column name, data type, length, precision, source db, source table, source column, conversion remarks 
+
+        //  name, description, field type, physical column name, data type, length, precision, source db, source table, source column, conversion remarks
         //
         ColumnInfo[] colinf=new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.FieldType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, attributeTypes), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.PhysicalName.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dataTypes), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataLength.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataPrecision.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceDatabase.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, databaseNames), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceColumn.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
-            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.ConversionLogicRemarks.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false), 
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Name.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.Description.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.FieldType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, attributeTypes),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.PhysicalName.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataType.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, dataTypes),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataLength.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.DataPrecision.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   true),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceDatabase.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, databaseNames),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceTable.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.SourceColumn.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(BaseMessages.getString(PKG, "DimensionTableDialog.ColumnInfo.ConversionLogicRemarks.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
         };
-        
-        wAttributes=new TableView(new Variables(), wTablesComp, 
-                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
-                              colinf, 
-                              FieldsRows,  
+
+        wAttributes=new TableView(new Variables(), wTablesComp,
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+                              colinf,
+                              FieldsRows,
                               null,
                               props
                               );
-       
+
         FormData fdTables = new FormData();
         fdTables.left  = new FormAttachment(0, 0);
         fdTables.top   = new FormAttachment(wlAtrributes, margin);
@@ -376,14 +376,14 @@ public class DimensionTableDialog extends Dialog
         fdTablesComp.right = new FormAttachment(100, 0);
         fdTablesComp.bottom= new FormAttachment(100, 0);
         wTablesComp.setLayoutData(fdTablesComp);
-        
+
         wTablesComp.layout();
         wTablesTab.setControl(wTablesComp);
     }	
 
-    
-    
-    
+
+
+
 	protected void addDefaultAttributes() {
 	  try {
       DimensionType dimensionType = DimensionType.getDimensionType(wDimensionType.getText());
@@ -409,11 +409,11 @@ public class DimensionTableDialog extends Dialog
       default:
         break;
       }
-        
+
 	  } catch(Exception e)  {
-	    new ErrorDialog(shell, 
-	        BaseMessages.getString(PKG, "DimensionTableDialog.ExceptionAddingDefaultAttributes.Title"), 
-	        BaseMessages.getString(PKG, "DimensionTableDialog.ExceptionAddingDefaultAttributes.Message"), 
+	    new ErrorDialog(shell,
+	        BaseMessages.getString(PKG, "DimensionTableDialog.ExceptionAddingDefaultAttributes.Title"),
+	        BaseMessages.getString(PKG, "DimensionTableDialog.ExceptionAddingDefaultAttributes.Message"),
 	        e
 	     );
 	  }
@@ -441,7 +441,7 @@ public class DimensionTableDialog extends Dialog
       String remarks = XMLHandler.getTagValue(node, "remarks");
       addAttribute(name, description, phName, attributeType, dataType, length, precision, remarks);
     }
-    
+
   }
 
   private void addAttribute(String name, String description, String phName, AttributeType attributeType, DataType dataType, int length, int precision, String comment) {
@@ -455,7 +455,7 @@ public class DimensionTableDialog extends Dialog
     if (length>=0) column.setProperty(DefaultIDs.LOGICAL_COLUMN_LENGTH, Integer.toString(length));
     if (precision>=0) column.setProperty(DefaultIDs.LOGICAL_COLUMN_PRECISION, Integer.toString(precision));
     column.setProperty(DefaultIDs.LOGICAL_COLUMN_CONVERSION_REMARKS, comment);
-    
+
     addLogicalColumnToAttributesList(column);
   }
 
@@ -468,7 +468,7 @@ public class DimensionTableDialog extends Dialog
 	
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
+	 */
 	public void getData()
 	{
 		wTableName.setText( Const.NVL(ConceptUtil.getName(logicalTable,locale), "") );
@@ -481,7 +481,7 @@ public class DimensionTableDialog extends Dialog
 	
   protected void refreshAttributesList() {
     wAttributes.clearAll();
-    
+
     for (LogicalColumn column : logicalTable.getLogicalColumns()) {
       addLogicalColumnToAttributesList(column);
     }
@@ -489,11 +489,11 @@ public class DimensionTableDialog extends Dialog
     wAttributes.setRowNums();
     wAttributes.optWidth(true);
   }
-   
+
 	private void addLogicalColumnToAttributesList(LogicalColumn column) {
     TableItem item = new TableItem(wAttributes.table, SWT.NONE);
-    
-    //  name, description, physical column name, data type, length, precision, source db, source table, source column, conversion remarks 
+
+    //  name, description, physical column name, data type, length, precision, source db, source table, source column, conversion remarks
     //
     int col=1;
     item.setText(col++, Const.NVL(ConceptUtil.getName(column,locale), ""));
@@ -519,7 +519,7 @@ public class DimensionTableDialog extends Dialog
 		
 	private void ok()
 	{
-	  
+	
     if (Const.isEmpty(wTableName.getText())) {
       MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
       box.setText(BaseMessages.getString(PKG, "DimensionTableDialog.ErrorDimensionHasNoName.Title"));
@@ -527,15 +527,15 @@ public class DimensionTableDialog extends Dialog
       box.open();
       return;
     }
-	  
+	
 		logicalTable.setName( new LocalizedString(locale, wTableName.getText()) );		
 		logicalTable.setDescription( new LocalizedString(locale, wTableDescription.getText()) );
 		logicalTable.setProperty(DefaultPropertyID.TABLE_TYPE.getId(), TableType.DIMENSION);
 		logicalTable.setProperty(DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME, wPhysicalName.getText());
     logicalTable.setProperty(DefaultIDs.LOGICAL_TABLE_DIMENSION_TYPE, wDimensionType.getText());
 		
-    // name, description, field type, physical column name, data type, length, precision, 
-		// source db, source table, source column, conversion remarks 
+    // name, description, field type, physical column name, data type, length, precision,
+		// source db, source table, source column, conversion remarks
     //
 		logicalTable.getLogicalColumns().clear();
 		int nr = wAttributes.nrNonEmpty();
@@ -543,7 +543,7 @@ public class DimensionTableDialog extends Dialog
 		  TableItem item = wAttributes.getNonEmpty(i);
 		  LogicalColumn logicalColumn = new LogicalColumn();
 		  logicalColumn.setId(UUID.randomUUID().toString());
-		  
+		
 		  int col=1;
 		  logicalColumn.setName(new LocalizedString(locale, item.getText(col++)));
 		  logicalColumn.setDescription(new LocalizedString(locale, item.getText(col++)));
@@ -558,7 +558,7 @@ public class DimensionTableDialog extends Dialog
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_SOURCE_TABLE, item.getText(col++));
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_SOURCE_COLUMN, item.getText(col++));
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_CONVERSION_REMARKS, item.getText(col++));
-      
+
       logicalColumn.setLogicalTable(logicalTable);
       logicalTable.getLogicalColumns().add(logicalColumn);
 		}

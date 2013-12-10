@@ -39,12 +39,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Uses named pipe capability to load Kettle-sourced data into an Infobright table.
- * 
+ *
  * @author geoffrey.falk@infobright.com
  */
 public class InfobrightLoader extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = InfobrightLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = InfobrightLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private final KettleRecordPopulator populator;
 
@@ -55,15 +55,15 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
 
   /**
    * Standard constructor. Does nothing special.
-   * 
+   *
    * @param stepMeta
    * @param stepDataInterface
    * @param copyNr
    * @param transMeta
    * @param trans
    */
-  public InfobrightLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public InfobrightLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     WindowsJNILibraryUtil.fixJavaLibraryPath(); // TODO move to Windows-specific class
     populator = new KettleRecordPopulator();
@@ -71,7 +71,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepInterface#processRow(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
    */
@@ -120,7 +120,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStep#init(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
    */
@@ -153,7 +153,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStep#stopRunning(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
    */
@@ -165,7 +165,8 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
         data.loader.killQuery();
         logDebug( "Loader statement killed." );
       } catch ( SQLException sqle ) {
-        logError( BaseMessages.getString( PKG, "InfobrightLoader.Log.FailedToKillQuery" ) + " : " + sqle.toString() );
+        logError( BaseMessages.getString( PKG, "InfobrightLoader.Log.FailedToKillQuery" )
+          + " : " + sqle.toString() );
         logError( Const.getStackTracker( sqle ) );
       }
     }

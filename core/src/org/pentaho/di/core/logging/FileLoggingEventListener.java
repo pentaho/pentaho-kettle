@@ -47,7 +47,7 @@ public class FileLoggingEventListener implements KettleLoggingEventListener {
 
   /**
    * Log all log lines to the specified file
-   * 
+   *
    * @param filename
    * @param append
    * @throws KettleException
@@ -59,7 +59,7 @@ public class FileLoggingEventListener implements KettleLoggingEventListener {
   /**
    * Log only lines belonging to the specified log channel ID or one of it's children (grandchildren) to the specified
    * file.
-   * 
+   *
    * @param logChannelId
    * @param filename
    * @param append
@@ -76,7 +76,8 @@ public class FileLoggingEventListener implements KettleLoggingEventListener {
     try {
       outputStream = KettleVFS.getOutputStream( file, append );
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to create a logging event listener to write to file '" + filename + "'", e );
+      throw new KettleException(
+        "Unable to create a logging event listener to write to file '" + filename + "'", e );
     }
   }
 

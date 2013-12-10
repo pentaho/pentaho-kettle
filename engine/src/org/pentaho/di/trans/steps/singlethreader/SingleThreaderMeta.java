@@ -65,14 +65,14 @@ import org.w3c.dom.Node;
 
 /**
  * Meta-data for the Mapping step: contains name of the (sub-)transformation to execute
- * 
+ *
  * @since 22-nov-2005
  * @author Matt
- * 
+ *
  */
 
 public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterface, HasRepositoryInterface {
-  private static Class<?> PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String transName;
   private String fileName;
@@ -99,7 +99,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     setDefault();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     try {
       String method = XMLHandler.getTagValue( stepnode, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
@@ -133,7 +134,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "SingleThreaderMeta.Exception.ErrorLoadingTransformationStepFromXML" ), e );
+        PKG, "SingleThreaderMeta.Exception.ErrorLoadingTransformationStepFromXML" ), e );
     }
   }
 
@@ -146,17 +147,17 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     StringBuffer retval = new StringBuffer( 300 );
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
-            .getCode() ) );
+      XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
+        .getCode() ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "trans_object_id", transObjectId == null ? null : transObjectId.toString() ) );
+      XMLHandler.addTagValue( "trans_object_id", transObjectId == null ? null : transObjectId.toString() ) );
     // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same
     // repository.
     //
     if ( repository != null && transObjectId != null ) {
       try {
         RepositoryObject objectInformation =
-            repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
+          repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
         if ( objectInformation != null ) {
           transName = objectInformation.getName();
           directoryPath = objectInformation.getRepositoryDirectory().getPath();
@@ -226,9 +227,9 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null
-        ? null : specificationMethod.getCode() );
-    rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null ? null : transObjectId
-        .toString() );
+      ? null : specificationMethod.getCode() );
+    rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null
+      ? null : transObjectId.toString() );
     rep.saveStepAttribute( id_transformation, id_step, "filename", fileName );
     rep.saveStepAttribute( id_transformation, id_step, "trans_name", transName );
     rep.saveStepAttribute( id_transformation, id_step, "directory_path", directoryPath );
@@ -244,7 +245,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     if ( parameters != null ) {
       for ( int i = 0; i < parameters.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_name", parameters[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_value", Const.NVL( parameterValues[i], "" ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_value", Const
+          .NVL( parameterValues[i], "" ) );
       }
     }
 
@@ -263,7 +265,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // First load some interesting data...
     //
@@ -274,7 +276,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       mappingTransMeta = loadSingleThreadedTransMeta( this, repository, space );
     } catch ( KettleException e ) {
       throw new KettleStepException( BaseMessages.getString(
-          PKG, "SingleThreaderMeta.Exception.UnableToLoadMappingTransformation" ), e );
+        PKG, "SingleThreaderMeta.Exception.UnableToLoadMappingTransformation" ), e );
     }
 
     row.clear();
@@ -288,12 +290,12 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
-      Repository rep, VariableSpace space ) throws KettleException {
+    Repository rep, VariableSpace space ) throws KettleException {
     return loadSingleThreadedTransMeta( mappingMeta, rep, null, space );
   }
 
   public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
-      Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     TransMeta mappingTransMeta = null;
 
     switch ( mappingMeta.getSpecificationMethod() ) {
@@ -306,11 +308,11 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
           //
           mappingTransMeta = new TransMeta( realFilename, false );
           mappingTransMeta.getLogChannel().logDetailed(
-              "Loading Mapping from repository",
-              "Mapping transformation was loaded from XML file [" + realFilename + "]" );
+            "Loading Mapping from repository",
+            "Mapping transformation was loaded from XML file [" + realFilename + "]" );
         } catch ( Exception e ) {
-          throw new KettleException(
-              BaseMessages.getString( PKG, "SingleThreaderMeta.Exception.UnableToLoadMapping" ), e );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "SingleThreaderMeta.Exception.UnableToLoadMapping" ), e );
         }
         break;
 
@@ -326,15 +328,15 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
               //
               mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null );
               mappingTransMeta.getLogChannel().logDetailed(
-                  "Loading Mapping from repository",
-                  "Mapping transformation [" + realTransname + "] was loaded from the repository" );
+                "Loading Mapping from repository",
+                "Mapping transformation [" + realTransname + "] was loaded from the repository" );
             } catch ( Exception e ) {
               throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
             }
           } else {
             throw new KettleException( BaseMessages.getString(
-                PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", realTransname )
-                + realDirectory );
+              PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", realTransname )
+              + realDirectory );
           }
         }
         break;
@@ -357,39 +359,39 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     return mappingTransMeta;
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "SingleThreaderMeta.CheckResult.NotReceivingAnyFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "SingleThreaderMeta.CheckResult.NotReceivingAnyFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SingleThreaderMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SingleThreaderMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SingleThreaderMeta.CheckResult.StepReceivingFieldsFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SingleThreaderMeta.CheckResult.StepReceivingFieldsFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SingleThreaderMeta.CheckResult.NoInputReceived" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SingleThreaderMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new SingleThreader( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -467,7 +469,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
 
   @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // Try to load the transformation from repository or file.
@@ -484,14 +486,14 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
-          mappingTransMeta.exportResources(
-              mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
+        mappingTransMeta.exportResources(
+          mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Job.Filename.Directory}
       //
       String newFilename =
-          "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+        "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
 
       // Set the correct filename inside the XML.
       //
@@ -509,7 +511,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       return proposedNewFilename;
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", fileName ) );
+        PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", fileName ) );
     }
   }
 
@@ -677,7 +679,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     // The correct reference is stored in the trans name and directory attributes...
     //
     RepositoryDirectoryInterface repositoryDirectoryInterface =
-        RepositoryImportLocation.getRepositoryImportLocation().findDirectory( directoryPath );
+      RepositoryImportLocation.getRepositoryImportLocation().findDirectory( directoryPath );
     transObjectId = repository.getTransformationID( transName, repositoryDirectoryInterface );
   }
 
@@ -690,7 +692,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
 
   private boolean isTransformationDefined() {
     return !Const.isEmpty( fileName )
-        || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
+      || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {
@@ -699,7 +701,7 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
 
   /**
    * Load the referenced object
-   * 
+   *
    * @param meta
    *          The metadata that references
    * @param index

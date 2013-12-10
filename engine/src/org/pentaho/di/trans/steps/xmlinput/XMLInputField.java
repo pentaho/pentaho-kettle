@@ -32,13 +32,13 @@ import org.w3c.dom.Node;
 
 /**
  * Describes an XML field and the position in an XML file
- * 
+ *
  * @author Matt
  * @since 16-12-2005
- * 
+ *
  */
 public class XMLInputField implements Cloneable {
-  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -48,10 +48,10 @@ public class XMLInputField implements Cloneable {
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
   public static final String[] trimTypeDesc = {
-      BaseMessages.getString( PKG, "XMLInputField.TrimType.None" ),
-      BaseMessages.getString( PKG, "XMLInputField.TrimType.Left" ),
-      BaseMessages.getString( PKG, "XMLInputField.TrimType.Right" ),
-      BaseMessages.getString( PKG, "XMLInputField.TrimType.Both" ) };
+    BaseMessages.getString( PKG, "XMLInputField.TrimType.None" ),
+    BaseMessages.getString( PKG, "XMLInputField.TrimType.Left" ),
+    BaseMessages.getString( PKG, "XMLInputField.TrimType.Right" ),
+    BaseMessages.getString( PKG, "XMLInputField.TrimType.Both" ) };
 
   public static final String POSITION_MARKER = ",";
 
@@ -340,7 +340,7 @@ public class XMLInputField implements Cloneable {
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to parse the field positions because of an error"
-          + Const.CR + "Please use E=element or A=attribute in a comma separated list (code: " + encoded + ")", e );
+        + Const.CR + "Please use E=element or A=attribute in a comma separated list (code: " + encoded + ")", e );
     }
   }
 }

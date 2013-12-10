@@ -40,7 +40,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 /**
  * A collection of utilities to manipulate strings.
- * 
+ *
  * @author wdeclerc
  */
 public class StringUtil {
@@ -67,29 +67,30 @@ public class StringUtil {
   public static final String EMPTY_STRING = "";
 
   public static final String[] SYSTEM_PROPERTIES = new String[] {
-      "java.version", "java.vendor", "java.vendor.url", "java.home", "java.vm.specification.version",
-      "java.vm.specification.vendor", "java.vm.specification.name", "java.vm.version", "java.vm.vendor",
-      "java.vm.name", "java.specification.version", "java.specification.vendor", "java.specification.name",
-      "java.class.version", "java.class.path", "java.library.path", "java.io.tmpdir", "java.compiler", "java.ext.dirs",
+    "java.version", "java.vendor", "java.vendor.url", "java.home", "java.vm.specification.version",
+    "java.vm.specification.vendor", "java.vm.specification.name", "java.vm.version", "java.vm.vendor",
+    "java.vm.name", "java.specification.version", "java.specification.vendor", "java.specification.name",
+    "java.class.version", "java.class.path", "java.library.path", "java.io.tmpdir", "java.compiler",
+    "java.ext.dirs",
 
-      "os.name", "os.arch", "os.version",
+    "os.name", "os.arch", "os.version",
 
-      "file.separator", "path.separator", "line.separator",
+    "file.separator", "path.separator", "line.separator",
 
-      "user.name", "user.home", "user.dir", "user.country", "user.language", "user.timezone",
+    "user.name", "user.home", "user.dir", "user.country", "user.language", "user.timezone",
 
-      "org.apache.commons.logging.Log", "org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
-      "org.apache.commons.logging.simplelog.showdatetime", "org.eclipse.swt.browser.XULRunnerInitialized",
-      "org.eclipse.swt.browser.XULRunnerPath",
+    "org.apache.commons.logging.Log", "org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
+    "org.apache.commons.logging.simplelog.showdatetime", "org.eclipse.swt.browser.XULRunnerInitialized",
+    "org.eclipse.swt.browser.XULRunnerPath",
 
-      "sun.arch.data.model", "sun.boot.class.path", "sun.boot.library.path", "sun.cpu.endian", "sun.cpu.isalist",
-      "sun.io.unicode.encoding", "sun.java.launcher", "sun.jnu.encoding", "sun.management.compiler",
-      "sun.os.patch.level", };
+    "sun.arch.data.model", "sun.boot.class.path", "sun.boot.library.path", "sun.cpu.endian", "sun.cpu.isalist",
+    "sun.io.unicode.encoding", "sun.java.launcher", "sun.jnu.encoding", "sun.management.compiler",
+    "sun.os.patch.level", };
 
   /**
    * Substitutes variables in <code>aString</code>. Variable names are delimited by open and close strings. The values
    * are retrieved from the given map.
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param variablesValues
@@ -107,7 +108,7 @@ public class StringUtil {
   /**
    * Substitutes variables in <code>aString</code>. Variable names are delimited by open and close strings. The values
    * are retrieved from the given map.
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param variablesValues
@@ -121,7 +122,7 @@ public class StringUtil {
    * @return the string with the substitution applied.
    */
   public static String substitute( String aString, Map<String, String> variablesValues, String open, String close,
-      int recursion ) {
+    int recursion ) {
     if ( aString == null ) {
       return null;
     }
@@ -174,7 +175,7 @@ public class StringUtil {
    * Substitutes hex values in <code>aString</code> and convert them to operating system char equivalents in the return
    * string. Format is $[01] or $[6F,FF,00,1F] Example:
    * "This is a hex encoded six digits number 123456 in this string: $[31,32,33,34,35,36]"
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @return the string with the substitution applied.
@@ -223,14 +224,15 @@ public class StringUtil {
 
   /**
    * Substitutes variables in <code>aString</code> with the environment values in the system properties
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param systemProperties
    *          the system properties to use
    * @return the string with the substitution applied.
    */
-  public static final synchronized String environmentSubstitute( String aString, Map<String, String> systemProperties ) {
+  public static final synchronized String environmentSubstitute( String aString,
+    Map<String, String> systemProperties ) {
     Map<String, String> sysMap = new HashMap<String, String>();
     synchronized ( sysMap ) {
       sysMap.putAll( Collections.synchronizedMap( systemProperties ) );
@@ -245,7 +247,7 @@ public class StringUtil {
   /**
    * Substitutes variables in <code>aString</code>. Variables are of the form "${<variable name>}", following the Unix
    * scripting convention. The values are retrieved from the given map.
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param variables
@@ -259,7 +261,7 @@ public class StringUtil {
   /**
    * Substitutes variables in <code>aString</code>. Variables are of the form "%%<variable name>%%", following the
    * Windows convention. The values are retrieved from the given map.
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param variables
@@ -274,14 +276,14 @@ public class StringUtil {
    * Substitutes field values in <code>aString</code>. Field values are of the form "?{<field name>}". The values are
    * retrieved from the specified row. Please note that the getString() method is used to convert to a String, for all
    * values in the row.
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param rowMeta
    *          The row metadata to use.
    * @param rowData
    *          The row data to use
-   * 
+   *
    * @return the string with the substitution applied.
    * @throws KettleValueException
    *           In case there is a String conversion error
@@ -297,7 +299,7 @@ public class StringUtil {
 
   /**
    * Search the string and report back on the variables used
-   * 
+   *
    * @param aString
    *          The string to search
    * @param open
@@ -310,7 +312,7 @@ public class StringUtil {
    *          also check for system variables.
    */
   private static void getUsedVariables( String aString, String open, String close, List<String> list,
-      boolean includeSystemVariables ) {
+    boolean includeSystemVariables ) {
     if ( aString == null ) {
       return;
     }
@@ -434,7 +436,7 @@ public class StringUtil {
 
   /**
    * Check if the string supplied is empty. A String is empty when it is null or when the length is 0
-   * 
+   *
    * @param string
    *          The string to check
    * @return true if the string supplied is empty
@@ -445,7 +447,7 @@ public class StringUtil {
 
   /**
    * Check if the stringBuffer supplied is empty. A StringBuffer is empty when it is null or when the length is 0
-   * 
+   *
    * @param string
    *          The stringBuffer to check
    * @return true if the stringBuffer supplied is empty
@@ -478,7 +480,7 @@ public class StringUtil {
 
   /**
    * Giving back a date/time string in the format following the rule from the most to the least significant
-   * 
+   *
    * @param date
    *          the date to convert
    * @return a string in the form yyyddMM_hhmmss
@@ -489,7 +491,7 @@ public class StringUtil {
 
   /**
    * Giving back a date/time string in the format following the rule from the most to the least significant
-   * 
+   *
    * @param date
    *          the date to convert
    * @param milliseconds
@@ -509,7 +511,7 @@ public class StringUtil {
   /**
    * Giving back the actual time as a date/time string in the format following the rule from the most to the least
    * significant
-   * 
+   *
    * @return a string in the form yyyddMM_hhmmss
    */
   public static String getFormattedDateTimeNow() {
@@ -519,7 +521,7 @@ public class StringUtil {
   /**
    * Giving back the actual time as a date/time string in the format following the rule from the most to the least
    * significant
-   * 
+   *
    * @param milliseconds
    *          true when milliseconds should be added
    * @return a string in the form yyyddMM_hhmmssSSS (milliseconds will be optional)
@@ -563,7 +565,7 @@ public class StringUtil {
 
   /**
    * remove specification from variable
-   * 
+   *
    * @param variable
    *          the variable to look for, with the $ or % variable specification.
    * @return the variable name

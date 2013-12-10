@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 27-nov-2006
- * 
+ *
  */
 public class SocketWriterData extends BaseStepData implements StepDataInterface {
   public DataOutputStream outputStream;

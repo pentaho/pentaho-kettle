@@ -67,7 +67,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Allows the user to make a selection of an Object in the repository
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
@@ -78,7 +78,6 @@ public class SelectObjectDialog extends Dialog {
                                                                  // needed
                                                                  // by
                                                                  // Translator2!!
-                                                                 // $NON-NLS-1$
 
   private Label wlTree;
   private Tree wTree;
@@ -158,7 +157,8 @@ public class SelectObjectDialog extends Dialog {
     Shell parent = getParent();
     dircolor = GUIResource.getInstance().getColorDirectory();
 
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MIN | SWT.MAX );
+    shell =
+      new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MIN | SWT.MAX );
     props.setLook( shell );
     shell.setImage( GUIResource.getInstance().getImageFolderConnections() );
 
@@ -175,7 +175,8 @@ public class SelectObjectDialog extends Dialog {
 
     wfilter = new ToolItem( treeTb, SWT.SEPARATOR );
     searchText = new Text( treeTb, SWT.SEARCH | SWT.CANCEL );
-    searchText.setToolTipText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Search.FilterString.ToolTip" ) );
+    searchText.setToolTipText( BaseMessages
+      .getString( PKG, "RepositoryExplorerDialog.Search.FilterString.ToolTip" ) );
     wfilter.setControl( searchText );
     wfilter.setWidth( 100 );
 
@@ -340,8 +341,8 @@ public class SelectObjectDialog extends Dialog {
       directoryTree = rep.loadRepositoryDirectoryTree();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ), BaseMessages.getString(
-          PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
+        PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ), BaseMessages.getString(
+        PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
     }
 
     getData();
@@ -439,22 +440,22 @@ public class SelectObjectDialog extends Dialog {
         ti.setImage( GUIResource.getInstance().getImageFolderConnections() );
         ti.setExpanded( true );
         RepositoryDirectoryUI.getTreeWithNames(
-            ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString,
-            pattern );
+          ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree,
+          filterString, pattern );
       } else {
         for ( int i = 0; i < directoryTree.getNrSubdirectories(); i++ ) {
           RepositoryDirectory subdir = directoryTree.getSubdirectory( i );
           ti = new TreeItem( wTree, SWT.NONE );
           ti.setImage( GUIResource.getInstance().getImageArrow() );
           RepositoryDirectoryUI.getTreeWithNames(
-              ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString,
-              pattern );
+            ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString,
+            pattern );
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title" ), BaseMessages
-              .getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Message" ), e );
+        shell, BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title" ), BaseMessages
+          .getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Message" ), e );
     }
   }
 

@@ -54,13 +54,13 @@ import org.xml.sax.SAXException;
 /**
  * Executes a xsd validator on the values in the input stream. New fields were calculated values can then be put on the
  * output stream.
- * 
+ *
  * @author Samatar
  * @since 14-08-2007
- * 
+ *
  */
 public class XsdValidator extends BaseStep implements StepInterface {
-  private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private XsdValidatorMeta meta;
   private XsdValidatorData data;
@@ -70,7 +70,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
   static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 
   public XsdValidator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -99,23 +99,25 @@ public class XsdValidator extends BaseStep implements StepInterface {
         if ( data.xmlindex < 0 ) {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "XsdValidator.Log.ErrorFindingField" )
-              + "[" + meta.getXMLStream() + "]" );
-          throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.CouldnotFindField", meta
-              .getXMLStream() ) );
+            + "[" + meta.getXMLStream() + "]" );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "XsdValidator.Exception.CouldnotFindField", meta.getXMLStream() ) );
         }
 
         // Let's check that Result Field is given
         if ( meta.getResultfieldname() == null ) {
           // Result field is missing !
           logError( BaseMessages.getString( PKG, "XsdValidator.Log.ErrorResultFieldMissing" ) );
-          throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.ErrorResultFieldMissing" ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "XsdValidator.Exception.ErrorResultFieldMissing" ) );
         }
 
         // Is XSD file is provided?
         if ( meta.getXSDSource().equals( meta.SPECIFY_FILENAME ) ) {
           if ( meta.getXSDFilename() == null ) {
             logError( BaseMessages.getString( PKG, "XsdValidator.Log.ErrorXSDFileMissing" ) );
-            throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.ErrorXSDFileMissing" ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "XsdValidator.Exception.ErrorXSDFileMissing" ) );
           } else {
             // Is XSD file exists ?
             FileObject xsdfile = null;
@@ -123,7 +125,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
               xsdfile = KettleVFS.getFileObject( environmentSubstitute( meta.getXSDFilename() ), getTransMeta() );
               if ( !xsdfile.exists() ) {
                 logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XSDFileNotExists" ) );
-                throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.XSDFileNotExists" ) );
+                throw new KettleStepException( BaseMessages.getString(
+                  PKG, "XsdValidator.Exception.XSDFileNotExists" ) );
               }
 
             } catch ( Exception e ) {
@@ -153,10 +156,10 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
             if ( data.xsdindex < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages
-                  .getString( PKG, "XsdValidator.Log.ErrorFindingXSDField", meta.getXSDDefinedField() ) );
+              logError( BaseMessages.getString( PKG, "XsdValidator.Log.ErrorFindingXSDField", meta
+                .getXSDDefinedField() ) );
               throw new KettleStepException( BaseMessages.getString(
-                  PKG, "XsdValidator.Exception.ErrorFindingXSDField", meta.getXSDDefinedField() ) );
+                PKG, "XsdValidator.Exception.ErrorFindingXSDField", meta.getXSDDefinedField() ) );
             }
           }
         }
@@ -164,7 +167,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
       } else {
         // XML stream field is missing !
         logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XmlStreamFieldMissing" ) );
-        throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.XmlStreamFieldMissing" ) );
+        throw new KettleStepException( BaseMessages
+          .getString( PKG, "XsdValidator.Exception.XmlStreamFieldMissing" ) );
       }
     }
 
@@ -205,7 +209,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
           if ( !xmlfileValidator.exists() ) {
             logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XMLfileMissing", XMLFieldvalue ) );
             throw new KettleStepException( BaseMessages.getString(
-                PKG, "XsdValidator.Exception.XMLfileMissing", XMLFieldvalue ) );
+              PKG, "XsdValidator.Exception.XMLfileMissing", XMLFieldvalue ) );
           }
           sourceXML = new StreamSource( xmlfileValidator );
         }
@@ -220,7 +224,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
           // we should not get here as anything entered in that does not look like
           // a url should be made a FileObject.
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "XsdValidator.Exception.CannotCreateSchema", xsdfile.getClass().getName() ) );
+            PKG, "XsdValidator.Exception.CannotCreateSchema", xsdfile.getClass().getName() ) );
         }
 
         if ( meta.getXSDSource().equals( meta.NO_NEED ) ) {
@@ -258,10 +262,12 @@ public class XsdValidator extends BaseStep implements StepInterface {
         // Output type=String
         if ( isvalid ) {
           outputRowData =
-              RowDataUtil.addValueData( row, getInputRowMeta().size(), environmentSubstitute( meta.getIfXmlValid() ) );
+            RowDataUtil.addValueData(
+              row, getInputRowMeta().size(), environmentSubstitute( meta.getIfXmlValid() ) );
         } else {
           outputRowData =
-              RowDataUtil.addValueData( row, getInputRowMeta().size(), environmentSubstitute( meta.getIfXmlInvalid() ) );
+            RowDataUtil.addValueData( row, getInputRowMeta().size(), environmentSubstitute( meta
+              .getIfXmlInvalid() ) );
         }
       } else {
         outputRowData = RowDataUtil.addValueData( row, getInputRowMeta().size(), isvalid );
@@ -275,7 +281,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "XsdValidator.Log.ReadRow" )
-            + " " + getInputRowMeta().getString( row ) );
+          + " " + getInputRowMeta().getString( row ) );
       }
 
       // add new values to the row.

@@ -45,7 +45,7 @@ public class EnvUtil {
 
   /**
    * Returns the properties from the users kettle home directory.
-   * 
+   *
    * @param fileName
    *          the relative name of the properties file in the users kettle directory.
    * @return the map of properties.
@@ -73,7 +73,7 @@ public class EnvUtil {
 
   /**
    * Adds the kettle properties the the global system properties.
-   * 
+   *
    * @throws KettleException
    *           in case the properties file can't be read.
    */
@@ -132,7 +132,7 @@ public class EnvUtil {
 
   /**
    * Add a number of internal variables to the Kettle Variables at the root.
-   * 
+   *
    * @param variables
    */
   public static void addInternalVariables( Properties prop ) {
@@ -152,9 +152,9 @@ public class EnvUtil {
    * Get System.getenv() in a reflection kind of way. The problem is that System.getenv() was deprecated in Java 1.4
    * while reinstated in 1.5 This method will get at getenv() using reflection and will return empty properties when
    * used in 1.4
-   * 
+   *
    * @return Properties containing the environment. You're not meant to change any value in the returned Properties!
-   * 
+   *
    */
   @SuppressWarnings( { "unchecked" } )
   private static final Properties getEnv() {
@@ -209,7 +209,7 @@ public class EnvUtil {
   /**
    * This method is written especially for weird JVM's like IBM's on AIX and OS/400. On these platforms, we notice that
    * environment variables have an extra double quote around it... This is messing up the ability to specify things.
-   * 
+   *
    * @param key
    *          The key, the name of the environment variable to return
    * @param def
@@ -227,7 +227,7 @@ public class EnvUtil {
 
   /**
    * This method is written especially for weird JVM's like
-   * 
+   *
    * @param key
    *          The key, the name of the environment variable to return
    * @param def
@@ -252,9 +252,9 @@ public class EnvUtil {
 
   /**
    * Returns an available java.util.Locale object for the given localeCode.
-   * 
+   *
    * The localeCode code can be case insensitive, if it is available the method will find it and return it.
-   * 
+   *
    * @param localeCode
    * @return java.util.Locale.
    */

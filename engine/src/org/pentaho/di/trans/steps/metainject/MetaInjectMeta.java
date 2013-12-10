@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
  */
 
 public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = MetaInjectMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MetaInjectMeta.class; // for i18n purposes, needed by Translator2!!
 
   // description of the transformation to execute...
   //
@@ -93,10 +93,10 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuffer retval = new StringBuffer( 500 );
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
-            .getCode() ) );
+      XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
+        .getCode() ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "trans_object_id", transObjectId == null ? null : transObjectId.toString() ) );
+      XMLHandler.addTagValue( "trans_object_id", transObjectId == null ? null : transObjectId.toString() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trans_name", transName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename", fileName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "directory_path", directoryPath ) );
@@ -110,7 +110,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "      " ).append( XMLHandler.openTag( "mapping" ) );
       SourceStepField source = targetSourceMapping.get( target );
       retval.append( "        " ).append( XMLHandler.addTagValue( "target_step_name", target.getStepname() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "target_attribute_key", target.getAttributeKey() ) );
+      retval.append( "        " ).append(
+        XMLHandler.addTagValue( "target_attribute_key", target.getAttributeKey() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "target_detail", target.isDetail() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "source_step", source.getStepname() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "source_field", source.getField() ) );
@@ -121,7 +122,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     try {
 
       String method = XMLHandler.getTagValue( stepnode, "specification_method" );
@@ -192,9 +194,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
     throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null
-          ? null : specificationMethod.getCode() );
+        ? null : specificationMethod.getCode() );
       rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null
-          ? null : transObjectId.toString() );
+        ? null : transObjectId.toString() );
       rep.saveStepAttribute( id_transformation, id_step, "filename", fileName );
       rep.saveStepAttribute( id_transformation, id_step, "trans_name", transName );
       rep.saveStepAttribute( id_transformation, id_step, "directory_path", directoryPath );
@@ -209,7 +211,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
         SourceStepField source = targetSourceMapping.get( target );
 
         rep.saveStepAttribute( id_transformation, id_step, i, "mapping_target_step_name", target.getStepname() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "mapping_target_attribute_key", target.getAttributeKey() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "mapping_target_attribute_key", target
+          .getAttributeKey() );
         rep.saveStepAttribute( id_transformation, id_step, i, "mapping_target_detail", target.isDetail() );
         rep.saveStepAttribute( id_transformation, id_step, i, "mapping_source_step", source.getStepname() );
         rep.saveStepAttribute( id_transformation, id_step, i, "mapping_source_field", source.getField() );
@@ -220,12 +223,12 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     rowMeta.clear(); // No defined output is expected from this step.
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new MetaInject( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -318,12 +321,12 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Deprecated
   public static final synchronized TransMeta loadTransformationMeta( MetaInjectMeta mappingMeta, Repository rep,
-      VariableSpace space ) throws KettleException {
+    VariableSpace space ) throws KettleException {
     return loadTransformationMeta( mappingMeta, rep, null, space );
   }
 
   public static final synchronized TransMeta loadTransformationMeta( MetaInjectMeta mappingMeta, Repository rep,
-      IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    IMetaStore metaStore, VariableSpace space ) throws KettleException {
     TransMeta mappingTransMeta = null;
 
     switch ( mappingMeta.getSpecificationMethod() ) {
@@ -336,11 +339,11 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
           //
           mappingTransMeta = new TransMeta( realFilename, metaStore, rep, false, space, null );
           mappingTransMeta.getLogChannel().logDetailed(
-              "Loading Mapping from repository",
-              "Mapping transformation was loaded from XML file [" + realFilename + "]" );
+            "Loading Mapping from repository",
+            "Mapping transformation was loaded from XML file [" + realFilename + "]" );
         } catch ( Exception e ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromFile", realFilename ), e );
+            PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromFile", realFilename ), e );
         }
         break;
 
@@ -362,14 +365,15 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
                                                                                                     // repository?
 
               mappingTransMeta.getLogChannel().logDetailed(
-                  "Loading Mapping from repository",
-                  "Mapping transformation [" + realTransname + "] was loaded from the repository" );
+                "Loading Mapping from repository",
+                "Mapping transformation [" + realTransname + "] was loaded from the repository" );
             } catch ( Exception e ) {
               throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
             }
           } else {
             throw new KettleException( BaseMessages.getString(
-                PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory ) );
+              PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname,
+              realDirectory ) );
           }
         }
         break;
@@ -455,7 +459,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
 
   private boolean isTransformationDefined() {
     return !Const.isEmpty( fileName )
-        || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
+      || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {
@@ -469,7 +473,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Load the referenced object
-   * 
+   *
    * @param meta
    *          The metadata that references
    * @param index

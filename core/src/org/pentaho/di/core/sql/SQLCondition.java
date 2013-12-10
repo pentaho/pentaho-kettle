@@ -48,8 +48,8 @@ public class SQLCondition {
     this( tableAlias, conditionSql, serviceFields, null );
   }
 
-  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields, SQLFields selectFields )
-    throws KettleSQLException {
+  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields,
+    SQLFields selectFields ) throws KettleSQLException {
     this.tableAlias = tableAlias;
     this.conditionClause = conditionSql;
     this.serviceFields = serviceFields;
@@ -60,11 +60,11 @@ public class SQLCondition {
 
   /**
    * Support for conditions is very simple for now:
-   * 
+   *
    * <Field> <operator> <value> <Field> <operator> <other field>
-   * 
+   *
    * TODO: figure out a simple algorithm to split up on brackets, AND, OR
-   * 
+   *
    * @throws KettleSQLException
    */
   private void parse() throws KettleSQLException {
@@ -86,7 +86,7 @@ public class SQLCondition {
   /**
    * Searches for the given string in a clause and returns the start index if found, -1 if not found. This method skips
    * brackets and single quotes. Case is ignored
-   * 
+   *
    * @param clause
    *          the clause
    * @param string
@@ -168,8 +168,8 @@ public class SQLCondition {
               // A PARAMETER() function in the where clause always returns true
               //
               Condition subCondition =
-                  new Condition( parameterName, Condition.FUNC_TRUE, parameterName, new ValueMetaAndData(
-                      new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ), Const.NVL( parameterValue, "" ) ) );
+                new Condition( parameterName, Condition.FUNC_TRUE, parameterName, new ValueMetaAndData(
+                  new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ), Const.NVL( parameterValue, "" ) ) );
               subCondition.setOperator( orConditionOperator );
               parentCondition.addCondition( subCondition );
 
@@ -178,8 +178,8 @@ public class SQLCondition {
               }
 
             } else {
-              throw new KettleSQLException( "A parameter value has to always be a string between single quotes in : "
-                  + clause );
+              throw new KettleSQLException(
+                "A parameter value has to always be a string between single quotes in : " + clause );
             }
 
           } else {
@@ -219,8 +219,8 @@ public class SQLCondition {
     return parentCondition;
   }
 
-  private int splitByOperator( String clause, Condition parentCondition, String operatorString, int conditionOperator )
-    throws KettleSQLException {
+  private int splitByOperator( String clause, Condition parentCondition, String operatorString,
+    int conditionOperator ) throws KettleSQLException {
     int lastIndex = 0;
     int index = 0;
     while ( index < clause.length() && ( index = searchForString( clause, operatorString, index ) ) >= 0 ) {
@@ -248,8 +248,8 @@ public class SQLCondition {
     List<String> strings = splitConditionClause( clause );
     if ( strings.size() > 3 ) {
       throw new KettleSQLException(
-          "Unfortunately support for conditions is still very rudimentary, only 1 simple condition is supported ["
-              + clause + "]" );
+        "Unfortunately support for conditions is still very rudimentary, only 1 simple condition is supported ["
+          + clause + "]" );
     }
     String left = strings.get( 0 );
 
@@ -314,8 +314,8 @@ public class SQLCondition {
         valueString.append( part );
       }
       value =
-          new ValueMetaAndData( new ValueMeta( "constant-in-list", ValueMetaInterface.TYPE_STRING ), valueString
-              .toString() );
+        new ValueMetaAndData( new ValueMeta( "constant-in-list", ValueMetaInterface.TYPE_STRING ), valueString
+          .toString() );
     } else {
 
       // Mondrian, analyzer CONTAINS hack:
@@ -350,7 +350,7 @@ public class SQLCondition {
 
   /**
    * We need to split conditions on a single operator (for now)
-   * 
+   *
    * @param clause
    * @return 3 string list (left, operator, right)
    * @throws KettleSQLException
@@ -359,15 +359,15 @@ public class SQLCondition {
     List<String> strings = new ArrayList<String>();
 
     String[] operators =
-        new String[] {
-            "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL", " LIKE",
-            "CONTAINS " };
+      new String[] {
+        "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL", " LIKE",
+        "CONTAINS " };
     int[] functions =
-        new int[] {
-            Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
-            Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER, Condition.FUNC_LARGER,
-            Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST, Condition.FUNC_NOT_NULL,
-            Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
+      new int[] {
+        Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
+        Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER,
+        Condition.FUNC_LARGER, Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST,
+        Condition.FUNC_NOT_NULL, Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
     int index = 0;
     while ( index < clause.length() ) {
       index = ThinUtil.skipChars( clause, index, '\'', '"' );
@@ -460,14 +460,14 @@ public class SQLCondition {
 
   /**
    * Extract the list of having fields from this having condition
-   * 
+   *
    * @param aggFields
    * @param rowMeta
    * @return
    * @throws KettleSQLException
    */
   public List<SQLField> extractHavingFields( List<SQLField> selectFields, List<SQLField> aggFields,
-      RowMetaInterface rowMeta ) throws KettleSQLException {
+    RowMetaInterface rowMeta ) throws KettleSQLException {
     List<SQLField> list = new ArrayList<SQLField>();
 
     // Get a list of all the lowest level field names and see if we can parse them as aggregation fields

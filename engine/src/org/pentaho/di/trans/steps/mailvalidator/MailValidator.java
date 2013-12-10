@@ -36,20 +36,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Check if an email address is valid *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class MailValidator extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MailValidatorMeta meta;
   private MailValidatorData data;
 
   public MailValidator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -104,8 +104,8 @@ public class MailValidator extends BaseStep implements StepInterface {
         data.indexOfeMailField = data.previousRowMeta.indexOfValue( meta.getEmailField() );
         if ( data.indexOfeMailField < 0 ) {
           // The field is unreachable !
-          throw new KettleException( BaseMessages.getString( PKG, "MailValidator.Exception.CouldnotFindField", meta
-              .getEmailField() ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "MailValidator.Exception.CouldnotFindField", meta.getEmailField() ) );
         }
       }
 
@@ -120,8 +120,8 @@ public class MailValidator extends BaseStep implements StepInterface {
             data.indexOfdefaultSMTPField = data.previousRowMeta.indexOfValue( meta.getDefaultSMTP() );
             if ( data.indexOfdefaultSMTPField < 0 ) {
               // The field is unreachable !
-              throw new KettleException( BaseMessages.getString( PKG, "MailValidator.Exception.CouldnotFindField", meta
-                  .getDefaultSMTP() ) );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "MailValidator.Exception.CouldnotFindField", meta.getDefaultSMTP() ) );
             }
           }
         }
@@ -158,8 +158,9 @@ public class MailValidator extends BaseStep implements StepInterface {
 
         // Check if address is valid
         MailValidationResult result =
-            MailValidation.isAddressValid(
-                log, emailaddress, data.realemailSender, data.realdefaultSMTPServer, data.timeout, meta.isSMTPCheck() );
+          MailValidation.isAddressValid(
+            log, emailaddress, data.realemailSender, data.realdefaultSMTPServer, data.timeout, meta
+              .isSMTPCheck() );
         // return result
         mailvalid = result.isValide();
         mailerror = result.getErrorMessage();
@@ -188,7 +189,7 @@ public class MailValidator extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "MailValidator.LineNumber", getLinesRead()
-            + " : " + getInputRowMeta().getString( r ) ) );
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

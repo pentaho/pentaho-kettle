@@ -63,19 +63,21 @@ public class TransformationHasANoteImportRuleTest extends TestCase {
     List<ImportValidationFeedback> feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has a note' rule", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     transMeta.removeNote( 0 );
 
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has a note' rule", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setEnabled( false );
 
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't expect any feedback from the 'transformation has a note' rule while disabled", feedback
-        .isEmpty() );
+      .isEmpty() );
 
   }
 }

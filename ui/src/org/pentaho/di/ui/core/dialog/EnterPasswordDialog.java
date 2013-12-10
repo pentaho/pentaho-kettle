@@ -47,12 +47,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * A dialog that asks for a password.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class EnterPasswordDialog extends Dialog {
-  private static Class<?> PKG = EnterPasswordDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterPasswordDialog.class; // for i18n purposes, needed by Translator2!!
 
   private String title, message;
 
@@ -106,8 +106,8 @@ public class EnterPasswordDialog extends Dialog {
     Display display = parent.getDisplay();
 
     shell =
-        new Shell( parent, SWT.DIALOG_TRIM
-            | SWT.RESIZE | SWT.MAX | SWT.MIN | ( modal ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) );
+      new Shell( parent, SWT.DIALOG_TRIM
+        | SWT.RESIZE | SWT.MAX | SWT.MIN | ( modal ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) );
     props.setLook( shell );
     shell.setImage( GUIResource.getInstance().getImageLogoSmall() );
 

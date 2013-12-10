@@ -49,21 +49,21 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Looks up information by first reading data into a hash table (in memory)
- * 
+ *
  * TODO: add warning with conflicting types OR modify the lookup values to the input row type. (this is harder to do as
  * currently we don't know the types)
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
  */
 public class StreamLookup extends BaseStep implements StepInterface {
-  private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   private StreamLookupMeta meta;
   private StreamLookupData data;
 
   public StreamLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -106,7 +106,8 @@ public class StreamLookup extends BaseStep implements StepInterface {
           }
           break;
         case ValueMetaInterface.TYPE_BOOLEAN:
-          if ( "TRUE".equalsIgnoreCase( meta.getValueDefault()[i] ) || "Y".equalsIgnoreCase( meta.getValueDefault()[i] ) ) {
+          if ( "TRUE".equalsIgnoreCase( meta.getValueDefault()[i] )
+            || "Y".equalsIgnoreCase( meta.getValueDefault()[i] ) ) {
             data.nullIf[i] = Boolean.TRUE;
           } else {
             data.nullIf[i] = Boolean.FALSE;
@@ -122,8 +123,9 @@ public class StreamLookup extends BaseStep implements StepInterface {
         default:
           // if a default value is given and no conversion is implemented throw an error
           if ( meta.getValueDefault()[i] != null && meta.getValueDefault()[i].trim().length() > 0 ) {
-            throw new RuntimeException( BaseMessages.getString( PKG, "StreamLookup.Exception.ConversionNotImplemented" )
-                + " " + ValueMeta.getTypeDesc( meta.getValueDefaultType()[i] ) );
+            throw new RuntimeException( BaseMessages.getString(
+              PKG, "StreamLookup.Exception.ConversionNotImplemented" )
+              + " " + ValueMeta.getTypeDesc( meta.getValueDefaultType()[i] ) );
           } else {
             // no default value given: just set it to null
             data.nullIf[i] = null;
@@ -141,7 +143,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
     }
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "StreamLookup.Log.ReadingFromStream" )
-          + data.infoStream.getStepname() + "]" );
+        + data.infoStream.getStepname() + "]" );
     }
 
     int[] keyNrs = new int[meta.getKeylookup().length];
@@ -155,7 +157,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
     while ( rowData != null ) {
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "StreamLookup.Log.ReadLookupRow" )
-            + rowSet.getRowMeta().getString( rowData ) );
+          + rowSet.getRowMeta().getString( rowData ) );
       }
 
       if ( firstRun ) {
@@ -171,7 +173,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
           keyNrs[i] = rowSet.getRowMeta().indexOfValue( meta.getKeylookup()[i] );
           if ( keyNrs[i] < 0 ) {
             throw new KettleStepException( BaseMessages.getString(
-                PKG, "StreamLookup.Exception.UnableToFindField", meta.getKeylookup()[i] ) );
+              PKG, "StreamLookup.Exception.UnableToFindField", meta.getKeylookup()[i] ) );
           }
           data.keyMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( keyNrs[i] ) );
         }
@@ -191,7 +193,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
           valueNrs[v] = rowSet.getRowMeta().indexOfValue( meta.getValue()[v] );
           if ( valueNrs[v] < 0 ) {
             throw new KettleStepException( BaseMessages.getString(
-                PKG, "StreamLookup.Exception.UnableToFindField", meta.getValue()[v] ) );
+              PKG, "StreamLookup.Exception.UnableToFindField", meta.getValue()[v] ) );
           }
           data.valueMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( valueNrs[v] ) );
         }
@@ -292,8 +294,8 @@ public class StreamLookup extends BaseStep implements StepInterface {
     return RowDataUtil.addRowData( row, rowMeta.size(), add );
   }
 
-  private void addToCache( RowMetaInterface keyMeta, Object[] keyData, RowMetaInterface valueMeta, Object[] valueData )
-    throws KettleValueException {
+  private void addToCache( RowMetaInterface keyMeta, Object[] keyData, RowMetaInterface valueMeta,
+    Object[] valueData ) throws KettleValueException {
     if ( meta.isMemoryPreservationActive() ) {
       if ( meta.isUsingSortedList() ) {
         KeyValue keyValue = new KeyValue( keyData, valueData );
@@ -309,11 +311,11 @@ public class StreamLookup extends BaseStep implements StepInterface {
           if ( !data.metadataVerifiedIntegerPair ) {
             data.metadataVerifiedIntegerPair = true;
             if ( keyMeta.size() != 1
-                || valueMeta.size() != 1 || !keyMeta.getValueMeta( 0 ).isInteger()
-                || !valueMeta.getValueMeta( 0 ).isInteger() ) {
+              || valueMeta.size() != 1 || !keyMeta.getValueMeta( 0 ).isInteger()
+              || !valueMeta.getValueMeta( 0 ).isInteger() ) {
 
               throw new KettleValueException( BaseMessages.getString(
-                  PKG, "StreamLookup.Exception.CanNotUseIntegerPairAlgorithm" ) );
+                PKG, "StreamLookup.Exception.CanNotUseIntegerPairAlgorithm" ) );
             }
           }
 
@@ -324,7 +326,8 @@ public class StreamLookup extends BaseStep implements StepInterface {
           if ( data.hashIndex == null ) {
             data.hashIndex = new ByteArrayHashIndex( keyMeta );
           }
-          data.hashIndex.put( RowMeta.extractData( keyMeta, keyData ), RowMeta.extractData( valueMeta, valueData ) );
+          data.hashIndex
+            .put( RowMeta.extractData( keyMeta, keyData ), RowMeta.extractData( valueMeta, valueData ) );
         }
       }
     } else {
@@ -411,7 +414,8 @@ public class StreamLookup extends BaseStep implements StepInterface {
       // no more input to be expected...
 
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "StreamLookup.Log.StoppedProcessingWithEmpty", getLinesRead() + "" ) );
+        logDetailed( BaseMessages.getString( PKG, "StreamLookup.Log.StoppedProcessingWithEmpty", getLinesRead()
+          + "" ) );
       }
       setOutputDone();
       return false;
@@ -429,12 +433,15 @@ public class StreamLookup extends BaseStep implements StepInterface {
         // Find the keynr in the row (only once)
         data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getKeystream()[i] );
         if ( data.keynrs[i] < 0 ) {
-          throw new KettleStepException( BaseMessages.getString(
-              PKG, "StreamLookup.Log.FieldNotFound", meta.getKeystream()[i], "" + getInputRowMeta().getString( r ) ) ); //$NON-NLS-3$
+          throw new KettleStepException(
+            BaseMessages
+              .getString(
+                PKG,
+                "StreamLookup.Log.FieldNotFound", meta.getKeystream()[i], "" + getInputRowMeta().getString( r ) ) );
         } else {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString(
-                PKG, "StreamLookup.Log.FieldInfo", meta.getKeystream()[i], "" + data.keynrs[i] ) ); //$NON-NLS-3$
+              PKG, "StreamLookup.Log.FieldInfo", meta.getKeystream()[i], "" + data.keynrs[i] ) );
           }
         }
 
@@ -448,8 +455,8 @@ public class StreamLookup extends BaseStep implements StepInterface {
 
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields(
-          data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository,
-          metaStore );
+        data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository,
+        metaStore );
 
       // Handle the NULL values (not found...)
       handleNullIf();

@@ -27,9 +27,9 @@ import java.util.List;
 
 /**
  * This class contains a list of data rows as well as the RowMetaInterface to describe it.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class RowBuffer {
   private RowMetaInterface rowMeta;

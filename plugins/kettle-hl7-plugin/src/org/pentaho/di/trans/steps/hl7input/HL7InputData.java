@@ -37,7 +37,7 @@ public class HL7InputData extends BaseStepData implements StepDataInterface
   public RowMetaInterface outputRowMeta;
 
   /**
-	 * 
+	 *
 	 */
 	public HL7InputData()
 	{

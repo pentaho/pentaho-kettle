@@ -81,13 +81,13 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * Dialog class for the Greenplum bulk loader step. Created on 28mar2008, copied from Sven Boden's Oracle version
- * 
+ *
  * @author Luke Lonergan
  */
 public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed
   // by Translator2!!
-  // $NON-NLS-1$
+
 
   private CTabFolder wTabFolder;
 

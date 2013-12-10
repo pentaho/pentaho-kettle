@@ -48,11 +48,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
- * 
+ *
  */
 
 public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ZipFileMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ZipFileMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** dynamic filename */
   private String sourcefilenamefield;
@@ -74,9 +74,9 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-      BaseMessages.getString( PKG, "ZipFileMeta.operationType.DoNothing" ),
-      BaseMessages.getString( PKG, "ZipFileMeta.operationType.Move" ),
-      BaseMessages.getString( PKG, "ZipFileMeta.operationType.Delete" ) };
+    BaseMessages.getString( PKG, "ZipFileMeta.operationType.DoNothing" ),
+    BaseMessages.getString( PKG, "ZipFileMeta.operationType.Move" ),
+    BaseMessages.getString( PKG, "ZipFileMeta.operationType.Delete" ) };
 
   /**
    * The operations type codes
@@ -185,7 +185,8 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
     this.createparentfolder = createparentfolder;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -231,7 +232,8 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
       sourcefilenamefield = XMLHandler.getTagValue( stepnode, "sourcefilenamefield" );
       targetfilenamefield = XMLHandler.getTagValue( stepnode, "targetfilenamefield" );
       baseFolderField = XMLHandler.getTagValue( stepnode, "baseFolderField" );
-      operationType = getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operation_type" ), "" ) );
       addresultfilenames = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addresultfilenames" ) );
       overwritezipentry = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "overwritezipentry" ) );
       createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "createparentfolder" ) );
@@ -249,7 +251,8 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
       sourcefilenamefield = rep.getStepAttributeString( id_step, "sourcefilenamefield" );
       targetfilenamefield = rep.getStepAttributeString( id_step, "targetfilenamefield" );
       baseFolderField = rep.getStepAttributeString( id_step, "baseFolderField" );
-      operationType = getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
       addresultfilenames = rep.getStepAttributeBoolean( id_step, "addresultfilenames" );
       overwritezipentry = rep.getStepAttributeBoolean( id_step, "overwritezipentry" );
       createparentfolder = rep.getStepAttributeBoolean( id_step, "createparentfolder" );
@@ -257,8 +260,8 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
       movetofolderfield = rep.getStepAttributeString( id_step, "movetofolderfield" );
 
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "ZipFileMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "ZipFileMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -276,14 +279,14 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "movetofolderfield", movetofolderfield );
 
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "ZipFileMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
+      throw new KettleException( BaseMessages.getString( PKG, "ZipFileMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -301,20 +304,20 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ZipFileMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ZipFileMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "ZipFileMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ZipFileMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ZipFile( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

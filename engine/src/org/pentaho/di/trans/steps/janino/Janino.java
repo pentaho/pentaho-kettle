@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Calculate new field values using pre-defined functions.
- * 
+ *
  * @author Matt
  * @since 8-sep-2005
  */
@@ -52,7 +52,8 @@ public class Janino extends BaseStep implements StepInterface {
   private JaninoMeta meta;
   private JaninoData data;
 
-  public Janino( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Janino( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -82,7 +83,7 @@ public class Janino extends BaseStep implements StepInterface {
           data.replaceIndex[i] = getInputRowMeta().indexOfValue( fn.getReplaceField() );
           if ( data.replaceIndex[i] < 0 ) {
             throw new KettleException( "Unknown field specified to replace with a formula result: ["
-                + fn.getReplaceField() + "]" );
+              + fn.getReplaceField() + "]" );
           }
         } else {
           data.replaceIndex[i] = -1;
@@ -185,14 +186,14 @@ public class Janino extends BaseStep implements StepInterface {
             //
             data.expressionEvaluators[m] = new ExpressionEvaluator();
             data.expressionEvaluators[m].setParameters(
-                parameterNames.toArray( new String[parameterNames.size()] ), parameterTypes
-                    .toArray( new Class<?>[parameterTypes.size()] ) );
+              parameterNames.toArray( new String[parameterNames.size()] ), parameterTypes
+                .toArray( new Class<?>[parameterTypes.size()] ) );
             data.expressionEvaluators[m].setReturnType( Object.class );
             data.expressionEvaluators[m].setThrownExceptions( new Class<?>[] { Exception.class } );
             data.expressionEvaluators[m].cook( fn.getFormula() );
           } else {
             throw new KettleException( "Unable to find field name for formula ["
-                + Const.NVL( fn.getFormula(), "" ) + "]" );
+              + Const.NVL( fn.getFormula(), "" ) + "]" );
           }
         }
       }
@@ -221,58 +222,58 @@ public class Janino extends BaseStep implements StepInterface {
             data.returnType[i] = JaninoData.RETURN_TYPE_STRING;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_STRING ) {
               throw new KettleValueException( "Please specify a String type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           } else if ( formulaResult instanceof Integer ) {
             data.returnType[i] = JaninoData.RETURN_TYPE_INTEGER;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER ) {
               throw new KettleValueException( "Please specify an Integer type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           } else if ( formulaResult instanceof Long ) {
             data.returnType[i] = JaninoData.RETURN_TYPE_LONG;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER ) {
               throw new KettleValueException( "Please specify an Integer type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           } else if ( formulaResult instanceof BigDecimal ) { // BigDecimal must be before Number since this is also
                                                               // instanceof Number
             data.returnType[i] = JaninoData.RETURN_TYPE_BIGDECIMAL;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_BIGNUMBER ) {
               throw new KettleValueException( "Please specify a BigNumber type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           } else if ( formulaResult instanceof Number ) {
             data.returnType[i] = JaninoData.RETURN_TYPE_NUMBER;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_NUMBER ) {
               throw new KettleValueException( "Please specify a Number type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           } else if ( formulaResult instanceof Date ) {
             data.returnType[i] = JaninoData.RETURN_TYPE_DATE;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_DATE ) {
               throw new KettleValueException( "Please specify a Date type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           } else if ( formulaResult instanceof byte[] ) {
             data.returnType[i] = JaninoData.RETURN_TYPE_BYTE_ARRAY;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_BINARY ) {
               throw new KettleValueException( "Please specify a Binary type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           } else if ( formulaResult instanceof Boolean ) {
             data.returnType[i] = JaninoData.RETURN_TYPE_BOOLEAN;
             if ( fn.getValueType() != ValueMetaInterface.TYPE_BOOLEAN ) {
               throw new KettleValueException( "Please specify a Boolean type to parse ["
-                  + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
-                  + "] as a result of formula [" + fn.getFormula() + "]" );
+                + formulaResult.getClass().getName() + "] for field [" + fn.getFieldName()
+                + "] as a result of formula [" + fn.getFormula() + "]" );
             }
           }
         }

@@ -96,8 +96,8 @@ public class StringEvaluatorTest extends TestCase {
   }
 
   private String[] series4 = new String[] {
-      "01234,56     ", "             ", "98765,43     ", "12394,26     ", "01934,34     ", "19245,23     ",
-      "00045,67     ", };
+    "01234,56     ", "             ", "98765,43     ", "12394,26     ", "01934,34     ", "19245,23     ",
+    "00045,67     ", };
 
   public void testSeries4() throws Exception {
     StringEvaluator evaluator = new StringEvaluator( true );
@@ -126,7 +126,7 @@ public class StringEvaluatorTest extends TestCase {
     assertEquals( "Not a number detected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType() );
     assertEquals( "Precision not correct", 2, result.getConversionMeta().getPrecision() );
     assertEquals( "Currency format mask is incorrect", "$#,##0.00;($#,##0.00)", result
-        .getConversionMeta().getConversionMask() );
+      .getConversionMeta().getConversionMask() );
   }
 
   public void testCurrencyData_UK() {

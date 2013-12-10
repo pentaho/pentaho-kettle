@@ -44,14 +44,14 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
 /**
- * 
+ *
  * On page one we select the username and password. We also provide a test button.
- * 
+ *
  * @author Matt
  * @since 04-apr-2005
  */
 public class CreateDatabaseWizardPage2 extends WizardPage {
-  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlUsername;
   private Text wUsername;

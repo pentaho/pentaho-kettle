@@ -18,8 +18,8 @@ public class BaseStepTest {
   @Before
   public void setup() {
     mockHelper =
-        new StepMockHelper<StepMetaInterface, StepDataInterface>(
-            "BASE STEP", StepMetaInterface.class, StepDataInterface.class );
+      new StepMockHelper<StepMetaInterface, StepDataInterface>(
+        "BASE STEP", StepMetaInterface.class, StepDataInterface.class );
   }
 
   @After
@@ -30,15 +30,15 @@ public class BaseStepTest {
   @Test
   public void testBaseStepGetLogLevelWontThrowNPEWithNullLog() {
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenAnswer(
-        new Answer<LogChannelInterface>() {
+      new Answer<LogChannelInterface>() {
 
-          @Override
-          public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
-            ( (BaseStep) invocation.getArguments()[0] ).getLogLevel();
-            return mockHelper.logChannelInterface;
-          }
-        } );
+        @Override
+        public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
+          ( (BaseStep) invocation.getArguments()[0] ).getLogLevel();
+          return mockHelper.logChannelInterface;
+        }
+      } );
     new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans )
-        .getLogLevel();
+      .getLogLevel();
   }
 }

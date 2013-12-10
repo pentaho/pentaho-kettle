@@ -49,7 +49,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the NullIf step.
- * 
+ *
  * @author Sven Boden
  */
 public class NullIfTest extends TestCase {
@@ -57,7 +57,7 @@ public class NullIfTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ), };
+    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

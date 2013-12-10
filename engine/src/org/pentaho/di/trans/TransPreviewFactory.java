@@ -31,7 +31,7 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 public class TransPreviewFactory {
   public static final TransMeta generatePreviewTransformation( VariableSpace parent, StepMetaInterface oneMeta,
-      String oneStepname ) {
+    String oneStepname ) {
     PluginRegistry registry = PluginRegistry.getInstance();
 
     TransMeta previewMeta = new TransMeta( parent );

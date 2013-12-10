@@ -70,9 +70,8 @@ public class TransformationResource {
     int lastLineNr = KettleLogStore.getLastBufferLineNr();
     Trans trans = CarteResource.getTransformation( id );
     String logText =
-        KettleLogStore
-            .getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr )
-            .toString();
+      KettleLogStore.getAppender().getBuffer(
+        trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
     return logText;
   }
 
@@ -112,7 +111,7 @@ public class TransformationResource {
 
       String carteObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject servletLoggingObject =
-          new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
+        new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
       servletLoggingObject.setLogLevel( trans.getLogLevel() );
       trans.setParent( servletLoggingObject );
@@ -133,7 +132,7 @@ public class TransformationResource {
 
       CarteObjectEntry entry = CarteResource.getCarteObjectEntry( id );
       TransConfiguration transConfiguration =
-          CarteSingleton.getInstance().getTransformationMap().getConfiguration( entry );
+        CarteSingleton.getInstance().getTransformationMap().getConfiguration( entry );
       TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
       // Set the appropriate logging, variables, arguments, replay date, ...
       // etc.
@@ -205,7 +204,8 @@ public class TransformationResource {
     try {
       transConfiguration = TransConfiguration.fromXML( xml.toString() );
       TransMeta transMeta = transConfiguration.getTransMeta();
-      TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
+      TransExecutionConfiguration transExecutionConfiguration =
+        transConfiguration.getTransExecutionConfiguration();
       transMeta.setLogLevel( transExecutionConfiguration.getLogLevel() );
       LogChannelInterface log = CarteSingleton.getInstance().getLog();
       if ( log.isDetailed() ) {
@@ -228,7 +228,7 @@ public class TransformationResource {
 
       String carteObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject servletLoggingObject =
-          new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
+        new SimpleLoggingObject( getClass().getName(), LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
       servletLoggingObject.setLogLevel( executionConfiguration.getLogLevel() );
 
@@ -240,7 +240,7 @@ public class TransformationResource {
       trans.setSocketRepository( CarteSingleton.getInstance().getSocketRepository() );
 
       CarteSingleton.getInstance().getTransformationMap().addTransformation(
-          transMeta.getName(), carteObjectId, trans, transConfiguration );
+        transMeta.getName(), carteObjectId, trans, transConfiguration );
       trans.setContainerObjectId( carteObjectId );
 
       if ( repository != null ) {

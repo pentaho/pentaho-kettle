@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * Metadata injection interface for the Fixed File Input step.
- * 
+ *
  * @author Matt
  */
 public class FixedInputMetaInjection implements StepMetaInjectionInterface {
@@ -52,22 +52,23 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
     // Add the fields...
     //
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
+      new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS
+        .getDescription() );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
+      new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
     fieldsEntry.getDetails().add( fieldEntry );
 
     for ( Entry entry : Entry.values() ) {
       if ( entry.getParent() == Entry.FIELD ) {
         StepInjectionMetaEntry metaEntry =
-            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
         fieldEntry.getDetails().add( metaEntry );
       } else {
         if ( entry.getParent() == null && entry != Entry.FIELDS && entry != Entry.FIELD ) {
           StepInjectionMetaEntry metaEntry =
-              new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
           all.add( metaEntry );
         }
       }
@@ -189,9 +190,9 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     FIELDS( ValueMetaInterface.TYPE_NONE, "All the data fields in the fixed width file" ), FIELD(
-        ValueMetaInterface.TYPE_NONE, "One data field" ),
+      ValueMetaInterface.TYPE_NONE, "One data field" ),
 
-    NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), TYPE(
+      NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), TYPE(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field data type" ), WIDTH(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field width" ), LENGTH(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field length" ), PRECISION(
@@ -202,7 +203,7 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
         FIELD, ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ), GROUP(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field group symbol" ),
 
-    FILENAME( ValueMetaInterface.TYPE_STRING, "Filename" ), HEADER_PRESENT(
+      FILENAME( ValueMetaInterface.TYPE_STRING, "Filename" ), HEADER_PRESENT(
         ValueMetaInterface.TYPE_STRING, "Header present? (Y/N)" ), LINE_WIDTH(
         ValueMetaInterface.TYPE_STRING, "The line width" ), BUFFER_SIZE(
         ValueMetaInterface.TYPE_STRING, "The buffer size" ), LAZY_CONVERSION_ACTIVE(

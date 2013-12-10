@@ -40,19 +40,19 @@ public class UISecurityUserTest {
     /*
      * roles.add(adminRole); roles.add(anonymousRole); roles.add(authenticatedRole); roles.add(ceoRole);
      * roles.add(ctoRole); roles.add(devRole); roles.add(devmgrRole); roles.add(isRole);
-     * 
+     *
      * joeUser = new UserInfo("joe", "password", "joe","joe", true); patUser = new UserInfo("pat", "password",
      * "pat","pat", true); suzyUser = new UserInfo("suzy", "password", "suzy","suzy", true); tiffanyUser = new
      * UserInfo("tiffany", "password", "tiffany","tiffany", true);
-     * 
+     *
      * joeUser.addRole(roles.get(0)); joeUser.addRole(roles.get(2)); joeUser.addRole(roles.get(3));
-     * 
+     *
      * suzyUser.addRole(roles.get(2)); suzyUser.addRole(roles.get(4)); suzyUser.addRole(roles.get(7));
-     * 
+     *
      * patUser.addRole(roles.get(2)); patUser.addRole(roles.get(5));
-     * 
+     *
      * tiffanyUser.addRole(roles.get(2)); tiffanyUser.addRole(roles.get(5)); tiffanyUser.addRole(roles.get(6));
-     * 
+     *
      * users.add(joeUser); users.add(patUser); users.add(suzyUser); users.add(tiffanyUser);
      */
   }

@@ -31,7 +31,7 @@ import org.pentaho.di.pan.CommandLineOption;
 
 /**
  * Kitchen Tests
- * 
+ *
  * @author jganoff
  */
 public class KitchenTest extends TestCase {
@@ -52,7 +52,7 @@ public class KitchenTest extends TestCase {
       fail( "Argument should not be parsable" );
     } catch ( KettleException expected ) {
       assertTrue( "Error is not as expected: " + expected.getMessage(), expected.getMessage().contains(
-          "ERROR: maxloglines" ) );
+        "ERROR: maxloglines" ) );
     }
   }
 
@@ -72,7 +72,7 @@ public class KitchenTest extends TestCase {
       fail( "Argument should not be parsable" );
     } catch ( KettleException expected ) {
       assertTrue( "Error is not as expected: " + expected.getMessage(), expected.getMessage().contains(
-          "ERROR: maxlogtimeout" ) );
+        "ERROR: maxlogtimeout" ) );
     }
   }
 
@@ -84,9 +84,9 @@ public class KitchenTest extends TestCase {
     final int maxNrLines = KettleLogStore.getAppender().getMaxNrLines() + 50;
     final String maxLogLinesArg = String.valueOf( maxNrLines );
     CommandLineOption maxLogLinesOption =
-        new CommandLineOption( "maxloglines", null, new StringBuffer( maxLogLinesArg ) );
+      new CommandLineOption( "maxloglines", null, new StringBuffer( maxLogLinesArg ) );
     CommandLineOption maxLogTimeoutOption =
-        new CommandLineOption( "maxlogtimeout", null, new StringBuffer( maxLogTimeoutArg ) );
+      new CommandLineOption( "maxlogtimeout", null, new StringBuffer( maxLogTimeoutArg ) );
     // Configure logging with the new options
     Kitchen.configureLogging( maxLogLinesOption, maxLogTimeoutOption );
     assertEquals( maxNrLines, KettleLogStore.getAppender().getMaxNrLines() );

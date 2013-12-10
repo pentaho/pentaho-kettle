@@ -158,12 +158,16 @@ public class SequenceMetaTests {
     final String sequenceName = "sequence_name";
 
     databaseInterface = new OracleDatabaseMeta();
-    assertEquals( "SELECT sequence_name.nextval FROM dual", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "SELECT sequence_name.currval FROM DUAL", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT sequence_name.nextval FROM dual", databaseInterface
+      .getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "SELECT sequence_name.currval FROM DUAL", databaseInterface
+      .getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new OracleRDBDatabaseMeta();
-    assertEquals( "SELECT sequence_name.nextval FROM dual", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "SELECT sequence_name.currval FROM DUAL", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT sequence_name.nextval FROM dual", databaseInterface
+      .getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "SELECT sequence_name.currval FROM DUAL", databaseInterface
+      .getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new VerticaDatabaseMeta();
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
@@ -171,31 +175,33 @@ public class SequenceMetaTests {
 
     databaseInterface = new PostgreSQLDatabaseMeta();
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "SELECT last_value FROM sequence_name", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT last_value FROM sequence_name", databaseInterface
+      .getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new GreenplumDatabaseMeta();
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "SELECT last_value FROM sequence_name", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT last_value FROM sequence_name", databaseInterface
+      .getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new AS400DatabaseMeta();
     assertEquals( "SELECT NEXT VALUE FOR sequence_name FROM SYSIBM.SYSDUMMY1", databaseInterface
-        .getSQLNextSequenceValue( sequenceName ) );
+      .getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "SELECT PREVIOUS VALUE FOR sequence_name FROM SYSIBM.SYSDUMMY1", databaseInterface
-        .getSQLCurrentSequenceValue( sequenceName ) );
+      .getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new DB2DatabaseMeta();
     assertEquals( "SELECT NEXT VALUE FOR sequence_name FROM SYSIBM.SYSDUMMY1", databaseInterface
-        .getSQLNextSequenceValue( sequenceName ) );
+      .getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "SELECT PREVIOUS VALUE FOR sequence_name FROM SYSIBM.SYSDUMMY1", databaseInterface
-        .getSQLCurrentSequenceValue( sequenceName ) );
+      .getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new HypersonicDatabaseMeta();
-    assertEquals(
-        "SELECT NEXT VALUE FOR sequence_name FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'SEQUENCE_NAME'",
-        databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals(
-        "SELECT sequence_name.currval FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'SEQUENCE_NAME'",
-        databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT NEXT VALUE FOR sequence_name "
+      + "FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'SEQUENCE_NAME'",
+      databaseInterface.getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "SELECT sequence_name.currval "
+      + "FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'SEQUENCE_NAME'",
+      databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new KingbaseESDatabaseMeta();
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
@@ -203,7 +209,8 @@ public class SequenceMetaTests {
 
     databaseInterface = new NetezzaDatabaseMeta();
     assertEquals( "select nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "select last_value from sequence_name", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "select last_value from sequence_name", databaseInterface
+      .getSQLCurrentSequenceValue( sequenceName ) );
 
     // the rest of the database metas say they don't support sequences
 

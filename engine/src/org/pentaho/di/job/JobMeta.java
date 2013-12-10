@@ -123,16 +123,16 @@ import org.w3c.dom.Node;
  * repository, or it is generated dynamically. The declared parameters of the job definition are then queried using
  * listParameters() and assigned values using calls to setParameterValue(..). JobMeta provides methods to load, save,
  * verify, etc.
- * 
+ *
  * @author Matt
  * @since 11-08-2003
- * 
+ *
  */
 public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface,
-    HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface, HasSlaveServersInterface,
-    NamedParams, RepositoryElementInterface, LoggingObjectInterface, HasRepositoryInterface, AttributesInterface {
+  HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface, HasSlaveServersInterface,
+  NamedParams, RepositoryElementInterface, LoggingObjectInterface, HasRepositoryInterface, AttributesInterface {
 
-  private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "job";
 
@@ -258,7 +258,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Instantiates a new job meta.
-   * 
+   *
    */
   public JobMeta() {
     clear();
@@ -267,7 +267,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryElementInterface#getObjectId()
    */
   public ObjectId getObjectId() {
@@ -276,7 +276,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.EngineMetaInterface#setObjectId(org.pentaho.di.repository.ObjectId)
    */
   public void setObjectId( ObjectId objectId ) {
@@ -305,7 +305,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     for ( PluginInterface plugin : plugins ) {
       try {
         LogTablePluginInterface logTablePluginInterface =
-            (LogTablePluginInterface) PluginRegistry.getInstance().loadClass( plugin );
+          (LogTablePluginInterface) PluginRegistry.getInstance().loadClass( plugin );
         if ( logTablePluginInterface.getType() == TableType.JOB ) {
           logTablePluginInterface.setContext( this, this );
           extraLogTables.add( logTablePluginInterface );
@@ -357,7 +357,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Creates the start entry.
-   * 
+   *
    * @return the job entry copy
    */
   public static final JobEntryCopy createStartEntry() {
@@ -374,7 +374,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Creates the dummy entry.
-   * 
+   *
    * @return the job entry copy
    */
   public static final JobEntryCopy createDummyEntry() {
@@ -390,7 +390,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the start.
-   * 
+   *
    * @return the start
    */
   public JobEntryCopy getStart() {
@@ -405,7 +405,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the dummy.
-   * 
+   *
    * @return the dummy
    */
   public JobEntryCopy getDummy() {
@@ -464,7 +464,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Compares this job's meta-data to the specified job's meta-data. This method simply calls compare(this, o)
-   * 
+   *
    * @param o
    *          the o
    * @return the int
@@ -479,7 +479,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    * Checks whether this job's meta-data object is equal to the specified object. If the specified object is not an
    * instance of JobMeta, false is returned. Otherwise the method returns whether a call to compare() indicates equality
    * (i.e. compare(this, (JobMeta)obj)==0).
-   * 
+   *
    * @param obj
    *          the obj
    * @return true, if successful
@@ -496,7 +496,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Clones the job meta-data object.
-   * 
+   *
    * @return a clone of the job meta-data object
    * @see java.lang.Object#clone()
    */
@@ -508,7 +508,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    * Perform a real clone of the job meta-data object, including cloning all lists and copying all values. If the
    * doClear parameter is true, the clone will be cleared of ALL values before the copy. If false, only the copied
    * fields will be cleared.
-   * 
+   *
    * @param doClear
    *          Whether to clear all of the clone's data before copying from the source object
    * @return a real clone of the calling object
@@ -553,7 +553,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.EngineMetaInterface#getName()
    */
   public String getName() {
@@ -562,7 +562,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Set the name of the job.
-   * 
+   *
    * @param newName
    *          The new name of the job
    */
@@ -583,7 +583,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the directory.
-   * 
+   *
    * @return Returns the directory.
    */
   public RepositoryDirectoryInterface getRepositoryDirectory() {
@@ -592,7 +592,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the directory.
-   * 
+   *
    * @param directory
    *          The directory to set.
    */
@@ -603,7 +603,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the filename.
-   * 
+   *
    * @return filename
    * @see org.pentaho.di.core.EngineMetaInterface#getFilename()
    */
@@ -613,7 +613,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Set the filename of the job
-   * 
+   *
    * @param newFilename
    *          The new filename of the job
    */
@@ -625,7 +625,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job log table.
-   * 
+   *
    * @return the job log table
    */
   public JobLogTable getJobLogTable() {
@@ -634,7 +634,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the job log table.
-   * 
+   *
    * @param jobLogTable
    *          the new job log table
    */
@@ -644,7 +644,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Returns a list of the databases.
-   * 
+   *
    * @return Returns the databases.
    */
   public List<DatabaseMeta> getDatabases() {
@@ -653,7 +653,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the database names.
-   * 
+   *
    * @return the database names
    */
   public String[] getDatabaseNames() {
@@ -666,7 +666,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the databases.
-   * 
+   *
    * @param databases
    *          The databases to set.
    */
@@ -677,7 +677,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.changed.ChangedFlag#setChanged(boolean)
    */
   public void setChanged( boolean ch ) {
@@ -691,7 +691,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Clears the different changed flags of the job.
-   * 
+   *
    */
   public void clearChanged() {
     changedEntries = false;
@@ -720,7 +720,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.changed.ChangedFlag#hasChanged()
    */
   public boolean hasChanged() {
@@ -766,7 +766,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   /**
    * This method asks all steps in the transformation whether or not the specified database connection is used. The
    * connection is used in the transformation if any of the steps uses it or if it is being used to log to.
-   * 
+   *
    * @param databaseMeta
    *          The connection to check
    * @return true if the connection is used in this transformation.
@@ -777,7 +777,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.EngineMetaInterface#getFileType()
    */
   public String getFileType() {
@@ -786,7 +786,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job filter names.
-   * 
+   *
    * @return the filter names
    * @see org.pentaho.di.core.EngineMetaInterface#getFilterNames()
    */
@@ -796,7 +796,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job filter extensions. For JobMeta, this method returns the value of {@link Const.STRING_JOB_FILTER_EXT}
-   * 
+   *
    * @return the filter extensions
    * @see org.pentaho.di.core.EngineMetaInterface#getFilterExtensions()
    */
@@ -807,7 +807,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   /**
    * Gets the default extension for a job. For JobMeta, this method returns the value of
    * {@link Const#STRING_JOB_DEFAULT_EXT}
-   * 
+   *
    * @return the default extension
    * @see org.pentaho.di.core.EngineMetaInterface#getDefaultExtension()
    */
@@ -817,7 +817,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.xml.XMLInterface#getXML()
    */
   public String getXML() {
@@ -841,9 +841,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
     retval.append( "  " ).append( XMLHandler.addTagValue( "directory", directory.getPath() ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_user", created_user ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( created_date ) ) ); //$NON-NLS-3$
+    retval
+      .append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( created_date ) ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) ); //$NON-NLS-3$
+    retval
+      .append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     String[] parameters = listParameters();
@@ -852,9 +854,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
       try {
         retval.append( "            " ).append(
-            XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
+          XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
         retval.append( "            " ).append(
-            XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
+          XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
       } catch ( UnknownParamException e ) {
         // skip the default value and/or description. This exception should never happen because we use listParameters()
         // above.
@@ -892,7 +894,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     }
 
     retval.append( "   " ).append( XMLHandler.addTagValue( "pass_batchid", batchIdPassed ) );
-    retval.append( "   " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) ); // $NON-NLS-1$
+    retval.append( "   " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) );
 
     retval.append( "  <entries>" ).append( Const.CR );
     for ( int i = 0; i < nrJobEntries(); i++ ) {
@@ -927,7 +929,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Instantiates a new job meta.
-   * 
+   *
    * @param fname
    *          the fname
    * @param rep
@@ -941,7 +943,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Instantiates a new job meta.
-   * 
+   *
    * @param fname
    *          the fname
    * @param rep
@@ -957,7 +959,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Load the job from the XML file specified.
-   * 
+   *
    * @param log
    *          the logging channel
    * @param fname
@@ -974,7 +976,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Load the job from the XML file specified.
-   * 
+   *
    * @param log
    *          the logging channel
    * @param fname
@@ -984,7 +986,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    * @throws KettleXMLException
    */
   public JobMeta( VariableSpace parentSpace, String fname, Repository rep, IMetaStore metaStore,
-      OverwritePrompter prompter ) throws KettleXMLException {
+    OverwritePrompter prompter ) throws KettleXMLException {
     this.initializeVariablesFrom( parentSpace );
     this.metaStore = metaStore;
     try {
@@ -997,17 +999,17 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         loadXML( jobnode, fname, rep, prompter );
       } else {
         throw new KettleXMLException( BaseMessages.getString( PKG, "JobMeta.Exception.ErrorReadingFromXMLFile" )
-            + fname );
+          + fname );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "JobMeta.Exception.UnableToLoadJobFromXMLFile" )
-          + fname + "]", e );
+        + fname + "]", e );
     }
   }
 
   /**
    * Instantiates a new job meta.
-   * 
+   *
    * @param inputStream
    *          the input stream
    * @param rep
@@ -1024,7 +1026,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Create a new JobMeta object by loading it from a a DOM node.
-   * 
+   *
    * @param jobnode
    *          The node to load from
    * @param rep
@@ -1039,7 +1041,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Create a new JobMeta object by loading it from a a DOM node.
-   * 
+   *
    * @param jobnode
    *          The node to load from
    * @param rep
@@ -1057,7 +1059,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks if is rep reference.
-   * 
+   *
    * @return true, if is rep reference
    */
   public boolean isRepReference() {
@@ -1066,7 +1068,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks if is file reference.
-   * 
+   *
    * @return true, if is file reference
    */
   public boolean isFileReference() {
@@ -1075,7 +1077,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks if is rep reference.
-   * 
+   *
    * @param fileName
    *          the file name
    * @param transName
@@ -1088,7 +1090,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks if is file reference.
-   * 
+   *
    * @param fileName
    *          the file name
    * @param transName
@@ -1101,7 +1103,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Load xml.
-   * 
+   *
    * @param jobnode
    *          the jobnode
    * @param rep
@@ -1117,7 +1119,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Load xml.
-   * 
+   *
    * @param jobnode
    *          the jobnode
    * @param fname
@@ -1136,7 +1138,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Load a block of XML from an DOM node.
-   * 
+   *
    * @param jobnode
    *          The node to load from
    * @param rep
@@ -1147,14 +1149,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    *          The prompter to use in case a shared object gets overwritten
    * @throws KettleXMLException
    */
-  public void loadXML( Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter )
-    throws KettleXMLException {
+  public void loadXML( Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects,
+    OverwritePrompter prompter ) throws KettleXMLException {
     loadXML( jobnode, null, rep, ignoreRepositorySharedObjects, prompter );
   }
 
   /**
    * Load a block of XML from an DOM node.
-   * 
+   *
    * @param jobnode
    *          The node to load from
    * @param fname
@@ -1170,13 +1172,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    */
   @Deprecated
   public void loadXML( Node jobnode, String fname, Repository rep, boolean ignoreRepositorySharedObjects,
-      OverwritePrompter prompter ) throws KettleXMLException {
+    OverwritePrompter prompter ) throws KettleXMLException {
     loadXML( jobnode, fname, rep, null, ignoreRepositorySharedObjects, prompter );
   }
 
   /**
    * Load a block of XML from an DOM node.
-   * 
+   *
    * @param jobnode
    *          The node to load from
    * @param fname
@@ -1192,7 +1194,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    * @throws KettleXMLException
    */
   public void loadXML( Node jobnode, String fname, Repository rep, IMetaStore metaStore,
-      boolean ignoreRepositorySharedObjects, OverwritePrompter prompter ) throws KettleXMLException {
+    boolean ignoreRepositorySharedObjects, OverwritePrompter prompter ) throws KettleXMLException {
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -1262,8 +1264,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
           sharedObjects = rep.readJobMetaSharedObjects( this );
         }
       } catch ( Exception e ) {
-        throw new KettleXMLException( BaseMessages.getString( PKG, "JobMeta.ErrorReadingSharedObjects.Message" ), e ); // $NON-NLS-1$
-                                                                                                                       // //
+        throw new KettleXMLException(
+          BaseMessages.getString( PKG, "JobMeta.ErrorReadingSharedObjects.Message" ), e );
+        // //
       }
 
       // Read the named parameters.
@@ -1300,12 +1303,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
             boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
             if ( askOverwrite && prompter != null ) {
               overwrite =
-                  prompter
-                      .overwritePrompt(
-                          BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon
-                              .getName() ), BaseMessages.getString(
-                              PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
-                          Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
+                prompter.overwritePrompt(
+                  BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon
+                    .getName() ), BaseMessages.getString(
+                    PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
+                  Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
             }
 
             if ( overwrite ) {
@@ -1437,7 +1439,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
       clearChanged();
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobMeta.Exception.UnableToLoadJobFromXMLNode" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "JobMeta.Exception.UnableToLoadJobFromXMLNode" ), e );
     } finally {
       setInternalKettleVariables();
     }
@@ -1445,7 +1448,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Read shared objects.
-   * 
+   *
    * @return the shared objects
    * @throws KettleException
    *           the kettle exception
@@ -1479,7 +1482,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.EngineMetaInterface#saveSharedObjects()
    */
   public void saveSharedObjects() throws KettleException {
@@ -1510,7 +1513,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find a database connection by it's name
-   * 
+   *
    * @param name
    *          The database name to look for
    * @return The database connection or null if nothing was found.
@@ -1527,7 +1530,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job entry copy.
-   * 
+   *
    * @param x
    *          the x
    * @param y
@@ -1555,7 +1558,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Nr job entries.
-   * 
+   *
    * @return the int
    */
   public int nrJobEntries() {
@@ -1564,7 +1567,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Nr job hops.
-   * 
+   *
    * @return the int
    */
   public int nrJobHops() {
@@ -1573,7 +1576,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Nr notes.
-   * 
+   *
    * @return the int
    */
   public int nrNotes() {
@@ -1582,7 +1585,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#nrDatabases()
    */
   public int nrDatabases() {
@@ -1591,7 +1594,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job hop.
-   * 
+   *
    * @param i
    *          the i
    * @return the job hop
@@ -1602,7 +1605,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job entry.
-   * 
+   *
    * @param i
    *          the i
    * @return the job entry
@@ -1613,7 +1616,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the note.
-   * 
+   *
    * @param i
    *          the i
    * @return the note
@@ -1624,7 +1627,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#getDatabase(int)
    */
   public DatabaseMeta getDatabase( int i ) {
@@ -1633,7 +1636,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the job entry.
-   * 
+   *
    * @param je
    *          the je
    */
@@ -1645,7 +1648,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the job hop.
-   * 
+   *
    * @param hi
    *          the hi
    */
@@ -1656,7 +1659,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the note.
-   * 
+   *
    * @param ni
    *          the ni
    */
@@ -1667,7 +1670,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#addDatabase(org.pentaho.di.core.database.DatabaseMeta)
    */
   public void addDatabase( DatabaseMeta ci ) {
@@ -1678,7 +1681,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the job entry.
-   * 
+   *
    * @param p
    *          the p
    * @param si
@@ -1691,7 +1694,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the job hop.
-   * 
+   *
    * @param p
    *          the p
    * @param hi
@@ -1704,7 +1707,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the note.
-   * 
+   *
    * @param p
    *          the p
    * @param ni
@@ -1717,7 +1720,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#addDatabase(int, org.pentaho.di.core.database.DatabaseMeta)
    */
   public void addDatabase( int p, DatabaseMeta ci ) {
@@ -1727,7 +1730,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(org.pentaho.di.core.database.DatabaseMeta)
    */
   public void addOrReplaceDatabase( DatabaseMeta databaseMeta ) {
@@ -1743,7 +1746,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Add a new slave server to the transformation if that didn't exist yet. Otherwise, replace it.
-   * 
+   *
    * @param slaveServer
    *          The slave server to be added.
    */
@@ -1760,7 +1763,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Removes the job entry.
-   * 
+   *
    * @param i
    *          the i
    */
@@ -1771,7 +1774,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Removes the job hop.
-   * 
+   *
    * @param i
    *          the i
    */
@@ -1782,7 +1785,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Removes the note.
-   * 
+   *
    * @param i
    *          the i
    */
@@ -1793,7 +1796,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Raise note.
-   * 
+   *
    * @param p
    *          the p
    */
@@ -1808,7 +1811,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Lower note.
-   * 
+   *
    * @param p
    *          the p
    */
@@ -1823,7 +1826,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#removeDatabase(int)
    */
   public void removeDatabase( int i ) {
@@ -1836,7 +1839,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Index of job hop.
-   * 
+   *
    * @param he
    *          the he
    * @return the int
@@ -1847,7 +1850,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Index of note.
-   * 
+   *
    * @param ni
    *          the ni
    * @return the int
@@ -1858,7 +1861,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Index of job entry.
-   * 
+   *
    * @param ge
    *          the ge
    * @return the int
@@ -1869,7 +1872,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#indexOfDatabase(org.pentaho.di.core.database.DatabaseMeta)
    */
   public int indexOfDatabase( DatabaseMeta di ) {
@@ -1878,7 +1881,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the job entry.
-   * 
+   *
    * @param idx
    *          the idx
    * @param jec
@@ -1890,7 +1893,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find an existing JobEntryCopy by it's name and number
-   * 
+   *
    * @param name
    *          The name of the job entry copy
    * @param nr
@@ -1911,7 +1914,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find job entry.
-   * 
+   *
    * @param full_name_nr
    *          the full_name_nr
    * @return the job entry copy
@@ -1930,7 +1933,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find job hop.
-   * 
+   *
    * @param name
    *          the name
    * @return the job hop meta
@@ -1948,7 +1951,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find job hop from.
-   * 
+   *
    * @param jge
    *          the jge
    * @return the job hop meta
@@ -1969,7 +1972,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find job hop.
-   * 
+   *
    * @param from
    *          the from
    * @param to
@@ -1982,7 +1985,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find job hop.
-   * 
+   *
    * @param from
    *          the from
    * @param to
@@ -1995,8 +1998,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     for ( JobHopMeta hi : jobhops ) {
       if ( hi.isEnabled() || includeDisabled ) {
         if ( hi != null
-            && hi.getFromEntry() != null && hi.getToEntry() != null && hi.getFromEntry().equals( from )
-            && hi.getToEntry().equals( to ) ) {
+          && hi.getFromEntry() != null && hi.getToEntry() != null && hi.getFromEntry().equals( from )
+          && hi.getToEntry().equals( to ) ) {
           return hi;
         }
       }
@@ -2006,7 +2009,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find job hop to.
-   * 
+   *
    * @param jge
    *          the jge
    * @return the job hop meta
@@ -2023,7 +2026,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find nr prev job entries.
-   * 
+   *
    * @param from
    *          the from
    * @return the int
@@ -2034,7 +2037,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find prev job entry.
-   * 
+   *
    * @param to
    *          the to
    * @param nr
@@ -2047,7 +2050,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find nr prev job entries.
-   * 
+   *
    * @param to
    *          the to
    * @param info
@@ -2069,7 +2072,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find prev job entry.
-   * 
+   *
    * @param to
    *          the to
    * @param nr
@@ -2096,7 +2099,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find nr next job entries.
-   * 
+   *
    * @param from
    *          the from
    * @return the int
@@ -2115,7 +2118,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find next job entry.
-   * 
+   *
    * @param from
    *          the from
    * @param cnt
@@ -2140,7 +2143,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks for loop.
-   * 
+   *
    * @param entry
    *          the entry
    * @return true, if successful
@@ -2151,7 +2154,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks for loop.
-   * 
+   *
    * @param entry
    *          the entry
    * @param lookup
@@ -2164,7 +2167,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks if is entry used in hops.
-   * 
+   *
    * @param jge
    *          the jge
    * @return true, if is entry used in hops
@@ -2180,7 +2183,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Count entries.
-   * 
+   *
    * @param name
    *          the name
    * @return the int
@@ -2201,7 +2204,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find unused nr.
-   * 
+   *
    * @param name
    *          the name
    * @return the int
@@ -2219,7 +2222,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find max nr.
-   * 
+   *
    * @param name
    *          the name
    * @return the int
@@ -2239,7 +2242,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Proposes an alternative job entry name when the original already exists...
-   * 
+   *
    * @param entryname
    *          The job entry name to find an alternative for..
    * @return The alternative stepname.
@@ -2259,7 +2262,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the all job graph entries.
-   * 
+   *
    * @param name
    *          the name
    * @return the all job graph entries
@@ -2287,7 +2290,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the all job hops using.
-   * 
+   *
    * @param name
    *          the name
    * @return the all job hops using
@@ -2299,7 +2302,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       // Look at all the hops
 
       if ( hi.getFromEntry() != null && hi.getToEntry() != null ) {
-        if ( hi.getFromEntry().getName().equalsIgnoreCase( name ) || hi.getToEntry().getName().equalsIgnoreCase( name ) ) {
+        if ( hi.getFromEntry().getName().equalsIgnoreCase( name )
+          || hi.getToEntry().getName().equalsIgnoreCase( name ) ) {
           hops.add( hi );
         }
       }
@@ -2309,7 +2313,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the note.
-   * 
+   *
    * @param x
    *          the x
    * @param y
@@ -2326,7 +2330,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       Point loc = ni.getLocation();
       Point p = new Point( loc.x, loc.y );
       if ( x >= p.x
-          && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
+        && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y
+        && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
         return ni;
       }
     }
@@ -2367,7 +2372,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#getMaxUndo()
    */
   public int getMaxUndo() {
@@ -2376,7 +2381,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#setMaxUndo(int)
    */
   public void setMaxUndo( int mu ) {
@@ -2388,7 +2393,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the undo size.
-   * 
+   *
    * @return the undo size
    */
   public int getUndoSize() {
@@ -2408,12 +2413,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#addUndo(java.lang.Object[], java.lang.Object[], int[],
    * org.pentaho.di.core.gui.Point[], org.pentaho.di.core.gui.Point[], int, boolean)
    */
   public void addUndo( Object[] from, Object[] to, int[] pos, Point[] prev, Point[] curr, int type_of_change,
-      boolean nextAlso ) {
+    boolean nextAlso ) {
     // First clean up after the current position.
     // Example: position at 3, size=5
     // 012345
@@ -2456,7 +2461,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   // get previous undo, change position
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#previousUndo()
    */
   public TransAction previousUndo() {
@@ -2473,7 +2478,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * View current undo, don't change undo position
-   * 
+   *
    * @return The current undo transaction
    */
   public TransAction viewThisUndo() {
@@ -2489,7 +2494,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   // View previous undo, don't change position
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#viewPreviousUndo()
    */
   public TransAction viewPreviousUndo() {
@@ -2504,7 +2509,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#nextUndo()
    */
   public TransAction nextUndo() {
@@ -2522,7 +2527,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#viewNextUndo()
    */
   public TransAction viewNextUndo() {
@@ -2538,7 +2543,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the maximum.
-   * 
+   *
    * @return the maximum
    */
   public Point getMaximum() {
@@ -2569,7 +2574,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Get the minimum point on the canvas of a job
-   * 
+   *
    * @return Minimum coordinate of a step in the job
    */
   public Point getMinimum() {
@@ -2612,7 +2617,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the selected locations.
-   * 
+   *
    * @return the selected locations
    */
   public Point[] getSelectedLocations() {
@@ -2628,7 +2633,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Get all the selected note locations
-   * 
+   *
    * @return The selected step and notes locations.
    */
   public Point[] getSelectedNoteLocations() {
@@ -2644,7 +2649,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the selected entries.
-   * 
+   *
    * @return the selected entries
    */
   public List<JobEntryCopy> getSelectedEntries() {
@@ -2659,7 +2664,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets a list of all selected notes.
-   * 
+   *
    * @return A list of all the selected notes.
    */
   public List<NotePadMeta> getSelectedNotes() {
@@ -2674,7 +2679,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the entry indexes.
-   * 
+   *
    * @param entries
    *          the entries
    * @return the entry indexes
@@ -2691,7 +2696,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Get an array of the locations of an array of notes
-   * 
+   *
    * @param notes
    *          An array of notes
    * @return an array of the locations of an array of notes
@@ -2708,7 +2713,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find start.
-   * 
+   *
    * @return the job entry copy
    */
   public JobEntryCopy findStart() {
@@ -2723,7 +2728,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   /**
    * Gets a textual representation of the job. If its name has been set, it will be returned, otherwise the classname is
    * returned.
-   * 
+   *
    * @return the textual representation of the job.
    */
   public String toString() {
@@ -2753,7 +2758,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the boolean value of batch id passed.
-   * 
+   *
    * @return Returns the batchIdPassed.
    */
   public boolean isBatchIdPassed() {
@@ -2762,7 +2767,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the batch id passed.
-   * 
+   *
    * @param batchIdPassed
    *          The batchIdPassed to set.
    */
@@ -2777,14 +2782,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Builds a list of all the SQL statements that this transformation needs in order to work properly.
-   * 
+   *
    * @return An ArrayList of SQLStatement objects.
    */
   public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore,
-      ProgressMonitorListener monitor ) throws KettleException {
+    ProgressMonitorListener monitor ) throws KettleException {
     if ( monitor != null ) {
       monitor.beginTask(
-          BaseMessages.getString( PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob" ), nrJobEntries() + 1 );
+        BaseMessages.getString( PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob" ), nrJobEntries() + 1 );
     }
     List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
@@ -2813,16 +2818,16 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         String sql = db.getDDL( jobLogTable.getTableName(), fields );
         if ( sql != null && sql.length() > 0 ) {
           SQLStatement stat =
-              new SQLStatement( BaseMessages.getString( PKG, "JobMeta.SQLFeedback.ThisJob" ), jobLogTable
-                  .getDatabaseMeta(), sql );
+            new SQLStatement( BaseMessages.getString( PKG, "JobMeta.SQLFeedback.ThisJob" ), jobLogTable
+              .getDatabaseMeta(), sql );
           stats.add( stat );
         }
       } catch ( KettleDatabaseException dbe ) {
         SQLStatement stat =
-            new SQLStatement( BaseMessages.getString( PKG, "JobMeta.SQLFeedback.ThisJob" ), jobLogTable
-                .getDatabaseMeta(), null );
+          new SQLStatement( BaseMessages.getString( PKG, "JobMeta.SQLFeedback.ThisJob" ), jobLogTable
+            .getDatabaseMeta(), null );
         stat.setError( BaseMessages.getString( PKG, "JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo" )
-            + dbe.getMessage() );
+          + dbe.getMessage() );
         stats.add( stat );
       } finally {
         db.disconnect();
@@ -2840,19 +2845,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   @SuppressWarnings( "deprecation" )
   private Collection<? extends SQLStatement> compatibleGetEntrySQLStatements( JobEntryInterface entry,
-      Repository repository, VariableSpace variableSpace ) throws KettleException {
+    Repository repository, VariableSpace variableSpace ) throws KettleException {
     return entry.getSQLStatements( repository, variableSpace );
   }
 
   @SuppressWarnings( "deprecation" )
   private Collection<? extends SQLStatement> compatibleGetEntrySQLStatements( JobEntryInterface entry,
-      Repository repository ) throws KettleException {
+    Repository repository ) throws KettleException {
     return entry.getSQLStatements( repository );
   }
 
   /**
    * Gets the arguments used for this job.
-   * 
+   *
    * @return Returns the arguments.
    * @deprecated Moved to the Job class
    */
@@ -2863,7 +2868,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the arguments.
-   * 
+   *
    * @param arguments
    *          The arguments to set.
    * @deprecated moved to the job class
@@ -2875,10 +2880,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Get a list of all the strings used in this job.
-   * 
+   *
    * @return A list of StringSearchResult with strings used in the job
    */
-  public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes ) {
+  public List<StringSearchResult>
+    getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes ) {
     List<StringSearchResult> stringList = new ArrayList<StringSearchResult>();
 
     if ( searchSteps ) {
@@ -2887,10 +2893,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       for ( int i = 0; i < nrJobEntries(); i++ ) {
         JobEntryCopy entryMeta = getJobEntry( i );
         stringList.add( new StringSearchResult( entryMeta.getName(), entryMeta, this, BaseMessages.getString(
-            PKG, "JobMeta.SearchMetadata.JobEntryName" ) ) );
+          PKG, "JobMeta.SearchMetadata.JobEntryName" ) ) );
         if ( entryMeta.getDescription() != null ) {
-          stringList.add( new StringSearchResult( entryMeta.getDescription(), entryMeta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.JobEntryDescription" ) ) );
+          stringList.add( new StringSearchResult( entryMeta.getDescription(), entryMeta, this, BaseMessages
+            .getString( PKG, "JobMeta.SearchMetadata.JobEntryDescription" ) ) );
         }
         JobEntryInterface metaInterface = entryMeta.getEntry();
         StringSearcher.findMetaData( metaInterface, 1, stringList, entryMeta, this );
@@ -2903,36 +2909,36 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       for ( int i = 0; i < nrDatabases(); i++ ) {
         DatabaseMeta meta = getDatabase( i );
         stringList.add( new StringSearchResult( meta.getName(), meta, this, BaseMessages.getString(
-            PKG, "JobMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+          PKG, "JobMeta.SearchMetadata.DatabaseConnectionName" ) ) );
         if ( meta.getHostname() != null ) {
           stringList.add( new StringSearchResult( meta.getHostname(), meta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.DatabaseHostName" ) ) );
+            PKG, "JobMeta.SearchMetadata.DatabaseHostName" ) ) );
         }
         if ( meta.getDatabaseName() != null ) {
           stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.DatabaseName" ) ) );
+            PKG, "JobMeta.SearchMetadata.DatabaseName" ) ) );
         }
         if ( meta.getUsername() != null ) {
           stringList.add( new StringSearchResult( meta.getUsername(), meta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.DatabaseUsername" ) ) );
+            PKG, "JobMeta.SearchMetadata.DatabaseUsername" ) ) );
         }
         if ( meta.getPluginId() != null ) {
           stringList.add( new StringSearchResult( meta.getPluginId(), meta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+            PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
         }
         if ( meta.getDatabasePortNumberString() != null ) {
           stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this, BaseMessages
-              .getString( PKG, "JobMeta.SearchMetadata.DatabasePort" ) ) );
+            .getString( PKG, "JobMeta.SearchMetadata.DatabasePort" ) ) );
         }
         if ( meta.getServername() != null ) {
           stringList.add( new StringSearchResult( meta.getServername(), meta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.DatabaseServer" ) ) );
+            PKG, "JobMeta.SearchMetadata.DatabaseServer" ) ) );
         }
         // if ( includePasswords )
         // {
         if ( meta.getPassword() != null ) {
           stringList.add( new StringSearchResult( meta.getPassword(), meta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.DatabasePassword" ) ) );
+            PKG, "JobMeta.SearchMetadata.DatabasePassword" ) ) );
           // }
         }
       }
@@ -2945,7 +2951,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         NotePadMeta meta = getNote( i );
         if ( meta.getNote() != null ) {
           stringList.add( new StringSearchResult( meta.getNote(), meta, this, BaseMessages.getString(
-              PKG, "JobMeta.SearchMetadata.NotepadText" ) ) );
+            PKG, "JobMeta.SearchMetadata.NotepadText" ) ) );
         }
       }
     }
@@ -2955,7 +2961,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the used variables.
-   * 
+   *
    * @return the used variables
    */
   public List<String> getUsedVariables() {
@@ -2974,7 +2980,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#haveConnectionsChanged()
    */
   public boolean haveConnectionsChanged() {
@@ -2993,7 +2999,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Have job entries changed.
-   * 
+   *
    * @return true, if successful
    */
   public boolean haveJobEntriesChanged() {
@@ -3012,7 +3018,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Have job hops changed.
-   * 
+   *
    * @return true, if successful
    */
   public boolean haveJobHopsChanged() {
@@ -3032,7 +3038,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Have notes changed.
-   * 
+   *
    * @return true, if successful
    */
   public boolean haveNotesChanged() {
@@ -3051,7 +3057,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the shared objects file.
-   * 
+   *
    * @return the sharedObjectsFile
    */
   public String getSharedObjectsFile() {
@@ -3060,7 +3066,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the shared objects file.
-   * 
+   *
    * @param sharedObjectsFile
    *          the sharedObjectsFile to set
    */
@@ -3070,7 +3076,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the user who last modified the job.
-   * 
+   *
    * @param modifiedUser
    *          The modifiedUser to set.
    */
@@ -3080,7 +3086,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the user who last modified the job.
-   * 
+   *
    * @return Returns the modifiedUser.
    */
   public String getModifiedUser() {
@@ -3089,7 +3095,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the date the job was modified.
-   * 
+   *
    * @param modifiedDate
    *          The modifiedDate to set.
    */
@@ -3099,7 +3105,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the date the job was last modified.
-   * 
+   *
    * @return Returns the modifiedDate.
    */
   public Date getModifiedDate() {
@@ -3108,7 +3114,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the description of the job.
-   * 
+   *
    * @return The description of the job
    */
   public String getDescription() {
@@ -3117,7 +3123,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the extended description of the job.
-   * 
+   *
    * @return The extended description of the job
    */
   public String getExtendedDescription() {
@@ -3126,7 +3132,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the version of the job.
-   * 
+   *
    * @return The version of the job
    */
   public String getJobversion() {
@@ -3135,7 +3141,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the status of the job.
-   * 
+   *
    * @return the status of the job
    */
   public int getJobstatus() {
@@ -3144,7 +3150,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Set the description of the job.
-   * 
+   *
    * @param description
    *          The new description of the job
    */
@@ -3154,7 +3160,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Set the description of the job.
-   * 
+   *
    * @param extendedDescription
    *          The new extended description of the job
    */
@@ -3164,7 +3170,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Set the version of the job.
-   * 
+   *
    * @param jobVersion
    *          The new version description of the job
    */
@@ -3174,7 +3180,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Set the status of the job.
-   * 
+   *
    * @param jobStatus
    *          The new status description of the job
    */
@@ -3184,7 +3190,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the date the job was created.
-   * 
+   *
    * @return Returns the createdDate.
    */
   public Date getCreatedDate() {
@@ -3209,7 +3215,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the user by whom the job was created.
-   * 
+   *
    * @return Returns the createdUser.
    */
   public String getCreatedUser() {
@@ -3218,7 +3224,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find a jobentry with a certain ID in a list of job entries.
-   * 
+   *
    * @param jobentries
    *          The List of jobentries
    * @param id_jobentry
@@ -3240,7 +3246,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find a jobentrycopy with a certain ID in a list of job entry copies.
-   * 
+   *
    * @param jobcopies
    *          The List of jobentry copies
    * @param id_jobentry_copy
@@ -3275,7 +3281,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     setInternalNameKettleVariable( var );
 
     // The name of the directory in the repository
-    var.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : "" );
+    var.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null
+      ? directory.getPath() : "" );
 
     // Undefine the transformation specific variables:
     // transformations can't run jobs, so if you use these they are 99.99%
@@ -3290,7 +3297,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the internal name kettle variable.
-   * 
+   *
    * @param var
    *          the new internal name kettle variable
    */
@@ -3301,7 +3308,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the internal filename kettle variables.
-   * 
+   *
    * @param var
    *          the new internal filename kettle variables
    */
@@ -3331,7 +3338,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
   public void copyVariablesFrom( VariableSpace space ) {
@@ -3340,7 +3347,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
    */
   public String environmentSubstitute( String aString ) {
@@ -3349,7 +3356,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
    */
   public String[] environmentSubstitute( String[] aString ) {
@@ -3363,7 +3370,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
    */
   public VariableSpace getParentVariableSpace() {
@@ -3372,7 +3379,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
    */
@@ -3382,7 +3389,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
    */
   public String getVariable( String variableName, String defaultValue ) {
@@ -3391,7 +3398,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
    */
   public String getVariable( String variableName ) {
@@ -3400,7 +3407,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
    */
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
@@ -3415,7 +3422,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
@@ -3425,7 +3432,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
    */
   public String[] listVariables() {
@@ -3434,7 +3441,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
    */
   public void setVariable( String variableName, String variableValue ) {
@@ -3443,7 +3450,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
    */
   public void shareVariablesWith( VariableSpace space ) {
@@ -3452,7 +3459,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
    */
   public void injectVariables( Map<String, String> prop ) {
@@ -3461,13 +3468,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   @Deprecated
   public void checkJobEntries( List<CheckResultInterface> remarks, boolean only_selected,
-      ProgressMonitorListener monitor ) {
+    ProgressMonitorListener monitor ) {
     checkJobEntries( remarks, only_selected, monitor, this, null, null );
   }
 
   /**
    * Check all job entries within the job. Each Job Entry has the opportunity to check their own settings.
-   * 
+   *
    * @param remarks
    *          List of CheckResult remarks inserted into by each JobEntry
    * @param only_selected
@@ -3476,11 +3483,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    *          Progress monitor (not presently in use)
    */
   public void checkJobEntries( List<CheckResultInterface> remarks, boolean only_selected,
-      ProgressMonitorListener monitor, VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    ProgressMonitorListener monitor, VariableSpace space, Repository repository, IMetaStore metaStore ) {
     remarks.clear(); // Empty remarks
     if ( monitor != null ) {
-      monitor.beginTask( BaseMessages.getString( PKG, "JobMeta.Monitor.VerifyingThisJobEntryTask.Title" ), jobcopies
-          .size() + 2 );
+      monitor.beginTask(
+        BaseMessages.getString( PKG, "JobMeta.Monitor.VerifyingThisJobEntryTask.Title" ), jobcopies.size() + 2 );
     }
     boolean stop_checking = false;
     for ( int i = 0; i < jobcopies.size() && !stop_checking; i++ ) {
@@ -3489,7 +3496,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         JobEntryInterface entry = copy.getEntry();
         if ( entry != null ) {
           if ( monitor != null ) {
-            monitor.subTask( BaseMessages.getString( PKG, "JobMeta.Monitor.VerifyingJobEntry.Title", entry.getName() ) );
+            monitor.subTask( BaseMessages.getString( PKG, "JobMeta.Monitor.VerifyingJobEntry.Title", entry
+              .getName() ) );
           }
           entry.check( remarks, this, space, repository, metaStore );
           compatibleEntryCheck( entry, remarks );
@@ -3517,7 +3525,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the resource dependencies.
-   * 
+   *
    * @return the resource dependencies
    */
   public List<ResourceReference> getResourceDependencies() {
@@ -3534,7 +3542,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   }
 
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException {
     String resourceName = null;
     try {
       // Handle naming for both repository and XML bases resources...
@@ -3549,9 +3558,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         originalPath = directory.getPath();
         baseName = getName();
         fullname =
-            directory.getPath()
-                + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
-                    ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; // $NON-NLS-1$ //
+          directory.getPath()
+            + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
+              ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; //
       } else {
         // Assume file
         //
@@ -3562,7 +3571,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       }
 
       resourceName =
-          namingInterface.nameResource( baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.JOB );
+        namingInterface.nameResource(
+          baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.JOB );
       ResourceDefinition definition = definitions.get( resourceName );
       if ( definition == null ) {
         // If we do this once, it will be plenty :-)
@@ -3582,7 +3592,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         // loop over steps, databases will be exported to XML anyway.
         //
         for ( JobEntryCopy jobEntry : jobMeta.jobcopies ) {
-          compatibleJobEntryExportResources( jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository );
+          compatibleJobEntryExportResources(
+            jobEntry.getEntry(), jobMeta, definitions, namingInterface, repository );
           jobEntry.getEntry().exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
         }
 
@@ -3614,25 +3625,26 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       }
     } catch ( FileSystemException e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename() ), e );
+        PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename() ), e );
     } catch ( KettleFileException e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename() ), e );
+        PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename() ), e );
     }
 
     return resourceName;
   }
 
   @SuppressWarnings( "deprecation" )
-  private void compatibleJobEntryExportResources( JobEntryInterface entry, JobMeta jobMeta,
-      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository2 )
-    throws KettleException {
+  private void
+    compatibleJobEntryExportResources( JobEntryInterface entry, JobMeta jobMeta,
+      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+      Repository repository2 ) throws KettleException {
     entry.exportResources( jobMeta, definitions, namingInterface, repository );
   }
 
   /**
    * Gets a list of slave servers.
-   * 
+   *
    * @return the slaveServer list
    */
   public List<SlaveServer> getSlaveServers() {
@@ -3641,7 +3653,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the slave servers.
-   * 
+   *
    * @param slaveServers
    *          the slaveServers to set
    */
@@ -3651,7 +3663,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Find a slave server using the name
-   * 
+   *
    * @param serverString
    *          the name of the slave server
    * @return the slave server or null if we couldn't spot an approriate entry.
@@ -3662,7 +3674,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets an array of slave server names.
-   * 
+   *
    * @return An array list slave server names
    */
   public String[] getSlaveServerNames() {
@@ -3671,7 +3683,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * See if the name of the supplied job entry copy doesn't collide with any other job entry copy in the job.
-   * 
+   *
    * @param je
    *          The job entry copy to verify the name for.
    */
@@ -3706,7 +3718,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the shared objects.
-   * 
+   *
    * @return the sharedObjects
    */
   public SharedObjects getSharedObjects() {
@@ -3715,7 +3727,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the shared objects.
-   * 
+   *
    * @param sharedObjects
    *          the sharedObjects to set
    */
@@ -3725,7 +3737,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the name changed listener.
-   * 
+   *
    * @param listener
    *          the listener
    */
@@ -3738,7 +3750,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Removes the name changed listener.
-   * 
+   *
    * @param listener
    *          the listener
    */
@@ -3748,7 +3760,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the filename changed listener.
-   * 
+   *
    * @param listener
    *          the listener
    */
@@ -3761,7 +3773,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Removes the filename changed listener.
-   * 
+   *
    * @param listener
    *          the listener
    */
@@ -3771,7 +3783,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Adds the passed ContentChangedListener to the list of listeners.
-   * 
+   *
    * @param listener
    */
   public void addContentChangedListener( ContentChangedListener listener ) {
@@ -3783,7 +3795,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Removes the passed ContentChangedListener from the list of listeners.
-   * 
+   *
    * @param listener
    */
   public void removeContentChangedListener( ContentChangedListener listener ) {
@@ -3792,7 +3804,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Name changed.
-   * 
+   *
    * @param oldFilename
    *          the old filename
    * @param newFilename
@@ -3811,7 +3823,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Fire filename changed listeners.
-   * 
+   *
    * @param oldFilename
    *          the old filename
    * @param newFilename
@@ -3829,7 +3841,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Fire name changed listeners.
-   * 
+   *
    * @param oldName
    *          the old name
    * @param newName
@@ -3861,7 +3873,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#activateParameters()
    */
   public void activateParameters() {
@@ -3891,17 +3903,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
    * java.lang.String)
    */
-  public void addParameterDefinition( String key, String defValue, String description ) throws DuplicateParamException {
+  public void addParameterDefinition( String key, String defValue, String description )
+    throws DuplicateParamException {
     namedParams.addParameterDefinition( key, defValue, description );
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDescription(java.lang.String)
    */
   public String getParameterDescription( String key ) throws UnknownParamException {
@@ -3910,7 +3923,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDefault(java.lang.String)
    */
   public String getParameterDefault( String key ) throws UnknownParamException {
@@ -3919,7 +3932,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterValue(java.lang.String)
    */
   public String getParameterValue( String key ) throws UnknownParamException {
@@ -3928,7 +3941,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#listParameters()
    */
   public String[] listParameters() {
@@ -3937,7 +3950,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#setParameterValue(java.lang.String, java.lang.String)
    */
   public void setParameterValue( String key, String value ) throws UnknownParamException {
@@ -3946,7 +3959,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#eraseParameters()
    */
   public void eraseParameters() {
@@ -3955,7 +3968,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#clearParameters()
    */
   public void clearParameters() {
@@ -3964,7 +3977,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#copyParametersFrom(org.pentaho.di.core.parameters.NamedParams)
    */
   public void copyParametersFrom( NamedParams params ) {
@@ -3973,7 +3986,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job copies.
-   * 
+   *
    * @return the job copies
    */
   public List<JobEntryCopy> getJobCopies() {
@@ -3982,7 +3995,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the notes.
-   * 
+   *
    * @return the notes
    */
   public List<NotePadMeta> getNotes() {
@@ -3991,7 +4004,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the jobhops.
-   * 
+   *
    * @return the jobhops
    */
   public List<JobHopMeta> getJobhops() {
@@ -4000,7 +4013,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryElementInterface#getRepositoryElementType()
    */
   public RepositoryObjectType getRepositoryElementType() {
@@ -4009,7 +4022,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryElementInterface#getObjectRevision()
    */
   public ObjectRevision getObjectRevision() {
@@ -4018,7 +4031,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.pentaho.di.repository.RepositoryElementInterface#setObjectRevision(org.pentaho.di.repository.ObjectRevision)
    */
@@ -4028,7 +4041,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Create a unique list of job entry interfaces
-   * 
+   *
    * @return
    */
   public List<JobEntryInterface> composeJobEntryInterfaceList() {
@@ -4045,7 +4058,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogChannelId()
    */
   public String getLogChannelId() {
@@ -4054,7 +4067,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectName()
    */
   public String getObjectName() {
@@ -4063,7 +4076,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectCopy()
    */
   public String getObjectCopy() {
@@ -4072,7 +4085,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectType()
    */
   public LoggingObjectType getObjectType() {
@@ -4081,7 +4094,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
    */
   public LoggingObjectInterface getParent() {
@@ -4090,7 +4103,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
    */
   public LogLevel getLogLevel() {
@@ -4099,7 +4112,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the log level.
-   * 
+   *
    * @param logLevel
    *          the new log level
    */
@@ -4109,7 +4122,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the channel log table for the job.
-   * 
+   *
    * @return the channel log table for the job.
    */
   public ChannelLogTable getChannelLogTable() {
@@ -4118,7 +4131,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the channel log table for the job.
-   * 
+   *
    * @param channelLogTable
    *          the channelLogTable to set
    */
@@ -4128,7 +4141,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the job entry log table.
-   * 
+   *
    * @return the jobEntryLogTable
    */
   public JobEntryLogTable getJobEntryLogTable() {
@@ -4137,7 +4150,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the job entry log table.
-   * 
+   *
    * @param jobEntryLogTable
    *          the jobEntryLogTable to set
    */
@@ -4147,7 +4160,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the log tables.
-   * 
+   *
    * @return the log tables
    */
   public List<LogTableInterface> getLogTables() {
@@ -4161,7 +4174,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks whether the job can be saved. For JobMeta, this method always returns true
-   * 
+   *
    * @return true
    * @see org.pentaho.di.core.EngineMetaInterface#canSave()
    */
@@ -4171,7 +4184,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the container object id.
-   * 
+   *
    * @return the carteObjectId
    */
   public String getContainerObjectId() {
@@ -4180,7 +4193,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the carte object id.
-   * 
+   *
    * @param containerObjectId
    *          the execution container Object id to set
    */
@@ -4190,7 +4203,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the registration date for the transformation. For jobMeta, this method always returns null.
-   * 
+   *
    * @return null
    */
   public Date getRegistrationDate() {
@@ -4199,7 +4212,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Checks whether the job has repository references.
-   * 
+   *
    * @return true if the job has repository references, false otherwise
    */
   public boolean hasRepositoryReferences() {
@@ -4213,7 +4226,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Look up the references after import
-   * 
+   *
    * @param repository
    *          the repository to reference.
    */
@@ -4227,7 +4240,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Gets the repository.
-   * 
+   *
    * @return the repository
    */
   public Repository getRepository() {
@@ -4236,7 +4249,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Sets the repository.
-   * 
+   *
    * @param repository
    *          the repository to set
    */
@@ -4246,7 +4259,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
   /**
    * Returns whether or not the job is gathering metrics. For a JobMeta this is always false.
-   * 
+   *
    * @return is gathering metrics = false;
    */
   @Override
@@ -4281,7 +4294,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   /**
    * This method needs to be called to store those objects which are used and referenced in the job metadata but not
    * saved in the serialization.
-   * 
+   *
    * @param metaStore
    *          The store to save to
    * @throws MetaStoreException

@@ -38,20 +38,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Add sequence to each input row.
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class FieldsChangeSequence extends BaseStep implements StepInterface {
   private static Class<?> PKG = FieldsChangeSequenceMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private FieldsChangeSequenceMeta meta;
   private FieldsChangeSequenceData data;
 
-  public FieldsChangeSequence( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public FieldsChangeSequence( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -81,9 +80,10 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
         for ( int i = 0; i < data.fieldnr; i++ ) {
           data.fieldnrs[i] = data.previousMeta.indexOfValue( meta.getFieldName()[i] );
           if ( data.fieldnrs[i] < 0 ) {
-            logError( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.CanNotFindField", meta.getFieldName()[i] ) );
-            throw new KettleException( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.CanNotFindField", meta
-                .getFieldName()[i] ) );
+            logError( BaseMessages.getString(
+              PKG, "FieldsChangeSequence.Log.CanNotFindField", meta.getFieldName()[i] ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "FieldsChangeSequence.Log.CanNotFindField", meta.getFieldName()[i] ) );
           }
           data.fieldnrsMeta[i] = data.previousMeta.getValueMeta( data.fieldnrs[i] );
         }
@@ -125,7 +125,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.ReadRow" )
-            + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
+          + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
       }
 
       // reserve room and add value!
@@ -137,7 +137,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.WriteRow" )
-            + getLinesWritten() + " : " + getInputRowMeta().getString( r ) );
+          + getLinesWritten() + " : " + getInputRowMeta().getString( r ) );
       }
 
       if ( checkFeedback( getLinesRead() ) ) {

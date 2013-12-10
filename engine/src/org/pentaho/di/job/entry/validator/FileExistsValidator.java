@@ -34,7 +34,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * Fails if a field's value is a filename and the file does not exist.
- * 
+ *
  * @author mlowery
  */
 public class FileExistsValidator extends AbstractFileValidator {
@@ -43,10 +43,11 @@ public class FileExistsValidator extends AbstractFileValidator {
 
   static final String VALIDATOR_NAME = "fileExists";
 
-  private static final String KEY_FAIL_IF_DOES_NOT_EXIST = "org.pentaho.di.job.entries.createfile.failIfDoesNotExist";
+  private static final String KEY_FAIL_IF_DOES_NOT_EXIST =
+    "org.pentaho.di.job.entries.createfile.failIfDoesNotExist";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context ) {
+  public boolean validate( CheckResultSourceInterface source, String propertyName,
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
 
     String filename = ValidatorUtils.getValueAsString( source, propertyName );
     VariableSpace variableSpace = getVariableSpace( source, propertyName, remarks, context );
@@ -61,8 +62,9 @@ public class FileExistsValidator extends AbstractFileValidator {
     try {
       fileObject = KettleVFS.getFileObject( realFileName, variableSpace );
       if ( fileObject == null || ( fileObject != null && !fileObject.exists() && failIfDoesNotExist ) ) {
-        JobEntryValidatorUtils.addFailureRemark( source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils
-            .getLevelOnFail( context, VALIDATOR_NAME ) );
+        JobEntryValidatorUtils.addFailureRemark(
+          source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils.getLevelOnFail(
+            context, VALIDATOR_NAME ) );
         return false;
       }
       try {
@@ -88,7 +90,7 @@ public class FileExistsValidator extends AbstractFileValidator {
   }
 
   protected boolean getFailIfDoesNotExist( CheckResultSourceInterface source, String propertyName,
-      List<CheckResultInterface> remarks, ValidatorContext context ) {
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
     Object obj = context.get( KEY_FAIL_IF_DOES_NOT_EXIST );
     if ( obj instanceof Boolean ) {
       return (Boolean) obj;

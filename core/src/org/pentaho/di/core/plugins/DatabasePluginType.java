@@ -38,9 +38,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the step plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( DatabaseInterface.class )
 @PluginAnnotationType( DatabaseMetaPlugin.class )
@@ -96,7 +96,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 
   @Override
   public void handlePluginAnnotation( Class<?> clazz, Annotation annotation, List<String> libraries,
-      boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
+    boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
     // TODO Auto-generated method stub
     super.handlePluginAnnotation( clazz, annotation, libraries, nativePluginType, pluginFolder );
   }

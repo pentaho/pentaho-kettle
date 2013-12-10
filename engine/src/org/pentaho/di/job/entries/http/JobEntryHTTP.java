@@ -73,13 +73,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an HTTP job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
- * 
+ *
  */
 public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!!
 
   private static final String URL_FIELDNAME = "URL";
 
@@ -145,7 +145,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "targetfilename", targetFilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "file_appended", fileAppended ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_added", dateTimeAdded ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "targetfilename_extention", targetFilenameExtention ) );
+    retval
+      .append( "      " ).append( XMLHandler.addTagValue( "targetfilename_extention", targetFilenameExtention ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "uploadfilename", uploadFilename ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "url_fieldname", urlFieldname ) );
@@ -153,7 +154,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_host", proxyHostname ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_port", proxyPort ) );
@@ -173,8 +174,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       url = XMLHandler.getTagValue( entrynode, "url" );
@@ -195,7 +196,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       proxyPort = XMLHandler.getTagValue( entrynode, "proxy_port" );
       nonProxyHosts = XMLHandler.getTagValue( entrynode, "non_proxy_hosts" );
       addfilenameresult =
-          "Y".equalsIgnoreCase( Const.NVL( XMLHandler.getTagValue( entrynode, "addfilenameresult" ), "Y" ) );
+        "Y".equalsIgnoreCase( Const.NVL( XMLHandler.getTagValue( entrynode, "addfilenameresult" ), "Y" ) );
       Node headers = XMLHandler.getSubNode( entrynode, "headers" );
 
       // How many field headerName?
@@ -213,7 +214,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       url = rep.getJobEntryAttributeString( id_jobentry, "url" );
       targetFilename = rep.getJobEntryAttributeString( id_jobentry, "targetfilename" );
@@ -227,14 +228,16 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       runForEveryRow = rep.getJobEntryAttributeBoolean( id_jobentry, "run_every_row" );
 
       username = rep.getJobEntryAttributeString( id_jobentry, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      password =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
 
       proxyHostname = rep.getJobEntryAttributeString( id_jobentry, "proxy_host" );
       proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxy_port" ); // backward compatible.
 
       nonProxyHosts = rep.getJobEntryAttributeString( id_jobentry, "non_proxy_hosts" );
       addfilenameresult =
-          "Y".equalsIgnoreCase( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "addfilenameresult" ), "Y" ) );
+        "Y".equalsIgnoreCase( Const
+          .NVL( rep.getJobEntryAttributeString( id_jobentry, "addfilenameresult" ), "Y" ) );
 
       // How many headerName?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "header_name" );
@@ -246,7 +249,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       }
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'HTTP' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -264,8 +267,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "run_every_row", runForEveryRow );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", username );
-      rep
-          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_host", proxyHostname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_port", proxyPort );
@@ -278,7 +281,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'HTTP' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'HTTP' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -407,7 +411,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     } else {
       resultRows = new ArrayList<RowMetaAndData>();
       RowMetaAndData row = new RowMetaAndData();
-      row.addValue( new ValueMeta( urlFieldnameToUse, ValueMetaInterface.TYPE_STRING ), environmentSubstitute( url ) );
+      row.addValue(
+        new ValueMeta( urlFieldnameToUse, ValueMetaInterface.TYPE_STRING ), environmentSubstitute( url ) );
       resultRows.add( row );
     }
 
@@ -442,8 +447,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           Authenticator.setDefault( new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
               String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
-              return new PasswordAuthentication( environmentSubstitute( username ), realPassword != null ? realPassword
-                  .toCharArray() : new char[] {} );
+              return new PasswordAuthentication( environmentSubstitute( username ), realPassword != null
+                ? realPassword.toCharArray() : new char[] {} );
             }
           } );
         }
@@ -478,11 +483,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           for ( int j = 0; j < headerName.length; j++ ) {
             if ( !Const.isEmpty( headerValue[j] ) ) {
               connection.setRequestProperty(
-                  environmentSubstitute( headerName[j] ), environmentSubstitute( headerValue[j] ) );
+                environmentSubstitute( headerName[j] ), environmentSubstitute( headerValue[j] ) );
               if ( log.isDebug() ) {
                 log.logDebug( BaseMessages.getString(
-                    PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute( headerName[j] ),
-                    environmentSubstitute( headerValue[j] ) ) );
+                  PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute( headerName[j] ),
+                  environmentSubstitute( headerValue[j] ) ) );
               }
             }
           }
@@ -542,8 +547,9 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         if ( addfilenameresult ) {
           // Add to the result files...
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realTargetFile, this ), parentJob
-                  .getJobname(), toString() );
+            new ResultFile(
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realTargetFile, this ), parentJob
+                .getJobname(), toString() );
           result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
         }
 
@@ -689,8 +695,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "targetFilename", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "targetFilenameExtention", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "uploadFilename", remarks, putValidators( notBlankValidator() ) );

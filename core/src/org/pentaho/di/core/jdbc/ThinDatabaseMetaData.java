@@ -190,11 +190,11 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getColumns( String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern )
-    throws SQLException {
+  public ResultSet getColumns( String catalog, String schemaPattern, String tableNamePattern,
+    String columnNamePattern ) throws SQLException {
 
     System.out.println( "getColumns("
-        + catalog + ", " + schemaPattern + ", " + tableNamePattern + ", " + columnNamePattern + ")" );
+      + catalog + ", " + schemaPattern + ", " + tableNamePattern + ", " + columnNamePattern + ")" );
 
     try {
 
@@ -281,8 +281,9 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getCrossReference( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5 )
-    throws SQLException {
+  public ResultSet
+    getCrossReference( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5 )
+      throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
     rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
@@ -591,9 +592,9 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   public List<ThinServiceInformation> getServiceInformation() throws SQLException {
     try {
       String xml =
-          HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
-              .getWebAppName(), serviceUrl, connection.getUsername(), connection.getPassword(), connection
-              .getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts() );
+        HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
+          .getWebAppName(), serviceUrl, connection.getUsername(), connection.getPassword(), connection
+          .getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts() );
 
       List<ThinServiceInformation> services = new ArrayList<ThinServiceInformation>();
 
@@ -1214,7 +1215,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   public ResultSet getPseudoColumns( String catalog, String schemaPattern, String tableNamePattern,
-      String columnNamePattern ) throws SQLException {
+    String columnNamePattern ) throws SQLException {
     throw new SQLException( "Method not supported" );
   }
 

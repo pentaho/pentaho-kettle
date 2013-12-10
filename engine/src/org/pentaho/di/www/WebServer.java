@@ -54,7 +54,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 public class WebServer {
-  private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!
 
   private LogChannelInterface log;
 
@@ -75,8 +75,8 @@ public class WebServer {
   private String passwordFile;
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
-      boolean join, String passwordFile ) throws Exception {
+    SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
+    boolean join, String passwordFile ) throws Exception {
     this.log = log;
     this.transformationMap = transformationMap;
     this.jobMap = jobMap;
@@ -98,14 +98,14 @@ public class WebServer {
   }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-      SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port )
+    SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port )
     throws Exception {
     this( log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true );
   }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join )
-    throws Exception {
+    SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
+    boolean join ) throws Exception {
     this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, null );
   }
 
@@ -130,7 +130,7 @@ public class WebServer {
     SecurityHandler securityHandler = new SecurityHandler();
 
     if ( System.getProperty( "loginmodulename" ) != null
-        && System.getProperty( "java.security.auth.login.config" ) != null ) {
+      && System.getProperty( "java.security.auth.login.config" ) != null ) {
       JAASUserRealm jaasRealm = new JAASUserRealm( "Kettle" );
       jaasRealm.setLoginModuleName( System.getProperty( "loginmodulename" ) );
       securityHandler.setUserRealm( jaasRealm );
@@ -177,14 +177,15 @@ public class WebServer {
     // setup jersey (REST)
     ServletHolder jerseyServletHolder = new ServletHolder( ServletContainer.class );
     jerseyServletHolder.setInitParameter(
-        "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
+      "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
     jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "org.pentaho.di.www.jaxrs" );
     root.addServlet( jerseyServletHolder, "/api/*" );
 
     // setup static resource serving
     // ResourceHandler mobileResourceHandler = new ResourceHandler();
     // mobileResourceHandler.setWelcomeFiles(new String[]{"index.html"});
-    // mobileResourceHandler.setResourceBase(getClass().getClassLoader().getResource("org/pentaho/di/www/mobile").toExternalForm());
+    // mobileResourceHandler.setResourceBase(getClass().getClassLoader().
+    //   getResource("org/pentaho/di/www/mobile").toExternalForm());
     // Context mobileContext = new Context(contexts, "/mobile", Context.SESSIONS);
     // mobileContext.setHandler(mobileResourceHandler);
 
@@ -223,7 +224,7 @@ public class WebServer {
       }
     } catch ( Exception e ) {
       log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString(
-          PKG, "WebServer.Error.FailedToStop.Msg", "" + e ) );
+        PKG, "WebServer.Error.FailedToStop.Msg", "" + e ) );
     }
   }
 

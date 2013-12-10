@@ -79,7 +79,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = JsonOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JsonOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -343,7 +343,8 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     fdlCompatibilityMode.right = new FormAttachment( middle, -margin );
     wlCompatibilityMode.setLayoutData( fdlCompatibilityMode );
     wCompatibilityMode = new Button( wSettings, SWT.CHECK );
-    wCompatibilityMode.setToolTipText( BaseMessages.getString( PKG, "JsonOutputDialog.CompatibilityMode.Tooltip" ) );
+    wCompatibilityMode
+      .setToolTipText( BaseMessages.getString( PKG, "JsonOutputDialog.CompatibilityMode.Tooltip" ) );
     props.setLook( wCompatibilityMode );
     fdCompatibilityMode = new FormData();
     fdCompatibilityMode.left = new FormAttachment( middle, 0 );
@@ -405,20 +406,22 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
-          if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
+          if ( extension != null
+            && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
             wFilename.setText( dialog.getFilterPath()
-                + System.getProperty( "file.separator" )
-                + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
+              + System.getProperty( "file.separator" )
+              + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
+            wFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" ) + dialog.getFileName() );
           }
         }
       }
@@ -465,7 +468,8 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     fdlCreateParentFolder.right = new FormAttachment( middle, -margin );
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wFileName, SWT.CHECK );
-    wCreateParentFolder.setToolTipText( BaseMessages.getString( PKG, "JsonOutputDialog.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder.setToolTipText( BaseMessages
+      .getString( PKG, "JsonOutputDialog.CreateParentFolder.Tooltip" ) );
     props.setLook( wCreateParentFolder );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -488,8 +492,8 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( wFileName, SWT.CHECK );
-    wDoNotOpenNewFileInit
-        .setToolTipText( BaseMessages.getString( PKG, "JsonOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+      PKG, "JsonOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
@@ -633,9 +637,9 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
         String[] files = tfoi.getFiles( transMeta.environmentSubstitute( wFilename.getText() ) );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                  PKG, "JsonOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-                  PKG, "JsonOutputDialog.SelectOutputFiles.DialogMessage" ) );
+            new EnterSelectionDialog( shell, files, BaseMessages.getString(
+              PKG, "JsonOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+              PKG, "JsonOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -717,17 +721,17 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     final int FieldsRows = input.getOutputFields().length;
 
     colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JsonOutputDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JsonOutputDialog.ElementName.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonOutputDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonOutputDialog.ElementName.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
     colinf[1].setUsingVariables( true );
     wFields =
-        new TableView(
-            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1011,37 +1015,37 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
         BaseStepDialog.getFieldsFromPrevious(
-            r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6, new TableItemInsertListener() {
-              public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
-                if ( v.isNumber() ) {
-                  if ( v.getLength() > 0 ) {
-                    int le = v.getLength();
-                    int pr = v.getPrecision();
+          r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6, new TableItemInsertListener() {
+            public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
+              if ( v.isNumber() ) {
+                if ( v.getLength() > 0 ) {
+                  int le = v.getLength();
+                  int pr = v.getPrecision();
 
-                    if ( v.getPrecision() <= 0 ) {
-                      pr = 0;
-                    }
-
-                    String mask = " ";
-                    for ( int m = 0; m < le - pr; m++ ) {
-                      mask += "0";
-                    }
-                    if ( pr > 0 ) {
-                      mask += ".";
-                    }
-                    for ( int m = 0; m < pr; m++ ) {
-                      mask += "0";
-                    }
-                    tableItem.setText( 4, mask );
+                  if ( v.getPrecision() <= 0 ) {
+                    pr = 0;
                   }
+
+                  String mask = " ";
+                  for ( int m = 0; m < le - pr; m++ ) {
+                    mask += "0";
+                  }
+                  if ( pr > 0 ) {
+                    mask += ".";
+                  }
+                  for ( int m = 0; m < pr; m++ ) {
+                    mask += "0";
+                  }
+                  tableItem.setText( 4, mask );
                 }
-                return true;
               }
-            } );
+              return true;
+            }
+          } );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
   }
 
@@ -1071,12 +1075,12 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     wbShowFiles.setEnabled( activeFile );
 
     wlServletOutput.setEnabled( opType == JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE
-        || opType == JsonOutputMeta.OPERATION_TYPE_BOTH );
+      || opType == JsonOutputMeta.OPERATION_TYPE_BOTH );
     wServletOutput.setEnabled( opType == JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE
-        || opType == JsonOutputMeta.OPERATION_TYPE_BOTH );
+      || opType == JsonOutputMeta.OPERATION_TYPE_BOTH );
 
     boolean activeOutputValue =
-        JsonOutputMeta.getOperationTypeByDesc( wOperation.getText() ) != JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE;
+      JsonOutputMeta.getOperationTypeByDesc( wOperation.getText() ) != JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE;
 
     wlOutputValue.setEnabled( activeOutputValue );
     wOutputValue.setEnabled( activeOutputValue );

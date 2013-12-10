@@ -67,20 +67,20 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an SFTP put job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
- * 
+ *
  */
 public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntrySFTPPUT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySFTPPUT.class; // for i18n purposes, needed by Translator2!!
 
   private int afterFTPS;
 
   public static final String[] afterFTPSDesc = new String[] {
-      BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.DoNothing.Label" ),
-      BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Delete.Label" ),
-      BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Move.Label" ), };
+    BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.DoNothing.Label" ),
+    BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Delete.Label" ),
+    BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Move.Label" ), };
   public static final String[] afterFTPSCode = new String[] { "nothing", "delete", "move" };
 
   public static final int AFTER_FTPSPUT_NOTHING = 0;
@@ -156,7 +156,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
     retval.append( "      " ).append( XMLHandler.addTagValue( "serverport", serverPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", userName ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sftpdirectory", sftpDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "localdirectory", localDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
@@ -166,18 +166,20 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
     retval.append( "      " ).append( XMLHandler.addTagValue( "usekeyfilename", usekeyfilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "keyfilename", keyfilename ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "keyfilepass", Encr.encryptPasswordIfNotUsingVariables( keyfilepass ) ) );
+      XMLHandler.addTagValue( "keyfilepass", Encr.encryptPasswordIfNotUsingVariables( keyfilepass ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "compression", compression ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyType", proxyType ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyHost", proxyHost ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+      XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "createRemoteFolder", createRemoteFolder ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "aftersftpput", getAfterSFTPPutCode( getAfterFTPS() ) ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "aftersftpput", getAfterSFTPPutCode( getAfterFTPS() ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "destinationfolder", destinationfolder ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "createdestinationfolder", createDestinationFolder ) );
+    retval
+      .append( "      " ).append( XMLHandler.addTagValue( "createdestinationfolder", createDestinationFolder ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "successWhenNoFile", successWhenNoFile ) );
 
@@ -191,8 +193,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
     return afterFTPSCode[i];
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       serverName = XMLHandler.getTagValue( entrynode, "servername" );
@@ -214,7 +216,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       proxyHost = XMLHandler.getTagValue( entrynode, "proxyHost" );
       proxyPort = XMLHandler.getTagValue( entrynode, "proxyPort" );
       proxyUsername = XMLHandler.getTagValue( entrynode, "proxyUsername" );
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxyPassword" ) );
+      proxyPassword =
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxyPassword" ) );
 
       createRemoteFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createRemoteFolder" ) );
 
@@ -224,7 +227,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         setAfterFTPS( AFTER_FTPSPUT_DELETE );
       }
       destinationfolder = XMLHandler.getTagValue( entrynode, "destinationfolder" );
-      createDestinationFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createdestinationfolder" ) );
+      createDestinationFolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createdestinationfolder" ) );
       successWhenNoFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "successWhenNoFile" ) );
 
     } catch ( KettleXMLException xe ) {
@@ -268,13 +272,14 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
       serverPort = rep.getJobEntryAttributeString( id_jobentry, "serverport" );
 
       userName = rep.getJobEntryAttributeString( id_jobentry, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      password =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
       sftpDirectory = rep.getJobEntryAttributeString( id_jobentry, "sftpdirectory" );
       localDirectory = rep.getJobEntryAttributeString( id_jobentry, "localdirectory" );
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
@@ -285,20 +290,20 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       usekeyfilename = rep.getJobEntryAttributeBoolean( id_jobentry, "usekeyfilename" );
       keyfilename = rep.getJobEntryAttributeString( id_jobentry, "keyfilename" );
       keyfilepass =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "keyfilepass" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "keyfilepass" ) );
       compression = rep.getJobEntryAttributeString( id_jobentry, "compression" );
       proxyType = rep.getJobEntryAttributeString( id_jobentry, "proxyType" );
       proxyHost = rep.getJobEntryAttributeString( id_jobentry, "proxyHost" );
       proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxyPort" );
       proxyUsername = rep.getJobEntryAttributeString( id_jobentry, "proxyUsername" );
       proxyPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxyPassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxyPassword" ) );
 
       createRemoteFolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createRemoteFolder" );
 
       boolean remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
-      setAfterFTPS( getAfterSFTPPutByCode( Const
-          .NVL( rep.getJobEntryAttributeString( id_jobentry, "aftersftpput" ), "" ) ) );
+      setAfterFTPS( getAfterSFTPPutByCode( Const.NVL(
+        rep.getJobEntryAttributeString( id_jobentry, "aftersftpput" ), "" ) ) );
       if ( remove && getAfterFTPS() == AFTER_FTPSPUT_NOTHING ) {
         setAfterFTPS( AFTER_FTPSPUT_DELETE );
       }
@@ -308,7 +313,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'SFTPPUT' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -317,8 +322,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep
-          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sftpdirectory", sftpDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localdirectory", localDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -329,14 +334,14 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "usekeyfilename", usekeyfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "keyfilename", keyfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "keyfilepass", Encr
-          .encryptPasswordIfNotUsingVariables( keyfilepass ) );
+        .encryptPasswordIfNotUsingVariables( keyfilepass ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "compression", compression );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyType", proxyType );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyHost", proxyHost );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyPort", proxyPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyUsername", proxyUsername );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyPassword", Encr
-          .encryptPasswordIfNotUsingVariables( proxyPassword ) );
+        .encryptPasswordIfNotUsingVariables( proxyPassword ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "aftersftpput", getAfterSFTPPutCode( getAfterFTPS() ) );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "createRemoteFolder", createRemoteFolder );
@@ -345,8 +350,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "successWhenNoFile", successWhenNoFile );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException(
-          "Unable to load job entry of type 'SFTPPUT' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException( "Unable to load job entry of type 'SFTPPUT' to the repository for id_job="
+        + id_job, dbe );
     }
   }
 
@@ -727,7 +732,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
               if ( createDestinationFolder ) {
                 folder.createFolder();
               } else {
-                logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.DestinatFolderNotExist", realDestinationFolder ) );
+                logError( BaseMessages.getString(
+                  PKG, "JobSSH2PUT.Log.DestinatFolderNotExist", realDestinationFolder ) );
                 result.setNrErrors( 1 );
                 return result;
               }
@@ -766,12 +772,12 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
       // Create sftp client to host ...
       sftpclient =
-          new SFTPClient(
-              InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
-              realKeyFilename, realPassPhrase );
+        new SFTPClient(
+          InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
+          realKeyFilename, realPassPhrase );
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Log.OpenedConnection", realServerName, ""
-            + realServerPort, realUsername ) );
+          + realServerPort, realUsername ) );
       }
 
       // Set compression
@@ -782,8 +788,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       if ( !Const.isEmpty( realProxyHost ) ) {
         // Set proxy
         sftpclient.setProxy(
-            realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
-            environmentSubstitute( getProxyPassword() ), getProxyType() );
+          realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
+          environmentSubstitute( getProxyPassword() ), getProxyType() );
       }
 
       // login to ftp host ...
@@ -797,10 +803,11 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         if ( !existfolder ) {
           if ( !isCreateRemoteFolder() ) {
             throw new KettleException( BaseMessages.getString(
-                PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder", realSftpDirString ) );
+              PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder", realSftpDirString ) );
           }
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder", realSftpDirString ) );
+            logDetailed( BaseMessages
+              .getString( PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder", realSftpDirString ) );
           }
 
           // Let's create folder
@@ -874,7 +881,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
           if ( getIt ) {
             if ( log.isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "JobSFTPPUT.Log.PuttingFile", localFilename, realSftpDirString ) );
+              logDebug( BaseMessages.getString(
+                PKG, "JobSFTPPUT.Log.PuttingFile", localFilename, realSftpDirString ) );
             }
 
             sftpclient.put( myFile, destinationFilename );
@@ -896,8 +904,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
                 FileObject destination = null;
                 try {
                   destination =
-                      KettleVFS.getFileObject( realDestinationFolder
-                          + Const.FILE_SEPARATOR + myFile.getName().getBaseName(), this );
+                    KettleVFS.getFileObject( realDestinationFolder
+                      + Const.FILE_SEPARATOR + myFile.getName().getBaseName(), this );
                   myFile.moveTo( destination );
                   if ( log.isDetailed() ) {
                     logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Log.FileMoved", myFile, destination ) );
@@ -912,11 +920,11 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
                 if ( addFilenameResut ) {
                   // Add to the result files...
                   ResultFile resultFile =
-                      new ResultFile( ResultFile.FILE_TYPE_GENERAL, myFile, parentJob.getJobname(), toString() );
+                    new ResultFile( ResultFile.FILE_TYPE_GENERAL, myFile, parentJob.getJobname(), toString() );
                   result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   if ( log.isDetailed() ) {
                     logDetailed( BaseMessages.getString(
-                        PKG, "JobSFTPPUT.Log.FilenameAddedToResultFilenames", localFilename ) );
+                      PKG, "JobSFTPPUT.Log.FilenameAddedToResultFilenames", localFilename ) );
                   }
                 }
                 break;
@@ -968,11 +976,11 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate(
-        this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
+      this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );

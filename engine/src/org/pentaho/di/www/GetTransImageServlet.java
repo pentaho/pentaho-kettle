@@ -47,11 +47,12 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
 
   private static final long serialVersionUID = -4365372274638005929L;
 
-  private static Class<?> PKG = GetTransImageServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetTransImageServlet.class; // for i18n purposes, needed by Translator2!!
 
   public static final String CONTEXT_PATH = "/kettle/transImage";
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -119,9 +120,9 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
 
     SwingGC gc = new SwingGC( null, maximum, 32, 0, 0 );
     TransPainter transPainter =
-        new TransPainter(
-            gc, transMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
-            new ArrayList<StepMeta>(), 32, 1, 0, 0, true, "Arial", 10 );
+      new TransPainter(
+        gc, transMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
+        new ArrayList<StepMeta>(), 32, 1, 0, 0, true, "Arial", 10 );
     transPainter.setMagnification( magnification );
     transPainter.buildTransformationImage();
 

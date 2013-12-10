@@ -96,7 +96,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  * Dialog class for the MonetDB bulk loader step.
  */
 public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private CTabItem wGeneralSettingsTab, wMonetDBmclientSettingsTab, wOutputFieldsTab;
@@ -194,7 +194,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
   private static String[] encodings = { "", "US-ASCII", "ISO-8859-1", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-16" };
 
   private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString(
-      PKG, "MonetDBBulkLoaderDialog.Filetype.All" ) };
+    PKG, "MonetDBBulkLoaderDialog.Filetype.All" ) };
 
   public MonetDBBulkLoaderDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -258,7 +258,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     // ////////////////////////
 
     wGeneralSettingsTab = new CTabItem( wTabFolder, SWT.NONE );
-    wGeneralSettingsTab.setText( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.Tab.GeneralSettings.Label" ) );
+    wGeneralSettingsTab
+      .setText( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.Tab.GeneralSettings.Label" ) );
 
     wGeneralSettingsComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wGeneralSettingsComp );
@@ -277,7 +278,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
     wMonetDBmclientSettingsTab = new CTabItem( wTabFolder, SWT.NONE );
     wMonetDBmclientSettingsTab.setText( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.Label" ) );
+      PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.Label" ) );
 
     wMonetDBmclientSettingsComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wMonetDBmclientSettingsComp );
@@ -287,7 +288,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
     wMonetDBmclientParamGroup = new Group( wMonetDBmclientSettingsComp, SWT.SHADOW_IN );
     wMonetDBmclientParamGroup.setText( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup" ) );
+      PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup" ) );
     props.setLook( wMonetDBmclientParamGroup );
     wMonetDBmclientParamGroup.setLayout( tabLayout );
     wMonetDBmclientParamGroup.layout();
@@ -420,7 +421,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     // Widgets for setting the parameters that are sent to the mclient software when the step executes
     wlFieldSeparator = new Label( wMonetDBmclientParamGroup, SWT.LEFT );
     wlFieldSeparator.setText( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldSeparator.Label" ) );
+      PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldSeparator.Label" ) );
     props.setLook( wlFieldSeparator );
 
     wFieldSeparator = new Combo( wMonetDBmclientParamGroup, SWT.SINGLE | SWT.CENTER | SWT.BORDER );
@@ -430,7 +431,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
     wlFieldEnclosure = new Label( wMonetDBmclientParamGroup, SWT.LEFT );
     wlFieldEnclosure.setText( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldEnclosure.Label" ) );
+      PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.FieldEnclosure.Label" ) );
     props.setLook( wlFieldEnclosure );
 
     wFieldEnclosure = new Combo( wMonetDBmclientParamGroup, SWT.SINGLE | SWT.CENTER | SWT.BORDER );
@@ -439,7 +440,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
     wlNULLrepresentation = new Label( wMonetDBmclientParamGroup, SWT.LEFT );
     wlNULLrepresentation.setText( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.NULLrepresentation.Label" ) );
+      PKG, "MonetDBBulkLoaderDialog.Tab.MonetDBmclientSettings.ParameterGroup.NULLrepresentation.Label" ) );
     props.setLook( wlNULLrepresentation );
 
     wNULLrepresentation = new Combo( wMonetDBmclientParamGroup, SWT.SINGLE | SWT.CENTER | SWT.BORDER );
@@ -484,21 +485,21 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.ColumnInfo.TableField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.ColumnInfo.StreamField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.ColumnInfo.FormatOK" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true ); // $NON-NLS-1$ $NON-NLS-3$
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.ColumnInfo.FormatOK" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, wOutputFieldsComp, SWT.BORDER
-            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+      new TableView( transMeta, wOutputFieldsComp, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
     wReturn.optWidth( true );
 
     // wReturn.table.pack(); // Force columns to take up the size they need. Make it easy for the user to see what
@@ -878,7 +879,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-              wSchema.getText();
+            wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -892,8 +893,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
                 db.connect();
 
                 String schemaTable =
-                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                        .environmentSubstitute( tableName ) );
+                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                    .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
@@ -1073,7 +1074,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     }
     if ( inf != null ) {
       if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.Log.LookingAtConnection" ) + inf.toString() );
+        logDebug( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.Log.LookingAtConnection" )
+          + inf.toString() );
       }
 
       DatabaseExplorerDialog std = new DatabaseExplorerDialog( shell, SWT.NONE, inf, transMeta.getDatabases() );
@@ -1105,8 +1107,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-          PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+        PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+        PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -1117,8 +1119,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-          PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+        PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+        PKG, "MonetDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -1163,30 +1165,30 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString(
-                PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString(
-                PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       message += Const.CR;
       message +=
-          BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
+        BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString(
-              PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+        MessageDialog.openConfirm( shell, BaseMessages.getString(
+          PKG, "MonetDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-        new EnterMappingDialog( MonetDBBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
-            .getFieldNames(), mappings );
+      new EnterMappingDialog( MonetDBBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
+        .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -1230,9 +1232,9 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "MonetDBBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages
+        .getString( PKG, "MonetDBBulkLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+        PKG, "MonetDBBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1249,7 +1251,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+              .getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -1265,13 +1268,13 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
-              .getString( PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
+        BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
   }
 
   public ComboVar addConnectionLine( Composite parent, Control previous, int middle, int margin,
-      final Class<? extends DatabaseInterface> databaseType, final TransMeta transMeta ) {
+    final Class<? extends DatabaseInterface> databaseType, final TransMeta transMeta ) {
     final ComboVar wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
 

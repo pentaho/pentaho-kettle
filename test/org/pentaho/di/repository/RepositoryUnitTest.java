@@ -1,24 +1,24 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho Data Integration
  *
  * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
- *******************************************************************************
+ * ******************************************************************************
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  *
- ******************************************************************************/
+ * ****************************************************************************
+ */
 
 package org.pentaho.di.repository;
 
@@ -51,13 +51,14 @@ import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 /**
- * This class serves as a collection of tests for transformation steps and other Kettle capabilities that need to
- * interact with a database repository. It offers performance benefits over putting repo-related tests into the
- * individual unit test classes, as it is a test suite that establishes a connection to the test database repository
- * once before all internal test cases are executed, and disconnects after all tests have been run.
- * 
+ * This class serves as a collection of tests for transformation steps and other Kettle capabilities
+ * that need to interact with a database repository. It offers performance benefits over putting
+ * repo-related tests into the individual unit test classes, as it is a test suite that establishes
+ * a connection to the test database repository once before all internal test cases are executed,
+ * and disconnects after all tests have been run.
+ *
  * @author Matt Burgess
- * 
+ *
  */
 public class RepositoryUnitTest extends TestSuite {
 
@@ -68,10 +69,11 @@ public class RepositoryUnitTest extends TestSuite {
   protected static String filename; // The H2 database backing file
 
   /**
-   * setUpBeforeClass is a method called once before all tests are run. For this test suite, it is used to set up and
-   * connect to the test database repository, to increase performance and reduce unnecessary initialization,
-   * connects/disconnects from each test case. If repository initialization and/or connection/disconnection
-   * 
+   * setUpBeforeClass is a method called once before all tests are run. For this test suite, it is
+   * used to set up and connect to the test database repository, to increase performance and reduce
+   * unnecessary initialization, connects/disconnects from each test case. If repository
+   * initialization and/or connection/disconnection
+   *
    * @throws java.lang.Exception
    */
   @BeforeClass
@@ -88,7 +90,7 @@ public class RepositoryUnitTest extends TestSuite {
     try {
       DatabaseMeta databaseMeta = new DatabaseMeta( "H2Repo", "H2", "JDBC", null, filename, null, null, null );
       repositoryMeta =
-          new KettleDatabaseRepositoryMeta( "KettleDatabaseRepository", "H2Repo", "H2 Repository", databaseMeta );
+        new KettleDatabaseRepositoryMeta( "KettleDatabaseRepository", "H2Repo", "H2 Repository", databaseMeta );
       repository = new KettleDatabaseRepository();
       repository.init( repositoryMeta );
       repository.connectionDelegate.connect( true, true );
@@ -106,9 +108,9 @@ public class RepositoryUnitTest extends TestSuite {
   }
 
   /**
-   * This method is called once after all test cases have been run, and is used to perform suite-level cleanup such as
-   * disconnecting from the test repository.
-   * 
+   * This method is called once after all test cases have been run, and is used to perform
+   * suite-level cleanup such as disconnecting from the test repository.
+   *
    * @throws java.lang.Exception
    */
   @AfterClass
@@ -125,7 +127,7 @@ public class RepositoryUnitTest extends TestSuite {
 
   /**
    * This method is called once before each test case is executed.
-   * 
+   *
    * @throws java.lang.Exception
    */
   @Before
@@ -134,7 +136,7 @@ public class RepositoryUnitTest extends TestSuite {
 
   /**
    * This method is called once after each test case is executed.
-   * 
+   *
    * @throws java.lang.Exception
    */
   @After
@@ -142,14 +144,17 @@ public class RepositoryUnitTest extends TestSuite {
   }
 
   /**
-   * This test is to ensure that the metadata for the GetXMLData step is preserved when saving to a repository. The test
-   * creates a GetXMLData step and saves it to the repository. Then the local data is changed and the step is read back
-   * in from the repository. It is then asserted that the field value(s) are equal to what was saved.
-   * 
+   * This test is to ensure that the metadata for the GetXMLData step is preserved when saving to a
+   * repository. The test creates a GetXMLData step and saves it to the repository. Then the local
+   * data is changed and the step is read back in from the repository. It is then asserted that the
+   * field value(s) are equal to what was saved.
+   *
    * Test method for
-   * {@link org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta#readRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, java.util.List, java.util.Map)}
+   * {@link org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta#readRep(org.pentaho.di.repository.Repository,
+   * org.pentaho.di.repository.ObjectId, java.util.List, java.util.Map)}
    * . Test method for
-   * {@link org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, jorg.pentaho.di.repository.ObjectId)}
+   * {@link org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta#saveRep(org.pentaho.di.repository.Repository,
+   * org.pentaho.di.repository.ObjectId, jorg.pentaho.di.repository.ObjectId)}
    * .
    */
   @Test
@@ -205,7 +210,8 @@ public class RepositoryUnitTest extends TestSuite {
       transMeta.setRepositoryDirectory( repositoryDirectory );
       repository.transDelegate.saveTransformation( transMeta, "None", null, true );
 
-      // Create a new placeholder meta and set the result type to something different than what was saved,
+      // Create a new placeholder meta and set the result type to something different than what was
+      // saved,
       // to ensure the saveRep code is working correctly.
       GetXMLDataMeta newMeta = (GetXMLDataMeta) gxdm.clone();
       for ( GetXMLDataField f : newMeta.getInputFields() ) {

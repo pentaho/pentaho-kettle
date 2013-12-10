@@ -34,7 +34,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 
 /**
  * Singleton class to allow us to see on which date & time the kettle3.jar was built.
- * 
+ *
  * @author Matt
  * @since 2006-aug-12
  */

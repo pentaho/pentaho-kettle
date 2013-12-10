@@ -58,18 +58,19 @@ import org.w3c.dom.Node;
  */
 
 /**
- * 
+ *
  */
 @Step(
-    id = "PentahoReportingOutput", image = "org/pentaho/reporting/images/JFR.png",
-    description = "PentahoReportingOutput.Description", name = "PentahoReportingOutput.Name",
-    categoryDescription = "PentahoReportingOutput.Category", i18nPackageName = "org.pentaho.reporting.plugin" )
+  id = "PentahoReportingOutput", image = "org/pentaho/reporting/images/JFR.png",
+  description = "PentahoReportingOutput.Description", name = "PentahoReportingOutput.Name",
+  categoryDescription = "PentahoReportingOutput.Category", i18nPackageName = "org.pentaho.reporting.plugin" )
 public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!!
 
   public enum ProcessorType {
-    PDF( "PDF", "PDF" ), PagedHTML( "PagedHtml", "Paged HTML" ), StreamingHTML( "StreamingHtml", "Streaming HTML" ),
-    CSV( "CSV", "CSV" ), Excel( "Excel", "Excel" ), Excel_2007( "Excel 2007", "Excel 2007" ), RTF( "RTF", "RTF" ), ;
+    PDF( "PDF", "PDF" ), PagedHTML( "PagedHtml", "Paged HTML" ),
+      StreamingHTML( "StreamingHtml", "Streaming HTML" ), CSV( "CSV", "CSV" ), Excel( "Excel", "Excel" ),
+      Excel_2007( "Excel 2007", "Excel 2007" ), RTF( "RTF", "RTF" ), ;
 
     private String code;
     private String description;
@@ -119,7 +120,8 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     parameterFieldMap = new HashMap<String, String>();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -144,10 +146,11 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
         }
       }
 
-      outputProcessorType = ProcessorType.getProcessorTypeByCode( XMLHandler.getTagValue( stepnode, "processor_type" ) );
+      outputProcessorType =
+        ProcessorType.getProcessorTypeByCode( XMLHandler.getTagValue( stepnode, "processor_type" ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo" ), e );
+        PKG, "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -196,10 +199,10 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
       }
 
       outputProcessorType =
-          ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString( idStep, "processor_type" ) );
+        ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString( idStep, "processor_type" ) );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+        PKG, "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -222,32 +225,34 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo" )
-          + idStep, e );
+        PKG, "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo" )
+        + idStep, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
+        new CheckResult(
+          CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ),
+          stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
-            PKG, "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
+      new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new PentahoReportingOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

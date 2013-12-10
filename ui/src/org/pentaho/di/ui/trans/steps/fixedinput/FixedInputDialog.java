@@ -80,7 +80,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FixedInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FixedInputMeta inputMeta;
 
@@ -404,35 +404,37 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Fields
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.getTypes(), true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.FormatColumn.Column" ), ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.WidthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.LengthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.PrecisionColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.CurrencyColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.DecimalColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.GroupColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FixedInputDialog.TrimColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.trimTypeDesc ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.TypeColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.FormatColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.WidthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.LengthColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.PrecisionColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.CurrencyColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.DecimalColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.GroupColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FixedInputDialog.TrimColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
 
     colinf[2].setComboValuesSelectionListener( new ComboValuesSelectionListener() {
 
@@ -514,8 +516,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         }
 
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
           String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -685,17 +687,18 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     FixedInputMeta oneMeta = new FixedInputMeta();
     getInfo( oneMeta );
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta =
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-            PKG, "FixedInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-            PKG, "FixedInputDialog.PreviewSize.DialogMessage" ) );
+      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+        PKG, "FixedInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+        PKG, "FixedInputDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog(
-              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+        new TransPreviewProgressDialog(
+          shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -704,19 +707,18 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog(
-                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
-                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+            new EnterTextDialog(
+              shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog(
-              shell, transMeta, SWT.NONE, wStepname.getText(),
-              progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname
-                  .getText() ), loggingText );
+        new PreviewRowsDialog(
+          shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+            .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
       prd.open();
     }
   }
@@ -826,8 +828,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
       wd.open();
     } catch ( Exception e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "FixedInputDialog.ErrorShowingFixedWizard.DialogTitle" ), BaseMessages
-              .getString( PKG, "FixedInputDialog.ErrorShowingFixedWizard.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "FixedInputDialog.ErrorShowingFixedWizard.DialogTitle" ),
+        BaseMessages.getString( PKG, "FixedInputDialog.ErrorShowingFixedWizard.DialogMessage" ), e );
     }
   }
 
@@ -855,10 +857,12 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     field.setWidth( lineWidth );
     oneMeta.getFieldDefinition()[0] = field;
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta =
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     TransPreviewProgressDialog progressDialog =
-        new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() }, new int[] { limit } );
+      new TransPreviewProgressDialog(
+        shell, previewMeta, new String[] { wStepname.getText() }, new int[] { limit } );
     progressDialog.open();
 
     Trans trans = progressDialog.getTrans();
@@ -867,8 +871,9 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     if ( !progressDialog.isCancelled() ) {
       if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
         EnterTextDialog etd =
-            new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
-                .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+          new EnterTextDialog(
+            shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+              PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
         etd.setReadOnly();
         etd.open();
       }

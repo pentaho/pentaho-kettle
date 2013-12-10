@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
 /**
  * Holds meta information about one univariate stats calculation: source field name and what derived values are to be
  * computed
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho.org
  * @version 1.0
  */
@@ -52,7 +52,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Creates a new <code>UnivariateStatsMetaFunction</code>
-   * 
+   *
    * @param sourceFieldName
    *          the name of the input field to compute stats for
    * @param n
@@ -74,8 +74,8 @@ public class UnivariateStatsMetaFunction implements Cloneable {
    *          href="http://www.itl.nist.gov/div898/handbook/prc/section2/prc252.htm"> The Engineering Statistics
    *          Handbook</a> for details.
    */
-  public UnivariateStatsMetaFunction( String sourceFieldName, boolean n, boolean mean, boolean stdDev, boolean min,
-      boolean max, boolean median, double arbPercentile, boolean interpolate ) {
+  public UnivariateStatsMetaFunction( String sourceFieldName, boolean n, boolean mean, boolean stdDev,
+    boolean min, boolean max, boolean median, double arbPercentile, boolean interpolate ) {
     m_sourceFieldName = sourceFieldName;
     m_n = n;
     m_mean = mean;
@@ -89,7 +89,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Construct from an XML node
-   * 
+   *
    * @param uniNode
    *          a XML node
    */
@@ -141,7 +141,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Construct using data stored in repository
-   * 
+   *
    * @param rep
    *          the repository
    * @param id_step
@@ -170,7 +170,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Check for equality
-   * 
+   *
    * @param obj
    *          an UnivarateStatsMetaFunction to compare against
    * @return true if this Object and the supplied one are the same
@@ -187,7 +187,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Return a String containing XML describing this UnivariateStatsMetaFunction
-   * 
+   *
    * @return an XML description of this UnivarateStatsMetaFunction
    */
   public String getXML() {
@@ -210,7 +210,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Save this UnivariateStatsMetaFunction to a repository
-   * 
+   *
    * @param rep
    *          the repository to save to
    * @param id_transformation
@@ -238,7 +238,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Make a copy
-   * 
+   *
    * @return a copy of this UnivariateStatsMetaFunction.
    */
   public Object clone() {
@@ -253,7 +253,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set the name of the input field used by this UnivariateStatsMetaFunction.
-   * 
+   *
    * @param sn
    *          the name of the source field to use
    */
@@ -263,7 +263,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Return the name of the input field used by this UnivariateStatsMetaFunction
-   * 
+   *
    * @return the name of the input field used
    */
   public String getSourceFieldName() {
@@ -272,7 +272,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set whether to calculate N for this input field
-   * 
+   *
    * @param n
    *          true if N is to be calculated
    */
@@ -282,7 +282,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Get whether N is to be calculated for this input field
-   * 
+   *
    * @return true if N is to be calculated
    */
   public boolean getCalcN() {
@@ -291,7 +291,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set whether to calculate the mean for this input field
-   * 
+   *
    * @param b
    *          true if the mean is to be calculated
    */
@@ -301,7 +301,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Get whether the mean is to be calculated for this input field
-   * 
+   *
    * @return true if the mean is to be calculated
    */
   public boolean getCalcMean() {
@@ -310,7 +310,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set whether the standard deviation is to be calculated for this input value
-   * 
+   *
    * @param b
    *          true if the standard deviation is to be calculated
    */
@@ -320,7 +320,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Get whether the standard deviation is to be calculated for this input value
-   * 
+   *
    * @return true if the standard deviation is to be calculated
    */
   public boolean getCalcStdDev() {
@@ -329,7 +329,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set whether the minimum is to be calculated for this input value
-   * 
+   *
    * @param b
    *          true if the minimum is to be calculated
    */
@@ -339,7 +339,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Get whether the minimum is to be calculated for this input value
-   * 
+   *
    * @return true if the minimum is to be calculated
    */
   public boolean getCalcMin() {
@@ -348,7 +348,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set whether the maximum is to be calculated for this input value
-   * 
+   *
    * @param b
    *          true if the maximum is to be calculated
    */
@@ -358,7 +358,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Get whether the maximum is to be calculated for this input value
-   * 
+   *
    * @return true if the maximum is to be calculated
    */
   public boolean getCalcMax() {
@@ -367,7 +367,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set whether the median is to be calculated for this input value
-   * 
+   *
    * @param b
    *          true if the median is to be calculated
    */
@@ -377,7 +377,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Get whether the median is to be calculated for this input value
-   * 
+   *
    * @return true if the median is to be calculated
    */
   public boolean getCalcMedian() {
@@ -386,7 +386,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Get whether interpolation is to be used in the computation of percentiles
-   * 
+   *
    * @return true if interpolation is to be used
    */
   public boolean getInterpolatePercentile() {
@@ -395,7 +395,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Set whether interpolation is to be used in the computation of percentiles
-   * 
+   *
    * @param i
    *          true is interpolation is to be used
    */
@@ -405,7 +405,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Gets whether an arbitrary percentile is to be calculated for this input field
-   * 
+   *
    * @return true if a percentile is to be computed
    */
   public double getCalcPercentile() {
@@ -414,7 +414,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Sets whether an arbitrary percentile is to be calculated for this input field
-   * 
+   *
    * @param percentile
    *          the percentile to compute (0 <= percentile <= 100)
    */
@@ -434,7 +434,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
 
   /**
    * Returns the number of metrics to compute
-   * 
+   *
    * @return the number of metrics to compute
    */
   public int numberOfMetricsRequested() {

@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class ControlSpaceKeyAdapter extends KeyAdapter {
 
-  private static Class<?> PKG = ControlSpaceKeyAdapter.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ControlSpaceKeyAdapter.class; // for i18n purposes, needed by Translator2!!
 
   private static final PropsUI props = PropsUI.getInstance();
 
@@ -72,7 +72,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
   }
 
   /**
-   * 
+   *
    * @param space
    * @param control
    *          a Text or CCombo box object
@@ -80,7 +80,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
    * @param insertTextInterface
    */
   public ControlSpaceKeyAdapter( VariableSpace space, final Control control,
-      final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface ) {
+    final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface ) {
 
     this.variables = space;
     this.control = control;
@@ -92,7 +92,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
   /**
    * PDI-1284 in chinese window, Ctrl-SPACE is reversed by system for input chinese character. use Ctrl-ALT-SPACE
    * instead.
-   * 
+   *
    * @param e
    * @return
    */
@@ -192,7 +192,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
   }
 
   private static final void applyChanges( Shell shell, List list, Control control, int position,
-      InsertTextInterface insertTextInterface ) {
+    InsertTextInterface insertTextInterface ) {
     String extra = "${" + list.getSelection()[0] + "}";
     if ( insertTextInterface != null ) {
       insertTextInterface.insertText( extra, position );

@@ -38,13 +38,12 @@ import org.pentaho.di.ui.spoon.Spoon;
 /**
  * Takes care of displaying a dialog that will handle the wait while we're finding out which fields are output by a
  * certain SQL query on a database.
- * 
+ *
  * @author Matt
  * @since 12-may-2005
  */
 public class GetQueryFieldsProgressDialog {
   private static Class<?> PKG = GetQueryFieldsProgressDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                    // $NON-NLS-1$
 
   private Shell shell;
   private DatabaseMeta dbMeta;
@@ -123,11 +122,12 @@ public class GetQueryFieldsProgressDialog {
 
   /**
    * Showing an error dialog
-   * 
+   *
    * @param e
    */
   private void showErrorDialog( Exception e ) {
-    new ErrorDialog( shell, BaseMessages.getString( PKG, "GetQueryFieldsProgressDialog.Error.Title" ), BaseMessages
-        .getString( PKG, "GetQueryFieldsProgressDialog.Error.Message" ), e );
+    new ErrorDialog(
+      shell, BaseMessages.getString( PKG, "GetQueryFieldsProgressDialog.Error.Title" ), BaseMessages.getString(
+        PKG, "GetQueryFieldsProgressDialog.Error.Message" ), e );
   }
 }

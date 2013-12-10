@@ -59,7 +59,7 @@ import org.w3c.dom.Node;
  */
 public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInterface {
 
-  private static Class<?> PKG = ConcatFieldsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ConcatFieldsMeta.class; // for i18n purposes, needed by Translator2!!
 
   // have a different namespace in repository in contrast to the TextFileOutput
   private static final String ConcatFieldsNodeNameSpace = "ConcatFields";
@@ -109,19 +109,19 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
 
   @Deprecated
   public void getFieldsModifyInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space ) throws KettleStepException {
+    VariableSpace space ) throws KettleStepException {
     getFieldsModifyInput( row, name, info, nextStep, space, null, null );
   }
 
   public void getFieldsModifyInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
     super.getFields( row, name, info, nextStep, space, repository, metaStore );
   }
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // do not call the super class from TextFileOutputMeta since it modifies the source meta data
     // see getFieldsModifyInput() instead
 
@@ -143,11 +143,12 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
 
     // Check Target Field Name
     if ( Const.isEmpty( targetFieldName ) ) {
-      throw new KettleStepException( BaseMessages
-          .getString( PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ) );
     }
     // add targetFieldName
-    ValueMetaInterface vValue = new ValueMeta( targetFieldName, ValueMetaInterface.TYPE_STRING, targetFieldLength, 0 );
+    ValueMetaInterface vValue =
+      new ValueMeta( targetFieldName, ValueMetaInterface.TYPE_STRING, targetFieldLength, 0 );
     vValue.setOrigin( name );
     if ( !Const.isEmpty( getEncoding() ) ) {
       vValue.setStringEncoding( getEncoding() );
@@ -156,13 +157,16 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Override
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
     targetFieldName = XMLHandler.getTagValue( stepnode, ConcatFieldsNodeNameSpace, "targetFieldName" );
     targetFieldLength =
-        Const.toInt( XMLHandler.getTagValue( stepnode, ConcatFieldsNodeNameSpace, "targetFieldLength" ), 0 );
+      Const.toInt( XMLHandler.getTagValue( stepnode, ConcatFieldsNodeNameSpace, "targetFieldLength" ), 0 );
     removeSelectedFields =
-        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ConcatFieldsNodeNameSpace, "removeSelectedFields" ) );
+      "Y"
+        .equalsIgnoreCase( XMLHandler
+          .getTagValue( stepnode, ConcatFieldsNodeNameSpace, "removeSelectedFields" ) );
   }
 
   @Override
@@ -181,48 +185,51 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     targetFieldName = rep.getStepAttributeString( id_step, ConcatFieldsNodeNameSpace + "targetFieldName" );
-    targetFieldLength = (int) rep.getStepAttributeInteger( id_step, ConcatFieldsNodeNameSpace + "targetFieldLength" );
-    removeSelectedFields = rep.getStepAttributeBoolean( id_step, ConcatFieldsNodeNameSpace + "removeSelectedFields" );
+    targetFieldLength =
+      (int) rep.getStepAttributeInteger( id_step, ConcatFieldsNodeNameSpace + "targetFieldLength" );
+    removeSelectedFields =
+      rep.getStepAttributeBoolean( id_step, ConcatFieldsNodeNameSpace + "removeSelectedFields" );
   }
 
   @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
-    rep.saveStepAttribute( id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldName", targetFieldName );
     rep.saveStepAttribute(
-        id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldLength", targetFieldLength );
+      id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldName", targetFieldName );
     rep.saveStepAttribute(
-        id_transformation, id_step, ConcatFieldsNodeNameSpace + "removeSelectedFields", removeSelectedFields );
+      id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldLength", targetFieldLength );
+    rep.saveStepAttribute(
+      id_transformation, id_step, ConcatFieldsNodeNameSpace + "removeSelectedFields", removeSelectedFields );
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check Target Field Name
     if ( Const.isEmpty( targetFieldName ) ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check Target Field Length when Fast Data Dump
     if ( targetFieldLength <= 0 && isFastDump() ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "ConcatFieldsMeta.CheckResult.TargetFieldLengthMissingFastDataDump" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "ConcatFieldsMeta.CheckResult.TargetFieldLengthMissingFastDataDump" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ConcatFieldsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ConcatFieldsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -242,8 +249,8 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "ConcatFieldsMeta.CheckResult.AllFieldsFound" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "ConcatFieldsMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -251,8 +258,8 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Override
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ConcatFields( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

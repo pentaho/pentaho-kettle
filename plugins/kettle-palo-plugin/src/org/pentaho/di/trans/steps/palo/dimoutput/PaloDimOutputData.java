@@ -31,18 +31,18 @@ import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-public class PaloDimOutputData extends BaseStepData 
+public class PaloDimOutputData extends BaseStepData
 implements StepDataInterface{
     public PaloHelper helper;
     public int[] indexes;
     public ArrayList<String> elementNamesBatch = new ArrayList<String>();
-    
+
     public PaloDimOutputData(DatabaseMeta databaseMeta) throws KettleException {
         super();
         if(!(databaseMeta.getDatabaseInterface() instanceof PALODatabaseMeta )) {
             throw new KettleException ("A connection of type PALO is expected");
         }
-        
+
         //org.pentaho.di.core.logging.
         this.helper = new PaloHelper(databaseMeta, DefaultLogLevel.getLogLevel());
     }

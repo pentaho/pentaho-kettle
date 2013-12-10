@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 8-sep-2005
- * 
+ *
  */
 public class JavaFilterData extends BaseStepData implements StepDataInterface {
   public static final int RETURN_TYPE_STRING = 0;

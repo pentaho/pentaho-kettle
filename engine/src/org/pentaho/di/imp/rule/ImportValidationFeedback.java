@@ -34,7 +34,8 @@ public class ImportValidationFeedback {
    * @param resultType
    * @param comment
    */
-  public ImportValidationFeedback( ImportRuleInterface importRule, ImportValidationResultType resultType, String comment ) {
+  public ImportValidationFeedback( ImportRuleInterface importRule, ImportValidationResultType resultType,
+    String comment ) {
     this.importRule = importRule;
     this.resultType = resultType;
     this.comment = comment;

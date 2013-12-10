@@ -28,7 +28,7 @@ import org.pentaho.metastore.api.IMetaStore;
 /**
  * This interface is used to launch Step Dialogs. All dialogs that implement this simple interface can be opened by
  * Spoon.
- * 
+ *
  * @author Matt
  * @since 4-aug-2004
  */
@@ -36,14 +36,14 @@ public interface StepDialogInterface {
 
   /**
    * Opens a step dialog window.
-   * 
+   *
    * @return the (potentially new) name of the step
    */
   public String open();
 
   /**
    * Sets the repository.
-   * 
+   *
    * @param repository
    *          the new repository
    */

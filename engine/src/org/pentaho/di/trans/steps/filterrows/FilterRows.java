@@ -39,18 +39,18 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Filters input rows base on conditions.
- * 
+ *
  * @author Matt
  * @since 16-apr-2003, 07-nov-2004 (rewrite)
  */
 public class FilterRows extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FilterRowsMeta meta;
   private FilterRowsData data;
 
   public FilterRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -58,7 +58,8 @@ public class FilterRows extends BaseStep implements StepInterface {
     try {
       return meta.getCondition().evaluate( rowMeta, row );
     } catch ( Exception e ) {
-      String message = BaseMessages.getString( PKG, "FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction" );
+      String message =
+        BaseMessages.getString( PKG, "FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction" );
       logError( message );
       logError( BaseMessages.getString( PKG, "FilterRows.Log.ErrorOccurredForRow" ) + rowMeta.getString( row ) );
       logError( Const.getStackTracker( e ) );
@@ -92,8 +93,8 @@ public class FilterRows extends BaseStep implements StepInterface {
         if ( !Const.isEmpty( targetStreams.get( 0 ).getStepname() ) ) {
           data.trueRowSet = findOutputRowSet( getStepname(), getCopy(), targetStreams.get( 0 ).getStepname(), 0 );
           if ( data.trueRowSet == null ) {
-            throw new KettleException( BaseMessages.getString( PKG, "FilterRows.Log.TargetStepInvalid", targetStreams
-                .get( 0 ).getStepname() ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "FilterRows.Log.TargetStepInvalid", targetStreams.get( 0 ).getStepname() ) );
           }
         } else {
           data.trueRowSet = null;
@@ -102,8 +103,8 @@ public class FilterRows extends BaseStep implements StepInterface {
         if ( !Const.isEmpty( targetStreams.get( 1 ).getStepname() ) ) {
           data.falseRowSet = findOutputRowSet( getStepname(), getCopy(), targetStreams.get( 1 ).getStepname(), 0 );
           if ( data.falseRowSet == null ) {
-            throw new KettleException( BaseMessages.getString( PKG, "FilterRows.Log.TargetStepInvalid", targetStreams
-                .get( 1 ).getStepname() ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "FilterRows.Log.TargetStepInvalid", targetStreams.get( 1 ).getStepname() ) );
           }
         } else {
           data.falseRowSet = null;
@@ -160,7 +161,7 @@ public class FilterRows extends BaseStep implements StepInterface {
       data.falseStepname = targetStreams.get( 1 ).getStepname();
 
       data.chosesTargetSteps =
-          targetStreams.get( 0 ).getStepMeta() != null || targetStreams.get( 1 ).getStepMeta() != null;
+        targetStreams.get( 0 ).getStepMeta() != null || targetStreams.get( 1 ).getStepMeta() != null;
       return true;
     }
     return false;

@@ -27,7 +27,7 @@ public class FTPUtils {
 
   /**
    * normalize / to \ and remove trailing slashes from a path
-   * 
+   *
    * @param path
    * @return normalized path
    * @throws Exception

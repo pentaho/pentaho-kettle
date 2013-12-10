@@ -68,7 +68,7 @@ public class KettleReportBuilder {
   private LoggingObjectInterface parentObject;
 
   public KettleReportBuilder( LoggingObjectInterface parentObject, List<ReportSubjectLocation> locations,
-      String targetFilename, AutoDocOptionsInterface options ) {
+    String targetFilename, AutoDocOptionsInterface options ) {
     this.parentObject = parentObject;
     this.filenames = locations;
     this.targetFilename = targetFilename;
@@ -115,7 +115,7 @@ public class KettleReportBuilder {
      * labelElementFactory.setText("Kettle documentation"); labelElementFactory.setMinimumWidth(500f);
      * labelElementFactory.setMinimumHeight(20f); labelElementFactory.setUnderline(true);
      * labelElementFactory.setBold(true); Element label = labelElementFactory.createElement();
-     * 
+     *
      * // Add the label to the header... // reportHeader.addElement(label);
      */
     Float fontHeight = 12f;
@@ -330,9 +330,9 @@ public class KettleReportBuilder {
     String packName = KettleReportBuilder.class.getPackage().getName();
     if ( options.isIncludingImage() ) {
       String bshCode =
-          "Object getValue() { "
-              + Const.CR + "  return new " + packName + ".TransJobDrawable(dataRow, "
-              + ( options.getOutputType() == OutputType.PDF ? "true" : "false" ) + ");" + Const.CR + "}";
+        "Object getValue() { "
+          + Const.CR + "  return new " + packName + ".TransJobDrawable(dataRow, "
+          + ( options.getOutputType() == OutputType.PDF ? "true" : "false" ) + ");" + Const.CR + "}";
       BSHExpression bshExpression = new BSHExpression();
       bshExpression.setExpression( bshCode );
       bshExpression.setName( "getImage" );
@@ -350,7 +350,8 @@ public class KettleReportBuilder {
       // contentElementFactory.setAvoidPagebreaks(true);
       Element imageElement = contentElementFactory.createElement();
 
-      imageElement.setAttributeExpression( AttributeNames.Core.NAMESPACE, AttributeNames.Core.VALUE, bshExpression );
+      imageElement
+        .setAttributeExpression( AttributeNames.Core.NAMESPACE, AttributeNames.Core.VALUE, bshExpression );
       imageElement.setAttribute( AttributeNames.Core.NAMESPACE, AttributeNames.Core.IMAGE_ENCODING_QUALITY, "9" );
       imageElement.setAttribute( AttributeNames.Core.NAMESPACE, AttributeNames.Core.IMAGE_ENCODING_TYPE, "PNG" );
       itemBand.addElement( imageElement );
@@ -371,8 +372,8 @@ public class KettleReportBuilder {
     double bottomMargin = 0.78;
 
     a4Paper.setImageableArea(
-        leftMargin * 72.0, topMargin * 72.0, ( paperWidth - leftMargin - rightMargin ) * 72.0, ( paperHeight
-            - topMargin - bottomMargin ) * 72.0 );
+      leftMargin * 72.0, topMargin * 72.0, ( paperWidth - leftMargin - rightMargin ) * 72.0, ( paperHeight
+        - topMargin - bottomMargin ) * 72.0 );
 
     /*
      * create a PageFormat and associate the Paper with it.

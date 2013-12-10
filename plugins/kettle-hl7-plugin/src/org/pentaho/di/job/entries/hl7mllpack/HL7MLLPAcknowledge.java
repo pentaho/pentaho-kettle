@@ -56,13 +56,13 @@ import ca.uhn.hl7v2.validation.impl.NoValidation;
 		id="HL7MLLPAcknowledge",
 		categoryDescription="i18n:org.pentaho.di.job:JobCategory.Category.Utility",
 		i18nPackageName="org.pentaho.di.job.entries.hl7mllpack",
-		image="mllp-ack.png", 
+		image="mllp-ack.png",
 		name="HL7MLLPAcknowledge.Name",
 		description="HL7MLLPAcknowledge.TooltipDesc"
 	)
 public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEntryInterface
 {
-	private static Class<?> PKG = HL7MLLPAcknowledge.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = HL7MLLPAcknowledge.class; // for i18n purposes, needed by Translator2!!
 
 	private String server;
 	private String port;
@@ -87,7 +87,7 @@ public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEn
         HL7MLLPAcknowledge je = (HL7MLLPAcknowledge) super.clone();
         return je;
     }
-    
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(128);
@@ -148,13 +148,13 @@ public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEn
   public Result execute(Result previousResult, int nr)
   {
     Result result = previousResult;
-    
+
     try {
-      
+
       String serverName = environmentSubstitute(server);
       int portNumber = Integer.parseInt(environmentSubstitute(port));
       String variable = environmentSubstitute(variableName);
-      
+
       MLLPSocketCacheEntry entry = MLLPSocketCache.getInstance().getServerSocketStreamSource(serverName, portNumber);
       MLLPTransport transport = entry.getTransport();
 
@@ -162,7 +162,7 @@ public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEn
       //
       synchronized(transport) {
         String message = getVariable(variable);
-  
+
         // Parse the message and extract the acknowledge message.
         //
         Parser parser = new GenericParser();
@@ -170,11 +170,11 @@ public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEn
         parser.setValidationContext(validationContext);
         Message msg = parser.parse(message);
         Message ack = msg.generateACK();
-        
+
         String ackMessage = ack.encode();
-        
+
         String APPNAME = "PDI4";
-  
+
         if (ack instanceof  ca.uhn.hl7v2.model.v21.message.ACK) {
           ca.uhn.hl7v2.model.v21.message.ACK mod = (ca.uhn.hl7v2.model.v21.message.ACK) ack;
           mod.getMSH().getSENDINGAPPLICATION().setValue(APPNAME);
@@ -218,22 +218,22 @@ public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEn
         } else {
           logError("This job entry does not support the HL7 dialect used. Found ACK class: "+ack.getClass().getName());
         }
-        
+
         Transportable transportable = new TransportableImpl(ackMessage);
         transport.doSend(transportable);
       }
-      
+
       // All went well..
       //
       result.setNrErrors(0);
       result.setResult(true);
-      
+
     } catch(Exception e) {
       log.logError(BaseMessages.getString(PKG, "HL7MLLPInput.Exception.UnexpectedError"), e);
       result.setNrErrors(1);
       result.setResult(false);
-    } 
-    
+    }
+
     return result;
   }
 	
@@ -241,7 +241,7 @@ public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEn
 	{
 		return true;
 	}
-    
+
     public boolean isUnconditional()
     {
         return false;

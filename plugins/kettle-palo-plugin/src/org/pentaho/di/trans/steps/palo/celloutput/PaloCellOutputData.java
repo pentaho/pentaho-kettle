@@ -32,7 +32,7 @@ import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-public class PaloCellOutputData extends BaseStepData 
+public class PaloCellOutputData extends BaseStepData
 implements StepDataInterface {
     public PaloHelper helper;
     public int[] indexes;

@@ -57,9 +57,9 @@ import org.w3c.dom.NodeList;
 
 /**
  * This class takes care of crawling through the source code
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class MessagesSourceCrawler {
 
@@ -101,8 +101,8 @@ public class MessagesSourceCrawler {
    * @param singleMessagesFile
    *          the messages file if there is only one, otherwise: null
    */
-  public MessagesSourceCrawler( LogChannelInterface log, List<String> sourceDirectories, String singleMessagesFile,
-      List<SourceCrawlerXMLFolder> xmlFolders ) {
+  public MessagesSourceCrawler( LogChannelInterface log, List<String> sourceDirectories,
+    String singleMessagesFile, List<SourceCrawlerXMLFolder> xmlFolders ) {
     super();
     this.log = log;
     this.sourceDirectories = sourceDirectories;
@@ -152,18 +152,19 @@ public class MessagesSourceCrawler {
   /**
    * Add a key occurrence to the list of occurrences. The list is kept sorted on key and message package. If the key
    * already exists, we increment the number of occurrences.
-   * 
+   *
    * @param occ
    *          The key occurrence to add
    */
   public void addKeyOccurrence( KeyOccurrence occ ) {
 
-    // System.out.println("Adding key occurrence : folder="+occ.getSourceFolder()+", pkg="+occ.getMessagesPackage()+", key="+occ.getKey());
+    // System.out.println("Adding key occurrence : folder="+occ.getSourceFolder()+", 
+    // pkg="+occ.getMessagesPackage()+", key="+occ.getKey());
 
     String sourceFolder = occ.getSourceFolder();
     if ( sourceFolder == null ) {
       throw new RuntimeException( "No source folder found for key: "
-          + occ.getKey() + " in package " + occ.getMessagesPackage() );
+        + occ.getKey() + " in package " + occ.getMessagesPackage() );
     }
     String messagesPackage = occ.getMessagesPackage();
 
@@ -240,7 +241,7 @@ public class MessagesSourceCrawler {
       boolean[] xmlSubdirs = { true, }; // search sub-folders too
 
       FileInputList xulFileInputList =
-          FileInputList.createFileList( new Variables(), xmlDirs, xmlMasks, xmlReq, xmlSubdirs );
+        FileInputList.createFileList( new Variables(), xmlDirs, xmlMasks, xmlReq, xmlSubdirs );
       for ( FileObject fileObject : xulFileInputList.getFiles() ) {
         try {
           Document doc = XMLHandler.loadXMLFile( fileObject );
@@ -249,11 +250,10 @@ public class MessagesSourceCrawler {
           //
           for ( SourceCrawlerXMLElement xmlElement : xmlFolder.getElements() ) {
 
-            addLabelOccurrences(
-                xmlFolder.getDefaultSourceFolder(), fileObject, doc
-                    .getElementsByTagName( xmlElement.getSearchElement() ), xmlFolder.getKeyPrefix(), xmlElement
-                    .getKeyTag(), xmlElement.getKeyAttribute(), xmlFolder.getDefaultPackage(), xmlFolder
-                    .getPackageExceptions() );
+            addLabelOccurrences( xmlFolder.getDefaultSourceFolder(), fileObject, doc
+              .getElementsByTagName( xmlElement.getSearchElement() ), xmlFolder.getKeyPrefix(), xmlElement
+              .getKeyTag(), xmlElement.getKeyAttribute(), xmlFolder.getDefaultPackage(), xmlFolder
+              .getPackageExceptions() );
           }
         } catch ( KettleXMLException e ) {
           log.logError( "Unable to open XUL / XML document: " + fileObject );
@@ -262,9 +262,9 @@ public class MessagesSourceCrawler {
     }
   }
 
-  private void addLabelOccurrences( String sourceFolder, FileObject fileObject, NodeList nodeList, String keyPrefix,
-      String tag, String attribute, String defaultPackage, List<SourceCrawlerPackageException> packageExcpeptions )
-    throws Exception {
+  private void addLabelOccurrences( String sourceFolder, FileObject fileObject, NodeList nodeList,
+    String keyPrefix, String tag, String attribute, String defaultPackage,
+    List<SourceCrawlerPackageException> packageExcpeptions ) throws Exception {
     if ( nodeList == null ) {
       return;
     }
@@ -305,7 +305,7 @@ public class MessagesSourceCrawler {
         String xml = bodyXML.getBuffer().toString();
 
         KeyOccurrence keyOccurrence =
-            new KeyOccurrence( fileObject, sourceFolder, messagesPackage, -1, -1, key, "?", xml );
+          new KeyOccurrence( fileObject, sourceFolder, messagesPackage, -1, -1, key, "?", xml );
         addKeyOccurrence( keyOccurrence );
       }
     }
@@ -313,10 +313,10 @@ public class MessagesSourceCrawler {
 
   /**
    * Look for additional occurrences of keys in the specified file.
-   * 
+   *
    * @param sourceFolder
    *          The folder the java file and messages files live in
-   * 
+   *
    * @param javaFile
    *          The java source file to examine
    * @throws IOException
@@ -456,10 +456,10 @@ public class MessagesSourceCrawler {
 
   /**
    * Extract the needed information from the line and the index on which Messages.getString() occurs.
-   * 
+   *
    * @param sourceFolder
    *          The source folder the messages and java files live in
-   * 
+   *
    * @param fileObject
    *          the file we're reading
    * @param messagesPackage
@@ -472,7 +472,7 @@ public class MessagesSourceCrawler {
    *          the index in the line on which "Messages.getString(" is located.
    */
   private void addLineOccurrence( String sourceFolder, FileObject fileObject, String messagesPackage, String line,
-      int row, int index, String scanPhrase ) {
+    int row, int index, String scanPhrase ) {
     // Right after the "Messages.getString(" string is the key, quoted (")
     // until the next comma...
     //
@@ -530,7 +530,7 @@ public class MessagesSourceCrawler {
     if ( key.startsWith( "System." ) ) {
       String i18nPackage = BaseMessages.class.getPackage().getName();
       KeyOccurrence keyOccurrence =
-          new KeyOccurrence( fileObject, sourceFolder, i18nPackage, row, column, key, arguments, line );
+        new KeyOccurrence( fileObject, sourceFolder, i18nPackage, row, column, key, arguments, line );
 
       // If we just add this key, we'll get doubles in the i18n package
       //
@@ -545,7 +545,7 @@ public class MessagesSourceCrawler {
       }
     } else {
       KeyOccurrence keyOccurrence =
-          new KeyOccurrence( fileObject, sourceFolder, messagesPackage, row, column, key, arguments, line );
+        new KeyOccurrence( fileObject, sourceFolder, messagesPackage, row, column, key, arguments, line );
       addKeyOccurrence( keyOccurrence );
     }
   }
@@ -562,7 +562,7 @@ public class MessagesSourceCrawler {
 
   /**
    * Get all the key occurrences for a certain messages package.
-   * 
+   *
    * @param sourceFolder
    *          the source folder to reference
    * @param messagesPackage
@@ -590,7 +590,7 @@ public class MessagesSourceCrawler {
         if ( occurrences != null ) {
           for ( KeyOccurrence keyOccurrence : occurrences ) {
             if ( keyOccurrence.getKey().equals( key )
-                && keyOccurrence.getMessagesPackage().equals( selectedMessagesPackage ) ) {
+              && keyOccurrence.getMessagesPackage().equals( selectedMessagesPackage ) ) {
               return keyOccurrence;
             }
           }
@@ -640,7 +640,7 @@ public class MessagesSourceCrawler {
 
   /**
    * Get the unique package-key
-   * 
+   *
    * @param sourceFolder
    */
   public List<KeyOccurrence> getKeyOccurrences( String sourceFolder ) {

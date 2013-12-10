@@ -36,7 +36,7 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 /**
  * This file helps us to read a SAS7BAT file
- * 
+ *
  * @author matt
  * @since 4.3
  * @since 07-OCT-2011

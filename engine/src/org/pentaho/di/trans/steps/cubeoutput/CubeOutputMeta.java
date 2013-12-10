@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
  *
  */
 public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
   /** Flag: add the filenames to result filenames */
@@ -69,7 +69,8 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -128,12 +129,13 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       filename = XMLHandler.getTagValue( stepnode, "file", "name" );
       addToResultFilenames =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" ) );
       doNotOpenNewFileInit =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "CubeOutputMeta.Exception.UnableToLoadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "CubeOutputMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -165,7 +167,7 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "CubeOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+        PKG, "CubeOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -178,31 +180,31 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "CubeOutputMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "CubeOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "CubeOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
-            PKG, "CubeOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
+      new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "CubeOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new CubeOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -219,11 +221,11 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

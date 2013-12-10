@@ -38,18 +38,18 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 /**
  * Do nothing. Pass all input data to the next steps.
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class MappingOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MappingOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MappingOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MappingOutputMeta meta;
   private MappingOutputData data;
 
   public MappingOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -88,7 +88,7 @@ public class MappingOutput extends BaseStep implements StepInterface {
           }
           if ( totalsleep > 60000 ) {
             throw new KettleException( BaseMessages.getString(
-                PKG, "MappingOutput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
+              PKG, "MappingOutput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
           }
         }
       }
@@ -124,7 +124,7 @@ public class MappingOutput extends BaseStep implements StepInterface {
   }
 
   public void setConnectorSteps( StepInterface[] targetSteps, List<MappingValueRename> inputValueRenames,
-      List<MappingValueRename> outputValueRenames ) {
+    List<MappingValueRename> outputValueRenames ) {
     for ( int i = 0; i < targetSteps.length; i++ ) {
 
       // OK, before we leave, make sure there is a rowset that covers the path to this target step.

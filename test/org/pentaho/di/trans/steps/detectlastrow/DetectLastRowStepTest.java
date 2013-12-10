@@ -50,7 +50,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the Detect Last Row (also now as "Identify last row in stream) step.
- * 
+ *
  * @author Sven Boden
  */
 public class DetectLastRowStepTest extends TestCase {
@@ -58,10 +58,10 @@ public class DetectLastRowStepTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
-            new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ), };
+    {
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
+      new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -72,10 +72,10 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Create data rows.
-   * 
+   *
    * @param nrRows
    *          nr of rows to insert (from 0 to 3 for the moment)
-   * 
+   *
    * @return List of row and meta data
    */
   public List<RowMetaAndData> createData( int nrRows ) {
@@ -84,11 +84,13 @@ public class DetectLastRowStepTest extends TestCase {
     RowMetaInterface rm = createRowMetaInterface();
 
     Object[] r1 =
-        new Object[] { "KETTLE1", new Long( 123L ), new Double( 10.5D ), Boolean.TRUE, BigDecimal.valueOf( 123.45 ) };
+      new Object[] { "KETTLE1", new Long( 123L ), new Double( 10.5D ), Boolean.TRUE, BigDecimal.valueOf( 123.45 ) };
     Object[] r2 =
-        new Object[] { "KETTLE2", new Long( 500L ), new Double( 20.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ) };
+      new Object[] {
+        "KETTLE2", new Long( 500L ), new Double( 20.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ) };
     Object[] r3 =
-        new Object[] { "KETTLE3", new Long( 501L ), new Double( 21.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ) };
+      new Object[] {
+        "KETTLE3", new Long( 501L ), new Double( 21.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ) };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );
@@ -101,10 +103,11 @@ public class DetectLastRowStepTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
-            new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ), new ValueMeta( "result", ValueMeta.TYPE_BOOLEAN ), };
+    {
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
+      new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
+      new ValueMeta( "result", ValueMeta.TYPE_BOOLEAN ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -115,10 +118,10 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Create result data rows.
-   * 
+   *
    * @param nrRows
    *          nr of rows to insert (from 0 to 3 for the moment)
-   * 
+   *
    * @return List of row and meta data
    */
   public List<RowMetaAndData> createResultData( int nrRows ) {
@@ -127,17 +130,17 @@ public class DetectLastRowStepTest extends TestCase {
     RowMetaInterface rm = createResultRowMetaInterface();
 
     Object[] r1 =
-        new Object[] {
-            "KETTLE1", new Long( 123L ), new Double( 10.5D ), Boolean.TRUE, BigDecimal.valueOf( 123.45 ),
-            ( nrRows == 1 ? Boolean.TRUE : Boolean.FALSE ) };
+      new Object[] {
+        "KETTLE1", new Long( 123L ), new Double( 10.5D ), Boolean.TRUE, BigDecimal.valueOf( 123.45 ),
+        ( nrRows == 1 ? Boolean.TRUE : Boolean.FALSE ) };
     Object[] r2 =
-        new Object[] {
-            "KETTLE2", new Long( 500L ), new Double( 20.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ),
-            ( nrRows == 2 ? Boolean.TRUE : Boolean.FALSE ) };
+      new Object[] {
+        "KETTLE2", new Long( 500L ), new Double( 20.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ),
+        ( nrRows == 2 ? Boolean.TRUE : Boolean.FALSE ) };
     Object[] r3 =
-        new Object[] {
-            "KETTLE3", new Long( 501L ), new Double( 21.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ),
-            ( nrRows == 3 ? Boolean.TRUE : Boolean.FALSE ) };
+      new Object[] {
+        "KETTLE3", new Long( 501L ), new Double( 21.0D ), Boolean.FALSE, BigDecimal.valueOf( 123.45 ),
+        ( nrRows == 3 ? Boolean.TRUE : Boolean.FALSE ) };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );
@@ -148,7 +151,7 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          first row set to compare
    * @param rows2
@@ -190,10 +193,10 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Test case Detect Last Row step. Nr of rows to test with as argument.
-   * 
+   *
    * @param nrRows
    *          Number of rows to test.
-   * 
+   *
    * @throws Exception
    *           upon any exception
    */
@@ -297,7 +300,7 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Test with 0 rows
-   * 
+   *
    * @throws Exception
    *           Upon any error.
    */
@@ -307,7 +310,7 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Test with 1 rows
-   * 
+   *
    * @throws Exception
    *           Upon any error.
    */
@@ -317,7 +320,7 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Test with 2 rows
-   * 
+   *
    * @throws Exception
    *           Upon any error.
    */
@@ -327,7 +330,7 @@ public class DetectLastRowStepTest extends TestCase {
 
   /**
    * Test with 3 rows
-   * 
+   *
    * @throws Exception
    *           Upon any error.
    */

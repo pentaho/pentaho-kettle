@@ -68,31 +68,36 @@ public class TransformationHasNoDisabledHopsImportRuleTest extends TestCase {
     // Load the plugin to test from the registry.
     //
     PluginRegistry registry = PluginRegistry.getInstance();
-    PluginInterface plugin = registry.findPluginWithId( ImportRulePluginType.class, "TransformationHasNoDisabledHops" );
-    assertNotNull( "The 'transformation has no disabled hops' rule could not be found in the plugin registry!", plugin );
+    PluginInterface plugin =
+      registry.findPluginWithId( ImportRulePluginType.class, "TransformationHasNoDisabledHops" );
+    assertNotNull(
+      "The 'transformation has no disabled hops' rule could not be found in the plugin registry!", plugin );
 
     TransformationHasNoDisabledHopsImportRule rule =
-        (TransformationHasNoDisabledHopsImportRule) registry.loadClass( plugin );
+      (TransformationHasNoDisabledHopsImportRule) registry.loadClass( plugin );
     assertNotNull(
-        "The 'transformation has no disabled hops' class could not be loaded by the plugin registry!", plugin );
+      "The 'transformation has no disabled hops' class could not be loaded by the plugin registry!", plugin );
 
     rule.setEnabled( true );
 
     List<ImportValidationFeedback> feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has no disabled hops'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     transMeta.getTransHop( 0 ).setEnabled( false );
 
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has no disabled hops'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setEnabled( false );
 
     feedback = rule.verifyRule( transMeta );
-    assertTrue( "We didn't expect any feedback from the 'transformation has no disabled hops' while disabled", feedback
+    assertTrue(
+      "We didn't expect any feedback from the 'transformation has no disabled hops' while disabled", feedback
         .isEmpty() );
 
   }

@@ -46,7 +46,7 @@ import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 
 public class TableAgileMart extends TableOutput implements TableManager {
 
-  private static Class<?> PKG = TableAgileMartMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableAgileMartMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String message = null;
 
@@ -55,7 +55,7 @@ public class TableAgileMart extends TableOutput implements TableManager {
   private AgileMartUtil util = new AgileMartUtil();
 
   public TableAgileMart( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -229,8 +229,8 @@ public class TableAgileMart extends TableOutput implements TableManager {
     TableOutputMeta meta = getMeta();
     TableOutputData data = getData();
     try {
-      data.db
-          .truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+      data.db.truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
+        .getTableName() ) );
       util.updateMetadata( meta, -1 );
       return true;
     } catch ( KettleDatabaseException e ) {

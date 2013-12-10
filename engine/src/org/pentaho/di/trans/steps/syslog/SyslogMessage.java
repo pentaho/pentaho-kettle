@@ -37,20 +37,20 @@ import org.productivity.java.syslog4j.Syslog;
 
 /**
  * Write message to SyslogMessage *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class SyslogMessage extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SyslogMessageMeta meta;
   private SyslogMessageData data;
 
   public SyslogMessage( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -76,7 +76,7 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       if ( data.indexOfMessageFieldName < 0 ) {
         // The field is unreachable !
         throw new KettleException( BaseMessages.getString( PKG, "SyslogMessage.Exception.CouldnotFindField", meta
-            .getMessageFieldName() ) );
+          .getMessageFieldName() ) );
       }
 
     }
@@ -90,9 +90,8 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       }
 
       // Send message
-      SyslogDefs.sendMessage(
-          data.syslog, SyslogDefs.getPriority( meta.getPriority() ), message, meta.isAddTimestamp(), data.datePattern,
-          meta.isAddHostName() );
+      SyslogDefs.sendMessage( data.syslog, SyslogDefs.getPriority( meta.getPriority() ), message, meta
+        .isAddTimestamp(), data.datePattern, meta.isAddHostName() );
 
       putRow( getInputRowMeta(), r ); // copy row to output rowset(s);
 

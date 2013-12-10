@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl</a>
- * 
+ *
  */
 public class StringListPluginProperty extends KeyValue<List<String>> implements PluginProperty, Iterable<String> {
 
@@ -94,7 +94,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#appendXml(java.lang.StringBuilder)
    */
   public void appendXml( final StringBuilder builder ) {
@@ -107,7 +107,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#evaluate()
    */
   public boolean evaluate() {
@@ -116,7 +116,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#loadXml(org.w3c.dom.Node)
    */
   public void loadXml( final Node node ) {
@@ -127,7 +127,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#readFromPreferences(java.util.prefs.Preferences)
    */
   public void readFromPreferences( final Preferences node ) {
@@ -137,19 +137,19 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#readFromRepositoryStep(org.pentaho.di.repository.Repository,
    *      long)
    */
-  public void readFromRepositoryStep( final Repository repository, final IMetaStore metaStore, final ObjectId stepId )
-    throws KettleException {
+  public void readFromRepositoryStep( final Repository repository, final IMetaStore metaStore,
+    final ObjectId stepId ) throws KettleException {
     final String stringValue = repository.getStepAttributeString( stepId, this.getKey() );
     this.setValue( fromString( stringValue ) );
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#saveToPreferences(java.util.prefs.Preferences)
    */
   public void saveToPreferences( final Preferences node ) {
@@ -158,12 +158,12 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#saveToRepositoryStep(org.pentaho.di.repository.Repository,
    *      long, long)
    */
   public void saveToRepositoryStep( final Repository repository, final IMetaStore metaStore,
-      final ObjectId transformationId, final ObjectId stepId ) throws KettleException {
+    final ObjectId transformationId, final ObjectId stepId ) throws KettleException {
     final String stringValue = asString( this.getValue() );
     repository.saveStepAttribute( transformationId, stepId, this.getKey(), stringValue );
   }
@@ -183,7 +183,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Iterable#iterator()
    */
   public Iterator<String> iterator() throws IllegalStateException {
@@ -211,7 +211,7 @@ public class StringListPluginProperty extends KeyValue<List<String>> implements 
 
   /**
    * Assert state, value not null.
-   * 
+   *
    * @throws IllegalStateException
    *           if this.value is null.
    */

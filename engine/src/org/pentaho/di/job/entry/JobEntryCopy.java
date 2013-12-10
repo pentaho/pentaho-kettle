@@ -50,14 +50,14 @@ import org.w3c.dom.Node;
 /**
  * This class describes the fact that a single JobEntry can be used multiple times in the same Job. Therefor it contains
  * a link to a JobEntry, a position, a number, etc.
- * 
+ *
  * @author Matt
  * @since 01-10-2003
- * 
+ *
  */
 
 public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterface, ChangedFlagInterface,
-    AttributesInterface {
+  AttributesInterface {
   private static final String XML_TAG = "entry";
 
   private JobEntryInterface entry;
@@ -109,7 +109,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   }
 
   /**
-   * 
+   *
    * @param entrynode
    * @param databases
    * @param slaveServers
@@ -123,14 +123,15 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     this( entrynode, databases, slaveServers, rep, null );
   }
 
-  public JobEntryCopy( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public JobEntryCopy( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       String stype = XMLHandler.getTagValue( entrynode, "type" );
       PluginRegistry registry = PluginRegistry.getInstance();
       PluginInterface jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, stype );
       if ( jobPlugin == null ) {
-        throw new KettlePluginLoaderException( stype, "No valid step/plugin specified (jobPlugin=null) for " + stype );
+        throw new KettlePluginLoaderException( stype, "No valid step/plugin specified (jobPlugin=null) for "
+          + stype );
       }
 
       // Get an empty JobEntry of the appropriate class...
@@ -161,7 +162,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
   /**
    * Backward compatible loading of XML, using deprecated method.
-   * 
+   *
    * @param entrynode
    * @param databases
    * @param slaveServers
@@ -170,7 +171,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
    */
   @SuppressWarnings( "deprecation" )
   protected void compatibleLoadXml( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
-      Repository rep ) throws KettleXMLException {
+    Repository rep ) throws KettleXMLException {
     entry.loadXML( entrynode, databases, slaveServers, rep );
   }
 
@@ -253,7 +254,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
    */
   public String getTypeDesc() {
     PluginInterface plugin =
-        PluginRegistry.getInstance().findPluginWithId( JobEntryPluginType.class, entry.getPluginId() );
+      PluginRegistry.getInstance().findPluginWithId( JobEntryPluginType.class, entry.getPluginId() );
     return plugin.getDescription();
   }
 

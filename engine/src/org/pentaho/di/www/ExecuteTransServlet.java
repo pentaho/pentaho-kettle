@@ -68,7 +68,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -123,7 +124,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       TransConfiguration transConfiguration = new TransConfiguration( transMeta, transExecutionConfiguration );
 
       String carteObjectId = UUID.randomUUID().toString();
-      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+      SimpleLoggingObject servletLoggingObject =
+        new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
       servletLoggingObject.setLogLevel( logLevel );
 
@@ -167,7 +169,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     } catch ( Exception ex ) {
 
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-          PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+        PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
   }
 
@@ -195,7 +197,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
         directoryPath = trans.substring( 0, lastSlash );
         name = trans.substring( lastSlash + 1 );
       }
-      RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
+      RepositoryDirectoryInterface directory =
+        repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
       if ( directory == null ) {
         throw new KettleException( "Unable to find directory path '" + directoryPath + "' in the repository" );
       }

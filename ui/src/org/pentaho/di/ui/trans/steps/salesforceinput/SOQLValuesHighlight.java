@@ -106,12 +106,12 @@ public class SOQLValuesHighlight implements LineStyleListener {
 
   void initializeColors() {
     colors = new Color[] { GUIResource.getInstance().getColor( 0, 0, 0 ), // black
-        GUIResource.getInstance().getColor( 255, 0, 0 ), // red
-        GUIResource.getInstance().getColor( 63, 127, 95 ), // green
-        GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
-        GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
+      GUIResource.getInstance().getColor( 255, 0, 0 ), // red
+      GUIResource.getInstance().getColor( 63, 127, 95 ), // green
+      GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
+      GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
 
-        };
+    };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
     tokenColors[WHITE] = 0;
@@ -160,7 +160,7 @@ public class SOQLValuesHighlight implements LineStyleListener {
           Color color = getColor( token );
           if ( color != colors[0] ) { // hardcoded default foreground color, black
             StyleRange style =
-                new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
+              new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
             // if ( token == KEY ) {
             // style.fontStyle = SWT.BOLD;
             // }
@@ -261,8 +261,8 @@ public class SOQLValuesHighlight implements LineStyleListener {
     };
 
     private String[] fgKeywords = {
-        "select", "from", "where", "and", "or", "with", "group", "having", "order", "by", "asc", "desc", "nulls",
-        "first", "last", "limit", "rollup", "cube", "true", "false" };
+      "select", "from", "where", "and", "or", "with", "group", "having", "order", "by", "asc", "desc", "nulls",
+      "first", "last", "limit", "rollup", "cube", "true", "false" };
 
     public JavaScanner() {
       initialize();

@@ -47,12 +47,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Read data from a TCP/IP socket supplied by SocketWriter. The data coming over the socket is one serialized Row object
  * including metadata and then a series of serialized rows, data only.
- * 
+ *
  * @author Matt
  * @since 01-dec-2006
  */
 public class SocketReader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SocketReaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SocketReaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_FINISHED = "Finished";
   private static final int TIMEOUT_IN_SECONDS = 30;
@@ -60,7 +60,7 @@ public class SocketReader extends BaseStep implements StepInterface {
   private SocketReaderData data;
 
   public SocketReader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -82,7 +82,7 @@ public class SocketReader extends BaseStep implements StepInterface {
 
         // // timeout with retry until connected
         while ( !connected
-            && ( TIMEOUT_IN_SECONDS > ( System.currentTimeMillis() - startTime ) / 1000 ) && !isStopped() ) {
+          && ( TIMEOUT_IN_SECONDS > ( System.currentTimeMillis() - startTime ) / 1000 ) && !isStopped() ) {
           try {
             int port = Integer.parseInt( environmentSubstitute( meta.getPort() ) );
             int bufferSize = Integer.parseInt( environmentSubstitute( meta.getBufferSize() ) );
@@ -92,24 +92,23 @@ public class SocketReader extends BaseStep implements StepInterface {
 
             if ( meta.isCompressed() ) {
               data.outputStream =
-                  new DataOutputStream( new BufferedOutputStream(
-                      new GZIPOutputStream( data.socket.getOutputStream() ), bufferSize ) );
+                new DataOutputStream( new BufferedOutputStream( new GZIPOutputStream( data.socket
+                  .getOutputStream() ), bufferSize ) );
               data.inputStream =
-                  new DataInputStream( new BufferedInputStream(
-                      new GZIPInputStream( data.socket.getInputStream() ), bufferSize ) );
+                new DataInputStream( new BufferedInputStream(
+                  new GZIPInputStream( data.socket.getInputStream() ), bufferSize ) );
             } else {
               data.outputStream =
-                  new DataOutputStream( new BufferedOutputStream( data.socket.getOutputStream(), bufferSize ) );
+                new DataOutputStream( new BufferedOutputStream( data.socket.getOutputStream(), bufferSize ) );
               data.inputStream =
-                  new DataInputStream( new BufferedInputStream( data.socket.getInputStream(), bufferSize ) );
+                new DataInputStream( new BufferedInputStream( data.socket.getInputStream(), bufferSize ) );
             }
             lastException = null;
           } catch ( Exception e ) {
             lastException =
-                new KettleException(
-                    "Unable to open socket to server "
-                        + environmentSubstitute( meta.getHostname() ) + " port "
-                        + environmentSubstitute( meta.getPort() ), e );
+              new KettleException( "Unable to open socket to server "
+                + environmentSubstitute( meta.getHostname() ) + " port "
+                + environmentSubstitute( meta.getPort() ), e );
           }
 
           if ( lastException != null ) { // Sleep for a second
@@ -126,14 +125,14 @@ public class SocketReader extends BaseStep implements StepInterface {
             data.socket.shutdownOutput();
             data.socket.close();
             logError( "Closed connection to data socket to "
-                + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
+              + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
           }
 
           throw lastException;
         } else {
           if ( data.inputStream == null ) {
             throw new KettleException( "Unable to connect to the SocketWriter in the "
-                + TIMEOUT_IN_SECONDS + "s timeout period." );
+              + TIMEOUT_IN_SECONDS + "s timeout period." );
           }
         }
 
@@ -159,10 +158,10 @@ public class SocketReader extends BaseStep implements StepInterface {
           data.socket.shutdownOutput();
           data.socket.close();
           logError( "Closed connection to data socket to "
-              + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
+            + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
         } catch ( IOException e1 ) {
           logError( "Failed to close connection to data socket to "
-              + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
+            + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
         }
       }
       throw new KettleException( e );

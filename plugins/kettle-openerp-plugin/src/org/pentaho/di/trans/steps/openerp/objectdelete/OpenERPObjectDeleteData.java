@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class OpenERPObjectDeleteData extends BaseStepData implements StepDataInterface {
 
 	public OpenERPHelper helper;
-	public ArrayList<Object> batchRows = new ArrayList<Object>(); 
+	public ArrayList<Object> batchRows = new ArrayList<Object>();
 	
 	public OpenERPObjectDeleteData(DatabaseMeta databaseMeta) throws KettleException {
 		super();

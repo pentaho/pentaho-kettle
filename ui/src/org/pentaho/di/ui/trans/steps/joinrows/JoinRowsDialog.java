@@ -60,7 +60,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = JoinRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JoinRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlSortDir;
   private Button wbSortDir;
@@ -261,8 +261,8 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
     } catch ( KettleException ke ) {
       inputfields = new RowMeta();
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "JoinRowsDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-              PKG, "JoinRowsDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "JoinRowsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "JoinRowsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
     wOK = new Button( shell, SWT.PUSH );

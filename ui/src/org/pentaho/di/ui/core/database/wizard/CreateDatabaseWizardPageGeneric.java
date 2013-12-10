@@ -41,14 +41,14 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 /**
- * 
+ *
  * On page one we select the database connection SAP/R3 specific settings 1) The data tablespace 2) The index tablespace
- * 
+ *
  * @author Jens Bleuel
  * @since 22-mar-2006
  */
 public class CreateDatabaseWizardPageGeneric extends WizardPage {
-  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlURL;
   private Text wURL;
@@ -136,11 +136,12 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage {
   public boolean canFlipToNextPage() {
     String url = wURL.getText() != null ? wURL.getText().length() > 0 ? wURL.getText() : null : null;
     String driverClass =
-        wDriverClass.getText() != null ? wDriverClass.getText().length() > 0 ? wDriverClass.getText() : null : null;
+      wDriverClass.getText() != null
+        ? wDriverClass.getText().length() > 0 ? wDriverClass.getText() : null : null;
 
     if ( url == null || driverClass == null ) {
       setErrorMessage( BaseMessages.getString(
-          PKG, "CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired" ) );
+        PKG, "CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired" ) );
       return false;
     } else {
       getDatabaseInfo();
@@ -166,7 +167,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
    */
   public IWizardPage getNextPage() {

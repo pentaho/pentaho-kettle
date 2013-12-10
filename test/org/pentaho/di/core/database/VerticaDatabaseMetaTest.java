@@ -27,9 +27,9 @@ import org.junit.Test;
 
 /**
  * Tests for the Vertica Database Meta classes.
- * 
+ *
  * @author sflatley
- * 
+ *
  */
 public class VerticaDatabaseMetaTest {
 

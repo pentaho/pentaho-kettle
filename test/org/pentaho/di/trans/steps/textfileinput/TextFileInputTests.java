@@ -57,14 +57,14 @@ import org.pentaho.reporting.libraries.base.util.CSVTokenizer;
 /**
  * This class was a "copy and modification" of Kettle's CsvInput1Test. I added comments as I was learning the
  * architecture of the class.
- * 
+ *
  * @author sflatley
  */
 public class TextFileInputTests extends TestCase {
 
   /**
    * Write the file to be used as input (as a temporary file).
-   * 
+   *
    * @return Absolute file name/path of the created file.
    * @throws IOException
    *           UPON
@@ -91,7 +91,7 @@ public class TextFileInputTests extends TestCase {
   /**
    * Create result data for test case 1. Each Object array in element in list should mirror the data written by
    * writeInputFile().
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -112,7 +112,7 @@ public class TextFileInputTests extends TestCase {
 
   /**
    * Creates a RowMetaInterface with a ValueMetaInterface with the name "filename".
-   * 
+   *
    * @return
    */
   public RowMetaInterface createRowMetaInterface() {
@@ -128,7 +128,7 @@ public class TextFileInputTests extends TestCase {
 
   /**
    * Creates data... Will add more as I figure what the data is.
-   * 
+   *
    * @param fileName
    * @return
    */
@@ -143,17 +143,17 @@ public class TextFileInputTests extends TestCase {
   /**
    * Creates a row meta interface for the fields that are defined by performing a getFields and by checking "Result
    * filenames - Add filenames to result from "Text File Input" dialog.
-   * 
+   *
    * @return
    */
   public RowMetaInterface createResultRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "d", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "e", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "d", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "e", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Stores data for the MySQL bulk load step.
- * 
+ *
  * @author Matt
  * @since 14-apr-2009
  */

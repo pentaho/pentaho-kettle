@@ -39,18 +39,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Normalise de-normalised input data.
- * 
+ *
  * @author Matt
  * @since 5-apr-2003
  */
 public class Normaliser extends BaseStep implements StepInterface {
-  private static Class<?> PKG = NormaliserMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = NormaliserMeta.class; // for i18n purposes, needed by Translator2!!
 
   private NormaliserMeta meta;
   private NormaliserData data;
 
   public Normaliser( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

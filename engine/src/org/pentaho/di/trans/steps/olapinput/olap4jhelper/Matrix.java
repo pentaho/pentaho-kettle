@@ -42,7 +42,7 @@ public class Matrix {
 
   /**
    * Creats a Matrix.
-   * 
+   *
    * @param width
    *          Width of matrix
    * @param height
@@ -55,7 +55,7 @@ public class Matrix {
 
   /**
    * Sets the value at a particular coordinate
-   * 
+   *
    * @param x
    *          X coordinate
    * @param y
@@ -75,7 +75,7 @@ public class Matrix {
 
   /**
    * Sets the value at a particular coordinate
-   * 
+   *
    * @param x
    *          X coordinate
    * @param y
@@ -95,7 +95,7 @@ public class Matrix {
 
   /**
    * Returns the cell at a particular coordinate.
-   * 
+   *
    * @param x
    *          X coordinate
    * @param y
@@ -108,7 +108,7 @@ public class Matrix {
 
   /**
    * Return the width of the created matrix.
-   * 
+   *
    * @return the width
    */
   public int getMatrixWidth() {
@@ -117,7 +117,7 @@ public class Matrix {
 
   /**
    * Return the height of the matrix.
-   * 
+   *
    * @return the height
    */
   public int getMatrixHeight() {
@@ -126,7 +126,7 @@ public class Matrix {
 
   /**
    * Return the generated hashmap.
-   * 
+   *
    * @return the map
    */
   public Map<List<Integer>, AbstractBaseCell> getMap() {
@@ -134,9 +134,9 @@ public class Matrix {
   }
 
   /**
-   * 
+   *
    * Set the header/row data offset.
-   * 
+   *
    * @param offset
    */
   public void setOffset( final int offset ) {
@@ -145,9 +145,9 @@ public class Matrix {
   }
 
   /**
-   * 
+   *
    * Return the header/row data offset.
-   * 
+   *
    * @return offset
    */
   public int getOffset() {

@@ -48,7 +48,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 
 public class XulDatabaseDialog {
 
-  private static Class<?> PKG = XulDatabaseDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XulDatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseMeta databaseMeta;
 
@@ -97,7 +97,7 @@ public class XulDatabaseDialog {
 
   /**
    * Opens the XUL database dialog
-   * 
+   *
    * @return databaseName (or NULL on error or cancel) TODO: Fix deprecation warning in v3.2 by using the new dialog
    */
   public String open() {
@@ -109,7 +109,7 @@ public class XulDatabaseDialog {
 
       // PDI-5088 clear previous options selections since we are re-using the dialog
       XulTree tree =
-          (XulTree) xulDialogComponent.getDocument().getRootElement().getElementById( "options-parameter-tree" );
+        (XulTree) xulDialogComponent.getDocument().getRootElement().getElementById( "options-parameter-tree" );
       tree.getRootChildren().removeAll();
 
       dataHandler.setData( databaseMeta );
@@ -129,7 +129,7 @@ public class XulDatabaseDialog {
 
     } catch ( Exception e ) {
       new ErrorDialog( parentShell, BaseMessages.getString( PKG, "XulDatabaseDialog.Error.Title" ), BaseMessages
-          .getString( PKG, "XulDatabaseDialog.Error.Dialog" ), e );
+        .getString( PKG, "XulDatabaseDialog.Error.Dialog" ), e );
       return null;
     }
     return databaseName;
@@ -156,7 +156,7 @@ public class XulDatabaseDialog {
 
     } catch ( XulException e ) {
       new ErrorDialog( parentShell, BaseMessages.getString( PKG, "XulDatabaseDialog.Error.Title" ), BaseMessages
-          .getString( PKG, "XulDatabaseDialog.Error.HandleXul" ), e );
+        .getString( PKG, "XulDatabaseDialog.Error.HandleXul" ), e );
       return;
     }
 
@@ -176,9 +176,11 @@ public class XulDatabaseDialog {
           res = GlobalMessages.getBundle( failOverLocale, MESSAGES );
         } catch ( MissingResourceException e2 ) {
           res = null;
-          log.logError( BaseMessages.getString( PKG, "XulDatabaseDialog.Error.ResourcesNotFound.Title" ), BaseMessages
-              .getString( PKG, "XulDatabaseDialog.Error.ResourcesNotFound", primaryLocale == null ? "" : primaryLocale
-                  .toString(), failOverLocale == null ? "" : failOverLocale.toString() ), e2 );
+          log.logError(
+            BaseMessages.getString( PKG, "XulDatabaseDialog.Error.ResourcesNotFound.Title" ), BaseMessages
+              .getString( PKG, "XulDatabaseDialog.Error.ResourcesNotFound", primaryLocale == null
+                ? "" : primaryLocale.toString(), failOverLocale == null ? "" : failOverLocale.toString() ),
+            e2 );
         }
       }
 
@@ -198,7 +200,7 @@ public class XulDatabaseDialog {
 
     } catch ( Exception e ) {
       new ErrorDialog( parentShell, BaseMessages.getString( PKG, "XulDatabaseDialog.Error.Title" ), BaseMessages
-          .getString( PKG, "XulDatabaseDialog.Error.HandleXul" ), e );
+        .getString( PKG, "XulDatabaseDialog.Error.HandleXul" ), e );
       return;
     }
 
@@ -216,7 +218,7 @@ public class XulDatabaseDialog {
 
     } catch ( Exception e ) {
       new ErrorDialog( parentShell, BaseMessages.getString( PKG, "XulDatabaseDialog.Error.Title" ), BaseMessages
-          .getString( PKG, "XulDatabaseDialog.Error.Dialog" ), e );
+        .getString( PKG, "XulDatabaseDialog.Error.Dialog" ), e );
       return;
     }
   }

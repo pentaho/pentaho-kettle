@@ -92,7 +92,7 @@ public class FunctionLib {
 
   /**
    * Get all the function names for a certain category
-   * 
+   *
    * @param category
    *          the category name to look for
    * @return the sorted array of function names for the specified category

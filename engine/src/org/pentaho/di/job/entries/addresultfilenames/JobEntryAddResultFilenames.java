@@ -63,13 +63,12 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'add result filenames' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!
-                                                                  // $NON-NLS-1$
 
   public boolean argFromPrevious;
 
@@ -122,8 +121,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
@@ -145,12 +144,13 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         filemasks[i] = XMLHandler.getTagValue( fnode, "filemask" );
       }
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.UnableToLoadFromXml" ), xe );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "JobEntryAddResultFilenames.UnableToLoadFromXml" ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
       includeSubfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "include_subfolders" );
@@ -168,8 +168,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         filemasks[a] = rep.getJobEntryAttributeString( id_jobentry, a, "filemask" );
       }
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.UnableToLoadFromRepo", String
-          .valueOf( id_jobentry ) ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryAddResultFilenames.UnableToLoadFromRepo", String.valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -187,8 +187,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.UnableToSaveToRepo", String
-          .valueOf( id_job ) ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryAddResultFilenames.UnableToSaveToRepo", String.valueOf( id_job ) ), dbe );
     }
   }
 
@@ -215,7 +215,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     if ( argFromPrevious ) {
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.FoundPreviousRows", String
-            .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
+          .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
       }
     }
 
@@ -231,7 +231,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         // ok we can process this file/folder
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString(
-              PKG, "JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous ) );
+            PKG, "JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous ) );
         }
 
         if ( !processFile( filefolder_previous, fmasks_previous, parentJob, result ) ) {
@@ -246,7 +246,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         // ok we can process this file/folder
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString(
-              PKG, "JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i] ) );
+            PKG, "JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i] ) );
         }
         if ( !processFile( arguments[i], filemasks[i], parentJob, result ) ) {
           nrErrFiles++;
@@ -279,12 +279,12 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
           // Add filename to Resultfilenames ...
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.AddingFileToResult", filefolder
-                .toString() ) );
+              .toString() ) );
           }
           ResultFile resultFile =
-              new ResultFile(
-                  ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filefolder.toString(), this ), parentJob
-                      .getJobname(), toString() );
+            new ResultFile(
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filefolder.toString(), this ), parentJob
+                .getJobname(), toString() );
           result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
         } else {
           FileObject[] list = filefolder.findFiles( new TextFileSelector( filefolder.toString(), realwildcard ) );
@@ -293,12 +293,12 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
             // Add filename to Resultfilenames ...
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.AddingFileToResult", list[i]
-                  .toString() ) );
+                .toString() ) );
             }
             ResultFile resultFile =
-                new ResultFile(
-                    ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( list[i].toString(), this ), parentJob
-                        .getJobname(), toString() );
+              new ResultFile(
+                ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( list[i].toString(), this ), parentJob
+                  .getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
           }
         }
@@ -306,14 +306,15 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
       } else {
         // File can not be found
         if ( log.isBasic() ) {
-          logBasic( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.FileCanNotbeFound", realFilefoldername ) );
+          logBasic( BaseMessages.getString(
+            PKG, "JobEntryAddResultFilenames.FileCanNotbeFound", realFilefoldername ) );
         }
         rcode = false;
       }
     } catch ( Exception e ) {
       rcode = false;
       logError( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.CouldNotProcess", realFilefoldername, e
-          .getMessage() ), e );
+        .getMessage() ), e );
     } finally {
       if ( filefolder != null ) {
         try {
@@ -350,16 +351,17 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
           String short_filename = info.getFile().getName().getBaseName();
 
           if ( info.getFile().getParent().equals( info.getBaseFolder() )
-              || ( !info.getFile().getParent().equals( info.getBaseFolder() ) && includeSubfolders ) ) {
+            || ( !info.getFile().getParent().equals( info.getBaseFolder() ) && includeSubfolders ) ) {
             if ( ( info.getFile().getType() == FileType.FILE && fileWildcard == null )
-                || ( info.getFile().getType() == FileType.FILE && fileWildcard != null && GetFileWildcard(
-                    short_filename, fileWildcard ) ) ) {
+              || ( info.getFile().getType() == FileType.FILE && fileWildcard != null && GetFileWildcard(
+                short_filename, fileWildcard ) ) ) {
               returncode = true;
             }
           }
         }
       } catch ( Exception e ) {
-        logError( "Error while finding files ... in [" + info.getFile().toString() + "]. Exception :" + e.getMessage() );
+        logError( "Error while finding files ... in ["
+          + info.getFile().toString() + "]. Exception :" + e.getMessage() );
         returncode = false;
       }
       return returncode;
@@ -371,7 +373,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
   }
 
   /**********************************************************
-   * 
+   *
    * @param selectedfile
    * @param wildcard
    * @return True if the selectedfile matches the wildcard
@@ -428,8 +430,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     return includeSubfolders;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {

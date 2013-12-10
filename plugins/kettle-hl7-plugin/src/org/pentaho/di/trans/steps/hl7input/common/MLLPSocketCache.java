@@ -32,35 +32,35 @@ import ca.uhn.hl7v2.protocol.impl.ServerSocketStreamSource;
 public class MLLPSocketCache {
 
   private static MLLPSocketCache cache;
-  
+
   private Map<String, MLLPSocketCacheEntry> map;
-  
+
   public static MLLPSocketCache getInstance() {
     if (cache==null) {
       cache = new MLLPSocketCache();
     }
     return cache;
   }
-  
+
   public MLLPSocketCache() {
     map = new HashMap<String, MLLPSocketCacheEntry>();
   }
-  
+
   public MLLPSocketCacheEntry getServerSocketStreamSource(String server, int port) throws Exception {
     final String key = createKey(server,port);
     MLLPSocketCacheEntry s = map.get(key);
     if (s!=null) return s;
-    
+
     // Open the socket for this server/port combination.
     //
     ServerSocket serverSocket = new ServerSocket(port);
     StreamSource streamSource = new ServerSocketStreamSource(serverSocket, server);
     MLLPTransport transport = new MLLPTransport(streamSource);
     transport.connect();
-    
+
     final MLLPSocketCacheEntry entry = new MLLPSocketCacheEntry(serverSocket, streamSource, transport);
     entry.setJobListener(new JobAdapter() {
-      
+
       @Override
       public void jobFinished(Job job) throws KettleException {
         KettleException exception = null;
@@ -79,9 +79,9 @@ public class MLLPSocketCache {
         } catch(Exception e) {
           exception=new KettleException(e);
         }
-        
+
         map.remove(key);
-        
+
         if (exception!=null) {
           throw exception;
         }
@@ -90,10 +90,10 @@ public class MLLPSocketCache {
     // Store a copy in our map to make sure that only the first return value contains the job listener.
     //
     map.put(key, new MLLPSocketCacheEntry(serverSocket, streamSource, transport));
-    
+
     return entry;
   }
-  
+
   private String createKey(String server, int port) {
     return server+":"+port;
   }

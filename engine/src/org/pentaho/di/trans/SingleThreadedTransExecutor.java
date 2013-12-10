@@ -194,7 +194,8 @@ public class SingleThreadedTransExecutor {
         if ( stepsSize <= stepsMinSize ) {
           if ( testing ) {
             tLogString.append( String.format( "stepsMinSize:%s  stepsSize:%s", stepsMinSize, stepsSize ) );
-            tLogString.append( "stepsSize is <= stepsMinSize.. exiting outer sort loop. index:" + x ).append( "\n" );
+            tLogString
+              .append( "stepsSize is <= stepsMinSize.. exiting outer sort loop. index:" + x ).append( "\n" );
           }
           break;
         }
@@ -209,9 +210,10 @@ public class SingleThreadedTransExecutor {
         stepsMinSize++;
         if ( stepsMinSize >= stepsSize ) {
           if ( testing ) {
+            tLogString.append( String.format( "stepsMinSize:%s  stepsSize:%s", stepsMinSize, stepsSize ) ).append(
+              "\n" );
             tLogString
-                .append( String.format( "stepsMinSize:%s  stepsSize:%s", stepsMinSize, stepsSize ) ).append( "\n" );
-            tLogString.append( "stepsMinSize is >= stepsSize.. exiting outer sort loop. index:" + x ).append( "\n" );
+              .append( "stepsMinSize is >= stepsSize.. exiting outer sort loop. index:" + x ).append( "\n" );
           }
           break;
         }
@@ -224,12 +226,9 @@ public class SingleThreadedTransExecutor {
 
       if ( !forwardChange && !backwardChange ) {
         if ( testing ) {
-          tLogString
-              .append(
-                  String
-                      .format(
-                          "existing outer loop because no change was detected going forward or backward. index:%s  min:%s  max:%s",
-                          x, stepsMinSize, stepsSize ) ).append( "\n" );
+          tLogString.append( String.format( "existing outer loop because no "
+            + "change was detected going forward or backward. index:%s  min:%s  max:%s",
+            x, stepsMinSize, stepsSize ) ).append( "\n" );
         }
         break;
       }
@@ -279,8 +278,8 @@ public class SingleThreadedTransExecutor {
       }
       if ( !ok ) {
         throw new KettleException( "Step '"
-            + combi.stepname + "' of type '" + combi.stepMeta.getStepID()
-            + "' is not yet supported in a Single Threaded transformation engine." );
+          + combi.stepname + "' of type '" + combi.stepMeta.getStepID()
+          + "' is not yet supported in a Single Threaded transformation engine." );
       }
     }
     // Initialize all the steps...
@@ -297,7 +296,7 @@ public class SingleThreadedTransExecutor {
 
   /**
    * Give all steps in the transformation the chance to process all rows on input...
-   * 
+   *
    * @return true if more iterations can be performed. False if this is not the case.
    */
   public boolean oneIteration() throws KettleException {
@@ -367,7 +366,8 @@ public class SingleThreadedTransExecutor {
         //
         combi.step.batchComplete();
 
-        // System.out.println(combi.step.toString()+" : input="+getTotalRows(combi.step.getInputRowSets())+", output="+getTotalRows(combi.step.getOutputRowSets()));
+        // System.out.println(combi.step.toString()+" : input="+getTotalRows(combi.step.getInputRowSets())+",
+        // output="+getTotalRows(combi.step.getOutputRowSets()));
 
         if ( stepDone ) {
           nrDone++;

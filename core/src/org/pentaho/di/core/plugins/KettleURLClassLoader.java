@@ -38,7 +38,7 @@ import java.util.jar.JarFile;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleURLClassLoader extends URLClassLoader {
-  private static Class<?> PKG = KettleURLClassLoader.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = KettleURLClassLoader.class; // for i18n purposes, needed by Translator2!!
 
   private String name;
 
@@ -107,11 +107,11 @@ public class KettleURLClassLoader extends URLClassLoader {
       // Get the jar, load the bytes from the jar file, construct class from scratch as in snippet below...
 
       /*
-       * 
+       *
        * loaded = super.findClass(name);
-       * 
+       *
        * URL url = super.findResource(newName);
-       * 
+       *
        * InputStream clis = getResourceAsStream(newName);
        */
 
@@ -149,7 +149,7 @@ public class KettleURLClassLoader extends URLClassLoader {
       return retval;
     } catch ( Exception e ) {
       System.out.println( BaseMessages.getString( PKG, "KettleURLClassLoader.Exception.UnableToReadClass" )
-          + e.toString() );
+        + e.toString() );
       return null;
     }
   }
@@ -162,7 +162,7 @@ public class KettleURLClassLoader extends URLClassLoader {
 
   /**
    * This method is designed to clear out classloader file locks in windows.
-   * 
+   *
    * @param clazzLdr
    *          class loader to clean up
    */

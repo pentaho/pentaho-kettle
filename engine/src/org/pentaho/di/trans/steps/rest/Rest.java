@@ -65,11 +65,11 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 /**
  * @author Samatar
  * @since 16-jan-2011
- * 
+ *
  */
 
 public class Rest extends BaseStep implements StepInterface {
-  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
   private RestMeta meta;
   private RestData data;
@@ -171,8 +171,8 @@ public class Rest extends BaseStep implements StepInterface {
       // Get response time
       long responseTime = System.currentTimeMillis() - startTime;
       if ( isDetailed() ) {
-        logDetailed( BaseMessages
-            .getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
+        logDetailed( BaseMessages.getString(
+          PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
       }
 
       // Get status
@@ -235,13 +235,13 @@ public class Rest extends BaseStep implements StepInterface {
 
       if ( !Const.isEmpty( data.realProxyHost ) ) {
         // PROXY CONFIGURATION
-        data.config
-            .getProperties().put(
-                DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI,
-                "http://" + data.realProxyHost + ":" + data.realProxyPort );
+        data.config.getProperties().put(
+          DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI,
+          "http://" + data.realProxyHost + ":" + data.realProxyPort );
         if ( !Const.isEmpty( data.realHttpLogin ) && !Const.isEmpty( data.realHttpPassword ) ) {
           data.config.getState().setProxyCredentials(
-              AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort, data.realHttpLogin, data.realHttpPassword );
+            AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort, data.realHttpLogin,
+            data.realHttpPassword );
         }
       } else {
         if ( !Const.isEmpty( data.realHttpLogin ) ) {
@@ -274,7 +274,8 @@ public class Rest extends BaseStep implements StepInterface {
             }
           };
 
-          data.config.getProperties().put( HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hv, ctx ) );
+          data.config.getProperties().put(
+            HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hv, ctx ) );
 
         } catch ( NoSuchAlgorithmException e ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
@@ -283,7 +284,8 @@ public class Rest extends BaseStep implements StepInterface {
         } catch ( CertificateException e ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CertificateException" ), e );
         } catch ( FileNotFoundException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.FileNotFound", data.trustStoreFile ), e );
+          throw new KettleException(
+            BaseMessages.getString( PKG, "Rest.Error.FileNotFound", data.trustStoreFile ), e );
         } catch ( IOException e ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.IOException" ), e );
         } catch ( KeyManagementException e ) {
@@ -326,7 +328,7 @@ public class Rest extends BaseStep implements StepInterface {
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
             throw new KettleException( BaseMessages.getString(
-                PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
+              PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
           }
         }
       } else {
@@ -456,7 +458,8 @@ public class Rest extends BaseStep implements StepInterface {
       data.realProxyHost = environmentSubstitute( meta.getProxyHost() );
       data.realProxyPort = Const.toInt( environmentSubstitute( meta.getProxyPort() ), 8080 );
       data.realHttpLogin = environmentSubstitute( meta.getHttpLogin() );
-      data.realHttpPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
+      data.realHttpPassword =
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
 
       if ( !meta.isDynamicMethod() ) {
         data.method = environmentSubstitute( meta.getMethod() );

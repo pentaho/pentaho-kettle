@@ -57,64 +57,65 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 /**
  * Test class for database lookup. H2 is used as database in memory to get an easy playground for database tests. H2
  * does not support all SQL features but it should proof enough for most of our tests.
- * 
+ *
  * Still to do: - cache testing. - Do not pass rows functionality/eat rows on failed lookup - Fail on multiple rows -
  * Order by - Different comparators
- * 
+ *
  * @author Sven Boden
  */
 public class DatabaseLookupTest {
   static Database database;
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
-      "Database Lookup test", LoggingObjectType.GENERAL, null );
+    "Database Lookup test", LoggingObjectType.GENERAL, null );
 
   public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>", };
+    + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+    + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+    + "<password></password>" + "</connection>", };
 
   private static String lookup_table = "lookup_table1";
 
   private static String[] insertStatement = {
-      // New rows for the source
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (1, 100, '1')",
+    // New rows for the source
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (1, 100, '1')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (2, 100, '2')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (2, 100, '2')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (3, 100, '3')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (3, 100, '3')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (4, 100, '4')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (4, 100, '4')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (5, 101, '5')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (5, 101, '5')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (6, 101, '6')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (6, 101, '6')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (7, 101, '7')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (7, 101, '7')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (8, 101, '8')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (8, 101, '8')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (9, 102, '9')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (9, 102, '9')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (10, 102, '10')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (10, 102, '10')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (11, 102, '11')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (11, 102, '11')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (12, 102, '12')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (12, 102, '12')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (13, 103, '13')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (13, 103, '13')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (14, 103, '14')",
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (14, 103, '14')",
 
-      "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (15, 103, '15')" };
+    "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " + "VALUES (15, 103, '15')" };
 
   public static RowMetaInterface createSourceRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ), new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
-            new ValueMeta( "STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
+    {
+      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -127,7 +128,8 @@ public class DatabaseLookupTest {
    * Create source table.
    */
   public static void createTables( Database db ) throws Exception {
-    String source = db.getCreateTableStatement( lookup_table, createSourceRowMetaInterface(), null, false, null, true );
+    String source =
+      db.getCreateTableStatement( lookup_table, createSourceRowMetaInterface(), null, false, null, true );
     try {
       db.execStatement( source );
     } catch ( KettleException ex ) {
@@ -137,7 +139,7 @@ public class DatabaseLookupTest {
 
   /**
    * Insert data in the source table.
-   * 
+   *
    * @param db
    *          database to use.
    */
@@ -182,10 +184,10 @@ public class DatabaseLookupTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "int_gield", ValueMeta.TYPE_INTEGER, 8, 0 ),
-            new ValueMeta( "RET_CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
-            new ValueMeta( "RET_STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
+    {
+      new ValueMeta( "int_gield", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "RET_CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "RET_STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

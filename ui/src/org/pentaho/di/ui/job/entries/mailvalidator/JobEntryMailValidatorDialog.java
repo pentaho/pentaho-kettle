@@ -57,12 +57,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntryMailValidator
- * 
+ *
  * @author Samatar
  * @since 23-06-2008
  */
 public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryMailValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMailValidator.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
@@ -162,9 +162,9 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 
     // eMail address
     wMailAddress =
-        new LabelTextVar(
-            jobMeta, shell, BaseMessages.getString( PKG, "JobEntryMailValidatorDialog.MailAddress.Label" ),
-            BaseMessages.getString( PKG, "JobEntryMailValidatorDialog.MailAddress.Tooltip" ) );
+      new LabelTextVar( jobMeta, shell, BaseMessages.getString(
+        PKG, "JobEntryMailValidatorDialog.MailAddress.Label" ), BaseMessages.getString(
+        PKG, "JobEntryMailValidatorDialog.MailAddress.Tooltip" ) );
     wMailAddress.addModifyListener( lsMod );
     fdMailAddress = new FormData();
     fdMailAddress.left = new FormAttachment( 0, 0 );
@@ -178,7 +178,8 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
 
     wSettingsGroup = new Group( shell, SWT.SHADOW_NONE );
     props.setLook( wSettingsGroup );
-    wSettingsGroup.setText( BaseMessages.getString( PKG, "JobEntryMailValidatorDialog.Group.SettingsAddress.Label" ) );
+    wSettingsGroup.setText( BaseMessages
+      .getString( PKG, "JobEntryMailValidatorDialog.Group.SettingsAddress.Label" ) );
 
     FormLayout SettingsgroupLayout = new FormLayout();
     SettingsgroupLayout.marginWidth = 10;
@@ -238,7 +239,8 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
     wleMailSender.setLayoutData( fdleMailSender );
 
     weMailSender = new TextVar( jobMeta, wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    weMailSender.setToolTipText( BaseMessages.getString( PKG, "JobEntryMailValidatorDialog.eMailSenderField.Tooltip" ) );
+    weMailSender.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryMailValidatorDialog.eMailSenderField.Tooltip" ) );
     props.setLook( weMailSender );
     weMailSender.addModifyListener( lsMod );
     fdeMailSender = new FormData();
@@ -258,7 +260,8 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
     wlDefaultSMTP.setLayoutData( fdlDefaultSMTP );
 
     wDefaultSMTP = new TextVar( jobMeta, wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wDefaultSMTP.setToolTipText( BaseMessages.getString( PKG, "JobEntryMailValidatorDialog.DefaultSMTPField.Tooltip" ) );
+    wDefaultSMTP.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryMailValidatorDialog.DefaultSMTPField.Tooltip" ) );
     props.setLook( wDefaultSMTP );
     wDefaultSMTP.addModifyListener( lsMod );
     fdDefaultSMTP = new FormData();

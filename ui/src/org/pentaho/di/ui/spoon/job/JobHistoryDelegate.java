@@ -77,7 +77,7 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler {
-  private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/job-history-toolbar.xul";
 
@@ -208,7 +208,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
       refreshButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "refresh-history" );
       fetchNextBatchButton =
-          (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-next-batch-history" );
+        (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-next-batch-history" );
       fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-all-history" );
 
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
@@ -216,8 +216,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
       new ErrorDialog( jobHistoryComposite.getShell(), BaseMessages.getString(
-          PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -242,9 +242,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
       MessageBox mb = new MessageBox( jobGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
       mb.setMessage( BaseMessages.getString(
-          PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) ); // Nothing found that
-                                                                                                  // matches your
-                                                                                                  // criteria, sorry
+        PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) ); // Nothing found that
+                                                                                                // matches your
+                                                                                                // criteria, sorry
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) );
       if ( mb.open() == SWT.YES ) {
         Database database = new Database( loggingObject, databaseMeta );
@@ -253,8 +253,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           database.truncateTable( schemaTable );
         } catch ( Exception e ) {
           new ErrorDialog( jobGraph.getShell(), BaseMessages.getString(
-              PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString(
-              PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
+            PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString(
+            PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
         } finally {
           database.disconnect();
 
@@ -294,35 +294,38 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           try {
             db.connect();
             String schemaTable =
-                databaseMeta.getQuotedSchemaTableCombination( jeLogTable.getActualSchemaName(), jeLogTable
-                    .getActualTableName() );
+              databaseMeta.getQuotedSchemaTableCombination( jeLogTable.getActualSchemaName(), jeLogTable
+                .getActualTableName() );
             String sql =
-                "SELECT * FROM "
-                    + schemaTable + " WHERE " + databaseMeta.quoteField( jeLogTable.getKeyField().getFieldName() )
-                    + " = " + batchId;
+              "SELECT * FROM "
+                + schemaTable + " WHERE " + databaseMeta.quoteField( jeLogTable.getKeyField().getFieldName() )
+                + " = " + batchId;
 
             List<Object[]> rows = db.getRows( sql, 0 );
             RowMetaInterface rowMeta = db.getReturnRowMeta();
             results = new ArrayList<JobEntryCopyResult>();
 
             int jobEntryNameIndex =
-                rowMeta.indexOfValue( jeLogTable
-                    .findField( JobEntryLogTable.ID.JOBENTRYNAME.toString() ).getFieldName() );
+              rowMeta.indexOfValue( jeLogTable
+                .findField( JobEntryLogTable.ID.JOBENTRYNAME.toString() ).getFieldName() );
             int jobEntryResultIndex =
-                rowMeta.indexOfValue( jeLogTable.findField( JobEntryLogTable.ID.RESULT.toString() ).getFieldName() );
+              rowMeta
+                .indexOfValue( jeLogTable.findField( JobEntryLogTable.ID.RESULT.toString() ).getFieldName() );
             int jobEntryErrorsIndex =
-                rowMeta.indexOfValue( jeLogTable.findField( JobEntryLogTable.ID.ERRORS.toString() ).getFieldName() );
+              rowMeta
+                .indexOfValue( jeLogTable.findField( JobEntryLogTable.ID.ERRORS.toString() ).getFieldName() );
             LogTableField copyNrField = jeLogTable.findField( JobEntryLogTable.ID.COPY_NR.toString() );
             int jobEntryCopyNrIndex =
-                copyNrField == null ? -1 : ( copyNrField.isEnabled() ? rowMeta
-                    .indexOfValue( copyNrField.getFieldName() ) : -1 );
+              copyNrField == null ? -1 : ( copyNrField.isEnabled() ? rowMeta.indexOfValue( copyNrField
+                .getFieldName() ) : -1 );
 
             for ( Object[] row : rows ) {
               String jobEntryName = rowMeta.getString( row, jobEntryNameIndex );
               boolean jobEntryResult = rowMeta.getBoolean( row, jobEntryResultIndex );
               long errors = rowMeta.getInteger( row, jobEntryErrorsIndex );
               long copyNr = jobEntryCopyNrIndex < 0 ? 0 : rowMeta.getInteger( row, jobEntryCopyNrIndex );
-              JobEntryCopyResult result = new JobEntryCopyResult( jobEntryName, jobEntryResult, errors, (int) copyNr );
+              JobEntryCopyResult result =
+                new JobEntryCopyResult( jobEntryName, jobEntryResult, errors, (int) copyNr );
               results.add( result );
             }
 
@@ -332,9 +335,11 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
           gotResults = true;
         } catch ( Exception e ) {
-          new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-              PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Text" ), BaseMessages
-              .getString( PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Message" ), e );
+          new ErrorDialog(
+            spoon.getShell(), BaseMessages.getString(
+              PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Text" ),
+            BaseMessages.getString(
+              PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Message" ), e );
 
         }
       } else {
@@ -382,8 +387,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       //
       for ( JobEntryCopyResult result : results ) {
         System.out.println( "Job entry copy result --  Name="
-            + result.getJobEntryName() + ", result=" + result.getResult() + ", errors=" + result.getErrors() + ", nr="
-            + result.getCopyNr() );
+          + result.getJobEntryName() + ", result=" + result.getResult() + ", errors=" + result.getErrors()
+          + ", nr=" + result.getCopyNr() );
       }
 
     }
@@ -438,7 +443,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /**
    * Don't allow more queries until this one finishes.
-   * 
+   *
    * @param inProgress
    *          is query in progress
    */
@@ -510,12 +515,17 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         LogTableField keyField = logTable.getKeyField();
 
         if ( nameField != null ) {
-          sql.append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " LIKE ?" );
-          params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), jobMeta.getName() );
+          sql
+            .append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append(
+              " LIKE ?" );
+          params
+            .addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), jobMeta.getName() );
         }
 
         if ( keyField != null && keyField.isEnabled() ) {
-          sql.append( " ORDER BY " ).append( logConnection.quoteField( keyField.getFieldName() ) ).append( " DESC" );
+          sql
+            .append( " ORDER BY " ).append( logConnection.quoteField( keyField.getFieldName() ) ).append(
+              " DESC" );
         }
 
         ResultSet resultSet = database.openQuery( sql.toString(), params.getRowMeta(), params.getData() );
@@ -692,7 +702,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -701,7 +711,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -710,7 +720,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -719,7 +729,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -727,7 +737,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -735,7 +745,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {
@@ -881,9 +891,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       }
 
       TableView tableView =
-          new TableView( jobMeta, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, columnList
-              .toArray( new ColumnInfo[columnList.size()] ), 1, true, // readonly!
-          null, spoon.props );
+        new TableView( jobMeta, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, columnList
+          .toArray( new ColumnInfo[columnList.size()] ), 1, true, // readonly!
+        null, spoon.props );
 
       tableView.table.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent arg0 ) {

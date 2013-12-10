@@ -44,16 +44,16 @@ import org.w3c.dom.Node;
 
 /**
  * Job to create a cube in palo
- * 
+ *
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
 
 @org.pentaho.di.core.annotations.JobEntry(
-		id="PALO_CUBE_CREATE", 
+		id="PALO_CUBE_CREATE",
 		i18nPackageName="org.pentaho.di.job.entries.palo.JobEntryCubeCreate",
 		image = "PaloCubeCreate.png",
-		name="PaloCubeCreate.JobName", 
+		name="PaloCubeCreate.JobName",
 		description = "PaloCubeCreate.JobDescription",
 		categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo")
 public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryInterface {
@@ -85,9 +85,9 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 		retval.append("      ").append(XMLHandler.addTagValue("cubeName", getCubeName()));
 		
 		retval.append("      <dimensions>").append(Const.CR);
-        for (String dimensionName : this.dimensionNames) 
+        for (String dimensionName : this.dimensionNames)
         	retval.append("        ").append(XMLHandler.addTagValue("dimensionname",dimensionName));
-        
+
         retval.append("      </dimensions>").append(Const.CR);
 
 		return retval.toString();
@@ -120,7 +120,7 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 			this.setCubeName(rep.getStepAttributeString(id_jobentry, "cubeName"));
 			
 			int nrFields = rep.countNrStepAttributes(id_jobentry, "dimensionname");
-            
+
             for (int i=0;i<nrFields;i++) {
                 String dimensionName = rep.getStepAttributeString (id_jobentry, i, "dimensionname");
                 this.dimensionNames.add(dimensionName);

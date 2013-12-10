@@ -61,10 +61,10 @@ import org.w3c.dom.Node;
  */
 
 public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFoldersDesc = new String[] {
-      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFoldersCode = new String[] { "N", "Y" };
 
   public static final String NO = "N";
@@ -224,7 +224,8 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
     this.rowLimit = rowLimit;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -264,7 +265,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // the folderName
     ValueMetaInterface folderName = new ValueMeta( "folderName", ValueMeta.TYPE_STRING );
@@ -318,7 +319,8 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
     row.addValueMeta( rooturi );
 
     // childrens
-    ValueMetaInterface childrens = new ValueMeta( space.environmentSubstitute( "childrens" ), ValueMeta.TYPE_INTEGER );
+    ValueMetaInterface childrens =
+      new ValueMeta( space.environmentSubstitute( "childrens" ), ValueMeta.TYPE_INTEGER );
     childrens.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
     childrens.setOrigin( name );
     row.addValueMeta( childrens );
@@ -428,65 +430,65 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
     return FileInputList.createFolderList( space, folderName, folderRequired );
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( isFoldernameDynamic ) {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.InputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.InputOk" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.InputErrorKo" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.InputErrorKo" ), stepMeta );
       }
       remarks.add( cr );
 
       if ( Const.isEmpty( dynamicFoldernameField ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
       }
 
       remarks.add( cr );
     } else {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.NoInputError" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.NoInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.NoInputOk" ), stepMeta );
       }
       remarks.add( cr );
       // check specified folder names
       FileInputList fileList = getFolderList( transMeta );
       if ( fileList.nrOfFiles() == 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.ExpectedFoldersError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.ExpectedFoldersError" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetSubFoldersMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetSubFoldersMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
         remarks.add( cr );
       }
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new GetSubFolders( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -499,7 +501,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -508,11 +510,11 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

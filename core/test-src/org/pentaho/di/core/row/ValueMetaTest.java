@@ -30,18 +30,18 @@ import junit.framework.TestCase;
 
 /**
  * Test functionality in ValueMeta
- * 
+ *
  * @author sboden
  */
 public class ValueMetaTest extends TestCase {
   /**
    * Compare to byte arrays for equality.
-   * 
+   *
    * @param b1
    *          1st byte array
    * @param b2
    *          2nd byte array
-   * 
+   *
    * @return true if equal
    */
   private boolean byteCompare( byte[] b1, byte[] b2 ) {
@@ -93,7 +93,7 @@ public class ValueMetaTest extends TestCase {
     val1.setStringEncoding( "UTF8" );
 
     ValueMeta val2 =
-        new ValueMeta( "BINSTR1", ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+      new ValueMeta( "BINSTR1", ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
     val2.setStorageMetadata( val1 );
     val2.setLength( 6 );
     val2.setStringEncoding( "UTF8" );
@@ -246,9 +246,9 @@ public class ValueMetaTest extends TestCase {
   /**
    * Lazy conversion is used to read data from disk in a binary format. The data itself is not converted from the byte[]
    * to Integer, rather left untouched until it's needed.
-   * 
+   *
    * However at that time we do need it we should get the correct value back.
-   * 
+   *
    * @throws Exception
    */
   public void testLazyConversionInteger() throws Exception {
@@ -275,9 +275,9 @@ public class ValueMetaTest extends TestCase {
   /**
    * Lazy conversion is used to read data from disk in a binary format. The data itself is not converted from the byte[]
    * to Integer, rather left untouched until it's needed.
-   * 
+   *
    * However at that time we do need it we should get the correct value back.
-   * 
+   *
    * @throws Exception
    */
   public void testLazyConversionNumber() throws Exception {
@@ -321,9 +321,9 @@ public class ValueMetaTest extends TestCase {
   /**
    * Lazy conversion is used to read data from disk in a binary format. The data itself is not converted from the byte[]
    * to Integer, rather left untouched until it's needed.
-   * 
+   *
    * However at that time we do need it we should get the correct value back.
-   * 
+   *
    * @throws Exception
    */
   public void testLazyConversionBigNumber() throws Exception {

@@ -57,10 +57,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * This wizard page let's you select the tables that need to be ripped.
- * 
+ *
  * @author Matt
  * @since 17-apr-04
- * 
+ *
  */
 public class RipDatabaseWizardPage2 extends WizardPage {
   private PropsUI props;

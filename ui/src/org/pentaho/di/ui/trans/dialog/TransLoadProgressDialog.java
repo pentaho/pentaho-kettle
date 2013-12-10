@@ -39,12 +39,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while loading a transformation...
- * 
+ *
  * @author Matt
  * @since 13-mrt-2005
  */
 public class TransLoadProgressDialog {
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Shell shell;
   private Repository rep;
@@ -58,8 +58,8 @@ public class TransLoadProgressDialog {
   /**
    * Creates a new dialog that will handle the wait while loading a transformation...
    */
-  public TransLoadProgressDialog( Shell shell, Repository rep, String transname, RepositoryDirectoryInterface repdir,
-      String versionLabel ) {
+  public TransLoadProgressDialog( Shell shell, Repository rep, String transname,
+    RepositoryDirectoryInterface repdir, String versionLabel ) {
     this.shell = shell;
     this.rep = rep;
     this.transname = transname;
@@ -89,11 +89,12 @@ public class TransLoadProgressDialog {
             transInfo = rep.loadTransformation( objectId, versionLabel );
           } else {
             transInfo =
-                rep.loadTransformation( transname, repdir, new ProgressMonitorAdapter( monitor ), true, versionLabel );
+              rep.loadTransformation(
+                transname, repdir, new ProgressMonitorAdapter( monitor ), true, versionLabel );
           }
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
-              PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation" ) );
+            PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation" ) );
         }
       }
     };
@@ -103,13 +104,13 @@ public class TransLoadProgressDialog {
       pmd.run( false, false, op );
     } catch ( InvocationTargetException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+        PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transInfo = null;
     } catch ( InterruptedException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+        PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transInfo = null;
     }
 

@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A carte object entry in the transformation or job maps
- * 
+ *
  * @author matt
- * 
+ *
  */
 @XmlRootElement
 public class CarteObjectEntry implements Comparator<CarteObjectEntry>, Comparable<CarteObjectEntry> {

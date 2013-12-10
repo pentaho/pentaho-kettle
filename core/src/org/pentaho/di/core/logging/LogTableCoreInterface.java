@@ -34,7 +34,7 @@ public interface LogTableCoreInterface {
 
   /**
    * Saves the log table to a repository.
-   * 
+   *
    * @param attributeInterface
    *          The attribute interface used to store the attributes
    */
@@ -42,7 +42,7 @@ public interface LogTableCoreInterface {
 
   /**
    * Loads details of the log table from a repository.
-   * 
+   *
    * @param attributeInterface
    *          The attribute interface used to load the attributes
    */
@@ -80,7 +80,7 @@ public interface LogTableCoreInterface {
 
   /**
    * Assemble the log record from the logging subject.
-   * 
+   *
    * @param status
    *          The status to log
    * @param subject
@@ -150,14 +150,14 @@ public interface LogTableCoreInterface {
 
   /**
    * Clone the log table
-   * 
+   *
    * @return The cloned log table
    */
   public Object clone();
 
   /**
    * Replace the metadata of the logtable with the one of the specified
-   * 
+   *
    * @param logTableInterface
    *          the new log table details
    */

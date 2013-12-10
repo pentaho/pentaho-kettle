@@ -46,50 +46,49 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 /**
  * Test class for combination lookup/update. HSQL is used as database in memory to get an easy playground for database
  * tests. H2 does not support all SQL features but it should proof enough for most of our tests.
- * 
+ *
  * @author Sven Boden
  */
 public class CombinationLookupTest extends TestCase {
   public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<connection>" + "<name>lookup</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>", };
+    + "<connection>" + "<name>lookup</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+    + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+    + "<password></password>" + "</connection>", };
 
   private static String target_table = "type1_dim";
   private static String source_table = "source";
 
-  private static String[] insertStatement =
-      {
-          // New rows for the target
-          "INSERT INTO "
-              + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
-              + "VALUES (1, 'BE010001', 'Frijters', 'Frijters NV');",
-          "INSERT INTO "
-              + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
-              + "VALUES (2, 'BE010002', 'Sebrechts', 'Sebrechts NV');",
-          "INSERT INTO "
-              + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
-              + "VALUES (3, 'DE010003', 'Gelden', 'Gelden Distribution Center');",
+  private static String[] insertStatement = {
+    // New rows for the target
+    "INSERT INTO "
+      + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
+      + "VALUES (1, 'BE010001', 'Frijters', 'Frijters NV');",
+    "INSERT INTO "
+      + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
+      + "VALUES (2, 'BE010002', 'Sebrechts', 'Sebrechts NV');",
+    "INSERT INTO "
+      + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
+      + "VALUES (3, 'DE010003', 'Gelden', 'Gelden Distribution Center');",
 
-          // Existing business key
-          "INSERT INTO "
-              + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
-              + "VALUES (4, 'BE010001', 'Frijters', 'Frijters BVBA');",
+    // Existing business key
+    "INSERT INTO "
+      + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
+      + "VALUES (4, 'BE010001', 'Frijters', 'Frijters BVBA');",
 
-          // New row again
-          "INSERT INTO "
-              + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
-              + "VALUES (5, 'DE010004', 'Germania', 'German Distribution Center');" };
+    // New row again
+    "INSERT INTO "
+      + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
+      + "VALUES (5, 'DE010004', 'Germania', 'German Distribution Center');" };
 
   public RowMetaInterface createTargetRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
-            new ValueMeta( "DLR_CD", ValueMeta.TYPE_STRING, 8, 0 ),
-            new ValueMeta( "DLR_NM", ValueMeta.TYPE_STRING, 30, 0 ),
-            new ValueMeta( "DLR_DESC", ValueMeta.TYPE_STRING, 30, 0 ), };
+    {
+      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "DLR_CD", ValueMeta.TYPE_STRING, 8, 0 ),
+      new ValueMeta( "DLR_NM", ValueMeta.TYPE_STRING, 30, 0 ),
+      new ValueMeta( "DLR_DESC", ValueMeta.TYPE_STRING, 30, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -102,11 +101,11 @@ public class CombinationLookupTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "ORDNO", ValueMeta.TYPE_INTEGER, 8, 0 ),
-            new ValueMeta( "DLR_CD", ValueMeta.TYPE_STRING, 8, 0 ),
-            new ValueMeta( "DLR_NM", ValueMeta.TYPE_STRING, 30, 0 ),
-            new ValueMeta( "DLR_DESC", ValueMeta.TYPE_STRING, 30, 0 ), };
+    {
+      new ValueMeta( "ORDNO", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "DLR_CD", ValueMeta.TYPE_STRING, 8, 0 ),
+      new ValueMeta( "DLR_NM", ValueMeta.TYPE_STRING, 30, 0 ),
+      new ValueMeta( "DLR_DESC", ValueMeta.TYPE_STRING, 30, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -119,14 +118,16 @@ public class CombinationLookupTest extends TestCase {
    * Create source and target table.
    */
   public void createTables( Database db ) throws Exception {
-    String target = db.getCreateTableStatement( target_table, createTargetRowMetaInterface(), null, false, null, true );
+    String target =
+      db.getCreateTableStatement( target_table, createTargetRowMetaInterface(), null, false, null, true );
     try {
       db.execStatement( target );
     } catch ( KettleException ex ) {
       fail( "failure while creating table " + target_table + ": " + ex.getMessage() );
     }
 
-    String source = db.getCreateTableStatement( source_table, createSourceRowMetaInterface(), null, false, null, true );
+    String source =
+      db.getCreateTableStatement( source_table, createSourceRowMetaInterface(), null, false, null, true );
     try {
       db.execStatement( source );
     } catch ( KettleException ex ) {
@@ -136,7 +137,7 @@ public class CombinationLookupTest extends TestCase {
 
   /**
    * Insert data in the source table.
-   * 
+   *
    * @param db
    *          database to use.
    */
@@ -148,7 +149,7 @@ public class CombinationLookupTest extends TestCase {
 
   /**
    * Check the results in the target dimension table.
-   * 
+   *
    * @param db
    *          database to use.
    */
@@ -156,7 +157,7 @@ public class CombinationLookupTest extends TestCase {
     String query = "SELECT ID, DLR_CD, DLR_NM, DLR_DESC FROM " + target_table + " ORDER BY ID";
 
     String[] correctResults =
-        { "1|BE010001|null|null", "2|BE010002|null|null", "3|DE010003|null|null", "4|DE010004|null|null", };
+    { "1|BE010001|null|null", "2|BE010002|null|null", "3|DE010003|null|null", "4|DE010004|null|null", };
 
     ResultSet rs = db.openQuery( query );
     int idx = 0;
@@ -222,7 +223,8 @@ public class CombinationLookupTest extends TestCase {
     StepMeta fromstep = new StepMeta( fromstepid, fromstepname, tii );
     fromstep.setLocation( 150, 100 );
     fromstep.setDraw( true );
-    fromstep.setDescription( "Reads information from table [" + source_table + "] on database [" + lookupDBInfo + "]" );
+    fromstep.setDescription( "Reads information from table ["
+      + source_table + "] on database [" + lookupDBInfo + "]" );
     transMeta.addStep( fromstep );
 
     //

@@ -90,7 +90,7 @@ public class LogChannel implements LogChannelInterface {
   }
 
   /**
-   * 
+   *
    * @param logMessage
    * @param channelLogLevel
    */

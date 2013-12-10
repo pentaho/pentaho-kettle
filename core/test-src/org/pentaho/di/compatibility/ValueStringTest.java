@@ -31,7 +31,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of ValueString.
- * 
+ *
  * @author Sven Boden
  */
 public class ValueStringTest extends TestCase {
@@ -141,7 +141,7 @@ public class ValueStringTest extends TestCase {
 
   /**
    * Test setting a number.
-   * 
+   *
    */
   public void testSetNumber() {
     ValueString vs = new ValueString();

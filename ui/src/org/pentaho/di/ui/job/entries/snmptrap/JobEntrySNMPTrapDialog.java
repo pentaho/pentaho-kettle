@@ -66,13 +66,13 @@ import org.snmp4j.smi.UdpAddress;
 
 /**
  * This dialog allows you to edit the SNMPTrap job entry settings.
- * 
+ *
  * @author Samatar
  * @since 12-09-2008
  */
 
 public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySNMPTrap.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySNMPTrap.class; // for i18n purposes, needed by Translator2!!
 
   private LabelText wName;
 
@@ -192,8 +192,8 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // Job entry name line
     wName =
-        new LabelText( shell, BaseMessages.getString( PKG, "JobSNMPTrap.Name.Label" ), BaseMessages.getString(
-            PKG, "JobSNMPTrap.Name.Tooltip" ) );
+      new LabelText( shell, BaseMessages.getString( PKG, "JobSNMPTrap.Name.Label" ), BaseMessages.getString(
+        PKG, "JobSNMPTrap.Name.Tooltip" ) );
     wName.addModifyListener( lsMod );
     fdName = new FormData();
     fdName.top = new FormAttachment( 0, 0 );
@@ -234,9 +234,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // ServerName line
     wServerName =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Server.Label" ), BaseMessages
-                .getString( PKG, "JobSNMPTrap.Server.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Server.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -247,9 +247,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // Server port line
     wPort =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Port.Label" ), BaseMessages.getString(
-                PKG, "JobSNMPTrap.Port.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Port.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -260,9 +260,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // Server OID line
     wOID =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSNMPTrap.OID.Label" ), BaseMessages.getString(
-                PKG, "JobSNMPTrap.OID.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSNMPTrap.OID.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.OID.Tooltip" ) );
     props.setLook( wOID );
     wOID.addModifyListener( lsMod );
     fdOID = new FormData();
@@ -328,9 +328,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // Community String line
     wComString =
-        new LabelTextVar(
-            jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.ComString.Label" ), BaseMessages
-                .getString( PKG, "JobSNMPTrap.ComString.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.ComString.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.ComString.Tooltip" ) );
     props.setLook( wComString );
     wComString.addModifyListener( lsMod );
     fdComString = new FormData();
@@ -341,9 +341,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // User line
     wUser =
-        new LabelTextVar(
-            jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.User.Label" ), BaseMessages
-                .getString( PKG, "JobSNMPTrap.User.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.User.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.User.Tooltip" ) );
     props.setLook( wUser );
     wUser.addModifyListener( lsMod );
     fdUser = new FormData();
@@ -354,9 +354,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // Passphrase String line
     wPassphrase =
-        new LabelTextVar(
-            jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Passphrase.Label" ), BaseMessages
-                .getString( PKG, "JobSNMPTrap.Passphrase.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Passphrase.Label" ),
+        BaseMessages.getString( PKG, "JobSNMPTrap.Passphrase.Tooltip" ) );
     props.setLook( wPassphrase );
     wPassphrase.setEchoChar( '*' );
     wPassphrase.addModifyListener( lsMod );
@@ -368,9 +368,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // EngineID String line
     wEngineID =
-        new LabelTextVar(
-            jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.EngineID.Label" ), BaseMessages
-                .getString( PKG, "JobSNMPTrap.EngineID.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.EngineID.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.EngineID.Tooltip" ) );
     props.setLook( wEngineID );
     wEngineID.addModifyListener( lsMod );
     fdEngineID = new FormData();
@@ -381,9 +381,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // Retry line
     wRetry =
-        new LabelTextVar(
-            jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Retry.Label" ), BaseMessages
-                .getString( PKG, "JobSNMPTrap.Retry.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Retry.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.Retry.Tooltip" ) );
     props.setLook( wRetry );
     wRetry.addModifyListener( lsMod );
     fdRetry = new FormData();
@@ -394,9 +394,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
 
     // Timeout line
     wTimeout =
-        new LabelTextVar(
-            jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Timeout.Label" ), BaseMessages
-                .getString( PKG, "JobSNMPTrap.Timeout.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Timeout.Label" ), BaseMessages
+          .getString( PKG, "JobSNMPTrap.Timeout.Tooltip" ) );
     props.setLook( wTimeout );
     wTimeout.addModifyListener( lsMod );
     fdTimeout = new FormData();
@@ -436,8 +436,8 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
     wlMessage.setLayoutData( fdlMessage );
 
     wMessage =
-        new StyledTextComp(
-            jobEntry, wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( jobEntry, wMessageGroup, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wMessage );
     wMessage.addModifyListener( lsMod );
     fdMessage = new FormData();
@@ -550,7 +550,8 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
     boolean testOK = false;
     String errMsg = null;
     String hostname = jobMeta.environmentSubstitute( wServerName.getText() );
-    int nrPort = Const.toInt( jobMeta.environmentSubstitute( "" + wPort.getText() ), JobEntrySNMPTrap.DEFAULT_PORT );
+    int nrPort =
+      Const.toInt( jobMeta.environmentSubstitute( "" + wPort.getText() ), JobEntrySNMPTrap.DEFAULT_PORT );
 
     try {
       UdpAddress udpAddress = new UdpAddress( InetAddress.getByName( hostname ), nrPort );
@@ -574,7 +575,7 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobSNMPTrap.Connected.NOK.ConnectionBad", hostname )
-          + Const.CR + errMsg + Const.CR );
+        + Const.CR + errMsg + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobSNMPTrap.Connected.Title.Bad" ) );
       mb.open();
     }

@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 /**
  * Helper class for determining (via reflection) whether various Hadoop compression codecs (such as Snappy) are
  * available on the classpath and for returning Input/Output streams for reading/writing.
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
  */
 public class HadoopCompression {
@@ -44,7 +44,7 @@ public class HadoopCompression {
 
   /**
    * Locate the Snappy Shim for the active Hadoop Configuration via the Hadoop Configuration Util
-   * 
+   *
    * @return A {@link org.pentaho.hadoop.shim.spi.SnappyShim} to interact with Snappy
    * @throws Exception
    *           Error locating a valid Snappy shim:
@@ -67,7 +67,7 @@ public class HadoopCompression {
   /**
    * Tests whether hadoop-snappy (not to be confused with other java-based snappy implementations such as jsnappy or
    * snappy-java) plus the native snappy libraries are available.
-   * 
+   *
    * @return true if hadoop-snappy is available on the classpath
    */
   public static boolean isHadoopSnappyAvailable() {
@@ -82,11 +82,11 @@ public class HadoopCompression {
 
   /**
    * Gets a CompressionInputStream that uses the snappy codec and wraps the supplied base input stream.
-   * 
+   *
    * @param in
    *          the base input stream to wrap around
    * @return an InputStream that uses the Snappy codec
-   * 
+   *
    * @throws Exception
    *           if snappy is not available or an error occurs during reflection
    */
@@ -96,13 +96,13 @@ public class HadoopCompression {
 
   /**
    * Gets an InputStream that uses the snappy codec and wraps the supplied base input stream.
-   * 
+   *
    * @param the
    *          buffer size for the codec to use (in bytes)
    * @param in
    *          the base input stream to wrap around
    * @return an InputStream that uses the Snappy codec
-   * 
+   *
    * @throws Exception
    *           if snappy is not available or an error occurs during reflection
    */
@@ -113,19 +113,19 @@ public class HadoopCompression {
 
     Object snappyShim = getActiveSnappyShim();
     Method getSnappyInputStream =
-        snappyShim.getClass().getMethod( "getSnappyInputStream", int.class, InputStream.class );
+      snappyShim.getClass().getMethod( "getSnappyInputStream", int.class, InputStream.class );
     return (InputStream) getSnappyInputStream.invoke( snappyShim, bufferSize, in );
   }
 
   /**
    * Gets an OutputStream that uses the snappy codec and wraps the supplied base output stream.
-   * 
+   *
    * @param the
    *          buffer size for the codec to use (in bytes)
    * @param out
    *          the base output stream to wrap around
    * @return a OutputStream that uses the Snappy codec
-   * 
+   *
    * @throws Exception
    *           if snappy is not available or an error occurs during reflection
    */
@@ -135,14 +135,14 @@ public class HadoopCompression {
 
   /**
    * Gets an OutputStream that uses the snappy codec and wraps the supplied base output stream.
-   * 
+   *
    * @param the
    *          buffer size for the codec to use (in bytes)
-   * 
+   *
    * @param out
    *          the base output stream to wrap around
    * @return a OutputStream that uses the Snappy codec
-   * 
+   *
    * @throws Exception
    *           if snappy is not available or an error occurs during reflection
    */
@@ -153,7 +153,7 @@ public class HadoopCompression {
 
     Object snappyShim = getActiveSnappyShim();
     Method getSnappyOutputStream =
-        snappyShim.getClass().getMethod( "getSnappyOutputStream", int.class, OutputStream.class );
+      snappyShim.getClass().getMethod( "getSnappyOutputStream", int.class, OutputStream.class );
     return (OutputStream) getSnappyOutputStream.invoke( snappyShim, bufferSize, out );
   }
 }

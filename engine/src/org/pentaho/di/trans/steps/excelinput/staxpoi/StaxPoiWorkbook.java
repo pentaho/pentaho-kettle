@@ -42,11 +42,11 @@ public class StaxPoiWorkbook implements KWorkbook {
       XMLStreamReader workbookReader = factory.createXMLStreamReader( workbookData );
       while ( workbookReader.hasNext() ) {
         if ( workbookReader.next() == XMLStreamConstants.START_ELEMENT
-            && workbookReader.getLocalName().equals( "sheet" ) ) {
+          && workbookReader.getLocalName().equals( "sheet" ) ) {
           String sheetName = workbookReader.getAttributeValue( null, "name" );
           String sheetID =
-              workbookReader.getAttributeValue(
-                  "http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id" );
+            workbookReader.getAttributeValue(
+              "http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id" );
           sheetList.add( sheetName );
           sheetNameIDMap.put( sheetName, sheetID );
         }

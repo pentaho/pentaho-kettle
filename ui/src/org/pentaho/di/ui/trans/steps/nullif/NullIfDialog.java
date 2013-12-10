@@ -61,7 +61,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class NullIfDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = NullIfMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = NullIfMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStepname;
   private Text wStepname;
@@ -140,15 +140,17 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface 
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.ValueToNull" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.ValueToNull" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -317,7 +319,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface 
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
   }
 }

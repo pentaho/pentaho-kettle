@@ -54,7 +54,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class HL7InputDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!
 
 	private HL7InputMeta input;
 	
@@ -74,10 +74,10 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
  		props.setLook(shell);
  		setShellImage(shell, input);
-        
-		ModifyListener lsMod = new ModifyListener() 
+
+		ModifyListener lsMod = new ModifyListener()
 		{
-			public void modifyText(ModifyEvent e) 
+			public void modifyText(ModifyEvent e)
 			{
 				input.setChanged();
 			}
@@ -89,14 +89,14 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "HL7InputDialog.Shell.Title")); 
+		shell.setText(BaseMessages.getString(PKG, "HL7InputDialog.Shell.Title"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "HL7InputDialog.Stepname.Label")); 
+		wlStepname.setText(BaseMessages.getString(PKG, "HL7InputDialog.Stepname.Label"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -115,7 +115,7 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 	      // MessageField line
         Label wlMessageField = new Label(shell, SWT.RIGHT);
-        wlMessageField.setText(BaseMessages.getString(PKG, "HL7InputDialog.MessageField.Label")); 
+        wlMessageField.setText(BaseMessages.getString(PKG, "HL7InputDialog.MessageField.Label"));
         props.setLook(wlMessageField);
         FormData fdlMessageField = new FormData();
         fdlMessageField.left = new FormAttachment(0, 0);
@@ -131,7 +131,7 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
         fdMessageField.top  = new FormAttachment(wStepname, margin);
         fdMessageField.right= new FormAttachment(100, 0);
         wMessageField.setLayoutData(fdMessageField);
-        
+
         try {
           RowMetaInterface fields = transMeta.getPrevStepFields(stepMeta);
           String[] names = fields.getFieldNames();
@@ -143,9 +143,9 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wMessageField);
 
@@ -180,7 +180,7 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
+	 */
 	public void getData()
 	{
 	    wMessageField.setText(Const.NVL(input.getMessageField(), ""));
@@ -200,7 +200,7 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
 		if (Const.isEmpty(wStepname.getText())) return;
 
 		stepname = wStepname.getText(); // return value
-		input.setMessageField(wMessageField.getText()); 
+		input.setMessageField(wMessageField.getText());
 		
 		dispose();
 	}

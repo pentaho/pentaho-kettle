@@ -106,7 +106,7 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 
   /**
    * Add a tab item to the tab usage history
-   * 
+   *
    * @param item
    *          the tab item to add
    */
@@ -120,7 +120,7 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 
   /**
    * Remove all occurrences of the specified item from the last used list.
-   * 
+   *
    * @param item
    *          the tab item to remove
    */

@@ -39,7 +39,8 @@ public class Stream implements StreamInterface {
    * @param stepMeta
    * @param description
    */
-  public Stream( StreamType streamType, StepMeta stepMeta, String description, StreamIcon streamIcon, Object subject ) {
+  public Stream( StreamType streamType, StepMeta stepMeta, String description, StreamIcon streamIcon,
+    Object subject ) {
     this.streamType = streamType;
     this.stepMeta = stepMeta;
     this.description = description;

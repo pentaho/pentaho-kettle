@@ -56,11 +56,11 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
- * 
+ *
  */
 public class TeraFast extends AbstractStep implements StepInterface {
 
-  private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TeraFastMeta meta;
 
@@ -80,7 +80,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * Constructor.
-   * 
+   *
    * @param stepMeta
    *          the stepMeta.
    * @param stepDataInterface
@@ -93,15 +93,15 @@ public class TeraFast extends AbstractStep implements StepInterface {
    *          the trans.
    */
   public TeraFast( final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr,
-      final TransMeta transMeta, final Trans trans ) {
+    final TransMeta transMeta, final Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Create the command line for a fastload process depending on the meta information supplied.
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */
@@ -112,7 +112,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
     final StringBuilder builder = new StringBuilder();
     try {
       final FileObject fileObject =
-          KettleVFS.getFileObject( environmentSubstitute( this.meta.getFastloadPath().getValue() ) );
+        KettleVFS.getFileObject( environmentSubstitute( this.meta.getFastloadPath().getValue() ) );
       final String fastloadExec = KettleVFS.getFilename( fileObject );
       builder.append( fastloadExec );
     } catch ( Exception e ) {
@@ -121,7 +121,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
     // Add log error log, if set.
     if ( StringUtils.isNotBlank( this.meta.getLogFile().getValue() ) ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( this.meta.getLogFile().getValue() ) );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( this.meta.getLogFile().getValue() ) );
         builder.append( " -e " );
         builder.append( "\"" + KettleVFS.getFilename( fileObject ) + "\"" );
       } catch ( Exception e ) {
@@ -133,7 +134,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStep#init(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
    */
@@ -147,7 +148,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStep#processRow(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
    */
@@ -217,10 +218,10 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * Write a single row to the temporary data file.
-   * 
+   *
    * @param rowMetaInterface
    *          describe the row of data
-   * 
+   *
    * @param row
    *          row entries
    * @throws KettleException
@@ -271,7 +272,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
             break;
           default:
             throw new KettleException( BaseMessages.getString(
-                PKG, "GPLoadDataOutput.Exception.TypeNotSupported", valueMeta.getType() ) );
+              PKG, "GPLoadDataOutput.Exception.TypeNotSupported", valueMeta.getType() ) );
         }
       }
       dataFilePrintStream.print( FastloadControlBuilder.DATAFILE_COLUMN_SEPERATOR );
@@ -293,7 +294,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * Execute fastload.
-   * 
+   *
    * @throws KettleException
    *           ...
    */
@@ -316,7 +317,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * Start fastload command line tool and initialize streams.
-   * 
+   *
    * @throws KettleException
    *           ...
    */
@@ -325,11 +326,10 @@ public class TeraFast extends AbstractStep implements StepInterface {
     this.logBasic( "About to execute: " + command );
     try {
       this.process = Runtime.getRuntime().exec( command );
-      new Thread(
-          new ConfigurableStreamLogger( getLogChannel(), this.process.getErrorStream(), LogLevel.ERROR, "ERROR" ) )
-          .start();
       new Thread( new ConfigurableStreamLogger(
-          getLogChannel(), this.process.getInputStream(), LogLevel.DETAILED, "OUTPUT" ) ).start();
+        getLogChannel(), this.process.getErrorStream(), LogLevel.ERROR, "ERROR" ) ).start();
+      new Thread( new ConfigurableStreamLogger(
+        getLogChannel(), this.process.getInputStream(), LogLevel.DETAILED, "OUTPUT" ) ).start();
       this.fastload = this.process.getOutputStream();
     } catch ( Exception e ) {
       throw new KettleException( "Error while setup: " + command, e );
@@ -338,7 +338,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * Invoke loading with control file.
-   * 
+   *
    * @throws KettleException
    *           ...
    */
@@ -366,7 +366,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * Invoke loading with loading commands.
-   * 
+   *
    * @throws KettleException
    *           ...
    */
@@ -375,12 +375,12 @@ public class TeraFast extends AbstractStep implements StepInterface {
     builder.setSessions( this.meta.getSessions().getValue() );
     builder.setErrorLimit( this.meta.getErrorLimit().getValue() );
     builder.logon( this.meta.getDbMeta().getHostname(), this.meta.getDbMeta().getUsername(), this.meta
-        .getDbMeta().getPassword() );
+      .getDbMeta().getPassword() );
     builder.setRecordFormat( FastloadControlBuilder.RECORD_VARTEXT );
     try {
       builder.define(
-          this.meta.getRequiredFields( this.getTransMeta() ), meta.getTableFieldList(), resolveFileName( this.meta
-              .getDataFile().getValue() ) );
+        this.meta.getRequiredFields( this.getTransMeta() ), meta.getTableFieldList(), resolveFileName( this.meta
+          .getDataFile().getValue() ) );
     } catch ( Exception ex ) {
       throw new KettleException( "Error defining data file!", ex );
     }
@@ -388,7 +388,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
     builder.beginLoading( this.meta.getDbMeta().getPreferredSchemaName(), this.meta.getTargetTable().getValue() );
 
     builder.insert( this.meta.getRequiredFields( this.getTransMeta() ), meta.getTableFieldList(), this.meta
-        .getTargetTable().getValue() );
+      .getTargetTable().getValue() );
     builder.endLoading();
     builder.logoff();
     final String control = builder.toString();
@@ -405,7 +405,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStep#dispose(org.pentaho.di.trans.step.StepMetaInterface,
    *      org.pentaho.di.trans.step.StepDataInterface)
    */

@@ -131,7 +131,8 @@ public class CarteTest {
       // just test if we actually can create a SlaveServerStatus from the webservice
       // and that it is the same going in as out
       String xml =
-          XMLHandler.getXMLHeader( Const.XML_ENCODING ) + SlaveServerStatus.fromXML( response.getContent() ).getXML();
+        XMLHandler.getXMLHeader( Const.XML_ENCODING )
+          + SlaveServerStatus.fromXML( response.getContent() ).getXML();
       Assert.assertEquals( response.getContent().trim(), xml.trim() );
     } catch ( Exception ex ) {
       ex.printStackTrace();
@@ -274,7 +275,8 @@ public class CarteTest {
   public static Node findTextNode( Node parent, String parentNodeName ) {
     List<Node> nodes = flatten( parent, null );
     for ( Node node : nodes ) {
-      if ( node.getNodeType() == Node.TEXT_NODE && node.getParentNode().getNodeName().equalsIgnoreCase( parentNodeName ) ) {
+      if ( node.getNodeType() == Node.TEXT_NODE
+        && node.getParentNode().getNodeName().equalsIgnoreCase( parentNodeName ) ) {
         return node;
       }
     }

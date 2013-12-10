@@ -59,18 +59,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to excel cells and then writes this information to one or more files.
- * 
+ *
  * @author Matt
  * @since 7-sep-2006
  */
 public class ExcelOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ExcelOutputMeta meta;
   private ExcelOutputData data;
 
   public ExcelOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -117,7 +117,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
     // If we split the data stream in small XLS files, we need to do this here...
     //
-    if ( ( getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ( ( getLinesOutput() ) % meta.getSplitEvery() ) == 0 ) ) {
+    boolean splitFile = meta.getSplitEvery() > 0 && ( ( getLinesOutput() ) % meta.getSplitEvery() ) == 0;
+    if ( getLinesOutput() > 0 && splitFile ) {
       // Not finished: open another file...
       if ( r != null ) {
         if ( data.oneFileOpened ) {
@@ -231,29 +232,29 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderExist", parentfolder
-              .getName().toString() ) );
+            .getName().toString() ) );
         }
       } else {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderNotExist", parentfolder
-              .getName().toString() ) );
+            .getName().toString() ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderCreated", parentfolder
-                .getName().toString() ) );
+              .getName().toString() ) );
           }
         } else {
           retval = false;
           logError( BaseMessages.getString( PKG, "ExcelOutput.Error.CanNotFoundParentFolder", parentfolder
-              .getName().toString(), file.getName().toString() ) );
+            .getName().toString(), file.getName().toString() ) );
         }
       }
     } catch ( Exception e ) {
       retval = false;
       logError( BaseMessages.getString( PKG, "ExcelOutput.Log.CouldNotCreateParentFolder", parentfolder
-          .getName().toString() ) );
+        .getName().toString() ) );
     } finally {
       if ( parentfolder != null ) {
         try {
@@ -268,7 +269,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
   /**
    * Write a value to Excel, increasing data.positionX with one afterwards.
-   * 
+   *
    * @param v
    *          The value to write
    * @param vMeta
@@ -285,7 +286,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
   /**
    * Write a value to Excel, increasing data.positionX with one afterwards.
-   * 
+   *
    * @param v
    *          The value to write
    * @param vMeta
@@ -298,7 +299,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
    *          true if this is part of the header/footer
    * @return
    */
-  private boolean writeField( Object v, ValueMetaInterface vMeta, ExcelField excelField, int column, boolean isHeader ) {
+  private boolean writeField( Object v, ValueMetaInterface vMeta, ExcelField excelField, int column,
+    boolean isHeader ) {
     try {
       String hashName = vMeta.getName();
       if ( isHeader ) {
@@ -417,7 +419,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
                 data.formats.put( vMeta.getName(), cellFormat ); // save for next time around...
               }
               jxl.write.Number number =
-                  new jxl.write.Number( data.positionX, data.positionY, vMeta.getNumber( v ), cellFormat );
+                new jxl.write.Number( data.positionX, data.positionY, vMeta.getNumber( v ), cellFormat );
               data.sheet.addCell( number );
             } else if ( !meta.isNullBlank() ) {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
@@ -533,7 +535,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         }
       } else {
 
-        FileObject fo = KettleVFS.getFileObject( environmentSubstitute( meta.getTemplateFileName() ), getTransMeta() );
+        FileObject fo =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getTemplateFileName() ), getTransMeta() );
         // create the openFile from the template
 
         Workbook tmpWorkbook = Workbook.getWorkbook( KettleVFS.getInputStream( fo ), data.ws );
@@ -706,7 +709,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( meta.isAddToResultFiles() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
         resultFile.setComment( "This file was created with an Excel output step by Pentaho Data Integration" );
         addResultFile( resultFile );
       }
@@ -740,7 +743,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
   private void setFonts() throws Exception {
     // --- Set Header font
     int headerFontSize =
-        Const.toInt( environmentSubstitute( meta.getHeaderFontSize() ), ExcelOutputMeta.DEFAULT_FONT_SIZE );
+      Const.toInt( environmentSubstitute( meta.getHeaderFontSize() ), ExcelOutputMeta.DEFAULT_FONT_SIZE );
     // Set font name
     FontName headerFontName = ExcelFontMap.getFontName( meta.getHeaderFontName() );
     // Set UnderlineStyle
@@ -749,10 +752,12 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     WritableFont writableHeaderFont = null;
     if ( meta.isHeaderFontBold() ) {
       writableHeaderFont =
-          new WritableFont( headerFontName, headerFontSize, WritableFont.BOLD, meta.isHeaderFontItalic(), underline );
+        new WritableFont(
+          headerFontName, headerFontSize, WritableFont.BOLD, meta.isHeaderFontItalic(), underline );
     } else {
       writableHeaderFont =
-          new WritableFont( headerFontName, headerFontSize, WritableFont.NO_BOLD, meta.isHeaderFontItalic(), underline );
+        new WritableFont(
+          headerFontName, headerFontSize, WritableFont.NO_BOLD, meta.isHeaderFontItalic(), underline );
     }
 
     // Header font color
@@ -778,7 +783,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         imageFile = KettleVFS.getFileObject( data.realHeaderImage );
         if ( !imageFile.exists() ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "ExcelInputLog.ImageFileNotExists", data.realHeaderImage ) );
+            PKG, "ExcelInputLog.ImageFileNotExists", data.realHeaderImage ) );
         }
         data.realHeaderImage = KettleVFS.getFilename( imageFile );
         // Put an image
@@ -789,8 +794,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         byte[] imageData = new byte[(int) imageFile.getContent().getSize()];
         KettleVFS.getInputStream( imageFile ).read( imageData );
 
-        data.headerImage = new WritableImage( 0, 0, data.headerImageWidth, data.headerImageHeight, imageData ); // imageFile.g.new
-                                                                                                                // File(data.realHeaderImage));
+        data.headerImage = new WritableImage( 0, 0, data.headerImageWidth, data.headerImageHeight, imageData );
         imageData = null;
       } catch ( Exception e ) {
         throw new KettleException( e );
@@ -808,12 +812,13 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
     // --- Set rows font
     // Set font size
-    int rowFontSize = Const.toInt( environmentSubstitute( meta.getRowFontSize() ), ExcelOutputMeta.DEFAULT_FONT_SIZE );
+    int rowFontSize =
+      Const.toInt( environmentSubstitute( meta.getRowFontSize() ), ExcelOutputMeta.DEFAULT_FONT_SIZE );
     // Set font name
     FontName rowFontName = ExcelFontMap.getFontName( meta.getRowFontName() );
 
     data.writableFont =
-        new WritableFont( rowFontName, rowFontSize, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE );
+      new WritableFont( rowFontName, rowFontSize, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE );
 
     // Row font color
     Colour rowFontColour = ExcelFontMap.getColour( meta.getRowFontColor(), Colour.BLACK );

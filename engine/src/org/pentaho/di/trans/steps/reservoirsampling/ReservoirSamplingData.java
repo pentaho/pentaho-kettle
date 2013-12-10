@@ -35,10 +35,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * <p>
  * For more information see:<br>
  * <br>
- * 
+ *
  * Vitter, J. S. Random Sampling with a Reservoir. ACM Transactions on Mathematical Software, Vol. 11, No. 1, March
  * 1985. Pages 37-57.
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho.org)
  * @version 1.0
  */
@@ -68,7 +68,7 @@ public class ReservoirSamplingData extends BaseStepData implements StepDataInter
 
   /**
    * Set the meta data for the output format
-   * 
+   *
    * @param rmi
    *          a <code>RowMetaInterface</code> value
    */
@@ -78,7 +78,7 @@ public class ReservoirSamplingData extends BaseStepData implements StepDataInter
 
   /**
    * Get the output meta data
-   * 
+   *
    * @return a <code>RowMetaInterface</code> value
    */
   public RowMetaInterface getOutputRowMeta() {
@@ -87,7 +87,7 @@ public class ReservoirSamplingData extends BaseStepData implements StepDataInter
 
   /**
    * Gets the sample as an array of rows
-   * 
+   *
    * @return the sampled rows
    */
   public List<Object[]> getSample() {
@@ -96,7 +96,7 @@ public class ReservoirSamplingData extends BaseStepData implements StepDataInter
 
   /**
    * Initialize this data object
-   * 
+   *
    * @param sampleSize
    *          the number of rows to sample
    * @param seed
@@ -126,7 +126,7 @@ public class ReservoirSamplingData extends BaseStepData implements StepDataInter
   /**
    * Determine the current operational state of the Reservoir Sampling step. Sampling, PassThrough(Do not wait until
    * end, pass through on the fly), Disabled.
-   * 
+   *
    * @return current operational state
    */
   public PROC_MODE getProcessingMode() {
@@ -134,9 +134,9 @@ public class ReservoirSamplingData extends BaseStepData implements StepDataInter
   }
 
   /**
-   * 
+   *
    * Set this component to sample, pass through or be disabled
-   * 
+   *
    * @param state
    *          member of PROC_MODE enumeration indicating the desired operational state
    */
@@ -146,10 +146,10 @@ public class ReservoirSamplingData extends BaseStepData implements StepDataInter
 
   /**
    * Here is where the action happens. Sampling is done using the "R" algorithm of Jeffrey Scott Vitter.
-   * 
+   *
    * @param row
    *          an incoming row
-   * 
+   *
    */
   public void processRow( Object[] row ) {
     if ( m_currentRow < m_k ) {

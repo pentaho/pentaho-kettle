@@ -35,13 +35,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Executor class to allow a java program to inject rows of data into a transformation. This step can be used as a
  * starting point in such a "headless" transformation.
- * 
+ *
  * @since 22-jun-2006
  */
 public class Injector extends BaseStep implements StepInterface {
-  private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public Injector( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Injector( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

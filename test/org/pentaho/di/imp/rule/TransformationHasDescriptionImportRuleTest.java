@@ -47,12 +47,14 @@ public class TransformationHasDescriptionImportRuleTest extends TestCase {
 
     PluginRegistry registry = PluginRegistry.getInstance();
 
-    PluginInterface plugin = registry.findPluginWithId( ImportRulePluginType.class, "TransformationHasDescription" );
+    PluginInterface plugin =
+      registry.findPluginWithId( ImportRulePluginType.class, "TransformationHasDescription" );
     assertNotNull( "The 'transformation has description' rule could not be found in the plugin registry!", plugin );
 
-    TransformationHasDescriptionImportRule rule = (TransformationHasDescriptionImportRule) registry.loadClass( plugin );
+    TransformationHasDescriptionImportRule rule =
+      (TransformationHasDescriptionImportRule) registry.loadClass( plugin );
     assertNotNull(
-        "The 'transformation has description rule' class could not be loaded by the plugin registry!", plugin );
+      "The 'transformation has description rule' class could not be loaded by the plugin registry!", plugin );
 
     rule.setMinLength( 20 );
     rule.setEnabled( true );
@@ -60,19 +62,22 @@ public class TransformationHasDescriptionImportRuleTest extends TestCase {
     List<ImportValidationFeedback> feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     rule.setMinLength( 2000 );
     rule.setEnabled( true );
 
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setEnabled( false );
 
     feedback = rule.verifyRule( transMeta );
-    assertTrue( "We didn't expect any feedback from the 'transformation has description rule' while disabled", feedback
+    assertTrue(
+      "We didn't expect any feedback from the 'transformation has description rule' while disabled", feedback
         .isEmpty() );
 
   }

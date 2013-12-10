@@ -31,14 +31,14 @@ public interface SpoonPluginInterface {
 
   /**
    * Provides an optional SpoonLifecycleListener to be notified of Spoon startup and shutdown.
-   * 
+   *
    * @return optional SpoonLifecycleListener
    */
   public SpoonLifecycleListener getLifecycleListener();
 
   /**
    * Provides an optional SpoonPerspective.
-   * 
+   *
    * @return optional SpoonPerspective
    */
   public SpoonPerspective getPerspective();

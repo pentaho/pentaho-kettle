@@ -40,7 +40,7 @@ public class IifFunctionTest extends TestCase {
     String falseValueString = "'Small'";
 
     IifFunction function =
-        new IifFunction( "Service", conditionClause, trueValueString, falseValueString, serviceFields );
+      new IifFunction( "Service", conditionClause, trueValueString, falseValueString, serviceFields );
     assertNotNull( function.getSqlCondition() );
     Condition condition = function.getSqlCondition().getCondition();
     assertNotNull( condition );

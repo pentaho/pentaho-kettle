@@ -51,7 +51,8 @@ public class CarteResource {
   }
 
   public static CarteObjectEntry getCarteObjectEntry( String id ) {
-    List<CarteObjectEntry> transList = CarteSingleton.getInstance().getTransformationMap().getTransformationObjects();
+    List<CarteObjectEntry> transList =
+      CarteSingleton.getInstance().getTransformationMap().getTransformationObjects();
     for ( CarteObjectEntry entry : transList ) {
       if ( entry.getId().equals( id ) ) {
         return entry;
@@ -93,7 +94,7 @@ public class CarteResource {
   @Produces( { MediaType.APPLICATION_JSON } )
   public List<CarteObjectEntry> getTransformations() {
     List<CarteObjectEntry> transEntries =
-        CarteSingleton.getInstance().getTransformationMap().getTransformationObjects();
+      CarteSingleton.getInstance().getTransformationMap().getTransformationObjects();
     return transEntries;
   }
 
@@ -102,7 +103,7 @@ public class CarteResource {
   @Produces( { MediaType.APPLICATION_JSON } )
   public List<TransformationStatus> getTransformationsDetails() {
     List<CarteObjectEntry> transEntries =
-        CarteSingleton.getInstance().getTransformationMap().getTransformationObjects();
+      CarteSingleton.getInstance().getTransformationMap().getTransformationObjects();
 
     List<TransformationStatus> details = new ArrayList<TransformationStatus>();
 

@@ -30,11 +30,11 @@ import java.lang.annotation.Target;
 
 /**
  * Allows for properties to be dynamically injected into classes during runtime.
- * 
+ *
  * Both methods and fields can be annotated.
- * 
+ *
  * @author Alex Silva
- * 
+ *
  */
 @Documented
 @Target( { ElementType.FIELD, ElementType.METHOD } )
@@ -49,7 +49,7 @@ public @interface Inject {
    * <li><u>Methods:</u>The name of the property being set by the method, as defined by
    * <code>Introspector.decapitalize</code> and the Java Beans API.</li>
    * </ol>
-   * 
+   *
    * @return the property name to be injected
    */
   String property() default "";

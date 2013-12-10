@@ -30,7 +30,7 @@ import org.pentaho.di.core.database.PALODatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 
-public class PaloCellInputData extends BaseStepData 
+public class PaloCellInputData extends BaseStepData
 implements StepDataInterface {
     public PaloHelper helper;
 	

@@ -57,13 +57,13 @@ import ca.uhn.hl7v2.validation.impl.NoValidation;
 		id="HL7MLLPInput",
 		categoryDescription="i18n:org.pentaho.di.job:JobCategory.Category.Utility",
 		i18nPackageName="org.pentaho.di.job.entries.hl7mllpin",
-		image="mllp-in.png", 
+		image="mllp-in.png",
 		name="HL7MLLPInput.Name",
 		description="HL7MLLPInput.TooltipDesc"
 	)
 public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInterface
 {
-	private static Class<?> PKG = HL7MLLPInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = HL7MLLPInput.class; // for i18n purposes, needed by Translator2!!
 
 	private String server;
 	private String port;
@@ -92,7 +92,7 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
         HL7MLLPInput je = (HL7MLLPInput) super.clone();
         return je;
     }
-    
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(128);
@@ -163,29 +163,29 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
 		Result result = previousResult;
 		
 		try {
-		  
+		
 		  String serverName = environmentSubstitute(server);
 		  int portNumber = Integer.parseInt(environmentSubstitute(port));
 		  String messageVariable = environmentSubstitute(messageVariableName);
       String messageTypeVariable = environmentSubstitute(messageTypeVariableName);
       String versionVariable = environmentSubstitute(versionVariableName);
-      
+
       MLLPSocketCacheEntry entry = MLLPSocketCache.getInstance().getServerSocketStreamSource(serverName, portNumber);
       if (entry.getJobListener()!=null) {
         parentJob.addJobListener(entry.getJobListener());
       }
       MLLPTransport transport = entry.getTransport();
-      
+
       // Get the next value...
       //
       synchronized(transport) {
         Transportable transportable = transport.doReceive();
   	    String message = transportable.getMessage();
-  	    
+  	
   	    logDetailed("Received message: "+message);
-  	    
+  	
   	    parentJob.setVariable(messageVariable, message);
-	    
+	
   	    //  Parse the message and extract the control ID.
         //
         Parser parser = new GenericParser();
@@ -195,7 +195,7 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
         Structure structure = msg.get("MSH");
         String messageType = null;
         String version = msg.getVersion();
-        
+
         if (structure instanceof ca.uhn.hl7v2.model.v21.segment.MSH) {
           messageType = ((ca.uhn.hl7v2.model.v21.segment.MSH)structure).getMESSAGETYPE().encode();
         } else if (structure instanceof ca.uhn.hl7v2.model.v22.segment.MSH) {
@@ -215,11 +215,11 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
         } else {
           logError("This job entry does not support the HL7 dialect used. Found MSH class: "+structure.getClass().getName());
         }
-        
+
         if (!Const.isEmpty(messageTypeVariable)) parentJob.setVariable(messageTypeVariable, messageType);
         if (!Const.isEmpty(versionVariable)) parentJob.setVariable(versionVariable, version);
       }
-      
+
 			// All went well..
 			//
 			result.setNrErrors(0);
@@ -229,7 +229,7 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
 			log.logError(BaseMessages.getString(PKG, "HL7MLLPInput.Exception.UnexpectedError"), e);
 			result.setNrErrors(1);
 			result.setResult(false);
-		} 
+		}
 		
 		return result;
 	}
@@ -238,7 +238,7 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return true;
 	}
-    
+
     public boolean isUnconditional()
     {
         return false;

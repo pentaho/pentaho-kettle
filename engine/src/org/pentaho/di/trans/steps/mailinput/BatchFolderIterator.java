@@ -107,7 +107,7 @@ public class BatchFolderIterator implements Iterator<Message> {
 
   /**
    * Not implemented.
-   * 
+   *
    * @throws UnsupportedOperationException
    */
   @Override

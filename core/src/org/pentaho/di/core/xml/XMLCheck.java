@@ -39,7 +39,7 @@ public class XMLCheck {
 
   /**
    * Checks an xml file is well formed.
-   * 
+   *
    * @param file
    *          The file to check
    * @return true if the file is well formed.
@@ -57,7 +57,7 @@ public class XMLCheck {
 
   /**
    * Checks an xml string is well formed.
-   * 
+   *
    * @param is
    *          inputstream
    * @return true if the xml is well formed.

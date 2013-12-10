@@ -26,13 +26,13 @@ import org.pentaho.di.core.row.ValueMeta;
 
 /**
  * Describes a single field in an excel file
- * 
+ *
  * TODO: allow the width of a column to be set --> data.sheet.setColumnView(column, width); TODO: allow the default font
  * to be set TODO: allow an aggregation formula on one of the columns --> SUM(A2:A151)
- * 
+ *
  * @author Matt
  * @since 7-09-2006
- * 
+ *
  */
 public class ExcelField implements Cloneable {
   private String name;

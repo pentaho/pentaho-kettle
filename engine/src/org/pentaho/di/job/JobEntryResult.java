@@ -35,7 +35,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
  * <p>
  * --> ...
  * <p>
- * 
+ *
  * @author Matt
  * @since 16-mrt-2005
  */
@@ -62,7 +62,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 
   /**
    * Creates a new job entry result...
-   * 
+   *
    * @param result
    *          the result of the job entry
    * @param comment
@@ -71,7 +71,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
    *          the job entry for which this is the result.
    */
   public JobEntryResult( Result result, String logChannelId, String comment, String reason, String jobEntryName,
-      int jobEntryNr, String jobEntryFilename ) {
+    int jobEntryNr, String jobEntryFilename ) {
     this();
     if ( result != null ) {
       // lightClone doesn't bother cloning all the rows.
@@ -92,9 +92,9 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
   @Deprecated
   public JobEntryResult( Result result, String comment, String reason, JobEntryCopy copy ) {
 
-    this( result, copy.getEntry().getLogChannel().getLogChannelId(), comment, reason, copy != null
-        ? copy.getName() : null, copy != null ? copy.getNr() : 0, copy == null ? null : ( copy.getEntry() != null
-        ? copy.getEntry().getFilename() : null ) );
+    this( result, copy.getEntry().getLogChannel().getLogChannelId(), comment, reason, copy != null ? copy
+      .getName() : null, copy != null ? copy.getNr() : 0, copy == null ? null : ( copy.getEntry() != null ? copy
+      .getEntry().getFilename() : null ) );
   }
 
   public Object clone() {

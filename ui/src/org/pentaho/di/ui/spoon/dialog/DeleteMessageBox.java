@@ -33,11 +33,11 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Displays the delete message box to confirm deletes of multiple steps or job entries
- * 
+ *
  * @author David Kincade
  */
 public class DeleteMessageBox extends MessageBox {
-  private static Class<?> PKG = DeleteMessageBox.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DeleteMessageBox.class; // for i18n purposes, needed by Translator2!!
 
   // The title for the message box
   private static final String title = BaseMessages.getString( PKG, "DeleteMessageBox.Title" );
@@ -50,7 +50,7 @@ public class DeleteMessageBox extends MessageBox {
 
   /**
    * Creates a message box to confirm the deletion of the items
-   * 
+   *
    * @param shell
    *          the shell which will be the parent of the new instance
    * @param text
@@ -66,7 +66,7 @@ public class DeleteMessageBox extends MessageBox {
 
   /**
    * Creats the dialog and then performs the display and returns the result
-   * 
+   *
    * @see org.eclipse.swt.widgets.MessageBox
    */
   public int open() {
@@ -82,7 +82,7 @@ public class DeleteMessageBox extends MessageBox {
 
   /**
    * Builds a message from the text and the stepList
-   * 
+   *
    * @return
    */
   protected String buildMessage() {

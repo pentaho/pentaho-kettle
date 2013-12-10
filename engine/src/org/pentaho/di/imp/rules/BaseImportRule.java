@@ -114,16 +114,16 @@ public abstract class BaseImportRule implements ImportRuleInterface {
 
   /**
    * This returns the expected name for the composite that allows a base import rule to be edited.
-   * 
+   *
    * The expected name is in the org.pentaho.di.ui tree and has a class name that is the name of the job entry with
    * 'Composite' added to the end.
-   * 
+   *
    * e.g. if the import rule class name is: "org.pentaho.di.imp.rules.DatabaseConfigurationImportRule" the composite
    * then the composite class name would be: "org.pentaho.di.ui.imp.rules.DatabaseConfigurationImportRuleComposite"
-   * 
+   *
    * If the composite class for a job entry does not match this pattern it should override this method and return the
    * appropriate class name
-   * 
+   *
    * @return full class name of the composite class
    */
   @Override

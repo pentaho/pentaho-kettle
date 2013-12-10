@@ -112,9 +112,9 @@ public class WordCountSingleThreadTest extends TestCase {
           }
         }
         System.out.println( "#"
-            + i + " : Finished processing one iteration in " + delay + "ms, average is: "
-            + Const.round( ( (double) totalWait / ( i + 1 ) ), 1 ) + ", speed=" + speed
-            + " row/s, total rows buffered: " + totalRows );
+          + i + " : Finished processing one iteration in " + delay + "ms, average is: "
+          + Const.round( ( (double) totalWait / ( i + 1 ) ), 1 ) + ", speed=" + speed
+          + " row/s, total rows buffered: " + totalRows );
       }
 
       List<RowMetaAndData> resultRows = rc.getRowsWritten();
@@ -123,7 +123,7 @@ public class WordCountSingleThreadTest extends TestCase {
       // We also join with 3 identical rows in a data grid, giving 9 rows of which 3 are filtered out
       //
       assertEquals( "Error found in iteration " + i + " : not the expected amount of output rows.", 9, resultRows
-          .size() );
+        .size() );
       rc.clear();
     }
 
@@ -140,7 +140,7 @@ public class WordCountSingleThreadTest extends TestCase {
     System.out.println( "Average delay before idle : " + Const.round( ( (double) totalWait / iterations ), 1 ) );
     double transTimeSeconds = Const.round( ( (double) transTime / 1000 ), 1 );
     System.out.println( "Total transformation runtime for "
-        + iterations + " iterations :" + transTimeSeconds + " seconds" );
+      + iterations + " iterations :" + transTimeSeconds + " seconds" );
     double transTimePerIteration = Const.round( ( (double) transTime / iterations ), 2 );
     System.out.println( "Runtime per iteration: " + transTimePerIteration + " miliseconds" );
     double rowsPerSecond = Const.round( ( rowsProcessed ) / ( (double) transTime / 1000 ), 1 );
@@ -217,9 +217,9 @@ public class WordCountSingleThreadTest extends TestCase {
           }
         }
         System.out.println( "#"
-            + i + " : Finished processing one iteration in " + delay + "ms, average is: "
-            + Const.round( ( (double) totalWait / ( i + 1 ) ), 1 ) + ", speed=" + speed
-            + " row/s, total rows buffered: " + totalRows );
+          + i + " : Finished processing one iteration in " + delay + "ms, average is: "
+          + Const.round( ( (double) totalWait / ( i + 1 ) ), 1 ) + ", speed=" + speed
+          + " row/s, total rows buffered: " + totalRows );
       }
 
       List<RowMetaAndData> resultRows = rc.getRowsWritten();
@@ -227,7 +227,7 @@ public class WordCountSingleThreadTest extends TestCase {
       // The "group by" step reduces the amount of rows from 6 to 4.
       //
       assertEquals( "Error found in iteration " + i + " : not the expected amount of output rows.", 4, resultRows
-          .size() );
+        .size() );
       rc.clear();
     }
 
@@ -244,7 +244,7 @@ public class WordCountSingleThreadTest extends TestCase {
     System.out.println( "Average delay before idle : " + Const.round( ( (double) totalWait / iterations ), 1 ) );
     double transTimeSeconds = Const.round( ( (double) transTime / 1000 ), 1 );
     System.out.println( "Total transformation runtime for "
-        + iterations + " iterations :" + transTimeSeconds + " seconds" );
+      + iterations + " iterations :" + transTimeSeconds + " seconds" );
     double transTimePerIteration = Const.round( ( (double) transTime / iterations ), 2 );
     System.out.println( "Runtime per iteration: " + transTimePerIteration + " miliseconds" );
     double rowsPerSecond = Const.round( ( rowsProcessed ) / ( (double) transTime / 1000 ), 1 );
@@ -255,7 +255,7 @@ public class WordCountSingleThreadTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "key", ValueMeta.TYPE_STRING ), new ValueMeta( "value", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "key", ValueMeta.TYPE_STRING ), new ValueMeta( "value", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -279,7 +279,7 @@ public class WordCountSingleThreadTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "key", ValueMeta.TYPE_STRING ), new ValueMeta( "value", ValueMeta.TYPE_INTEGER ), };
+    { new ValueMeta( "key", ValueMeta.TYPE_STRING ), new ValueMeta( "value", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

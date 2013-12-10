@@ -35,17 +35,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Delay input row.
- * 
+ *
  * @author Samatar
  * @since 27-06-2008
  */
 public class Delay extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DelayMeta meta;
   private DelayData data;
 
-  public Delay( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Delay( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

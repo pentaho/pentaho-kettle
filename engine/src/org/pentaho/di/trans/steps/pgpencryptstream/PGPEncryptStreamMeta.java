@@ -52,11 +52,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
- * 
+ *
  */
 
 public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PGPEncryptStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGPEncryptStreamMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** GPG location */
   private String gpglocation;
@@ -163,7 +163,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     this.keyname = keyname;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -183,7 +184,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
     if ( !Const.isEmpty( resultfieldname ) ) {
       ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_STRING );
@@ -204,7 +205,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       gpglocation = XMLHandler.getTagValue( stepnode, "gpglocation" );
       keyname = XMLHandler.getTagValue( stepnode, "keyname" );
@@ -214,8 +216,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       streamfield = XMLHandler.getTagValue( stepnode, "streamfield" );
       resultfieldname = XMLHandler.getTagValue( stepnode, "resultfieldname" );
     } catch ( Exception e ) {
-      throw new KettleXMLException(
-          BaseMessages.getString( PKG, "PGPEncryptStreamMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "PGPEncryptStreamMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -230,7 +232,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "PGPEncryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+        PKG, "PGPEncryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -244,14 +246,15 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       rep.saveStepAttribute( id_transformation, id_step, "streamfield", streamfield );
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "PGPEncryptStreamMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "PGPEncryptStreamMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -294,20 +297,20 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "PGPEncryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PGPEncryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "PGPEncryptStreamMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PGPEncryptStreamMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new PGPEncryptStream( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

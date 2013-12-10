@@ -269,8 +269,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
 
   /**
    * Synchronize this folder with the back-end
-   * 
-   * 
+   *
+   *
    */
   public void refresh() {
     try {

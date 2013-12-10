@@ -51,8 +51,8 @@ public class SAPField {
   @Override
   public String toString() {
     return "SAPField [name="
-        + name + ", table=" + table + ", type=" + type + ", typePentaho=" + typePentaho + ", typeSAP=" + typeSAP
-        + ", value=" + value + ", defaultvalue=" + defaultvalue + ", description=" + description + "]";
+      + name + ", table=" + table + ", type=" + type + ", typePentaho=" + typePentaho + ", typeSAP=" + typeSAP
+      + ", value=" + value + ", defaultvalue=" + defaultvalue + ", description=" + description + "]";
   }
 
   public String getName() {

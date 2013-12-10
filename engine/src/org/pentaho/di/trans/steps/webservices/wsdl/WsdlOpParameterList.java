@@ -49,7 +49,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
 
   /**
    * Constructor.
-   * 
+   *
    * @param op
    *          Operation this arg list is for.
    * @param binding
@@ -68,7 +68,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
 
   /**
    * Was there a 'return type' parameter in this list? If so return its XML type.
-   * 
+   *
    * @return QName of the XML type, null if not present.
    */
   protected WsdlOpReturnType getReturnType() {
@@ -77,7 +77,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
 
   /**
    * Get the style (WRAPPED or BARE) of the parameters in this list.
-   * 
+   *
    * @return WsdlOperation.SOAPParamaterStyle enumeration value.
    */
   protected WsdlOperation.SOAPParameterStyle getParameterStyle() {
@@ -93,7 +93,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
 
   /**
    * Add a parameter to this list.
-   * 
+   *
    * @param p
    *          Message part defining the parameter.
    * @param requestPart
@@ -122,7 +122,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
 
   /**
    * Generate a WsdlOpParameter from the message part.
-   * 
+   *
    * @param part
    *          A list of message part.
    * @param requesPart
@@ -138,8 +138,8 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
       }
       params.addAll( resolvePartElement( part ) );
     } else {
-      params.add( new WsdlOpParameter( part.getName(), part.getTypeName(), _wsdlTypes
-          .findNamedType( part.getTypeName() ), _wsdlTypes ) );
+      params.add( new WsdlOpParameter( part.getName(), part.getTypeName(), _wsdlTypes.findNamedType( part
+        .getTypeName() ), _wsdlTypes ) );
     }
     return params;
   }
@@ -163,7 +163,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
    * out arguments and the return type of the method is void.</li>
    * </ol>
    * </ol>
-   * 
+   *
    * @param responseParam
    *          Parameter to process.
    */
@@ -206,7 +206,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter> {
 
   /**
    * Resolve a Part's element attribute value to a concrete XML type.
-   * 
+   *
    * @param p
    *          A message part.
    * @return A list of parameters resulting from the schema type -- typically the list will only contains a single

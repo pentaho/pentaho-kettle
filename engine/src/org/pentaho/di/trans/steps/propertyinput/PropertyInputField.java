@@ -28,12 +28,12 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Describes an Property field
- * 
+ *
  * @author Samatar Hassan
  * @since 24-03-2008
  */
 public class PropertyInputField implements Cloneable {
-  private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -43,10 +43,10 @@ public class PropertyInputField implements Cloneable {
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
   public static final String[] trimTypeDesc = {
-      BaseMessages.getString( PKG, "PropertyInputField.TrimType.None" ),
-      BaseMessages.getString( PKG, "PropertyInputField.TrimType.Left" ),
-      BaseMessages.getString( PKG, "PropertyInputField.TrimType.Right" ),
-      BaseMessages.getString( PKG, "PropertyInputField.TrimType.Both" ) };
+    BaseMessages.getString( PKG, "PropertyInputField.TrimType.None" ),
+    BaseMessages.getString( PKG, "PropertyInputField.TrimType.Left" ),
+    BaseMessages.getString( PKG, "PropertyInputField.TrimType.Right" ),
+    BaseMessages.getString( PKG, "PropertyInputField.TrimType.Both" ) };
 
   public static final int COLUMN_KEY = 0;
   public static final int COLUMN_VALUE = 1;
@@ -54,8 +54,8 @@ public class PropertyInputField implements Cloneable {
   public static final String[] ColumnCode = { "key", "value" };
 
   public static final String[] ColumnDesc = {
-      BaseMessages.getString( PKG, "PropertyInputField.Column.Key" ),
-      BaseMessages.getString( PKG, "PropertyInputField.Column.Value" ) };
+    BaseMessages.getString( PKG, "PropertyInputField.Column.Key" ),
+    BaseMessages.getString( PKG, "PropertyInputField.Column.Value" ) };
 
   private String name;
   private int column;

@@ -66,7 +66,7 @@ import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import com.google.gdata.util.common.base.Pair;
 
 public class Kitchen {
-  private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_KITCHEN = "Kitchen";
 
@@ -77,18 +77,19 @@ public class Kitchen {
     final RepositoryPluginType repositoryPluginType = RepositoryPluginType.getInstance();
 
     final Future<Pair<KettlePluginException, Future<KettleException>>> repositoryRegisterFuture =
-        executor.submit( new Callable<Pair<KettlePluginException, Future<KettleException>>>() {
+      executor.submit( new Callable<Pair<KettlePluginException, Future<KettleException>>>() {
 
-          @Override
-          public Pair<KettlePluginException, Future<KettleException>> call() throws Exception {
-            PluginRegistry.addPluginType( repositoryPluginType );
-            try {
-              KettleClientEnvironment.init();
-            } catch ( KettlePluginException e ) {
-              return Pair.of( e, null );
-            }
+        @Override
+        public Pair<KettlePluginException, Future<KettleException>> call() throws Exception {
+          PluginRegistry.addPluginType( repositoryPluginType );
+          try {
+            KettleClientEnvironment.init();
+          } catch ( KettlePluginException e ) {
+            return Pair.of( e, null );
+          }
 
-            Future<KettleException> kettleEnvironmentInitFuture = executor.submit( new Callable<KettleException>() {
+          Future<KettleException> kettleEnvironmentInitFuture =
+            executor.submit( new Callable<KettleException>() {
 
               @Override
               public KettleException call() throws Exception {
@@ -101,9 +102,9 @@ public class Kitchen {
                 return null;
               }
             } );
-            return Pair.of( null, kettleEnvironmentInitFuture );
-          }
-        } );
+          return Pair.of( null, kettleEnvironmentInitFuture );
+        }
+      } );
 
     List<String> args = new ArrayList<String>();
     for ( int i = 0; i < a.length; i++ ) {
@@ -119,62 +120,71 @@ public class Kitchen {
     RepositoryMeta repositoryMeta = null;
     Job job = null;
 
-    StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
+    StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname;
+    StringBuffer optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
+    StringBuffer optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
     NamedParams optionParams = new NamedParamsDefault();
     NamedParams customOptions = new NamedParamsDefault();
 
     CommandLineOption maxLogLinesOption =
-        new CommandLineOption(
-            "maxloglines", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogLines" ), new StringBuffer() );
+      new CommandLineOption(
+        "maxloglines", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogLines" ), new StringBuffer() );
     CommandLineOption maxLogTimeoutOption =
-        new CommandLineOption(
-            "maxlogtimeout", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogTimeout" ), new StringBuffer() );
+      new CommandLineOption(
+        "maxlogtimeout", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogTimeout" ), new StringBuffer() );
 
     CommandLineOption[] options =
-        new CommandLineOption[] {
-            new CommandLineOption( "rep", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepName" ), optionRepname =
-                new StringBuffer() ),
-            new CommandLineOption(
-                "user", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepUsername" ), optionUsername =
-                    new StringBuffer() ),
-            new CommandLineOption(
-                "pass", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepPassword" ), optionPassword =
-                    new StringBuffer() ),
-            new CommandLineOption( "job", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepJobName" ), optionJobname =
-                new StringBuffer() ),
-            new CommandLineOption( "dir", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepDir" ), optionDirname =
-                new StringBuffer() ),
-            new CommandLineOption( "file", BaseMessages.getString( PKG, "Kitchen.CmdLine.XMLJob" ), optionFilename =
-                new StringBuffer() ),
-            new CommandLineOption( "level", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogLevel" ), optionLoglevel =
-                new StringBuffer() ),
-            new CommandLineOption( "logfile", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogFile" ), optionLogfile =
-                new StringBuffer() ),
-            new CommandLineOption(
-                "log", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogFileOld" ), optionLogfileOld =
-                    new StringBuffer(), false, true ),
-            new CommandLineOption( "listdir", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListDir" ), optionListdir =
-                new StringBuffer(), true, false ),
-            new CommandLineOption(
-                "listjobs", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListJobsDir" ), optionListjobs =
-                    new StringBuffer(), true, false ),
-            new CommandLineOption(
-                "listrep", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListAvailableReps" ), optionListrep =
-                    new StringBuffer(), true, false ),
-            new CommandLineOption( "norep", BaseMessages.getString( PKG, "Kitchen.CmdLine.NoRep" ), optionNorep =
-                new StringBuffer(), true, false ),
-            new CommandLineOption( "version", BaseMessages.getString( PKG, "Kitchen.CmdLine.Version" ), optionVersion =
-                new StringBuffer(), true, false ),
-            new CommandLineOption(
-                "param", BaseMessages.getString( PKG, "Kitchen.ComdLine.Param" ), optionParams, false ),
-            new CommandLineOption(
-                "listparam", BaseMessages.getString( PKG, "Kitchen.ComdLine.ListParam" ), optionListParam =
-                    new StringBuffer(), true, false ),
-            new CommandLineOption( "export", BaseMessages.getString( PKG, "Kitchen.ComdLine.Export" ), optionExport =
-                new StringBuffer(), true, false ),
-            new CommandLineOption(
-                "custom", BaseMessages.getString( PKG, "Kitchen.ComdLine.Custom" ), customOptions, false ),
-            maxLogLinesOption, maxLogTimeoutOption, };
+      new CommandLineOption[] {
+        new CommandLineOption( "rep", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepName" ), optionRepname =
+          new StringBuffer() ),
+        new CommandLineOption(
+          "user", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepUsername" ), optionUsername =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "pass", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepPassword" ), optionPassword =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "job", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepJobName" ), optionJobname =
+            new StringBuffer() ),
+        new CommandLineOption( "dir", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepDir" ), optionDirname =
+          new StringBuffer() ),
+        new CommandLineOption(
+          "file", BaseMessages.getString( PKG, "Kitchen.CmdLine.XMLJob" ), optionFilename =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "level", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogLevel" ), optionLoglevel =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "logfile", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogFile" ), optionLogfile =
+            new StringBuffer() ),
+        new CommandLineOption(
+          "log", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogFileOld" ), optionLogfileOld =
+            new StringBuffer(), false, true ),
+        new CommandLineOption(
+          "listdir", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListDir" ), optionListdir =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "listjobs", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListJobsDir" ), optionListjobs =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "listrep", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListAvailableReps" ), optionListrep =
+            new StringBuffer(), true, false ),
+        new CommandLineOption( "norep", BaseMessages.getString( PKG, "Kitchen.CmdLine.NoRep" ), optionNorep =
+          new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "version", BaseMessages.getString( PKG, "Kitchen.CmdLine.Version" ), optionVersion =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "param", BaseMessages.getString( PKG, "Kitchen.ComdLine.Param" ), optionParams, false ),
+        new CommandLineOption(
+          "listparam", BaseMessages.getString( PKG, "Kitchen.ComdLine.ListParam" ), optionListParam =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "export", BaseMessages.getString( PKG, "Kitchen.ComdLine.Export" ), optionExport =
+            new StringBuffer(), true, false ),
+        new CommandLineOption(
+          "custom", BaseMessages.getString( PKG, "Kitchen.ComdLine.Custom" ), customOptions, false ),
+        maxLogLinesOption, maxLogTimeoutOption, };
 
     if ( args.size() == 0 ) {
       CommandLineOption.printUsage( options );
@@ -207,7 +217,8 @@ public class Kitchen {
       optionLogfile = optionLogfileOld;
     }
 
-    Pair<KettlePluginException, Future<KettleException>> repositoryRegisterResults = repositoryRegisterFuture.get();
+    Pair<KettlePluginException, Future<KettleException>> repositoryRegisterResults =
+      repositoryRegisterFuture.get();
     KettlePluginException repositoryRegisterException = repositoryRegisterResults.getFirst();
     if ( repositoryRegisterException != null ) {
       throw repositoryRegisterException;
@@ -228,8 +239,9 @@ public class Kitchen {
 
     if ( !Const.isEmpty( optionVersion ) ) {
       BuildVersion buildVersion = BuildVersion.getInstance();
-      log.logBasic( BaseMessages.getString( PKG, "Kitchen.Log.KettleVersion", buildVersion.getVersion(), buildVersion
-          .getRevision(), buildVersion.getBuildDate() ) );
+      log.logBasic( BaseMessages.getString(
+        PKG, "Kitchen.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion
+          .getBuildDate() ) );
       if ( a.length == 1 ) {
         exitJVM( 6 );
       }
@@ -288,11 +300,12 @@ public class Kitchen {
             }
 
             repository =
-                PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
+              PluginRegistry.getInstance().loadClass(
+                RepositoryPluginType.class, repositoryMeta, Repository.class );
             repository.init( repositoryMeta );
 
             repository.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
-                ? optionPassword.toString() : null );
+              ? optionPassword.toString() : null );
 
             RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree(); // Default = root
 
@@ -329,8 +342,8 @@ public class Kitchen {
               // List the jobs in the repository
               if ( "Y".equalsIgnoreCase( optionListjobs.toString() ) ) {
                 if ( log.isDebug() ) {
-                  log
-                      .logDebug( BaseMessages.getString( PKG, "Kitchen.Log.GettingLostJobsInDirectory", "" + directory ) );
+                  log.logDebug( BaseMessages.getString( PKG, "Kitchen.Log.GettingLostJobsInDirectory", ""
+                    + directory ) );
                 }
 
                 String[] jobnames = repository.getJobNames( directory.getObjectId(), false );
@@ -347,7 +360,7 @@ public class Kitchen {
               }
             } else {
               System.out.println( BaseMessages.getString(
-                  PKG, "Kitchen.Error.CanNotFindSuppliedDirectory", optionDirname + "" ) );
+                PKG, "Kitchen.Error.CanNotFindSuppliedDirectory", optionDirname + "" ) );
 
               repositoryMeta = null;
             }
@@ -371,7 +384,7 @@ public class Kitchen {
         for ( int i = 0; i < ri.nrRepositories(); i++ ) {
           RepositoryMeta rinfo = ri.getRepository( i );
           System.out.println( "#"
-              + ( i + 1 ) + " : " + rinfo.getName() + " [" + rinfo.getDescription() + "]  id=" + rinfo.getId() );
+            + ( i + 1 ) + " : " + rinfo.getName() + " [" + rinfo.getDescription() + "]  id=" + rinfo.getId() );
         }
       }
     } catch ( KettleException e ) {
@@ -383,7 +396,7 @@ public class Kitchen {
 
     if ( job == null ) {
       if ( !"Y".equalsIgnoreCase( optionListjobs.toString() )
-          && !"Y".equalsIgnoreCase( optionListdir.toString() ) && !"Y".equalsIgnoreCase( optionListrep.toString() ) ) {
+        && !"Y".equalsIgnoreCase( optionListdir.toString() ) && !"Y".equalsIgnoreCase( optionListrep.toString() ) ) {
         System.out.println( BaseMessages.getString( PKG, "Kitchen.Error.canNotLoadJob" ) );
       }
 
@@ -396,8 +409,8 @@ public class Kitchen {
         // Export the resources linked to the currently loaded file...
         //
         TopLevelResource topLevelResource =
-            ResourceUtil.serializeResourceExportInterface(
-                optionExport.toString(), job.getJobMeta(), job, repository, metaStore );
+          ResourceUtil.serializeResourceExportInterface(
+            optionExport.toString(), job.getJobMeta(), job, repository, metaStore );
         String launchFile = topLevelResource.getResourceName();
         String message = ResourceUtil.getExplanation( optionExport.toString(), launchFile, job.getJobMeta() );
         System.out.println();
@@ -463,10 +476,11 @@ public class Kitchen {
 
           if ( deflt != null ) {
             System.out.println( "Parameter: "
-                + parameterName + "=" + Const.NVL( value, "" ) + ", default=" + deflt + " : " + Const.NVL( descr, "" ) );
+              + parameterName + "=" + Const.NVL( value, "" ) + ", default=" + deflt + " : "
+              + Const.NVL( descr, "" ) );
           } else {
             System.out.println( "Parameter: "
-                + parameterName + "=" + Const.NVL( value, "" ) + " : " + Const.NVL( descr, "" ) );
+              + parameterName + "=" + Const.NVL( value, "" ) + " : " + Const.NVL( descr, "" ) );
           }
         }
 
@@ -503,16 +517,18 @@ public class Kitchen {
     } else if ( seconds <= 60 * 60 ) {
       int min = (int) ( seconds / 60 );
       int rem = (int) ( seconds % 60 );
-      log.logMinimal( BaseMessages.getString( PKG, "Kitchen.Log.ProcessEndAfterLong", String.valueOf( min ), String
-          .valueOf( rem ), String.valueOf( seconds ) ) );
+      log.logMinimal( BaseMessages.getString(
+        PKG, "Kitchen.Log.ProcessEndAfterLong", String.valueOf( min ), String.valueOf( rem ), String
+          .valueOf( seconds ) ) );
     } else if ( seconds <= 60 * 60 * 24 ) {
       int rem;
       int hour = (int) ( seconds / ( 60 * 60 ) );
       rem = (int) ( seconds % ( 60 * 60 ) );
       int min = rem / 60;
       rem = rem % 60;
-      log.logMinimal( BaseMessages.getString( PKG, "Kitchen.Log.ProcessEndAfterLonger", String.valueOf( hour ), String
-          .valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
+      log.logMinimal( BaseMessages.getString(
+        PKG, "Kitchen.Log.ProcessEndAfterLonger", String.valueOf( hour ), String.valueOf( min ), String
+          .valueOf( rem ), String.valueOf( seconds ) ) );
     } else {
       int rem;
       int days = (int) ( seconds / ( 60 * 60 * 24 ) );
@@ -521,8 +537,9 @@ public class Kitchen {
       rem = rem % ( 60 * 60 );
       int min = rem / 60;
       rem = rem % 60;
-      log.logMinimal( BaseMessages.getString( PKG, "Kitchen.Log.ProcessEndAfterLongest", String.valueOf( days ), String
-          .valueOf( hour ), String.valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
+      log.logMinimal( BaseMessages.getString(
+        PKG, "Kitchen.Log.ProcessEndAfterLongest", String.valueOf( days ), String.valueOf( hour ), String
+          .valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
     }
 
     if ( fileAppender != null ) {
@@ -549,7 +566,7 @@ public class Kitchen {
 
   /**
    * Configure the central log store from the provided command line options
-   * 
+   *
    * @param maxLogLinesOption
    *          Option for maximum log lines
    * @param maxLogTimeoutOption
@@ -558,7 +575,7 @@ public class Kitchen {
    *           Error parsing command line arguments
    */
   public static void configureLogging( final CommandLineOption maxLogLinesOption,
-      final CommandLineOption maxLogTimeoutOption ) throws KettleException {
+    final CommandLineOption maxLogTimeoutOption ) throws KettleException {
     int maxLogLines = parseIntArgument( maxLogLinesOption, 0 );
     if ( Const.isEmpty( maxLogLinesOption.getArgument() ) ) {
       maxLogLines = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_MAX_LOG_SIZE_IN_LINES ), 5000 );
@@ -572,7 +589,7 @@ public class Kitchen {
 
   /**
    * Parse an argument as an integer.
-   * 
+   *
    * @param option
    *          Command Line Option to parse argument of
    * @param def
@@ -587,7 +604,7 @@ public class Kitchen {
         return Integer.parseInt( option.getArgument().toString() );
       } catch ( NumberFormatException ex ) {
         throw new KettleException( BaseMessages.getString( PKG, "Kitchen.Error.InvalidNumberArgument", option
-            .getOption(), option.getArgument() ) );
+          .getOption(), option.getArgument() ) );
       }
     }
     return def;

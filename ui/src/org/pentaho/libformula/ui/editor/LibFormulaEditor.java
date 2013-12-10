@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 /**
- * 
+ *
  */
 
 package org.pentaho.libformula.ui.editor;
@@ -76,7 +76,7 @@ import org.pentaho.reporting.libraries.formula.lvalues.ParsePosition;
 
 /**
  * @author matt
- * 
+ *
  */
 public class LibFormulaEditor extends Dialog implements KeyListener {
   public static final String FUNCTIONS_FILE = "functions.xml";
@@ -215,7 +215,7 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
 
     // An expression editor on the right
     //
-    expressionEditor = new StyledText( rightSash, SWT.NONE ); // $NON-NLS-1$
+    expressionEditor = new StyledText( rightSash, SWT.NONE );
     expressionEditor.setText( this.formula );
     expressionEditor.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent event ) {
@@ -369,8 +369,8 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
     Display display = new Display();
     String[] inputFields = { "firstname", "name", };
     LibFormulaEditor lbe =
-        new LibFormulaEditor(
-            new Shell( display, SWT.NONE ), SWT.NONE, "MID(UPPER([name] & \" \" & [firstname]);5;10)", inputFields );
+      new LibFormulaEditor(
+        new Shell( display, SWT.NONE ), SWT.NONE, "MID(UPPER([name] & \" \" & [firstname]);5;10)", inputFields );
     lbe.open();
   }
 
@@ -409,12 +409,12 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
       if ( before.equals( "[" ) ) {
         for ( String fieldName : inputFields ) {
           proposals.add( new CompletionProposal( "[" + fieldName + "] (input field)", fieldName + "]", fieldName
-              .length() + 1 ) );
+            .length() + 1 ) );
         }
       } else if ( Const.isEmpty( before ) ) {
         for ( String fieldName : inputFields ) {
-          proposals.add( new CompletionProposal( "[" + fieldName + "] (input field)", "[" + fieldName + "]", fieldName
-              .length() + 2 ) );
+          proposals.add( new CompletionProposal(
+            "[" + fieldName + "] (input field)", "[" + fieldName + "]", fieldName.length() + 2 ) );
         }
       } else {
         // Only add those where "before" matches the start of the keyword or function
@@ -423,14 +423,15 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
           String key = "[" + fieldName;
           if ( key.startsWith( before ) && !key.equalsIgnoreCase( before ) ) {
             proposals.add( new CompletionProposal( "[" + fieldName + "] (keyword)", fieldName.substring( before
-                .length() )
-                + "]", fieldName.length() - before.length() + 1 ) );
+              .length() )
+              + "]", fieldName.length() - before.length() + 1 ) );
           }
         }
         for ( String function : functions ) {
           if ( function.startsWith( before ) && !function.equalsIgnoreCase( before ) ) {
-            proposals.add( new CompletionProposal( function + "() (Function)", function.substring( before.length() )
-                + "()", function.length() - before.length() + 1 ) );
+            proposals.add( new CompletionProposal( function + "() (Function)", function
+              .substring( before.length() )
+              + "()", function.length() - before.length() + 1 ) );
           }
         }
       }

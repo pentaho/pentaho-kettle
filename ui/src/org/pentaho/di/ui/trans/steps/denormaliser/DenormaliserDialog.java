@@ -64,7 +64,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class DenormaliserDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SORT_WARNING_PARAMETER = "PivotSortWarning";
 
@@ -181,14 +181,14 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
     ColumnInfo[] ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.GroupField" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.GroupField" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wGroup =
-        new TableView(
-            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
-            nrKeyRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrKeyRows, lsMod, props );
 
     wGet = new Button( shell, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "DenormaliserDialog.GetFields.Button" ) );
@@ -216,50 +216,51 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
     int UpInsRows = ( input.getDenormaliserTargetField() != null ? input.getDenormaliserTargetField().length : 1 );
 
     ColumnInfo[] ciTarget =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.TargetFieldname" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.ValueFieldname" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Keyvalue" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.getAllTypes(), false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 4 ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Group" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.NullIf" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Aggregation" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, DenormaliserTargetField.typeAggrLongDesc, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.TargetFieldname" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.ValueFieldname" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Keyvalue" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Type" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes(), false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Format" ),
+          ColumnInfo.COLUMN_TYPE_FORMAT, 4 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Length" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Precision" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Currency" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Decimal" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Group" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.NullIf" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Aggregation" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, DenormaliserTargetField.typeAggrLongDesc, false ), };
 
     ciTarget[ciTarget.length - 1].setToolTip( BaseMessages.getString( PKG, "DenormaliserDialog.CiTarget.Title" ) );
     ciTarget[2].setUsingVariables( true );
 
     wTarget =
-        new TableView(
-            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciTarget,
-            UpInsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciTarget,
+        UpInsRows, lsMod, props );
 
     wGetAgg = new Button( shell, SWT.PUSH );
     wGetAgg.setText( BaseMessages.getString( PKG, "DenormaliserDialog.GetLookupFields.Button" ) );
@@ -459,13 +460,13 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle(
-              shell, BaseMessages.getString( PKG, "DenormaliserDialog.Unpivot.DialogTitle" ), null, BaseMessages
-                  .getString( PKG, "DenormaliserDialog.Unpivot.DialogMessage", Const.CR, Const.CR ),
-              MessageDialog.WARNING, new String[] { BaseMessages.getString(
-                  PKG, "DenormaliserDialog.WarningMessage.Option.1" ) }, 0, BaseMessages.getString(
-                  PKG, "DenormaliserDialog.WarningMessage.Option.2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-                  STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle(
+          shell, BaseMessages.getString( PKG, "DenormaliserDialog.Unpivot.DialogTitle" ), null, BaseMessages
+            .getString( PKG, "DenormaliserDialog.Unpivot.DialogMessage", Const.CR, Const.CR ),
+          MessageDialog.WARNING, new String[] { BaseMessages.getString(
+            PKG, "DenormaliserDialog.WarningMessage.Option.1" ) }, 0, BaseMessages.getString(
+            PKG, "DenormaliserDialog.WarningMessage.Option.2" ), "N".equalsIgnoreCase( props
+            .getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
@@ -483,8 +484,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -496,33 +497,33 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
         BaseStepDialog.getFieldsFromPrevious(
-            r, wTarget, 2, new int[] {}, new int[] {}, -1, -1, new TableItemInsertListener() {
-              public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
-                if ( Const.indexOfString( v.getName(), groupingFields ) < 0 ) // Not a grouping field
+          r, wTarget, 2, new int[] {}, new int[] {}, -1, -1, new TableItemInsertListener() {
+            public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
+              if ( Const.indexOfString( v.getName(), groupingFields ) < 0 ) // Not a grouping field
+              {
+                if ( !wKeyField.getText().equalsIgnoreCase( v.getName() ) ) // Not the key field
                 {
-                  if ( !wKeyField.getText().equalsIgnoreCase( v.getName() ) ) // Not the key field
-                  {
-                    int nr = tableItem.getParent().indexOf( tableItem ) + 1;
-                    tableItem.setText( 1, BaseMessages.getString( PKG, "DenormaliserDialog.TargetFieldname.Label" )
-                        + nr ); // the target fieldname
-                    tableItem.setText( 2, v.getName() );
-                    tableItem.setText( 4, v.getTypeDesc() );
-                    if ( v.getLength() >= 0 ) {
-                      tableItem.setText( 6, "" + v.getLength() );
-                    }
-                    if ( v.getPrecision() >= 0 ) {
-                      tableItem.setText( 7, "" + v.getPrecision() );
-                    }
+                  int nr = tableItem.getParent().indexOf( tableItem ) + 1;
+                  tableItem.setText( 1, BaseMessages.getString( PKG, "DenormaliserDialog.TargetFieldname.Label" )
+                    + nr ); // the target fieldname
+                  tableItem.setText( 2, v.getName() );
+                  tableItem.setText( 4, v.getTypeDesc() );
+                  if ( v.getLength() >= 0 ) {
+                    tableItem.setText( 6, "" + v.getLength() );
+                  }
+                  if ( v.getPrecision() >= 0 ) {
+                    tableItem.setText( 7, "" + v.getPrecision() );
                   }
                 }
-                return true;
               }
-            } );
+              return true;
+            }
+          } );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -546,8 +547,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

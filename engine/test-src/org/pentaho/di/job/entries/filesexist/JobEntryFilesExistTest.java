@@ -100,8 +100,8 @@ public class JobEntryFilesExistTest {
 
     assertFalse( "Entry should fail", res.getResult() );
     assertEquals(
-        "Files not found. Result is false. And... Number of errors should be the same as number of not found files",
-        entry.arguments.length, res.getNrErrors() );
+      "Files not found. Result is false. And... Number of errors should be the same as number of not found files",
+      entry.arguments.length, res.getNrErrors() );
   }
 
   @Test
@@ -125,7 +125,8 @@ public class JobEntryFilesExistTest {
 
   @Test
   public void testExecuteFail() throws Exception {
-    entry.arguments = new String[] { existingFile1, existingFile2, "nonExistingFile1.ext", "nonExistingFile2.ext" };
+    entry.arguments =
+      new String[] { existingFile1, existingFile2, "nonExistingFile1.ext", "nonExistingFile2.ext" };
 
     Result res = entry.execute( new Result(), 0 );
 

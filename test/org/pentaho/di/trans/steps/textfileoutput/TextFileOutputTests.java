@@ -72,7 +72,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Creates a row generator step for this class..
-   * 
+   *
    * @param name
    * @param registry
    * @return
@@ -105,7 +105,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Create a dummy step for this class.
-   * 
+   *
    * @param name
    * @param registry
    * @return
@@ -123,7 +123,7 @@ public class TextFileOutputTests extends TestCase {
   /**
    * Create result data for test case 1. Each Object array in element in list should mirror the data written by the row
    * generator created by the createRowGenerator method.
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -158,7 +158,7 @@ public class TextFileOutputTests extends TestCase {
   /**
    * Create result data for test case 1. Each Object array in element in list should mirror the data written by the row
    * generator created by the createRowGenerator method.
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultDataFromObjects( Object[][] objs ) {
@@ -175,7 +175,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Creates a RowMetaInterface with a ValueMetaInterface with the name "filename".
-   * 
+   *
    * @return
    */
   public RowMetaInterface createRowMetaInterface() {
@@ -191,7 +191,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Creates data... Will add more as I figure what the data is.
-   * 
+   *
    * @param fileName
    * @return
    */
@@ -206,16 +206,16 @@ public class TextFileOutputTests extends TestCase {
   /**
    * Creates a row meta interface for the fields that are defined by performing a getFields and by checking "Result
    * filenames - Add filenames to result from "Text File Input" dialog.
-   * 
+   *
    * @return
    */
   public RowMetaInterface createResultRowMetaInterface() {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "City", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "State", ValueMeta.TYPE_STRING ) };
+    {
+      new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "City", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "State", ValueMeta.TYPE_STRING ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );
@@ -226,33 +226,33 @@ public class TextFileOutputTests extends TestCase {
 
   private static String getXML1() {
     String xml1 =
-        "  <step>"
-            + "    <name>Text file output</name>" + "    <type>TextFileOutput</type>" + "    <description/>"
-            + "    <distribute>Y</distribute>" + "    <copies>1</copies>" + "         <partitioning>"
-            + "           <method>none</method>" + "           <schema_name/>" + "           </partitioning>"
-            + "    <separator>;</separator>" + "    <enclosure>&quot;</enclosure>"
-            + "    <enclosure_forced>N</enclosure_forced>" + "    <enclosure_fix_disabled>N</enclosure_fix_disabled>"
-            + "    <header>Y</header>" + "    <footer>N</footer>" + "    <format>DOS</format>"
-            + "    <compression>None</compression>" + "    <encoding/>" + "    <endedLine/>"
-            + "    <fileNameInField>N</fileNameInField>" + "    <fileNameField/>" + "    <file>"
-            + "      <name>file</name>" + "      <is_command>N</is_command>"
-            + "      <servlet_output>N</servlet_output>"
-            + "      <do_not_open_new_file_init>N</do_not_open_new_file_init>" + "      <extention>txt</extention>"
-            + "      <append>N</append>" + "      <split>N</split>" + "      <haspartno>N</haspartno>"
-            + "      <add_date>N</add_date>" + "      <add_time>N</add_time>"
-            + "      <SpecifyFormat>N</SpecifyFormat>" + "      <date_time_format/>"
-            + "      <add_to_result_filenames>Y</add_to_result_filenames>" + "      <pad>N</pad>"
-            + "      <fast_dump>N</fast_dump>" + "      <splitevery>0</splitevery>" + "    </file>" + "    <fields>"
-            + "    </fields>" + "     <cluster_schema/>"
-            + " <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>"
-            + "      <xloc>183</xloc>" + "      <yloc>66</yloc>" + "      <draw>Y</draw>" + "      </GUI>"
-            + "    </step>";
+      "  <step>"
+        + "    <name>Text file output</name>" + "    <type>TextFileOutput</type>" + "    <description/>"
+        + "    <distribute>Y</distribute>" + "    <copies>1</copies>" + "         <partitioning>"
+        + "           <method>none</method>" + "           <schema_name/>" + "           </partitioning>"
+        + "    <separator>;</separator>" + "    <enclosure>&quot;</enclosure>"
+        + "    <enclosure_forced>N</enclosure_forced>"
+        + "    <enclosure_fix_disabled>N</enclosure_fix_disabled>" + "    <header>Y</header>"
+        + "    <footer>N</footer>" + "    <format>DOS</format>" + "    <compression>None</compression>"
+        + "    <encoding/>" + "    <endedLine/>" + "    <fileNameInField>N</fileNameInField>"
+        + "    <fileNameField/>" + "    <file>" + "      <name>file</name>"
+        + "      <is_command>N</is_command>" + "      <servlet_output>N</servlet_output>"
+        + "      <do_not_open_new_file_init>N</do_not_open_new_file_init>"
+        + "      <extention>txt</extention>" + "      <append>N</append>" + "      <split>N</split>"
+        + "      <haspartno>N</haspartno>" + "      <add_date>N</add_date>" + "      <add_time>N</add_time>"
+        + "      <SpecifyFormat>N</SpecifyFormat>" + "      <date_time_format/>"
+        + "      <add_to_result_filenames>Y</add_to_result_filenames>" + "      <pad>N</pad>"
+        + "      <fast_dump>N</fast_dump>" + "      <splitevery>0</splitevery>" + "    </file>"
+        + "    <fields>" + "    </fields>" + "     <cluster_schema/>"
+        + " <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>"
+        + "      <xloc>183</xloc>" + "      <yloc>66</yloc>" + "      <draw>Y</draw>" + "      </GUI>"
+        + "    </step>";
 
     return xml1;
   }
 
   private StepMeta createTextFileOutputStep( String name, String textFileName, String compression,
-      PluginRegistry registry ) {
+    PluginRegistry registry ) {
 
     // Create a Text File Output step
     String testFileOutputName = name;
@@ -325,7 +325,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          set 1 of rows to compare
    * @param rows2
@@ -360,7 +360,8 @@ public class TextFileOutputTests extends TestCase {
     // create the text file output step
     // but first lets get a filename
     String textFileName = TestUtilities.createEmptyTempFile( "testTextFileOutput1" );
-    StepMeta textFileOutputStep = createTextFileOutputStep( "text file output step", textFileName, "None", registry );
+    StepMeta textFileOutputStep =
+      createTextFileOutputStep( "text file output step", textFileName, "None", registry );
     transMeta.addStep( textFileOutputStep );
 
     // create a TransHopMeta for textFileOutputStep and add it to the transMeta
@@ -403,7 +404,7 @@ public class TextFileOutputTests extends TestCase {
   /**
    * Tests the default setting of createparentfolder to true by creating a new TextFileOutputMeta and verifying that
    * createparentfolder is true
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -419,7 +420,7 @@ public class TextFileOutputTests extends TestCase {
   /**
    * Tests the default setting of createparentfolder to true by creating a new TextFileOutputMeta using a sample XML
    * step (from a real transformation) and verifying that createparentfolder is true
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -438,7 +439,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Tests the ZIP output capability of the TextFileOutput step
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -539,7 +540,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Tests the GZIP output capability of the TextFileOutput step
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -569,7 +570,8 @@ public class TextFileOutputTests extends TestCase {
     // but first lets get a filename
     String textFileName = "testTextFileOutput5";
     String textFileOutputStepName = "text file output step";
-    StepMeta textFileOutputStep = createTextFileOutputStep( textFileOutputStepName, textFileName, "GZip", registry );
+    StepMeta textFileOutputStep =
+      createTextFileOutputStep( textFileOutputStepName, textFileName, "GZip", registry );
     transMeta.addStep( textFileOutputStep );
 
     // create a TransHopMeta for textFileOutputStep and add it to the transMeta
@@ -633,7 +635,7 @@ public class TextFileOutputTests extends TestCase {
 
   /**
    * Tests the normal output capability of the TextFileOutput step
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -663,7 +665,8 @@ public class TextFileOutputTests extends TestCase {
     // but first lets get a filename
     String textFileName = "testTextFileOutput6";
     String textFileOutputStepName = "text file output step";
-    StepMeta textFileOutputStep = createTextFileOutputStep( textFileOutputStepName, textFileName, "None", registry );
+    StepMeta textFileOutputStep =
+      createTextFileOutputStep( textFileOutputStepName, textFileName, "None", registry );
     transMeta.addStep( textFileOutputStep );
 
     // create a TransHopMeta for textFileOutputStep and add it to the transMeta

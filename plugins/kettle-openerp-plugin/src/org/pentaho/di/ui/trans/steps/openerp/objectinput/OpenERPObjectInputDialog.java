@@ -66,8 +66,8 @@ import com.debortoliwines.openerp.api.helpers.FilterHelper;
 
 public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDialogInterface {
 
-	private static Class<?> PKG = OpenERPObjectInputMeta.class; // for i18n purposes, needed by Translator2!! // $NON-NLS-1$
-	private static Class<?> PKGStepInterface = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = OpenERPObjectInputMeta.class; // for i18n purposes, needed by Translator2!!
+	private static Class<?> PKGStepInterface = StepInterface.class; // for i18n purposes, needed by Translator2!!
 	
 	ArrayList<FieldMapping> sourceListMapping;
 	
@@ -169,8 +169,8 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		fd.top = new FormAttachment(textReadBatchSize, margin);
 		labelFilter.setLayoutData(fd);
 		
-		filterViewColinf = new ColumnInfo[] { 
-				new ColumnInfo(getLocalizedFilterColumn(0), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
+		filterViewColinf = new ColumnInfo[] {
+				new ColumnInfo(getLocalizedFilterColumn(0), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
 				new ColumnInfo(getLocalizedFilterColumn(1), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
 				new ColumnInfo(getLocalizedFilterColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
 				new ColumnInfo(getLocalizedFilterColumn(3), ColumnInfo.COLUMN_TYPE_TEXT, false, false)};
@@ -198,8 +198,8 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		fd.top = new FormAttachment(tableViewFilter, margin);
 		labelFields.setLayoutData(fd);
 		
-		ColumnInfo[] colinf = new ColumnInfo[] { 
-				new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+		ColumnInfo[] colinf = new ColumnInfo[] {
+				new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
 				new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
 				new ColumnInfo(getLocalizedColumn(2), ColumnInfo.COLUMN_TYPE_TEXT, false, true)};
 
@@ -283,7 +283,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 			}
 		});
 		
-		// 
+		//
 		// Search the fields in the background
 		//
 		final Runnable runnable = new Runnable()
@@ -329,7 +329,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		case 1:
 			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewModelName");
 		case 2:
-			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFieldName");  
+			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFieldName");
 		default:
 			return "";
 		}
@@ -345,15 +345,15 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		case 2:
 			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterComparator");
 		case 3:
-			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterValue");  
+			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterValue");
 		default:
 			return "";
 		}
 	}
 
 	private void showHelp(){
-		EnterTextDialog text = new EnterTextDialog(shell, 
-				BaseMessages.getString(PKG,"OpenERPObjectInputDialog.FilterHelp.Title"),"", 
+		EnterTextDialog text = new EnterTextDialog(shell,
+				BaseMessages.getString(PKG,"OpenERPObjectInputDialog.FilterHelp.Title"),"",
 				BaseMessages.getString(PKG,"OpenERPObjectInputDialog.FilterHelp.Text"));
 		text.setReadOnly();
 		text.open();
@@ -381,8 +381,8 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 				}
 			
 			if (!found){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorTitle"), 
-						BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorString"), 
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorTitle"),
+						BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorString"),
 						new Exception(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ModelNotFoundError", comboModelName.getText())));
 				return;
 			}
@@ -395,11 +395,11 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		
 		if (tableViewFields.table.getItemCount() > 0) {
 			// Ask what we should do with the existing data in the step.
-			MessageDialog md = new MessageDialog(tableViewFields.getShell(), BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  
-					null, BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Message", "" + tableViewFields.table.getItemCount(), "" + mappings.size()),     //$NON-NLS-3$
-					MessageDialog.WARNING, new String[] { BaseMessages.getString(PKGStepInterface, "BaseStepDialog.AddNew"), 
-				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.ClearAndAdd"),   
-				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.Cancel"), }, 0); 
+			MessageDialog md = new MessageDialog(tableViewFields.getShell(), BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"
+					null, BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Message", "" + tableViewFields.table.getItemCount(), "" + mappings.size()),
+					MessageDialog.WARNING, new String[] { BaseMessages.getString(PKGStepInterface, "BaseStepDialog.AddNew"),
+				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.ClearAndAdd"),
+				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.Cancel"), }, 0);
 			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 			int idx = md.open();
 			choice = idx & 0xFF;
@@ -425,9 +425,9 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 					+ map.target_model
 					+ map.target_field))
 				tableViewFields.add(
-						map.target_field_label, 
+						map.target_field_label,
 						map.target_model,
-						map.target_field, 
+						map.target_field,
 						map.source_model,
 						map.source_field,
 						String.valueOf(map.source_index),
@@ -443,7 +443,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		for (ReadFilter filter : filters)
 			tableViewFilter.add(
 					filter.getOperator(),
-					filter.getFieldName(), 
+					filter.getFieldName(),
 					filter.getComparator(),
 					filter.getValue());
 
@@ -483,7 +483,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 				}
 			}
 		}
-		return modelList; 
+		return modelList;
 	}
 	
 	private void fillFilterCombos(ArrayList<FieldMapping> mappings){

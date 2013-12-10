@@ -51,7 +51,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the Janino step.
- * 
+ *
  * @author Slawomir Chodnicki
  */
 public class JaninoStepTest extends TestCase {
@@ -59,11 +59,11 @@ public class JaninoStepTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "integer", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "number", ValueMeta.TYPE_NUMBER ), new ValueMeta( "bigdecimal", ValueMeta.TYPE_BIGNUMBER ),
-            new ValueMeta( "date", ValueMeta.TYPE_DATE ), new ValueMeta( "binary", ValueMeta.TYPE_BINARY ),
-            new ValueMeta( "bool", ValueMeta.TYPE_BOOLEAN ), };
+    {
+      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "integer", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "number", ValueMeta.TYPE_NUMBER ),
+      new ValueMeta( "bigdecimal", ValueMeta.TYPE_BIGNUMBER ), new ValueMeta( "date", ValueMeta.TYPE_DATE ),
+      new ValueMeta( "binary", ValueMeta.TYPE_BINARY ), new ValueMeta( "bool", ValueMeta.TYPE_BOOLEAN ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -78,9 +78,9 @@ public class JaninoStepTest extends TestCase {
     RowMetaInterface rm = createRowMetaInterface();
 
     Object[] r1 =
-        new Object[] {
-            "string-value", new Long( 42L ), new Double( 23.0 ), new BigDecimal( 11.0 ), new Date(),
-            new byte[] { 1, 2, 3, 4, 5 }, new Boolean( true ) };
+      new Object[] {
+        "string-value", new Long( 42L ), new Double( 23.0 ), new BigDecimal( 11.0 ), new Date(),
+        new byte[] { 1, 2, 3, 4, 5 }, new Boolean( true ) };
 
     Object[] n = { null, null, null, null, null, null, null };
 
@@ -98,9 +98,9 @@ public class JaninoStepTest extends TestCase {
     RowMetaInterface rm = createRowMetaInterface();
 
     Object[] r1 =
-        new Object[] {
-            "string-value", new Long( 42L ), new Double( 23.0 ), new BigDecimal( 11.0 ), new Date( 10000000 ),
-            new byte[] { 1, 2, 3, 4, 5 }, new Boolean( true ) };
+      new Object[] {
+        "string-value", new Long( 42L ), new Double( 23.0 ), new BigDecimal( 11.0 ), new Date( 10000000 ),
+        new byte[] { 1, 2, 3, 4, 5 }, new Boolean( true ) };
 
     Object[] n = { null, null, null, null, null, null, null };
 
@@ -140,8 +140,8 @@ public class JaninoStepTest extends TestCase {
       try {
         if ( rm1.getRowMeta().compare( r1, r2, fields ) != 0 ) {
           fail( "row nr "
-              + idx + "i s not equal (" + rm1.getRowMeta().getString( r1 ) + " != " + rm1.getRowMeta().getString( r2 )
-              + ")" );
+            + idx + "i s not equal (" + rm1.getRowMeta().getString( r1 ) + " != "
+            + rm1.getRowMeta().getString( r2 ) + ")" );
         }
       } catch ( KettleValueException e ) {
         fail( "row nr " + idx + " is not equal" );
@@ -188,21 +188,22 @@ public class JaninoStepTest extends TestCase {
     jm.setDefault();
 
     JaninoMetaFunction[] formulas =
-        {
-            new JaninoMetaFunction(
-                "string", "(string==null)?null:\"string-value\"", ValueMeta.TYPE_STRING, -1, -1, "string" ),
-            new JaninoMetaFunction(
-                "integer", "(integer==null)?null:new Long(42L)", ValueMeta.TYPE_INTEGER, -1, -1, "integer" ),
-            new JaninoMetaFunction(
-                "number", "(number==null)?null:new Double(23.0)", ValueMeta.TYPE_NUMBER, -1, -1, "number" ),
-            new JaninoMetaFunction(
-                "bigdecimal", "(bigdecimal==null)?null:new java.math.BigDecimal(11.0)", ValueMeta.TYPE_BIGNUMBER, -1,
-                -1, "bigdecimal" ),
-            new JaninoMetaFunction(
-                "date", "(date==null)?null:new java.util.Date(10000000)", ValueMeta.TYPE_DATE, -1, -1, "date" ),
-            new JaninoMetaFunction(
-                "binary", "(binary==null)?null:new byte[]{1,2,3,4,5}", ValueMeta.TYPE_BINARY, -1, -1, "binary" ),
-            new JaninoMetaFunction( "bool", "(bool==null)?null:Boolean.TRUE", ValueMeta.TYPE_BOOLEAN, -1, -1, "bool" ), };
+    {
+      new JaninoMetaFunction(
+        "string", "(string==null)?null:\"string-value\"", ValueMeta.TYPE_STRING, -1, -1, "string" ),
+      new JaninoMetaFunction(
+        "integer", "(integer==null)?null:new Long(42L)", ValueMeta.TYPE_INTEGER, -1, -1, "integer" ),
+      new JaninoMetaFunction(
+        "number", "(number==null)?null:new Double(23.0)", ValueMeta.TYPE_NUMBER, -1, -1, "number" ),
+      new JaninoMetaFunction(
+        "bigdecimal", "(bigdecimal==null)?null:new java.math.BigDecimal(11.0)", ValueMeta.TYPE_BIGNUMBER,
+        -1, -1, "bigdecimal" ),
+      new JaninoMetaFunction(
+        "date", "(date==null)?null:new java.util.Date(10000000)", ValueMeta.TYPE_DATE, -1, -1, "date" ),
+      new JaninoMetaFunction(
+        "binary", "(binary==null)?null:new byte[]{1,2,3,4,5}", ValueMeta.TYPE_BINARY, -1, -1, "binary" ),
+      new JaninoMetaFunction(
+        "bool", "(bool==null)?null:Boolean.TRUE", ValueMeta.TYPE_BOOLEAN, -1, -1, "bool" ), };
 
     jm.setFormula( formulas );
 

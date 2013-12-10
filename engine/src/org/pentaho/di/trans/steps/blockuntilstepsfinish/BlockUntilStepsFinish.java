@@ -40,20 +40,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Block all incoming rows until defined steps finish processing rows.
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class BlockUntilStepsFinish extends BaseStep implements StepInterface {
   private static Class<?> PKG = BlockUntilStepsFinishMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   private BlockUntilStepsFinishMeta meta;
   private BlockUntilStepsFinishData data;
 
   public BlockUntilStepsFinish( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

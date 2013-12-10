@@ -39,7 +39,7 @@ public class XsdType {
   public static final String DECIMAL = "decimal";
 
   public static final String[] TYPES = new String[] {
-      STRING, INTEGER, INTEGER_DESC, SHORT, BOOLEAN, DATE, TIME, DATE_TIME, DOUBLE, FLOAT, BINARY, DECIMAL, };
+    STRING, INTEGER, INTEGER_DESC, SHORT, BOOLEAN, DATE, TIME, DATE_TIME, DOUBLE, FLOAT, BINARY, DECIMAL, };
 
   public static int xsdTypeToKettleType( String aXsdType ) {
     int vRet = ValueMetaInterface.TYPE_NONE;

@@ -31,9 +31,9 @@ import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * The classes implementing this interface allow their used resources to be exported.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public interface ResourceExportInterface {
 
@@ -41,7 +41,7 @@ public interface ResourceExportInterface {
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
-   * 
+   *
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -52,11 +52,12 @@ public interface ResourceExportInterface {
    *          the repository object to load from
    * @param metaStore
    *          the central metastore to load non-kettle specific metadata from
-   * 
+   *
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException;
 }

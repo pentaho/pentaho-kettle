@@ -50,15 +50,15 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id = "PaloCellOutput", 
-		image = "PaloCellOutput.png", 
+@Step(id = "PaloCellOutput",
+		image = "PaloCellOutput.png",
 		i18nPackageName="org.pentaho.di.trans.steps.palo.celloutput",
-		name = "PaloCellOutput.TransName", 
-		description="PaloCellOutput.TransDescription", 
+		name = "PaloCellOutput.TransName",
+		description="PaloCellOutput.TransDescription",
 		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo")
-public class PaloCellOutputMeta extends BaseStepMeta 
+public class PaloCellOutputMeta extends BaseStepMeta
     implements StepMetaInterface {
-    
+
     private DatabaseMeta databaseMeta;
     private String cube = "";
     private String measureType = "";
@@ -66,15 +66,15 @@ public class PaloCellOutputMeta extends BaseStepMeta
     private String splashMode = "DISABLED";
     private boolean clearCube;
     private List< DimensionField > fields = new ArrayList < DimensionField >();
-    private DimensionField measureField = new DimensionField("","",""); 
+    private DimensionField measureField = new DimensionField("","","");
     private int commitSize = 1000;
     private boolean enableDimensionCache = true;
     private boolean preloadDimensionCache = true;
-    
+
     public PaloCellOutputMeta() {
         super();
     }
-    
+
     public void setDefault(){
     	if (updateMode == null){
     		updateMode = "SET";
@@ -83,23 +83,23 @@ public class PaloCellOutputMeta extends BaseStepMeta
     		splashMode = "DISABLED";
     	}
     }
-    
+
     /**
      * @return Returns the database.
      */
     public final DatabaseMeta getDatabaseMeta() {
         return databaseMeta;
     }
-    
+
     /**
      * @param database The database to set.
      */
     public final void setDatabaseMeta(final DatabaseMeta database) {
         this.databaseMeta = database;
     }
-    
-    public final void loadXML(final Node stepnode, 
-            final List < DatabaseMeta > databases, 
+
+    public final void loadXML(final Node stepnode,
+            final List < DatabaseMeta > databases,
             final IMetaStore metaStore) throws KettleXMLException {
         readData(stepnode, databases);
     }
@@ -108,18 +108,18 @@ public class PaloCellOutputMeta extends BaseStepMeta
         PaloCellOutputMeta retval = (PaloCellOutputMeta) super.clone();
         return retval;
     }
-    
-    private void readData(final Node stepnode, 
+
+    private void readData(final Node stepnode,
             final List < ? extends SharedObjectInterface > databases)
             throws KettleXMLException {
         try {
             databaseMeta = DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue(stepnode, "connection"));
             this.cube = XMLHandler.getTagValue(stepnode, "cube");
-            measureType = XMLHandler.getTagValue(stepnode, "measuretype"); 
-            updateMode = XMLHandler.getTagValue(stepnode, "updateMode"); 
-            splashMode = XMLHandler.getTagValue(stepnode, "splashMode"); 
-            clearCube = XMLHandler.getTagValue(stepnode, "clearcube").equals("Y") ? true : false; 
-            
+            measureType = XMLHandler.getTagValue(stepnode, "measuretype");
+            updateMode = XMLHandler.getTagValue(stepnode, "updateMode");
+            splashMode = XMLHandler.getTagValue(stepnode, "splashMode");
+            clearCube = XMLHandler.getTagValue(stepnode, "clearcube").equals("Y") ? true : false;
+
             /* For backwards compatibility */
             try{
             	enableDimensionCache = XMLHandler.getTagValue(stepnode, "enableDimensionCache").equals("Y") ? true : false;
@@ -132,9 +132,9 @@ public class PaloCellOutputMeta extends BaseStepMeta
             	preloadDimensionCache = false;
             	commitSize = 1000;
             }
-            
+
             this.fields = new ArrayList < DimensionField >();
-            
+
             Node fields = XMLHandler.getSubNode(stepnode,"fields");
             int nrFields = XMLHandler.countNodes(fields,"field");
             for (int i=0;i<nrFields;i++) {
@@ -144,13 +144,13 @@ public class PaloCellOutputMeta extends BaseStepMeta
                 String fieldType = XMLHandler.getTagValue(fnode, "fieldtype");
                 this.fields.add(new DimensionField(dimensionName,fieldName,fieldType));
             }
-            
+
             Node measures = XMLHandler.getSubNode(stepnode,"measures");
             int nrMeasures = XMLHandler.countNodes(measures,"measure");
-            
-            // v4 code review (matt): 
+
+            // v4 code review (matt):
             // --------------------------
-            //   It's a bit weird to break in the for loop. 
+            //   It's a bit weird to break in the for loop.
             //   I think this was done for compatibility reasons.
             //
             for (int i=0;i<nrMeasures;) {
@@ -161,10 +161,10 @@ public class PaloCellOutputMeta extends BaseStepMeta
                 this.measureField = new DimensionField(measureName,fieldName,fieldType);
                 break;
             }
-            
+
             setDefault();
-            
-            
+
+
         } catch (Exception e) {
             throw new KettleXMLException("Unable to load step info from XML", e);
         }
@@ -172,7 +172,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
 
     public final String getXML() {
         StringBuffer retval = new StringBuffer();
-        
+
         retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));
         retval.append("    ").append(XMLHandler.addTagValue("cube", this.cube));
         retval.append("    ").append(XMLHandler.addTagValue("measuretype", measureType));
@@ -180,9 +180,9 @@ public class PaloCellOutputMeta extends BaseStepMeta
         retval.append("    ").append(XMLHandler.addTagValue("splashMode", splashMode));
         retval.append("    ").append(XMLHandler.addTagValue("clearcube", clearCube));
         retval.append("    ").append(XMLHandler.addTagValue("enableDimensionCache", enableDimensionCache));
-        retval.append("    ").append(XMLHandler.addTagValue("preloadDimensionCache", preloadDimensionCache)); 
+        retval.append("    ").append(XMLHandler.addTagValue("preloadDimensionCache", preloadDimensionCache));
         retval.append("    ").append(XMLHandler.addTagValue("commitSize", commitSize));
-        
+
         retval.append("    <fields>").append(Const.CR);
         for (DimensionField field : this.fields) {
             retval.append("      <field>").append(Const.CR);
@@ -192,7 +192,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
             retval.append("      </field>").append(Const.CR);
         }
         retval.append("    </fields>").append(Const.CR);
-        
+
         retval.append("    <measures>").append(Const.CR);
         // The two condition checks for the Measure is a workaround for a bug.
         // If you opened a transformation where the measure was not completely defined
@@ -208,7 +208,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
             retval.append("      </measure>").append(Const.CR);
         }
         retval.append("    </measures>").append(Const.CR);
-            
+
         return retval.toString();
     }
 
@@ -216,9 +216,9 @@ public class PaloCellOutputMeta extends BaseStepMeta
         try {
             this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
             this.cube = rep.getStepAttributeString(idStep, "cube");
-            this.measureType = rep.getStepAttributeString(idStep, "measuretype"); 
-            this.updateMode = rep.getStepAttributeString(idStep, "updateMode"); 
-            this.splashMode = rep.getStepAttributeString(idStep, "splashMode"); 
+            this.measureType = rep.getStepAttributeString(idStep, "measuretype");
+            this.updateMode = rep.getStepAttributeString(idStep, "updateMode");
+            this.splashMode = rep.getStepAttributeString(idStep, "splashMode");
             this.clearCube = rep.getStepAttributeBoolean(idStep, "clearcube");
 
             /* For backwards compatibility */
@@ -236,19 +236,19 @@ public class PaloCellOutputMeta extends BaseStepMeta
             }
         	
             int nrFields = rep.countNrStepAttributes(idStep, "dimensionname");
-            
+
             for (int i=0;i<nrFields;i++) {
                 String dimensionName = rep.getStepAttributeString (idStep, i, "dimensionname");
                 String fieldName = rep.getStepAttributeString (idStep, i, "fieldname");
                 String fieldType = rep.getStepAttributeString (idStep, i, "fieldtype");
                 this.fields.add(new DimensionField(dimensionName,fieldName,fieldType));
             }
-            
+
             String measureName = rep.getStepAttributeString(idStep, "measurename");
             String measureFieldName = rep.getStepAttributeString(idStep, "measurefieldname");
             String measureFieldType = rep.getStepAttributeString(idStep, "measurefieldtype");
             this.measureField= new DimensionField(measureName,measureFieldName,measureFieldType);
-            
+
             setDefault();
         } catch (Exception e) {
             throw new KettleException("Unexpected error reading step information from the repository", e);
@@ -262,34 +262,34 @@ public class PaloCellOutputMeta extends BaseStepMeta
             rep.saveStepAttribute(idTransformation, idStep, "measuretype", this.measureType);
             rep.saveStepAttribute(idTransformation, idStep, "updateMode", this.updateMode);
             rep.saveStepAttribute(idTransformation, idStep, "splashMode", this.splashMode);
-            rep.saveStepAttribute(idTransformation, idStep, "clearcube", this.clearCube); 
-            rep.saveStepAttribute(idTransformation, idStep, "preloadDimensionCache", this.preloadDimensionCache); 
+            rep.saveStepAttribute(idTransformation, idStep, "clearcube", this.clearCube);
+            rep.saveStepAttribute(idTransformation, idStep, "preloadDimensionCache", this.preloadDimensionCache);
             rep.saveStepAttribute(idTransformation, idStep, "enableDimensionCache", this.enableDimensionCache);
-            rep.saveStepAttribute(idTransformation, idStep, "commitSize", this.commitSize); 
-            
+            rep.saveStepAttribute(idTransformation, idStep, "commitSize", this.commitSize);
+
             rep.saveStepAttribute(idTransformation, idStep, "measurename", this.measureField.getDimensionName());
             rep.saveStepAttribute(idTransformation, idStep, "measurefieldname", this.measureField.getFieldName());
             rep.saveStepAttribute(idTransformation, idStep, "measurefieldtype", this.measureField.getFieldType());
-            
+
             for (int i=0;i<this.fields.size();i++) {
                 rep.saveStepAttribute(idTransformation, idStep, i, "dimensionname", this.fields.get(i).getDimensionName());
                 rep.saveStepAttribute(idTransformation, idStep, i, "fieldname", this.fields.get(i).getFieldName());
                 rep.saveStepAttribute(idTransformation, idStep, i, "fieldtype", this.fields.get(i).getFieldType());
             }
-            
+
         } catch (Exception e) {
             throw new KettleException("Unable to save step information to the repository for idStep=" + idStep, e);
         }
     }
 
 
-    public final void check(final List < CheckResultInterface > remarks, 
-            final TransMeta transMeta, final StepMeta stepMeta, 
-            final RowMetaInterface prev, final String input[], 
+    public final void check(final List < CheckResultInterface > remarks,
+            final TransMeta transMeta, final StepMeta stepMeta,
+            final RowMetaInterface prev, final String input[],
             final String output[], final RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
-        
+
         CheckResult cr;
-        
+
         if (databaseMeta != null) {
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection exists", stepMeta);
             remarks.add(cr);
@@ -307,7 +307,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
                     cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "The name of the cube is missing.", stepMeta);
                     remarks.add(cr);
                 }
-                
+
                 if(this.measureField==null || Const.isEmpty(this.measureField.getFieldName())) {
                     cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Measure field is empty.",stepMeta);
                     remarks.add(cr);
@@ -343,14 +343,14 @@ public class PaloCellOutputMeta extends BaseStepMeta
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta);
             remarks.add(cr);
         }
-        
+
     }
 
-    public final StepInterface getStep(final StepMeta stepMeta, 
-            final StepDataInterface stepDataInterface, final int cnr, 
+    public final StepInterface getStep(final StepMeta stepMeta,
+            final StepDataInterface stepDataInterface, final int cnr,
             final TransMeta transMeta, final Trans trans) {
-        
-        return new PaloCellOutput(stepMeta, stepDataInterface, cnr, 
+
+        return new PaloCellOutput(stepMeta, stepDataInterface, cnr,
                 transMeta, trans);
     }
 
@@ -361,7 +361,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
             return null;
         }
     }
-    
+
     public final DatabaseMeta[] getUsedDatabaseConnections() {
         if (databaseMeta != null) {
             return new DatabaseMeta[] {databaseMeta};
@@ -390,14 +390,14 @@ public class PaloCellOutputMeta extends BaseStepMeta
         return this.fields;
     }
     public void setLevels(List < DimensionField > fields) {
-        this.fields = fields; 
+        this.fields = fields;
     }
-    
+
     public DimensionField getMeasure() {
         return this.measureField;
     }
     public void setMeasureField(DimensionField measureField) {
-        this.measureField = measureField; 
+        this.measureField = measureField;
     }
     public String getUpdateMode() {
 		return updateMode;

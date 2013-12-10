@@ -70,14 +70,14 @@ import org.w3c.dom.Node;
 /**
  * This class defines the database specific parameters for a certain database type. It also provides static information
  * regarding a number of well known databases.
- * 
+ *
  * @author Matt
  * @since 18-05-2003
- * 
+ *
  */
 public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface,
-    VariableSpace, RepositoryElementInterface {
-  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  VariableSpace, RepositoryElementInterface {
+  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "connection";
 
@@ -105,7 +105,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Indicates that the connections doesn't point to a type of database yet.
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -113,7 +113,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a MySQL database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -121,7 +121,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an Oracle database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -129,7 +129,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an AS/400 (IBM iSeries) DB400 database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -137,7 +137,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an Microsoft Access database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -145,7 +145,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Microsoft SQL Server database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -153,7 +153,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an IBM DB2 database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -161,7 +161,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a PostgreSQL database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -169,7 +169,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an Intersystems Cache database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -177,7 +177,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an IBM Informix database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -185,7 +185,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Sybase ASE database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -193,7 +193,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Gupta SQLBase database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -201,7 +201,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a DBase III/IV/V database through JDBC
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -209,7 +209,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a FireBird database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -217,7 +217,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a SAP DB database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -225,7 +225,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Hypersonic java database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -233,7 +233,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a generic database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -241,7 +241,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an SAP R/3 system
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -249,7 +249,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an Ingress database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -257,7 +257,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Borland Interbase database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -265,7 +265,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an ExtenDB database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -273,7 +273,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Teradata database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -281,7 +281,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an Oracle RDB database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -289,7 +289,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an H2 database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -297,7 +297,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Netezza database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -305,7 +305,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an IBM UniVerse database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -313,7 +313,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a SQLite database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -321,7 +321,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an Apache Derby database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -329,7 +329,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a BMC Remedy Action Request System
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -337,7 +337,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Palo MOLAP Server
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -345,7 +345,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a SybaseIQ ASE database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -353,7 +353,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Greenplum database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -361,7 +361,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a MonetDB database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -369,7 +369,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a KingbaseES database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -377,7 +377,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Vertica database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -385,7 +385,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a Neoview database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -393,7 +393,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to a LucidDB database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -401,7 +401,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Connection to an Infobright database
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -441,7 +441,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * Longer description for user interactions.
    */
   public static final String[] dbAccessTypeDesc = {
-      "Native (JDBC)", "ODBC", "OCI", "Plugin specific access method", "JNDI", "Custom", };
+    "Native (JDBC)", "ODBC", "OCI", "Plugin specific access method", "JNDI", "Custom", };
 
   /**
    * Use this length in a String value to indicate that you want to use a CLOB in stead of a normal text field.
@@ -455,7 +455,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Construct a new database connections. Note that not all these parameters are not always mandatory.
-   * 
+   *
    * @param name
    *          The database name
    * @param type
@@ -474,14 +474,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    *          The password
    */
   public DatabaseMeta( String name, String type, String access, String host, String db, String port, String user,
-      String pass ) {
+    String pass ) {
     setValues( name, type, access, host, db, port, user, pass );
     addOptions();
   }
 
   /**
    * Create an empty database connection
-   * 
+   *
    */
   public DatabaseMeta() {
     setDefault();
@@ -490,7 +490,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Set default values for an Oracle database.
-   * 
+   *
    */
   public void setDefault() {
     setValues( "", "Oracle", "Native", "", "", "1521", "", "" );
@@ -498,12 +498,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Add a list of common options for some databases.
-   * 
+   *
    */
   public void addOptions() {
     PluginInterface mySqlPlugin = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "MYSQL" );
     PluginInterface infoBrightPlugin =
-        PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, new InfobrightDatabaseMeta() );
+      PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, new InfobrightDatabaseMeta() );
 
     String mySQL = mySqlPlugin.getIds()[0];
 
@@ -529,7 +529,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Set the system dependend database interface for this database metadata definition
-   * 
+   *
    * @param databaseInterface
    *          the system dependend database interface
    */
@@ -539,11 +539,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Search for the right type of DatabaseInterface object and clone it.
-   * 
+   *
    * @param databaseType
    *          the type of DatabaseInterface to look for (description)
    * @return The requested DatabaseInterface
-   * 
+   *
    * @throws KettleDatabaseException
    *           when the type could not be found or referenced.
    */
@@ -551,18 +551,18 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     DatabaseInterface di = findDatabaseInterface( databaseType );
     if ( di == null ) {
       throw new KettleDatabaseException( BaseMessages.getString(
-          PKG, "DatabaseMeta.Error.DatabaseInterfaceNotFound", databaseType ) );
+        PKG, "DatabaseMeta.Error.DatabaseInterfaceNotFound", databaseType ) );
     }
     return (DatabaseInterface) di.clone();
   }
 
   /**
    * Search for the right type of DatabaseInterface object and return it.
-   * 
+   *
    * @param databaseType
    *          the type of DatabaseInterface to look for (id or description)
    * @return The requested DatabaseInterface
-   * 
+   *
    * @throws KettleDatabaseException
    *           when the type could not be found or referenced.
    */
@@ -575,7 +575,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
 
     if ( plugin == null ) {
-      throw new KettleDatabaseException( "database type with plugin id [" + databaseTypeDesc + "] couldn't be found!" );
+      throw new KettleDatabaseException( "database type with plugin id ["
+        + databaseTypeDesc + "] couldn't be found!" );
     }
 
     return getDatabaseInterfacesMap().get( plugin.getIds()[0] );
@@ -583,7 +584,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Returns the database ID of this database connection if a repository was used before.
-   * 
+   *
    * @return the ID of the db connection.
    */
   @Override
@@ -605,9 +606,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public void replaceMeta( DatabaseMeta databaseMeta ) {
-    this.setValues( databaseMeta.getName(), databaseMeta.getPluginId(), databaseMeta.getAccessTypeDesc(), databaseMeta
-        .getHostname(), databaseMeta.getDatabaseName(), databaseMeta.getDatabasePortNumberString(), databaseMeta
-        .getUsername(), databaseMeta.getPassword() );
+    this.setValues(
+      databaseMeta.getName(), databaseMeta.getPluginId(), databaseMeta.getAccessTypeDesc(), databaseMeta
+        .getHostname(), databaseMeta.getDatabaseName(), databaseMeta.getDatabasePortNumberString(),
+      databaseMeta.getUsername(), databaseMeta.getPassword() );
     this.setServername( databaseMeta.getServername() );
     this.setDataTablespace( databaseMeta.getDataTablespace() );
     this.setIndexTablespace( databaseMeta.getIndexTablespace() );
@@ -618,8 +620,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     this.setChanged();
   }
 
-  public void setValues( String name, String type, String access, String host, String db, String port, String user,
-      String pass ) {
+  public void setValues( String name, String type, String access, String host, String db, String port,
+    String user, String pass ) {
     try {
       databaseInterface = getDatabaseInterface( type );
     } catch ( KettleDatabaseException kde ) {
@@ -666,7 +668,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Sets the name of the database connection. This name should be unique in a transformation and in general in a single
    * repository.
-   * 
+   *
    * @param name
    *          The name of the database connection
    */
@@ -677,7 +679,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Returns the name of the database connection
-   * 
+   *
    * @return The name of the database connection
    */
   @Override
@@ -694,7 +696,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * <p>
    * TYPE_DATABASE_...
    * <p>
-   * 
+   *
    * @return the database type
    * @Deprecated public int getDatabaseType() { return databaseInterface.getDatabaseType(); }
    */
@@ -708,7 +710,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /*
    * Sets the type of database.
-   * 
+   *
    * @param db_type The database type public void setDatabaseType(int db_type) { databaseInterface this.databaseType =
    * db_type; }
    */
@@ -722,7 +724,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * <p>
    * TYPE_ACCESS_OCI
    * <p>
-   * 
+   *
    * @return The type of database access.
    */
   public int getAccessType() {
@@ -731,7 +733,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Set the type of database access.
-   * 
+   *
    * @param access_type
    *          The access type.
    */
@@ -741,7 +743,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Returns a short description of the type of database.
-   * 
+   *
    * @return A short description of the type of database.
    * @deprecated This is actually the plugin ID
    */
@@ -752,7 +754,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Gets you a short description of the type of database access.
-   * 
+   *
    * @return A short description of the type of database access.
    */
   public String getAccessTypeDesc() {
@@ -761,7 +763,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Return the hostname of the machine on which the database runs.
-   * 
+   *
    * @return The hostname of the database.
    */
   public String getHostname() {
@@ -770,7 +772,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Sets the hostname of the machine on which the database runs.
-   * 
+   *
    * @param hostname
    *          The hostname of the machine on which the database runs.
    */
@@ -780,7 +782,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Return the port on which the database listens as a String. Allows for parameterisation.
-   * 
+   *
    * @return The database port.
    */
   public String getDatabasePortNumberString() {
@@ -789,7 +791,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Sets the port on which the database listens.
-   * 
+   *
    * @param db_port
    *          The port number on which the database listens
    */
@@ -799,7 +801,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Return the name of the database.
-   * 
+   *
    * @return The database name.
    */
   public String getDatabaseName() {
@@ -808,7 +810,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Set the name of the database.
-   * 
+   *
    * @param databaseName
    *          The new name of the database
    */
@@ -818,7 +820,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Get the username to log into the database on this connection.
-   * 
+   *
    * @return The username to log into the database on this connection.
    */
   public String getUsername() {
@@ -827,7 +829,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Sets the username to log into the database on this connection.
-   * 
+   *
    * @param username
    *          The username
    */
@@ -837,7 +839,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Get the password to log into the database on this connection.
-   * 
+   *
    * @return the password to log into the database on this connection.
    */
   public String getPassword() {
@@ -846,7 +848,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Sets the password to log into the database on this connection.
-   * 
+   *
    * @param password
    *          the password to log into the database on this connection.
    */
@@ -915,7 +917,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Set extra attributes on this database connection
-   * 
+   *
    * @param attributes
    *          The extra attributes to set on this database connection.
    */
@@ -926,7 +928,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Constructs a new database using an XML string snippet. It expects the snippet to be enclosed in
    * <code>connection</code> tags.
-   * 
+   *
    * @param xml
    *          The XML string to parse
    * @throws KettleXMLException
@@ -938,7 +940,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Reads the information from an XML Node into this new database connection.
-   * 
+   *
    * @param con
    *          The Node to read the data from
    * @throws KettleXMLException
@@ -1004,7 +1006,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     retval.append( "    " ).append( XMLHandler.addTagValue( "port", getDatabasePortNumberString() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "username", getUsername() ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "servername", getServername() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "data_tablespace", getDataTablespace() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "index_tablespace", getIndexTablespace() ) );
@@ -1029,8 +1031,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       String attribute = getAttributes().getProperty( code );
       if ( !Const.isEmpty( attribute ) ) {
         retval.append( "      <attribute>"
-            + XMLHandler.addTagValue( "code", code, false ) + XMLHandler.addTagValue( "attribute", attribute, false )
-            + "</attribute>" + Const.CR );
+          + XMLHandler.addTagValue( "code", code, false )
+          + XMLHandler.addTagValue( "attribute", attribute, false ) + "</attribute>" + Const.CR );
       }
     }
     retval.append( "    </attributes>" ).append( Const.CR );
@@ -1173,7 +1175,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Add an extra option to the attributes list
-   * 
+   *
    * @param databaseTypeCode
    *          The database type code for which the option applies
    * @param option
@@ -1230,7 +1232,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   /**
-   * 
+   *
    * @return true when the database engine supports empty transaction. (for example Informix does not on a non-ANSI
    *         database type!)
    */
@@ -1240,7 +1242,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * See if this database supports the setCharacterStream() method on a PreparedStatement.
-   * 
+   *
    * @return true if we can set a Stream on a field in a PreparedStatement. False if not.
    */
   public boolean supportsSetCharacterStream() {
@@ -1250,7 +1252,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Get the maximum length of a text field for this database connection. This includes optional CLOB, Memo and Text
    * fields. (the maximum!)
-   * 
+   *
    * @return The maximum text field length for this database type. (mostly CLOB_LENGTH)
    */
   public int getMaxTextFieldLength() {
@@ -1330,9 +1332,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         tmpAllDatabaseInterfaces.put( plugin.getIds()[0], databaseInterface );
       } catch ( KettlePluginException cnfe ) {
         System.out.println( "Could not create connection entry for "
-            + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
         log.logError( "Could not create connection entry for "
-            + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
         if ( log.isDebug() ) {
           log.logDebug( "Debug-Error loading plugin: " + plugin, cnfe );
         }
@@ -1432,7 +1434,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Indicates the need to insert a placeholder (0) for auto increment fields.
-   * 
+   *
    * @return true if we need a placeholder for auto increment fields in insert statements.
    */
   public boolean needsPlaceHolder() {
@@ -1461,7 +1463,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Check the database connection parameters and give back an array of remarks
-   * 
+   *
    * @return an array of remarks Strings
    */
   public String[] checkParameters() {
@@ -1476,7 +1478,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
 
     if ( !isPartitioned()
-        && !( getDatabaseInterface() instanceof SAPR3DatabaseMeta || getDatabaseInterface() instanceof GenericDatabaseMeta ) ) {
+      && !( getDatabaseInterface() instanceof SAPR3DatabaseMeta
+      || getDatabaseInterface() instanceof GenericDatabaseMeta ) ) {
       if ( getDatabaseName() == null || getDatabaseName().length() == 0 ) {
         remarks.add( "Please specify the name of the database" );
       }
@@ -1487,7 +1490,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * This is now replaced with getQuotedSchemaTableCombination(), enforcing the use of the quoteFields call
-   * 
+   *
    * @param schemaName
    * @param tableName
    * @return
@@ -1500,7 +1503,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Calculate the schema-table combination, usually this is the schema and table separated with a dot. (schema.table)
-   * 
+   *
    * @param schemaName
    *          the schema-name or null if no schema is used.
    * @param tableName
@@ -1513,12 +1516,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         return quoteField( environmentSubstitute( tableName ) ); // no need to look further
       } else {
         return databaseInterface.getSchemaTableCombination(
-            quoteField( environmentSubstitute( getPreferredSchemaName() ) ),
-            quoteField( environmentSubstitute( tableName ) ) );
+          quoteField( environmentSubstitute( getPreferredSchemaName() ) ),
+          quoteField( environmentSubstitute( tableName ) ) );
       }
     } else {
       return databaseInterface.getSchemaTableCombination(
-          quoteField( environmentSubstitute( schemaName ) ), quoteField( environmentSubstitute( tableName ) ) );
+        quoteField( environmentSubstitute( schemaName ) ), quoteField( environmentSubstitute( tableName ) ) );
     }
   }
 
@@ -1538,10 +1541,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
 
     String definition =
-        v.getDatabaseColumnTypeDefinition( databaseInterface, tk, pk, use_autoinc, add_fieldname, add_cr );
+      v.getDatabaseColumnTypeDefinition( databaseInterface, tk, pk, use_autoinc, add_fieldname, add_cr );
     if ( !Const.isEmpty( definition ) ) {
       return definition;
     }
@@ -1563,7 +1566,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     String retval = databaseInterface.getAddColumnStatement( tablename, v, tk, use_autoinc, pk, semicolon );
     retval += Const.CR;
     if ( semicolon ) {
@@ -1573,7 +1576,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     String retval = databaseInterface.getDropColumnStatement( tablename, v, tk, use_autoinc, pk, semicolon );
     retval += Const.CR;
     if ( semicolon ) {
@@ -1583,7 +1586,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     String retval = databaseInterface.getModifyColumnStatement( tablename, v, tk, use_autoinc, pk, semicolon );
     retval += Const.CR;
     if ( semicolon ) {
@@ -1623,7 +1626,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Returns a quoted field if this is needed: contains spaces, is a reserved word, ...
-   * 
+   *
    * @param field
    *          The fieldname to check for quoting
    * @return The quoted field (if this is needed.
@@ -1648,7 +1651,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       return handleCase( getStartQuote() + field + getEndQuote() );
     } else {
       if ( databaseInterface.isQuoteAllFields()
-          || hasSpacesInField( field ) || hasSpecialCharInField( field ) || hasDotInField( field ) ) {
+        || hasSpacesInField( field ) || hasSpecialCharInField( field ) || hasDotInField( field ) ) {
         return getStartQuote() + field + getEndQuote();
       } else {
         return field;
@@ -1672,7 +1675,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * Determines whether or not this field is in need of quoting:<br>
    * - When the fieldname contains spaces<br>
    * - When the fieldname is a reserved word<br>
-   * 
+   *
    * @param fieldname
    *          the fieldname to check if there is a need for quoting
    * @return true if the fieldname needs to be quoted.
@@ -1683,7 +1686,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Returns true if the string specified is a reserved word on this database type.
-   * 
+   *
    * @param word
    *          The word to check
    * @return true if word is a reserved word on this database.
@@ -1698,7 +1701,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Detects if a field has spaces in the name. We need to quote the field in that case.
-   * 
+   *
    * @param fieldname
    *          The fieldname to check for spaces
    * @return true if the fieldname contains spaces
@@ -1715,7 +1718,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Detects if a field has spaces in the name. We need to quote the field in that case.
-   * 
+   *
    * @param fieldname
    *          The fieldname to check for spaces
    * @return true if the fieldname contains spaces
@@ -1781,7 +1784,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Checks the fields specified for reserved words and quotes them.
-   * 
+   *
    * @param fields
    *          the list of fields to check
    * @return true if one or more values have a name that is a reserved word on this database type.
@@ -1800,7 +1803,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Checks the fields specified for reserved words
-   * 
+   *
    * @param fields
    *          the list of fields to check
    * @return The nr of reserved words for this database.
@@ -1859,7 +1862,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   /**
-   * 
+   *
    * @return The SQL on this database to get a list of stored procedures.
    */
   public String getSQLListOfProcedures() {
@@ -1905,7 +1908,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * @return a feature list for the chosen database type.
-   * 
+   *
    */
   public List<RowMetaAndData> getFeatureSummary() {
     List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
@@ -2036,19 +2039,19 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       r = new RowMetaAndData();
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "Add column statement" );
       r.addValue( val, ValueMetaInterface.TYPE_STRING, getAddColumnStatement(
-          "TABLE", testValue, null, false, null, false ) );
+        "TABLE", testValue, null, false, null, false ) );
       list.add( r );
       // drop column statement
       r = new RowMetaAndData();
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "Drop column statement" );
       r.addValue( val, ValueMetaInterface.TYPE_STRING, getDropColumnStatement(
-          "TABLE", testValue, null, false, null, false ) );
+        "TABLE", testValue, null, false, null, false ) );
       list.add( r );
       // Modify column statement
       r = new RowMetaAndData();
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "Modify column statement" );
       r.addValue( val, ValueMetaInterface.TYPE_STRING, getModifyColumnStatement(
-          "TABLE", testValue, null, false, null, false ) );
+        "TABLE", testValue, null, false, null, false ) );
       list.add( r );
 
       // List of reserved words
@@ -2143,7 +2146,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "SQL: truncate table" );
       String truncateStatement = getTruncateTableStatement( null, "TABLE" );
       r.addValue( val, ValueMetaInterface.TYPE_STRING, truncateStatement != null
-          ? truncateStatement : "Not supported by this database type" );
+        ? truncateStatement : "Not supported by this database type" );
       list.add( r );
       // supports float rounding on update?
       r = new RowMetaAndData();
@@ -2192,7 +2195,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   /**
-   * 
+   *
    * @param b
    *          Set to true if the database supports a boolean, bit, logical, ... datatype
    */
@@ -2208,7 +2211,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   /**
-   * 
+   *
    * @param b
    *          Set to true if the database supports the Timestamp data type (nanosecond precision and all)
    */
@@ -2232,7 +2235,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Changes the names of the fields to their quoted equivalent if this is needed
-   * 
+   *
    * @param fields
    *          The row of fields to change
    */
@@ -2296,7 +2299,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Verify the name of the database and if required, change it if it already exists in the list of databases.
-   * 
+   *
    * @param databases
    *          the databases to check against.
    * @param oldname
@@ -2397,7 +2400,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Finds the partition metadata for the given partition iD
-   * 
+   *
    * @param partitionId
    *          The partition ID to look for
    * @return the partition database metadata or null if nothing was found.
@@ -2494,7 +2497,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Find a database with a certain name in an arraylist of databases.
-   * 
+   *
    * @param databases
    *          The ArrayList of databases
    * @param dbname
@@ -2517,7 +2520,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Find a database with a certain ID in an arraylist of databases.
-   * 
+   *
    * @param databases
    *          The ArrayList of databases
    * @param id
@@ -2668,14 +2671,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       return factory.getConnectionTestReport( this );
     } catch ( ClassNotFoundException e ) {
       report
-          .append( BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" ) )
-          .append( Const.CR ); // $NON-NLS-1
+        .append( BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" ) )
+        .append( Const.CR );
       report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() )
-          + e.toString() + Const.CR );
+        + e.toString() + Const.CR );
       report.append( Const.getStackTracker( e ) + Const.CR );
     } catch ( Exception e ) {
       report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() )
-          + e.toString() + Const.CR );
+        + e.toString() + Const.CR );
       report.append( Const.getStackTracker( e ) + Const.CR );
     }
     return report.toString();
@@ -2686,7 +2689,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     PluginInterface plugin = registry.getPlugin( DatabasePluginType.class, databaseInterface.getPluginId() );
     if ( plugin == null ) {
       throw new KettleDatabaseException( "database type with plugin id ["
-          + databaseInterface.getPluginId() + "] couldn't be found!" );
+        + databaseInterface.getPluginId() + "] couldn't be found!" );
     }
 
     ClassLoader loader = registry.getClassLoader( plugin );
@@ -2784,7 +2787,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   /**
    * Get the SQL to insert a new empty unknown record in a dimension.
-   * 
+   *
    * @param schemaTable
    *          the schema-table name to insert into
    * @param keyField
@@ -2805,7 +2808,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   /**
-   * 
+   *
    * @return The SQL on this database to get a list of sequences.
    */
   public String getSQLListOfSequences() {
@@ -2832,14 +2835,15 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return databaseInterface.getNextBatchId( this, ldb, schemaName, tableName, fieldName );
   }
 
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i )
+    throws KettleDatabaseException {
     return databaseInterface.getValueFromResultSet( rs, val, i );
   }
 
   /**
    * Marker used to determine if the DatabaseMeta should be allowed to be modified/saved. It does NOT prevent object
    * modification.
-   * 
+   *
    * @return
    */
   public boolean isReadOnly() {
@@ -2849,7 +2853,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Sets the marker used to determine if the DatabaseMeta should be allowed to be modified/saved. Setting to true does
    * NOT prevent object modification.
-   * 
+   *
    * @return
    */
   public void setReadOnly( boolean readOnly ) {

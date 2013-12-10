@@ -57,13 +57,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * A dialog that sets the printer settings for a Kettle printout.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
- * 
+ *
  */
 public class EnterPrintDialog extends Dialog {
-  private static Class<?> PKG = EnterPrintDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterPrintDialog.class; // for i18n purposes, needed by Translator2!!
 
   private int retval;
   private Image image;
@@ -113,7 +113,7 @@ public class EnterPrintDialog extends Dialog {
   public double leftMargin, rightMargin, topMargin, bottomMargin;
 
   public EnterPrintDialog( Shell parent, int nrcols, int nrrows, int scale, double factorX, double factorY,
-      Rectangle m, double marginLeft, double marginRigth, double marginTop, double marginBottom, Image image ) {
+    Rectangle m, double marginLeft, double marginRigth, double marginTop, double marginBottom, Image image ) {
     super( parent, SWT.NONE );
     props = PropsUI.getInstance();
     this.nrcols = nrcols;
@@ -136,7 +136,8 @@ public class EnterPrintDialog extends Dialog {
 
     retval = SWT.OK;
 
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    shell =
+      new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
 
     FormLayout formLayout = new FormLayout();
@@ -438,7 +439,8 @@ public class EnterPrintDialog extends Dialog {
     double percentScreenY = actualSizeY / ( page.y * nrrows );
 
     gc.drawImage(
-        image, 0, 0, imd.width, imd.height, 0, 0, (int) ( width * percentScreenX ), (int) ( height * percentScreenY ) );
+      image, 0, 0, imd.width, imd.height, 0, 0, (int) ( width * percentScreenX ),
+      (int) ( height * percentScreenY ) );
 
     StringBuffer text = new StringBuffer();
     text.append( nrcols ).append( "x" ).append( nrrows ).append( " @ " ).append( scale ).append( "%" );

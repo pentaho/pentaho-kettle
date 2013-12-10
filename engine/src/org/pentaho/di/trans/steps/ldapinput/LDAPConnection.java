@@ -55,7 +55,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class LDAPConnection {
-  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int SEARCH_SCOPE_OBJECT_SCOPE = 0;
 
@@ -101,7 +101,7 @@ public class LDAPConnection {
    * Construct a new LDAP Connection
    */
   public LDAPConnection( LogChannelInterface logInterface, VariableSpace variableSpace, LdapMeta meta,
-      Collection<String> binaryAttributes ) throws KettleException {
+    Collection<String> binaryAttributes ) throws KettleException {
     this.log = logInterface;
     protocol = new LdapProtocolFactory( logInterface ).createLdapProtocol( variableSpace, meta, binaryAttributes );
     this.sortingAttributes = new ArrayList<String>();
@@ -109,7 +109,7 @@ public class LDAPConnection {
 
   /**
    * Connect to LDAP server
-   * 
+   *
    * @throws KettleException
    */
   public void connect() throws KettleException {
@@ -118,7 +118,7 @@ public class LDAPConnection {
 
   /**
    * Connect to LDAP server
-   * 
+   *
    * @param username
    *          : username
    * @param password
@@ -185,8 +185,9 @@ public class LDAPConnection {
     return ( GetPagingSize() > 0 );
   }
 
-  public void search( String searchBase, String filter, int limitRows, String[] attributeReturned, int searchScope )
-    throws KettleException {
+  public void
+    search( String searchBase, String filter, int limitRows, String[] attributeReturned, int searchScope )
+      throws KettleException {
     // Set the Search base.This is the place where the search will
     setSearchBase( searchBase );
     setFilter( Const.NVL( correctFilter( filter ), DEFAUL_FILTER_STRING ) );
@@ -242,7 +243,8 @@ public class LDAPConnection {
         ctlk = new SortControl( getSortingAttributesKeys(), Control.NONCRITICAL );
         nrCtl++;
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( "LDAPInput.Log.SortingKeys", getSortingAttributesKeys().toString() ) );
+          log.logDebug( BaseMessages
+            .getString( "LDAPInput.Log.SortingKeys", getSortingAttributesKeys().toString() ) );
         }
       }
 
@@ -292,7 +294,8 @@ public class LDAPConnection {
     } catch ( NameNotFoundException n ) {
       // The entry is not found
       if ( checkEntry ) {
-        throw new KettleException( BaseMessages.getString( PKG, "LDAPConnection.Error.Deleting.NameNotFound", dn ), n );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "LDAPConnection.Error.Deleting.NameNotFound", dn ), n );
       }
       return STATUS_SKIPPED;
     } catch ( Exception e ) {
@@ -308,7 +311,8 @@ public class LDAPConnection {
         // Define attribute
         Attribute mod = new BasicAttribute( attributes[i], values[i] );
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "LDAPConnection.Update.Attribute", attributes[i], values[i] ) );
+          log
+            .logDebug( BaseMessages.getString( PKG, "LDAPConnection.Update.Attribute", attributes[i], values[i] ) );
         }
         // Save update action on attribute
         mods[i] = new ModificationItem( DirContext.REPLACE_ATTRIBUTE, mod );
@@ -320,7 +324,8 @@ public class LDAPConnection {
     } catch ( NameNotFoundException n ) {
       // The entry is not found
       if ( checkEntry ) {
-        throw new KettleException( BaseMessages.getString( PKG, "LDAPConnection.Error.Deleting.NameNotFound", dn ), n );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "LDAPConnection.Error.Deleting.NameNotFound", dn ), n );
       }
       return STATUS_SKIPPED;
     } catch ( Exception e ) {
@@ -338,7 +343,8 @@ public class LDAPConnection {
     } catch ( NameNotFoundException n ) {
       // The entry is not found
       if ( checkEntry ) {
-        throw new KettleException( BaseMessages.getString( PKG, "LDAPConnection.Error.Deleting.NameNotFound", dn ), n );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "LDAPConnection.Error.Deleting.NameNotFound", dn ), n );
       }
       return STATUS_SKIPPED;
     } catch ( Exception e ) {
@@ -348,7 +354,7 @@ public class LDAPConnection {
 
   /**
    * Insert record in LDAP based on DN
-   * 
+   *
    * @param dn
    *          : Distinguished Name (Key for lookup)
    * @param attributes
@@ -377,7 +383,7 @@ public class LDAPConnection {
   /**
    * Upsert record in LDAP First we will check if the entry exist based on DN If we can not find it, we will create it
    * otherwise, we will perform an update
-   * 
+   *
    * @param dn
    *          : Distinguished Name (Key for lookup)
    * @param attributes
@@ -394,7 +400,7 @@ public class LDAPConnection {
    * @throws KettleException
    */
   public int upsert( String dn, String[] attributes, String[] values, String[] attributesToUpdate,
-      String[] valuesToUpdate, String multValuedSeparator ) throws KettleException {
+    String[] valuesToUpdate, String multValuedSeparator ) throws KettleException {
 
     try {
 
@@ -445,7 +451,7 @@ public class LDAPConnection {
 
   /**
    * Rename an entry
-   * 
+   *
    * @param oldDn
    *          Distinguished name of the entry to rename
    * @param newDn
@@ -515,7 +521,7 @@ public class LDAPConnection {
     while ( ne.hasMore() ) {
       NameClassPair nameCP = (NameClassPair) ne.next();
       childs.put( nameCP.getName() + "," + rootName, getInitialContext().getAttributes(
-          nameCP.getName() + "," + rootName ) );
+        nameCP.getName() + "," + rootName ) );
       getPaths( nameCP.getName() + "," + rootName, childs, paths );
       paths.add( nameCP.getName() + "," + rootName );
     }
@@ -523,7 +529,7 @@ public class LDAPConnection {
 
   /**
    * Close the LDAP connection
-   * 
+   *
    * @throws KettleException
    */
   public void close() throws KettleException {
@@ -563,12 +569,12 @@ public class LDAPConnection {
           // pass the cookie back for the next page
           if ( isSortingAttributes() ) {
             getInitialContext().setRequestControls(
-                new Control[] {
-                    new SortControl( getSortingAttributesKeys(), Control.NONCRITICAL ),
-                    new PagedResultsControl( GetPagingSize(), cookie, Control.CRITICAL ) } );
+              new Control[] {
+                new SortControl( getSortingAttributesKeys(), Control.NONCRITICAL ),
+                new PagedResultsControl( GetPagingSize(), cookie, Control.CRITICAL ) } );
           } else {
             getInitialContext().setRequestControls(
-                new Control[] { new PagedResultsControl( GetPagingSize(), cookie, Control.CRITICAL ) } );
+              new Control[] { new PagedResultsControl( GetPagingSize(), cookie, Control.CRITICAL ) } );
           }
           if ( ( cookie != null ) && ( cookie.length != 0 ) ) {
             // get search result for the page
@@ -615,7 +621,7 @@ public class LDAPConnection {
 
   /**
    * Remove CR and LF from filter string
-   * 
+   *
    * @param filter
    * @return corrected filter
    */
@@ -640,7 +646,7 @@ public class LDAPConnection {
 
   /**
    * Convert the SID into string format
-   * 
+   *
    * @param SID
    * @return String representation of SID
    */
@@ -675,7 +681,7 @@ public class LDAPConnection {
 
   /**
    * Converts the GUID to a readable string format
-   * 
+   *
    * @param inArr
    * @return the formatted GUID
    */

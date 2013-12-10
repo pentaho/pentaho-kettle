@@ -39,7 +39,7 @@ import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
 
 /**
  * This is a wrapper around a standard X509TrustManager. It's just initialized in a specific way for Kettle purposes.
- * 
+ *
  */
 public class KettleTrustManager implements X509TrustManager {
 
@@ -51,7 +51,7 @@ public class KettleTrustManager implements X509TrustManager {
   private X509TrustManager tm;
 
   /**
-   * 
+   *
    * @param certStorePath
    * @param certPassword
    * @throws KettleException
@@ -66,15 +66,15 @@ public class KettleTrustManager implements X509TrustManager {
         inputStream = KettleVFS.getInputStream( certFilename );
         keyStore.load( inputStream, Const.NVL( certPassword, "" ).toCharArray() );
       } catch ( Exception e ) {
-        throw new KettleException(
-            BaseMessages.getString( PKG, "KettleTrustManager.Exception.CouldNotOpenCertStore" ), e );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "KettleTrustManager.Exception.CouldNotOpenCertStore" ), e );
       } finally {
         if ( inputStream != null ) {
           try {
             inputStream.close();
           } catch ( Exception e ) {
             throw new KettleException( BaseMessages.getString(
-                PKG, "KettleTrustManager.Exception.CouldNotOpenCertStore" ), e );
+              PKG, "KettleTrustManager.Exception.CouldNotOpenCertStore" ), e );
           }
         }
       }
@@ -89,17 +89,17 @@ public class KettleTrustManager implements X509TrustManager {
         tm = (X509TrustManager) tms[0];
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "KettleTrustManager.Exception.CouldNotInitializeTrustManager" ), e );
+          PKG, "KettleTrustManager.Exception.CouldNotInitializeTrustManager" ), e );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "KettleTrustManager.Exception.CouldNotInitializeKettleTrustManager" ), e );
+        PKG, "KettleTrustManager.Exception.CouldNotInitializeKettleTrustManager" ), e );
     }
   }
 
   /**
    * Pass method from x509TrustManager to this class...
-   * 
+   *
    * @return an array of certificate authority certificates which are trusted for authenticating peers
    */
   public X509Certificate[] getAcceptedIssuers() {
@@ -111,7 +111,7 @@ public class KettleTrustManager implements X509TrustManager {
 
   /**
    * Pass method from x509TrustManager to this class...
-   * 
+   *
    * Given the partial or complete certificate chain provided by the peer, build a certificate path to a trusted root
    * and return if it can be validated and is trusted for client SSL authentication based on the authentication type
    */
@@ -124,7 +124,7 @@ public class KettleTrustManager implements X509TrustManager {
 
   /**
    * Pass method from x509TrustManager to this class...
-   * 
+   *
    * Given the partial or complete certificate chain provided by the peer, build a certificate path to a trusted root
    * and return if it can be validated and is trusted for server SSL authentication based on the authentication type
    */

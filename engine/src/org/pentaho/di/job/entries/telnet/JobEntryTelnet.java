@@ -53,10 +53,10 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a Telnet job entry.
- * 
+ *
  * @author Samatar
  * @since 05-11-2003
- * 
+ *
  */
 
 public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryInterface {
@@ -97,8 +97,8 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       hostname = XMLHandler.getTagValue( entrynode, "hostname" );
@@ -110,14 +110,15 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       hostname = rep.getJobEntryAttributeString( id_jobentry, "hostname" );
       port = rep.getJobEntryAttributeString( id_jobentry, "port" );
       timeout = rep.getJobEntryAttributeString( id_jobentry, "timeout" );
     } catch ( KettleException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'Telnet' exists from the repository for id_jobentry=" + id_jobentry, dbe );
+        "Unable to load job entry of type 'Telnet' exists from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -126,8 +127,8 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "hostname", hostname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "port", port );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException(
-          "Unable to save job entry of type 'Telnet' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException( "Unable to save job entry of type 'Telnet' to the repository for id_job="
+        + id_job, dbe );
     }
   }
 
@@ -219,8 +220,8 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "hostname", remarks, putValidators( notBlankValidator() ) );
   }
 }

@@ -47,12 +47,12 @@ import org.pentaho.di.trans.steps.rules.Rules.Column;
 
 /**
  * This Transformation Step allows a user to execute a rule set against an individual rule or a collection of rules.
- * 
+ *
  * Additional columns can be added to the output from the rules and these (of course) can be used for routing if
  * desired.
- * 
+ *
  * @author cboyden
- * 
+ *
  */
 
 public class RulesExecutorData extends BaseStepData implements StepDataInterface {
@@ -184,7 +184,7 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
   }
 
   /**
-   * 
+   *
    * @param columnName
    *          Column.payload associated with the result, or null if not found
    * @return

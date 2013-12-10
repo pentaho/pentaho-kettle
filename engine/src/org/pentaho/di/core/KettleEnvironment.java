@@ -48,7 +48,7 @@ import org.pentaho.di.trans.step.RowDistributionPluginType;
  */
 public class KettleEnvironment {
 
-  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
   /** Indicates whether the Kettle environment has been initialized. */
   private static Boolean initialized;
@@ -56,9 +56,9 @@ public class KettleEnvironment {
   /**
    * Initializes the Kettle environment. This method will attempt to configure Simple JNDI, by simply calling
    * init(true).
-   * 
+   *
    * @see KettleEnvironment#init(boolean)
-   * 
+   *
    * @throws KettleException
    *           Any errors that occur during initialization will throw a KettleException.
    */
@@ -68,12 +68,12 @@ public class KettleEnvironment {
 
   /**
    * Initializes the Kettle environment. This method performs the following operations:
-   * 
+   *
    * - Creates a Kettle "home" directory if it does not already exist - Reads in the kettle.properties file -
    * Initializes the logging back-end - Sets the console log level to debug - If specified by parameter, configures
    * Simple JNDI - Registers the native types and the plugins for the various plugin types - Reads the list of variables
    * - Initializes the Lifecycle listeners
-   * 
+   *
    * @param simpleJndi
    *          true to configure Simple JNDI, false otherwise
    * @throws KettleException
@@ -122,7 +122,7 @@ public class KettleEnvironment {
 
   /**
    * Alert all Lifecycle plugins that the Kettle environment is being initialized.
-   * 
+   *
    * @throws KettleException
    *           when a lifecycle listener throws an exception
    */
@@ -137,7 +137,7 @@ public class KettleEnvironment {
           s.onEnvironmentShutdown();
         } catch ( Throwable t ) {
           System.err.println( BaseMessages.getString(
-              PKG, "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
+            PKG, "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
           t.printStackTrace();
         }
       }
@@ -147,7 +147,7 @@ public class KettleEnvironment {
 
   /**
    * Checks if the Kettle environment has been initialized.
-   * 
+   *
    * @return true if initialized, false otherwise
    */
   public static boolean isInitialized() {
@@ -160,7 +160,7 @@ public class KettleEnvironment {
 
   /**
    * Loads the plugin registry.
-   * 
+   *
    * @throws KettlePluginException
    *           if any errors are encountered while loading the plugin registry.
    */

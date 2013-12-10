@@ -53,9 +53,9 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 /**
  * Test class for the Modified Javascript step. Things tested: ltrim(), rtrim(), trim(), lpad(), rpad(), upper(),
  * lower(), isNum(), str2num(), num2str().
- * 
+ *
  * Still to do: - Use multiple arguments in str2num/num2str (tests only with 1 argument) - Defined error handling
- * 
+ *
  * @author Sven Boden
  */
 public class JavaScriptStringTest extends TestCase {
@@ -148,10 +148,10 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "original", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "ltrimStr", ValueMeta.TYPE_STRING ), new ValueMeta( "rtrimStr", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "trimStr", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "original", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "ltrimStr", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "rtrimStr", ValueMeta.TYPE_STRING ), new ValueMeta( "trimStr", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -173,12 +173,12 @@ public class JavaScriptStringTest extends TestCase {
     Object[] r3 = new Object[] { "    ", "b    e", "be", "be", "be" };
     Object[] r4 = new Object[] { "small", "bsmalle", "bsmalle", "bsmalle", "bsmalle" };
     Object[] r5 =
-        new Object[] { "longer string", "blonger stringe", "blonger stringe", "blonger stringe", "blonger stringe" };
+      new Object[] { "longer string", "blonger stringe", "blonger stringe", "blonger stringe", "blonger stringe" };
     Object[] r6 =
-        new Object[] {
-            "spaces right    ", "bspaces right    e", "bspaces right    e", "bspaces righte", "bspaces righte" };
+      new Object[] {
+        "spaces right    ", "bspaces right    e", "bspaces right    e", "bspaces righte", "bspaces righte" };
     Object[] r7 =
-        new Object[] { "   spaces left", "b   spaces lefte", "bspaces lefte", "b   spaces lefte", "bspaces lefte" };
+      new Object[] { "   spaces left", "b   spaces lefte", "bspaces lefte", "b   spaces lefte", "bspaces lefte" };
     Object[] r8 = new Object[] { "   spaces   ", "b   spaces   e", "bspaces   e", "b   spacese", "bspacese" };
 
     list.add( new RowMetaAndData( rm, r1 ) );
@@ -200,11 +200,13 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "lpadded1", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "lpadded2", ValueMeta.TYPE_STRING ), new ValueMeta( "rpadded1", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "rpadded2", ValueMeta.TYPE_STRING ), new ValueMeta( "upperStr", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "lowerStr", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "lpadded1", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "lpadded2", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "rpadded1", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "rpadded2", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "upperStr", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "lowerStr", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -220,9 +222,9 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "numb1", ValueMeta.TYPE_NUMBER ),
-            new ValueMeta( "bool1", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "str1", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "numb1", ValueMeta.TYPE_NUMBER ),
+      new ValueMeta( "bool1", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "str1", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -244,21 +246,21 @@ public class JavaScriptStringTest extends TestCase {
     Object[] r3 = new Object[] { "    ", "xxxxxx    ", "         ", "    xxxxxx", "         ", "    ", "    " };
     Object[] r4 = new Object[] { "TeSt1", "xxxxxTeSt1", "    TeSt1", "TeSt1xxxxx", "TeSt1    ", "TEST1", "test1" };
     Object[] r5 =
-        new Object[] {
-            "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "LONGER ST1ING",
-            "longer st1ing" };
+      new Object[] {
+        "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "LONGER ST1ING",
+        "longer st1ing" };
     Object[] r6 =
-        new Object[] {
-            "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ",
-            "SPACES RIGHT    ", "spaces right    " };
+      new Object[] {
+        "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ",
+        "SPACES RIGHT    ", "spaces right    " };
     Object[] r7 =
-        new Object[] {
-            "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   SPACES LEFT",
-            "   spaces left" };
+      new Object[] {
+        "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   spacEs lEft",
+        "   SPACES LEFT", "   spaces left" };
     Object[] r8 =
-        new Object[] {
-            "   spaces   ", "   spaces   ", "   spaces   ", "   spaces   ", "   spaces   ", "   SPACES   ",
-            "   spaces   " };
+      new Object[] {
+        "   spaces   ", "   spaces   ", "   spaces   ", "   spaces   ", "   spaces   ", "   SPACES   ",
+        "   spaces   " };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );
@@ -299,9 +301,10 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ), new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), };
+    {
+      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -339,11 +342,11 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ), new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "index1", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index2", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "index3", ValueMeta.TYPE_INTEGER ), };
+    {
+      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index1", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "index2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index3", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -361,19 +364,22 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = createRowMetaInterfaceResult4();
 
     Object[] r1 =
-        new Object[] { "abcdefgh", "ef", new Long( 3 ), new Long( 10 ), new Long( 4 ), new Long( 4 ), new Long( -1 ) };
+      new Object[] {
+        "abcdefgh", "ef", new Long( 3 ), new Long( 10 ), new Long( 4 ), new Long( 4 ), new Long( -1 ) };
     Object[] r2 =
-        new Object[] { "abcdefgh", "h", new Long( 0 ), new Long( 7 ), new Long( 7 ), new Long( 7 ), new Long( 7 ) };
+      new Object[] { "abcdefgh", "h", new Long( 0 ), new Long( 7 ), new Long( 7 ), new Long( 7 ), new Long( 7 ) };
     Object[] r3 =
-        new Object[] { "abcdefgh", "h", new Long( 1 ), new Long( 6 ), new Long( 7 ), new Long( 7 ), new Long( 7 ) };
+      new Object[] { "abcdefgh", "h", new Long( 1 ), new Long( 6 ), new Long( 7 ), new Long( 7 ), new Long( 7 ) };
     Object[] r4 =
-        new Object[] { "abcdefgh", null, new Long( 1 ), new Long( 2 ), new Long( -1 ), new Long( -1 ), new Long( -1 ) };
+      new Object[] {
+        "abcdefgh", null, new Long( 1 ), new Long( 2 ), new Long( -1 ), new Long( -1 ), new Long( -1 ) };
     Object[] r5 =
-        new Object[] {
-            "abcdefgh", "invalid", new Long( 1 ), new Long( 1 ), new Long( -1 ), new Long( -1 ), new Long( -1 ) };
+      new Object[] {
+        "abcdefgh", "invalid", new Long( 1 ), new Long( 1 ), new Long( -1 ), new Long( -1 ), new Long( -1 ) };
     Object[] r6 =
-        new Object[] {
-            "abcdefgh", "invalidlonger", new Long( 1 ), new Long( 1 ), new Long( -1 ), new Long( -1 ), new Long( -1 ) };
+      new Object[] {
+        "abcdefgh", "invalidlonger", new Long( 1 ), new Long( 1 ), new Long( -1 ), new Long( -1 ),
+        new Long( -1 ) };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );
@@ -454,17 +460,17 @@ public class JavaScriptStringTest extends TestCase {
     ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
 
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var original = 'b' + string.getString() + 'e';\n"
-                + "var ltrimStr = 'b' + ltrim(string.getString()) + 'e';\n"
-                + "var rtrimStr = 'b' + rtrim(string.getString()) + 'e';\n"
-                + "var trimStr  = 'b' + trim(string.getString()) + 'e';\n" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var original = 'b' + string.getString() + 'e';\n"
+          + "var ltrimStr = 'b' + ltrim(string.getString()) + 'e';\n"
+          + "var rtrimStr = 'b' + rtrim(string.getString()) + 'e';\n"
+          + "var trimStr  = 'b' + trim(string.getString()) + 'e';\n" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "original", "ltrimStr", "rtrimStr", "trimStr" } );
     svm.setRename( new String[] { "", "", "", "" } );
     svm.setType( new int[] {
-        ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING,
-        ValueMetaInterface.TYPE_STRING } );
+      ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING,
+      ValueMetaInterface.TYPE_STRING } );
     svm.setLength( new int[] { -1, -1, -1, -1 } );
     svm.setPrecision( new int[] { -1, -1, -1, -1 } );
     svm.setReplace( new boolean[] { false, false, false, false, } );
@@ -559,18 +565,18 @@ public class JavaScriptStringTest extends TestCase {
     ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
 
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var lpadded1 = lpad(string, \"x\", 10);\n"
-                + "var lpadded2 = lpad(string, \" \", 9);\n" + "var rpadded1 = rpad(string, \"x\", 10);\n"
-                + "var rpadded2 = rpad(string, \" \", 9);\n" + "var upperStr = upper(string);\n"
-                + "var lowerStr = lower(string);\n" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var lpadded1 = lpad(string, \"x\", 10);\n"
+          + "var lpadded2 = lpad(string, \" \", 9);\n" + "var rpadded1 = rpad(string, \"x\", 10);\n"
+          + "var rpadded2 = rpad(string, \" \", 9);\n" + "var upperStr = upper(string);\n"
+          + "var lowerStr = lower(string);\n" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "lpadded1", "lpadded2", "rpadded1", "rpadded2", "upperStr", "lowerStr" } );
     svm.setRename( new String[] { "", "", "", "", "", "", "" } );
     svm.setType( new int[] {
-        ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING,
-        ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING,
-        ValueMetaInterface.TYPE_STRING } );
+      ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING,
+      ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING,
+      ValueMetaInterface.TYPE_STRING } );
     svm.setLength( new int[] { -1, -1, -1, -1, -1, -1, -1 } );
     svm.setPrecision( new int[] { -1, -1, -1, -1, -1, -1, -1 } );
     svm.setReplace( new boolean[] { false, false, false, false, false, false, false, } );
@@ -643,15 +649,15 @@ public class JavaScriptStringTest extends TestCase {
     ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
 
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT, "script",
-            "var numb1 = str2num(trim(string.getString()), \"#.#\", \"en\");\n"
-                + "var bool1 = isNum(string.getString());\n" + "var str1  = num2str(numb1);\n" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script",
+        "var numb1 = str2num(trim(string.getString()), \"#.#\", \"en\");\n"
+          + "var bool1 = isNum(string.getString());\n" + "var str1  = num2str(numb1);\n" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "numb1", "bool1", "str1" } );
     svm.setRename( new String[] { "", "", "" } );
     svm.setType( new int[] {
-        ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.TYPE_STRING } );
+      ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.TYPE_STRING } );
     svm.setLength( new int[] { -1, -1, -1 } );
     svm.setPrecision( new int[] { -1, -1, -1 } );
     svm.setReplace( new boolean[] { false, false, false, } );
@@ -665,10 +671,9 @@ public class JavaScriptStringTest extends TestCase {
     // Now execute the transformation and get the result from the dummy step.
     //
     List<RowMetaAndData> result =
-        TransTestFactory
-            .executeTestTransformation(
-                transMeta, TransTestFactory.INJECTOR_STEPNAME, testStepname, TransTestFactory.DUMMY_STEPNAME,
-                createData3() );
+      TransTestFactory.executeTestTransformation(
+        transMeta, TransTestFactory.INJECTOR_STEPNAME, testStepname, TransTestFactory.DUMMY_STEPNAME,
+        createData3() );
 
     // Verify that this is what we expected...
     //
@@ -688,16 +693,16 @@ public class JavaScriptStringTest extends TestCase {
     ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
 
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT, "script",
-            "var index1 = indexOf(string.getString(), search.getString());\n"
-                + "var index2 = indexOf(string.getString(), search.getString(), offset1.getInteger());\n"
-                + "var index3 = indexOf(string.getString(), search.getString(), offset2.getInteger());\n" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script",
+        "var index1 = indexOf(string.getString(), search.getString());\n"
+          + "var index2 = indexOf(string.getString(), search.getString(), offset1.getInteger());\n"
+          + "var index3 = indexOf(string.getString(), search.getString(), offset2.getInteger());\n" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "index1", "index2", "index3" } );
     svm.setRename( new String[] { "", "", "" } );
     svm.setType( new int[] {
-        ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
+      ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER } );
     svm.setLength( new int[] { -1, -1, -1 } );
     svm.setPrecision( new int[] { -1, -1, -1 } );
     svm.setReplace( new boolean[] { false, false, false, } );
@@ -710,9 +715,9 @@ public class JavaScriptStringTest extends TestCase {
     // Now execute the transformation and get the result from the dummy step.
     //
     List<RowMetaAndData> result =
-        TransTestFactory.executeTestTransformation(
-            transMeta, TransTestFactory.INJECTOR_STEPNAME, javaScriptStepname, TransTestFactory.DUMMY_STEPNAME,
-            createData4() );
+      TransTestFactory.executeTestTransformation(
+        transMeta, TransTestFactory.INJECTOR_STEPNAME, javaScriptStepname, TransTestFactory.DUMMY_STEPNAME,
+        createData4() );
 
     // Verify that this is what we expected...
     //

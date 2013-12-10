@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class PGPDecryptStreamData extends BaseStepData implements StepDataInterface {
   public int indexOfField;

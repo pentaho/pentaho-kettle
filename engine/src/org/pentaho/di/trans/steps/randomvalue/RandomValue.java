@@ -45,20 +45,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Get random value.
- * 
+ *
  * @author Matt, Samatar
  * @since 8-8-2008
  */
 public class RandomValue extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = RandomValueMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RandomValueMeta.class; // for i18n purposes, needed by Translator2!!
 
   private RandomValueMeta meta;
 
   private RandomValueData data;
 
   public RandomValue( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -182,7 +182,8 @@ public class RandomValue extends BaseStep implements StepInterface {
     row = getRandomValue( imeta, row );
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "RandomValue.Log.ValueReturned", data.outputRowMeta.getString( row ) ) );
+      logRowlevel( BaseMessages.getString( PKG, "RandomValue.Log.ValueReturned", data.outputRowMeta
+        .getString( row ) ) );
     }
 
     putRow( data.outputRowMeta, row );

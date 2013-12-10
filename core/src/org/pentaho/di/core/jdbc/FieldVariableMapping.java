@@ -30,8 +30,8 @@ public class FieldVariableMapping {
 
   public enum MappingType {
     FIELDMAP, // Helper mapping to map output fields to SQL columns
-    SQL_WHERE, // generates the where clause condition into a SQL condition.
-    JSON_QUERY; // generates the JSON query (MongoDB mainly)
+      SQL_WHERE, // generates the where clause condition into a SQL condition.
+      JSON_QUERY; // generates the JSON query (MongoDB mainly)
 
     public static MappingType getMappingType( String typeString ) {
       try {
@@ -65,7 +65,7 @@ public class FieldVariableMapping {
 
   /**
    * Find a field-variable mapping by field name, perform case insensitive comparison.
-   * 
+   *
    * @param mappings
    *          The list of mappings
    * @param fieldName
@@ -73,7 +73,7 @@ public class FieldVariableMapping {
    * @return the field-variable mapping or null if nothing could be found.
    */
   public static FieldVariableMapping findFieldVariableMappingByFieldName( List<FieldVariableMapping> mappings,
-      String fieldName ) {
+    String fieldName ) {
     for ( FieldVariableMapping mapping : mappings ) {
       if ( !Const.isEmpty( mapping.getFieldName() ) && mapping.getFieldName().equalsIgnoreCase( fieldName ) ) {
         return mapping;

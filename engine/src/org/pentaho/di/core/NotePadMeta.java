@@ -33,10 +33,10 @@ import org.w3c.dom.Node;
 
 /**
  * Describes a note displayed on a Transformation, Job, Schema, or Report.
- * 
+ *
  * @author Matt
  * @since 28-11-2003
- * 
+ *
  */
 public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterface, GUISizeInterface {
   public static final String XML_TAG = "notepad";
@@ -104,9 +104,9 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
   }
 
   public NotePadMeta( String n, int xl, int yl, int w, int h, String fontname, int fontsize, boolean fontbold,
-      boolean fontitalic, int fontColorRed, int fontColorGreen, int fontColorBlue, int backGrounColorRed,
-      int backGrounColorGreen, int backGrounColorBlue, int borderColorRed, int borderColorGreen, int borderColorBlue,
-      boolean drawshadow ) {
+    boolean fontitalic, int fontColorRed, int fontColorGreen, int fontColorBlue, int backGrounColorRed,
+    int backGrounColorGreen, int backGrounColorBlue, int borderColorRed, int borderColorGreen,
+    int borderColorBlue, boolean drawshadow ) {
     this.note = n;
     this.location = new Point( xl, yl );
     this.width = w;
@@ -151,22 +151,23 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
       // font color
       this.fontcolorred = Const.toInt( XMLHandler.getTagValue( notepadnode, "fontcolorred" ), COLOR_RGB_BLACK_RED );
       this.fontcolorgreen =
-          Const.toInt( XMLHandler.getTagValue( notepadnode, "fontcolorgreen" ), COLOR_RGB_BLACK_GREEN );
-      this.fontcolorblue = Const.toInt( XMLHandler.getTagValue( notepadnode, "fontcolorblue" ), COLOR_RGB_BLACK_BLUE );
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "fontcolorgreen" ), COLOR_RGB_BLACK_GREEN );
+      this.fontcolorblue =
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "fontcolorblue" ), COLOR_RGB_BLACK_BLUE );
       // background color
       this.backgroundcolorred =
-          Const.toInt( XMLHandler.getTagValue( notepadnode, "backgroundcolorred" ), COLOR_RGB_DEFAULT_BG_RED );
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "backgroundcolorred" ), COLOR_RGB_DEFAULT_BG_RED );
       this.backgroundcolorgreen =
-          Const.toInt( XMLHandler.getTagValue( notepadnode, "backgroundcolorgreen" ), COLOR_RGB_DEFAULT_BG_GREEN );
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "backgroundcolorgreen" ), COLOR_RGB_DEFAULT_BG_GREEN );
       this.backgroundcolorblue =
-          Const.toInt( XMLHandler.getTagValue( notepadnode, "backgroundcolorblue" ), COLOR_RGB_DEFAULT_BG_BLUE );
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "backgroundcolorblue" ), COLOR_RGB_DEFAULT_BG_BLUE );
       // border color
       this.bordercolorred =
-          Const.toInt( XMLHandler.getTagValue( notepadnode, "bordercolorred" ), COLOR_RGB_DEFAULT_BORDER_RED );
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "bordercolorred" ), COLOR_RGB_DEFAULT_BORDER_RED );
       this.bordercolorgreen =
-          Const.toInt( XMLHandler.getTagValue( notepadnode, "bordercolorgreen" ), COLOR_RGB_DEFAULT_BORDER_GREEN );
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "bordercolorgreen" ), COLOR_RGB_DEFAULT_BORDER_GREEN );
       this.bordercolorblue =
-          Const.toInt( XMLHandler.getTagValue( notepadnode, "bordercolorblue" ), COLOR_RGB_DEFAULT_BORDER_BLUE );
+        Const.toInt( XMLHandler.getTagValue( notepadnode, "bordercolorblue" ), COLOR_RGB_DEFAULT_BORDER_BLUE );
       this.drawshadow = "Y".equalsIgnoreCase( XMLHandler.getTagValue( notepadnode, "drawshadow" ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to read Notepad info from XML", e );

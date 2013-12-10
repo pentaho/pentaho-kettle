@@ -34,18 +34,18 @@ import org.w3c.dom.Node;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   public abstract static class AbstractHandler implements Closure {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Closure#execute(java.lang.Object)
      * @throws IllegalArgumentException
      *           if property is null.
@@ -63,7 +63,7 @@ public final class PluginPropertyHandler {
 
     /**
      * Handle property.
-     * 
+     *
      * @param property
      *          property.
      * @throws KettleException
@@ -74,7 +74,7 @@ public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    *         Fail/throws KettleException.
    */
   public static class Fail extends AbstractHandler {
@@ -89,11 +89,6 @@ public final class PluginPropertyHandler {
      */
     public static final Fail INSTANCE = new Fail();
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see at.aschauer.commons.pentaho.plugin.PluginPropertyHandler.AbstractHandler#handle(at.aschauer.commons.pentaho.plugin.PluginProperty)
-     */
     @Override
     protected void handle( final PluginProperty property ) throws KettleException {
       throw new KettleException( MESSAGE );
@@ -103,17 +98,12 @@ public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   public static class AppendXml extends AbstractHandler {
 
     private final StringBuilder builder = new StringBuilder();
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see at.aschauer.commons.pentaho.plugin.PluginPropertyHandler.AbstractHandler#handle(at.aschauer.commons.pentaho.plugin.PluginProperty)
-     */
     @Override
     protected void handle( final PluginProperty property ) {
       property.appendXml( this.builder );
@@ -130,7 +120,7 @@ public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   public static class LoadXml extends AbstractHandler {
 
@@ -138,7 +128,7 @@ public final class PluginPropertyHandler {
 
     /**
      * Constructor.
-     * 
+     *
      * @param node
      *          node to set.
      * @throws IllegalArgumentException
@@ -150,11 +140,6 @@ public final class PluginPropertyHandler {
       this.node = node;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see at.aschauer.commons.pentaho.plugin.PluginPropertyHandler.AbstractHandler#handle(at.aschauer.commons.pentaho.plugin.PluginProperty)
-     */
     @Override
     protected void handle( final PluginProperty property ) {
       property.loadXml( this.node );
@@ -164,7 +149,7 @@ public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   public static class SaveToRepository extends AbstractHandler {
 
@@ -178,7 +163,7 @@ public final class PluginPropertyHandler {
 
     /**
      * Constructor.
-     * 
+     *
      * @param repository
      *          repository to use.
      * @param metaStore
@@ -190,8 +175,8 @@ public final class PluginPropertyHandler {
      * @throws IllegalArgumentException
      *           if repository is null.
      */
-    public SaveToRepository( final Repository repository, final IMetaStore metaStore, final ObjectId transformationId,
-        final ObjectId stepId ) throws IllegalArgumentException {
+    public SaveToRepository( final Repository repository, final IMetaStore metaStore,
+      final ObjectId transformationId, final ObjectId stepId ) throws IllegalArgumentException {
       super();
       Assert.assertNotNull( repository, "Repository cannot be null" );
       this.repository = repository;
@@ -200,11 +185,6 @@ public final class PluginPropertyHandler {
       this.stepId = stepId;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see at.aschauer.commons.pentaho.plugin.PluginPropertyHandler.AbstractHandler#handle(at.aschauer.commons.pentaho.plugin.PluginProperty)
-     */
     @Override
     protected void handle( final PluginProperty property ) throws KettleException {
       property.saveToRepositoryStep( this.repository, this.metaStore, this.transformationId, this.stepId );
@@ -214,7 +194,7 @@ public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   public static class ReadFromRepository extends AbstractHandler {
 
@@ -226,7 +206,7 @@ public final class PluginPropertyHandler {
 
     /**
      * Constructor.
-     * 
+     *
      * @param repository
      *          the repository.
      * @param metaStore
@@ -245,11 +225,6 @@ public final class PluginPropertyHandler {
       this.stepId = stepId;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see at.aschauer.commons.pentaho.plugin.PluginPropertyHandler.AbstractHandler#handle(at.aschauer.commons.pentaho.plugin.PluginProperty)
-     */
     @Override
     protected void handle( final PluginProperty property ) throws KettleException {
       property.readFromRepositoryStep( this.repository, this.metaStore, this.stepId );
@@ -259,7 +234,7 @@ public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   public static class SaveToPreferences extends AbstractHandler {
 
@@ -267,7 +242,7 @@ public final class PluginPropertyHandler {
 
     /**
      * Constructor.
-     * 
+     *
      * @param node
      *          node to set.
      * @throws IllegalArgumentException
@@ -279,11 +254,6 @@ public final class PluginPropertyHandler {
       this.node = node;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see at.aschauer.commons.pentaho.plugin.PluginPropertyHandler.AbstractHandler#handle(at.aschauer.commons.pentaho.plugin.PluginProperty)
-     */
     @Override
     protected void handle( final PluginProperty property ) {
       property.saveToPreferences( this.node );
@@ -293,7 +263,7 @@ public final class PluginPropertyHandler {
 
   /**
    * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
-   * 
+   *
    */
   public static class ReadFromPreferences extends AbstractHandler {
 
@@ -301,7 +271,7 @@ public final class PluginPropertyHandler {
 
     /**
      * Constructor.
-     * 
+     *
      * @param node
      *          node to set.
      * @throws IllegalArgumentException
@@ -313,11 +283,6 @@ public final class PluginPropertyHandler {
       this.node = node;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see at.aschauer.commons.pentaho.plugin.PluginPropertyHandler.AbstractHandler#handle(at.aschauer.commons.pentaho.plugin.PluginProperty)
-     */
     @Override
     protected void handle( final PluginProperty property ) {
       property.readFromPreferences( this.node );

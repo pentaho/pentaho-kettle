@@ -32,19 +32,19 @@ import org.pentaho.di.i18n.BaseMessages;
 /**
  * This class supports overriding of config builders by supplying a VariableSpace containing a variable in the format of
  * vfs.[scheme].config.parser where [scheme] is one of the VFS schemes (file, http, sftp, etc...)
- * 
+ *
  * @author cboyden
  */
 public class KettleFileSystemConfigBuilderFactory {
 
-  private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * This factory returns a FileSystemConfigBuilder. Custom FileSystemConfigBuilders can be created by implementing the
    * {@link IKettleFileSystemConfigBuilder} or overriding the {@link KettleGenericFileSystemConfigBuilder}
-   * 
+   *
    * @see org.apache.commons.vfs.FileSystemConfigBuilder
-   * 
+   *
    * @param varSpace
    *          A Kettle variable space for resolving VFS config parameters
    * @param scheme
@@ -62,10 +62,10 @@ public class KettleFileSystemConfigBuilderFactory {
     if ( parserClass != null ) {
       try {
         Class<?> configBuilderClass =
-            KettleFileSystemConfigBuilderFactory.class.getClassLoader().loadClass( parserClass );
+          KettleFileSystemConfigBuilderFactory.class.getClassLoader().loadClass( parserClass );
         Method mGetInstance = configBuilderClass.getMethod( "getInstance" );
         if ( ( mGetInstance != null )
-            && ( IKettleFileSystemConfigBuilder.class.isAssignableFrom( mGetInstance.getReturnType() ) ) ) {
+          && ( IKettleFileSystemConfigBuilder.class.isAssignableFrom( mGetInstance.getReturnType() ) ) ) {
           result = (IKettleFileSystemConfigBuilder) mGetInstance.invoke( null );
         } else {
           result = (IKettleFileSystemConfigBuilder) configBuilderClass.newInstance();

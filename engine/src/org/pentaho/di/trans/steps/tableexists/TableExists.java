@@ -38,20 +38,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Check if a table exists in a Database *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class TableExists extends BaseStep implements StepInterface {
-  private static Class<?> PKG = TableExistsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableExistsMeta meta;
   private TableExistsData data;
 
   public TableExists( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -88,9 +88,9 @@ public class TableExists extends BaseStep implements StepInterface {
           if ( data.indexOfTablename < 0 ) {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "TableExists.Exception.CouldnotFindField" )
-                + "[" + meta.getDynamicTablenameField() + "]" );
-            throw new KettleException( BaseMessages.getString( PKG, "TableExists.Exception.CouldnotFindField", meta
-                .getDynamicTablenameField() ) );
+              + "[" + meta.getDynamicTablenameField() + "]" );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "TableExists.Exception.CouldnotFindField", meta.getDynamicTablenameField() ) );
           }
         }
       } // End If first
@@ -114,7 +114,7 @@ public class TableExists extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "TableExists.LineNumber", getLinesRead()
-            + " : " + getInputRowMeta().getString( r ) ) );
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( KettleException e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

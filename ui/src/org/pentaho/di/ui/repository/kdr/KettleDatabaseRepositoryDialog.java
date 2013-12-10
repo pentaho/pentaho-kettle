@@ -66,15 +66,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
  * This dialog is used to edit/enter the name and description of a repository. You can also use this dialog to create,
  * upgrade or remove a repository.
- * 
+ *
  * @author Matt
  * @since 19-jun-2003
- * 
+ *
  */
 
 public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
+
   private MODE mode;
   private Label wlConnection;
 
@@ -117,7 +117,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
   private DatabaseDialog databaseDialog;
 
   public KettleDatabaseRepositoryDialog( Shell parent, int style, RepositoryMeta repositoryMeta,
-      RepositoriesMeta repositoriesMeta ) {
+    RepositoriesMeta repositoriesMeta ) {
     this.display = parent.getDisplay();
     this.props = PropsUI.getInstance();
     this.input = (KettleDatabaseRepositoryMeta) repositoryMeta;
@@ -126,7 +126,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     this.masterRepositoryName = repositoryMeta.getName();
 
     shell =
-        new Shell( parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL | SWT.SHEET );
+      new Shell( parent, style
+        | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL | SWT.SHEET );
     shell.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Main.Title" ) );
 
   }
@@ -439,7 +440,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
         MessageBox qmb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
         qmb.setMessage( BaseMessages.getString(
-            PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR, Const.CR ) );
+          PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR, Const.CR ) );
         qmb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Title" ) );
         int answer = qmb.open();
         if ( answer != SWT.YES ) {
@@ -452,8 +453,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
         System.out.println( "Allocating repository..." );
 
         KettleDatabaseRepository rep =
-            (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(
-                RepositoryPluginType.class, repositoryMeta, Repository.class );
+          (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(
+            RepositoryPluginType.class, repositoryMeta, Repository.class );
         rep.init( repositoryMeta );
 
         System.out.println( "Connecting to database for repository creation..." );
@@ -478,7 +479,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
         MessageBox qmb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
         qmb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message1" )
-            + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message2" ) );
+          + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message2" ) );
         qmb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Title" ) );
         int answer = qmb.open();
 
@@ -487,9 +488,10 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
           if ( !goAhead ) {
             EnterPasswordDialog etd =
-                new EnterPasswordDialog(
-                    shell,
-                    BaseMessages.getString( PKG, "RepositoryDialog.Dialog.EnterPassword.Title" ), BaseMessages.getString( PKG, "RepositoryDialog.Dialog.EnterPassword.Message" ), "" ); //$NON-NLS-3$
+              new EnterPasswordDialog(
+                shell,
+                BaseMessages.getString( PKG, "RepositoryDialog.Dialog.EnterPassword.Title" ), BaseMessages.getString(
+                  PKG, "RepositoryDialog.Dialog.EnterPassword.Message" ), "" );
             etd.setModal();
             String pwd = etd.open();
             if ( pwd != null ) {
@@ -501,32 +503,34 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                 rep.connect( "admin", pwd, true );
                 goAhead = true;
               } catch ( KettleException e ) {
-                new ErrorDialog( shell, BaseMessages
-                    .getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ), BaseMessages.getString(
-                    PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message" ), e );
+                new ErrorDialog( shell, BaseMessages.getString(
+                  PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ), BaseMessages.getString(
+                  PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message" ), e );
               }
             }
           }
 
           if ( goAhead ) {
-            System.out.println( BaseMessages.getString(
+            System.out
+              .println( BaseMessages.getString(
                 PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message1" )
-                + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message2" ) );
+                + cu
+                + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message2" ) );
             UpgradeRepositoryProgressDialog urpd = new UpgradeRepositoryProgressDialog( shell, rep, upgrade );
             if ( urpd.open() ) {
               if ( urpd.isDryRun() ) {
                 StringBuffer sql = new StringBuffer();
                 sql.append( "-- Repository creation/upgrade DDL: " ).append( Const.CR );
                 sql.append( "--" ).append( Const.CR );
+                sql.append( "-- Nothing was created nor modified in the target repository database." ).append(
+                  Const.CR );
                 sql
-                    .append( "-- Nothing was created nor modified in the target repository database." ).append(
-                        Const.CR );
+                  .append( "-- Hit the OK button to execute the generated SQL or Close to reject the changes." )
+                  .append( Const.CR );
                 sql
-                    .append( "-- Hit the OK button to execute the generated SQL or Close to reject the changes." )
-                    .append( Const.CR );
-                sql
-                    .append( "-- Please note that it is possible to change/edit the generated SQL before execution." )
-                    .append( Const.CR );
+                  .append(
+                    "-- Please note that it is possible to change/edit the generated SQL before execution." )
+                  .append( Const.CR );
                 sql.append( "--" ).append( Const.CR );
                 for ( String statement : urpd.getGeneratedStatements() ) {
                   if ( statement.endsWith( ";" ) ) {
@@ -536,15 +540,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                   }
                 }
                 SQLEditor editor =
-                    new SQLEditor(
-                        rep.getDatabaseMeta(), shell, SWT.NONE, rep.getDatabaseMeta(), DBCache.getInstance(), sql
-                            .toString() );
+                  new SQLEditor( rep.getDatabaseMeta(), shell, SWT.NONE, rep.getDatabaseMeta(), DBCache
+                    .getInstance(), sql.toString() );
                 editor.open();
 
               } else {
                 MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
                 mb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message1" )
-                    + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message2" ) );
+                  + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message2" ) );
                 mb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Title" ) );
                 mb.open();
               }
@@ -555,8 +558,10 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
         rep.disconnect();
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell,
-            BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title" ), BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message" ) + Const.CR, ke ); //$NON-NLS-3$
+          shell,
+          BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title" ), BaseMessages
+            .getString( PKG, "RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message" )
+            + Const.CR, ke );
       }
     } else {
       MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
@@ -572,8 +577,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
     try {
       KettleDatabaseRepository rep =
-          (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(
-              RepositoryPluginType.class, repositoryMeta, Repository.class );
+        (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(
+          RepositoryPluginType.class, repositoryMeta, Repository.class );
       rep.init( repositoryMeta );
 
       MessageBox qmb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
@@ -583,9 +588,10 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
       if ( answer == SWT.YES ) {
         EnterPasswordDialog etd =
-            new EnterPasswordDialog(
-                shell,
-                BaseMessages.getString( PKG, "RepositoryDialog.Dialog.AskAdminPassword.Title" ), BaseMessages.getString( PKG, "RepositoryDialog.Dialog.AskAdminPassword.Message" ), "" ); //$NON-NLS-3$
+          new EnterPasswordDialog(
+            shell,
+            BaseMessages.getString( PKG, "RepositoryDialog.Dialog.AskAdminPassword.Title" ), BaseMessages.getString(
+              PKG, "RepositoryDialog.Dialog.AskAdminPassword.Message" ), "" );
         String pwd = etd.open();
         if ( pwd != null ) {
           try {
@@ -595,20 +601,22 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
               rep.dropRepositorySchema();
 
               MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
-              mb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Message" ) );
+              mb.setMessage( BaseMessages.getString(
+                PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Message" ) );
               mb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Title" ) );
               mb.open();
             } catch ( KettleDatabaseException dbe ) {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-              mb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Message" )
-                  + Const.CR + dbe.getMessage() );
+              mb.setMessage( BaseMessages.getString(
+                PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Message" )
+                + Const.CR + dbe.getMessage() );
               mb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Title" ) );
               mb.open();
             }
           } catch ( KettleException e ) {
             new ErrorDialog( shell, BaseMessages.getString(
-                PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title" ), BaseMessages.getString(
-                PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message" ), e );
+              PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title" ), BaseMessages.getString(
+              PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message" ), e );
           } finally {
             rep.disconnect();
           }
@@ -616,8 +624,9 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell,
-          BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title" ), BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message" ), ke ); //$NON-NLS-3$
+        shell,
+        BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title" ), BaseMessages
+          .getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message" ), ke );
     }
   }
 

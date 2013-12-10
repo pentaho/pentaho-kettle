@@ -304,7 +304,7 @@ public class SWTGC implements GCInterface {
         break;
       case PARALLEL:
         gc.setLineAttributes( new LineAttributes(
-            gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10 ) );
+          gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10 ) );
         break;
       default:
         break;

@@ -57,17 +57,17 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.www.AddTransServlet;
 
 /**
- * 
+ *
  * Dialog that allows you to edit the settings of the security service connection
- * 
+ *
  * @see SlaveServer
  * @author Matt
  * @since 31-10-2006
- * 
+ *
  */
 
 public class SlaveServerDialog extends Dialog {
-  private static Class<?> PKG = SlaveServerDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SlaveServerDialog.class; // for i18n purposes, needed by Translator2!!
 
   private SlaveServer slaveServer;
 
@@ -252,7 +252,7 @@ public class SlaveServerDialog extends Dialog {
     fdlHostname.right = new FormAttachment( middle, -margin );
     wlHostname.setLayoutData( fdlHostname );
 
-    wHostname = new TextVar( slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER ); // slaveServer.getVariable("MASTER_HOST")
+    wHostname = new TextVar( slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wHostname );
     wHostname.addModifyListener( lsMod );
     FormData fdHostname = new FormData();
@@ -528,21 +528,23 @@ public class SlaveServerDialog extends Dialog {
       String reply = slaveServer.sendXML( xml, AddTransServlet.CONTEXT_PATH );
 
       String message =
-          BaseMessages.getString( PKG, "SlaveServer.Replay.Info1" )
-              + slaveServer.constructUrl( AddTransServlet.CONTEXT_PATH ) + Const.CR
-              + BaseMessages.getString( PKG, "SlaveServer.Replay.Info2" ) + Const.CR + Const.CR;
+        BaseMessages.getString( PKG, "SlaveServer.Replay.Info1" )
+          + slaveServer.constructUrl( AddTransServlet.CONTEXT_PATH ) + Const.CR
+          + BaseMessages.getString( PKG, "SlaveServer.Replay.Info2" ) + Const.CR + Const.CR;
       message += xml;
       message += Const.CR + Const.CR;
       message += "Reply was:" + Const.CR + Const.CR;
       message += reply + Const.CR;
 
       EnterTextDialog dialog =
-          new EnterTextDialog( shell, "XML", BaseMessages.getString( PKG, "SlaveServer.RetournedXMLInfo" ), message );
+        new EnterTextDialog(
+          shell, "XML", BaseMessages.getString( PKG, "SlaveServer.RetournedXMLInfo" ), message );
       dialog.open();
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "SlaveServer.ExceptionError" ), BaseMessages.getString(
-          PKG, "SlaveServer.ExceptionUnableGetReplay.Error1" )
-          + slaveServer.getHostname() + BaseMessages.getString( PKG, "SlaveServer.ExceptionUnableGetReplay.Error2" ), e );
+        PKG, "SlaveServer.ExceptionUnableGetReplay.Error1" )
+        + slaveServer.getHostname()
+        + BaseMessages.getString( PKG, "SlaveServer.ExceptionUnableGetReplay.Error2" ), e );
     }
   }
 }

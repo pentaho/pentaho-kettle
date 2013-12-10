@@ -38,11 +38,11 @@ import ca.uhn.hl7v2.validation.impl.NoValidation;
 
 /**
  * Read HL7 Messages and output values
- * 
+ *
  */
 public class HL7Input extends BaseStep implements StepInterface
 {
-	private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!
 	
 	private HL7InputMeta    meta;
 	private HL7InputData    data;
@@ -56,7 +56,7 @@ public class HL7Input extends BaseStep implements StepInterface
 	{
 	    meta = (HL7InputMeta) smi;
 	    data = (HL7InputData) sdi;
-	    
+	
 		Object[] r=getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
 		{
@@ -69,10 +69,10 @@ public class HL7Input extends BaseStep implements StepInterface
 		  if (data.messageFieldIndex<0) {
 		    throw new KettleException("Unable to find field ["+meta.getMessageField()+"] in the input fields.");
 		  }
-		  
+		
 		  data.outputRowMeta = getInputRowMeta().clone();
 		  meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
-		  
+		
 		  data.parser = new GenericParser();
 		  data.parser.setValidationContext(new NoValidation());
 		}
@@ -82,11 +82,11 @@ public class HL7Input extends BaseStep implements StepInterface
 		try {
 		  Message message = data.parser.parse(messageString);
 	      List<HL7Value> values = HL7KettleParser.extractValues(message);
-	      
+	
 	      for (HL7Value value : values) {
     	      Object[] output = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
     	      int outputIndex = getInputRowMeta().size();
-    	      
+    	
     	      output[outputIndex++] = value.getParentGroup();
               output[outputIndex++] = value.getGroupName();
               output[outputIndex++] = value.getVersion();
@@ -97,16 +97,16 @@ public class HL7Input extends BaseStep implements StepInterface
               output[outputIndex++] = value.getDataType();
               output[outputIndex++] = value.getDescription();
               output[outputIndex++] = value.getValue();
-              
+
               putRow(data.outputRowMeta, output);
 	      }
 		} catch(Exception e) {
 		  throw new KettleException("Error parsing message", e);
 		}
 		
-        if (checkFeedback(getLinesWritten())) 
+        if (checkFeedback(getLinesWritten()))
         {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "HL7Input.Log.LineNumber")+getLinesWritten()); 
+        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "HL7Input.Log.LineNumber")+getLinesWritten());
         }
 			
 		return true;

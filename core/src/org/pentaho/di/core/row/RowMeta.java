@@ -74,7 +74,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * This method copies the row metadata and sets all values to the specified type (usually String)
-   * 
+   *
    * @param targetType
    *          The target type
    * @return The cloned metadata
@@ -148,7 +148,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Add a metadata value. If a value with the same name already exists, it gets renamed.
-   * 
+   *
    * @param meta
    *          The metadata value to add
    */
@@ -164,7 +164,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Add a metadata value on a certain location in the row. If a value with the same name already exists, it gets
    * renamed. Remember to change the data row according to this.
-   * 
+   *
    * @param index
    *          The index where the metadata value needs to be put in the row
    * @param meta
@@ -181,7 +181,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get the value metadata on the specified index.
-   * 
+   *
    * @param index
    *          The index to get the value metadata from
    * @return The value metadata specified by the index.
@@ -193,7 +193,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Replaces a value meta entry in the row metadata with another one
-   * 
+   *
    * @param index
    *          The index in the row to replace at
    * @param valueMeta
@@ -206,7 +206,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get a String value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param rowRow
    *          the row of data
    * @param index
@@ -226,7 +226,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get an Integer value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param rowRow
    *          the row of data
    * @param index
@@ -246,7 +246,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get a Number value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param rowRow
    *          the row of data
    * @param index
@@ -266,7 +266,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get a Date value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param rowRow
    *          the row of data
    * @param index
@@ -286,7 +286,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get a BigNumber value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param rowRow
    *          the row of data
    * @param index
@@ -306,7 +306,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get a Boolean value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param rowRow
    *          the row of data
    * @param index
@@ -326,7 +326,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get a Binary value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param rowRow
    *          the row of data
    * @param index
@@ -346,7 +346,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Determines whether a value in a row is null. A value is null when the object is null or when it's an empty String
-   * 
+   *
    * @param dataRow
    *          The row of data
    * @param index
@@ -426,7 +426,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Searches the index of a value meta with a given name
-   * 
+   *
    * @param valueName
    *          the name of the value metadata to look for
    * @return the index or -1 in case we didn't find the value
@@ -443,7 +443,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Searches for a value with a certain name in the value meta list
-   * 
+   *
    * @param valueName
    *          The value name to search for
    * @return The value metadata or null if nothing was found
@@ -469,7 +469,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Merge the values of row r to this Row. The values that are not yet in the row are added unchanged. The values that
    * are in the row are renamed to name_2, name_3, etc.
-   * 
+   *
    * @param r
    *          The row to be merged with this row
    */
@@ -511,7 +511,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get an array of the names of all the Values in the Row.
-   * 
+   *
    * @return an array of Strings: the names of all the Values in the Row.
    */
   @Override
@@ -527,7 +527,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Write ONLY the specified data to the outputStream
-   * 
+   *
    * @throws KettleFileException
    *           in case things go awry
    */
@@ -552,7 +552,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Write ONLY the specified metadata to the outputStream
-   * 
+   *
    * @throws KettleFileException
    *           in case things go awry
    */
@@ -572,7 +572,8 @@ public class RowMeta implements RowMetaInterface {
 
   }
 
-  public RowMeta( DataInputStream inputStream ) throws KettleFileException, KettleEOFException, SocketTimeoutException {
+  public RowMeta( DataInputStream inputStream ) throws KettleFileException, KettleEOFException,
+    SocketTimeoutException {
     this();
 
     int nr;
@@ -581,7 +582,8 @@ public class RowMeta implements RowMetaInterface {
     } catch ( SocketTimeoutException e ) {
       throw e;
     } catch ( EOFException e ) {
-      throw new KettleEOFException( "End of file while reading the number of metadata values in the row metadata", e );
+      throw new KettleEOFException(
+        "End of file while reading the number of metadata values in the row metadata", e );
     } catch ( IOException e ) {
       throw new KettleFileException( "Unable to read nr of metadata values: " + e.toString(), e );
     }
@@ -633,7 +635,7 @@ public class RowMeta implements RowMetaInterface {
     int index = indexOfValue( valueName );
     if ( index < 0 ) {
       throw new KettleValueException( "Unable to find value metadata with name '"
-          + valueName + "', so I can't delete it." );
+        + valueName + "', so I can't delete it." );
     }
     valueMetaList.remove( index );
   }
@@ -662,7 +664,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Get the string representation of the data in a row of data
-   * 
+   *
    * @param row
    *          the row of data to convert to string
    * @return the row of data in string form
@@ -686,7 +688,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get an array of strings showing the name of the values in the row padded to a maximum length, followed by the types
    * of the values.
-   * 
+   *
    * @param maxlen
    *          The length to which the name will be padded.
    * @return an array of strings: the names and the types of the fieldnames in the row.
@@ -706,7 +708,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -733,7 +735,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Compare 2 rows with each other for equality using certain values in the rows and also considering the case
    * sensitivity flag.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -760,7 +762,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -791,7 +793,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowMeta2
@@ -806,9 +808,8 @@ public class RowMeta implements RowMetaInterface {
    * @throws KettleValueException
    */
   @Override
-  public int
-    compare( Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 )
-      throws KettleValueException {
+  public int compare( Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int[] fieldnrs1,
+    int[] fieldnrs2 ) throws KettleValueException {
     int len = ( fieldnrs1.length < fieldnrs2.length ) ? fieldnrs1.length : fieldnrs2.length;
     for ( int i = 0; i < len; i++ ) {
       ValueMetaInterface valueMeta1 = getValueMeta( fieldnrs1[i] );
@@ -826,7 +827,7 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Compare 2 rows with each other using all values in the rows and also considering the specified ascending clauses of
    * the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -852,7 +853,7 @@ public class RowMeta implements RowMetaInterface {
    * Calculate a hashCode of the content (not the index) of the data specified NOTE: This method uses a simple XOR of
    * the individual hashCodes which can result in a lot of collisions for similar types of data (e.g. [A,B] == [B,A] and
    * is not suitable for normal use. It is kept to provide backward compatibility with CombinationLookup.lookupValues()
-   * 
+   *
    * @param rowData
    *          The data to calculate a hashCode with
    * @return the calculated hashCode
@@ -880,7 +881,7 @@ public class RowMeta implements RowMetaInterface {
    * different primitive values ['2008-01-01:12:30'] and ['2008-01-01:00:00'] that use a format object to change the
    * value (as Date yyyy-MM-dd), the hashCodes will be different resulting in the two rows not being considered equal
    * via the hashCode even though compare() or equals() might consider them to be.
-   * 
+   *
    * @param rowData
    *          The data to calculate a hashCode with
    * @return the calculated hashCode
@@ -897,7 +898,7 @@ public class RowMeta implements RowMetaInterface {
    * values for nulls of different data types and will return the same hashCode for different native values that have a
    * ValueMeta converting them into the same value (e.g. ['2008-01-01:12:30'] and ['2008-01-01:00:00'] as Date
    * yyyy-MM-dd)
-   * 
+   *
    * @param rowData
    *          The data to calculate a hashCode with
    * @return the calculated hashCode
@@ -919,7 +920,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Serialize a row of data to byte[]
-   * 
+   *
    * @param metadata
    *          the metadata to use
    * @param row
@@ -941,7 +942,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Create a row of data bases on a serialized format (byte[])
-   * 
+   *
    * @param data
    *          the serialized data
    * @param metadata
@@ -994,7 +995,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Create a new row metadata object from XML
-   * 
+   *
    * @param node
    *          the XML node to deserialize from
    * @throws IOException
@@ -1033,7 +1034,7 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * Convert an XML node into binary data using the row metadata supplied.
-   * 
+   *
    * @param node
    *          The data row node
    * @throws IOException

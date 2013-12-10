@@ -62,10 +62,10 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class StepsMetricsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = StepsMetrics.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepsMetrics.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] YES_NO_COMBO = new String[] {
-      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   private String[] previousSteps;
   private StepsMetricsMeta input;
@@ -207,20 +207,21 @@ public class StepsMetricsDialog extends BaseStepDialog implements StepDialogInte
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "StepsMetricsDialog.Fieldname.Step" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            previousSteps, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StepsMetricsDialog.Fieldname.Step" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        previousSteps, false );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "StepsMetricsDialog.Fieldname.CopyNr" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StepsMetricsDialog.Fieldname.CopyNr" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "StepsMetricsDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            YES_NO_COMBO );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StepsMetricsDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        YES_NO_COMBO );
     colinf[1].setUsingVariables( true );
     wFields =
-        new TableView(
-            transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

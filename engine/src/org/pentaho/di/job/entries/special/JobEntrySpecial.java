@@ -46,10 +46,10 @@ import org.w3c.dom.Node;
 
 /**
  * This class can contain a few special job entries such as Start and Dummy.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
- * 
+ *
  */
 
 public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntryInterface {
@@ -104,8 +104,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       start = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "start" ) );
@@ -124,7 +124,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       start = rep.getJobEntryAttributeBoolean( id_jobentry, "start" );
       dummy = rep.getJobEntryAttributeBoolean( id_jobentry, "dummy" );
@@ -138,7 +138,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
       dayOfMonth = (int) rep.getJobEntryAttributeInteger( id_jobentry, "dayOfMonth" );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'special' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -157,8 +157,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "weekDay", weekDay );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "dayOfMonth", dayOfMonth );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException(
-          "Unable to save job entry of type 'special' to the repository with id_job=" + id_job, dbe );
+      throw new KettleException( "Unable to save job entry of type 'special' to the repository with id_job="
+        + id_job, dbe );
     }
   }
 
@@ -178,8 +178,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
         long sleepTime = getNextExecutionTime();
         if ( sleepTime > 0 ) {
           parentJob.getLogChannel().logBasic(
-              parentJob.getJobname(),
-              "Sleeping: " + ( sleepTime / 1000 / 60 ) + " minutes (sleep time=" + sleepTime + ")" );
+            parentJob.getJobname(),
+            "Sleeping: " + ( sleepTime / 1000 / 60 ) + " minutes (sleep time=" + sleepTime + ")" );
           long totalSleep = 0L;
           while ( totalSleep < sleepTime && !parentJob.isStopped() ) {
             Thread.sleep( 1000L );
@@ -367,8 +367,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
   }
 

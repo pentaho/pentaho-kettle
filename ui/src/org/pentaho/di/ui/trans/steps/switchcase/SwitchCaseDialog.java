@@ -57,7 +57,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFieldName;
   private CCombo wFieldName;
@@ -161,8 +161,8 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
       wFieldName.setItems( inputFields.getFieldNames() );
     } catch ( KettleStepException ex ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString(
-          PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
+        PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString(
+        PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
     }
 
     wlContains = new Label( shell, SWT.RIGHT );
@@ -269,16 +269,17 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     wlValues.setLayoutData( fdlValues );
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.TargetStep" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                nextStepNames, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.TargetStep" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames, false ), };
 
     wValues =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, input
-            .getStepIOMeta().getTargetStreams().size(), lsMod, props );
+      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, input
+        .getStepIOMeta().getTargetStreams().size(), lsMod, props );
 
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );
@@ -382,10 +383,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     wValues.setRowNums();
     wValues.optWidth( true );
 
-    wDefaultTarget.setText( input.getDefaultTargetStep() == null ? "" : input.getDefaultTargetStep().getName() ); // default
-                                                                                                                  // target
-                                                                                                                  // step
-                                                                                                                  // name
+    wDefaultTarget.setText( input.getDefaultTargetStep() == null ? "" : input.getDefaultTargetStep().getName() );
 
     wStepname.selectAll();
     wStepname.setFocus();

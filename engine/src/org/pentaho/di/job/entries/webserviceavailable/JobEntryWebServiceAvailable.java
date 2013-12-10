@@ -45,15 +45,14 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a webservice available job entry.
- * 
+ *
  * @author Samatar
  * @since 05-11-2009
- * 
+ *
  */
 
 public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryWebServiceAvailable.class; // for i18n purposes, needed by Translator2!!
-                                                                   // $NON-NLS-1$
 
   private String url;
   private String connectTimeOut;
@@ -86,8 +85,8 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       url = XMLHandler.getTagValue( entrynode, "url" );
@@ -95,19 +94,19 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
       readTimeOut = XMLHandler.getTagValue( entrynode, "readTimeOut" );
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "JobEntryWebServiceAvailable.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
+        PKG, "JobEntryWebServiceAvailable.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       url = rep.getJobEntryAttributeString( id_jobentry, "url" );
       connectTimeOut = rep.getJobEntryAttributeString( id_jobentry, "connectTimeOut" );
       readTimeOut = rep.getJobEntryAttributeString( id_jobentry, "readTimeOut" );
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "JobEntryWebServiceAvailable.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry ), dbe );
+        PKG, "JobEntryWebServiceAvailable.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry ), dbe );
     }
   }
 
@@ -118,7 +117,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
       rep.saveJobEntryAttribute( id_job, getObjectId(), "readTimeOut", readTimeOut );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "JobEntryWebServiceAvailable.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job ), dbe );
+        PKG, "JobEntryWebServiceAvailable.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job ), dbe );
     }
   }
 
@@ -167,7 +166,8 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
       } catch ( Exception e ) {
         result.setNrErrors( 1 );
         String message =
-            BaseMessages.getString( PKG, "JobEntryWebServiceAvailable.ERROR_0004_Exception", realURL, e.toString() );
+          BaseMessages
+            .getString( PKG, "JobEntryWebServiceAvailable.ERROR_0004_Exception", realURL, e.toString() );
         logError( message );
         result.setLogText( message );
       } finally {

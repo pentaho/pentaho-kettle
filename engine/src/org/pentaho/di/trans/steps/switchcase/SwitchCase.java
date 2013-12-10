@@ -44,18 +44,18 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Filters input rows base on conditions.
- * 
+ *
  * @author Matt
  * @since 16-apr-2003, 07-nov-2004 (rewrite)
  */
 public class SwitchCase extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SwitchCaseMeta meta;
   private SwitchCaseData data;
 
   public SwitchCase( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -146,7 +146,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
    * is null - put output rowset to special 'null set' (avoid usage of null as a map keys)
    * <li>Discover default row set. We expect only one default rowset, even if technically can have many. *
    * </ol>
-   * 
+   *
    * @throws KettleException
    *           if something goes wrong during step preparation.
    */
@@ -157,7 +157,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
     data.fieldIndex = getInputRowMeta().indexOfValue( meta.getFieldname() );
     if ( data.fieldIndex < 0 ) {
       throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Exception.UnableToFindFieldName", meta
-          .getFieldname() ) );
+        .getFieldname() ) );
     }
 
     data.inputValueMeta = getInputRowMeta().getValueMeta( data.fieldIndex );
@@ -176,19 +176,19 @@ public class SwitchCase extends BaseStep implements StepInterface {
         }
         if ( target.caseTargetStep == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", target.caseValue ) );
+            PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", target.caseValue ) );
         }
 
         RowSet rowSet = findOutputRowSet( target.caseTargetStep.getName() );
         if ( rowSet == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", target.caseTargetStep ) );
+            PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", target.caseTargetStep ) );
         }
 
         try {
           Object value =
-              data.valueMeta.convertDataFromString(
-                  target.caseValue, data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE );
+            data.valueMeta.convertDataFromString(
+              target.caseValue, data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE );
 
           // If we have a value and a rowset, we can store the combination in the map
           //
@@ -199,7 +199,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
           }
         } catch ( Exception e ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "SwitchCase.Log.UnableToConvertValue", target.caseValue ), e );
+            PKG, "SwitchCase.Log.UnableToConvertValue", target.caseValue ), e );
         }
       }
 

@@ -63,13 +63,15 @@ public class JobHasANoteImportRuleTest extends TestCase {
     List<ImportValidationFeedback> feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has a note'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     jobMeta.removeNote( 0 );
 
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has a note' rule", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setEnabled( false );
 

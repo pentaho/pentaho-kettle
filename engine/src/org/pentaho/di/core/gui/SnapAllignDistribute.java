@@ -34,7 +34,7 @@ public class SnapAllignDistribute {
   private UndoInterface undoInterface;
 
   public SnapAllignDistribute( UndoInterface undoInterface, List<? extends GUIPositionInterface> elements,
-      int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable ) {
+    int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable ) {
     this.undoInterface = undoInterface;
     this.elements = elements;
     this.indices = indices;

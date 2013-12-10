@@ -38,9 +38,9 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 /**
  * Helper class to generate profiling transformations...
- * 
+ *
  * @author Matt Casters (mcasters@pentaho.org)
- * 
+ *
  */
 public class TransProfileFactory {
   public static final String RESULT_STEP_NAME = "calc stats";
@@ -51,7 +51,7 @@ public class TransProfileFactory {
   private RowMetaInterface tableLayout;
 
   /**
-   * 
+   *
    * @param parent
    * @param databaseMeta
    * @param schemaTable
@@ -96,19 +96,19 @@ public class TransProfileFactory {
     // For now, just do : min, max, sum, count, avg, std dev. (7)
     //
     int[] numericCalculations =
-        new int[] {
-            GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_SUM,
-            GroupByMeta.TYPE_GROUP_COUNT_ALL, GroupByMeta.TYPE_GROUP_AVERAGE,
-            GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION, };
+      new int[] {
+        GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_SUM,
+        GroupByMeta.TYPE_GROUP_COUNT_ALL, GroupByMeta.TYPE_GROUP_AVERAGE,
+        GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION, };
 
     int[] stringCalculations =
-        new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_COUNT_ALL, };
+      new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_COUNT_ALL, };
 
     int[] dateCalculations =
-        new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_COUNT_ALL, };
+      new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_COUNT_ALL, };
 
     int[] booleanCalculations =
-        new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_COUNT_ALL, };
+      new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_COUNT_ALL, };
 
     // Run it through the "group by" step without a grouping.
     // Later, we can use the UnivariateStats plugin/step perhaps.
@@ -133,9 +133,9 @@ public class TransProfileFactory {
       }
     }
     int nrCalculations =
-        nrNumeric
-            * numericCalculations.length + nrDates * dateCalculations.length + nrStrings * stringCalculations.length
-            + nrBooleans * booleanCalculations.length;
+      nrNumeric
+        * numericCalculations.length + nrDates * dateCalculations.length + nrStrings
+        * stringCalculations.length + nrBooleans * booleanCalculations.length;
 
     statsMeta.allocate( 0, nrCalculations );
     int calcIndex = 0;
@@ -146,7 +146,7 @@ public class TransProfileFactory {
       if ( valueMeta.isNumeric() ) {
         for ( int c = 0; c < numericCalculations.length; c++ ) {
           statsMeta.getAggregateField()[calcIndex] =
-              valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( numericCalculations[c] ) + ")"; // $NON-NLS-1$
+            valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( numericCalculations[c] ) + ")";
           statsMeta.getSubjectField()[calcIndex] = valueMeta.getName();
           statsMeta.getAggregateType()[calcIndex] = numericCalculations[c];
           calcIndex++;
@@ -158,7 +158,7 @@ public class TransProfileFactory {
       if ( valueMeta.isString() ) {
         for ( int c = 0; c < stringCalculations.length; c++ ) {
           statsMeta.getAggregateField()[calcIndex] =
-              valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( stringCalculations[c] ) + ")"; // $NON-NLS-1$
+            valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( stringCalculations[c] ) + ")";
           statsMeta.getSubjectField()[calcIndex] = valueMeta.getName();
           statsMeta.getAggregateType()[calcIndex] = stringCalculations[c];
           calcIndex++;
@@ -170,7 +170,7 @@ public class TransProfileFactory {
       if ( valueMeta.isDate() ) {
         for ( int c = 0; c < dateCalculations.length; c++ ) {
           statsMeta.getAggregateField()[calcIndex] =
-              valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( dateCalculations[c] ) + ")"; // $NON-NLS-1$
+            valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( dateCalculations[c] ) + ")";
           statsMeta.getSubjectField()[calcIndex] = valueMeta.getName();
           statsMeta.getAggregateType()[calcIndex] = dateCalculations[c];
           calcIndex++;
@@ -182,7 +182,7 @@ public class TransProfileFactory {
       if ( valueMeta.isBoolean() ) {
         for ( int c = 0; c < booleanCalculations.length; c++ ) {
           statsMeta.getAggregateField()[calcIndex] =
-              valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( booleanCalculations[c] ) + ")"; // $NON-NLS-1$
+            valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( booleanCalculations[c] ) + ")";
           statsMeta.getSubjectField()[calcIndex] = valueMeta.getName();
           statsMeta.getAggregateType()[calcIndex] = booleanCalculations[c];
           calcIndex++;
@@ -199,7 +199,7 @@ public class TransProfileFactory {
 
     DummyTransMeta dummyMeta = new DummyTransMeta();
     StepMeta result =
-        new StepMeta( registry.getPluginId( StepPluginType.class, dummyMeta ), RESULT_STEP_NAME, dummyMeta );
+      new StepMeta( registry.getPluginId( StepPluginType.class, dummyMeta ), RESULT_STEP_NAME, dummyMeta );
     result.setLocation( 450, 50 );
     result.setDraw( true );
     transMeta.addStep( result );
@@ -210,7 +210,8 @@ public class TransProfileFactory {
     return transMeta;
   }
 
-  private RowMetaInterface getTableFields( LoggingObjectInterface parentLoggingObject ) throws KettleDatabaseException {
+  private RowMetaInterface getTableFields( LoggingObjectInterface parentLoggingObject )
+    throws KettleDatabaseException {
     Database database = new Database( parentLoggingObject, databaseMeta );
     try {
       database.connect();

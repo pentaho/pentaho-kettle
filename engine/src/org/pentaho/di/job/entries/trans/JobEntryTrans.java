@@ -83,12 +83,12 @@ import org.w3c.dom.Node;
 
 /**
  * This is the job entry that defines a transformation to be run.
- * 
+ *
  * @author Matt Casters
  * @since 1-Oct-2003, rewritten on 18-June-2004
  */
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   private String transname;
 
@@ -225,17 +225,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // specificationMethod
     //
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
-            .getCode() ) );
+      XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
+        .getCode() ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "trans_object_id", transObjectId == null ? null : transObjectId.toString() ) );
+      XMLHandler.addTagValue( "trans_object_id", transObjectId == null ? null : transObjectId.toString() ) );
     // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same
     // repository.
     //
     if ( rep != null && transObjectId != null ) {
       try {
         RepositoryObject objectInformation =
-            rep.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
+          rep.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
         if ( objectInformation != null ) {
           transname = objectInformation.getName();
           directory = objectInformation.getRepositoryDirectory().getPath();
@@ -265,7 +265,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_date", addDate ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_time", addTime ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "loglevel", logFileLevel != null ? logFileLevel.getCode() : null ) );
+      XMLHandler.addTagValue( "loglevel", logFileLevel != null ? logFileLevel.getCode() : null ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "cluster", clustering ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "slave_server_name", remoteSlaveServerName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "set_append_logfile", setAppendLogfile ) );
@@ -321,8 +321,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
 
@@ -403,7 +403,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   // Load the jobentry from repository
   //
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       String method = rep.getJobEntryAttributeString( id_jobentry, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
@@ -463,7 +463,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'trans' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -472,9 +472,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "specification_method", specificationMethod == null
-          ? null : specificationMethod.getCode() );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "trans_object_id", transObjectId == null ? null : transObjectId
-          .toString() );
+        ? null : specificationMethod.getCode() );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "trans_object_id", transObjectId == null
+        ? null : transObjectId.toString() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "name", getTransname() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "dir_path", getDirectory() != null ? getDirectory() : "" );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "file_name", filename );
@@ -489,7 +489,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logfile", logfile );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logext", logext );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel != null
-          ? logFileLevel.getCode() : null );
+        ? logFileLevel.getCode() : null );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "cluster", clustering );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "slave_server_name", remoteSlaveServerName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "set_append_logfile", setAppendLogfile );
@@ -510,15 +510,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         for ( int i = 0; i < parameters.length; i++ ) {
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_name", parameters[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_stream_name", Const.NVL(
-              parameterFieldNames[i], "" ) );
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_value", Const.NVL( parameterValues[i], "" ) );
+            parameterFieldNames[i], "" ) );
+          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_value", Const.NVL(
+            parameterValues[i], "" ) );
         }
       }
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "pass_all_parameters", passingAllParameters );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'trans' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type 'trans' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -550,7 +552,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param result
    *          The result of the previous execution
    * @param nr
@@ -590,8 +592,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       }
       try {
         logChannelFileWriter =
-            new LogChannelFileWriter(
-                this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ), setAppendLogfile );
+          new LogChannelFileWriter(
+            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ), setAppendLogfile );
         logChannelFileWriter.startLogging();
       } catch ( KettleException e ) {
         logError( BaseMessages.getString( PKG, "JobTrans.Error.UnableOpenAppender", realLogFilename, e.toString() ) );
@@ -611,7 +613,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
       if ( remoteSlaveServer == null ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "JobTrans.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
+          PKG, "JobTrans.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
       }
     }
 
@@ -620,15 +622,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     switch ( specificationMethod ) {
       case FILENAME:
         if ( isDetailed() ) {
-          logDetailed( BaseMessages
-              .getString( PKG, "JobTrans.Log.OpeningTrans", environmentSubstitute( getFilename() ) ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "JobTrans.Log.OpeningTrans", environmentSubstitute( getFilename() ) ) );
         }
         break;
       case REPOSITORY_BY_NAME:
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString(
-              PKG, "JobTrans.Log.OpeningTransInDirec", environmentSubstitute( getFilename() ),
-              environmentSubstitute( directory ) ) );
+            PKG, "JobTrans.Log.OpeningTransInDirec", environmentSubstitute( getFilename() ),
+            environmentSubstitute( directory ) ) );
         }
         break;
       case REPOSITORY_BY_REFERENCE:
@@ -673,8 +675,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
     while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 )
-        && !parentJob.isStopped() ) {
+      || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 )
+      && !parentJob.isStopped() ) {
       // Clear the result rows of the result
       // Otherwise we double the amount of rows every iteration in the simple cases.
       //
@@ -719,7 +721,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       try {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString(
-              PKG, "JobTrans.StartingTrans", getFilename(), getName(), getDescription() ) );
+            PKG, "JobTrans.StartingTrans", getFilename(), getName(), getDescription() ) );
         }
 
         if ( clearResultRows ) {
@@ -768,7 +770,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                   // We have a parameter
                   if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                     namedParam.setParameterValue( parameters[idx], Const.NVL(
-                        environmentSubstitute( parameterValues[idx] ), "" ) );
+                      environmentSubstitute( parameterValues[idx] ), "" ) );
                   } else {
                     String fieldValue = "";
 
@@ -802,7 +804,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                   // We have a parameter
                   if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                     namedParam.setParameterValue( parameters[idx], Const.NVL(
-                        environmentSubstitute( parameterValues[idx] ), "" ) );
+                      environmentSubstitute( parameterValues[idx] ), "" ) );
                   } else {
                     String fieldValue = "";
 
@@ -907,7 +909,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
           if ( transSplitter != null ) {
             Result clusterResult =
-                Trans.getClusteredTransformationResult( log, transSplitter, parentJob, loggingRemoteWork );
+              Trans.getClusteredTransformationResult( log, transSplitter, parentJob, loggingRemoteWork );
             result.add( clusterResult );
           }
 
@@ -937,8 +939,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           Map<String, String> params = transExecutionConfiguration.getParams();
           for ( String param : transMeta.listParameters() ) {
             String value =
-                Const.NVL( transMeta.getParameterValue( param ), Const.NVL(
-                    transMeta.getParameterDefault( param ), transMeta.getVariable( param ) ) );
+              Const.NVL( transMeta.getParameterValue( param ), Const.NVL(
+                transMeta.getParameterDefault( param ), transMeta.getVariable( param ) ) );
             params.put( param, value );
           }
 
@@ -974,8 +976,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               }
             } catch ( Exception e1 ) {
 
-              logError( BaseMessages.getString(
-                  PKG, "JobTrans.Error.UnableContactSlaveServer", "" + remoteSlaveServer, transMeta.getName() ), e1 );
+              logError( BaseMessages.getString( PKG, "JobTrans.Error.UnableContactSlaveServer", ""
+                + remoteSlaveServer, transMeta.getName() ), e1 );
               result.setNrErrors( result.getNrErrors() + 1L );
               break; // Stop looking too, chances are too low the server will come back on-line
             }
@@ -1088,8 +1090,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
             if ( setLogfile ) {
               ResultFile resultFile =
-                  new ResultFile( ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject( realLogFilename, this ), parentJob
-                      .getJobname(), toString() );
+                new ResultFile(
+                  ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject( realLogFilename, this ), parentJob
+                    .getJobname(), toString() );
               result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             }
           } catch ( KettleException e ) {
@@ -1112,8 +1115,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         logChannelFileWriter.stopLogging();
 
         ResultFile resultFile =
-            new ResultFile(
-                ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(), getName() );
+          new ResultFile(
+            ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(), getName() );
         result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
         // See if anything went wrong during file writing...
@@ -1142,7 +1145,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return getTransMeta( rep, null, space );
   }
 
-  public TransMeta getTransMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+  public TransMeta getTransMeta( Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException {
     try {
       TransMeta transMeta = null;
       switch ( specificationMethod ) {
@@ -1178,7 +1182,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           break;
         default:
           throw new KettleException( "The specified object location specification method '"
-              + specificationMethod + "' is not yet supported in this job entry." );
+            + specificationMethod + "' is not yet supported in this job entry." );
       }
 
       if ( transMeta != null ) {
@@ -1245,8 +1249,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     this.clustering = clustering;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     if ( setLogfile ) {
       andValidator().validate( this, "logfile", remarks, putValidators( notBlankValidator() ) );
     }
@@ -1275,11 +1279,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   /**
    * We're going to load the transformation meta data referenced here. Then we're going to give it a new filename,
    * modify that filename in this entries. The parent caller will have made a copy of it, so it should be OK to do so.
-   * 
+   *
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
-   * 
+   *
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -1290,13 +1294,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    *          The repository to load resources from
    * @param metaStore
    *          the metaStore to load external metadata from
-   * 
+   *
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
     //
@@ -1310,7 +1315,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // Also go down into the transformation and export the files there. (mapping recursively down)
     //
     String proposedNewFilename =
-        transMeta.exportResources( transMeta, definitions, namingInterface, repository, metaStore );
+      transMeta.exportResources( transMeta, definitions, namingInterface, repository, metaStore );
 
     // To get a relative path to it, we inject ${Internal.Job.Filename.Directory}
     //
@@ -1447,7 +1452,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
   /**
    * Look up the references after import
-   * 
+   *
    * @param repository
    *          the repository to reference.
    */
@@ -1455,7 +1460,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // The correct reference is stored in the trans name and directory attributes...
     //
     RepositoryDirectoryInterface repositoryDirectoryInterface =
-        RepositoryImportLocation.getRepositoryImportLocation().findDirectory( directory );
+      RepositoryImportLocation.getRepositoryImportLocation().findDirectory( directory );
     transObjectId = repository.getTransformationID( transname, repositoryDirectoryInterface );
   }
 
@@ -1468,7 +1473,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
   private boolean isTransformationDefined() {
     return !Const.isEmpty( filename )
-        || transObjectId != null || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( transname ) );
+      || transObjectId != null || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( transname ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {
@@ -1477,7 +1482,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
   /**
    * Load the referenced object
-   * 
+   *
    * @param index
    *          the referenced object index to load (in case there are multiple references)
    * @param rep

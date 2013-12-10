@@ -50,7 +50,7 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 /**
  * Test class for the Injector step.
- * 
+ *
  * @author Sven Boden
  */
 public class InjectorTest extends TestCase {
@@ -58,11 +58,12 @@ public class InjectorTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field4", ValueMeta.TYPE_DATE ),
-            new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
-            new ValueMeta( "field7", ValueMeta.TYPE_BIGNUMBER ) };
+    {
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field4", ValueMeta.TYPE_DATE ),
+      new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
+      new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
+      new ValueMeta( "field7", ValueMeta.TYPE_BIGNUMBER ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -77,17 +78,17 @@ public class InjectorTest extends TestCase {
     RowMetaInterface rm = createRowMetaInterface();
 
     Object[] r1 =
-        new Object[] {
-            "KETTLE1", new Long( 123L ), new Double( 10.5D ), new Date(), Boolean.TRUE, BigDecimal.valueOf( 123.45 ),
-            BigDecimal.valueOf( 123.60 ) };
+      new Object[] {
+        "KETTLE1", new Long( 123L ), new Double( 10.5D ), new Date(), Boolean.TRUE,
+        BigDecimal.valueOf( 123.45 ), BigDecimal.valueOf( 123.60 ) };
     Object[] r2 =
-        new Object[] {
-            "KETTLE2", new Long( 500L ), new Double( 20.0D ), new Date(), Boolean.FALSE, BigDecimal.valueOf( 123.45 ),
-            BigDecimal.valueOf( 123.60 ) };
+      new Object[] {
+        "KETTLE2", new Long( 500L ), new Double( 20.0D ), new Date(), Boolean.FALSE,
+        BigDecimal.valueOf( 123.45 ), BigDecimal.valueOf( 123.60 ) };
     Object[] r3 =
-        new Object[] {
-            "KETTLE3", new Long( 501L ), new Double( 21.0D ), new Date(), Boolean.FALSE, BigDecimal.valueOf( 123.45 ),
-            BigDecimal.valueOf( 123.70 ) };
+      new Object[] {
+        "KETTLE3", new Long( 501L ), new Double( 21.0D ), new Date(), Boolean.FALSE,
+        BigDecimal.valueOf( 123.45 ), BigDecimal.valueOf( 123.70 ) };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );

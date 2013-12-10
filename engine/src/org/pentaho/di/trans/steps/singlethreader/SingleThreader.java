@@ -45,18 +45,18 @@ import org.pentaho.di.trans.steps.mappinginput.MappingInputData;
 
 /**
  * Execute a mapping: a re-usuable transformation
- * 
+ *
  * @author Matt
  * @since 22-nov-2005
  */
 public class SingleThreader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SingleThreaderMeta meta;
   private SingleThreaderData data;
 
   public SingleThreader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -133,7 +133,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
     if ( getStepMeta().isDoingErrorHandling() ) {
       int lastLogLine = KettleLogStore.getLastBufferLineNr();
       StringBuffer logText =
-          KettleLogStore.getAppender().getBuffer( data.mappingTrans.getLogChannelId(), false, data.lastLogLine );
+        KettleLogStore.getAppender().getBuffer( data.mappingTrans.getLogChannelId(), false, data.lastLogLine );
       data.lastLogLine = lastLogLine;
 
       for ( Object[] row : data.errorBuffer ) {
@@ -231,7 +231,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
     //
     if ( data.injectStepMeta.isMappingInput() ) {
       MappingInputData mappingInputData =
-          (MappingInputData) data.mappingTrans.findDataInterface( data.injectStepMeta.getName() );
+        (MappingInputData) data.mappingTrans.findDataInterface( data.injectStepMeta.getName() );
       mappingInputData.sourceSteps = new StepInterface[0];
       mappingInputData.valueRenames = new ArrayList<MappingValueRename>();
     }
@@ -264,11 +264,11 @@ public class SingleThreader extends BaseStep implements StepInterface {
       boolean ok = data.executor.init();
       if ( !ok ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "SingleThreader.Exception.UnableToInitSingleThreadedTransformation" ) );
+          PKG, "SingleThreader.Exception.UnableToInitSingleThreadedTransformation" ) );
       }
     } catch ( KettleException e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SingleThreader.Exception.UnableToPrepareExecutionOfMapping" ), e );
+        PKG, "SingleThreader.Exception.UnableToPrepareExecutionOfMapping" ), e );
     }
 
     // Add the mapping transformation to the active sub-transformations map in the parent transformation
@@ -300,7 +300,8 @@ public class SingleThreader extends BaseStep implements StepInterface {
           String injectStepName = environmentSubstitute( meta.getInjectStep() );
           data.injectStepMeta = data.mappingTransMeta.findStep( injectStepName );
           if ( data.injectStepMeta == null ) {
-            logError( "The inject step with name '" + injectStepName + "' couldn't be found in the sub-transformation" );
+            logError( "The inject step with name '"
+              + injectStepName + "' couldn't be found in the sub-transformation" );
           }
 
           String retrieveStepName = environmentSubstitute( meta.getRetrieveStep() );
@@ -308,7 +309,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
             data.retrieveStepMeta = data.mappingTransMeta.findStep( retrieveStepName );
             if ( data.retrieveStepMeta == null ) {
               logError( "The retrieve step with name '"
-                  + retrieveStepName + "' couldn't be found in the sub-transformation" );
+                + retrieveStepName + "' couldn't be found in the sub-transformation" );
             }
           }
 

@@ -32,12 +32,12 @@ import org.w3c.dom.Node;
 
 /**
  * Describes an XML field and the position in an XML field.
- * 
+ *
  * @author Samatar, Brahim
  * @since 20-06-2007
  */
 public class GetXMLDataField implements Cloneable {
-  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int RESULT_TYPE_VALUE_OF = 0;
   public static final int RESULT_TYPE_TYPE_SINGLE_NODE = 1;
@@ -45,8 +45,8 @@ public class GetXMLDataField implements Cloneable {
   public static final String[] ResultTypeCode = { "valueof", "singlenode" };
 
   public static final String[] ResultTypeDesc = {
-      BaseMessages.getString( PKG, "GetXMLDataField.ResultType.ValueOf" ),
-      BaseMessages.getString( PKG, "GetXMLDataField.ResultType.SingleNode" ) };
+    BaseMessages.getString( PKG, "GetXMLDataField.ResultType.ValueOf" ),
+    BaseMessages.getString( PKG, "GetXMLDataField.ResultType.SingleNode" ) };
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -59,10 +59,10 @@ public class GetXMLDataField implements Cloneable {
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
   public static final String[] trimTypeDesc = {
-      BaseMessages.getString( PKG, "GetXMLDataField.TrimType.None" ),
-      BaseMessages.getString( PKG, "GetXMLDataField.TrimType.Left" ),
-      BaseMessages.getString( PKG, "GetXMLDataField.TrimType.Right" ),
-      BaseMessages.getString( PKG, "GetXMLDataField.TrimType.Both" ) };
+    BaseMessages.getString( PKG, "GetXMLDataField.TrimType.None" ),
+    BaseMessages.getString( PKG, "GetXMLDataField.TrimType.Left" ),
+    BaseMessages.getString( PKG, "GetXMLDataField.TrimType.Right" ),
+    BaseMessages.getString( PKG, "GetXMLDataField.TrimType.Both" ) };
 
   // //////////////////////////////////////////////////////////////
   //
@@ -82,8 +82,8 @@ public class GetXMLDataField implements Cloneable {
   public static final String[] ElementOldTypeCode = { "node", "attribut" };
 
   public static final String[] ElementTypeDesc = {
-      BaseMessages.getString( PKG, "GetXMLDataField.ElementType.Node" ),
-      BaseMessages.getString( PKG, "GetXMLDataField.ElementType.Attribute" ) };
+    BaseMessages.getString( PKG, "GetXMLDataField.ElementType.Node" ),
+    BaseMessages.getString( PKG, "GetXMLDataField.ElementType.Attribute" ) };
 
   private String name;
   private String xpath;

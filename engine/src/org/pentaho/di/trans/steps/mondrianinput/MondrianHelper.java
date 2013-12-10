@@ -65,7 +65,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * <code>Mondrian Helper class</code> ...
- * 
+ *
  * @author jhyde
  * @since Mar 12, 2007
  */
@@ -100,8 +100,8 @@ public class MondrianHelper {
 
     if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
       DataSource dataSource =
-          DataSourceProviderFactory
-              .getDataSourceProviderInterface().getNamedDataSource( databaseMeta.getDatabaseName() );
+        DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource(
+          databaseMeta.getDatabaseName() );
       mondrian.olap.Util.PropertyList propList = new mondrian.olap.Util.PropertyList();
       propList.put( "Provider", "mondrian" );
       propList.put( "Catalog", space.environmentSubstitute( catalog ) );
@@ -114,10 +114,10 @@ public class MondrianHelper {
     } else {
 
       String connectString =
-          "Provider=mondrian;"
-              + "Jdbc='" + space.environmentSubstitute( databaseMeta.getURL() ) + "';" + "Catalog='"
-              + space.environmentSubstitute( catalog ) + "';" + "JdbcDrivers="
-              + space.environmentSubstitute( databaseMeta.getDriverClass() ) + ";";
+        "Provider=mondrian;"
+          + "Jdbc='" + space.environmentSubstitute( databaseMeta.getURL() ) + "';" + "Catalog='"
+          + space.environmentSubstitute( catalog ) + "';" + "JdbcDrivers="
+          + space.environmentSubstitute( databaseMeta.getDriverClass() ) + ";";
 
       if ( !Const.isEmpty( databaseMeta.getUsername() ) ) {
         connectString += "JdbcUser=" + space.environmentSubstitute( databaseMeta.getUsername() ) + ";";
@@ -152,7 +152,7 @@ public class MondrianHelper {
 
   /**
    * Outputs one row per tuple on the rows axis.
-   * 
+   *
    * @throws KettleDatabaseException
    *           in case some or other error occurs
    */
@@ -268,7 +268,8 @@ public class MondrianHelper {
           } else if ( valueData instanceof BigDecimal ) {
             valueType = ValueMetaInterface.TYPE_BIGNUMBER;
           } else {
-            throw new KettleDatabaseException( "Unhandled data type found '" + valueData.getClass().toString() + "'" );
+            throw new KettleDatabaseException( "Unhandled data type found '"
+              + valueData.getClass().toString() + "'" );
           }
 
           ValueMetaInterface valueMeta = new ValueMeta( headings.get( c ), valueType );
@@ -307,10 +308,10 @@ public class MondrianHelper {
   /**
    * Retrieve the rows from the opened query. Also create a description of the flattened output of the query. This call
    * populated rowMetaInterface and rows The query needs to be opened beforehand.
-   * 
+   *
    * @throws KettleDatabaseException
    *           in case something goes wrong
-   * 
+   *
    *           TODO: this is not quite working for our purposes.
    */
   public void createFlattenedOutput() throws KettleDatabaseException {
@@ -402,7 +403,7 @@ public class MondrianHelper {
   }
 
   private static void outputFlattenedRecurse( Result result, List<List<Object>> rows, List<Object> rowValues,
-      int[] coords, int axisOrdinal ) {
+    int[] coords, int axisOrdinal ) {
     final Axis[] axes = result.getAxes();
     if ( axisOrdinal == axes.length ) {
       final Cell cell = result.getCell( coords );

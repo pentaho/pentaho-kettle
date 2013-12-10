@@ -53,13 +53,13 @@ import org.w3c.dom.Node;
 
 /**
  * Output rows to RSS feed and create a file.
- * 
+ *
  * @author Samatar
  * @since 6-nov-2007
  */
 
 public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = RssOutput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RssOutput.class; // for i18n purposes, needed by Translator2!!
 
   private String channeltitle;
   private String channeldescription;
@@ -146,7 +146,8 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
   /** display item tag in output ? */
   private boolean displayitem;
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -568,7 +569,8 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
       file = KettleVFS.getFileObject( space.environmentSubstitute( getFileName() ) );
       return KettleVFS.getFilename( file );
     } catch ( Exception e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "RssOutput.Meta.ErrorGettingFile", getFileName() ), e );
+      throw new KettleStepException( BaseMessages
+        .getString( PKG, "RssOutput.Meta.ErrorGettingFile", getFileName() ), e );
     } finally {
       if ( file != null ) {
         try {
@@ -647,8 +649,10 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
       filenamefield = XMLHandler.getTagValue( stepnode, "file", "filename_field" );
       fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
 
-      isfilenameinfield = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "is_filename_in_field" ) );
-      createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
+      isfilenameinfield =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "is_filename_in_field" ) );
+      createparentfolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
       extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
       stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
       partNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "haspartno" ) );
@@ -961,9 +965,9 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
@@ -973,8 +977,8 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // Now see what we can find as previous step...
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "RssOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RssOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       // Starting from prev...
@@ -983,7 +987,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
        * (idx<0) { error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR; error_found=true; } } if
        * (error_found) { error_message=BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.FieldsNotFoundInOutput",
        * error_message);
-       * 
+       *
        * cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta); remarks.add(cr); } else { cr =
        * new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
        * "RssOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta); remarks.add(cr); }
@@ -995,28 +999,28 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
        * (idx<0) { error_message+="\t\t"+rv.getName()+" ("+rv.getTypeDesc()+")"+Const.CR; error_found=true; } } if
        * (error_found) { error_message=BaseMessages.getString(PKG, "RssOutputMeta.CheckResult.FieldsNotFound",
        * error_message);
-       * 
+       *
        * cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, error_message, stepMeta); remarks.add(cr); } else { cr =
        * new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
        * "RssOutputMeta.CheckResult.AllFieldsFound"), stepMeta); remarks.add(cr); }
        */
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "RssOutputMeta.CheckResult.NoFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "RssOutputMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "RssOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RssOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "RssOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "RssOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -1296,7 +1300,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new RssOutput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 }

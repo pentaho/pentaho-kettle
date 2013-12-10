@@ -36,13 +36,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Write data to log.
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class WriteToLog extends BaseStep implements StepInterface {
-  private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!!
 
   private WriteToLogMeta meta;
   private WriteToLogData data;
@@ -50,7 +50,7 @@ public class WriteToLog extends BaseStep implements StepInterface {
   private boolean rowCounterLimitHit = false;
 
   public WriteToLog( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -83,7 +83,7 @@ public class WriteToLog extends BaseStep implements StepInterface {
           if ( data.fieldnrs[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "WriteToLog.Log.CanNotFindField", meta.getFieldName()[i] ) );
             throw new KettleException( BaseMessages.getString( PKG, "WriteToLog.Log.CanNotFindField", meta
-                .getFieldName()[i] ) );
+              .getFieldName()[i] ) );
           }
         }
       } else {
@@ -103,8 +103,8 @@ public class WriteToLog extends BaseStep implements StepInterface {
 
     StringBuffer out = new StringBuffer();
     out.append( Const.CR
-        + "------------> " + BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" + getLinesRead() )
-        + "------------------------------" + Const.CR );
+      + "------------> " + BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" + getLinesRead() )
+      + "------------------------------" + Const.CR );
 
     out.append( getRealLogMessage() );
 

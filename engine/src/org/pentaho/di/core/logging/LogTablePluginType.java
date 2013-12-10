@@ -40,9 +40,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the logging plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( LogTablePluginInterface.class )
 @PluginAnnotationType( LogTablePlugin.class )
@@ -80,9 +80,8 @@ public class LogTablePluginType extends BasePluginType implements PluginTypeInte
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource(
-                  pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
-                      .getParent().getURL() );
+              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this
+                .getClass(), false, file.getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...

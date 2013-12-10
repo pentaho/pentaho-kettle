@@ -29,5 +29,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 public interface JobEntryListener {
   public void beforeExecution( Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface );
 
-  public void afterExecution( Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface, Result result );
+  public void afterExecution( Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface,
+    Result result );
 }

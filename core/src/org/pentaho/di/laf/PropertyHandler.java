@@ -25,7 +25,7 @@ package org.pentaho.di.laf;
 public interface PropertyHandler extends Handler {
   /**
    * load properties for the given properties file
-   * 
+   *
    * @param filename
    * @return true if load was successful
    */
@@ -33,7 +33,7 @@ public interface PropertyHandler extends Handler {
 
   /**
    * check to see whether a property file exists within the classpath or filesystem
-   * 
+   *
    * @param filename
    * @return true if resource exists
    */
@@ -41,7 +41,7 @@ public interface PropertyHandler extends Handler {
 
   /**
    * return the value of a given key from the properties list
-   * 
+   *
    * @param key
    * @return null if the key is not found
    */
@@ -49,7 +49,7 @@ public interface PropertyHandler extends Handler {
 
   /**
    * return the value of a given key from the properties list, returning the defValue string should the key not be found
-   * 
+   *
    * @param key
    * @param defValue
    * @return a string representing either the value associated with the passed key or defValue should that key not be

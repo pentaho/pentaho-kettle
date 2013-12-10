@@ -102,7 +102,7 @@ public class TransDialog extends Dialog {
   public static final int LOG_INDEX_CHANNEL = 3;
   public static final int LOG_INDEX_METRICS = 4;
 
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   public static enum Tabs {
     TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB, EXTRA_TAB,
@@ -295,16 +295,16 @@ public class TransDialog extends Dialog {
     // See if there are any other tabs to be added...
     extraTabs = new ArrayList<TransDialogPluginInterface>();
     java.util.List<PluginInterface> transDialogPlugins =
-        PluginRegistry.getInstance().getPlugins( TransDialogPluginType.class );
+      PluginRegistry.getInstance().getPlugins( TransDialogPluginType.class );
     for ( PluginInterface transDialogPlugin : transDialogPlugins ) {
       try {
         TransDialogPluginInterface extraTab =
-            (TransDialogPluginInterface) PluginRegistry.getInstance().loadClass( transDialogPlugin );
+          (TransDialogPluginInterface) PluginRegistry.getInstance().loadClass( transDialogPlugin );
         extraTab.addTab( transMeta, parent, wTabFolder );
         extraTabs.add( extraTab );
       } catch ( Exception e ) {
         new ErrorDialog( shell, "Error", "Error loading transformation dialog plugin with id "
-            + transDialogPlugin.getIds()[0], e );
+          + transDialogPlugin.getIds()[0], e );
       }
     }
 
@@ -710,19 +710,21 @@ public class TransDialog extends Dialog {
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Parameter.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Parameter.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Default.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Default.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Description.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Description.Label" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wParamFields =
-        new TableView(
-            transMeta, wParamComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wParamComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -940,7 +942,7 @@ public class TransDialog extends Dialog {
     wLogconnection.setItems( transMeta.getDatabaseNames() );
     wLogconnection.setText( Const.NVL( logTable.getConnectionName(), "" ) );
     wLogconnection.setToolTipText( BaseMessages.getString( PKG, "TransDialog.LogConnection.Tooltip", logTable
-        .getConnectionNameVariable() ) );
+      .getConnectionNameVariable() ) );
 
     // Log schema ...
     //
@@ -962,7 +964,7 @@ public class TransDialog extends Dialog {
     wLogSchema.setLayoutData( fdLogSchema );
     wLogSchema.setText( Const.NVL( logTable.getSchemaName(), "" ) );
     wLogSchema.setToolTipText( BaseMessages.getString( PKG, "TransDialog.LogSchema.Tooltip", logTable
-        .getSchemaNameVariable() ) );
+      .getSchemaNameVariable() ) );
 
     // Log table...
     //
@@ -984,7 +986,7 @@ public class TransDialog extends Dialog {
     wLogTable.setLayoutData( fdLogtable );
     wLogTable.setText( Const.NVL( logTable.getTableName(), "" ) );
     wLogTable.setToolTipText( BaseMessages.getString( PKG, "TransDialog.LogTable.Tooltip", logTable
-        .getTableNameVariable() ) );
+      .getTableNameVariable() ) );
 
     return wLogTable;
 
@@ -1074,16 +1076,16 @@ public class TransDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.StepName" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, transMeta.getStepNames() ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.StepName" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, transMeta.getStepNames() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1100,13 +1102,8 @@ public class TransDialog extends Dialog {
     colinf[1].setDisabledListener( disabledListener );
 
     wOptionFields =
-        new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add
-                                                                                                                 // a
-                                                                                                                 // check
-                                                                                                                 // to
-                                                                                                                 // the
-                                                                                                                 // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1114,8 +1111,10 @@ public class TransDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item.setText( new String[] {
-          "", Const.NVL( field.getFieldName(), "" ), field.getSubject() == null ? "" : field.getSubject().toString(),
+      item
+        .setText( new String[] {
+          "", Const.NVL( field.getFieldName(), "" ),
+          field.getSubject() == null ? "" : field.getSubject().toString(),
           Const.NVL( field.getDescription(), "" ) } );
 
       // Exceptions!!!
@@ -1126,7 +1125,7 @@ public class TransDialog extends Dialog {
     }
 
     wOptionFields.table.getColumn( 0 ).setText(
-        BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
+      BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1225,13 +1224,13 @@ public class TransDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1248,13 +1247,8 @@ public class TransDialog extends Dialog {
     colinf[1].setDisabledListener( disabledListener );
 
     wOptionFields =
-        new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add
-                                                                                                                 // a
-                                                                                                                 // check
-                                                                                                                 // to
-                                                                                                                 // the
-                                                                                                                 // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1262,12 +1256,12 @@ public class TransDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item
-          .setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item.setText( new String[] {
+        "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
     wOptionFields.table.getColumn( 0 ).setText(
-        BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
+      BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1366,13 +1360,13 @@ public class TransDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1389,13 +1383,8 @@ public class TransDialog extends Dialog {
     colinf[1].setDisabledListener( disabledListener );
 
     wOptionFields =
-        new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add
-                                                                                                                 // a
-                                                                                                                 // check
-                                                                                                                 // to
-                                                                                                                 // the
-                                                                                                                 // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1403,12 +1392,12 @@ public class TransDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item
-          .setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item.setText( new String[] {
+        "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
     wOptionFields.table.getColumn( 0 ).setText(
-        BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
+      BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1466,13 +1455,13 @@ public class TransDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1489,13 +1478,8 @@ public class TransDialog extends Dialog {
     colinf[1].setDisabledListener( disabledListener );
 
     wOptionFields =
-        new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add
-                                                                                                                 // a
-                                                                                                                 // check
-                                                                                                                 // to
-                                                                                                                 // the
-                                                                                                                 // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1503,12 +1487,12 @@ public class TransDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item
-          .setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item.setText( new String[] {
+        "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
     wOptionFields.table.getColumn( 0 ).setText(
-        BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
+      BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1586,13 +1570,13 @@ public class TransDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1609,13 +1593,8 @@ public class TransDialog extends Dialog {
     colinf[1].setDisabledListener( disabledListener );
 
     wOptionFields =
-        new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add
-                                                                                                                 // a
-                                                                                                                 // check
-                                                                                                                 // to
-                                                                                                                 // the
-                                                                                                                 // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1623,12 +1602,12 @@ public class TransDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item
-          .setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item.setText( new String[] {
+        "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
     wOptionFields.table.getColumn( 0 ).setText(
-        BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
+      BaseMessages.getString( PKG, "TransDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1799,19 +1778,21 @@ public class TransDialog extends Dialog {
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Connection.Label" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            connectionNames );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Connection.Label" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, connectionNames );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Table.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Table.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Field.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Field.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
 
     wFields =
-        new TableView(
-            transMeta, wDepComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wDepComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     wGet = new Button( wDepComp, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "TransDialog.GetDependenciesButton.Label" ) );
@@ -1978,7 +1959,7 @@ public class TransDialog extends Dialog {
     Label wlTransformationType = new Label( wMiscComp, SWT.RIGHT );
     wlTransformationType.setText( BaseMessages.getString( PKG, "TransDialog.TransformationType.Label" ) );
     wlTransformationType.setToolTipText( BaseMessages.getString(
-        PKG, "TransDialog.TransformationType.Tooltip", Const.CR ) );
+      PKG, "TransDialog.TransformationType.Tooltip", Const.CR ) );
     props.setLook( wlTransformationType );
     FormData fdlTransformationType = new FormData();
     fdlTransformationType.left = new FormAttachment( 0, 0 );
@@ -1986,8 +1967,8 @@ public class TransDialog extends Dialog {
     fdlTransformationType.top = new FormAttachment( wManageThreads, margin );
     wlTransformationType.setLayoutData( fdlTransformationType );
     wTransformationType = new CCombo( wMiscComp, SWT.NORMAL );
-    wTransformationType.setToolTipText( BaseMessages
-        .getString( PKG, "TransDialog.TransformationType.Tooltip", Const.CR ) );
+    wTransformationType.setToolTipText( BaseMessages.getString(
+      PKG, "TransDialog.TransformationType.Tooltip", Const.CR ) );
     wTransformationType.addSelectionListener( lsModSel );
     props.setLook( wTransformationType );
     FormData fdTransformationType = new FormData();
@@ -2336,8 +2317,8 @@ public class TransDialog extends Dialog {
     transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
     transMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
     transMeta.setUsingThreadPriorityManagment( wManageThreads.getSelection() );
-    transMeta.setTransformationType( TransformationType.values()[Const.indexOfString(
-        wTransformationType.getText(), TransformationType.getTransformationTypesDescriptions() )] );
+    transMeta.setTransformationType( TransformationType.values()[Const.indexOfString( wTransformationType
+      .getText(), TransformationType.getTransformationTypesDescriptions() )] );
 
     if ( directoryChangeAllowed && transMeta.getObjectId() != null ) {
       if ( newDirectory != null ) {
@@ -2350,9 +2331,9 @@ public class TransDialog extends Dialog {
         } catch ( KettleException ke ) {
           transMeta.setRepositoryDirectory( dirFrom );
           OK = false;
-          new ErrorDialog(
-              shell, BaseMessages.getString( PKG, "TransDialog.ErrorMovingTransformation.DialogTitle" ), BaseMessages
-                  .getString( PKG, "TransDialog.ErrorMovingTransformation.DialogMessage" ), ke );
+          new ErrorDialog( shell, BaseMessages
+            .getString( PKG, "TransDialog.ErrorMovingTransformation.DialogTitle" ), BaseMessages.getString(
+            PKG, "TransDialog.ErrorMovingTransformation.DialogMessage" ), ke );
         }
       }
     } else {
@@ -2478,7 +2459,7 @@ public class TransDialog extends Dialog {
       boolean allOK = true;
 
       for ( LogTableInterface logTable : new LogTableInterface[] {
-          transLogTable, performanceLogTable, channelLogTable, stepLogTable, metricsLogTable, } ) {
+        transLogTable, performanceLogTable, channelLogTable, stepLogTable, metricsLogTable, } ) {
         if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
           // OK, we have something to work with!
           //
@@ -2493,8 +2474,8 @@ public class TransDialog extends Dialog {
             RowMetaInterface fields = logTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
             String tableName = db.environmentSubstitute( logTable.getTableName() );
             String schemaTable =
-                logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
-                    db.environmentSubstitute( logTable.getSchemaName() ), tableName );
+              logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
+                db.environmentSubstitute( logTable.getSchemaName() ), tableName );
             String createTable = db.getDDL( schemaTable, fields );
 
             if ( !Const.isEmpty( createTable ) ) {
@@ -2508,8 +2489,8 @@ public class TransDialog extends Dialog {
               RowMetaInterface index = indexes.get( i );
               if ( !index.isEmpty() ) {
                 String createIndex =
-                    db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
-                        .getFieldNames(), false, false, false, true );
+                  db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
+                    .getFieldNames(), false, false, false, true );
                 if ( !Const.isEmpty( createIndex ) ) {
                   ddl.append( createIndex );
                 }
@@ -2519,8 +2500,9 @@ public class TransDialog extends Dialog {
             if ( ddl.length() > 0 ) {
               allOK = false;
               SQLEditor sqledit =
-                  new SQLEditor( transMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl
-                      .toString() );
+                new SQLEditor(
+                  transMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl
+                    .toString() );
               sqledit.open();
             }
           } finally {
@@ -2540,7 +2522,7 @@ public class TransDialog extends Dialog {
 
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TransDialog.ErrorOccurred.DialogTitle" ), BaseMessages
-          .getString( PKG, "TransDialog.ErrorOccurred.DialogMessage" ), e );
+        .getString( PKG, "TransDialog.ErrorOccurred.DialogMessage" ), e );
     }
   }
 

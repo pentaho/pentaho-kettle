@@ -65,10 +65,10 @@ import org.w3c.dom.Node;
 
 /**
  * This executes an exported Talend Job.
- * 
+ *
  * @author Matt
  * @since 1-04-2011
- * 
+ *
  */
 public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryTalendJobExec.class; // for i18n
@@ -104,26 +104,26 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       className = XMLHandler.getTagValue( entrynode, "class_name" );
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "JobEntryTalendJobExec.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
+        PKG, "JobEntryTalendJobExec.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       className = rep.getJobEntryAttributeString( id_jobentry, "class_name" );
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "JobEntryTalendJobExec.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
+        PKG, "JobEntryTalendJobExec.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -133,7 +133,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       rep.saveJobEntryAttribute( id_job, getObjectId(), "class_name", className );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "JobEntryTalendJobExec.ERROR_0003_Cannot_Save_Job_Entry", id_job ), dbe );
+        PKG, "JobEntryTalendJobExec.ERROR_0003_Cannot_Save_Job_Entry", id_job ), dbe );
     }
   }
 
@@ -164,7 +164,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
         }
       } catch ( Exception e ) {
         result.setNrErrors( 1 );
-        logError( BaseMessages.getString( PKG, "JobEntryTalendJobExec.ERROR_0004_IO_Exception", e.getMessage() ), e );
+        logError(
+          BaseMessages.getString( PKG, "JobEntryTalendJobExec.ERROR_0004_IO_Exception", e.getMessage() ), e );
       }
     } else {
       result.setNrErrors( 1 );
@@ -196,8 +197,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
             try {
               cleanupJarFiles( jarFiles );
             } catch ( Exception e ) {
-              System.err
-                  .println( "Error cleaning up temporary Talend jar file extracts: " + Const.getStackTracker( e ) );
+              System.err.println( "Error cleaning up temporary Talend jar file extracts: "
+                + Const.getStackTracker( e ) );
             }
           }
         } );
@@ -220,7 +221,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "JobEntryTalendJobExec.ERROR_0006_ExceptionExecutingTalenJob" ), e );
+        PKG, "JobEntryTalendJobExec.ERROR_0006_ExceptionExecutingTalenJob" ), e );
     }
 
     return result;
@@ -228,12 +229,13 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
 
   private URL[] prepareJarFiles( FileObject zipFile ) throws Exception {
 
-    FileInputList fileList = FileInputList.createFileList( this, new String[] { "zip:" + zipFile.toString(), }, // zip:file:///tmp/foo.zip
-        new String[] { ".*\\.jar$", }, // Include mask: only jar files
-        new String[] { ".*classpath\\.jar$", }, // Exclude mask: only jar files
-        new String[] { "Y", }, // File required
-        new boolean[] { true, } // Search sub-directories
-        );
+    // zip:file:///tmp/foo.zip
+    FileInputList fileList = FileInputList.createFileList( this, new String[] { "zip:" + zipFile.toString(), },
+      new String[] { ".*\\.jar$", }, // Include mask: only jar files
+      new String[] { ".*classpath\\.jar$", }, // Exclude mask: only jar files
+      new String[] { "Y", }, // File required
+      new boolean[] { true, } // Search sub-directories
+      );
 
     List<URL> files = new ArrayList<URL>();
 
@@ -241,7 +243,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
     //
     for ( FileObject file : fileList.getFiles() ) {
       FileObject jarfilecopy =
-          KettleVFS.createTempFile( file.getName().getBaseName(), ".jar", environmentSubstitute( "${java.io.tmpdir}" ) );
+        KettleVFS.createTempFile(
+          file.getName().getBaseName(), ".jar", environmentSubstitute( "${java.io.tmpdir}" ) );
       jarfilecopy.copyFrom( file, new AllFileSelector() );
       files.add( jarfilecopy.getURL() );
     }
@@ -276,8 +279,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
   }
 
@@ -286,11 +289,11 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
    * does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file. For now,
    * we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like that.
    * TODO: create options to configure this behavior
-   * 
+   *
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
-   * 
+   *
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -301,13 +304,14 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
    *          The repository to load resources from
    * @param metaStore
    *          the metaStore to load external metadata from
-   * 
+   *
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the

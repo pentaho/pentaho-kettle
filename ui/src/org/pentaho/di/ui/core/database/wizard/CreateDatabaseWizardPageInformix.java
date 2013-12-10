@@ -40,14 +40,14 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 /**
- * 
+ *
  * On page one we set the Informix servername
- * 
+ *
  * @author Matt
  * @since 04-apr-2005
  */
 public class CreateDatabaseWizardPageInformix extends WizardPage {
-  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlServername;
   private Text wServername;
@@ -108,9 +108,10 @@ public class CreateDatabaseWizardPageInformix extends WizardPage {
 
   public boolean canFlipToNextPage() {
     String name =
-        wServername.getText() != null ? wServername.getText().length() > 0 ? wServername.getText() : null : null;
+      wServername.getText() != null ? wServername.getText().length() > 0 ? wServername.getText() : null : null;
     if ( name == null ) {
-      setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPageInformix.ErrorMessage.ServernameRequired" ) );
+      setErrorMessage( BaseMessages.getString(
+        PKG, "CreateDatabaseWizardPageInformix.ErrorMessage.ServernameRequired" ) );
       return false;
     } else {
       getDatabaseInfo();
@@ -130,7 +131,7 @@ public class CreateDatabaseWizardPageInformix extends WizardPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
    */
   public IWizardPage getNextPage() {

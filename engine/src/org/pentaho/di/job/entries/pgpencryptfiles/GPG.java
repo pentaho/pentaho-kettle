@@ -40,15 +40,15 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * This defines a GnuPG wrapper class.
- * 
+ *
  * @author Samatar
  * @since 25-02-2011
- * 
+ *
  */
 
 public class GPG {
 
-  private static Class<?> PKG = JobEntryPGPEncryptFiles.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryPGPEncryptFiles.class; // for i18n purposes, needed by Translator2!!
 
   private LogChannelInterface log;
 
@@ -71,7 +71,7 @@ public class GPG {
 
     /**
      * Creates new ProcessStreamReader object.
-     * 
+     *
      * @param in
      */
     ProcessStreamReader( InputStream in ) {
@@ -105,7 +105,7 @@ public class GPG {
 
   /**
    * Constructs a new GnuPG
-   * 
+   *
    * @param gpgFilename
    *          gpg program location
    * @param logInterface
@@ -152,7 +152,7 @@ public class GPG {
 
   /**
    * Returns GPG program location
-   * 
+   *
    * @return GPG filename
    */
   public String getGpgExeFile() {
@@ -161,7 +161,7 @@ public class GPG {
 
   /**
    * Runs GnuPG external program
-   * 
+   *
    * @param commandArgs
    *          command line arguments
    * @param inputStr
@@ -222,7 +222,8 @@ public class GPG {
 
     try {
       if ( p.exitValue() != 0 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "GPG.Exception.ExistStatus", psr_stderr.getString() ) );
+        throw new KettleException( BaseMessages.getString( PKG, "GPG.Exception.ExistStatus", psr_stderr
+          .getString() ) );
       }
     } catch ( IllegalThreadStateException itse ) {
       throw new KettleException( BaseMessages.getString( PKG, "GPG.ExceptionillegalThreadStateException" ), itse );
@@ -238,7 +239,7 @@ public class GPG {
 
   /**
    * Decrypt a file
-   * 
+   *
    * @param cryptedFilename
    *          crypted filename
    * @param passPhrase
@@ -255,7 +256,7 @@ public class GPG {
 
   /**
    * Decrypt a file
-   * 
+   *
    * @param cryptedFilename
    *          crypted filename
    * @param passPhrase
@@ -264,12 +265,13 @@ public class GPG {
    *          decrypted filename
    * @throws KettleException
    */
-  public void decryptFile( String cryptedFilename, String passPhrase, String decryptedFilename ) throws KettleException {
+  public void decryptFile( String cryptedFilename, String passPhrase, String decryptedFilename )
+    throws KettleException {
 
     try {
       execGnuPG( "--batch --yes "
-          + ( Const.isEmpty( passPhrase ) ? "" : "--passphrase " + "\"" + passPhrase + "\" " ) + "--output " + "\""
-          + decryptedFilename + "\" " + "--decrypt " + "\"" + cryptedFilename + "\"", null, true );
+        + ( Const.isEmpty( passPhrase ) ? "" : "--passphrase " + "\"" + passPhrase + "\" " ) + "--output "
+        + "\"" + decryptedFilename + "\" " + "--decrypt " + "\"" + cryptedFilename + "\"", null, true );
 
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -278,7 +280,7 @@ public class GPG {
 
   /**
    * Encrypt a file
-   * 
+   *
    * @param filename
    *          file to encrypt
    * @param userID
@@ -296,7 +298,7 @@ public class GPG {
 
   /**
    * Encrypt a file
-   * 
+   *
    * @param filename
    *          file to encrypt
    * @param userID
@@ -311,8 +313,8 @@ public class GPG {
     throws KettleException {
     try {
       execGnuPG( "--batch --yes"
-          + ( asciiMode ? " -a" : "" ) + " -r " + "\"" + Const.NVL( userID, "" ) + "\" " + "--output " + "\""
-          + cryptedFilename + "\" " + "--encrypt  " + "\"" + filename + "\"", null, true );
+        + ( asciiMode ? " -a" : "" ) + " -r " + "\"" + Const.NVL( userID, "" ) + "\" " + "--output " + "\""
+        + cryptedFilename + "\" " + "--encrypt  " + "\"" + filename + "\"", null, true );
 
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -321,7 +323,7 @@ public class GPG {
 
   /**
    * Sign and encrypt a file
-   * 
+   *
    * @param file
    *          file to encrypt
    * @param userID
@@ -339,7 +341,7 @@ public class GPG {
 
   /**
    * Sign and encrypt a file
-   * 
+   *
    * @param filename
    *          file to encrypt
    * @param userID
@@ -355,9 +357,11 @@ public class GPG {
 
     try {
 
-      execGnuPG( "--batch --yes"
-          + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
-          + "--output " + "\"" + cryptedFilename + "\" " + "--encrypt --sign " + "\"" + filename + "\"", null, true );
+      execGnuPG(
+        "--batch --yes"
+          + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" )
+          + " " + "--output " + "\"" + cryptedFilename + "\" " + "--encrypt --sign " + "\"" + filename + "\"",
+        null, true );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -365,7 +369,7 @@ public class GPG {
 
   /**
    * Sign a file
-   * 
+   *
    * @param filename
    *          file to encrypt
    * @param userID
@@ -380,9 +384,9 @@ public class GPG {
     throws KettleException {
     try {
       execGnuPG( "--batch --yes"
-          + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
-          + "--output " + "\"" + signedFilename + "\" " + ( asciiMode ? "--clearsign " : "--sign " ) + "\"" + filename
-          + "\"", null, true );
+        + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
+        + "--output " + "\"" + signedFilename + "\" " + ( asciiMode ? "--clearsign " : "--sign " ) + "\""
+        + filename + "\"", null, true );
 
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -391,7 +395,7 @@ public class GPG {
 
   /**
    * Sign a file
-   * 
+   *
    * @param file
    *          file to encrypt
    * @param userID
@@ -414,7 +418,7 @@ public class GPG {
 
   /**
    * Verify a signature
-   * 
+   *
    * @param filename
    *          filename
    * @throws KettleException
@@ -425,7 +429,7 @@ public class GPG {
 
   /**
    * Verify a signature
-   * 
+   *
    * @param filename
    *          filename
    * @originalFilename fill this value in case of detached signature
@@ -438,7 +442,7 @@ public class GPG {
 
   /**
    * Verify a signature for detached file
-   * 
+   *
    * @param signatureFilename
    *          filename
    * @param originalFilenamefill
@@ -451,7 +455,7 @@ public class GPG {
 
   /**
    * Verify a signature for detached file
-   * 
+   *
    * @param signatureFile
    *          filename
    * @param originalFile
@@ -464,7 +468,7 @@ public class GPG {
 
   /**
    * Encrypt a string
-   * 
+   *
    * @param plainText
    *          input string to encrypt
    * @param keyID
@@ -479,7 +483,7 @@ public class GPG {
 
   /**
    * Signs and encrypts a string
-   * 
+   *
    * @param plainText
    *          input string to encrypt
    * @param userID
@@ -493,7 +497,8 @@ public class GPG {
     try {
       createTempFile( plainText );
 
-      return execGnuPG( "-r \"" + userID + "\" --passphrase-fd 0 -se \"" + getTempFileName() + "\"", passPhrase, false );
+      return execGnuPG(
+        "-r \"" + userID + "\" --passphrase-fd 0 -se \"" + getTempFileName() + "\"", passPhrase, false );
     } finally {
 
       deleteTempFile();
@@ -503,7 +508,7 @@ public class GPG {
 
   /**
    * Sign
-   * 
+   *
    * @param stringToSign
    *          input string to sign
    * @param passPhrase
@@ -526,7 +531,7 @@ public class GPG {
 
   /**
    * Decrypt a string
-   * 
+   *
    * @param cryptedText
    *          input string to decrypt
    * @param passPhrase
@@ -548,7 +553,7 @@ public class GPG {
   /**
    * Create a unique temporary file when needed by one of the main methods. The file handle is store in tmpFile object
    * var.
-   * 
+   *
    * @param content
    *          data to write into the file
    * @throws KettleException
@@ -581,7 +586,7 @@ public class GPG {
 
   /**
    * Delete temporary file.
-   * 
+   *
    * @throws KettleException
    */
   private void deleteTempFile() {
@@ -595,7 +600,7 @@ public class GPG {
 
   /**
    * Returns temporary filename.
-   * 
+   *
    * @return temporary filename
    */
   private String getTempFileName() {

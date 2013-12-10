@@ -143,13 +143,13 @@ public class Edi2Xml extends BaseStep implements StepInterface {
       StringBuilder errorMessage = new StringBuilder( 180 );
       errorMessage.append( "error parsing edi on line " + e.line + " position " + e.charPositionInLine );
       errorMessage.append( ": expecting "
-          + ( ( e.expecting > -1 ) ? parser.getTokenNames()[e.expecting] : "<UNKNOWN>" ) + " but found " );
+        + ( ( e.expecting > -1 ) ? parser.getTokenNames()[e.expecting] : "<UNKNOWN>" ) + " but found " );
       errorMessage.append( ( e.token.getType() >= 0 ) ? parser.getTokenNames()[e.token.getType()] : "<EOF>" );
 
       if ( getStepMeta().isDoingErrorHandling() ) {
         putError(
-            getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
-            "MALFORMED_EDI" );
+          getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
+          "MALFORMED_EDI" );
       } else {
         logError( errorMessage.toString() );
 
@@ -168,12 +168,12 @@ public class Edi2Xml extends BaseStep implements StepInterface {
     } catch ( RecognitionException e ) {
       StringBuilder errorMessage = new StringBuilder( 180 );
       errorMessage.append( "error parsing edi on line " ).append( e.line ).append( " position " ).append(
-          e.charPositionInLine ).append( ". " ).append( e.toString() );
+        e.charPositionInLine ).append( ". " ).append( e.toString() );
 
       if ( getStepMeta().isDoingErrorHandling() ) {
         putError(
-            getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
-            "MALFORMED_EDI" );
+          getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
+          "MALFORMED_EDI" );
       } else {
         logError( errorMessage.toString() );
 

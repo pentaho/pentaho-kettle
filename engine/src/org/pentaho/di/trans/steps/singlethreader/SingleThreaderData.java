@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.StepMeta;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class SingleThreaderData extends BaseStepData implements StepDataInterface {
   public SingleThreadedTransExecutor executor;

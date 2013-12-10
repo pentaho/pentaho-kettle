@@ -75,7 +75,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  * @since 28-March-2006
  */
 public class DeleteDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -264,27 +264,26 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.Comparator" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-    //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.Comparator" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );
     ciKey[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.StreamField1" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.StreamField1" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     ciKey[3] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.StreamField2" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DeleteDialog.ColumnInfo.StreamField2" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     tableFieldColumns.add( ciKey[0] );
     wKey =
-        new TableView(
-            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
-            nrKeyRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrKeyRows, lsMod, props );
 
     wGet = new Button( shell, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "DeleteDialog.GetFields.Button" ) );
@@ -473,7 +472,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-              wSchema.getText();
+            wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -487,8 +486,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
                 db.connect();
 
                 String schemaTable =
-                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                        .environmentSubstitute( tableName ) );
+                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                    .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
@@ -569,9 +568,9 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-                  PKG, "DeleteDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
-                  PKG, "DeleteDialog.AvailableSchemas.Message", wConnection.getText() ) );
+            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+              PKG, "DeleteDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+              PKG, "DeleteDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -585,8 +584,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "DeleteDialog.ErrorGettingSchemas" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "DeleteDialog.ErrorGettingSchemas" ), e );
       } finally {
         database.disconnect();
       }
@@ -632,7 +631,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
         BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 3 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "DeleteDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "DeleteDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "DeleteDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }

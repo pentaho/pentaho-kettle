@@ -33,9 +33,9 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * Injection support for the Excel Writer step.
- * 
+ *
  * Injection only supported for the name, type, and format of the output field.
- * 
+ *
  * @author Jeffrey Lo
  */
 public class ExcelOutputMetaInjection implements StepMetaInjectionInterface {
@@ -51,17 +51,17 @@ public class ExcelOutputMetaInjection implements StepMetaInjectionInterface {
     List<StepInjectionMetaEntry> all = new ArrayList<StepInjectionMetaEntry>();
 
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
+      new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
+      new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
     fieldsEntry.getDetails().add( fieldEntry );
 
     for ( Entry entry : Entry.values() ) {
       if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
         StepInjectionMetaEntry metaEntry =
-            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
         fieldEntry.getDetails().add( metaEntry );
       }
     }
@@ -200,7 +200,7 @@ public class ExcelOutputMetaInjection implements StepMetaInjectionInterface {
 
     FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
 
-    NAME( ValueMetaInterface.TYPE_STRING, "Input field name" ), TYPE(
+      NAME( ValueMetaInterface.TYPE_STRING, "Input field name" ), TYPE(
         ValueMetaInterface.TYPE_STRING, "Type field value" ), FORMAT(
         ValueMetaInterface.TYPE_STRING, "Format field name" ), ;
 

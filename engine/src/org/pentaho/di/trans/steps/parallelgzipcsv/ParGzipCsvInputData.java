@@ -108,7 +108,7 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
 
   /**
    * Read more data from our current file...
-   * 
+   *
    * @return
    */
   public boolean getMoreData() throws KettleException {

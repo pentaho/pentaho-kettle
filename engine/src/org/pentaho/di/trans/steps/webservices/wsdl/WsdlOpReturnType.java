@@ -47,7 +47,7 @@ public class WsdlOpReturnType implements java.io.Serializable {
 
   /**
    * Get the Xml type.
-   * 
+   *
    * @return QName for the XML type.
    */
   public QName getXmlType() {
@@ -56,7 +56,7 @@ public class WsdlOpReturnType implements java.io.Serializable {
 
   /**
    * If the return type is an array, get the xml type of the items in the array.
-   * 
+   *
    * @return QName for the item XML type, null if not an array.
    */
   public QName getItemXmlType() {
@@ -65,7 +65,7 @@ public class WsdlOpReturnType implements java.io.Serializable {
 
   /**
    * Is this an array type?
-   * 
+   *
    * @return true if this is an array type.
    */
   public boolean isArray() {

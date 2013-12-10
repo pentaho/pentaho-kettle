@@ -28,7 +28,7 @@ import com.sforce.soap.partner.sobject.SObject;
 
 /**
  * Store a record from Salesforce extraction.
- * 
+ *
  * @author Samatar
  * @since 10-06-2007
  */

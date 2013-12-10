@@ -38,12 +38,12 @@ import org.pentaho.di.ui.trans.dialog.TransDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while saving a transformation...
- * 
+ *
  * @author Matt
  * @since 13-mrt-2005
  */
 public class SaveProgressDialog {
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Shell shell;
   private Repository rep;
@@ -70,8 +70,8 @@ public class SaveProgressDialog {
           rep.save( meta, versionComment, new ProgressMonitorAdapter( monitor ) );
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
-              PKG, "TransSaveProgressDialog.Exception.ErrorSavingTransformation" )
-              + e.toString() );
+            PKG, "TransSaveProgressDialog.Exception.ErrorSavingTransformation" )
+            + e.toString() );
         }
       }
     };
@@ -81,13 +81,13 @@ public class SaveProgressDialog {
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
+        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ), BaseMessages.getString(
+        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
       retval = false;
     } catch ( InterruptedException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
+        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ), BaseMessages.getString(
+        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
       retval = false;
     }
 

@@ -123,7 +123,7 @@ public class SAPConnectionMock implements SAPConnection {
   }
 
   public SAPResultSet executeFunctionUncursored( SAPFunction function, Collection<SAPField> input,
-      Collection<SAPField> output ) throws SAPException {
+    Collection<SAPField> output ) throws SAPException {
     SAPResultSet srs = new SAPResultSet();
     if ( function.getName().equalsIgnoreCase( "SearchCustomer" ) ) {
       for ( int i = 1; i <= 9; i++ ) {
@@ -150,7 +150,7 @@ public class SAPConnectionMock implements SAPConnection {
   // this method cannot be mocked
   // for testcases use the executeFunctionUncursored
   public SAPRowIterator executeFunctionCursored( SAPFunction function, Collection<SAPField> input,
-      Collection<SAPField> output ) throws SAPException {
+    Collection<SAPField> output ) throws SAPException {
     return null;
   }
 }

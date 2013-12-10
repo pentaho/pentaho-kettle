@@ -66,13 +66,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
  * This dialog allows you to edit the Column Exists job entry settings. (select the connection and the table to be
  * checked) This entry type evaluates!
- * 
+ *
  * @author Samatar
  * @since 15-06-2008
  */
 
 public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryColumnsExist.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryColumnsExist.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
@@ -275,15 +275,15 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] { new ColumnInfo(
-            BaseMessages.getString( PKG, "JobEntryColumnsExist.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false ), };
+      new ColumnInfo[] { new ColumnInfo( BaseMessages.getString(
+        PKG, "JobEntryColumnsExist.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobEntryColumnsExist.Fields.Column" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -483,9 +483,9 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         try {
           database.connect();
           String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination(
-                  jobMeta.environmentSubstitute( wSchemaname.getText() ), jobMeta.environmentSubstitute( wTablename
-                      .getText() ) );
+            databaseMeta.getQuotedSchemaTableCombination(
+              jobMeta.environmentSubstitute( wSchemaname.getText() ), jobMeta
+                .environmentSubstitute( wTablename.getText() ) );
           RowMetaInterface row = database.getTableFields( schemaTable );
           if ( row != null ) {
             String[] available = row.getFieldNames();
@@ -503,8 +503,8 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
             mb.open();
           }
         } catch ( Exception e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-              PKG, "JobEntryColumnsExist.ConnectionError2.DialogMessage", wTablename.getText() ), e );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+            .getString( PKG, "JobEntryColumnsExist.ConnectionError2.DialogMessage", wTablename.getText() ), e );
         } finally {
           database.disconnect();
         }
@@ -527,9 +527,9 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-                  PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
-                  PKG, "System.Dialog.AvailableSchemas.Message" ) );
+            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+              PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+              PKG, "System.Dialog.AvailableSchemas.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchemaname.setText( Const.NVL( d.toString(), "" ) );
@@ -542,8 +542,8 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();

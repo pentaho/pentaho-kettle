@@ -66,7 +66,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class SasInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = SasInputMeta.class; // for i18n purposes, needed
                                                     // by Translator2!!
-                                                    // $NON-NLS-1$
 
   private CCombo wAccField;
 
@@ -190,34 +189,34 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     // Fields
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Rename" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.getTypes(), true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Mask" ), ColumnInfo.COLUMN_TYPE_FORMAT,
-                2 ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Precision" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Group" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.TrimType" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Name" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Rename" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Type" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Mask" ),
+          ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Length" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Precision" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Decimal" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Group" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.TrimType" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
 
     colinf[3].setComboValuesSelectionListener( new ComboValuesSelectionListener() {
 
@@ -373,16 +372,16 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
       FileDialog dialog = new FileDialog( shell, SWT.OPEN );
       dialog.setFilterExtensions( new String[] { "*.sas7bdat;*.SAS7BDAT", "*.*" } );
       dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "SASInputDialog.FileType.SAS7BAT" )
-              + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        BaseMessages.getString( PKG, "SASInputDialog.FileType.SAS7BAT" )
+          + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+        BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+        BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
       if ( dialog.open() != null ) {
         String filename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
         SasInputHelper helper = new SasInputHelper( filename );
         BaseStepDialog.getFieldsFromPrevious(
-            helper.getRowMeta(), wFields, 1, new int[] { 1 }, new int[] { 3 }, 4, 5, null );
+          helper.getRowMeta(), wFields, 1, new int[] { 1 }, new int[] { 3 }, 4, 5, null );
       }
 
     } catch ( Exception e ) {

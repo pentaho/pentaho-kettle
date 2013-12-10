@@ -54,9 +54,9 @@ import org.w3c.dom.Node;
 
 /**
  * Description: Hold data for LucidDB Streaming loader dialog/UI
- * 
+ *
  * @author ngoodman
- * 
+ *
  */
 public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = LucidDBStreamingLoaderMeta.class; // for i18n
@@ -74,7 +74,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
   // purposes,
   // needed by
   // Translator2!!
-  // $NON-NLS-1$
 
   /** what's the schema for the target? */
   private String schemaName;
@@ -157,7 +156,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
     this.tableName = tableName;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -199,7 +199,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
@@ -249,7 +250,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
 
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+        PKG, "LucidDBStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -267,7 +268,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
     StringBuffer retval = new StringBuffer( 300 );
 
     retval
-        .append( "    " ).append( XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) ); //$NON-NLS-3$
+      .append( "    " ).append(
+        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "table", tableName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "host", host ) );
@@ -339,7 +341,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+        PKG, "LucidDBStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -349,8 +351,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
       rep.saveStepAttribute( id_transformation, id_step, "table", tableName );
-      rep.saveStepAttribute( id_transformation, id_step, "host", host ); //$NON-NLS-1
-      rep.saveStepAttribute( id_transformation, id_step, "port", port ); //$NON-NLS-1
+      rep.saveStepAttribute( id_transformation, id_step, "host", host );
+      rep.saveStepAttribute( id_transformation, id_step, "port", port );
       rep.saveStepAttribute( id_transformation, id_step, "operation", operation );
       rep.saveStepAttribute( id_transformation, id_step, "custom_sql", custom_sql );
 
@@ -377,25 +379,25 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+        PKG, "LucidDBStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
   // TODO: In future, we need to implement it to do double-check.
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
   }
 
   /**
-   * 
+   *
    */
 
   public boolean isInKeys( String streamFieldName ) {
@@ -457,8 +459,9 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
           sb.append( "," );
         }
 
-        sb.append( buildFakeCursorRowString( prev.searchValueMeta( fieldStreamForFields[i] ), fieldStreamForFields[i] )
-            + Const.CR );
+        sb.append( buildFakeCursorRowString(
+          prev.searchValueMeta( fieldStreamForFields[i] ), fieldStreamForFields[i] )
+          + Const.CR );
       }
     }
 
@@ -475,7 +478,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
    * Reviews the current keys, fields, and builds a select statement suitable for remoting the rows ie, select * from
    * table(remote_rows_udx( ..... ) as "SRC"
    */
-  private String buildRemoteRowsFragment( RowMetaInterface prev, boolean statement_alone ) throws KettleStepException {
+  private String buildRemoteRowsFragment( RowMetaInterface prev, boolean statement_alone )
+    throws KettleStepException {
 
     StringBuffer fragment = new StringBuffer();
 
@@ -508,7 +512,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
 
   /**
    * Builds the target column list for use in the INSERT statement INSERT INTO T1 <<columns>> ie, ("Col1", "Col2")
-   * 
+   *
    * @return
    */
   private String buildTargetColumnsForInsert() {
@@ -555,7 +559,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
   /**
    * Builds the source column list for use in the MERGE statement WHEN NOT MATCHED THEN INSERT INTO T1 (tgt1, tg2)
    * VALUES <<columnlist>> ie, ("SRC"."Field1", "SRC"."Field2")
-   * 
+   *
    * @return
    */
   private String buildSourceColumnsForInsert() {
@@ -602,7 +606,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
   /**
    * Builds the match condition for MERGE stmt MERGE INTO T1 USING SRC ON <<matchCondition>> ie, "SRC"."Field1" =
    * "TGT"."Table1" AND "SRC"."Field2" = "SRC"."Table2"
-   * 
+   *
    * @return
    */
 
@@ -674,12 +678,12 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
   private String buildTargetTableString( VariableSpace space ) {
 
     return databaseMeta.getQuotedSchemaTableCombination( space.environmentSubstitute( getSchemaName() ), space
-        .environmentSubstitute( getTableName() ) );
+      .environmentSubstitute( getTableName() ) );
   }
 
   /**
    * Create DML Sql Statements for remote_rows
-   * 
+   *
    * @param prev
    * @return
    * @throws KettleStepException
@@ -798,13 +802,13 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
 
   // TODO: Not know the purpose of this method yet so far.
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new LucidDBStreamingLoader( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -837,21 +841,21 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
             return db.getTableFields( schemaTable );
           } else {
             throw new KettleException( BaseMessages.getString(
-                PKG, "LucidDBStreamingLoaderMeta.Exception.TableNotFound" ) );
+              PKG, "LucidDBStreamingLoaderMeta.Exception.TableNotFound" ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString(
-              PKG, "LucidDBStreamingLoaderMeta.Exception.TableNotSpecified" ) );
+            PKG, "LucidDBStreamingLoaderMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "LucidDBStreamingLoaderMeta.Exception.ErrorGettingFields" ), e );
+          PKG, "LucidDBStreamingLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }
     } else {
       throw new KettleException( BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderMeta.Exception.ConnectionNotDefined" ) );
+        PKG, "LucidDBStreamingLoaderMeta.Exception.ConnectionNotDefined" ) );
     }
 
   }
@@ -945,15 +949,15 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
 
   @Override
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     SQLStatement retval = super.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
         String schemaTable =
-            databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                .environmentSubstitute( tableName ) );
+          databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+            .environmentSubstitute( tableName ) );
 
         if ( !Const.isEmpty( schemaTable ) ) {
           Database db = new Database( loggingObject, databaseMeta );
@@ -971,7 +975,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
             retval.setSQL( cr_table );
           } catch ( KettleDatabaseException dbe ) {
             retval.setError( BaseMessages.getString( PKG, "LucidDBStreamingLoaderMeta.Error.ErrorConnecting", dbe
-                .getMessage() ) );
+              .getMessage() ) );
           } finally {
             db.disconnect();
           }

@@ -65,7 +65,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlScript;
   private StyledTextComp wScript;
@@ -234,9 +234,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     // Output Fieldame
 
     wResultField =
-        new LabelTextVar(
-            transMeta, wStepSettings, BaseMessages.getString( PKG, "RegexEvalDialog.ResultField.Label" ), BaseMessages
-                .getString( PKG, "RegexEvalDialog.ResultField.Tooltip" ) );
+      new LabelTextVar( transMeta, wStepSettings, BaseMessages.getString(
+        PKG, "RegexEvalDialog.ResultField.Label" ), BaseMessages.getString(
+        PKG, "RegexEvalDialog.ResultField.Tooltip" ) );
 
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
@@ -256,7 +256,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     fdlAllowCaptureGroups.right = new FormAttachment( middle, -margin );
     wlAllowCaptureGroups.setLayoutData( fdlAllowCaptureGroups );
     wAllowCaptureGroups = new Button( wStepSettings, SWT.CHECK );
-    wAllowCaptureGroups.setToolTipText( BaseMessages.getString( PKG, "RegexEvalDialog.AllowCaptureGroups.Tooltip" ) );
+    wAllowCaptureGroups
+      .setToolTipText( BaseMessages.getString( PKG, "RegexEvalDialog.AllowCaptureGroups.Tooltip" ) );
     props.setLook( wAllowCaptureGroups );
     fdAllowCaptureGroups = new FormData();
     fdAllowCaptureGroups.left = new FormAttachment( middle, margin );
@@ -324,8 +325,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     wbTestRegExScript.setLayoutData( fdbTestRegExScript );
 
     wScript =
-        new StyledTextComp(
-            transMeta, wGeneralComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( transMeta, wGeneralComp, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     wScript.setText( BaseMessages.getString( PKG, "RegexEvalDialog.Script.Label" ) );
     props.setLook( wScript, Props.WIDGET_STYLE_FIXED );
     wScript.addModifyListener( lsMod );
@@ -382,38 +383,44 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     final int fieldsRows = input.getFieldName().length;
 
     ColumnInfo[] columnInfo =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.NewField" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.getTypes() ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Format" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Nullif" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.IfNull" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.TrimType" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.trimTypeDesc, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.NewField" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Precision" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Format" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Group" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Nullif" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.IfNull" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.TrimType" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true ), };
 
     wFields =
-        new TableView(
-            transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnInfo, fieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnInfo, fieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -718,8 +725,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "RegexEvalDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "RegexEvalDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "RegexEvalDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "RegexEvalDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -846,8 +853,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     RegexEvalMeta meta = new RegexEvalMeta();
     setRegexOptions( meta );
     RegexEvalHelperDialog d =
-        new RegexEvalHelperDialog( shell, transMeta, meta.getScript(), meta.getRegexOptions(), meta
-            .isCanonicalEqualityFlagSet() );
+      new RegexEvalHelperDialog( shell, transMeta, meta.getScript(), meta.getRegexOptions(), meta
+        .isCanonicalEqualityFlagSet() );
     wScript.setText( d.open() );
   }
 }

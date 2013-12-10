@@ -45,8 +45,8 @@ public class KettleValidatorException extends KettleValueException {
   public static final int ERROR_ONLY_NULL_VALUE_ALLOWED = 15;
 
   private static final String[] errorCode = new String[] {
-      "KVD000", "KVD001", "KVD002", "KVD003", "KVD004", "KVD005", "KVD006", "KVD007", "KVD008", "KVD009", "KVD010",
-      "KVD011", "KVD012", "KVD013", "KVD014", "KVD015", };
+    "KVD000", "KVD001", "KVD002", "KVD003", "KVD004", "KVD005", "KVD006", "KVD007", "KVD008", "KVD009",
+    "KVD010", "KVD011", "KVD012", "KVD013", "KVD014", "KVD015", };
 
   private Validator validator;
   private Validation validatorField;
@@ -57,7 +57,7 @@ public class KettleValidatorException extends KettleValueException {
 
   /**
    * Constructs a new Throwable with the specified detail message.
-   * 
+   *
    * @param Validator
    *          - the instance of Validator that this object will reference use environmenSubsitute invokation. The class
    *          is probably where this object is being created.
@@ -71,7 +71,7 @@ public class KettleValidatorException extends KettleValueException {
    *          - the name of the field that failed Validation.
    */
   public KettleValidatorException( Validator validator, Validation validatorField, int code, String message,
-      String fieldname ) {
+    String fieldname ) {
     super( message );
     this.validator = validator;
     this.validatorField = validatorField;

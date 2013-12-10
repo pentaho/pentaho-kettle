@@ -39,7 +39,7 @@ public class KeyToRowSetMap {
 
   /**
    * Support custom runtime implementation.
-   * 
+   *
    * @param map
    */
   protected KeyToRowSetMap( Map<Object, Set<RowSet>> map ) {

@@ -32,7 +32,7 @@ public class KettleDatabaseRepositoryJobAttribute implements RepositoryAttribute
   private ObjectId jobObjectId;
 
   public KettleDatabaseRepositoryJobAttribute( KettleDatabaseRepositoryConnectionDelegate connectionDelegate,
-      ObjectId jobObjectId ) {
+    ObjectId jobObjectId ) {
     this.connectionDelegate = connectionDelegate;
     this.jobObjectId = jobObjectId;
   }

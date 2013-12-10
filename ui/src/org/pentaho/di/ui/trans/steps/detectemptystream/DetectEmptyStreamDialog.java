@@ -53,7 +53,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 
 public class DetectEmptyStreamDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DetectEmptyStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DetectEmptyStreamMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DetectEmptyStreamMeta input;
 

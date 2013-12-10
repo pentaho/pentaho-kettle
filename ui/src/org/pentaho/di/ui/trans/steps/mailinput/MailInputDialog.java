@@ -89,7 +89,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MailInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MailInputMeta input;
   private Label wlServerName;
@@ -800,8 +800,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     // START OF Batch Settings GROUP///
     //
     wBatchSettingsGroup =
-        createGroup( wSettingsComp, wIMAPSettings, BaseMessages.getString(
-            PKG, "MailInputDialog.BatchSettingsGroup.Label" ) );
+      createGroup( wSettingsComp, wIMAPSettings, BaseMessages.getString(
+        PKG, "MailInputDialog.BatchSettingsGroup.Label" ) );
 
     // Batch size
     Label wlBatchSize = new Label( wBatchSettingsGroup, SWT.RIGHT );
@@ -1186,19 +1186,20 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     final int FieldsRows = input.getInputFields().length;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, MailInputField.ColumnDesc, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, MailInputField.ColumnDesc, true ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column.Tooltip" ) );
     colinf[1].setToolTip( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column.Tooltip" ) );
 
-    wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields =
+      new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1390,7 +1391,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       wSubject.setText( input.getSubjectSearch() );
     }
     wNegateSubject.setSelection( input.isNotTermSubjectSearch() );
-    wConditionOnReceivedDate.setText( MailConnectionMeta.getConditionDateDesc( input.getConditionOnReceivedDate() ) );
+    wConditionOnReceivedDate
+      .setText( MailConnectionMeta.getConditionDateDesc( input.getConditionOnReceivedDate() ) );
     wNegateReceivedDate.setSelection( input.isNotTermReceivedDateSearch() );
     if ( input.getReceivedDate1() != null ) {
       wReadFrom.setText( input.getReceivedDate1() );
@@ -1454,8 +1456,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       getInfo( input );
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
-              PKG, "MailInputDialog.ErrorParsingData.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "MailInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1487,7 +1489,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setNotTermRecipientSearch( wNegateReceipient.getSelection() );
     in.setSubjectSearch( wSubject.getText() );
     in.setNotTermSubjectSearch( wNegateSubject.getSelection() );
-    in.setConditionOnReceivedDate( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) );
+    in
+      .setConditionOnReceivedDate( MailConnectionMeta
+        .getConditionDateByDesc( wConditionOnReceivedDate.getText() ) );
     in.setNotTermReceivedDateSearch( wNegateReceivedDate.getSelection() );
     in.setReceivedDate1( wReadFrom.getText() );
     in.setReceivedDate2( wReadTo.getText() );
@@ -1530,7 +1534,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
           wFolderField.setText( field );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "MailInput.FailedToGetFields.DialogTitle" ), BaseMessages
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MailInput.FailedToGetFields.DialogTitle" ), BaseMessages
             .getString( PKG, "MailInput.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousfields = true;
@@ -1549,9 +1554,11 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   private void conditionReceivedDate() {
     boolean activeReceivedDate =
-        !( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) == MailConnectionMeta.CONDITION_DATE_IGNORE );
+      !( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() )
+      == MailConnectionMeta.CONDITION_DATE_IGNORE );
     boolean useBetween =
-        ( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) == MailConnectionMeta.CONDITION_DATE_BETWEEN );
+      ( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() )
+      == MailConnectionMeta.CONDITION_DATE_BETWEEN );
     wlReadFrom.setVisible( activeReceivedDate );
     wReadFrom.setVisible( activeReceivedDate );
     open.setVisible( activeReceivedDate );
@@ -1570,7 +1577,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) ) {
         if ( wUseSSL.getSelection() ) {
           if ( Const.isEmpty( wPort.getText() )
-              || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT ) ) {
+            || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT );
           }
         } else {
@@ -1581,7 +1588,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       } else if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) ) {
         if ( wUseSSL.getSelection() ) {
           if ( Const.isEmpty( wPort.getText() )
-              || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT ) ) {
+            || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
           }
         } else {
@@ -1671,7 +1678,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   public void chooseListMails() {
     boolean ok =
-        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
+      ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
     wlFirstmails.setEnabled( ok );
     wFirstmails.setEnabled( ok );
   }
@@ -1707,10 +1714,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       try {
         mailConn =
-            new MailConnection(
-                LogChannel.UI, MailConnectionMeta.getProtocolFromString(
-                    wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser, realpass,
-                wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername );
+          new MailConnection(
+            LogChannel.UI, MailConnectionMeta.getProtocolFromString(
+              wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser,
+            realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername );
         mailConn.connect();
 
         retval = true;
@@ -1722,7 +1729,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( !retval ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "MailInput.Connected.NOK.ConnectionBad", wServerName.getText() )
-          + Const.CR + Const.NVL( errordescription, "" ) );
+        + Const.CR + Const.NVL( errordescription, "" ) );
       mb.setText( BaseMessages.getString( PKG, "MailInput.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -1752,7 +1759,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setMessage( BaseMessages.getString( PKG, "MailInput.Connected.NOK.IMAPFolderExists", foldername )
-              + Const.CR );
+            + Const.CR );
           mb.setText( BaseMessages.getString( PKG, "MailInput.IMAPFolderExists.Title.Bad" ) );
           mb.open();
         }
@@ -1767,18 +1774,18 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       getInfo( oneMeta );
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-              PKG, "MailInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-              PKG, "MailInputDialog.NumberRows.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+          PKG, "MailInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+          PKG, "MailInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog(
-                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1787,24 +1794,24 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog(
-                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
-                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
           PreviewRowsDialog prd =
-              new PreviewRowsDialog(
-                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
-                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 

@@ -25,7 +25,7 @@ package org.pentaho.di.core.spreadsheet;
 public interface KWorkbook {
   /**
    * Get a sheet with a certain name in a workbook.
-   * 
+   *
    * @param sheetName
    *          The name of the sheet.
    * @return The sheet or null if the sheet was not found.
@@ -49,7 +49,7 @@ public interface KWorkbook {
 
   /**
    * Get a sheet in the workbook by index
-   * 
+   *
    * @param sheetNr
    *          The sheet number to get
    * @return The selected sheet
@@ -58,7 +58,7 @@ public interface KWorkbook {
 
   /**
    * Get a sheet name in the workbook by index
-   * 
+   *
    * @param sheetNr
    *          The sheet number to get
    * @return The selected sheet's name

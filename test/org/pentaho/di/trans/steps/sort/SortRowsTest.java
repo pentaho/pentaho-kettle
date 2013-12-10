@@ -52,9 +52,9 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the Sort step.
- * 
+ *
  * TODO: ascii data case sensitive and case insensitive.
- * 
+ *
  * @author Sven Boden
  */
 public class SortRowsTest extends TestCase {
@@ -64,7 +64,7 @@ public class SortRowsTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "KEY1", ValueMeta.TYPE_STRING ), new ValueMeta( "KEY2", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "KEY1", ValueMeta.TYPE_STRING ), new ValueMeta( "KEY2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

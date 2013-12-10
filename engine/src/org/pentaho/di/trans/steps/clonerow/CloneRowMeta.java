@@ -55,7 +55,7 @@ import org.w3c.dom.Node;
  */
 
 public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** nr of clone rows */
   private String nrclones;
@@ -92,7 +92,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -168,7 +169,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
       clonenumfield = XMLHandler.getTagValue( stepnode, "clonenumfield" );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "CloneRowMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "CloneRowMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -195,8 +197,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
       clonenumfield = rep.getStepAttributeString( id_step, "clonenumfield" );
 
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "CloneRowMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "CloneRowMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -213,13 +215,13 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "clonenumfield", clonenumfield );
 
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "CloneRowMeta.Exception.UnexpectedErrorSavingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "CloneRowMeta.Exception.UnexpectedErrorSavingStepInfo" ), e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (boolean) ?
     if ( addcloneflag ) {
       String realfieldValue = space.environmentSubstitute( cloneflagfield );
@@ -240,9 +242,9 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -288,30 +290,30 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "CloneRowMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "CloneRowMeta.CheckResult.NotReceivingFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "CloneRowMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "CloneRowMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "CloneRowMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "CloneRowMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new CloneRow( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

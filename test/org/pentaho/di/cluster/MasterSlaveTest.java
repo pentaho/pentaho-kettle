@@ -78,30 +78,30 @@ public class MasterSlaveTest extends BaseCluster {
     SlaveServer slave3 = slaves.get( 2 );
 
     int port1 =
-        master.allocateServerSocket( clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave1
-            .getName(), "B", "0" );
+      master.allocateServerSocket(
+        clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave1.getName(), "B", "0" );
     assertEquals( 40000, port1 );
 
     int port1b =
-        master.allocateServerSocket( clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave1
-            .getName(), "B", "0" );
+      master.allocateServerSocket(
+        clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave1.getName(), "B", "0" );
     assertEquals( port1, port1b );
 
     int port2 =
-        master.allocateServerSocket( clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave2
-            .getName(), "B", "0" );
+      master.allocateServerSocket(
+        clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave2.getName(), "B", "0" );
     assertEquals( 40001, port2 );
 
     int port3 =
-        master.allocateServerSocket( clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave3
-            .getName(), "B", "0" );
+      master.allocateServerSocket(
+        clusteredRunId, 40000, "localhost", "trans1", master.getName(), "A", "0", slave3.getName(), "B", "0" );
     assertEquals( 40002, port3 );
 
     master.deAllocateServerSockets( "trans1", clusteredRunId );
 
     port1 =
-        master.allocateServerSocket( clusteredRunId, 40000, "localhost", "trans2", master.getName(), "A", "0", slave1
-            .getName(), "B", "0" );
+      master.allocateServerSocket(
+        clusteredRunId, 40000, "localhost", "trans2", master.getName(), "A", "0", slave1.getName(), "B", "0" );
     assertEquals( 40000, port1 );
 
     master.deAllocateServerSockets( "trans2", clusteredRunId );
@@ -114,8 +114,8 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runParallelFileReadOnMaster() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster(
-            clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-master.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-master.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <testParallelFileReadOnMaster>" );
@@ -137,15 +137,15 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runParallelFileReadOnMasterWithCopies() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster(
-            clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-master-with-copies.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-master-with-copies.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <runParallelFileReadOnMasterWithCopies>" );
     long nrErrors = Trans.monitorClusteredTransformation( logChannel, transSplitter, null, 1 );
     assertEquals( 0L, nrErrors );
     String result =
-        loadFileContent( transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result-with-copies.txt" );
+      loadFileContent( transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result-with-copies.txt" );
     assertEqualsIgnoreWhitespacesAndCase( "100", result );
   }
 
@@ -155,8 +155,8 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runParallelFileReadOnSlaves() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster(
-            clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <runParallelFileReadOnSlaves>" );
@@ -172,15 +172,16 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runParallelFileReadOnSlavesWithPartitioning() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster(
-            clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator,
+        "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <runParallelFileReadOnSlavesWithPartitioning>" );
     long nrErrors = Trans.monitorClusteredTransformation( logChannel, transSplitter, null, 1 );
     assertEquals( 0L, nrErrors );
     String result =
-        loadFileContent( transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning.txt" );
+      loadFileContent( transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning.txt" );
     assertEqualsIgnoreWhitespacesAndCase( "100", result );
   }
 
@@ -191,15 +192,16 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runParallelFileReadOnSlavesWithPartitioning2() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster(
-            clusterGenerator, "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning2.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator,
+        "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning2.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <runParallelFileReadOnSlavesWithPartitioning2>" );
     long nrErrors = Trans.monitorClusteredTransformation( logChannel, transSplitter, null, 1 );
     assertEquals( 0L, nrErrors );
     String result =
-        loadFileContent( transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning2.txt" );
+      loadFileContent( transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning2.txt" );
     assertEqualsIgnoreWhitespacesAndCase( "100", result );
   }
 
@@ -208,8 +210,8 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runMultipleCopiesOnMultipleSlaves2() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster(
-            clusterGenerator, "test/org/pentaho/di/cluster/test-hops-between-multiple-copies-steps-on-cluster.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator, "test/org/pentaho/di/cluster/test-hops-between-multiple-copies-steps-on-cluster.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <runMultipleCopiesOnMultipleSlaves2>" );
@@ -224,8 +226,8 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runMultipleCopiesOnMultipleSlaves() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster(
-            clusterGenerator, "test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator, "test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <testMultipleCopiesOnMultipleSlaves>" );
@@ -241,7 +243,8 @@ public class MasterSlaveTest extends BaseCluster {
    */
   public void runOneStepClustered() throws Exception {
     TransMeta transMeta =
-        loadTransMetaReplaceSlavesInCluster( clusterGenerator, "test/org/pentaho/di/cluster/one-step-clustered.ktr" );
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator, "test/org/pentaho/di/cluster/one-step-clustered.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
     TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
     LogChannel logChannel = createLogChannel( "cluster unit test <runOneStepClustered>" );
@@ -251,8 +254,8 @@ public class MasterSlaveTest extends BaseCluster {
     assertEqualsIgnoreWhitespacesAndCase( "10000", result );
   }
 
-  private static TransMeta loadTransMetaReplaceSlavesInCluster( ClusterGenerator clusterGenerator, String testFilename )
-    throws KettleException {
+  private static TransMeta loadTransMetaReplaceSlavesInCluster( ClusterGenerator clusterGenerator,
+    String testFilename ) throws KettleException {
     TransMeta transMeta = new TransMeta( testFilename );
 
     // Add the slave servers

@@ -44,7 +44,7 @@ import org.yaml.snakeyaml.Yaml;
 
 /**
  * Read YAML files, parse them and convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 20-06-2010
  */

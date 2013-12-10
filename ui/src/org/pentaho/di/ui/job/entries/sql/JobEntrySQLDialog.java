@@ -67,16 +67,16 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql script to be executed)
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySQL.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySQL.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] {
-      BaseMessages.getString( PKG, "JobSQL.Filetype.Sql" ), BaseMessages.getString( PKG, "JobSQL.Filetype.Text" ),
-      BaseMessages.getString( PKG, "JobSQL.Filetype.All" ) };
+    BaseMessages.getString( PKG, "JobSQL.Filetype.Sql" ), BaseMessages.getString( PKG, "JobSQL.Filetype.Text" ),
+    BaseMessages.getString( PKG, "JobSQL.Filetype.All" ) };
 
   private Label wlName;
 
@@ -335,7 +335,8 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     fdlSQL.top = new FormAttachment( wUseSubs, margin );
     wlSQL.setLayoutData( fdlSQL );
 
-    wSQL = new StyledTextComp( jobEntry, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+    wSQL =
+      new StyledTextComp( jobEntry, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
     wSQL.addModifyListener( lsMod );
     fdSQL = new FormData();

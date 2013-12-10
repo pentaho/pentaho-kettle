@@ -52,9 +52,9 @@ import org.w3c.dom.Node;
 
 /**
  * Configuration for the NumberRangePlugin
- * 
+ *
  * @author ronny.roeller@fredhopper.com
- * 
+ *
  */
 
 public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
@@ -75,7 +75,8 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     rules = new LinkedList<NumberRangeRule>();
   }
 
-  public NumberRangeMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public NumberRangeMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     loadXML( stepnode, databases, metaStore );
   }
 
@@ -105,7 +106,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     ValueMetaInterface mcValue = new ValueMeta( outputField, ValueMetaInterface.TYPE_STRING );
     mcValue.setOrigin( name );
     mcValue.setLength( 255 );
@@ -117,7 +118,8 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     try {
       inputField = XMLHandler.getTagValue( stepnode, "inputField" );
       outputField = XMLHandler.getTagValue( stepnode, "outputField" );
@@ -191,8 +193,12 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
 
       int i = 0;
       for ( NumberRangeRule rule : rules ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "lower_bound", String.valueOf( rule.getLowerBound() ) );
-        rep.saveStepAttribute( id_transformation, id_step, i, "upper_bound", String.valueOf( rule.getUpperBound() ) );
+        rep
+          .saveStepAttribute( id_transformation, id_step, i, "lower_bound", String
+            .valueOf( rule.getLowerBound() ) );
+        rep
+          .saveStepAttribute( id_transformation, id_step, i, "upper_bound", String
+            .valueOf( rule.getUpperBound() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "value", String.valueOf( rule.getValue() ) );
         i++;
       }
@@ -201,17 +207,19 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
-      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo );
+      cr =
+        new CheckResult(
+          CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
-              + prev.size() + " fields", stepinfo );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
+          + prev.size() + " fields", stepinfo );
       remarks.add( cr );
     }
 
@@ -225,8 +233,8 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans disp ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans disp ) {
     return new NumberRange( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 

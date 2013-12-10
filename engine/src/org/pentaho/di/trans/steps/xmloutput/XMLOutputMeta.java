@@ -60,12 +60,12 @@ import org.w3c.dom.Node;
 
 /**
  * This class knows how to handle the MetaData for the XML output step
- * 
+ *
  * @since 14-jan-2006
- * 
+ *
  */
 public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = XMLOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The base name of the output file */
   private String fileName;
@@ -297,7 +297,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     this.outputFields = outputFields;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -330,7 +331,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
       servletOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "servlet_output" ) );
 
       doNotOpenNewFileInit =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
       stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
       dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
       timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
@@ -339,7 +340,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
       date_time_format = XMLHandler.getTagValue( stepnode, "file", "date_time_format" );
 
       addToResultFilenames =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" ) );
 
       zipped = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) );
       splitEvery = Const.toInt( XMLHandler.getTagValue( stepnode, "file", "splitevery" ), 0 );
@@ -354,7 +355,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
         outputFields[i] = new XMLField();
         String contentTypeString =
-            Const.NVL( XMLHandler.getTagValue( fnode, "content_type" ), ContentType.Element.name() );
+          Const.NVL( XMLHandler.getTagValue( fnode, "content_type" ), ContentType.Element.name() );
         outputFields[i].setContentType( ContentType.valueOf( contentTypeString ) );
         String fieldName = XMLHandler.getTagValue( fnode, "name" );
         outputFields[i].setFieldName( fieldName );
@@ -510,7 +511,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     // No values are added to the row in this type of step
     // However, in case of Fixed length records,
@@ -530,8 +531,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     RowMeta row = new RowMeta();
     for ( int i = 0; i < outputFields.length; i++ ) {
       XMLField field = outputFields[i];
-      row
-          .addValueMeta( new ValueMeta( field.getFieldName(), field.getType(), field.getLength(), field.getPrecision() ) );
+      row.addValueMeta( new ValueMeta( field.getFieldName(), field.getType(), field.getLength(), field
+        .getPrecision() ) );
     }
     return row;
   }
@@ -566,7 +567,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
       if ( field.getFieldName() != null && field.getFieldName().length() != 0 ) {
         retval.append( "      <field>" ).append( Const.CR );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "content_type", field.getContentType().name() ) );
+        retval
+          .append( "        " ).append( XMLHandler.addTagValue( "content_type", field.getContentType().name() ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getFieldName() ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "element", field.getElementName() ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "type", field.getTypeDesc() ) );
@@ -617,7 +619,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields[i] = new XMLField();
 
         outputFields[i].setContentType( ContentType.valueOf( Const.NVL( rep.getStepAttributeString(
-            id_step, i, "field_content_type" ), ContentType.Element.name() ) ) );
+          id_step, i, "field_content_type" ), ContentType.Element.name() ) ) );
         outputFields[i].setFieldName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         outputFields[i].setElementName( rep.getStepAttributeString( id_step, i, "field_element" ) );
         outputFields[i].setType( rep.getStepAttributeString( id_step, i, "field_type" ) );
@@ -677,16 +679,16 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepinfo );
       remarks.add( cr );
 
       String error_message = "";
@@ -706,8 +708,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "XMLOutputMeta.CheckResult.AllFieldsFound" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "XMLOutputMeta.CheckResult.AllFieldsFound" ), stepinfo );
         remarks.add( cr );
       }
     }
@@ -715,24 +717,24 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "XMLOutputMeta.CheckResult.ExpectedInputOk" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XMLOutputMeta.CheckResult.ExpectedInputOk" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "XMLOutputMeta.CheckResult.ExpectedInputError" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XMLOutputMeta.CheckResult.ExpectedInputError" ), stepinfo );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
-            PKG, "XMLOutputMeta.CheckResult.FilesNotChecked" ), stepinfo );
+      new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "XMLOutputMeta.CheckResult.FilesNotChecked" ), stepinfo );
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new XMLOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -816,7 +818,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively. So
    * what this does is turn the name of the base path into an absolute path.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -825,11 +827,11 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

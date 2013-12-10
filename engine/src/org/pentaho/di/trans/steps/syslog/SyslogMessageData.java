@@ -29,7 +29,7 @@ import org.productivity.java.syslog4j.SyslogIF;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class SyslogMessageData extends BaseStepData implements StepDataInterface {
   public int indexOfMessageFieldName;

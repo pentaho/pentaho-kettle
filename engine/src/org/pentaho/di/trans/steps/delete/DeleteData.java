@@ -30,10 +30,10 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
- * 
+ *
  * @author Tom
  * @since 28-March-2006
- * 
+ *
  */
 public class DeleteData extends BaseStepData implements StepDataInterface {
   public Database db;

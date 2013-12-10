@@ -49,7 +49,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
-  private static Class<?> PKG = LDAPOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDAPOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Flag indicating that we use authentication for connection */
   private boolean useAuthentication;
@@ -96,12 +96,12 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Insert" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Upsert" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Update" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Add" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Delete" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Rename" ) };
+    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Insert" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Upsert" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Update" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Add" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Delete" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Rename" ) };
 
   /**
    * The operations type codes
@@ -126,8 +126,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
    * The referrals description
    */
   public static final String[] referralTypeDesc = {
-      BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Follow" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Ignore" ) };
+    BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Follow" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Ignore" ) };
 
   /**
    * The referrals type codes
@@ -144,10 +144,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
    * The derefAliasess description
    */
   public static final String[] derefAliasesTypeDesc = {
-      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Always" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Never" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Searching" ),
-      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Finding" ) };
+    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Always" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Never" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Searching" ),
+    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Finding" ) };
 
   /**
    * The derefAliasess type codes
@@ -510,7 +510,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
     this.failIfNotExist = value;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -637,16 +638,17 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
     retval.append( "    " ).append( XMLHandler.addTagValue( "host", Host ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "username", userName ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "port", port ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "dnFieldName", dnFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "failIfNotExist", failIfNotExist ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "operationType", getOperationTypeCode( operationType ) ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "operationType", getOperationTypeCode( operationType ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "multivaluedseparator", multiValuedSeparator ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "searchBase", searchBase ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "referralType", getReferralTypeCode( referralType ) ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "derefAliasesType", getDerefAliasesCode( derefAliasesType ) ) );
+      XMLHandler.addTagValue( "derefAliasesType", getDerefAliasesCode( derefAliasesType ) ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "oldDnFieldName", oldDnFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "newDnFieldName", newDnFieldName ) );
@@ -666,7 +668,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
     retval.append( "    " ).append( XMLHandler.addTagValue( "protocol", protocol ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trustStorePath", trustStorePath ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
+      XMLHandler
+        .addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trustAllCertificates", trustAllCertificates ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "useCertificate", useCertificate ) );
 
@@ -684,12 +687,13 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       port = XMLHandler.getTagValue( stepnode, "port" );
       dnFieldName = XMLHandler.getTagValue( stepnode, "dnFieldName" );
       failIfNotExist = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "failIfNotExist" ) );
-      operationType = getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operationType" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "operationType" ), "" ) );
       multiValuedSeparator = XMLHandler.getTagValue( stepnode, "multivaluedseparator" );
       searchBase = XMLHandler.getTagValue( stepnode, "searchBase" );
       referralType = getReferralTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "referralType" ), "" ) );
       derefAliasesType =
-          getDerefAliasesTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "derefAliasesType" ), "" ) );
+        getDerefAliasesTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "derefAliasesType" ), "" ) );
 
       oldDnFieldName = XMLHandler.getTagValue( stepnode, "oldDnFieldName" );
       newDnFieldName = XMLHandler.getTagValue( stepnode, "newDnFieldName" );
@@ -724,7 +728,7 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       protocol = XMLHandler.getTagValue( stepnode, "protocol" );
       trustStorePath = XMLHandler.getTagValue( stepnode, "trustStorePath" );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
       trustAllCertificates = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "trustAllCertificates" ) );
       useCertificate = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useCertificate" ) );
 
@@ -776,12 +780,14 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       port = rep.getStepAttributeString( id_step, "port" );
       dnFieldName = rep.getStepAttributeString( id_step, "dnFieldName" );
       failIfNotExist = rep.getStepAttributeBoolean( id_step, "failIfNotExist" );
-      operationType = getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operationType" ), "" ) );
+      operationType =
+        getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operationType" ), "" ) );
       multiValuedSeparator = rep.getStepAttributeString( id_step, "multivaluedseparator" );
       searchBase = rep.getStepAttributeString( id_step, "searchBase" );
-      referralType = getReferralTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "referralType" ), "" ) );
+      referralType =
+        getReferralTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "referralType" ), "" ) );
       derefAliasesType =
-          getDerefAliasesTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "referralType" ), "" ) );
+        getDerefAliasesTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "referralType" ), "" ) );
 
       newDnFieldName = rep.getStepAttributeString( id_step, "newDnFieldName" );
       oldDnFieldName = rep.getStepAttributeString( id_step, "oldDnFieldName" );
@@ -798,12 +804,13 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       protocol = rep.getStepAttributeString( id_step, "protocol" );
       trustStorePath = rep.getStepAttributeString( id_step, "trustStorePath" );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
       trustAllCertificates = rep.getStepAttributeBoolean( id_step, "trustAllCertificates" );
       useCertificate = rep.getStepAttributeBoolean( id_step, "useCertificate" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LDAPOutputMeta.Exception.ErrorReadingRepository" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "LDAPOutputMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
@@ -813,9 +820,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       rep.saveStepAttribute( id_transformation, id_step, "useauthentication", useAuthentication );
       rep.saveStepAttribute( id_transformation, id_step, "host", Host );
       rep.saveStepAttribute( id_transformation, id_step, "username", userName );
-      rep
-          .saveStepAttribute( id_transformation, id_step, "password", Encr
-              .encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "port", port );
       rep.saveStepAttribute( id_transformation, id_step, "dnFieldName", dnFieldName );
@@ -824,7 +830,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       rep.saveStepAttribute( id_transformation, id_step, "multivaluedseparator", multiValuedSeparator );
       rep.saveStepAttribute( id_transformation, id_step, "searchBase", searchBase );
       rep.saveStepAttribute( id_transformation, id_step, "referralType", getReferralTypeCode( referralType ) );
-      rep.saveStepAttribute( id_transformation, id_step, "derefAliasesType", getDerefAliasesCode( derefAliasesType ) );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "derefAliasesType", getDerefAliasesCode( derefAliasesType ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "oldDnFieldName", oldDnFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "newDnFieldName", newDnFieldName );
@@ -839,61 +846,61 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       rep.saveStepAttribute( id_transformation, id_step, "protocol", protocol );
       rep.saveStepAttribute( id_transformation, id_step, "trustStorePath", trustStorePath );
       rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", Encr
-          .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
+        .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
       rep.saveStepAttribute( id_transformation, id_step, "trustAllCertificates", trustAllCertificates );
       rep.saveStepAttribute( id_transformation, id_step, "useCertificate", useCertificate );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LDAPOutputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LDAPOutputMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "LDAPOutputMeta.CheckResult.NoInputExpected" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "LDAPOutputMeta.CheckResult.NoInputExpected" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "LDAPOutputMeta.CheckResult.NoInput" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "LDAPOutputMeta.CheckResult.NoInput" ), stepMeta );
     }
     remarks.add( cr );
 
     // Check hostname
     if ( Const.isEmpty( Host ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "LDAPOutputMeta.CheckResult.HostnameMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "LDAPOutputMeta.CheckResult.HostnameMissing" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "LDAPOutputMeta.CheckResult.HostnameOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "LDAPOutputMeta.CheckResult.HostnameOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check return fields
     if ( updateLookup.length == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "LDAPOutputUpdateMeta.CheckResult.NoFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "LDAPOutputUpdateMeta.CheckResult.NoFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "LDAPOutputUpdateMeta.CheckResult.FieldsOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "LDAPOutputUpdateMeta.CheckResult.FieldsOk" ), stepMeta );
     }
 
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new LDAPOutput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

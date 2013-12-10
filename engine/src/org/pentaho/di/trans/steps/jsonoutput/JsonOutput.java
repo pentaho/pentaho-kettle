@@ -48,12 +48,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to one or more XML files.
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
  */
 public class JsonOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = JsonOutput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JsonOutput.class; // for i18n purposes, needed by Translator2!!
 
   private JsonOutputMeta meta;
   private JsonOutputData data;
@@ -155,7 +155,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
   private CompatibilityFactory compatibilityFactory;
 
   public JsonOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     // Here we decide whether or not to build the structure in
@@ -234,7 +234,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
     if ( data.writeToFile ) {
       // Open a file
       if ( !openNewFile() ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "JsonOutput.Error.OpenNewFile", buildFilename() ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "JsonOutput.Error.OpenNewFile", buildFilename() ) );
       }
       // Write data to file
       try {
@@ -327,7 +328,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
       }
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString(
-          PKG, "JsonOutput.Error.ErrorCreatingParentFolder", parentfolder.getName() ) );
+        PKG, "JsonOutput.Error.ErrorCreatingParentFolder", parentfolder.getName() ) );
     } finally {
       if ( parentfolder != null ) {
         try {
@@ -354,9 +355,9 @@ public class JsonOutput extends BaseStep implements StepInterface {
         if ( meta.AddToResult() ) {
           // Add this to the result file names...
           ResultFile resultFile =
-              new ResultFile(
-                  ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
-                      .getName(), getStepname() );
+            new ResultFile(
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
+              getTransMeta().getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "JsonOutput.ResultFilenames.Comment" ) );
           addResultFile( resultFile );
         }
@@ -367,8 +368,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
 
         if ( !Const.isEmpty( meta.getEncoding() ) ) {
           data.writer =
-              new OutputStreamWriter( new BufferedOutputStream( outputStream, 5000 ), environmentSubstitute( meta
-                  .getEncoding() ) );
+            new OutputStreamWriter( new BufferedOutputStream( outputStream, 5000 ), environmentSubstitute( meta
+              .getEncoding() ) );
         } else {
           data.writer = new OutputStreamWriter( new BufferedOutputStream( outputStream, 5000 ) );
         }

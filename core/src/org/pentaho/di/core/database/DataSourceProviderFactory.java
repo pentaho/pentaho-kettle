@@ -27,9 +27,9 @@ import org.pentaho.di.core.database.util.DatabaseUtil;
 /**
  * This class provides the extension point for tools to override the default DataSourceProviderInterface implementation.
  * To override the default implementation, simply call the setter with your own implementation.
- * 
+ *
  * @author mbatchel Jan 9, 2009
- * 
+ *
  */
 public class DataSourceProviderFactory {
 

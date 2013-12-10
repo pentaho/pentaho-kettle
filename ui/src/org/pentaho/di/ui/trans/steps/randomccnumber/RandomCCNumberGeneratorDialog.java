@@ -62,7 +62,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                   // $NON-NLS-1$
 
   private Label wlStepname;
   private Text wStepname;
@@ -153,7 +152,8 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 
     // CCNumberField fieldname ...
     wlCCNumberField = new Label( wOutputFields, SWT.RIGHT );
-    wlCCNumberField.setText( BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCNumberFieldName.Label" ) );
+    wlCCNumberField
+      .setText( BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCNumberFieldName.Label" ) );
     props.setLook( wlCCNumberField );
     fdlCCNumberField = new FormData();
     fdlCCNumberField.left = new FormAttachment( 0, 0 );
@@ -162,7 +162,7 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
     wlCCNumberField.setLayoutData( fdlCCNumberField );
     wCCNumberField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wCCNumberField.setToolTipText( BaseMessages.getString(
-        PKG, "RandomCCNumberGeneratorDialog.CCNumberFieldName.Tooltip" ) );
+      PKG, "RandomCCNumberGeneratorDialog.CCNumberFieldName.Tooltip" ) );
     props.setLook( wCCNumberField );
     wCCNumberField.addModifyListener( lsMod );
     fdCCNumberField = new FormData();
@@ -200,7 +200,8 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
     fdlCCLengthField.top = new FormAttachment( wCCTypeField, margin );
     wlCCLengthField.setLayoutData( fdlCCLengthField );
     wCCLengthField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wCCLengthField.setToolTipText( BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCLength.Tooltip" ) );
+    wCCLengthField
+      .setToolTipText( BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCLength.Tooltip" ) );
     props.setLook( wCCLengthField );
     wCCLengthField.addModifyListener( lsMod );
     fdCCLengthField = new FormData();
@@ -232,23 +233,24 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCTypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, RandomCreditCardNumberGenerator.cardTypes );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCTypeColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, RandomCreditCardNumberGenerator.cardTypes );
     colinf[0].setReadOnly( true );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCLengthColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCLengthColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1].setUsingVariables( true );
     colinf[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCSizeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.CCSizeColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[2].setUsingVariables( true );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -401,17 +403,17 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
       getInfo( oneMeta );
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-              PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-              PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+          PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+          PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog(
-                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -420,25 +422,25 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog(
-                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
-                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog(
-                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
-                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages.getString(
-          PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
+        PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages.getString(
+        PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

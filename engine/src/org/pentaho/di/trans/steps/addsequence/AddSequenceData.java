@@ -47,7 +47,7 @@ public class AddSequenceData extends BaseStepData implements StepDataInterface {
   public String realSequenceName;
 
   /**
-   * 
+   *
    */
   public AddSequenceData() {
     super();

@@ -73,12 +73,12 @@ import org.w3c.dom.Node;
  * member variables and default method behavior. However, JobEntryBase does not implement JobEntryInterface (although it
  * implements most of the same methods), so individual job entry classes must implement JobEntryInterface and
  * specifically the <code>execute()</code> method.
- * 
+ *
  * @author Matt Created on 18-jun-04
- * 
+ *
  */
-public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface, ResourceHolderInterface,
-    LoggingObjectInterface, AttributesInterface, ExtensionDataInterface {
+public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface,
+  ResourceHolderInterface, LoggingObjectInterface, AttributesInterface, ExtensionDataInterface {
 
   /** The name of the job entry */
   private String name;
@@ -134,7 +134,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Instantiates a new job entry base object with the given name and description.
-   * 
+   *
    * @param name
    *          the name of the job entry
    * @param description
@@ -151,7 +151,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the JobEntry object is equal to the specified object
-   * 
+   *
    * @return true if the two objects are equal, false otherwise
    * @see java.lang.Object#equals(java.lang.Object)
    */
@@ -178,7 +178,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the object id.
-   * 
+   *
    * @param id
    *          the new object id
    */
@@ -188,7 +188,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the id for the job entry
-   * 
+   *
    * @param id
    *          the new id
    */
@@ -198,7 +198,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the object id
-   * 
+   *
    * @return the object id
    * @see org.pentaho.di.core.CheckResultSourceInterface#getObjectId()
    */
@@ -208,7 +208,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the plug-in type description
-   * 
+   *
    * @return the plug-in type description
    */
   public String getTypeDesc() {
@@ -218,7 +218,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the name of the job entry
-   * 
+   *
    * @param name
    *          the new name
    */
@@ -228,7 +228,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the name of the job entry
-   * 
+   *
    * @return the name of the job entry
    * @see org.pentaho.di.core.CheckResultSourceInterface#getName()
    */
@@ -238,7 +238,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the description for the job entry.
-   * 
+   *
    * @param Description
    *          the new description
    */
@@ -248,7 +248,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the description of the job entry
-   * 
+   *
    * @return the description of the job entry
    * @see org.pentaho.di.core.CheckResultSourceInterface#getDescription()
    */
@@ -258,7 +258,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets that the job entry has changed (i.e. a call to setChanged(true))
-   * 
+   *
    * @see JobEntryBase#setChanged(boolean)
    */
   public void setChanged() {
@@ -267,7 +267,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets whether the job entry has changed
-   * 
+   *
    * @param ch
    *          true if the job entry has changed, false otherwise
    */
@@ -277,7 +277,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks whether the job entry has changed
-   * 
+   *
    * @return true if the job entry has changed, false otherwise
    */
   public boolean hasChanged() {
@@ -286,7 +286,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the job entry has started
-   * 
+   *
    * @return true if the job entry has started, false otherwise
    */
   public boolean isStart() {
@@ -295,7 +295,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the job entry is a dummy entry
-   * 
+   *
    * @return true if the job entry is a dummy entry, false otherwise
    */
   public boolean isDummy() {
@@ -304,7 +304,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the job entry is an evaluation.
-   * 
+   *
    * @return true if the job entry is an evaluation, false otherwise
    */
   public boolean isEvaluation() {
@@ -313,7 +313,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the job entry executes a job
-   * 
+   *
    * @return true if the job entry executes a job, false otherwise
    */
   public boolean isJob() {
@@ -322,7 +322,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the job entry sends email
-   * 
+   *
    * @return true if the job entry sends email, false otherwise
    */
   public boolean isMail() {
@@ -331,7 +331,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the job entry executes a shell program
-   * 
+   *
    * @return true if the job entry executes a shell program, false otherwise
    */
   public boolean isShell() {
@@ -340,7 +340,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the job entry is of a special type (Start, Dummy, etc.)
-   * 
+   *
    * @return true if the job entry is of a special type, false otherwise
    */
   public boolean isSpecial() {
@@ -349,7 +349,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if this job entry executes a transformation
-   * 
+   *
    * @return true if this job entry executes a transformation, false otherwise
    */
   public boolean isTransformation() {
@@ -358,7 +358,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if this job entry performs an FTP operation
-   * 
+   *
    * @return true if this job entry performs an FTP operation, false otherwise
    */
   public boolean isFTP() {
@@ -367,7 +367,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if this job entry performs an SFTP operation
-   * 
+   *
    * @return true if this job entry performs an SFTP operation, false otherwise
    */
   public boolean isSFTP() {
@@ -376,7 +376,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if this job entry performs an HTTP operation
-   * 
+   *
    * @return true if this job entry performs an HTTP operation, false otherwise
    */
   public boolean isHTTP() {
@@ -390,7 +390,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * a job in Spoon. The method returns an XML string, containing the serialized settings. The string contains a series
    * of XML tags, typically one tag per setting. The helper class org.pentaho.di.core.xml.XMLHandler is typically used
    * to construct the XML string.
-   * 
+   *
    * @return the xml representation of the job entry
    */
   public String getXML() {
@@ -408,7 +408,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing the
    * job entry's settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler is
    * typically used to conveniently read the settings from the XML node.
-   * 
+   *
    * @param entrynode
    *          the top-level XML node
    * @param databases
@@ -435,18 +435,18 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   @Deprecated
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
-      Repository repository ) throws KettleXMLException {
+    Repository repository ) throws KettleXMLException {
     // Provided for compatibility with v4 code
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     // Provided for compatibility with v4 code
   }
 
   /**
    * Parses the repository objects. For JobEntryBase, this is a stub (empty) method
-   * 
+   *
    * @param rep
    *          the repository
    * @throws KettleException
@@ -458,7 +458,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. For
    * JobEntryBase, this method performs no operations.
-   * 
+   *
    * @param rep
    *          the repository object
    * @param id_jobentry
@@ -472,19 +472,19 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   @Deprecated
   public void loadRep( Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     // Nothing by default, provided for API and runtime compatibility against v4 code
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     // Nothing by default, provided for API and runtime compatibility against v4 code
   }
 
   /**
    * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. For JobEntryBase,
    * this method performs no operations.
-   * 
+   *
    * @param rep
    *          the repository object
    * @param id_job
@@ -511,7 +511,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * This method is called when a job entry is duplicated in Spoon. It needs to return a deep copy of this job entry
    * object. It is essential that the implementing class creates proper deep copies if the job entry configuration is
    * stored in modifiable objects, such as lists or custom helper objects.
-   * 
+   *
    * @return a clone of the object
    */
   public Object clone() {
@@ -526,7 +526,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Returns a string representation of the object. For JobEntryBase, this method returns the name
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   public String toString() {
@@ -535,7 +535,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks whether a reset of the number of errors is required before execution.
-   * 
+   *
    * @return true if a reset of the number of errors is required before execution, false otherwise
    */
   public boolean resetErrorsBeforeExecution() {
@@ -545,7 +545,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * This method must return true if the job entry supports the true/false outgoing hops. For JobEntryBase, this method
    * always returns false
-   * 
+   *
    * @return false
    */
   public boolean evaluates() {
@@ -555,7 +555,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * This method must return true if the job entry supports the unconditional outgoing hop. For JobEntryBase, this
    * method always returns true
-   * 
+   *
    * @return true
    */
   public boolean isUnconditional() {
@@ -564,7 +564,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the SQL statements needed by this job entry to execute successfully.
-   * 
+   *
    * @param repository
    *          the repository
    * @return a list of SQL statements
@@ -579,7 +579,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables. For
    * JobEntryBase, this method returns an empty list.
-   * 
+   *
    * @param repository
    *          the repository object
    * @param space
@@ -596,7 +596,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables. For
    * JobEntryBase, this method returns an empty list.
-   * 
+   *
    * @param repository
    *          the repository object
    * @param space
@@ -612,7 +612,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the filename of the job entry. For JobEntryBase, this method always returns null
-   * 
+   *
    * @return null
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getFilename()
    */
@@ -623,7 +623,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Gets the real filename of the job entry, by substituting any environment variables present in the filename. For
    * JobEntryBase, this method always returns null
-   * 
+   *
    * @return null
    */
   public String getRealFilename() {
@@ -633,7 +633,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Gets all the database connections that are used by the job entry. For JobEntryBase, this method returns an empty
    * (non-null) array
-   * 
+   *
    * @return an empty (non-null) array
    */
   public DatabaseMeta[] getUsedDatabaseConnections() {
@@ -642,7 +642,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Copies variables from a given variable space to this job entry
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
   public void copyVariablesFrom( VariableSpace space ) {
@@ -651,7 +651,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Substitutes any variable values into the given string, and returns the resolved string
-   * 
+   *
    * @return the string with any environment variables resolved and substituted
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
    */
@@ -662,7 +662,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Substitutes any variable values into each of the given strings, and returns an array containing the resolved
    * string(s)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
    */
   public String[] environmentSubstitute( String[] aString ) {
@@ -676,7 +676,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the parent variable space
-   * 
+   *
    * @return the parent variable space
    * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
    */
@@ -686,8 +686,9 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the parent variable space
-   * 
-   * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
+   *
+   * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(
+   *   org.pentaho.di.core.variables.VariableSpace)
    */
   public void setParentVariableSpace( VariableSpace parent ) {
     variables.setParentVariableSpace( parent );
@@ -695,7 +696,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the value of the specified variable, or returns a default value if no such variable exists
-   * 
+   *
    * @return the value of the specified variable, or returns a default value if no such variable exists
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
    */
@@ -705,7 +706,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the value of the specified variable, or returns a default value if no such variable exists
-   * 
+   *
    * @return the value of the specified variable, or returns a default value if no such variable exists
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
    */
@@ -716,7 +717,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Returns a boolean representation of the specified variable after performing any necessary substitution. Truth
    * values include case-insensitive versions of "Y", "YES", "TRUE" or "1".
-   * 
+   *
    * @param variableName
    *          the name of the variable to interrogate
    * @boolean defaultValue the value to use if the specified variable is unassigned.
@@ -735,8 +736,9 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the values of the job entry's variables to the values from the parent variables
-   * 
-   * @see org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
+   *
+   * @see org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(
+   *   org.pentaho.di.core.variables.VariableSpace)
    */
   public void initializeVariablesFrom( VariableSpace parent ) {
     variables.initializeVariablesFrom( parent );
@@ -744,7 +746,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets a list of variable names for the job entry
-   * 
+   *
    * @return a list of variable names
    * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
    */
@@ -754,7 +756,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the value of the specified variable to the specified value
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
    */
   public void setVariable( String variableName, String variableValue ) {
@@ -764,7 +766,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Shares a variable space from another variable space. This means that the object should take over the space used as
    * argument.
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
    */
   public void shareVariablesWith( VariableSpace space ) {
@@ -775,7 +777,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * Injects variables using the given Map. The behavior should be that the properties object will be stored and at the
    * time the VariableSpace is initialized (or upon calling this method if the space is already initialized). After
    * injecting the link of the properties object should be removed.
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
    */
   public void injectVariables( Map<String, String> prop ) {
@@ -784,7 +786,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Support for overrides not having to put in a check method. For JobEntryBase, this method performs no operations.
-   * 
+   *
    * @param remarks
    *          CheckResults from checking the job entry
    * @param jobMeta
@@ -797,7 +799,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Allows JobEntry objects to check themselves for consistency
-   * 
+   *
    * @param remarks
    *          List of CheckResult objects indicating consistency status
    * @param jobMeta
@@ -809,15 +811,15 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @param metaStore
    *          the MetaStore to load common elements from
    */
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
   }
 
   /**
    * Gets a list of all the resource dependencies that the step is depending on. In JobEntryBase, this method returns an
    * empty resource dependency list.
-   * 
+   *
    * @return an empty list of ResourceReferences
    * @see ResourceReference
    */
@@ -829,7 +831,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. For
    * JobEntryBase, this method simply returns null
-   * 
+   *
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -838,7 +840,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *          The resource naming interface allows the object to be named appropriately
    * @param repository
    *          The repository to load resources from
-   * 
+   *
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
@@ -846,7 +848,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository ) throws KettleException {
     return null;
   }
 
@@ -854,7 +856,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
-   * 
+   *
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -865,19 +867,20 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *          The repository to load resources from
    * @param metaStore
    *          the metaStore to load external metadata from
-   * 
+   *
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
+    throws KettleException {
     return null;
   }
 
   /**
    * Gets the plugin id.
-   * 
+   *
    * @return the plugin id
    */
   public String getPluginId() {
@@ -886,7 +889,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the plugin id.
-   * 
+   *
    * @param configId
    *          the new plugin id
    */
@@ -896,7 +899,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the plugin id.
-   * 
+   *
    * @deprecated in favor of getPluginId()
    */
   @Deprecated
@@ -906,7 +909,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the plugin id.
-   * 
+   *
    * @deprecated in favor of setPluginId()
    */
   @Deprecated
@@ -917,13 +920,13 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * This returns the expected name for the dialog that edits a job entry. The expected name is in the org.pentaho.di.ui
    * tree and has a class name that is the name of the job entry with 'Dialog' added to the end.
-   * 
+   *
    * e.g. if the job entry is org.pentaho.di.job.entries.zipfile.JobEntryZipFile the dialog would be
    * org.pentaho.di.ui.job.entries.zipfile.JobEntryZipFileDialog
-   * 
+   *
    * If the dialog class for a job entry does not match this pattern it should override this method and return the
    * appropriate class name
-   * 
+   *
    * @return full class name of the dialog
    */
   public String getDialogClassName() {
@@ -935,7 +938,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Returns the holder type for the job entry
-   * 
+   *
    * @return the holder type for the job entry
    * @see org.pentaho.di.resource.ResourceHolderInterface#getHolderType()
    */
@@ -945,7 +948,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the variable bindings for the job entry.
-   * 
+   *
    * @return the variable bindings for the job entry.
    */
   protected VariableSpace getVariables() {
@@ -954,7 +957,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the repository for the job entry.
-   * 
+   *
    * @param repository
    *          the repository
    */
@@ -964,7 +967,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the repository for the job entry.
-   * 
+   *
    * @return the repository
    */
   public Repository getRepository() {
@@ -973,7 +976,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the parent job.
-   * 
+   *
    * @param parentJob
    *          the new parent job
    */
@@ -986,7 +989,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the parent job.
-   * 
+   *
    * @return the parent job
    */
   public Job getParentJob() {
@@ -995,7 +998,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the logging level is basic.
-   * 
+   *
    * @return true if the logging level is basic, false otherwise
    */
   public boolean isBasic() {
@@ -1004,7 +1007,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the logging level is detailed.
-   * 
+   *
    * @return true if the logging level is detailed, false otherwise
    */
   public boolean isDetailed() {
@@ -1013,7 +1016,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the logging level is debug.
-   * 
+   *
    * @return true if the logging level is debug, false otherwise
    */
   public boolean isDebug() {
@@ -1022,7 +1025,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks if the logging level is rowlevel.
-   * 
+   *
    * @return true if the logging level is rowlevel, false otherwise
    */
   public boolean isRowlevel() {
@@ -1031,7 +1034,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string at the minimal level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1041,7 +1044,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string and arguments at the minimal level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1053,7 +1056,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string at the basic level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1063,7 +1066,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string and arguments at the basic level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1075,7 +1078,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string at the detailed level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1085,7 +1088,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string and arguments at the detailed level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1097,7 +1100,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string at the debug level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1107,7 +1110,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string and arguments at the debug level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1119,7 +1122,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string at the row level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1129,7 +1132,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string and arguments at the row level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1141,7 +1144,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string at the error level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1151,7 +1154,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string and Throwable object at the error level.
-   * 
+   *
    * @param message
    *          the message
    * @param e
@@ -1163,7 +1166,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Logs the specified string and arguments at the error level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1175,7 +1178,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the log channel.
-   * 
+   *
    * @return the log channel
    */
   public LogChannelInterface getLogChannel() {
@@ -1184,7 +1187,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the logging channel id
-   * 
+   *
    * @return the log channel id
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogChannelId()
    */
@@ -1194,7 +1197,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the object name
-   * 
+   *
    * @return the object name
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectName()
    */
@@ -1204,7 +1207,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets a string identifying a copy in a series of steps
-   * 
+   *
    * @return a string identifying a copy in a series of steps
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectCopy()
    */
@@ -1214,7 +1217,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the revision of the object with respect to a repository
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectRevision()
    */
   public ObjectRevision getObjectRevision() {
@@ -1223,7 +1226,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the logging object type
-   * 
+   *
    * @return the logging object type
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectType()
    */
@@ -1233,7 +1236,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the logging object interface's parent
-   * 
+   *
    * @return the logging object interface's parent
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
    */
@@ -1243,7 +1246,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the directory of the job entry in the repository. For JobEntryBase, this returns null
-   * 
+   *
    * @return null
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getRepositoryDirectory()
    */
@@ -1253,7 +1256,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the logging level for the job entry
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
    */
   public LogLevel getLogLevel() {
@@ -1262,7 +1265,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the logging level for the job entry
-   * 
+   *
    * @param logLevel
    *          the new log level
    */
@@ -1273,7 +1276,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Gets the container object id
-   * 
+   *
    * @return the container object id
    */
   public String getContainerObjectId() {
@@ -1282,7 +1285,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Sets the container object id
-   * 
+   *
    * @param containerObjectId
    *          the container object id to set
    */
@@ -1292,7 +1295,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Returns the registration date for the job entry. For JobEntryBase, this method always returns null
-   * 
+   *
    * @return null
    */
   public Date getRegistrationDate() {
@@ -1301,7 +1304,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Checks whether the job entry has repository references. For JobEntryBase, this method always returns false
-   * 
+   *
    * @return false
    */
   public boolean hasRepositoryReferences() {
@@ -1310,7 +1313,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Looks up the references after import
-   * 
+   *
    * @param repository
    *          the repository to reference.
    * @throws KettleException
@@ -1335,7 +1338,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Load the referenced object
-   * 
+   *
    * @param index
    *          the referenced object index to load (in case there are multiple references)
    * @param rep
@@ -1352,7 +1355,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Load the referenced object
-   * 
+   *
    * @param index
    *          the referenced object index to load (in case there are multiple references)
    * @param rep

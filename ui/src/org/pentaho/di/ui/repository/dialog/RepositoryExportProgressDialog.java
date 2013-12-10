@@ -41,13 +41,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while we are exporting the complete repository to XML...
- * 
+ *
  * @author Matt
  * @since 02-jun-2005
  */
 public class RepositoryExportProgressDialog {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   private Shell shell;
   private Repository rep;
@@ -57,12 +56,13 @@ public class RepositoryExportProgressDialog {
 
   private LogChannelInterface log;
 
-  public RepositoryExportProgressDialog( Shell shell, Repository rep, RepositoryDirectoryInterface dir, String filename ) {
+  public RepositoryExportProgressDialog( Shell shell, Repository rep, RepositoryDirectoryInterface dir,
+    String filename ) {
     this( shell, rep, dir, filename, new ImportRules() );
   }
 
   public RepositoryExportProgressDialog( Shell shell, Repository rep, RepositoryDirectoryInterface dir,
-      String filename, ImportRules importRules ) {
+    String filename, ImportRules importRules ) {
     this.shell = shell;
     this.rep = rep;
     this.dir = dir;
@@ -83,7 +83,7 @@ public class RepositoryExportProgressDialog {
           exporter.exportAllObjects( new ProgressMonitorAdapter( monitor ), filename, dir, "all" );
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
-              PKG, "RepositoryExportDialog.Error.CreateUpdate", Const.getStackTracker( e ) ) );
+            PKG, "RepositoryExportDialog.Error.CreateUpdate", Const.getStackTracker( e ) ) );
         }
       }
     };
@@ -94,13 +94,15 @@ public class RepositoryExportProgressDialog {
     } catch ( InvocationTargetException e ) {
       log.logError( RepositoryExportProgressDialog.class.toString(), "Error creating repository: " + e.toString() );
       log.logError( Const.getStackTracker( e ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExportDialog.ErrorExport.Title" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RepositoryExportDialog.ErrorExport.Title" ), BaseMessages
           .getString( PKG, "RepositoryExportDialog.ErrorExport.Message" ), e );
       retval = false;
     } catch ( InterruptedException e ) {
       log.logError( RepositoryExportProgressDialog.class.toString(), "Error creating repository: " + e.toString() );
       log.logError( Const.getStackTracker( e ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExportDialog.ErrorExport.Title" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RepositoryExportDialog.ErrorExport.Title" ), BaseMessages
           .getString( PKG, "RepositoryExportDialog.ErrorExport.Message" ), e );
       retval = false;
     }

@@ -49,20 +49,20 @@ import org.pentaho.di.i18n.BaseMessages;
 public class RandomCreditCardNumberGenerator {
   /*
    * 2006 Graham King graham@darkcoding.net
-   * 
+   *
    * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
    * License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any
    * later version.
-   * 
+   *
    * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
    * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
    * details.
-   * 
+   *
    * You should have received a copy of the GNU General Public License along with this program; if not, write to the
    * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-   * 
+   *
    * www.darkcoding.net
-   * 
+   *
    * From : Graham King <graham (at) gkgk dot org> To : samatar hassan <sahass78 (at) yahoo dot fr> Envoye le : Mer 8
    * decembre 2010, 22h 30min 55s Objet : Re: CreditCardNumberGenerator LGPL grant - Pentaho data Integration Hi
    * Samatar, Thanks for getting in touch. Yes, I am happy to grant Pentaho Data Integration an LGPL exception, meaning
@@ -70,7 +70,6 @@ public class RandomCreditCardNumberGenerator {
    * considered LGPL licensed. All the best, Graham
    */
   private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                   // $NON-NLS-1$
 
   public static final int CARD_TYPE_AMEX = 0;
   public static final int CARD_TYPE_DINERS = 1;
@@ -89,25 +88,26 @@ public class RandomCreditCardNumberGenerator {
   public static final int CARD_TYPE_LASER = 14;
 
   public static final String[] cardTypes = {
-      "American Express", "Diners", "Discover", "En Route", "JCB1", "JCB2", "MasterCard", "Visa", "Voyager", "Airplus",
-      "BankCard", "Maestro", "Solo", "Switch", "Laser" };
+    "American Express", "Diners", "Discover", "En Route", "JCB1", "JCB2", "MasterCard", "Visa", "Voyager",
+    "Airplus", "BankCard", "Maestro", "Solo", "Switch", "Laser" };
 
   private static final String[] VISA_PREFIX_LIST = new String[] {
-      "4539", "4556", "4916", "4532", "4929", "40240071", "4485", "4716", "4" };
+    "4539", "4556", "4916", "4532", "4929", "40240071", "4485", "4716", "4" };
   private static final String[] MASTERCARD_PREFIX_LIST = new String[] { "51", "52", "53", "54", "55" };
   private static final String[] AMEX_PREFIX_LIST = new String[] { "34", "37" };
   private static final String[] DISCOVER_PREFIX_LIST = new String[] { "6011" };
   private static final String[] DINERS_PREFIX_LIST = new String[] { "300", "301", "302", "303", "36", "38" };
   private static final String[] ENROUTE_PREFIX_LIST = new String[] { "2014", "2149" };
   private static final String[] JCB_15_PREFIX_LIST = new String[] { "2100", "1800" };
-  private static final String[] JCB_16_PREFIX_LIST = new String[] { "3088", "3096", "3112", "3158", "3337", "3528" };
+  private static final String[] JCB_16_PREFIX_LIST =
+    new String[] { "3088", "3096", "3112", "3158", "3337", "3528" };
   private static final String[] VOYAGER_PREFIX_LIST = new String[] { "8699" };
   private static final String[] AIRPLUS_PREFIX_LIST = new String[] { "192", "122" };
   private static final String[] BANKCARD_PREFIX_LIST = new String[] { "56" };
   private static final String[] MAESTRO_PREFIX_LIST = new String[] { "5020", "6" };
   private static final String[] SOLO_PREFIX_LIST = new String[] { "6334", "6767" };
   private static final String[] SWITCH_PREFIX_LIST = new String[] {
-      "4903", "4905", "4911", "4936", "564182", "633110", "6333", "6759" };
+    "4903", "4905", "4911", "4936", "564182", "633110", "6333", "6759" };
   private static final String[] LASER_PREFIX_LIST = new String[] { "6304", "6706", "6771", "6709" };
 
   private static final int[] VISA_LENGTH_LIST = new int[] { 13, 16 };
@@ -230,8 +230,10 @@ public class RandomCreditCardNumberGenerator {
         return;
       }
     }
-    throw new KettleException( BaseMessages.getString(
-        PKG, "RandomCreditCardNumbberGenerator.UnSupportedLength", String.valueOf( size ), getCardName( cardType ) ) );
+    throw new KettleException( BaseMessages
+      .getString(
+        PKG, "RandomCreditCardNumbberGenerator.UnSupportedLength", String.valueOf( size ),
+        getCardName( cardType ) ) );
   }
 
   public static String[] GenerateCreditCardNumbers( int cardType, int size, int howMany ) throws KettleException {
@@ -299,7 +301,7 @@ public class RandomCreditCardNumberGenerator {
         break;
       default:
         throw new KettleException( BaseMessages.getString(
-            PKG, "RandomCreditCardNumbberGenerator.UnknownCardtype", String.valueOf( cardType ) ) );
+          PKG, "RandomCreditCardNumbberGenerator.UnknownCardtype", String.valueOf( cardType ) ) );
     }
     return cards;
   }

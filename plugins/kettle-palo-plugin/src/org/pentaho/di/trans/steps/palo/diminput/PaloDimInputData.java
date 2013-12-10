@@ -29,7 +29,7 @@ import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-public class PaloDimInputData extends BaseStepData 
+public class PaloDimInputData extends BaseStepData
 implements StepDataInterface {
 	public PaloHelper helper;
 	

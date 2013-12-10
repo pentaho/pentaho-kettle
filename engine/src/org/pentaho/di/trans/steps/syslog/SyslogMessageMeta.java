@@ -49,7 +49,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** dynamic message fieldname */
   private String messagefieldname;
@@ -65,7 +65,8 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -213,7 +214,8 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       messagefieldname = XMLHandler.getTagValue( stepnode, "messagefieldname" );
       port = XMLHandler.getTagValue( stepnode, "port" );
@@ -225,8 +227,8 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
       addHostName = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addHostName" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException(
-          BaseMessages.getString( PKG, "SyslogMessageMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "SyslogMessageMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -245,7 +247,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SyslogMessageMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+        PKG, "SyslogMessageMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -263,13 +265,13 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "SyslogMessageMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -287,20 +289,20 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SyslogMessageMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SyslogMessageMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SyslogMessageMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SyslogMessageMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SyslogMessage( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

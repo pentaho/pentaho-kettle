@@ -67,7 +67,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
 public class JobMetricsDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   // private static final LogWriter log = LogWriter.getInstance();
 
@@ -247,7 +247,7 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
             System.out.println( duration.toString() );
             LoggingObjectInterface loggingObject =
-                LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
+              LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
             if ( loggingObject == null ) {
               return;
             }
@@ -288,8 +288,8 @@ public class JobMetricsDelegate extends SpoonDelegate {
     jobGraph.getDisplay().asyncExec( new Runnable() {
       public void run() {
         if ( metricsComposite != null
-            && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed() && jobMetricsTab != null
-            && !jobMetricsTab.isDisposed() ) {
+          && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed() && jobMetricsTab != null
+          && !jobMetricsTab.isDisposed() ) {
           if ( jobMetricsTab.isShowing() ) {
             canvas.redraw();
           }
@@ -349,7 +349,8 @@ public class JobMetricsDelegate extends SpoonDelegate {
     canvas.setSize( bounds.width, bounds.height );
 
     SWTGC gc =
-        new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI.getInstance().getIconSize() );
+      new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI
+        .getInstance().getIconSize() );
     MetricsPainter painter = new MetricsPainter( gc, barHeight );
     drawAreas = painter.paint( durations );
     image = (Image) gc.getImage();

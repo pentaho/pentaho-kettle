@@ -76,15 +76,15 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /*
  * ConcatFieldsDialog
- * 
+ *
  * derived form TextFileOutputDialog
- * 
+ *
  * @author jb
  * @since 2012-08-31
  *
  */
 public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ConcatFieldsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ConcatFieldsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -236,7 +236,8 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     // TargetFieldLength line
     wlTargetFieldLength = new Label( shell, SWT.RIGHT );
     wlTargetFieldLength.setText( BaseMessages.getString( PKG, "ConcatFieldsDialog.TargetFieldLength.Label" ) );
-    wlTargetFieldLength.setToolTipText( BaseMessages.getString( PKG, "ConcatFieldsDialog.TargetFieldLength.Tooltip" ) );
+    wlTargetFieldLength.setToolTipText( BaseMessages.getString(
+      PKG, "ConcatFieldsDialog.TargetFieldLength.Tooltip" ) );
     props.setLook( wlTargetFieldLength );
     fdlTargetFieldLength = new FormData();
     fdlTargetFieldLength.left = new FormAttachment( 0, 0 );
@@ -351,46 +352,49 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            ValueMeta.getTypes() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        ValueMeta.getTypes() );
     colinf[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.FormatColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            formats );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.FormatColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, formats );
     colinf[3] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.LengthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.LengthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[4] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.PrecisionColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.PrecisionColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[5] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.CurrencyColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.CurrencyColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[6] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.DecimalColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.DecimalColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[7] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.GroupColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.GroupColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[8] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.TrimTypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            ValueMeta.trimTypeDesc, true );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.TrimTypeColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true );
     colinf[9] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ConcatFieldsDialog.NullColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ConcatFieldsDialog.NullColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
 
     wFields =
-        new TableView(
-            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -448,9 +452,10 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 
     // Remove selected fields?
     wlRemoveSelectedFields = new Label( wContentComp, SWT.RIGHT );
-    wlRemoveSelectedFields.setText( BaseMessages.getString( PKG, "ConcatFieldsDialog.RemoveSelectedFields.Label" ) );
+    wlRemoveSelectedFields
+      .setText( BaseMessages.getString( PKG, "ConcatFieldsDialog.RemoveSelectedFields.Label" ) );
     wlRemoveSelectedFields.setToolTipText( BaseMessages.getString(
-        PKG, "ConcatFieldsDialog.RemoveSelectedFields.Tooltip" ) );
+      PKG, "ConcatFieldsDialog.RemoveSelectedFields.Tooltip" ) );
     props.setLook( wlRemoveSelectedFields );
     fdlRemoveSelectedFields = new FormData();
     fdlRemoveSelectedFields.left = new FormAttachment( 0, 0 );
@@ -1004,14 +1009,14 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }
 
   /**
    * Sets the output width to minimal width...
-   * 
+   *
    */
   public void setMinimalWidth() {
     int nrNonEmptyFields = wFields.nrNonEmpty();

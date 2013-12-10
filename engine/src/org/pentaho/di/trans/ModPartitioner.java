@@ -67,7 +67,7 @@ public class ModPartitioner extends BasePartitioner {
       partitionColumnIndex = rowMeta.indexOfValue( fieldName );
       if ( partitionColumnIndex < 0 ) {
         throw new KettleStepException( "Unable to find partitioning field name ["
-            + fieldName + "] in the output row..." + rowMeta );
+          + fieldName + "] in the output row..." + rowMeta );
       }
     }
 

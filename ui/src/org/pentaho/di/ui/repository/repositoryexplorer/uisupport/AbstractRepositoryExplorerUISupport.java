@@ -57,7 +57,7 @@ public abstract class AbstractRepositoryExplorerUISupport implements IRepository
     for ( XulOverlay overlay : overlays ) {
       if ( overlay instanceof RepositoryExplorerDefaultXulOverlay ) {
         container.loadOverlay( overlay.getOverlayUri(), new XulSpoonResourceBundle(
-            ( (RepositoryExplorerDefaultXulOverlay) overlay ).getPackageClass() ) );
+          ( (RepositoryExplorerDefaultXulOverlay) overlay ).getPackageClass() ) );
       } else {
         container.loadOverlay( overlay.getOverlayUri(), overlay.getResourceBundleUri() );
       }

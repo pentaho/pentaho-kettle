@@ -78,7 +78,7 @@ public class WebServiceField implements Cloneable {
   /**
    * We consider a field to be complex if it's a type we don't recognize. In that case, we will give back XML as a
    * string.
-   * 
+   *
    * @return
    */
   public boolean isComplex() {

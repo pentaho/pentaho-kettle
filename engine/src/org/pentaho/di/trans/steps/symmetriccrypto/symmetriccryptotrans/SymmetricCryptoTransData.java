@@ -31,10 +31,10 @@ import org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm.SymmetricCr
 /**
  * Symmetric algorithm Executes a SymmetricCryptoTrans on the values in the input stream. Selected calculated values can
  * then be put on the output stream.
- * 
+ *
  * @author Samatar
  * @since 5-apr-2003
- * 
+ *
  */
 public class SymmetricCryptoTransData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;

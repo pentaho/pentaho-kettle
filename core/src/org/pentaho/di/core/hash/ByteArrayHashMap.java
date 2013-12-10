@@ -37,7 +37,7 @@ public class ByteArrayHashMap extends AbstractHashedMap {
 
   /**
    * Constructs an empty <tt>ByteArrayHashMap</tt> with the specified initial capacity and load factor.
-   * 
+   *
    * @param initialCapacity
    *          the initial capacity
    * @param loadFactor
@@ -75,7 +75,7 @@ public class ByteArrayHashMap extends AbstractHashedMap {
   /**
    * Constructs an empty <tt>ByteArrayHashMap</tt> with the specified initial capacity and the default load factor
    * (0.75).
-   * 
+   *
    * @param initialCapacity
    *          the initial capacity.
    * @throws IllegalArgumentException
@@ -95,16 +95,16 @@ public class ByteArrayHashMap extends AbstractHashedMap {
   /**
    * Returns the entry to which the specified key is &quot;mapped&quot;, or, in other words, if this index contains an
    * entry that is equal to the given key, or {@code null} if this is not the case.
-   * 
+   *
    * <p>
    * More formally, if this index contains an entry {@code e} such that {@code key.equals(e))}, then this method returns
    * {@code e}; otherwise it returns {@code null}. (There can be at most one such entry.)
-   * 
+   *
    * @param key
    *          The key to look up.
    * @throws KettleValueException
    *           in case of a value conversion error
-   * 
+   *
    * @see #put(Object)
    * @see #insert(Object)
    */

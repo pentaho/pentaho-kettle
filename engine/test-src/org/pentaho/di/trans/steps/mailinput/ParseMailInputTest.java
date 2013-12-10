@@ -92,10 +92,10 @@ public class ParseMailInputTest {
   @BeforeClass
   public static void setup() {
     stepMockHelper =
-        new StepMockHelper<MailInputMeta, StepDataInterface>(
-            "ABORT TEST", MailInputMeta.class, StepDataInterface.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      new StepMockHelper<MailInputMeta, StepDataInterface>(
+        "ABORT TEST", MailInputMeta.class, StepDataInterface.class );
+    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -152,12 +152,12 @@ public class ParseMailInputTest {
     Header ex2 = new Header( HDR_EX2, HDR_EX2V );
 
     // for fixed [PDI-6532]
-    when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX1 } ) ) )
-        .thenReturn( getEnum( new Header[] { ex1 } ) );
-    when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX2 } ) ) )
-        .thenReturn( getEnum( new Header[] { ex2 } ) );
+    when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX1 } ) ) ).thenReturn(
+      getEnum( new Header[] { ex1 } ) );
+    when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX2 } ) ) ).thenReturn(
+      getEnum( new Header[] { ex2 } ) );
     when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX1, HDR_EX2 } ) ) ).thenReturn(
-        getEnum( new Header[] { ex1, ex2 } ) );
+      getEnum( new Header[] { ex1, ex2 } ) );
 
     // for previous implementation
     when( message.getHeader( eq( HDR_EX1 ) ) ).thenReturn( new String[] { ex1.getValue() } );
@@ -166,7 +166,7 @@ public class ParseMailInputTest {
 
   /**
    * [PDI-6532] When mail header is found returns his actual value.
-   * 
+   *
    * @throws Exception
    * @throws KettleException
    */
@@ -194,9 +194,9 @@ public class ParseMailInputTest {
 
   /**
    * [PDI-6532] When mail header is not found returns empty String
-   * 
+   *
    * @throws Exception
-   * 
+   *
    */
   @Test
   public void testHeadersParsedNegative() throws Exception {
@@ -220,7 +220,7 @@ public class ParseMailInputTest {
 
   /**
    * Test, message number can be parsed correctly
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -241,7 +241,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message subject can be parsed
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -262,7 +262,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message From can be parsed correctly
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -286,7 +286,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message ReplayTo can be parsed correctly
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -310,7 +310,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message recipients can be parsed
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -334,7 +334,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message description is correct
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -356,7 +356,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message received date is correct
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -378,7 +378,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message sent date is correct
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -400,7 +400,7 @@ public class ParseMailInputTest {
 
   /**
    * Message content type is correct
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -422,7 +422,7 @@ public class ParseMailInputTest {
 
   /**
    * Test message size is correct
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -444,7 +444,7 @@ public class ParseMailInputTest {
 
   /**
    * Test that message body can be parsed correctly
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -466,7 +466,7 @@ public class ParseMailInputTest {
 
   /**
    * Test that message folder name can be parsed correctly
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -488,7 +488,7 @@ public class ParseMailInputTest {
 
   /**
    * Test that message folder name can be parsed correctly
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -505,12 +505,13 @@ public class ParseMailInputTest {
     Object[] r = RowDataUtil.allocateRowData( data.nrFields );
     underTest.parseToArray( r, message );
 
-    Assert.assertEquals( "Message Attached files count is correct", new Long( ATTCH_COUNT ), Long.class.cast( r[0] ) );
+    Assert.assertEquals( "Message Attached files count is correct", new Long( ATTCH_COUNT ), Long.class
+      .cast( r[0] ) );
   }
 
   /**
    * Test that message body content type can be parsed correctly
-   * 
+   *
    * @throws Exception
    */
   @Test

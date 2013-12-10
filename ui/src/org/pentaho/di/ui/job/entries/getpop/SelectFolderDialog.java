@@ -50,13 +50,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog represents an explorer type of interface on a given IMAP connection. It shows the folders defined
- * 
+ *
  * @author Samatar
  * @since 12-08-2009
- * 
+ *
  */
 public class SelectFolderDialog extends Dialog {
-  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!
 
   private PropsUI props;
   private Shell shell;
@@ -170,7 +170,8 @@ public class SelectFolderDialog extends Dialog {
     return true;
   }
 
-  private void buildFoldersTree( Folder folder, TreeItem parentTreeItem, boolean topfolder ) throws MessagingException {
+  private void buildFoldersTree( Folder folder, TreeItem parentTreeItem, boolean topfolder )
+    throws MessagingException {
     if ( ( folder.getType() & Folder.HOLDS_FOLDERS ) != 0 ) {
       Folder[] f = folder.list();
       for ( int i = 0; i < f.length; i++ ) {

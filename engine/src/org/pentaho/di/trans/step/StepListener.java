@@ -26,15 +26,15 @@ import org.pentaho.di.trans.Trans;
 
 /**
  * This listener informs the audience of the various states of a step.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public interface StepListener {
 
   /**
    * This method is called when a step goes from being idle to being active.
-   * 
+   *
    * @param trans
    * @param stepMeta
    * @param step
@@ -43,7 +43,7 @@ public interface StepListener {
 
   /**
    * This method is called when a step completes all work and is finished.
-   * 
+   *
    * @param trans
    * @param stepMeta
    * @param step

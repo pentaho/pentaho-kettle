@@ -83,7 +83,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				// Prepare output meta
 				data.outputRowMeta = getInputRowMeta().clone();
 	      meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
-	            
+	
 				prepareFieldList();
 				
 				/* If the ID isn't used as the filter, prepare the filter */
@@ -99,14 +99,14 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			}
 			first = false;
 			data.updateBatchRows.clear();
-			 
+			
 		}
 		
 		// Prepare output row
 		Object[] outputRow = new Object[data.outputRowMeta.size()];
         for (int i=0; i< getInputRowMeta().size();i++)
             outputRow[i] = inputRow[i]; // Don't convert to normal storage.  Send it through as is.
-        
+
 		String row = "";
 		try {
 			Row updateRow = openerERPAdapter.getNewRow(rowFields);
@@ -120,7 +120,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 					combinedKey += SEPARATOR + (inputRow[i] == null ? "" : this.getInputValue(inputRow,i));
 				if (filterRowCache.containsKey(combinedKey))
 					updateRow.put("id", filterRowCache.get(combinedKey));
-				else 
+				else
 					updateRow.put("id", 0);
 			}
 			
@@ -129,10 +129,10 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				
 			// If the import function does not return the ID field once complete then
 			// we have to call the create function for each row, to return the ID
-			if (data.helper.getImportReturnIDS() == false 
-			    && meta.getOutputIDField() 
+			if (data.helper.getImportReturnIDS() == false
+			    && meta.getOutputIDField()
 			    && updateRow.getID() == 0){
-			  
+			
 				openerERPAdapter.createObject(updateRow);
 				outputRow[data.outputRowMeta.indexOfValue(meta.getOutputIDFieldName())] = Long.parseLong(updateRow.get("id").toString());
 				
@@ -159,7 +159,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 		return true;
 	}
 	
-	//  Returns the normal storage (Native java) representation of the object (vs binary string etc). 
+	//  Returns the normal storage (Native java) representation of the object (vs binary string etc).
 	private Object getInputValue(Object[] inputRow, int index) throws KettleValueException{
 	  return this.getInputRowMeta().getValueMeta(index).convertToNormalStorageType(inputRow[index]);
 	}
@@ -183,7 +183,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				
 				if (data.helper.getImportReturnIDS() && idFieldIndex >=0)
 				  outputrow[idFieldIndex] = Long.parseLong(data.updateBatchRows.get(i).get("id").toString());
-          
+
         putRow(data.outputRowMeta, outputrow);
 			}
 		} finally {
@@ -221,9 +221,9 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			String comparison = meta.getKeyLookups().get(i)[1];
 			String streamField = meta.getKeyLookups().get(i)[2];
 
-			// Only pass through filters for constant values that aren't linked to stream fileds 
-			if (streamField != null 
-					&& streamField.length() > 0 
+			// Only pass through filters for constant values that aren't linked to stream fileds
+			if (streamField != null
+					&& streamField.length() > 0
 					&& getInputRowMeta().indexOfValue(streamField) >= 0){
 				readFieldList.add(modelField);
 				readIdx.add(getInputRowMeta().indexOfValue(streamField));

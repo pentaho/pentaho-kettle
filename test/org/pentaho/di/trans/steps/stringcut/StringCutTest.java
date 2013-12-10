@@ -50,7 +50,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the StringCut step.
- * 
+ *
  * @author Matt Burgess
  */
 public class StringCutTest extends TransformationTestCase {
@@ -63,9 +63,9 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
+    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
 
-        };
+    };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -78,11 +78,11 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "outf3", ValueMeta.TYPE_STRING ),
+    {
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "outf3", ValueMeta.TYPE_STRING ),
 
-        };
+    };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -95,11 +95,11 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "outf3", ValueMeta.TYPE_STRING ), new ValueMeta( "outf4", ValueMeta.TYPE_STRING ),
+    {
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "outf3", ValueMeta.TYPE_STRING ), new ValueMeta( "outf4", ValueMeta.TYPE_STRING ),
 
-        };
+    };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -110,10 +110,10 @@ public class StringCutTest extends TransformationTestCase {
 
   /**
    * Create data rows.
-   * 
+   *
    * @param nrRows
    *          nr of rows to insert (from 0 to 3 for the moment)
-   * 
+   *
    * @return List of row and meta data
    */
   public List<RowMetaAndData> createData1() {

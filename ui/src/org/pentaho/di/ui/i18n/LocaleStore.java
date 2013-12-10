@@ -31,9 +31,9 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * This class stores all the messages for a locale for all the used packages...
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class LocaleStore {
 
@@ -53,7 +53,7 @@ public class LocaleStore {
 
   /**
    * Create a new LocaleStore
-   * 
+   *
    * @param locale
    *          The locale to handle
    * @param messagesPackages
@@ -61,7 +61,7 @@ public class LocaleStore {
    * @param packageOccurrences
    */
   public LocaleStore( LogChannelInterface log, String locale, String mainLocale,
-      Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences ) {
+    Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences ) {
     this.log = log;
     this.locale = locale;
     this.mainLocale = mainLocale;
@@ -71,9 +71,9 @@ public class LocaleStore {
 
   /**
    * Read all the messages stores from the specified locale from all the specified packages
-   * 
+   *
    * @param directories
-   * 
+   *
    * @param directories
    *          The source directories to reference the packages from
    * @throws KettleException

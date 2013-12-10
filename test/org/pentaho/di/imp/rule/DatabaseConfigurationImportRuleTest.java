@@ -50,7 +50,8 @@ public class DatabaseConfigurationImportRuleTest extends TestCase {
     String PORT = "3306";
     String USERNAME = "foo";
     String PASSWORD = "bar";
-    DatabaseMeta verifyMeta = new DatabaseMeta( "LOGDB", "MYSQL", "JDBC", HOSTNAME, DBNAME, PORT, USERNAME, PASSWORD );
+    DatabaseMeta verifyMeta =
+      new DatabaseMeta( "LOGDB", "MYSQL", "JDBC", HOSTNAME, DBNAME, PORT, USERNAME, PASSWORD );
 
     // Create a transformation to test.
     //
@@ -71,14 +72,16 @@ public class DatabaseConfigurationImportRuleTest extends TestCase {
 
     List<ImportValidationFeedback> feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'database configuration'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setDatabaseMeta( verifyMeta );
 
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     // Create some errors...
     //
@@ -86,40 +89,40 @@ public class DatabaseConfigurationImportRuleTest extends TestCase {
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An error ruling was expected validating the db name",
-        feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+      "An error ruling was expected validating the db name",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
     verifyMeta.setDBName( DBNAME );
 
     verifyMeta.setHostname( "incorrect-hostname" );
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An error ruling was expected validating the db hostname",
-        feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+      "An error ruling was expected validating the db hostname",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
     verifyMeta.setHostname( HOSTNAME );
 
     verifyMeta.setDBPort( "incorrect-port" );
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An error ruling was expected validating the db port",
-        feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+      "An error ruling was expected validating the db port",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
     verifyMeta.setDBPort( PORT );
 
     verifyMeta.setUsername( "incorrect-username" );
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An error ruling was expected validating the db username",
-        feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+      "An error ruling was expected validating the db username",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
     verifyMeta.setUsername( USERNAME );
 
     verifyMeta.setPassword( "incorrect-password" );
     feedback = rule.verifyRule( transMeta );
     assertTrue( "We didn't get any feedback from the 'transformation has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An error ruling was expected validating the db password",
-        feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+      "An error ruling was expected validating the db password",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
     verifyMeta.setPassword( PASSWORD );
 
     // No feedback expected!
@@ -128,7 +131,7 @@ public class DatabaseConfigurationImportRuleTest extends TestCase {
 
     feedback = rule.verifyRule( transMeta );
     assertTrue(
-        "We didn't expect any feedback from the 'transformation has trans log table configured' since disabled",
-        feedback.isEmpty() );
+      "We didn't expect any feedback from the 'transformation has trans log table configured' since disabled",
+      feedback.isEmpty() );
   }
 }

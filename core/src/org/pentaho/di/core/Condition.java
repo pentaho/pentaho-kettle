@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 
 /**
  * This class describes a condition in a general meaning.
- * 
+ *
  * A condition can either be
  * <p>
  * <p>
@@ -57,7 +57,7 @@ import org.w3c.dom.Node;
  * A condition can be negated or not.
  * <p>
  * <p>
- * 
+ *
  * @author Matt
  * @since 8-06-2004
  */
@@ -75,8 +75,8 @@ public class Condition implements Cloneable, XMLInterface {
   public static final int OPERATOR_XOR = 6;
 
   public static final String[] functions = new String[] {
-      "=", "<>", "<", "<=", ">", ">=", "REGEXP", "IS NULL", "IS NOT NULL", "IN LIST", "CONTAINS", "STARTS WITH",
-      "ENDS WITH", "LIKE", "TRUE", };
+    "=", "<>", "<", "<=", ">", ">=", "REGEXP", "IS NULL", "IS NOT NULL", "IN LIST", "CONTAINS", "STARTS WITH",
+    "ENDS WITH", "LIKE", "TRUE", };
 
   public static final int FUNC_EQUAL = 0;
   public static final int FUNC_NOT_EQUAL = 1;
@@ -162,7 +162,7 @@ public class Condition implements Cloneable, XMLInterface {
 
   /**
    * Returns the database ID of this Condition if a repository was used before.
-   * 
+   *
    * @return the ID of the db connection.
    */
   public ObjectId getObjectId() {
@@ -171,10 +171,10 @@ public class Condition implements Cloneable, XMLInterface {
 
   /**
    * Set the database ID for this Condition in the repository.
-   * 
+   *
    * @param id
    *          The ID to set on this condition.
-   * 
+   *
    */
   public void setObjectId( ObjectId id ) {
     this.id = id;
@@ -301,7 +301,7 @@ public class Condition implements Cloneable, XMLInterface {
 
   /**
    * Get the id of the RightExact Value in the repository
-   * 
+   *
    * @return The id of the RightExact Value in the repository
    */
   public ObjectId getRightExactID() {
@@ -310,10 +310,10 @@ public class Condition implements Cloneable, XMLInterface {
 
   /**
    * Set the database ID for the RightExact Value in the repository.
-   * 
+   *
    * @param id_right_exact
    *          The ID to set on this Value.
-   * 
+   *
    */
   public void setRightExactID( ObjectId id_right_exact ) {
     this.id_right_exact = id_right_exact;
@@ -357,7 +357,7 @@ public class Condition implements Cloneable, XMLInterface {
 
   /**
    * Evaluate the condition...
-   * 
+   *
    * @param rowMeta
    *          the row metadata
    * @param r
@@ -460,7 +460,8 @@ public class Condition implements Cloneable, XMLInterface {
               retval = false;
             } else {
               retval =
-                  Pattern.matches( fieldMeta2.getCompatibleString( field2 ), fieldMeta.getCompatibleString( field ) );
+                Pattern
+                  .matches( fieldMeta2.getCompatibleString( field2 ), fieldMeta.getCompatibleString( field ) );
             }
             break;
           case FUNC_NULL:
@@ -488,13 +489,13 @@ public class Condition implements Cloneable, XMLInterface {
             break;
           case FUNC_CONTAINS:
             retval =
-                fieldMeta.getCompatibleString( field ) != null ? fieldMeta.getCompatibleString( field ).indexOf(
-                    fieldMeta2.getCompatibleString( field2 ) ) >= 0 : false;
+              fieldMeta.getCompatibleString( field ) != null ? fieldMeta.getCompatibleString( field ).indexOf(
+                fieldMeta2.getCompatibleString( field2 ) ) >= 0 : false;
             break;
           case FUNC_STARTS_WITH:
             retval =
-                fieldMeta.getCompatibleString( field ) != null ? fieldMeta.getCompatibleString( field ).startsWith(
-                    fieldMeta2.getCompatibleString( field2 ) ) : false;
+              fieldMeta.getCompatibleString( field ) != null ? fieldMeta
+                .getCompatibleString( field ).startsWith( fieldMeta2.getCompatibleString( field2 ) ) : false;
             break;
           case FUNC_ENDS_WITH:
             String string = fieldMeta.getCompatibleString( field );
@@ -643,7 +644,7 @@ public class Condition implements Cloneable, XMLInterface {
 
   /**
    * This method moves up atomic conditions if there is only one sub-condition.
-   * 
+   *
    * @return true if there was a simplification.
    */
   public boolean simplify() {
@@ -819,7 +820,7 @@ public class Condition implements Cloneable, XMLInterface {
 
   /**
    * Build a new condition using an XML Document Node
-   * 
+   *
    * @param condnode
    * @throws KettleXMLException
    */

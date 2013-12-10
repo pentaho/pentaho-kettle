@@ -138,7 +138,7 @@ public class BlackBoxTests {
 
   /**
    * Tries to find an output file to match a transformation or job file
-   * 
+   *
    * @param dir
    *          The directory to look in
    * @param baseName
@@ -369,14 +369,15 @@ public class BlackBoxTests {
           frag += new String( bytes );
           frag += "<--";
           String exp =
-              goldBuffer[indexGold] < 32 ? "\\" + (char) ( goldBuffer[indexGold] - 'a' ) : ""
-                  + (char) goldBuffer[indexGold];
+            goldBuffer[indexGold] < 32 ? "\\" + (char) ( goldBuffer[indexGold] - 'a' ) : ""
+              + (char) goldBuffer[indexGold];
           String act =
-              tmpBuffer[indexTmp] < 32 ? "\\" + (char) ( tmpBuffer[indexTmp] - 'a' ) : "" + (char) tmpBuffer[indexTmp];
+            tmpBuffer[indexTmp] < 32 ? "\\" + (char) ( tmpBuffer[indexTmp] - 'a' ) : ""
+              + (char) tmpBuffer[indexTmp];
           String message =
-              "Test files ("
-                  + getPath( actual ) + ") differ at: line " + lineno + " char " + charno + " expecting '" + exp
-                  + "' but found '" + act + "' - " + frag;
+            "Test files ("
+              + getPath( actual ) + ") differ at: line " + lineno + " char " + charno + " expecting '" + exp
+              + "' but found '" + act + "' - " + frag;
           addFailure( message );
           log.logError( "BlackBoxTest", message );
           fail( message );
@@ -390,9 +391,9 @@ public class BlackBoxTests {
       }
       if ( totalGold != totalTmp ) {
         String message =
-            "Comparison files are not same length. "
-                + "Expected=" + expected.getPath() + " (" + totalGold + ") " + "Actual=" + actual.getPath() + " ("
-                + totalTmp + ")";
+          "Comparison files are not same length. "
+            + "Expected=" + expected.getPath() + " (" + totalGold + ") " + "Actual=" + actual.getPath() + " ("
+            + totalTmp + ")";
         addFailure( message );
         fail( message );
       }
@@ -454,7 +455,8 @@ public class BlackBoxTests {
         trans.execute( null );
       } catch ( Exception e ) {
         addFailure( "Unable to prepare and initialize this transformation: " + getPath( fileName ) );
-        log.logError( "BlackBoxTest", "Unable to prepare and initialize this transformation: " + getPath( fileName ) );
+        log.logError( "BlackBoxTest", "Unable to prepare and initialize this transformation: "
+          + getPath( fileName ) );
         fail( "Unable to prepare and initialize this transformation: " + getPath( fileName ) );
         return null;
       }

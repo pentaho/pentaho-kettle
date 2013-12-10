@@ -26,14 +26,14 @@ import org.pentaho.di.core.market.SupportLevel;
 
 /**
  * This is an indicator for the support level of a certain software component (plugin)
- * 
+ *
  * @author matt
  */
 public enum SupportLevel {
   // Supported by ...
   //
   PROFESSIONALLY_SUPPORTED("Professionally supported"),
-  
+
   // Supported by the community
   //
   COMMUNITY_SUPPORTED("Community Supported"),
@@ -42,19 +42,19 @@ public enum SupportLevel {
   //
   NOT_SUPPORTED("Not supported"),
   ;
-  
+
   private String description;
-  
+
   private SupportLevel(String description) {
     this.description = description;
   }
-  
+
   public String getDescription() {
     return description;
   }
-  
+
   /**
-   * Get the SupportLevel for a given support level code 
+   * Get the SupportLevel for a given support level code
    * @param code The code to search for
    * @return the corresponding SupportLevel or NOT_SUPPORTED if not found.
    */

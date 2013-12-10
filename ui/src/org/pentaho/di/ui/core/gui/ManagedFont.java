@@ -28,10 +28,10 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * Class to keep track of which font is a system font (managed by the OS) and which is not.
- * 
+ *
  * @author Matt
  * @since 2006-06-15
- * 
+ *
  */
 public class ManagedFont {
   private Font font;
@@ -50,7 +50,7 @@ public class ManagedFont {
 
   /**
    * Create a new managed font by using fontdata
-   * 
+   *
    * @param display
    *          the display to use
    * @param fontData
@@ -63,7 +63,7 @@ public class ManagedFont {
 
   /**
    * Free the managed resource if it hasn't already been done and if this is not a system font
-   * 
+   *
    */
   public void dispose() {
     // System color and already disposed off colors don't need to be disposed!

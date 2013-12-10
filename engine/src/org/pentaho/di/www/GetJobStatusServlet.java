@@ -42,7 +42,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 
 public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginInterface {
-  private static Class<?> PKG = GetJobStatusServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetJobStatusServlet.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/kettle/jobStatus";
@@ -54,7 +54,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     super( jobMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -115,9 +116,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       String status = job.getStatus();
       int lastLineNr = KettleLogStore.getLastBufferLineNr();
       String logText =
-          KettleLogStore
-              .getAppender().getBuffer( job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr )
-              .toString();
+        KettleLogStore.getAppender().getBuffer(
+          job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
 
       if ( useXML ) {
         response.setContentType( "text/xml" );
@@ -147,11 +147,13 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
-        out.println( "<TITLE>" + BaseMessages.getString( PKG, "GetJobStatusServlet.KettleJobStatus" ) + "</TITLE>" );
+        out
+          .println( "<TITLE>"
+            + BaseMessages.getString( PKG, "GetJobStatusServlet.KettleJobStatus" ) + "</TITLE>" );
         out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
-            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-            + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-            + "\">" );
+          + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+          + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+          + "\">" );
         out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
@@ -160,8 +162,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         try {
           out.println( "<table border=\"1\">" );
           out.print( "<tr> <th>"
-              + BaseMessages.getString( PKG, "GetJobStatusServlet.Jobname" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.TransStatus" ) + "</th> </tr>" );
+            + BaseMessages.getString( PKG, "GetJobStatusServlet.Jobname" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.TransStatus" ) + "</th> </tr>" );
 
           out.print( "<tr>" );
           out.print( "<td>" + Const.NVL( encoder.encodeForHTML( jobName ), "" ) + "</td>" );
@@ -176,10 +178,12 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           Point max = job.getJobMeta().getMaximum();
           max.x += 20;
           max.y += 20;
-          out.print( "<iframe height=\""
+          out
+            .print( "<iframe height=\""
               + max.y + "\" width=\"" + max.x + "\" seamless src=\""
-              + convertContextPath( GetJobImageServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( jobName, "UTF-8" )
-              + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\"></iframe>" );
+              + convertContextPath( GetJobImageServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+              + "\"></iframe>" );
           out.print( "<p>" );
 
           // out.print("<a href=\"" + convertContextPath(GetJobImageServlet.CONTEXT_PATH) + "?name=" +
@@ -189,38 +193,41 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
           if ( job.isFinished() ) {
             out.print( "<a href=\""
-                + convertContextPath( StartJobServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-                + "\">" + BaseMessages.getString( PKG, "GetJobStatusServlet.StartJob" ) + "</a>" );
+              + convertContextPath( StartJobServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id="
+              + URLEncoder.encode( id, "UTF-8" ) + "\">"
+              + BaseMessages.getString( PKG, "GetJobStatusServlet.StartJob" ) + "</a>" );
             out.print( "<p>" );
           } else {
             out.print( "<a href=\""
-                + convertContextPath( StopJobServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-                + "\">" + BaseMessages.getString( PKG, "GetJobStatusServlet.StopJob" ) + "</a>" );
+              + convertContextPath( StopJobServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id="
+              + URLEncoder.encode( id, "UTF-8" ) + "\">"
+              + BaseMessages.getString( PKG, "GetJobStatusServlet.StopJob" ) + "</a>" );
             out.print( "<p>" );
           }
 
           out.println( "<p>" );
 
           out.print( "<a href=\""
-              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&xml=y&id=" + URLEncoder.encode( id, "UTF-8" )
-              + "\">" + BaseMessages.getString( PKG, "TransStatusServlet.ShowAsXml" ) + "</a><br>" );
+            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&xml=y&id="
+            + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.ShowAsXml" ) + "</a><br>" );
           out.print( "<a href=\""
-              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
           out.print( "<p><a href=\""
-              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-              + "\">" + BaseMessages.getString( PKG, "TransStatusServlet.Refresh" ) + "</a>" );
+            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+            + "\">" + BaseMessages.getString( PKG, "TransStatusServlet.Refresh" ) + "</a>" );
 
           // Put the logging below that.
 
           out.println( "<p>" );
-          out
-              .println( "<textarea id=\"joblog\" cols=\"120\" rows=\"20\" wrap=\"off\" name=\"Job log\" readonly=\"readonly\">"
-                  + encoder.encodeForHTML( logText ) + "</textarea>" );
+          out.println( "<textarea id=\"joblog\" cols=\"120\" rows=\"20\" wrap=\"off\" "
+            + "name=\"Job log\" readonly=\"readonly\">"
+            + encoder.encodeForHTML( logText ) + "</textarea>" );
 
           out.println( "<script type=\"text/javascript\"> " );
           out.println( "  joblog.scrollTop=joblog.scrollHeight; " );
@@ -240,12 +247,12 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     } else {
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-            PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id ) ) );
+          PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id ) ) );
       } else {
         out.println( "<H1>Job '" + encoder.encodeForHTML( jobName ) + "' could not be found.</H1>" );
         out.println( "<a href=\""
-            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }
   }

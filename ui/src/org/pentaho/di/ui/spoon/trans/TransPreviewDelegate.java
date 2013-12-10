@@ -73,8 +73,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtRadio;
 
 public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandler {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by
-                                             // Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_PREVIEW_TOOLBAR = "ui/trans-preview-toolbar.xul";
 
@@ -133,7 +132,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   /**
    * Add a grid with the execution metrics per step in a table view
-   * 
+   *
    */
   public void addTransPreview() {
 
@@ -215,8 +214,8 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
       new ErrorDialog( transPreviewComposite.getShell(), BaseMessages.getString(
-          PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR ), new Exception( t ) );
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -277,7 +276,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   }
 
   protected void showPreviewGrid( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface rowMeta,
-      List<Object[]> rowsData ) throws KettleException {
+    List<Object[]> rowsData ) throws KettleException {
     clearPreviewComposite();
 
     ColumnInfo[] columnInfo = new ColumnInfo[rowMeta.size()];
@@ -288,7 +287,8 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     }
 
     tableView =
-        new TableView( transMeta, previewComposite, SWT.NONE, columnInfo, rowsData.size(), null, PropsUI.getInstance() );
+      new TableView( transMeta, previewComposite, SWT.NONE, columnInfo, rowsData.size(), null, PropsUI
+        .getInstance() );
 
     // Put data on it...
     //
@@ -347,7 +347,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -357,7 +357,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -366,7 +366,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -376,7 +376,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -386,7 +386,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -396,7 +396,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho. ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {
@@ -497,7 +497,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
           for ( StepMetaDataCombi combi : trans.getSteps() ) {
             if ( combi.copy == 0 ) {
               StringBuffer logBuffer =
-                  KettleLogStore.getAppender().getBuffer( combi.step.getLogChannel().getLogChannelId(), false );
+                KettleLogStore.getAppender().getBuffer( combi.step.getLogChannel().getLogChannelId(), false );
               previewLogMap.put( combi.stepMeta, logBuffer );
             }
           }
@@ -506,8 +506,8 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     } );
   }
 
-  public void
-    addPreviewData( StepMeta stepMeta, RowMetaInterface rowMeta, List<Object[]> rowsData, StringBuffer buffer ) {
+  public void addPreviewData( StepMeta stepMeta, RowMetaInterface rowMeta, List<Object[]> rowsData,
+    StringBuffer buffer ) {
     previewLogMap.put( stepMeta, buffer );
     previewMetaMap.put( stepMeta, rowMeta );
     previewDataMap.put( stepMeta, rowsData );

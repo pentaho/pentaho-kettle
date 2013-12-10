@@ -108,11 +108,11 @@ class ScriptValuesHighlight implements LineStyleListener {
   void initializeColors() {
     Display display = Display.getDefault();
     colors = new Color[] { new Color( display, new RGB( 0, 0, 0 ) ), // black
-        new Color( display, new RGB( 63, 127, 95 ) ), // red
-        new Color( display, new RGB( 0, 0, 192 ) ), // green
-        new Color( display, new RGB( 127, 0, 85 ) ), // blue
-        new Color( display, new RGB( 255, 102, 0 ) ) // Kettle Functions / Orange
-        };
+      new Color( display, new RGB( 63, 127, 95 ) ), // red
+      new Color( display, new RGB( 0, 0, 192 ) ), // green
+      new Color( display, new RGB( 127, 0, 85 ) ), // blue
+      new Color( display, new RGB( 255, 102, 0 ) ) // Kettle Functions / Orange
+    };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
     tokenColors[WHITE] = 0;
@@ -167,7 +167,7 @@ class ScriptValuesHighlight implements LineStyleListener {
           Color color = getColor( token );
           if ( color != colors[0] ) { // hardcoded default foreground color, black
             StyleRange style =
-                new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
+              new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
             if ( token == KEY ) {
               style.fontStyle = SWT.BOLD;
             }
@@ -266,10 +266,10 @@ class ScriptValuesHighlight implements LineStyleListener {
     private String[] kfKeywords = { "num2str" };
 
     private String[] fgKeywords = {
-        "array", "break", "case", "catch", "const", "continue", "Date", "default", "delete", "do", "else", "eval",
-        "escape", "false", "finally", "float", "for", "function", "if", "in", "instanceof", "isFinite", "isNaN", "new",
-        "Number", "null", "String", "switch", "this", "then", "throw", "to", "true", "try", "typeof", "parseInt",
-        "parseFloat", "return", "unescape", "var", "void", "with", "while" };
+      "array", "break", "case", "catch", "const", "continue", "Date", "default", "delete", "do", "else", "eval",
+      "escape", "false", "finally", "float", "for", "function", "if", "in", "instanceof", "isFinite", "isNaN",
+      "new", "Number", "null", "String", "switch", "this", "then", "throw", "to", "true", "try", "typeof",
+      "parseInt", "parseFloat", "return", "unescape", "var", "void", "with", "while" };
 
     public JavaScanner() {
       initialize();

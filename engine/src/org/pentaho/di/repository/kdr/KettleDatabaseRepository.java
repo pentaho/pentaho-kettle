@@ -94,15 +94,14 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
 /**
- * 
+ *
  * This class handles interactions with a Kettle repository.
- * 
+ *
  * @author Matt Created on 31-mrt-2004
- * 
+ *
  */
 public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
-  // private static Class<?> PKG = Repository.class; // for i18n purposes,
-  // needed by Translator2!! $NON-NLS-1$
+  // private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!! 
 
   public KettleDatabaseRepositoryTransDelegate transDelegate;
   public KettleDatabaseRepositoryJobDelegate jobDelegate;
@@ -152,7 +151,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     this.clusterSchemaDelegate = new KettleDatabaseRepositoryClusterSchemaDelegate( this );
     this.partitionSchemaDelegate = new KettleDatabaseRepositoryPartitionSchemaDelegate( this );
     this.directoryDelegate = new KettleDatabaseRepositoryDirectoryDelegate( this );
-    this.connectionDelegate = new KettleDatabaseRepositoryConnectionDelegate( this, repositoryMeta.getConnection() );
+    this.connectionDelegate =
+      new KettleDatabaseRepositoryConnectionDelegate( this, repositoryMeta.getConnection() );
     this.userDelegate = new KettleDatabaseRepositoryUserDelegate( this );
     this.conditionDelegate = new KettleDatabaseRepositoryConditionDelegate( this );
     this.valueDelegate = new KettleDatabaseRepositoryValueDelegate( this );
@@ -172,7 +172,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Connect to the repository.
-   * 
+   *
    * @throws KettleException
    *           in case there is a general unexpected error or if we're already connected
    */
@@ -182,7 +182,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Connect to the repository.
-   * 
+   *
    * @throws KettleException
    *           in case there is a general unexpected error or if we're already connected
    */
@@ -215,12 +215,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Add the repository service to the map and add the interface to the list
-   * 
+   *
    * @param clazz
    * @param repositoryService
    */
   private void registerRepositoryService( Class<? extends IRepositoryService> clazz,
-      IRepositoryService repositoryService ) {
+    IRepositoryService repositoryService ) {
     this.serviceMap.put( clazz, repositoryService );
     this.serviceList.add( clazz );
   }
@@ -243,7 +243,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Return the major repository version.
-   * 
+   *
    * @return the major repository version.
    */
   public int getMajorVersion() {
@@ -252,7 +252,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Return the minor repository version.
-   * 
+   *
    * @return the minor repository version.
    */
   public int getMinorVersion() {
@@ -261,7 +261,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Get the repository version.
-   * 
+   *
    * @return The repository version as major version + "." + minor version
    */
   public String getVersion() {
@@ -271,7 +271,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   // TransMeta
   //
   public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
-      ProgressMonitorListener monitor, boolean setInternalVariables, String versionName ) throws KettleException {
+    ProgressMonitorListener monitor, boolean setInternalVariables, String versionName ) throws KettleException {
     try {
       securityProvider.validateAction( RepositoryOperation.READ_TRANSFORMATION );
       TransMeta transMeta = new TransMeta();
@@ -291,8 +291,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
-  public synchronized ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir,
-      String newName ) throws KettleException {
+  public synchronized ObjectId renameTransformation( ObjectId id_transformation,
+    RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.MODIFY_TRANSFORMATION );
     transDelegate.renameTransformation( id_transformation, newDir, newName );
     return id_transformation; // The same in our case.
@@ -302,7 +302,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Load a job in a directory
-   * 
+   *
    * @param jobname
    *          The name of the job
    * @param repdir
@@ -312,7 +312,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    * @throws KettleException
    */
   public JobMeta loadJob( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor,
-      String versionName ) throws KettleException {
+    String versionName ) throws KettleException {
     try {
       securityProvider.validateAction( RepositoryOperation.READ_JOB );
       JobMeta jobMeta = jobDelegate.loadJobMeta( jobname, repdir, monitor );
@@ -341,9 +341,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   // Common methods...
   // ////////////////////////////
 
-  public boolean
-    exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
-      throws KettleException {
+  public boolean exists( String name, RepositoryDirectoryInterface repositoryDirectory,
+    RepositoryObjectType objectType ) throws KettleException {
     try {
       switch ( objectType ) {
         case JOB:
@@ -355,7 +354,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
           return transDelegate.existsTransMeta( name, repositoryDirectory, objectType );
 
         default:
-          throw new KettleException( "We can't verify the existance of repository element type [" + objectType + "]" );
+          throw new KettleException( "We can't verify the existance of repository element type ["
+            + objectType + "]" );
       }
     } finally {
       connectionDelegate.closeReadTransaction();
@@ -367,12 +367,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   public void save( RepositoryElementInterface repositoryElement, String versionComment,
-      ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
+    ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     save( repositoryElement, versionComment, monitor, null, false, overwrite );
   }
 
   public void save( RepositoryElementInterface repositoryElement, String versionComment,
-      ProgressMonitorListener monitor, ObjectId parentId, boolean used, boolean overwrite ) throws KettleException {
+    ProgressMonitorListener monitor, ObjectId parentId, boolean used, boolean overwrite ) throws KettleException {
 
     try {
       lockRepository();
@@ -401,15 +401,16 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
         case CLUSTER_SCHEMA:
           securityProvider.validateAction( RepositoryOperation.MODIFY_CLUSTER_SCHEMA );
           clusterSchemaDelegate.saveClusterSchema(
-              (ClusterSchema) repositoryElement, versionComment, parentId, used, overwrite );
+            (ClusterSchema) repositoryElement, versionComment, parentId, used, overwrite );
           break;
         case PARTITION_SCHEMA:
           securityProvider.validateAction( RepositoryOperation.MODIFY_PARTITION_SCHEMA );
-          partitionSchemaDelegate.savePartitionSchema( (PartitionSchema) repositoryElement, parentId, used, overwrite );
+          partitionSchemaDelegate.savePartitionSchema(
+            (PartitionSchema) repositoryElement, parentId, used, overwrite );
           break;
         default:
           throw new KettleException( "We can't save the element with type ["
-              + repositoryElement.getRepositoryElementType() + "] in the repository" );
+            + repositoryElement.getRepositoryElementType() + "] in the repository" );
       }
 
       // Automatically commit changes to these elements.
@@ -422,16 +423,16 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment, Calendar versionDate,
-      ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
+    ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     save( repositoryElement, versionComment, monitor, null, false, overwrite );
   }
 
   // Condition
 
   /**
-   * 
+   *
    * Read a condition from the repository.
-   * 
+   *
    * @param id_condition
    *          The condition id
    * @throws KettleException
@@ -453,7 +454,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Load the Database connection Metadata from the repository
-   * 
+   *
    * @param id_database
    *          the id of the database connection to load
    * @throws KettleException
@@ -465,7 +466,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Remove a database connection from the repository
-   * 
+   *
    * @param databaseName
    *          The name of the connection to remove
    * @throws KettleException
@@ -478,9 +479,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   // ClusterSchema
-  public ClusterSchema
-    loadClusterSchema( ObjectId idClusterSchema, List<SlaveServer> slaveServers, String versionLabel )
-      throws KettleException {
+  public ClusterSchema loadClusterSchema( ObjectId idClusterSchema, List<SlaveServer> slaveServers,
+    String versionLabel ) throws KettleException {
     return clusterSchemaDelegate.loadClusterSchema( idClusterSchema, slaveServers );
   }
 
@@ -492,7 +492,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   // PartitionSchema
 
-  public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionName ) throws KettleException {
+  public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionName )
+    throws KettleException {
     return partitionSchemaDelegate.loadPartitionSchema( id_partition_schema );
   }
 
@@ -548,8 +549,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     commit();
   }
 
-  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-    throws KettleException {
+  public ObjectId
+    renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
+      throws KettleException {
     ObjectId result = null;
     securityProvider.validateAction( RepositoryOperation.RENAME_DIRECTORY );
     result = directoryDelegate.renameRepositoryDirectory( id, newParentDir, newName );
@@ -559,7 +561,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Create a new directory, possibly by creating several sub-directies of / at the same time.
-   * 
+   *
    * @param parentDirectory
    *          the parent directory
    * @param directoryPath
@@ -569,7 +571,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    *           In case something goes wrong
    */
   public RepositoryDirectoryInterface createRepositoryDirectory( RepositoryDirectoryInterface parentDirectory,
-      String directoryPath ) throws KettleException {
+    String directoryPath ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.CREATE_DIRECTORY );
     return directoryDelegate.createRepositoryDirectory( parentDirectory, directoryPath );
   }
@@ -580,10 +582,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   public synchronized ObjectId getRootDirectoryID() throws KettleException {
     RowMetaAndData result =
-        connectionDelegate.getOneRow( "SELECT "
-            + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " FROM "
-            + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
-            + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = 0" );
+      connectionDelegate.getOneRow( "SELECT "
+        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = 0" );
     if ( result != null && result.isNumeric( 0 ) ) {
       return new LongObjectId( result.getInteger( 0, -1 ) );
     }
@@ -607,17 +609,18 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     RowMetaAndData table = new RowMetaAndData();
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER ), id );
+      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_REPOSITORY_LOG_REP_VERSION, ValueMetaInterface.TYPE_STRING ), getVersion() );
+      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_REP_VERSION, ValueMetaInterface.TYPE_STRING ), getVersion() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_DATE, ValueMetaInterface.TYPE_DATE ), new Date() );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_DATE, ValueMetaInterface.TYPE_DATE ),
-        new Date() );
-    table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_USER, ValueMetaInterface.TYPE_STRING ), getUserInfo() != null
-        ? getUserInfo().getLogin() : "admin" );
-    table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING ), description );
+      new ValueMeta( KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_USER, ValueMetaInterface.TYPE_STRING ),
+      getUserInfo() != null ? getUserInfo().getLogin() : "admin" );
+    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING ),
+      description );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG, table );
 
@@ -628,10 +631,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
-        id_transformation );
-    table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER ), id_note );
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+      id_transformation );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER ), id_note );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_NOTE, table );
   }
@@ -640,9 +644,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER ), id_note );
+      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER ), id_note );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_JOB_NOTE, table );
   }
@@ -656,13 +660,16 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       RowMetaAndData table = new RowMetaAndData();
 
       table.addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+        id_transformation );
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
+      table
+        .addValue(
           new ValueMeta(
-              KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
-          id_transformation );
-      table.addValue( new ValueMeta(
-          KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
-      table.addValue( new ValueMeta(
-          KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ), id_database );
+            KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ),
+          id_database );
 
       connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_STEP_DATABASE, table );
     }
@@ -678,34 +685,37 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       RowMetaAndData table = new RowMetaAndData();
 
       table.addValue( new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-      table.addValue( new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
-      table.addValue( new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ), id_database );
+        KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
+      table.addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ),
+        id_jobentry );
+      table.addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ),
+        id_database );
 
       connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE, table );
     }
   }
 
   public synchronized ObjectId insertTransformationPartitionSchema( ObjectId id_transformation,
-      ObjectId id_partition_schema ) throws KettleException {
+    ObjectId id_partition_schema ) throws KettleException {
     ObjectId id = connectionDelegate.getNextTransformationPartitionSchemaID();
 
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA,
-        ValueMetaInterface.TYPE_INTEGER ), id );
+      KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA,
+      ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue(
-        new ValueMeta(
-            KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
-        id_transformation );
-    table
-        .addValue(
-            new ValueMeta(
-                KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA,
-                ValueMetaInterface.TYPE_INTEGER ), id_partition_schema );
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION,
+        ValueMetaInterface.TYPE_INTEGER ), id_transformation );
+    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA,
+        ValueMetaInterface.TYPE_INTEGER ), id_partition_schema );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA, table );
 
@@ -719,13 +729,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id );
+      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), clusterSchema
-        .getObjectId() );
+      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), clusterSchema
+      .getObjectId() );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER ), slaveServer
-        .getObjectId() );
+      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER ), slaveServer
+      .getObjectId() );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE, table );
 
@@ -739,14 +749,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id );
-    table
-        .addValue(
-            new ValueMeta(
-                KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
-            id_transformation );
+      KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+      id_transformation );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id_cluster );
+      KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id_cluster );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER, table );
 
@@ -760,35 +769,34 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id );
+      KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
-        id_transformation );
-    table
-        .addValue(
-            new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER ),
-            id_slave );
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+      id_transformation );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id_slave );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE, table );
 
     return id;
   }
 
-  public synchronized void
-    insertTransStepCondition( ObjectId id_transformation, ObjectId id_step, ObjectId id_condition )
-      throws KettleException {
+  public synchronized void insertTransStepCondition( ObjectId id_transformation, ObjectId id_step,
+    ObjectId id_condition ) throws KettleException {
     String tablename = KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION;
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue(
+    table
+      .addValue(
         new ValueMeta(
-            KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
-        id_transformation );
+          KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION,
+          ValueMetaInterface.TYPE_INTEGER ), id_transformation );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
+      KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
     table.addValue(
-        new ValueMeta(
-            KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER ),
-        id_condition );
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER ),
+      id_condition );
 
     connectionDelegate.insertTableRow( tablename, table );
   }
@@ -800,24 +808,24 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   public synchronized String[] getTransformationNames( ObjectId id_directory, boolean includeDeleted )
     throws KettleException {
     return connectionDelegate.getStrings( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY ) + " = ? ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME ), id_directory );
+      + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY ) + " = ? ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME ), id_directory );
   }
 
   public List<RepositoryElementMetaInterface> getJobObjects( ObjectId id_directory, boolean includeDeleted )
     throws KettleException {
     return getRepositoryObjects(
-        quoteTable( KettleDatabaseRepository.TABLE_R_JOB ), RepositoryObjectType.JOB, id_directory );
+      quoteTable( KettleDatabaseRepository.TABLE_R_JOB ), RepositoryObjectType.JOB, id_directory );
   }
 
-  public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId id_directory, boolean includeDeleted )
-    throws KettleException {
+  public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId id_directory,
+    boolean includeDeleted ) throws KettleException {
     List<RepositoryElementMetaInterface> objects =
-        getRepositoryObjects(
-            quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ), RepositoryObjectType.TRANSFORMATION,
-            id_directory );
+      getRepositoryObjects(
+        quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ), RepositoryObjectType.TRANSFORMATION,
+        id_directory );
     if ( objects.size() > 0 ) {
       System.out.println( objects.get( 0 ).getRepositoryDirectory().getPath() );
     }
@@ -827,275 +835,279 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   /**
    * @param id_directory
    * @return A list of RepositoryObjects
-   * 
+   *
    * @throws KettleException
    */
   private synchronized List<RepositoryElementMetaInterface> getRepositoryObjects( String tableName,
-      RepositoryObjectType objectType, ObjectId id_directory ) throws KettleException {
+    RepositoryObjectType objectType, ObjectId id_directory ) throws KettleException {
     return connectionDelegate.getRepositoryObjects( tableName, objectType, id_directory );
   }
 
   public synchronized String[] getJobNames( ObjectId id_directory, boolean includeDeleted ) throws KettleException {
     return connectionDelegate.getStrings( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_JOB_NAME ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ) + " = ? ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_JOB_NAME ), id_directory );
+      + quote( KettleDatabaseRepository.FIELD_JOB_NAME ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ) + " = ? ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_JOB_NAME ), id_directory );
   }
 
   public synchronized String[] getDirectoryNames( ObjectId id_directory ) throws KettleException {
     return connectionDelegate.getStrings( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ? ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ), id_directory );
+      + quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ? ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ), id_directory );
   }
 
   public synchronized String[] getJobNames() throws KettleException {
     return connectionDelegate.getStrings( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_JOB_NAME ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB ) + " ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_JOB_NAME ) );
+      + quote( KettleDatabaseRepository.FIELD_JOB_NAME ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB ) + " ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_JOB_NAME ) );
   }
 
   public ObjectId[] getSubConditionIDs( ObjectId id_condition ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT ) + " = ? ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ), id_condition );
+      + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT ) + " = ? ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ), id_condition );
   }
 
   public ObjectId[] getTransNoteIDs( ObjectId id_transformation ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_NOTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION ) + " = ?", id_transformation );
+      + quote( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_NOTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION ) + " = ?", id_transformation );
   }
 
   public ObjectId[] getTransformationConditionIDs( ObjectId id_transformation ) throws KettleException {
-    return connectionDelegate.getIDs( "SELECT "
+    return connectionDelegate.getIDs(
+      "SELECT "
         + quote( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION ) + " FROM "
         + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+        + quote( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION ) + " = ? ",
+      id_transformation );
   }
 
   public ObjectId[] getTransformationDatabaseIDs( ObjectId id_transformation ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION ) + " = ?", id_transformation );
+      + quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION ) + " = ?", id_transformation );
   }
 
   public ObjectId[] getJobNoteIDs( ObjectId id_job ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_NOTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB ) + " = ?", id_job );
+      + quote( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_NOTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB ) + " = ?", id_job );
   }
 
   public ObjectId[] getDatabaseIDs( boolean includeDeleted ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE ) + " ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE ) );
+      + quote( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE ) + " ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE ) );
   }
 
   public ObjectId[] getDatabaseAttributeIDs( ObjectId id_database ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE ) + " = ? ", id_database );
+      + quote( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE ) + " = ? ", id_database );
   }
 
   public ObjectId[] getPartitionSchemaIDs( boolean includeDeleted ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ) + " ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME ) );
+      + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ) + " ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME ) );
   }
 
   public ObjectId[] getPartitionIDs( ObjectId id_partition_schema ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA ) + " = ? ", id_partition_schema );
+      + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA ) + " = ? ", id_partition_schema );
   }
 
   public ObjectId[] getTransformationPartitionSchemaIDs( ObjectId id_transformation ) throws KettleException {
-    return connectionDelegate
-        .getIDs(
-            "SELECT "
-                + quote( KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA ) + " FROM "
-                + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA ) + " WHERE "
-                + quote( KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION ) + " = ? ",
-            id_transformation );
+    return connectionDelegate.getIDs(
+      "SELECT "
+        + quote( KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA ) + " FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION ) + " = ? ",
+      id_transformation );
   }
 
   public ObjectId[] getTransformationClusterSchemaIDs( ObjectId id_transformation ) throws KettleException {
     return connectionDelegate.getIDs(
-        "SELECT ID_TRANS_CLUSTER FROM "
-            + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER ) + " WHERE ID_TRANSFORMATION = ? ",
-        id_transformation );
+      "SELECT ID_TRANS_CLUSTER FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER ) + " WHERE ID_TRANSFORMATION = ? ",
+      id_transformation );
   }
 
   public ObjectId[] getClusterIDs( boolean includeDeleted ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ) + " ORDER BY "
-        + quote( KettleDatabaseRepository.FIELD_CLUSTER_NAME ) );
+      + quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ) + " ORDER BY "
+      + quote( KettleDatabaseRepository.FIELD_CLUSTER_NAME ) );
   }
 
   public ObjectId[] getSlaveIDs( boolean includeDeleted ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ) );
+      + quote( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ) );
   }
 
   public ObjectId[] getClusterSlaveIDs( ObjectId id_cluster_schema ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER ) + " = ? ", id_cluster_schema );
+      + quote( KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER ) + " = ? ", id_cluster_schema );
   }
 
   public synchronized String[] getDatabaseNames( boolean includeDeleted ) throws KettleException {
     String nameField = quote( KettleDatabaseRepository.FIELD_DATABASE_NAME );
     return connectionDelegate.getStrings( "SELECT "
-        + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE ) + " ORDER BY " + nameField );
+      + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE ) + " ORDER BY "
+      + nameField );
   }
 
   public synchronized String[] getPartitionSchemaNames( boolean includeDeleted ) throws KettleException {
     String nameField = quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME );
     return connectionDelegate.getStrings( "SELECT "
-        + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ) + " ORDER BY "
-        + nameField );
+      + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ) + " ORDER BY "
+      + nameField );
   }
 
   public synchronized String[] getSlaveNames( boolean includeDeleted ) throws KettleException {
     String nameField = quote( KettleDatabaseRepository.FIELD_SLAVE_NAME );
     return connectionDelegate.getStrings( "SELECT "
-        + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ) + " ORDER BY " + nameField );
+      + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ) + " ORDER BY " + nameField );
   }
 
   public synchronized String[] getClusterNames( boolean includeDeleted ) throws KettleException {
     String nameField = quote( KettleDatabaseRepository.FIELD_CLUSTER_NAME );
-    return connectionDelegate.getStrings( "SELECT "
-        + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ) + " ORDER BY " + nameField );
+    return connectionDelegate
+      .getStrings( "SELECT "
+        + nameField + " FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ) + " ORDER BY "
+        + nameField );
   }
 
   public ObjectId[] getStepIDs( ObjectId id_transformation ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_STEP ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION ) + " = ?", id_transformation );
+      + quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_STEP ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION ) + " = ?", id_transformation );
   }
 
   public synchronized String[] getTransformationsUsingDatabase( ObjectId id_database ) throws KettleException {
     ObjectId[] transIds =
-        connectionDelegate.getIDs( "SELECT DISTINCT "
-            + quote( FIELD_STEP_DATABASE_ID_TRANSFORMATION ) + " FROM "
-            + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ) + " WHERE "
-            + quote( FIELD_STEP_DATABASE_ID_DATABASE ) + " = ?", id_database );
+      connectionDelegate.getIDs( "SELECT DISTINCT "
+        + quote( FIELD_STEP_DATABASE_ID_TRANSFORMATION ) + " FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ) + " WHERE "
+        + quote( FIELD_STEP_DATABASE_ID_DATABASE ) + " = ?", id_database );
 
     return transDelegate.getTransformationsWithIDList( transIds );
   }
 
   public synchronized String[] getJobsUsingDatabase( ObjectId id_database ) throws KettleException {
     ObjectId[] jobIds =
-        connectionDelegate.getIDs( "SELECT DISTINCT "
-            + quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB ) + " FROM "
-            + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE ) + " WHERE "
-            + quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE ) + " = ? ", id_database );
+      connectionDelegate.getIDs( "SELECT DISTINCT "
+        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB ) + " FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE ) + " = ? ", id_database );
 
     return jobDelegate.getJobsWithIDList( jobIds );
   }
 
   public synchronized String[] getClustersUsingSlave( ObjectId id_slave ) throws KettleException {
     return connectionDelegate.getStrings( "SELECT DISTINCT "
-        + quote( FIELD_CLUSTER_SLAVE_ID_CLUSTER ) + " FROM " + quoteTable( TABLE_R_CLUSTER_SLAVE ) + " WHERE "
-        + quote( FIELD_CLUSTER_SLAVE_ID_SLAVE ) + " = ?", id_slave );
+      + quote( FIELD_CLUSTER_SLAVE_ID_CLUSTER ) + " FROM " + quoteTable( TABLE_R_CLUSTER_SLAVE ) + " WHERE "
+      + quote( FIELD_CLUSTER_SLAVE_ID_SLAVE ) + " = ?", id_slave );
   }
 
   public synchronized String[] getTransformationsUsingSlave( ObjectId id_slave ) throws KettleException {
     ObjectId[] transIds =
-        connectionDelegate.getIDs( "SELECT DISTINCT "
-            + quote( FIELD_TRANS_SLAVE_ID_TRANSFORMATION ) + " FROM " + quoteTable( TABLE_R_TRANS_SLAVE ) + " WHERE "
-            + quote( FIELD_TRANS_SLAVE_ID_SLAVE ) + " = ?", id_slave );
+      connectionDelegate.getIDs( "SELECT DISTINCT "
+        + quote( FIELD_TRANS_SLAVE_ID_TRANSFORMATION ) + " FROM " + quoteTable( TABLE_R_TRANS_SLAVE )
+        + " WHERE " + quote( FIELD_TRANS_SLAVE_ID_SLAVE ) + " = ?", id_slave );
     return transDelegate.getTransformationsWithIDList( transIds );
   }
 
   public synchronized String[] getTransformationsUsingPartitionSchema( ObjectId id_partition_schema )
     throws KettleException {
     ObjectId[] transIds =
-        connectionDelegate.getIDs( "SELECT DISTINCT "
-            + quote( FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION ) + " FROM "
-            + quoteTable( TABLE_R_TRANS_PARTITION_SCHEMA ) + " WHERE "
-            + quote( FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " = ?", id_partition_schema );
+      connectionDelegate.getIDs( "SELECT DISTINCT "
+        + quote( FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION ) + " FROM "
+        + quoteTable( TABLE_R_TRANS_PARTITION_SCHEMA ) + " WHERE "
+        + quote( FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " = ?", id_partition_schema );
     return transDelegate.getTransformationsWithIDList( transIds );
   }
 
   public synchronized String[] getTransformationsUsingCluster( ObjectId id_cluster ) throws KettleException {
     ObjectId[] transIds =
-        connectionDelegate.getIDs( "SELECT DISTINCT "
-            + quote( FIELD_TRANS_CLUSTER_ID_TRANSFORMATION ) + " FROM " + quoteTable( TABLE_R_TRANS_CLUSTER )
-            + " WHERE " + quote( FIELD_TRANS_CLUSTER_ID_CLUSTER ) + " = ?", id_cluster );
+      connectionDelegate.getIDs( "SELECT DISTINCT "
+        + quote( FIELD_TRANS_CLUSTER_ID_TRANSFORMATION ) + " FROM " + quoteTable( TABLE_R_TRANS_CLUSTER )
+        + " WHERE " + quote( FIELD_TRANS_CLUSTER_ID_CLUSTER ) + " = ?", id_cluster );
     return transDelegate.getTransformationsWithIDList( transIds );
   }
 
   public ObjectId[] getJobHopIDs( ObjectId id_job ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_HOP ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB ) + " = ?", id_job );
+      + quote( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_HOP ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB ) + " = ?", id_job );
   }
 
   public ObjectId[] getTransDependencyIDs( ObjectId id_transformation ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DEPENDENCY ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_DEPENDENCY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION ) + " = ?", id_transformation );
+      + quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DEPENDENCY ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_DEPENDENCY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION ) + " = ?", id_transformation );
   }
 
   public ObjectId[] getJobEntryIDs( ObjectId id_job ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB ) + " = ?", id_job );
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB ) + " = ?", id_job );
   }
 
   public ObjectId[] getJobEntryCopyIDs( ObjectId id_job ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB ) + " = ?", id_job );
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB ) + " = ?", id_job );
   }
 
   public ObjectId[] getJobEntryCopyIDs( ObjectId id_job, ObjectId id_jobentry ) throws KettleException {
     return connectionDelegate.getIDs( "SELECT "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY ) + " FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB ) + " = ? AND "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY ) + " = ? ", id_job, id_jobentry );
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY ) + " FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB ) + " = ? AND "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY ) + " = ? ", id_job, id_jobentry );
   }
 
   private RowMetaAndData getStepDatabase( ObjectId id_step ) throws KettleException {
     return connectionDelegate.getOneRow(
-        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ),
-        quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_STEP ), id_step );
+      quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ),
+      quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_STEP ), id_step );
   }
 
   private RowMetaAndData getJobEntryDatabase( ObjectId id_jobentry ) throws KettleException {
     return connectionDelegate.getOneRow(
-        quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE ),
-        quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY ), id_jobentry );
+      quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE ),
+      quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY ), id_jobentry );
   }
 
   // STEP ATTRIBUTES: SAVE
 
   /**
    * GZips and then base64 encodes an array of bytes to a String
-   * 
+   *
    * @param val
    *          the array of bytes to convert to a string
    * @return the base64 encoded string
@@ -1129,8 +1141,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   public synchronized void delSteps( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_STEP ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_STEP ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void deleteCondition( ObjectId id_condition ) throws KettleException {
@@ -1146,8 +1158,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       deleteCondition( id_condition );
     } else {
       connectionDelegate.performDelete( "DELETE FROM "
-          + quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ) + " WHERE "
-          + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ) + " = ? ", id_condition );
+        + quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ) + " = ? ", id_condition );
     }
   }
 
@@ -1156,14 +1168,16 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     for ( int i = 0; i < ids.length; i++ ) {
       deleteCondition( ids[i] );
     }
-    connectionDelegate.performDelete( "DELETE FROM "
+    connectionDelegate.performDelete(
+      "DELETE FROM "
         + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+        + quote( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION ) + " = ? ",
+      id_transformation );
   }
 
   /**
    * Delete the relationships between the transformation/steps and the databases.
-   * 
+   *
    * @param id_transformation
    *          the transformation for which we want to delete the databases.
    * @throws KettleException
@@ -1171,13 +1185,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    */
   public synchronized void delStepDatabases( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_DATABASE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   /**
    * Delete the relationships between the job/job entries and the databases.
-   * 
+   *
    * @param id_job
    *          the job for which we want to delete the databases.
    * @throws KettleDatabaseException
@@ -1185,95 +1199,94 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    */
   public synchronized void delJobEntryDatabases( ObjectId id_job ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delJobEntries( ObjectId id_job ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delJobEntryCopies( ObjectId id_job ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delDependencies( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_DEPENDENCY ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_DEPENDENCY ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void delStepAttributes( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void delTransAttributes( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void delJobAttributes( ObjectId id_job ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delPartitionSchemas( ObjectId id_transformation ) throws KettleException {
-    connectionDelegate
-        .performDelete(
-            "DELETE FROM "
-                + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA ) + " WHERE "
-                + quote( KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION ) + " = ? ",
-            id_transformation );
+    connectionDelegate.performDelete(
+      "DELETE FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION ) + " = ? ",
+      id_transformation );
   }
 
   public synchronized void delPartitions( ObjectId id_partition_schema ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA ) + " = ? ", id_partition_schema );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA ) + " = ? ", id_partition_schema );
   }
 
   public synchronized void delClusterSlaves( ObjectId id_cluster ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER ) + " =  ? ", id_cluster );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER ) + " =  ? ", id_cluster );
   }
 
   public synchronized void delTransformationClusters( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void delTransformationSlaves( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void delJobEntryAttributes( ObjectId id_job ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delTransHops( ObjectId id_transformation ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_HOP ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANSFORMATION ) + " =  ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_HOP ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANSFORMATION ) + " =  ? ", id_transformation );
   }
 
   public synchronized void delJobHops( ObjectId id_job ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_HOP ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_HOP ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delTransNotes( ObjectId id_transformation ) throws KettleException {
@@ -1281,13 +1294,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     for ( int i = 0; i < ids.length; i++ ) {
       connectionDelegate.performDelete( "DELETE FROM "
-          + quoteTable( KettleDatabaseRepository.TABLE_R_NOTE ) + " WHERE "
-          + quote( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE ) + " = ? ", ids[i] );
+        + quoteTable( KettleDatabaseRepository.TABLE_R_NOTE ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE ) + " = ? ", ids[i] );
     }
 
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_NOTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_NOTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void delJobNotes( ObjectId id_job ) throws KettleException {
@@ -1295,41 +1308,43 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     for ( int i = 0; i < ids.length; i++ ) {
       connectionDelegate.performDelete( "DELETE FROM "
-          + quoteTable( KettleDatabaseRepository.TABLE_R_NOTE ) + " WHERE "
-          + quote( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE ) + " = ? ", ids[i] );
+        + quoteTable( KettleDatabaseRepository.TABLE_R_NOTE ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE ) + " = ? ", ids[i] );
     }
 
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_NOTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB_NOTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delTrans( ObjectId id_transformation ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.DELETE_TRANSFORMATION );
 
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
   public synchronized void delJob( ObjectId id_job ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.DELETE_TRANSFORMATION );
 
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_JOB ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_JOB_ID_JOB ) + " = ? ", id_job );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_JOB ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_JOB_ID_JOB ) + " = ? ", id_job );
   }
 
   public synchronized void delTransStepCondition( ObjectId id_transformation ) throws KettleException {
-    connectionDelegate.performDelete( "DELETE FROM "
+    connectionDelegate.performDelete(
+      "DELETE FROM "
         + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION ) + " = ? ", id_transformation );
+        + quote( KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION ) + " = ? ",
+      id_transformation );
   }
 
   public synchronized void delValue( ObjectId id_value ) throws KettleException {
     connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ) + " = ? ", id_value );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ) + " = ? ", id_value );
   }
 
   public synchronized void deleteSlave( ObjectId id_slave ) throws KettleException {
@@ -1347,11 +1362,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     if ( transList.length == 0 && clustList.length == 0 ) {
       connectionDelegate.performDelete( "DELETE FROM "
-          + quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ) + " WHERE "
-          + quote( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE ) + " = ? ", id_slave );
+        + quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE ) + " = ? ", id_slave );
       connectionDelegate.performDelete( "DELETE FROM "
-          + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE ) + " WHERE "
-          + quote( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE ) + " = ? ", id_slave );
+        + quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE ) + " = ? ", id_slave );
       commit();
     } else {
       StringBuffer message = new StringBuffer();
@@ -1372,7 +1387,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
       KettleDependencyException e = new KettleDependencyException( message.toString() );
       throw new KettleDependencyException( "This slave server is still in use by one or more transformations ("
-          + transList.length + ") or cluster schemas (" + clustList.length + ") :", e );
+        + transList.length + ") or cluster schemas (" + clustList.length + ") :", e );
     }
   }
 
@@ -1448,7 +1463,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Update the list in R_STEP_TYPE using the StepLoader StepPlugin entries
-   * 
+   *
    * @return the SQL statements executed
    * @throws KettleException
    *           if the update didn't go as planned.
@@ -1459,7 +1474,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Update the list in R_DATABASE_TYPE using the plugin registry
-   * 
+   *
    * @return the SQL statements executed
    * @throws KettleException
    *           if the update didn't go as planned.
@@ -1470,7 +1485,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Update the list in R_JOBENTRY_TYPE
-   * 
+   *
    * @exception KettleException
    *              if something went wrong during the update.
    */
@@ -1558,7 +1573,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Read all the databases defined in the repository
-   * 
+   *
    * @return a list of all the databases defined in the repository
    * @throws KettleException
    */
@@ -1583,7 +1598,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   /**
    * Set this directory during import to signal that job entries like Trans and Job need to point to job entries
    * relative to this directory.
-   * 
+   *
    * @param importBaseDirectory
    *          the base import directory, selected by the user
    */
@@ -1594,7 +1609,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   /**
    * The directory set during import to signal that job entries like Trans and Job need to point to job entries relative
    * to this directory
-   * 
+   *
    * @return the base import directory, selected by the user
    */
   public RepositoryDirectory getImportBaseDirectory() {
@@ -1603,7 +1618,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Create or upgrade repository tables & fields, populate lookup tables, ...
-   * 
+   *
    * @param monitor
    *          The progress monitor to use, or null if no monitor is present.
    * @param upgrade
@@ -1612,12 +1627,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    *          the list of statements to populate
    * @param dryrun
    *          true if we don't actually execute the statements
-   * 
+   *
    * @throws KettleException
    *           in case something goes wrong!
    */
   public void createRepositorySchema( ProgressMonitorListener monitor, boolean upgrade, List<String> statements,
-      boolean dryRun ) throws KettleException {
+    boolean dryRun ) throws KettleException {
     creationHelper.createRepositorySchema( monitor, upgrade, statements, dryRun );
   }
 
@@ -1675,7 +1690,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   // get
 
-  public boolean getStepAttributeBoolean( ObjectId id_step, int nr, String code, boolean def ) throws KettleException {
+  public boolean getStepAttributeBoolean( ObjectId id_step, int nr, String code, boolean def )
+    throws KettleException {
     return connectionDelegate.getStepAttributeBoolean( id_step, nr, code, def );
   }
 
@@ -1711,7 +1727,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * This method is only used to check backward compatibility with the 2.x series.
-   * 
+   *
    * @param id_step
    * @param nr
    * @param code
@@ -1727,7 +1743,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   public void loadJobEntry( JobEntryBase jobEntryBase, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     jobEntryDelegate.loadJobEntryBase( jobEntryBase, id_jobentry, databases, slaveServers );
   }
 
@@ -1760,8 +1776,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     return jobEntryDelegate.insertJobEntry( id_job, jobEntryBase );
   }
 
-  public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases )
-    throws KettleException {
+  public DatabaseMeta
+    loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases )
+      throws KettleException {
     long id_database = getStepAttributeInteger( idStep, code );
     if ( id_database <= 0 ) {
       return null;
@@ -1771,14 +1788,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * This method saves the object ID of the database object (if not null) in the step attributes
-   * 
+   *
    * @param id_transformation
    * @param id_step
    * @param string
    * @param database
    */
   public void saveDatabaseMetaStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
-      DatabaseMeta database ) throws KettleException {
+    DatabaseMeta database ) throws KettleException {
     ObjectId id = null;
     if ( database != null ) {
       id = database.getObjectId();
@@ -1788,7 +1805,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, int nr,
-      String idCode, List<DatabaseMeta> databases ) throws KettleException {
+    String idCode, List<DatabaseMeta> databases ) throws KettleException {
 
     long id_database = getJobEntryAttributeInteger( id_jobentry, nr, idCode );
     if ( id_database <= 0 ) {
@@ -1803,7 +1820,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * This method saves the object ID of the database object (if not null) in the step attributes
-   * 
+   *
    * @param id_job
    * @param nr
    * @param id_jobentry
@@ -1813,7 +1830,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    * @param database
    */
   public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
-      String idCode, DatabaseMeta database ) throws KettleException {
+    String idCode, DatabaseMeta database ) throws KettleException {
     ObjectId id = null;
     if ( database != null ) {
       id = database.getObjectId();
@@ -1830,7 +1847,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * Load a condition from the repository with the Object ID stored in a step attribute.
-   * 
+   *
    * @param id_step
    * @param code
    * @return
@@ -1849,14 +1866,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   /**
    * This method saves the object ID of the condition object (if not null) in the step attributes
-   * 
+   *
    * @param id_step
    * @param code
    * @param condition
    */
-  public void
-    saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
-      throws KettleException {
+  public void saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
+    Condition condition ) throws KettleException {
     ObjectId id = null;
     if ( condition != null ) {
       id = saveCondition( condition );
@@ -1883,7 +1899,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   public List<RepositoryElementMetaInterface> getJobAndTransformationObjects( ObjectId id_directory,
-      boolean includeDeleted ) throws KettleException {
+    boolean includeDeleted ) throws KettleException {
     // TODO not the most efficient impl; also, no sorting is done
     List<RepositoryElementMetaInterface> objs = new ArrayList<RepositoryElementMetaInterface>();
     objs.addAll( getJobObjects( id_directory, includeDeleted ) );
@@ -1928,9 +1944,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
           Date modifiedDate = row.getDate( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE, null );
           long dirId = row.getInteger( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, 0 );
           RepositoryDirectoryInterface directory =
-              loadRepositoryDirectoryTree().findDirectory( new LongObjectId( dirId ) );
+            loadRepositoryDirectoryTree().findDirectory( new LongObjectId( dirId ) );
           return new RepositoryObject(
-              objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false );
+            objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false );
         }
 
         case JOB: {
@@ -1941,14 +1957,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
           Date modifiedDate = row.getDate( KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, null );
           long dirId = row.getInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, 0 );
           RepositoryDirectoryInterface directory =
-              loadRepositoryDirectoryTree().findDirectory( new LongObjectId( dirId ) );
+            loadRepositoryDirectoryTree().findDirectory( new LongObjectId( dirId ) );
           return new RepositoryObject(
-              objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false );
+            objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false );
         }
         default:
           throw new KettleException( "Object type "
-              + objectType.getTypeDescription()
-              + " was specified.  Only information from transformations and jobs can be retrieved at this time." );
+            + objectType.getTypeDescription()
+            + " was specified.  Only information from transformations and jobs can be retrieved at this time." );
           // Nothing matches, return null
       }
     } catch ( Exception e ) {

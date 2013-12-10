@@ -32,8 +32,8 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 
 @Step(
-    id = "TableAgileMart", image = "plugins/steps/MonetDBAgileMartPlugin/icon.png", name = "Table Agile Mart",
-    description = "Table Agile Mart", categoryDescription = "Agile BI" )
+  id = "TableAgileMart", image = "plugins/steps/MonetDBAgileMartPlugin/icon.png", name = "Table Agile Mart",
+  description = "Table Agile Mart", categoryDescription = "Agile BI" )
 public class TableAgileMartMeta extends TableOutputMeta {
 
   protected long rowLimit = getLongProperty( "AgileBIRowLimit", 100000 ); // have a nice default
@@ -79,14 +79,14 @@ public class TableAgileMartMeta extends TableOutputMeta {
         TransMeta transMeta = getParentStepMeta().getParentTransMeta();
         if ( transMeta != null ) {
           setDatabaseMeta( transMeta.findDatabase( transMeta.environmentSubstitute( getStringProperty(
-              "AgileBIDatabase", "AgileBI" ) ) ) );
+            "AgileBIDatabase", "AgileBI" ) ) ) );
         }
       }
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
 
     setupDatabaseMeta();
 

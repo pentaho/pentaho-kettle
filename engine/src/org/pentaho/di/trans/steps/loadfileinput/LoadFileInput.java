@@ -49,18 +49,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read files, parse them and convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 20-06-2007
  */
 public class LoadFileInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private LoadFileInputMeta meta;
   private LoadFileInputData data;
 
   public LoadFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -68,7 +68,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     if ( meta.addResultFile() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
       resultFile.setComment( "File was read by a LoadFileInput step" );
       addResultFile( resultFile );
     }
@@ -111,9 +111,9 @@ public class LoadFileInput extends BaseStep implements StepInterface {
               if ( data.indexOfFilenameField < 0 ) {
                 // The field is unreachable !
                 logError( BaseMessages.getString( PKG, "LoadFileInput.Log.ErrorFindingField" )
-                    + "[" + meta.getDynamicFilenameField() + "]" );
+                  + "[" + meta.getDynamicFilenameField() + "]" );
                 throw new KettleException( BaseMessages.getString(
-                    PKG, "LoadFileInput.Exception.CouldnotFindField", meta.getDynamicFilenameField() ) );
+                  PKG, "LoadFileInput.Exception.CouldnotFindField", meta.getDynamicFilenameField() ) );
               }
             }
             // Get the number of previous fields
@@ -127,7 +127,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString(
-              PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(), Fieldvalue ) );
+            PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(), Fieldvalue ) );
         }
 
         FileObject file = null;
@@ -208,7 +208,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "LoadFileInput.Log.UnableToOpenFile", "" + data.filenr, data.file
-          .toString(), e.toString() ) );
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -227,7 +227,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
       if ( isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "LoadFileInput.Log.ReadRow", data.outputRowMeta
-            .getString( outputRowData ) ) );
+          .getString( outputRowData ) ) );
       }
 
       putRow( data.outputRowMeta, outputRowData );
@@ -262,7 +262,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
   /**
    * Read a text file.
-   * 
+   *
    * @param vfsFilename
    *          the filename or URL to read from
    * @param charSetName
@@ -292,8 +292,8 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
       retval = stringBuffer.toString();
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LoadFileInput.Error.GettingFileContent", vfsFilename, e
-          .toString() ) );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LoadFileInput.Error.GettingFileContent", vfsFilename, e.toString() ) );
     } finally {
       if ( reader != null ) {
         try {
@@ -318,7 +318,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
       logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
-          PKG, "LoadFileInput.Log.RequiredFiles", message ) );
+        PKG, "LoadFileInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesMissing", message ) );
     }
@@ -327,15 +327,15 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
       logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
-          PKG, "LoadFileInput.Log.RequiredNotAccessibleFiles", message ) );
+        PKG, "LoadFileInput.Log.RequiredNotAccessibleFiles", message ) );
       throw new KettleException( BaseMessages.getString(
-          PKG, "LoadFileInput.Log.RequiredNotAccessibleFilesMissing", message ) );
+        PKG, "LoadFileInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 

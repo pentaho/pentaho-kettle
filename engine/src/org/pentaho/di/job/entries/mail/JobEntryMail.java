@@ -84,12 +84,12 @@ import org.w3c.dom.Node;
 
 /**
  * Describes a Mail Job Entry.
- * 
+ *
  * @author Matt Created on 17-06-2003
- * 
+ *
  */
 public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!!
 
   private String server;
 
@@ -197,7 +197,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_secure_auth", usingSecureAuthentication ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "auth_user", authenticationUser ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "auth_password", Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ) ) );
+      XMLHandler
+        .addTagValue( "auth_password", Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ) ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "only_comment", onlySendComment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_HTML", useHTML ) );
@@ -214,8 +215,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      <filetypes>" );
     if ( fileType != null ) {
       for ( int i = 0; i < fileType.length; i++ ) {
-        retval
-            .append( "        " ).append( XMLHandler.addTagValue( "filetype", ResultFile.getTypeCode( fileType[i] ) ) );
+        retval.append( "        " ).append(
+          XMLHandler.addTagValue( "filetype", ResultFile.getTypeCode( fileType[i] ) ) );
       }
     }
     retval.append( "      </filetypes>" );
@@ -238,8 +239,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     fileType = new int[nrFileTypes];
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       setServer( XMLHandler.getTagValue( entrynode, "server" ) );
@@ -260,7 +261,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_secure_auth" ) ) );
       setAuthenticationUser( XMLHandler.getTagValue( entrynode, "auth_user" ) );
       setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(
-          entrynode, "auth_password" ) ) );
+        entrynode, "auth_password" ) ) );
 
       setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_comment" ) ) );
       setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_HTML" ) ) );
@@ -306,7 +307,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       // First load the common parts like name & description, then the attributes...
       //
@@ -331,7 +332,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       usingSecureAuthentication = rep.getJobEntryAttributeBoolean( id_jobentry, "use_secure_auth" );
       authenticationUser = rep.getJobEntryAttributeString( id_jobentry, "auth_user" );
       authenticationPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "auth_password" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "auth_password" ) );
       onlySendComment = rep.getJobEntryAttributeBoolean( id_jobentry, "only_comment" );
       useHTML = rep.getJobEntryAttributeBoolean( id_jobentry, "use_HTML" );
       usePriority = rep.getJobEntryAttributeBoolean( id_jobentry, "use_Priority" );
@@ -362,7 +363,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'mail' from the repository with id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
 
   }
@@ -391,7 +392,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "use_secure_auth", usingSecureAuthentication );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_user", authenticationUser );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "auth_password", Encr
-          .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
+        .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "only_comment", onlySendComment );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "use_HTML", useHTML );
@@ -417,7 +418,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'mail' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type 'mail' to the repository for id_job=" + id_job, dbe );
     }
 
   }
@@ -886,55 +888,65 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Job" ) ).append( endRow );
         messageText.append( "-----" ).append( endRow );
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobName" ) + "    : " ).append(
-            parentJob.getJobMeta().getName() ).append( endRow );
+          parentJob.getJobMeta().getName() ).append( endRow );
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobDirectory" ) + "  : " ).append(
-            parentJob.getJobMeta().getRepositoryDirectory() ).append( endRow );
-        messageText
-            .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntry" ) + "   : " ).append( getName() )
-            .append( endRow );
+          parentJob.getJobMeta().getRepositoryDirectory() ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntry" ) + "   : " ).append(
+          getName() ).append( endRow );
         messageText.append( Const.CR );
       }
 
       if ( includeDate ) {
         messageText
-            .append( endRow ).append( BaseMessages.getString( PKG, "JobMail.Log.Comment.MsgDate" ) + ": " ).append(
-                XMLHandler.date2string( new Date() ) ).append( endRow ).append( endRow );
+          .append( endRow ).append( BaseMessages.getString( PKG, "JobMail.Log.Comment.MsgDate" ) + ": " )
+          .append( XMLHandler.date2string( new Date() ) ).append( endRow ).append( endRow );
       }
       if ( !onlySendComment && result != null ) {
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PreviousResult" ) + ":" ).append( endRow );
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PreviousResult" ) + ":" ).append(
+          endRow );
         messageText.append( "-----------------" ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntryNr" ) + "         : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntryNr" ) + "         : " ).append(
             result.getEntryNr() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Errors" ) + "               : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Errors" ) + "               : " ).append(
             result.getNrErrors() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRead" ) + "           : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRead" ) + "           : " ).append(
             result.getNrLinesRead() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesWritten" ) + "        : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesWritten" ) + "        : " ).append(
             result.getNrLinesWritten() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesInput" ) + "          : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesInput" ) + "          : " ).append(
             result.getNrLinesInput() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesOutput" ) + "         : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesOutput" ) + "         : " ).append(
             result.getNrLinesOutput() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesUpdated" ) + "        : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesUpdated" ) + "        : " ).append(
             result.getNrLinesUpdated() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRejected" ) + "       : " ).append(
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.LinesRejected" ) + "       : " ).append(
             result.getNrLinesRejected() ).append( endRow );
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Status" ) + "  : " ).append(
-            result.getExitStatus() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Result" ) + "               : " ).append(
+          result.getExitStatus() ).append( endRow );
+        messageText
+          .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Result" ) + "               : " ).append(
             result.getResult() ).append( endRow );
         messageText.append( endRow );
       }
 
       if ( !onlySendComment
-          && ( !Const.isEmpty( environmentSubstitute( contactPerson ) ) || !Const
-              .isEmpty( environmentSubstitute( contactPhone ) ) ) ) {
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.ContactInfo" ) + " :" ).append( endRow );
+        && ( !Const.isEmpty( environmentSubstitute( contactPerson ) ) || !Const
+          .isEmpty( environmentSubstitute( contactPhone ) ) ) ) {
+        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.ContactInfo" ) + " :" ).append(
+          endRow );
         messageText.append( "---------------------" ).append( endRow );
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PersonToContact" ) + " : " ).append(
-            environmentSubstitute( contactPerson ) ).append( endRow );
+          environmentSubstitute( contactPerson ) ).append( endRow );
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.Tel" ) + "  : " ).append(
-            environmentSubstitute( contactPhone ) ).append( endRow );
+          environmentSubstitute( contactPhone ) ).append( endRow );
         messageText.append( endRow );
       }
 
@@ -943,7 +955,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         JobTracker jobTracker = parentJob.getJobTracker();
         if ( jobTracker != null ) {
           messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PathToJobentry" ) + ":" ).append(
-              endRow );
+            endRow );
           messageText.append( "------------------------" ).append( endRow );
 
           addBacktracking( jobTracker, messageText );
@@ -1010,8 +1022,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           } else {
             // create a single ZIP archive of all files
             masterZipfile =
-                new File( System.getProperty( "java.io.tmpdir" )
-                    + Const.FILE_SEPARATOR + environmentSubstitute( zipFilename ) );
+              new File( System.getProperty( "java.io.tmpdir" )
+                + Const.FILE_SEPARATOR + environmentSubstitute( zipFilename ) );
             ZipOutputStream zipOutputStream = null;
             try {
               zipOutputStream = new ZipOutputStream( new FileOutputStream( masterZipfile ) );
@@ -1044,7 +1056,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                 }
               }
             } catch ( Exception e ) {
-              logError( "Error zipping attachement files into file [" + masterZipfile.getPath() + "] : " + e.toString() );
+              logError( "Error zipping attachement files into file ["
+                + masterZipfile.getPath() + "] : " + e.toString() );
               logError( Const.getStackTracker( e ) );
               result.setNrErrors( 1 );
             } finally {
@@ -1139,11 +1152,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         if ( usingAuthentication ) {
           if ( !Const.isEmpty( port ) ) {
             transport.connect( environmentSubstitute( Const.NVL( server, "" ) ), Integer
-                .parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ), environmentSubstitute( Const.NVL(
-                authenticationUser, "" ) ), environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
+              .parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ), environmentSubstitute( Const.NVL(
+              authenticationUser, "" ) ), environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
           } else {
             transport.connect( environmentSubstitute( Const.NVL( server, "" ) ), environmentSubstitute( Const.NVL(
-                authenticationUser, "" ) ), environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
+              authenticationUser, "" ) ), environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
           }
         } else {
           transport.connect();
@@ -1244,7 +1257,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
       if ( jer.getLogDate() != null ) {
         messageText.append( " (" );
-        messageText.append( XMLHandler.date2string( jer.getLogDate() ) ); // $NON-NLS-1$
+        messageText.append( XMLHandler.date2string( jer.getLogDate() ) );
         messageText.append( ')' );
       }
     }
@@ -1304,11 +1317,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     andValidator().validate( this, "server", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "replyAddress", remarks, putValidators( notBlankValidator(), emailValidator() ) );
+    andValidator()
+      .validate( this, "replyAddress", remarks, putValidators( notBlankValidator(), emailValidator() ) );
 
     andValidator().validate( this, "destination", remarks, putValidators( notBlankValidator() ) );
 

@@ -32,7 +32,8 @@ import org.pentaho.di.trans.steps.excelinput.poi.PoiWorkbook;
 
 public class WorkbookFactory {
 
-  public static KWorkbook getWorkbook( SpreadSheetType type, String filename, String encoding ) throws KettleException {
+  public static KWorkbook getWorkbook( SpreadSheetType type, String filename, String encoding )
+    throws KettleException {
     switch ( type ) {
       case JXL:
         return new XLSWorkbook( filename, encoding );

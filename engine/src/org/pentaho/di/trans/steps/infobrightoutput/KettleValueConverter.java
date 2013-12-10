@@ -33,7 +33,7 @@ import com.infobright.etl.model.ValueConverterException;
 
 /**
  * Wraps a Kettle ValueMetaInterface in a portable way.
- * 
+ *
  * @author geoffrey.falk@infobright.com
  */
 public class KettleValueConverter implements ValueConverter {

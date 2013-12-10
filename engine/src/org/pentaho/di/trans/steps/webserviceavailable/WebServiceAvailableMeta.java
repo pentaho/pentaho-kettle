@@ -52,11 +52,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-01-2010
- * 
+ *
  */
 
 public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = WebServiceAvailableMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WebServiceAvailableMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** dynamic filename */
   private String urlField;
@@ -118,7 +118,8 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
     this.resultfieldname = resultfieldname;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -135,7 +136,7 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !Const.isEmpty( resultfieldname ) ) {
       ValueMetaInterface v = new ValueMeta( resultfieldname, ValueMeta.TYPE_BOOLEAN );
@@ -155,7 +156,8 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       urlField = XMLHandler.getTagValue( stepnode, "urlField" );
       connectTimeOut = XMLHandler.getTagValue( stepnode, "connectTimeOut" );
@@ -163,7 +165,7 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
       resultfieldname = XMLHandler.getTagValue( stepnode, "resultfieldname" );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "WebServiceAvailableMeta.Exception.UnableToReadStepInfo" ), e );
+        PKG, "WebServiceAvailableMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -176,7 +178,7 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "WebServiceAvailableMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+        PKG, "WebServiceAvailableMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -188,14 +190,15 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
       rep.saveStepAttribute( id_transformation, id_step, "readTimeOut", readTimeOut );
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "WebServiceAvailableMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "WebServiceAvailableMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -220,20 +223,20 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "WebServiceAvailableMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "WebServiceAvailableMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "WebServiceAvailableMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "WebServiceAvailableMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new WebServiceAvailable( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

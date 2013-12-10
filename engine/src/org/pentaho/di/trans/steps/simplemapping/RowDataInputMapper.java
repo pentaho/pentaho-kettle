@@ -30,9 +30,9 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 /**
  * This class renamed fields in rows before passing them to the row producer specified
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class RowDataInputMapper {
   private RowProducer rowProducer;

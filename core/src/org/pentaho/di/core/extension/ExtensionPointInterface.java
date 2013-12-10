@@ -29,7 +29,7 @@ public interface ExtensionPointInterface {
 
   /**
    * This method is called by the Kettle code
-   * 
+   *
    * @param log
    *          the logging channel to log debugging information to
    * @param object

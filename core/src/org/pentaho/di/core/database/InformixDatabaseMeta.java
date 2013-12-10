@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains Informix specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -35,7 +35,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -72,13 +73,13 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
       return "jdbc:odbc:" + databaseName;
     } else {
       return "jdbc:informix-sqli://"
-          + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER=" + getServername();
+        + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER=" + getServername();
     }
   }
 
   /**
    * Indicates the need to insert a placeholder (0) for auto increment fields.
-   * 
+   *
    * @return true if we need a placeholder for auto increment fields in insert statements.
    */
   @Override
@@ -112,7 +113,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -129,13 +130,13 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -152,13 +153,13 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -185,7 +186,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           if ( use_autoinc ) {
             retval += "SERIAL8";
@@ -255,7 +256,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Get the SQL to insert a new empty unknown record in a dimension.
-   * 
+   *
    * @param schemaTable
    *          the schema-table name to insert into
    * @param keyField

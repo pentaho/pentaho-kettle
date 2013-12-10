@@ -43,20 +43,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Search and replace in string.
- * 
+ *
  * @author Samatar Hassan
  * @since 28 September 2008
  */
 public class ReplaceString extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = ReplaceStringMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ReplaceStringMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ReplaceStringMeta meta;
 
   private ReplaceStringData data;
 
   public ReplaceString( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -78,7 +78,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
     }
   }
 
-  private Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord, String patternString ) {
+  private Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
+    String patternString ) {
     int flags = 0;
     if ( literalParsing && !wholeWord ) {
       flags |= Pattern.LITERAL;
@@ -121,9 +122,9 @@ public class ReplaceString extends BaseStep implements StepInterface {
     for ( int i = 0; i < data.numFields; i++ ) {
 
       String value =
-          replaceString(
-              getInputRowMeta().getString( row, data.inStreamNrs[i] ), data.patterns[i], getResolvedReplaceByString(
-                  i, row ) );
+        replaceString(
+          getInputRowMeta().getString( row, data.inStreamNrs[i] ), data.patterns[i],
+          getResolvedReplaceByString( i, row ) );
 
       if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
         // update field value
@@ -166,30 +167,31 @@ public class ReplaceString extends BaseStep implements StepInterface {
       for ( int i = 0; i < data.numFields; i++ ) {
         data.inStreamNrs[i] = getInputRowMeta().indexOfValue( meta.getFieldInStream()[i] );
         if ( data.inStreamNrs[i] < 0 ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "ReplaceString.Exception.FieldRequired", meta
-              .getFieldInStream()[i] ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "ReplaceString.Exception.FieldRequired", meta.getFieldInStream()[i] ) );
         }
 
         // check field type
         if ( getInputRowMeta().getValueMeta( data.inStreamNrs[i] ).getType() != ValueMeta.TYPE_STRING ) {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "ReplaceString.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
+            PKG, "ReplaceString.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
         }
 
         data.outStreamNrs[i] = environmentSubstitute( meta.getFieldOutStream()[i] );
 
         data.patterns[i] =
-            buildPattern(
-                meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
-                meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
-                meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES, environmentSubstitute( meta
-                    .getReplaceString()[i] ) );
+          buildPattern(
+            meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
+            meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
+            meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES, environmentSubstitute( meta
+              .getReplaceString()[i] ) );
 
         String field = meta.getFieldReplaceByString()[i];
         if ( !Const.isEmpty( field ) ) {
           data.replaceFieldIndex[i] = getInputRowMeta().indexOfValue( field );
           if ( data.replaceFieldIndex[i] < 0 ) {
-            throw new KettleStepException( BaseMessages.getString( PKG, "ReplaceString.Exception.FieldRequired", field ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "ReplaceString.Exception.FieldRequired", field ) );
           }
         } else {
           data.replaceFieldIndex[i] = -1;

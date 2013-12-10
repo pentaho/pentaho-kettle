@@ -35,7 +35,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Reads information from an OLAP datasource using MDX
- * 
+ *
  * @author Paul Stoellberger
  * @since 11-MAR-2010
  */
@@ -43,7 +43,8 @@ public class OlapInput extends BaseStep implements StepInterface {
   private OlapInputMeta meta;
   private OlapData data;
 
-  public OlapInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public OlapInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

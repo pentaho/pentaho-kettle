@@ -42,8 +42,8 @@ public class IntegerValidator implements JobEntryValidator {
 
   private String VALIDATOR_NAME = "integer";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context ) {
+  public boolean validate( CheckResultSourceInterface source, String propertyName,
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
 
     Object result = null;
     String value = null;

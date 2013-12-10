@@ -38,18 +38,19 @@ import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
 
 public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager {
 
-  private static Class<?> PKG = MonetDBAgileMartMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MonetDBAgileMartMeta.class; // for i18n purposes, needed by Translator2!!
 
   private long rowLimit = -1;
   private long bufferLimit = -1;
 
-  public MonetDBAgileMart( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public MonetDBAgileMart( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     // TODO - pull "AgileBI" from configuration
     String connection = MonetDBAgileMartMeta.getStringProperty( "AgileBIDatabase", "AgileBI" );
-    ( (MonetDBAgileMartMeta) stepMeta.getStepMetaInterface() ).setDatabaseMeta( transMeta.findDatabase( connection ) );
+    ( (MonetDBAgileMartMeta) stepMeta.getStepMetaInterface() ).setDatabaseMeta( transMeta
+      .findDatabase( connection ) );
 
   }
 
@@ -138,7 +139,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 
   /**
    * Write the current buffer to the mclient. This is called when a data load is cancelled
-   * 
+   *
    * @return
    */
   public boolean flush() {
@@ -148,9 +149,9 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
     } catch ( KettleException e ) {
       MonetDBBulkLoaderMeta meta = getMeta();
       setMessage( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.FlushError", meta.getTableName(), this
-          .getMessage() ) );
+        .getMessage() ) );
       log.logError( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.FlushError", meta.getTableName(), this
-          .getMessage() ), e );
+        .getMessage() ), e );
     }
     return false;
   }
@@ -162,9 +163,9 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
       return true;
     } catch ( KettleException e ) {
       setMessage( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this
-          .getMessage() ) );
+        .getMessage() ) );
       log.logError( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this
-          .getMessage() ), e );
+        .getMessage() ), e );
       return false;
     }
   }
@@ -184,9 +185,9 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
       return true;
     } catch ( KettleException e ) {
       setMessage( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.SchemaError", meta.getTableName(), this
-          .getMessage() ) );
+        .getMessage() ) );
       log.logError( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.SchemaError", meta.getTableName(), this
-          .getMessage() ), e );
+        .getMessage() ), e );
     }
     return false;
   }
@@ -197,10 +198,10 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
       drop();
       return true;
     } catch ( KettleException e ) {
-      setMessage( BaseMessages
-          .getString( PKG, "MonetDBAgileMart.Log.DropError", meta.getTableName(), this.getMessage() ) );
+      setMessage( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.DropError", meta.getTableName(), this
+        .getMessage() ) );
       log.logError( BaseMessages.getString( PKG, "MonetDBAgileMart.Log.DropError", meta.getTableName(), this
-          .getMessage() ), e );
+        .getMessage() ), e );
     }
     return false;
   }

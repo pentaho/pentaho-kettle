@@ -58,7 +58,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 			
 			if (map.source_index >= 0 && value != null && value instanceof Object [])
 				copyRow[i] = (((Object []) value).length == 0 ? null : ((Object []) value)[map.source_index]);
-			else 
+			else
 				copyRow[i] = value;
 			
 			copyRow[i] = fixType(map, copyRow[i]);
@@ -84,9 +84,9 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 		else if (map.target_field_type == ValueMetaInterface.TYPE_STRING && value instanceof Object []){
 			String stringValue = "";
 			for(Object singleValue : (Object []) value)
-				stringValue += "," + singleValue.toString(); 
+				stringValue += "," + singleValue.toString();
 			
-			fixedValue = stringValue.substring(1); 
+			fixedValue = stringValue.substring(1);
 		}
 			
 		

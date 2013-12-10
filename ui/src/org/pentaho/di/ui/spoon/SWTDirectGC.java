@@ -48,7 +48,7 @@ import org.pentaho.di.ui.util.ImageUtil;
 /**
  * SWTGC draws on an Image. This class draws directly on an SWT GC. getImage() returns null as a consequence of not
  * being created nor used.
- * 
+ *
  * @author matt
  */
 public class SWTDirectGC implements GCInterface {
@@ -300,7 +300,7 @@ public class SWTDirectGC implements GCInterface {
         break;
       case PARALLEL:
         gc.setLineAttributes( new LineAttributes(
-            gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10 ) );
+          gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10 ) );
         break;
       default:
         break;

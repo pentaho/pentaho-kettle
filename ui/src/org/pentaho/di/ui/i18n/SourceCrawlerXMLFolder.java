@@ -27,9 +27,9 @@ import java.util.List;
 
 /**
  * Contains the definition of which elements to scan in which XML files in which folder
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SourceCrawlerXMLFolder {
   private String folder;
@@ -46,7 +46,7 @@ public class SourceCrawlerXMLFolder {
    * @param elements
    */
   public SourceCrawlerXMLFolder( String folder, String wildcard, String keyPrefix,
-      List<SourceCrawlerXMLElement> elements, List<SourceCrawlerPackageException> packageExceptions ) {
+    List<SourceCrawlerXMLElement> elements, List<SourceCrawlerPackageException> packageExceptions ) {
     this.folder = folder;
     this.wildcard = wildcard;
     this.keyPrefix = keyPrefix;
@@ -60,8 +60,8 @@ public class SourceCrawlerXMLFolder {
    */
   public SourceCrawlerXMLFolder( String folder, String wildcard, String keyPrefix ) {
     this(
-        folder, wildcard, keyPrefix, new ArrayList<SourceCrawlerXMLElement>(),
-        new ArrayList<SourceCrawlerPackageException>() );
+      folder, wildcard, keyPrefix, new ArrayList<SourceCrawlerXMLElement>(),
+      new ArrayList<SourceCrawlerPackageException>() );
   }
 
   /**

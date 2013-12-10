@@ -51,21 +51,36 @@ import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 /**
  * This class was a "copy and modification" of Kettle's JsonOutputTests.
- * 
+ *
  * @author Hendy Irawan <hendy@soluvas.com> Modified by Sean Flatley, removing dependency on external text file to hold
  *         expected results and modifying code to handle "Compatibility Mode".
  */
 public class JsonOutputTest extends TestCase {
 
   private static final String EXPECTED_NON_COMPATIBILITY_JSON =
-      "{\"data\":[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"}]}";
+    "{\"data\":[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"}]}";
 
   private static final String EXPECTED_COMPATIBILITY_MODE_JSON =
-      "{\"data\":[{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]}";
+    "{\"data\":[{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]}";
 
   /**
    * Creates a row generator step for this class..
-   * 
+   *
    * @param name
    * @param registry
    * @return
@@ -98,7 +113,7 @@ public class JsonOutputTest extends TestCase {
 
   /**
    * Create a dummy step for this class.
-   * 
+   *
    * @param name
    * @param registry
    * @return
@@ -116,7 +131,7 @@ public class JsonOutputTest extends TestCase {
   /**
    * Create result data for test case 1. Each Object array in element in list should mirror the data written by the row
    * generator created by the createRowGenerator method.
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -150,7 +165,7 @@ public class JsonOutputTest extends TestCase {
 
   /**
    * Creates a RowMetaInterface with a ValueMetaInterface with the name "filename".
-   * 
+   *
    * @return
    */
   public RowMetaInterface createRowMetaInterface() {
@@ -166,7 +181,7 @@ public class JsonOutputTest extends TestCase {
 
   /**
    * Creates data... Will add more as I figure what the data is.
-   * 
+   *
    * @param fileName
    * @return
    */
@@ -181,16 +196,16 @@ public class JsonOutputTest extends TestCase {
   /**
    * Creates a row meta interface for the fields that are defined by performing a getFields and by checking "Result
    * filenames - Add filenames to result from "Text File Input" dialog.
-   * 
+   *
    * @return
    */
   public RowMetaInterface createResultRowMetaInterface() {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "State", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "City", ValueMeta.TYPE_STRING ) };
+    {
+      new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "State", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "City", ValueMeta.TYPE_STRING ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );

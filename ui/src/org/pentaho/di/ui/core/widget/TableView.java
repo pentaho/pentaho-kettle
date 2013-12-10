@@ -102,13 +102,12 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
  * Widget to display or modify data, displayed in a Table format.
- * 
+ *
  * @author Matt
  * @since 27-05-2003
  */
 public class TableView extends Composite {
-  private static Class<?> PKG = TableView.class; // for i18n purposes, needed by
-                                                 // Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableView.class; // for i18n purposes, needed by Translator2!!
 
   private Composite parent;
   private ColumnInfo[] columns;
@@ -183,12 +182,12 @@ public class TableView extends Composite {
   private boolean showingConversionErrorsInline;
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
-      ModifyListener lsm, PropsUI pr ) {
+    ModifyListener lsm, PropsUI pr ) {
     this( space, parent, style, columnInfo, nrRows, false, lsm, pr );
   }
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
-      boolean readOnly, ModifyListener lsm, PropsUI pr ) {
+    boolean readOnly, ModifyListener lsm, PropsUI pr ) {
     super( parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS | SWT.NO_RADIO_GROUP );
     this.parent = parent;
     this.columns = columnInfo;
@@ -311,22 +310,22 @@ public class TableView extends Composite {
 
     mRow = new Menu( table );
     MenuItem miRowInsBef = new MenuItem( mRow, SWT.NONE );
-    miRowInsBef.setText( OsHelper
-        .customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.InsertBeforeRow" ) ) );
+    miRowInsBef.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "TableView.menu.InsertBeforeRow" ) ) );
     MenuItem miRowInsAft = new MenuItem( mRow, SWT.NONE );
-    miRowInsAft.setText( OsHelper
-        .customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.InsertAfterRow" ) ) );
+    miRowInsAft.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "TableView.menu.InsertAfterRow" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     MenuItem miRowUp = new MenuItem( mRow, SWT.NONE );
     miRowUp.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.MoveUp" ) ) );
     MenuItem miRowDown = new MenuItem( mRow, SWT.NONE );
     miRowDown.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.MoveDown" ) ) );
     MenuItem miCol1 = new MenuItem( mRow, SWT.NONE );
-    miCol1.setText( OsHelper.customizeMenuitemText( BaseMessages
-        .getString( PKG, "TableView.menu.OptimalSizeWithHeader" ) ) );
+    miCol1.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "TableView.menu.OptimalSizeWithHeader" ) ) );
     MenuItem miCol2 = new MenuItem( mRow, SWT.NONE );
     miCol2.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
-        PKG, "TableView.menu.OptimalSizeWithoutHeader" ) ) );
+      PKG, "TableView.menu.OptimalSizeWithoutHeader" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     MenuItem miClear = new MenuItem( mRow, SWT.NONE );
     miClear.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.ClearAll" ) ) );
@@ -334,28 +333,31 @@ public class TableView extends Composite {
     MenuItem miSelAll = new MenuItem( mRow, SWT.NONE );
     miSelAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.SelectAll" ) ) );
     MenuItem miUnselAll = new MenuItem( mRow, SWT.NONE );
-    miUnselAll
-        .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.ClearSelection" ) ) );
+    miUnselAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "TableView.menu.ClearSelection" ) ) );
     MenuItem miFilter = new MenuItem( mRow, SWT.NONE );
-    miFilter.setText( OsHelper
-        .customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.FilteredSelection" ) ) );
+    miFilter.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "TableView.menu.FilteredSelection" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     MenuItem miClipAll = new MenuItem( mRow, SWT.NONE );
-    miClipAll
-        .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.CopyToClipboard" ) ) );
+    miClipAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "TableView.menu.CopyToClipboard" ) ) );
     MenuItem miPasteAll = new MenuItem( mRow, SWT.NONE );
     miPasteAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
-        PKG, "TableView.menu.PasteFromClipboard" ) ) );
+      PKG, "TableView.menu.PasteFromClipboard" ) ) );
     MenuItem miCutAll = new MenuItem( mRow, SWT.NONE );
-    miCutAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.CutSelected" ) ) );
+    miCutAll
+      .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.CutSelected" ) ) );
     MenuItem miDelAll = new MenuItem( mRow, SWT.NONE );
-    miDelAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.DeleteSelected" ) ) );
+    miDelAll.setText( OsHelper.customizeMenuitemText( BaseMessages
+      .getString( PKG, "TableView.menu.DeleteSelected" ) ) );
     MenuItem miKeep = new MenuItem( mRow, SWT.NONE );
-    miKeep.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.KeepSelected" ) ) );
+    miKeep
+      .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.KeepSelected" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     MenuItem miCopyToAll = new MenuItem( mRow, SWT.NONE );
     miCopyToAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
-        PKG, "TableView.menu.CopyFieldToAllRows" ) ) );
+      PKG, "TableView.menu.CopyFieldToAllRows" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     miEditUndo = new MenuItem( mRow, SWT.NONE );
     miEditRedo = new MenuItem( mRow, SWT.NONE );
@@ -558,7 +560,7 @@ public class TableView extends Composite {
 
         /*
          * left = e.keyCode == SWT.ARROW_LEFT && last_carret_position==0;
-         * 
+         *
          * if (text!=null && !text.isDisposed()) right = e.keyCode == SWT.ARROW_RIGHT &&
          * last_carret_position==text.getText().length();
          */
@@ -567,7 +569,7 @@ public class TableView extends Composite {
         // We edit the data after moving to another cell, only if editNextCell =
         // true;
         if ( e.character == SWT.CR
-            || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.TAB || left || right ) {
+          || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.TAB || left || right ) {
           if ( activeTableItem == null ) {
             return;
           }
@@ -654,7 +656,8 @@ public class TableView extends Composite {
           applyComboChange( activeTableItem, activeTableRow, activeTableColumn );
 
           String[] after_edit = getItemText( activeTableItem );
-          checkChanged( new String[][] { before_edit }, new String[][] { after_edit }, new int[] { activeTableRow } );
+          checkChanged(
+            new String[][] { before_edit }, new String[][] { after_edit }, new int[] { activeTableRow } );
 
           int maxcols = table.getColumnCount();
           int maxrows = table.getItemCount();
@@ -797,8 +800,8 @@ public class TableView extends Composite {
 
         // Move cursor: set selection on the row in question.
         if ( ( e.keyCode == SWT.ARROW_DOWN && !shift )
-            || ( e.keyCode == SWT.ARROW_UP && !shift ) || ( e.keyCode == SWT.HOME && !shift )
-            || ( e.keyCode == SWT.END && !shift ) ) {
+          || ( e.keyCode == SWT.ARROW_UP && !shift ) || ( e.keyCode == SWT.HOME && !shift )
+          || ( e.keyCode == SWT.END && !shift ) ) {
           switch ( e.keyCode ) {
             case SWT.ARROW_DOWN:
               activeTableRow++;
@@ -923,11 +926,11 @@ public class TableView extends Composite {
 
         if ( activeTableColumn > 0 ) {
           boolean text_char =
-              ( e.character >= 'a' && e.character <= 'z' )
-                  || ( e.character >= 'A' && e.character <= 'Z' ) || ( e.character >= '0' && e.character <= '9' )
-                  || ( e.character == ' ' ) || ( e.character == '_' ) || ( e.character == ',' )
-                  || ( e.character == '.' ) || ( e.character == '+' ) || ( e.character == '-' )
-                  || ( e.character == '*' ) || ( e.character == '/' ) || ( e.character == ';' );
+            ( e.character >= 'a' && e.character <= 'z' )
+              || ( e.character >= 'A' && e.character <= 'Z' ) || ( e.character >= '0' && e.character <= '9' )
+              || ( e.character == ' ' ) || ( e.character == '_' ) || ( e.character == ',' )
+              || ( e.character == '.' ) || ( e.character == '+' ) || ( e.character == '-' )
+              || ( e.character == '*' ) || ( e.character == '/' ) || ( e.character == ';' );
 
           // setSelection(row, rownr, colnr);
           // character a-z, A-Z, 0-9: start typing...
@@ -1004,12 +1007,12 @@ public class TableView extends Composite {
                   return;
                 } else {
                   if ( i == table.getColumnCount() - 1 && // last column
-                      pt.x > rect.x + rect.width && // to the right
-                      pt.y >= rect.y && pt.y <= rect.y + rect.height // same
-                                                                     // height
-                                                                     // as this
-                                                                     // visible
-                                                                     // item
+                    pt.x > rect.x + rect.width && // to the right
+                    pt.y >= rect.y && pt.y <= rect.y + rect.height // same
+                                                                   // height
+                                                                   // as this
+                                                                   // visible
+                                                                   // item
                   ) {
                     return; // don't do anything when clicking to the right of
                             // the grid.
@@ -1301,7 +1304,7 @@ public class TableView extends Composite {
       lastRowCount = table.getItemCount();
     } catch ( Exception e ) {
       new ErrorDialog( this.getShell(), BaseMessages.getString( PKG, "TableView.ErrorDialog.title" ), BaseMessages
-          .getString( PKG, "TableView.ErrorDialog.description" ), e );
+        .getString( PKG, "TableView.ErrorDialog.description" ), e );
     }
   }
 
@@ -1335,7 +1338,7 @@ public class TableView extends Composite {
 
   /**
    * Inform the content listener that content changed.
-   * 
+   *
    * @param rownr
    * @param colnr
    * @param textData
@@ -1660,7 +1663,7 @@ public class TableView extends Composite {
    * Example: ----------------------------------------------------------------- Field in stream;Dimension field
    * TIME;TIME DATA_TYPE;DATA_TYPE MAP_TYPE;MAP_TYPE RESOLUTION;RESOLUTION START_TIME;START_TIME
    * -----------------------------------------------------------------
-   * 
+   *
    * !! Paste at the end of the table! --> Create new table item for every line
    */
 
@@ -2039,7 +2042,7 @@ public class TableView extends Composite {
       };
 
       final TextVar textWidget =
-          new TextVar( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface );
+        new TextVar( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface );
 
       text = textWidget;
       textWidget.setText( content );
@@ -2444,7 +2447,7 @@ public class TableView extends Composite {
   /**
    * Count non-empty rows in the table... IMPORTANT: always call this method before calling getNonEmpty(int selnr): for
    * performance reasons we cache the row indexes.
-   * 
+   *
    * @return the number of rows/table-items that are not empty
    */
   public int nrNonEmpty() {
@@ -2463,7 +2466,7 @@ public class TableView extends Composite {
   /**
    * Return the row/table-item on the specified index. IMPORTANT: the indexes of the non-empty rows are populated with a
    * call to nrNonEmpty(). Make sure to call that first.
-   * 
+   *
    * @param index
    *          the index of the non-empty row/table-item
    * @return the requested non-empty row/table-item
@@ -2694,21 +2697,21 @@ public class TableView extends Composite {
     if ( prev != null ) {
       miEditUndo.setEnabled( true );
       miEditUndo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.Undo", prev
-          .toString() ) ) );
+        .toString() ) ) );
     } else {
       miEditUndo.setEnabled( false );
       miEditUndo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
-          PKG, "TableView.menu.UndoNotAvailable" ) ) );
+        PKG, "TableView.menu.UndoNotAvailable" ) ) );
     }
 
     if ( next != null ) {
       miEditRedo.setEnabled( true );
       miEditRedo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.Redo", next
-          .toString() ) ) );
+        .toString() ) ) );
     } else {
       miEditRedo.setEnabled( false );
       miEditRedo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
-          PKG, "TableView.menu.RedoNotAvailable" ) ) );
+        PKG, "TableView.menu.RedoNotAvailable" ) ) );
     }
 
   }
@@ -2899,7 +2902,7 @@ public class TableView extends Composite {
 
   /**
    * Get all the strings from a certain column as an array
-   * 
+   *
    * @param colnr
    *          The column to return
    * @return the column values as a string array.
@@ -3083,7 +3086,7 @@ public class TableView extends Composite {
 
   /**
    * Returns copy of columns array in order to prevent unintented modifications.
-   * 
+   *
    * @return columns array
    */
   public ColumnInfo[] getColumns() {

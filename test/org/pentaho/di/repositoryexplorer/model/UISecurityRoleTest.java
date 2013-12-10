@@ -40,26 +40,26 @@ public class UISecurityRoleTest {
     /*
      * roles.add(adminRole); roles.add(anonymousRole); roles.add(authenticatedRole); roles.add(ceoRole);
      * roles.add(ctoRole); roles.add(devRole); roles.add(devmgrRole); roles.add(isRole);
-     * 
+     *
      * joeUser = new UserInfo("joe", "password", "joe","joe", true); patUser = new UserInfo("pat", "password",
      * "pat","pat", true); suzyUser = new UserInfo("suzy", "password", "suzy","suzy", true); tiffanyUser = new
      * UserInfo("tiffany", "password", "tiffany","tiffany", true);
-     * 
+     *
      * adminRole.addUser(joeUser); adminRole.addUser(patUser);
-     * 
+     *
      * anonymousRole.addUser(tiffanyUser);
-     * 
+     *
      * authenticatedRole.addUser(joeUser); authenticatedRole.addUser(patUser); authenticatedRole.addUser(suzyUser);
      * authenticatedRole.addUser(tiffanyUser);
-     * 
+     *
      * ceoRole.addUser(joeUser);
-     * 
+     *
      * ctoRole.addUser(patUser);
-     * 
+     *
      * devmgrRole.addUser(joeUser); devmgrRole.addUser(patUser);
-     * 
+     *
      * isRole.addUser(joeUser); isRole.addUser(suzyUser);
-     * 
+     *
      * users.add(joeUser); users.add(patUser); users.add(suzyUser); users.add(tiffanyUser);
      */
   }

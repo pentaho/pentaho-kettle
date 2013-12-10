@@ -52,12 +52,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Retrieves values from a database by calling database stored procedures or functions
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
  */
 public class HTTP extends BaseStep implements StepInterface {
-  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!!
 
   private HTTPMeta meta;
   private HTTPData data;
@@ -76,7 +76,7 @@ public class HTTP extends BaseStep implements StepInterface {
         if ( data.argnrs[i] < 0 ) {
           logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField" ) + meta.getArgumentField()[i] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.CouldnotFindField", meta
-              .getArgumentField()[i] ) );
+            .getArgumentField()[i] ) );
         }
       }
     }
@@ -119,11 +119,10 @@ public class HTTP extends BaseStep implements StepInterface {
       if ( data.useHeaderParameters ) {
         for ( int i = 0; i < data.header_parameters_nrs.length; i++ ) {
           method.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString(
-              rowData, data.header_parameters_nrs[i] ) );
+            rowData, data.header_parameters_nrs[i] ) );
           if ( isDebug() ) {
-            log.logDebug( BaseMessages.getString(
-                PKG, "HTTPDialog.Log.HeaderValue", data.headerParameters[i].getName(), data.inputRowMeta.getString(
-                    rowData, data.header_parameters_nrs[i] ) ) );
+            log.logDebug( BaseMessages.getString( PKG, "HTTPDialog.Log.HeaderValue", data.headerParameters[i]
+              .getName(), data.inputRowMeta.getString( rowData, data.header_parameters_nrs[i] ) ) );
           }
         }
       }
@@ -170,7 +169,8 @@ public class HTTP extends BaseStep implements StepInterface {
             }
 
             if ( isDebug() ) {
-              log.logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
+              log
+                .logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
             }
 
             // the response
@@ -194,7 +194,8 @@ public class HTTP extends BaseStep implements StepInterface {
             }
 
           } else { // the status is a 401
-            throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.Authentication", data.realUrl ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "HTTP.Exception.Authentication", data.realUrl ) );
 
           }
         }
@@ -293,7 +294,7 @@ public class HTTP extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField", realUrlfieldName ) );
             throw new KettleException( BaseMessages.getString(
-                PKG, "HTTP.Exception.ErrorFindingField", realUrlfieldName ) );
+              PKG, "HTTP.Exception.ErrorFindingField", realUrlfieldName ) );
           }
         }
       } else {
@@ -313,15 +314,16 @@ public class HTTP extends BaseStep implements StepInterface {
       for ( int i = 0; i < nrHeaders; i++ ) {
         int fieldIndex = data.inputRowMeta.indexOfValue( meta.getHeaderField()[i] );
         if ( fieldIndex < 0 ) {
-          logError( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField" ) + meta.getHeaderField()[i] + "]" );
+          logError( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField" )
+            + meta.getHeaderField()[i] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField", meta
-              .getHeaderField()[i] ) );
+            .getHeaderField()[i] ) );
         }
 
         data.header_parameters_nrs[i] = fieldIndex;
         data.headerParameters[i] =
-            new NameValuePair( environmentSubstitute( meta.getHeaderParameter()[i] ), data.outputRowMeta.getString(
-                r, data.header_parameters_nrs[i] ) );
+          new NameValuePair( environmentSubstitute( meta.getHeaderParameter()[i] ), data.outputRowMeta
+            .getString( r, data.header_parameters_nrs[i] ) );
       }
 
     } // end if first

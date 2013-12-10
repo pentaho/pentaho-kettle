@@ -30,8 +30,8 @@ public class FileUtilsTest {
     String tempDir = TestUtils.createTempDir();
     String suff = tempDir.substring( tempDir.lastIndexOf( File.separator ) + 1 );
     tempDir += File.separator + suff + File.separator + suff;
-    assertTrue( "Dir should be created", FileUtil.createParentFolder(
-        getClass(), tempDir, true, new LogChannel( this ), null ) );
+    assertTrue( "Dir should be created", FileUtil.createParentFolder( getClass(), tempDir, true, new LogChannel(
+      this ), null ) );
     File fl = new File( tempDir.substring( 0, tempDir.lastIndexOf( File.separator ) ) );
     assertTrue( "Dir should exist", fl.exists() );
     fl.delete();

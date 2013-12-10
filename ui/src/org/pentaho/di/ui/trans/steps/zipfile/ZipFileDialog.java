@@ -55,7 +55,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ZipFileMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ZipFileMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlSourceFileNameField;
   private CCombo wSourceFileNameField;
@@ -536,8 +536,8 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "ZipFileDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "ZipFileDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "ZipFileDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "ZipFileDialog.FailedToGetFields.DialogMessage" ), ke );
       } finally {
         if ( source != null ) {
           wSourceFileNameField.setText( source );
@@ -554,9 +554,9 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 
   private void updateOperation() {
     wlMoveToFolderField
-        .setEnabled( ZipFileMeta.getOperationTypeByDesc( wOperation.getText() ) == ZipFileMeta.OPERATION_TYPE_MOVE );
+      .setEnabled( ZipFileMeta.getOperationTypeByDesc( wOperation.getText() ) == ZipFileMeta.OPERATION_TYPE_MOVE );
     wMoveToFolderField
-        .setEnabled( ZipFileMeta.getOperationTypeByDesc( wOperation.getText() ) == ZipFileMeta.OPERATION_TYPE_MOVE );
+      .setEnabled( ZipFileMeta.getOperationTypeByDesc( wOperation.getText() ) == ZipFileMeta.OPERATION_TYPE_MOVE );
 
   }
 }

@@ -37,19 +37,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Replace Field value by a constant value.
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class SetValueConstant extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SetValueConstantMeta meta;
   private SetValueConstantData data;
 
-  public SetValueConstant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public SetValueConstant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -87,7 +87,7 @@ public class SetValueConstant extends BaseStep implements StepInterface {
             if ( meta.getFieldName()[j].equals( meta.getFieldName()[i] ) ) {
               if ( j != i ) {
                 throw new KettleException( BaseMessages.getString(
-                    PKG, "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
+                  PKG, "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
               }
             }
           }
@@ -97,7 +97,7 @@ public class SetValueConstant extends BaseStep implements StepInterface {
           if ( data.fieldnrs[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta.getFieldName()[i] ) );
             throw new KettleException( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta
-                .getFieldName()[i] ) );
+              .getFieldName()[i] ) );
           }
 
           if ( meta.isSetEmptyString()[i] ) {

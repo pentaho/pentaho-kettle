@@ -45,18 +45,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Retrieves values from a database by calling database stored procedures or functions
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
- * 
+ *
  */
 public class DBProc extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DBProcMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DBProcMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DBProcMeta meta;
   private DBProcData data;
 
-  public DBProc( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public DBProc( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -77,7 +78,7 @@ public class DBProc extends BaseStep implements StepInterface {
           if ( data.argnrs[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "DBProc.Log.ErrorFindingField" ) + meta.getArgument()[i] + "]" );
             throw new KettleStepException( BaseMessages.getString( PKG, "DBProc.Exception.CouldnotFindField", meta
-                .getArgument()[i] ) );
+              .getArgument()[i] ) );
           }
         } else {
           data.argnrs[i] = -1;
@@ -85,18 +86,18 @@ public class DBProc extends BaseStep implements StepInterface {
       }
 
       data.db.setProcLookup( environmentSubstitute( meta.getProcedure() ), meta.getArgument(), meta
-          .getArgumentDirection(), meta.getArgumentType(), meta.getResultName(), meta.getResultType() );
+        .getArgumentDirection(), meta.getArgumentType(), meta.getResultName(), meta.getResultType() );
     }
 
     Object[] outputRowData = RowDataUtil.resizeArray( rowData, data.outputMeta.size() );
     int outputIndex = rowMeta.size();
 
     data.db.setProcValues( rowMeta, rowData, data.argnrs, meta.getArgumentDirection(), !Const.isEmpty( meta
-        .getResultName() ) );
+      .getResultName() ) );
 
     RowMetaAndData add =
-        data.db.callProcedure( meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), meta
-            .getResultName(), meta.getResultType() );
+      data.db.callProcedure( meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), meta
+        .getResultName(), meta.getResultType() );
     int addIndex = 0;
 
     // Function return?

@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 8-sep-2005
- * 
+ *
  */
 public class CalculatorData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;

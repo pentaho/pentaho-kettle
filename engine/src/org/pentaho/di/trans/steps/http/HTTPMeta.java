@@ -52,10 +52,10 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 10-dec-2006
- * 
+ *
  */
 public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!!
 
   // the timeout for waiting for data (milliseconds)
   public static final int DEFAULT_SOCKET_TIMEOUT = 10000;
@@ -271,7 +271,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
     this.urlField = urlField;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -331,20 +332,21 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Const.isEmpty( fieldName ) ) {
       ValueMetaInterface v = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     if ( !Const.isEmpty( resultCodeFieldName ) ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultCodeFieldName ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( resultCodeFieldName ), ValueMeta.TYPE_INTEGER );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     if ( !Const.isEmpty( responseTimeFieldName ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( responseTimeFieldName ), ValueMeta.TYPE_INTEGER );
+        new ValueMeta( space.environmentSubstitute( responseTimeFieldName ), ValueMeta.TYPE_INTEGER );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
@@ -391,7 +393,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       int nrargs;
 
@@ -468,7 +471,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
       resultCodeFieldName = rep.getStepAttributeString( id_step, "result_code" );
       responseTimeFieldName = rep.getStepAttributeString( id_step, "response_time" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "HTTPMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "HTTPMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -501,55 +505,56 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "result_code", resultCodeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "response_time", responseTimeFieldName );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "HTTPMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
+      throw new KettleException( BaseMessages.getString( PKG, "HTTPMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "HTTPMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "HTTPMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "HTTPMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "HTTPMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
     // check Url
     if ( urlInField ) {
       if ( Const.isEmpty( urlField ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "HTTPMeta.CheckResult.UrlfieldMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "HTTPMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "HTTPMeta.CheckResult.UrlfieldOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "HTTPMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( url ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "HTTPMeta.CheckResult.UrlMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "HTTPMeta.CheckResult.UrlMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "HTTPMeta.CheckResult.UrlOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "HTTPMeta.CheckResult.UrlOk" ), stepMeta );
       }
     }
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new HTTP( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -578,7 +583,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param proxyHost
    */
   public void setProxyHost( String proxyHost ) {
@@ -587,7 +592,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getProxyHost() {
@@ -596,7 +601,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param proxyPort
    */
   public void setProxyPort( String proxyPort ) {
@@ -605,7 +610,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getProxyPort() {
@@ -614,7 +619,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param httpLogin
    */
   public void setHttpLogin( String httpLogin ) {
@@ -623,7 +628,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getHttpLogin() {
@@ -632,7 +637,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param httpPassword
    */
   public void setHttpPassword( String httpPassword ) {
@@ -640,7 +645,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHttpPassword() {

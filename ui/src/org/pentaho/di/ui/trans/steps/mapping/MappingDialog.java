@@ -97,7 +97,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MappingMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MappingMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MappingMeta mappingMeta;
 
@@ -200,7 +200,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     private TableView wFieldMappings;
 
     public MappingDefinitionTab( MappingIODefinition definition, Text inputStep, Text outputStep, Button mainPath,
-        Text description, TableView fieldMappings ) {
+      Text description, TableView fieldMappings ) {
       super();
       this.definition = definition;
       wInputStep = inputStep;
@@ -439,8 +439,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     props.setLook( radioByReference );
     radioByReference.setSelection( false );
     radioByReference.setText( BaseMessages.getString( PKG, "MappingDialog.RadioRepByReference.Label" ) );
-    radioByReference.setToolTipText( BaseMessages
-        .getString( PKG, "MappingDialog.RadioRepByReference.Tooltip", Const.CR ) );
+    radioByReference.setToolTipText( BaseMessages.getString(
+      PKG, "MappingDialog.RadioRepByReference.Tooltip", Const.CR ) );
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment( 0, 0 );
     fdRadioByReference.right = new FormAttachment( 100, 0 );
@@ -696,18 +696,16 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MappingDialog.ErrorSelectingObject.DialogTitle" ), BaseMessages
-              .getString( PKG, "MappingDialog.ErrorSelectingObject.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "MappingDialog.ErrorSelectingObject.DialogTitle" ), BaseMessages
+          .getString( PKG, "MappingDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
   }
 
   private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
     // Read the transformation...
     //
-    mappingTransMeta =
-        repository.loadTransformation( transMeta.environmentSubstitute( transName ), repdir, null, true, null ); // reads
-                                                                                                                 // last
-                                                                                                                 // version
+    mappingTransMeta = repository.loadTransformation(
+      transMeta.environmentSubstitute( transName ), repdir, null, true, null );
     mappingTransMeta.clearChanged();
   }
 
@@ -720,9 +718,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       FileObject file =
-          vfsFileChooser.open(
-              shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
-              VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+        vfsFileChooser.open(
+          shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
+          VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
       if ( file == null ) {
         return;
       }
@@ -741,12 +739,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       }
     } catch ( IOException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages
-              .getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages
-              .getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     }
   }
 
@@ -771,8 +769,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MappingDialog.ErrorShowingTransformation.Title" ), BaseMessages
-              .getString( PKG, "MappingDialog.ErrorShowingTransformation.Message" ), e );
+        shell, BaseMessages.getString( PKG, "MappingDialog.ErrorShowingTransformation.Title" ), BaseMessages
+          .getString( PKG, "MappingDialog.ErrorShowingTransformation.Message" ), e );
     }
   }
 
@@ -786,12 +784,13 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
         if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.NoValidMappingDetailsFound" ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "MappingDialog.Exception.NoValidMappingDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)" ) );
+            PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)" ) );
         }
         loadRepositoryTrans( realTransname, repdir );
         break;
@@ -806,7 +805,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
   public void setActive() {
     boolean supportsReferences =
-        repository != null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+      repository != null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
 
     radioByName.setEnabled( repository != null );
     radioByReference.setEnabled( repository != null && supportsReferences );
@@ -825,7 +824,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   protected void setRadioButtons() {
     radioFilename.setSelection( specificationMethod == ObjectLocationSpecificationMethod.FILENAME );
     radioByName.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    radioByReference.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
+    radioByReference
+      .setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     setActive();
   }
 
@@ -926,16 +926,16 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     try {
       if ( repository == null ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "MappingDialog.Exception.NotConnectedToRepository.Message" ) );
+          PKG, "MappingDialog.Exception.NotConnectedToRepository.Message" ) );
       }
       RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.JOB );
       if ( transInf != null ) {
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages
-              .getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
+        PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 
@@ -1001,26 +1001,26 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   }
 
   private void addOutputMappingDefinitionTab( MappingIODefinition definition, int index ) {
-    addMappingDefinitionTab(
-        outputMappings.get( index ), index + 1 + inputMappings.size(), BaseMessages.getString(
-            PKG, "MappingDialog.OutputTab.Title" ), BaseMessages.getString( PKG, "MappingDialog.OutputTab.Tooltip" ),
-        BaseMessages.getString( PKG, "MappingDialog.OutputTab.label.InputSourceStepName" ), BaseMessages.getString(
-            PKG, "MappingDialog.OutputTab.label.OutputTargetStepName" ), BaseMessages.getString(
-            PKG, "MappingDialog.OutputTab.label.Description" ), BaseMessages.getString(
-            PKG, "MappingDialog.OutputTab.column.SourceField" ), BaseMessages.getString(
-            PKG, "MappingDialog.OutputTab.column.TargetField" ), false );
+    addMappingDefinitionTab( outputMappings.get( index ), index + 1 + inputMappings.size(), BaseMessages
+      .getString( PKG, "MappingDialog.OutputTab.Title" ), BaseMessages.getString(
+      PKG, "MappingDialog.OutputTab.Tooltip" ), BaseMessages.getString(
+      PKG, "MappingDialog.OutputTab.label.InputSourceStepName" ), BaseMessages.getString(
+      PKG, "MappingDialog.OutputTab.label.OutputTargetStepName" ), BaseMessages.getString(
+      PKG, "MappingDialog.OutputTab.label.Description" ), BaseMessages.getString(
+      PKG, "MappingDialog.OutputTab.column.SourceField" ), BaseMessages.getString(
+      PKG, "MappingDialog.OutputTab.column.TargetField" ), false );
 
   }
 
   private void addInputMappingDefinitionTab( MappingIODefinition definition, int index ) {
     addMappingDefinitionTab(
-        definition, index + 1, BaseMessages.getString( PKG, "MappingDialog.InputTab.Title" ), BaseMessages.getString(
-            PKG, "MappingDialog.InputTab.Tooltip" ), BaseMessages.getString(
-            PKG, "MappingDialog.InputTab.label.InputSourceStepName" ), BaseMessages.getString(
-            PKG, "MappingDialog.InputTab.label.OutputTargetStepName" ), BaseMessages.getString(
-            PKG, "MappingDialog.InputTab.label.Description" ), BaseMessages.getString(
-            PKG, "MappingDialog.InputTab.column.SourceField" ), BaseMessages.getString(
-            PKG, "MappingDialog.InputTab.column.TargetField" ), true );
+      definition, index + 1, BaseMessages.getString( PKG, "MappingDialog.InputTab.Title" ), BaseMessages
+        .getString( PKG, "MappingDialog.InputTab.Tooltip" ), BaseMessages.getString(
+        PKG, "MappingDialog.InputTab.label.InputSourceStepName" ), BaseMessages.getString(
+        PKG, "MappingDialog.InputTab.label.OutputTargetStepName" ), BaseMessages.getString(
+        PKG, "MappingDialog.InputTab.label.Description" ), BaseMessages.getString(
+        PKG, "MappingDialog.InputTab.column.SourceField" ), BaseMessages.getString(
+        PKG, "MappingDialog.InputTab.column.TargetField" ), true );
 
   }
 
@@ -1054,19 +1054,19 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     // fields for the source and target steps.
     //
     ColumnInfo[] colinfo =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "MappingDialog.Parameters.column.Variable" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "MappingDialog.Parameters.column.ValueOrField" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MappingDialog.Parameters.column.Variable" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MappingDialog.Parameters.column.ValueOrField" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
     colinfo[1].setUsingVariables( true );
 
     final TableView wMappingParameters =
-        new TableView(
-            transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, parameters
-                .getVariable().length, lsMod, props );
+      new TableView(
+        transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, parameters
+          .getVariable().length, lsMod, props );
     props.setLook( wMappingParameters );
     FormData fdMappings = new FormData();
     fdMappings.left = new FormAttachment( 0, 0 );
@@ -1153,7 +1153,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         StepMeta stepMeta = transMeta.findStep( stepname );
         if ( stepMeta == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname ) );
+            PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname ) );
         }
         return transMeta.getStepFields( stepMeta );
       }
@@ -1170,11 +1170,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         String[] stepnames = getMappingSteps( mappingTransMeta, mappingInput );
         if ( stepnames.length > 1 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length ) );
+            PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length ) );
         }
         if ( stepnames.length == 0 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length ) );
+            PKG, "MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length ) );
         }
         return mappingTransMeta.getStepFields( stepnames[0] );
       } else {
@@ -1183,7 +1183,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         StepMeta stepMeta = mappingTransMeta.findStep( stepname );
         if ( stepMeta == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname ) );
+            PKG, "MappingDialog.Exception.SpecifiedStepWasNotFound", stepname ) );
         }
         return mappingTransMeta.getStepFields( stepMeta );
       }
@@ -1191,8 +1191,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   }
 
   private void addMappingDefinitionTab( final MappingIODefinition definition, int index, final String tabTitle,
-      final String tabTooltip, String inputStepLabel, String outputStepLabel, String descriptionLabel,
-      String sourceColumnLabel, String targetColumnLabel, final boolean input ) {
+    final String tabTooltip, String inputStepLabel, String outputStepLabel, String descriptionLabel,
+    String sourceColumnLabel, String targetColumnLabel, final boolean input ) {
 
     final CTabItem wTab;
     if ( index >= wTabFolder.getItemCount() ) {
@@ -1337,7 +1337,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     wlDescription.setLayoutData( fdlDescription );
 
     final Text wDescription =
-        new Text( wInputComposite, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+      new Text( wInputComposite, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
     props.setLook( wDescription );
     wDescription.setText( Const.NVL( definition.getDescription(), "" ) );
     wDescription.addModifyListener( lsMod );
@@ -1370,12 +1370,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     wbEnterMapping.setEnabled( input );
 
     ColumnInfo[] colinfo =
-        new ColumnInfo[] {
-            new ColumnInfo( sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-            new ColumnInfo( targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo( sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+        new ColumnInfo( targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
     final TableView wFieldMappings =
-        new TableView(
-            transMeta, wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props );
+      new TableView(
+        transMeta, wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props );
     props.setLook( wFieldMappings );
     FormData fdMappings = new FormData();
     fdMappings.left = new FormAttachment( 0, 0 );
@@ -1429,7 +1429,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             wFieldMappings.optWidth( true );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
+          new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
               PKG, "MappingDialog.Exception.ErrorGettingMappingSourceAndTargetFields", e.toString() ), e );
         }
       }
@@ -1514,7 +1515,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     wTab.setControl( wInputComposite );
 
     final ApplyChanges applyChanges =
-        new MappingDefinitionTab( definition, wInputStep, wOutputStep, wMainPath, wDescription, wFieldMappings );
+      new MappingDefinitionTab( definition, wInputStep, wOutputStep, wMainPath, wDescription, wFieldMappings );
     changeList.add( applyChanges );
 
     // OK, suppose for some weird reason the user wants to remove an input
@@ -1556,31 +1557,35 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     wMultiInput.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         setTabFlags(
-            input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep );
+          input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep,
+          wbOutputStep );
       }
     } );
     wMultiOutput.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         setTabFlags(
-            input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep );
+          input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep,
+          wbOutputStep );
       }
     } );
     wMainPath.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         setTabFlags(
-            input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep );
+          input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep,
+          wbOutputStep );
       }
     } );
 
     setTabFlags(
-        input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep );
+      input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep,
+      wbOutputStep );
 
     wTabFolder.setSelection( wTab );
 
   }
 
   private void setTabFlags( boolean input, Label wlMainPath, Button wMainPath, Label wlInputStep, Text wInputStep,
-      Button wbInputStep, Label wlOutputStep, Text wOutputStep, Button wbOutputStep ) {
+    Button wbInputStep, Label wlOutputStep, Text wOutputStep, Button wbOutputStep ) {
 
     boolean multiInput = wMultiInput.getSelection();
     boolean multiOutput = wMultiOutput.getSelection();
@@ -1625,7 +1630,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   /**
    * Enables or disables the mapping button. We can only enable it if the target steps allows a mapping to be made
    * against it.
-   * 
+   *
    * @param button
    *          The button to disable or enable
    * @param input
@@ -1636,8 +1641,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
    *          The target step to verify
    * @throws KettleException
    */
-  private void enableMappingButton( final Button button, boolean input, String sourceStepname, String targetStepname )
-    throws KettleException {
+  private void enableMappingButton( final Button button, boolean input, String sourceStepname,
+    String targetStepname ) throws KettleException {
     if ( input ) {
       return; // nothing to do
     }
@@ -1659,7 +1664,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   }
 
   private void setMappingDefinitionTabNameAndToolTip( CTabItem wTab, String tabTitle, String tabTooltip,
-      MappingIODefinition definition, boolean input ) {
+    MappingIODefinition definition, boolean input ) {
 
     String stepname;
     if ( input ) {
@@ -1700,9 +1705,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     try {
       loadTransformation();
     } catch ( KettleException e ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Title" ), BaseMessages
-              .getString( PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Title" ), BaseMessages.getString(
+        PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
     }
 
     mappingMeta.setSpecificationMethod( specificationMethod );

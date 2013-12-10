@@ -85,7 +85,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class JobExecutorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private JobExecutorMeta jobExecutorMeta;
 
@@ -379,7 +379,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     radioByReference.setSelection( false );
     radioByReference.setText( BaseMessages.getString( PKG, "JobExecutorDialog.RadioRepByReference.Label" ) );
     radioByReference.setToolTipText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.RadioRepByReference.Tooltip", Const.CR ) );
+      PKG, "JobExecutorDialog.RadioRepByReference.Tooltip", Const.CR ) );
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment( 0, 0 );
     fdRadioByReference.right = new FormAttachment( 100, 0 );
@@ -582,8 +582,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorSelectingObject.DialogTitle" ), BaseMessages
-              .getString( PKG, "JobExecutorDialog.ErrorSelectingObject.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorSelectingObject.DialogTitle" ), BaseMessages
+          .getString( PKG, "JobExecutorDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
   }
 
@@ -605,9 +605,9 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       FileObject file =
-          vfsFileChooser.open(
-              shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getJobFilterNames(),
-              VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+        vfsFileChooser.open(
+          shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getJobFilterNames(),
+          VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
       if ( file == null ) {
         return;
       }
@@ -626,12 +626,12 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       }
     } catch ( IOException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogTitle" ), BaseMessages
-              .getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogTitle" ), BaseMessages
+          .getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogMessage" ), e );
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogTitle" ), BaseMessages
-              .getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogTitle" ), BaseMessages
+          .getString( PKG, "JobExecutorDialog.ErrorLoadingJob.DialogMessage" ), e );
     }
   }
 
@@ -655,8 +655,9 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         spoon.addJobGraph( executorJobMeta );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorShowingJob.Title" ), BaseMessages
-          .getString( PKG, "JobExecutorDialog.ErrorShowingJob.Message" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorShowingJob.Title" ), BaseMessages.getString(
+          PKG, "JobExecutorDialog.ErrorShowingJob.Message" ), e );
     }
   }
 
@@ -671,12 +672,12 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
         if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realJobname ) ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "JobExecutorDialog.Exception.NoValidJobExecutorDetailsFound" ) );
+            PKG, "JobExecutorDialog.Exception.NoValidJobExecutorDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "JobExecutorDialog.Exception.UnableToFindRepositoryDirectory)" ) );
+            PKG, "JobExecutorDialog.Exception.UnableToFindRepositoryDirectory)" ) );
         }
         loadRepositoryJob( realJobname, repdir );
         break;
@@ -691,7 +692,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
   public void setActive() {
     boolean supportsReferences =
-        repository != null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+      repository != null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
 
     radioByName.setEnabled( repository != null );
     radioByReference.setEnabled( repository != null && supportsReferences );
@@ -710,7 +711,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
   protected void setRadioButtons() {
     radioFilename.setSelection( specificationMethod == ObjectLocationSpecificationMethod.FILENAME );
     radioByName.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    radioByReference.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
+    radioByReference
+      .setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     setActive();
   }
 
@@ -766,8 +768,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wGroupTime.setText( Const.NVL( jobExecutorMeta.getGroupTime(), "" ) );
     wGroupField.setText( Const.NVL( jobExecutorMeta.getGroupField(), "" ) );
 
-    wExecutionResultTarget.setText( jobExecutorMeta.getExecutionResultTargetStepMeta() == null ? "" : jobExecutorMeta
-        .getExecutionResultTargetStepMeta().getName() );
+    wExecutionResultTarget.setText( jobExecutorMeta.getExecutionResultTargetStepMeta() == null
+      ? "" : jobExecutorMeta.getExecutionResultTargetStepMeta().getName() );
     wExecutionTimeField.setText( Const.NVL( jobExecutorMeta.getExecutionTimeField(), "" ) );
     wExecutionResultField.setText( Const.NVL( jobExecutorMeta.getExecutionResultField(), "" ) );
     wExecutionNrErrorsField.setText( Const.NVL( jobExecutorMeta.getExecutionNrErrorsField(), "" ) );
@@ -786,13 +788,13 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     // result files
     //
     wResultFilesTarget.setText( jobExecutorMeta.getResultFilesTargetStepMeta() == null ? "" : jobExecutorMeta
-        .getResultFilesTargetStepMeta().getName() );
+      .getResultFilesTargetStepMeta().getName() );
     wResultFileNameField.setText( Const.NVL( jobExecutorMeta.getResultFilesFileNameField(), "" ) );
 
     // Result rows
     //
     wResultRowsTarget.setText( jobExecutorMeta.getResultRowsTargetStepMeta() == null ? "" : jobExecutorMeta
-        .getResultRowsTargetStepMeta().getName() );
+      .getResultRowsTargetStepMeta().getName() );
     for ( int i = 0; i < jobExecutorMeta.getResultRowsField().length; i++ ) {
       TableItem item = new TableItem( wResultRowsFields.table, SWT.NONE );
       item.setText( 1, Const.NVL( jobExecutorMeta.getResultRowsField()[i], "" ) );
@@ -824,7 +826,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     try {
       if ( repository == null ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "JobExecutorDialog.Exception.NotConnectedToRepository.Message" ) );
+          PKG, "JobExecutorDialog.Exception.NotConnectedToRepository.Message" ) );
       }
       RepositoryObject transInf = repository.getObjectInformation( jobObjectId, RepositoryObjectType.JOB );
       if ( transInf != null ) {
@@ -832,8 +834,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-          PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+        PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
+        PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
 
   }
@@ -882,23 +884,23 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     // Now add a table view with the 3 columns to specify: variable name, input field & optional static input
     //
     parameterColumns =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobExecutorDialog.Parameters.column.Variable" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobExecutorDialog.Parameters.column.Field" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobExecutorDialog.Parameters.column.Input" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobExecutorDialog.Parameters.column.Variable" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobExecutorDialog.Parameters.column.Field" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobExecutorDialog.Parameters.column.Input" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
     parameterColumns[1].setUsingVariables( true );
 
     JobExecutorParameters parameters = jobExecutorMeta.getParameters();
     wJobExecutorParameters =
-        new TableView(
-            transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, parameterColumns, parameters
-                .getVariable().length, lsMod, props );
+      new TableView(
+        transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, parameterColumns,
+        parameters.getVariable().length, lsMod, props );
     props.setLook( wJobExecutorParameters );
     FormData fdJobExecutors = new FormData();
     fdJobExecutors.left = new FormAttachment( 0, 0 );
@@ -951,8 +953,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
     } catch ( Exception e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Title" ), BaseMessages
-              .getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Message" ), e );
+        shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Title" ), BaseMessages
+          .getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Message" ), e );
     }
 
   }
@@ -1054,7 +1056,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
     wlExecutionResultTarget = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionResultTarget );
-    wlExecutionResultTarget.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionResultTarget.Label" ) ); // -NLS-1$
+    wlExecutionResultTarget
+      .setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionResultTarget.Label" ) );
     FormData fdlExecutionResultTarget = new FormData();
     fdlExecutionResultTarget.top = new FormAttachment( 0, 0 );
     fdlExecutionResultTarget.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1074,7 +1077,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlExecutionTimeField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionTimeField );
-    wlExecutionTimeField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionTimeField.Label" ) ); // -NLS-1$
+    wlExecutionTimeField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionTimeField.Label" ) );
     FormData fdlExecutionTimeField = new FormData();
     fdlExecutionTimeField.top = new FormAttachment( lastControl, margin );
     fdlExecutionTimeField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1094,7 +1097,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlExecutionResultField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionResultField );
-    wlExecutionResultField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionResultField.Label" ) ); // -NLS-1$
+    wlExecutionResultField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionResultField.Label" ) );
     FormData fdlExecutionResultField = new FormData();
     fdlExecutionResultField.top = new FormAttachment( lastControl, margin );
     fdlExecutionResultField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1114,7 +1117,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlExecutionNrErrorsField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionNrErrorsField );
-    wlExecutionNrErrorsField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionNrErrorsField.Label" ) ); // -NLS-1$
+    wlExecutionNrErrorsField.setText( BaseMessages.getString(
+      PKG, "JobExecutorDialog.ExecutionNrErrorsField.Label" ) );
     FormData fdlExecutionNrErrorsField = new FormData();
     fdlExecutionNrErrorsField.top = new FormAttachment( lastControl, margin );
     fdlExecutionNrErrorsField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1134,8 +1138,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlExecutionLinesReadField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesReadField );
-    wlExecutionLinesReadField
-        .setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionLinesReadField.Label" ) ); // -NLS-1$
+    wlExecutionLinesReadField.setText( BaseMessages.getString(
+      PKG, "JobExecutorDialog.ExecutionLinesReadField.Label" ) );
     FormData fdlExecutionLinesReadField = new FormData();
     fdlExecutionLinesReadField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesReadField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1156,7 +1160,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wlExecutionLinesWrittenField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesWrittenField );
     wlExecutionLinesWrittenField.setText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.ExecutionLinesWrittenField.Label" ) ); // -NLS-1$
+      PKG, "JobExecutorDialog.ExecutionLinesWrittenField.Label" ) );
     FormData fdlExecutionLinesWrittenField = new FormData();
     fdlExecutionLinesWrittenField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesWrittenField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1176,8 +1180,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlExecutionLinesInputField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesInputField );
-    wlExecutionLinesInputField.setText( BaseMessages
-        .getString( PKG, "JobExecutorDialog.ExecutionLinesInputField.Label" ) ); // -NLS-1$
+    wlExecutionLinesInputField.setText( BaseMessages.getString(
+      PKG, "JobExecutorDialog.ExecutionLinesInputField.Label" ) );
     FormData fdlExecutionLinesInputField = new FormData();
     fdlExecutionLinesInputField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesInputField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1198,7 +1202,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wlExecutionLinesOutputField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesOutputField );
     wlExecutionLinesOutputField.setText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.ExecutionLinesOutputField.Label" ) ); // -NLS-1$
+      PKG, "JobExecutorDialog.ExecutionLinesOutputField.Label" ) );
     FormData fdlExecutionLinesOutputField = new FormData();
     fdlExecutionLinesOutputField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesOutputField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1219,7 +1223,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wlExecutionLinesRejectedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesRejectedField );
     wlExecutionLinesRejectedField.setText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.ExecutionLinesRejectedField.Label" ) ); // -NLS-1$
+      PKG, "JobExecutorDialog.ExecutionLinesRejectedField.Label" ) );
     FormData fdlExecutionLinesRejectedField = new FormData();
     fdlExecutionLinesRejectedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesRejectedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1240,7 +1244,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wlExecutionLinesUpdatedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesUpdatedField );
     wlExecutionLinesUpdatedField.setText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.ExecutionLinesUpdatedField.Label" ) ); // -NLS-1$
+      PKG, "JobExecutorDialog.ExecutionLinesUpdatedField.Label" ) );
     FormData fdlExecutionLinesUpdatedField = new FormData();
     fdlExecutionLinesUpdatedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesUpdatedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1261,7 +1265,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wlExecutionLinesDeletedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesDeletedField );
     wlExecutionLinesDeletedField.setText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.ExecutionLinesDeletedField.Label" ) ); // -NLS-1$
+      PKG, "JobExecutorDialog.ExecutionLinesDeletedField.Label" ) );
     FormData fdlExecutionLinesDeletedField = new FormData();
     fdlExecutionLinesDeletedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesDeletedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1282,7 +1286,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wlExecutionFilesRetrievedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionFilesRetrievedField );
     wlExecutionFilesRetrievedField.setText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.ExecutionFilesRetrievedField.Label" ) ); // -NLS-1$
+      PKG, "JobExecutorDialog.ExecutionFilesRetrievedField.Label" ) );
     FormData fdlExecutionFilesRetrievedField = new FormData();
     fdlExecutionFilesRetrievedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionFilesRetrievedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1302,8 +1306,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlExecutionExitStatusField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionExitStatusField );
-    wlExecutionExitStatusField.setText( BaseMessages
-        .getString( PKG, "JobExecutorDialog.ExecutionExitStatusField.Label" ) ); // -NLS-1$
+    wlExecutionExitStatusField.setText( BaseMessages.getString(
+      PKG, "JobExecutorDialog.ExecutionExitStatusField.Label" ) );
     FormData fdlExecutionExitStatusField = new FormData();
     fdlExecutionExitStatusField.top = new FormAttachment( lastControl, margin );
     fdlExecutionExitStatusField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1323,7 +1327,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlExecutionLogTextField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLogTextField );
-    wlExecutionLogTextField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionLogTextField.Label" ) ); // -NLS-1$
+    wlExecutionLogTextField
+      .setText( BaseMessages.getString( PKG, "JobExecutorDialog.ExecutionLogTextField.Label" ) );
     FormData fdlExecutionLogTextField = new FormData();
     fdlExecutionLogTextField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLogTextField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1344,7 +1349,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wlExecutionLogChannelIdField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLogChannelIdField );
     wlExecutionLogChannelIdField.setText( BaseMessages.getString(
-        PKG, "JobExecutorDialog.ExecutionLogChannelIdField.Label" ) ); // -NLS-1$
+      PKG, "JobExecutorDialog.ExecutionLogChannelIdField.Label" ) );
     FormData fdlExecutionLogChannelIdField = new FormData();
     fdlExecutionLogChannelIdField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLogChannelIdField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1392,7 +1397,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
     wlResultFilesTarget = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlResultFilesTarget );
-    wlResultFilesTarget.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ResultFilesTarget.Label" ) ); // -NLS-1$
+    wlResultFilesTarget.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ResultFilesTarget.Label" ) );
     FormData fdlResultFilesTarget = new FormData();
     fdlResultFilesTarget.top = new FormAttachment( 0, 0 );
     fdlResultFilesTarget.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1412,7 +1417,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     //
     wlResultFileNameField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlResultFileNameField );
-    wlResultFileNameField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ResultFileNameField.Label" ) ); // -NLS-1$
+    wlResultFileNameField.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ResultFileNameField.Label" ) );
     FormData fdlResultFileNameField = new FormData();
     fdlResultFileNameField.top = new FormAttachment( lastControl, margin );
     fdlResultFileNameField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1460,7 +1465,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
     wlResultRowsTarget = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlResultRowsTarget );
-    wlResultRowsTarget.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ResultRowsTarget.Label" ) ); // -NLS-1$
+    wlResultRowsTarget.setText( BaseMessages.getString( PKG, "JobExecutorDialog.ResultRowsTarget.Label" ) );
     FormData fdlResultRowsTarget = new FormData();
     fdlResultRowsTarget.top = new FormAttachment( 0, 0 );
     fdlResultRowsTarget.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1487,23 +1492,23 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     int nrRows = ( jobExecutorMeta.getResultRowsField() != null ? jobExecutorMeta.getResultRowsField().length : 1 );
 
     ColumnInfo[] ciResultFields =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.getTypes() ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
 
     wResultRowsFields =
-        new TableView( transMeta, wInputComposite, SWT.BORDER
-            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciResultFields, nrRows, lsMod, props );
+      new TableView( transMeta, wInputComposite, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciResultFields, nrRows, lsMod, props );
 
     FormData fdResultFields = new FormData();
     fdResultFields.left = new FormAttachment( 0, 0 );
@@ -1529,8 +1534,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     // Enable/disable fields...
     //
     if ( wlGroupSize == null
-        || wlGroupSize == null || wlGroupField == null || wGroupField == null || wlGroupTime == null
-        || wGroupTime == null ) {
+      || wlGroupSize == null || wlGroupField == null || wGroupField == null || wlGroupTime == null
+      || wGroupTime == null ) {
       return;
     }
     boolean enableSize = Const.toInt( transMeta.environmentSubstitute( wGroupSize.getText() ), -1 ) >= 0;
@@ -1562,8 +1567,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       loadJob();
     } catch ( KettleException e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Title" ), BaseMessages
-              .getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Message" ), e );
+        shell, BaseMessages.getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Title" ), BaseMessages
+          .getString( PKG, "JobExecutorDialog.ErrorLoadingSpecifiedJob.Message" ), e );
     }
 
     jobExecutorMeta.setSpecificationMethod( specificationMethod );

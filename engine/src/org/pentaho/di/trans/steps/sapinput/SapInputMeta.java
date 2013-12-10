@@ -116,7 +116,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
     return function;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -132,13 +133,14 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     row.clear(); // TODO: add an option to also include the input data...
 
     for ( SapOutputField field : outputFields ) {
 
       try {
-        ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( field.getNewName(), field.getTargetType() );
+        ValueMetaInterface valueMeta =
+          ValueMetaFactory.createValueMeta( field.getNewName(), field.getTargetType() );
         valueMeta.setOrigin( origin );
         row.addValueMeta( valueMeta );
       } catch ( Exception e ) {
@@ -150,7 +152,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append( "    " + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
+    retval.append( "    "
+      + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_FUNCTION ) ).append( Const.CR );
     if ( function != null && !Const.isEmpty( function.getName() ) ) {
@@ -169,8 +172,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( XMLHandler.addTagValue( "sap_type", parameter.getSapType().getCode(), false ) );
       retval.append( XMLHandler.addTagValue( "table_name", parameter.getTableName(), false ) );
       retval.append( XMLHandler.addTagValue( "parameter_name", parameter.getParameterName(), false ) );
-      retval
-          .append( XMLHandler.addTagValue( "target_type", ValueMeta.getTypeDesc( parameter.getTargetType() ), false ) );
+      retval.append( XMLHandler.addTagValue(
+        "target_type", ValueMeta.getTypeDesc( parameter.getTargetType() ), false ) );
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETER ) ).append( Const.CR );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
@@ -182,8 +185,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( XMLHandler.addTagValue( "sap_type", parameter.getSapType().getCode(), false ) );
       retval.append( XMLHandler.addTagValue( "table_name", parameter.getTableName(), false ) );
       retval.append( XMLHandler.addTagValue( "new_name", parameter.getNewName(), false ) );
-      retval
-          .append( XMLHandler.addTagValue( "target_type", ValueMeta.getTypeDesc( parameter.getTargetType() ), false ) );
+      retval.append( XMLHandler.addTagValue(
+        "target_type", ValueMeta.getTypeDesc( parameter.getTargetType() ), false ) );
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_FIELD ) ).append( Const.CR );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_FIELDS ) ).append( Const.CR );
@@ -191,7 +194,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       databaseMeta = DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "connection" ) );
 
@@ -203,7 +207,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       if ( !Const.isEmpty( functionName ) ) {
         function =
-            new SAPFunction( functionName, functionDescription, functionGroup, functionApplication, functionHost );
+          new SAPFunction( functionName, functionDescription, functionGroup, functionApplication, functionHost );
       } else {
         function = null;
       }
@@ -253,21 +257,21 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
         SapParameter parameter = parameters.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_field_name", parameter.getFieldName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_sap_type", parameter.getSapType() == null
-            ? null : parameter.getSapType().getCode() );
+          ? null : parameter.getSapType().getCode() );
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_table_name", parameter.getTableName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_name", parameter.getParameterName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_target_type", ValueMeta.getTypeDesc( parameter
-            .getTargetType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_target_type", ValueMeta
+          .getTypeDesc( parameter.getTargetType() ) );
       }
 
       for ( int i = 0; i < outputFields.size(); i++ ) {
         SapOutputField field = outputFields.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_sap_field_name", field.getSapFieldName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_sap_type", field.getSapType() == null
-            ? null : field.getSapType().getCode() );
+          ? null : field.getSapType().getCode() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_table_name", field.getTableName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_target_type", ValueMeta.getTypeDesc( field
-            .getTargetType() ) );
+          .getTargetType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_new_name", field.getNewName() );
       }
     } catch ( Exception e ) {
@@ -288,7 +292,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       if ( !Const.isEmpty( functionName ) ) {
         function =
-            new SAPFunction( functionName, functionDescription, functionGroup, functionApplication, functionHost );
+          new SAPFunction( functionName, functionDescription, functionGroup, functionApplication, functionHost );
       } else {
         function = null;
       }
@@ -317,9 +321,9 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( databaseMeta != null ) {
@@ -327,8 +331,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta );
       remarks.add( cr );
     }
 
@@ -341,8 +345,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SapInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

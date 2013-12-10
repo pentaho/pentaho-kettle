@@ -27,10 +27,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Describes a single field in an excel file
- * 
+ *
  * @author Matt
  * @since 12-04-2006
- * 
+ *
  */
 public class ExcelInputField implements Cloneable {
   private String name;

@@ -74,7 +74,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -210,7 +210,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     fdlSQL.top = new FormAttachment( wConnection, margin * 2 );
     wlSQL.setLayoutData( fdlSQL );
 
-    wSQL = new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+    wSQL =
+      new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
     wSQL.addModifyListener( lsMod );
     wSQL.addModifyListener( new ModifyListener() {
@@ -358,12 +359,13 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     final int FieldsRows = input.getArguments().length;
 
     colinf =
-        new ColumnInfo[] { new ColumnInfo(
-            BaseMessages.getString( PKG, "ExecSQLDialog.ColumnInfo.ArgumentFieldname" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "ExecSQLDialog.ColumnInfo.ArgumentFieldname" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );
@@ -392,7 +394,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     Rectangle rVariables = wlVariables.getBounds();
     Rectangle rQuoteString = wlQuoteString.getBounds();
     int width =
-        Math.max( Math.max( Math.max( rEachRow.width, rSingleStatement.width ), rVariables.width ), rQuoteString.width ) + 30;
+      Math.max(
+        Math.max( Math.max( rEachRow.width, rSingleStatement.width ), rVariables.width ), rQuoteString.width ) + 30;
 
     // Setup the "Quote String" label and checkbox
     //
@@ -755,8 +758,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "ExecSQLDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-              PKG, "ExecSQLDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "ExecSQLDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "ExecSQLDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }

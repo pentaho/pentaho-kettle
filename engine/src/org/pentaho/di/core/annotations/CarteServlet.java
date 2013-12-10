@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
 /**
  * This annotation signals to the Kettle plugin registry that it needs to consider the annotated class as a carte
  * servlet plugin. The class needs to implement the CartePluginInterface interface
- * 
+ *
  * @author Matt Casters
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

@@ -69,7 +69,8 @@ public class UserDefinedJavaClassDef implements Cloneable {
   }
 
   private static final String CONSTRUCTOR =
-      "\n\npublic %s(UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta, UserDefinedJavaClassData data) throws KettleStepException { super(parent,meta,data);}";
+    "\n\npublic %s(UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta, UserDefinedJavaClassData data) "
+      + "throws KettleStepException { super(parent,meta,data);}";
 
   private void appendConstructor( StringBuilder sb ) {
     sb.append( String.format( CONSTRUCTOR, className ) );

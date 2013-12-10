@@ -42,19 +42,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Output rows to Properties file and create a file.
- * 
+ *
  * @author Samatar
  * @since 13-Apr-2008
  */
 
 public class PropertyOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private PropertyOutputMeta meta;
   private PropertyOutputData data;
 
   public PropertyOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -82,7 +82,7 @@ public class PropertyOutput extends BaseStep implements StepInterface {
         // The field is unreachable !
         logError( BaseMessages.getString( PKG, "PropertyOutput.Log.ErrorFindingField", meta.getKeyField() ) );
         throw new KettleException( BaseMessages.getString( PKG, "PropertyOutput.Log.ErrorFindingField", meta
-            .getKeyField() ) );
+          .getKeyField() ) );
       }
 
       // Let's take the index of Key field ...
@@ -91,7 +91,7 @@ public class PropertyOutput extends BaseStep implements StepInterface {
         // The field is unreachable !
         logError( BaseMessages.getString( PKG, "PropertyOutput.Log.ErrorFindingField", meta.getValueField() ) );
         throw new KettleException( BaseMessages.getString( PKG, "PropertyOutput.Log.ErrorFindingField", meta
-            .getValueField() ) );
+          .getValueField() ) );
       }
 
       if ( meta.isFileNameInField() ) {
@@ -105,7 +105,7 @@ public class PropertyOutput extends BaseStep implements StepInterface {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "PropertyOutput.Log.ErrorFindingField", meta.getValueField() ) );
           throw new KettleException( BaseMessages.getString( PKG, "PropertyOutput.Log.ErrorFindingField", meta
-              .getValueField() ) );
+            .getValueField() ) );
         }
       } else {
         // Let's check for filename...
@@ -219,19 +219,19 @@ public class PropertyOutput extends BaseStep implements StepInterface {
         if ( !parentfolder.exists() ) {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "PropertyOutput.Log.ParentFolderExists", parentfolder
-                .getName().toString() ) );
+              .getName().toString() ) );
           }
           parentfolder.createFolder();
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder
-                .getName().toString() ) );
+              .getName().toString() ) );
           }
         }
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder
-            .getName().toString() ) );
+          .getName().toString() ) );
         throw new KettleException( BaseMessages.getString(
-            PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString() ) );
+          PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString() ) );
 
       } finally {
         if ( parentfolder != null ) {
@@ -258,7 +258,7 @@ public class PropertyOutput extends BaseStep implements StepInterface {
       if ( meta.addToResult() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "PropertyOutput.Log.FileAddedResult" ) );
         addResultFile( resultFile );
       }

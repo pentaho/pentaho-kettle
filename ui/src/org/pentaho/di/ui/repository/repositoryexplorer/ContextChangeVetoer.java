@@ -30,8 +30,8 @@ public interface ContextChangeVetoer {
 
   /**
    * Fired when the context is changed
-   * 
-   * 
+   *
+   *
    */
   TYPE onContextChange();
 }

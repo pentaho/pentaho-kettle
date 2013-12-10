@@ -28,10 +28,10 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * Class to keep track of which color is a system color (managed by the OS) and which is not.
- * 
+ *
  * @author Matt
  * @since 2006-06-15
- * 
+ *
  */
 public class ManagedColor {
   private Color color;
@@ -50,7 +50,7 @@ public class ManagedColor {
 
   /**
    * Create a new managed color by using the Red Green & Blue values.
-   * 
+   *
    * @param display
    * @param rgb
    */
@@ -61,7 +61,7 @@ public class ManagedColor {
 
   /**
    * Create a new managed color by using the Red Green & Blue values.
-   * 
+   *
    * @param display
    * @param r
    *          Red composite
@@ -77,7 +77,7 @@ public class ManagedColor {
 
   /**
    * Create a managed color by specifying the color (SWT.COLOR_*)
-   * 
+   *
    * @param display
    * @param color
    */
@@ -88,7 +88,7 @@ public class ManagedColor {
 
   /**
    * Free the managed resource if it hasn't already been done and if this is not a system color
-   * 
+   *
    */
   public void dispose() {
     // System color and already disposed off colors don't need to be disposed!

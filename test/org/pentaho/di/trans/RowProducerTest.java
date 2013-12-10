@@ -31,7 +31,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 /**
  * Tests for RowProducer
- * 
+ *
  */
 public class RowProducerTest extends TestCase {
 
@@ -73,7 +73,7 @@ public class RowProducerTest extends TestCase {
     /**
      * Create a blocking row set that requires {@code attempts} calls to
      * {@link #putRowWait(RowMetaInterface, Object[], long, TimeUnit)} before actually adding the row.
-     * 
+     *
      * @param attempts
      *          Number of calls required to actually put a row.
      */

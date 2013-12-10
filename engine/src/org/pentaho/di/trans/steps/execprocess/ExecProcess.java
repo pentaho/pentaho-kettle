@@ -40,20 +40,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Execute a process *
- * 
+ *
  * @author Samatar
  * @since 03-11-2008
- * 
+ *
  */
 
 public class ExecProcess extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ExecProcessMeta meta;
   private ExecProcessData data;
 
   public ExecProcess( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -88,9 +88,9 @@ public class ExecProcess extends BaseStep implements StepInterface {
         if ( data.indexOfProcess < 0 ) {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField" )
-              + "[" + meta.getProcessField() + "]" );
+            + "[" + meta.getProcessField() + "]" );
           throw new KettleException( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField", meta
-              .getProcessField() ) );
+            .getProcessField() ) );
         }
       }
     } // End If first
@@ -137,7 +137,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "ExecProcess.LineNumber", getLinesRead()
-            + " : " + getInputRowMeta().getString( r ) ) );
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( KettleException e ) {
 
@@ -178,12 +178,12 @@ public class ExecProcess extends BaseStep implements StepInterface {
         processresult.setErrorStream( errorMsg );
       } else {
         // get output stream
-        processresult
-            .setOutputStream( getOutputString( new BufferedReader( new InputStreamReader( p.getInputStream() ) ) ) );
+        processresult.setOutputStream( getOutputString( new BufferedReader( new InputStreamReader( p
+          .getInputStream() ) ) ) );
 
         // get error message
-        processresult
-            .setErrorStream( getOutputString( new BufferedReader( new InputStreamReader( p.getErrorStream() ) ) ) );
+        processresult.setErrorStream( getOutputString( new BufferedReader( new InputStreamReader( p
+          .getErrorStream() ) ) ) );
 
         // Wait until end
         p.waitFor();

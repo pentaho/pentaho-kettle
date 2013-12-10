@@ -57,7 +57,7 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 				throw new KettleException("Number of levels must be greater that 0 to process the rows");
 			this.logBasic("Number of defined levels: " + meta.getLevels().size());
 
-			/* Indexes will follow [data index],[consolidation index],[data index],[consolidation index] .... */ 
+			/* Indexes will follow [data index],[consolidation index],[data index],[consolidation index] .... */
 			data.indexes = new int[meta.getLevels().size() * 2];
 			for (int i = 0; i < meta.getLevels().size(); i++) {
 

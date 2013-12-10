@@ -31,10 +31,10 @@ import org.pentaho.di.i18n.BaseMessages;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class CreditCardVerifier {
-  private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int INVALID = -1;
   public static final int VISA = 0;
@@ -54,23 +54,23 @@ public class CreditCardVerifier {
   public static final int VOYAGER = 14;
 
   private static final String[] cardNames = {
-      "Visa", "Mastercard", "American Express", "En Route", "Diner's CLub/Carte Blanche", "Discover", "JCB1", "JCB2",
-      "BankCard", "Maestro", "Solo", "Switch", "Airplus", "Laser", "Voyager" };
+    "Visa", "Mastercard", "American Express", "En Route", "Diner's CLub/Carte Blanche", "Discover", "JCB1",
+    "JCB2", "BankCard", "Maestro", "Solo", "Switch", "Airplus", "Laser", "Voyager" };
   private static final String[] NotValidCardNames = {
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidVisa" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidMastercard" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidAmericanExpress" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidEnRoute" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidDiners" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidDiscover" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidJcb1" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidJcb2" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidMaestro" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidSolo" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidSwitch" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidAirplus" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidLaser" ),
-      BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidVoyager" ) };
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidVisa" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidMastercard" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidAmericanExpress" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidEnRoute" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidDiners" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidDiscover" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidJcb1" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidJcb2" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidMaestro" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidSolo" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidSwitch" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidAirplus" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidLaser" ),
+    BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidVoyager" ) };
 
   public static String getCardName( int id ) {
     return ( id > -1 && id < cardNames.length ? cardNames[id] : null );
@@ -165,8 +165,9 @@ public class CreditCardVerifier {
 
     if ( isNumber( number ) ) {
       if ( digit4.equals( "4903" )
-          || digit4.equals( "4905" ) || digit4.equals( "4911" ) || digit4.equals( "4936" ) || digit4.equals( "564182" )
-          || digit4.equals( "633110" ) || digit4.equals( "6333" ) || digit4.equals( "6759" ) ) {
+        || digit4.equals( "4905" ) || digit4.equals( "4911" ) || digit4.equals( "4936" )
+        || digit4.equals( "564182" ) || digit4.equals( "633110" ) || digit4.equals( "6333" )
+        || digit4.equals( "6759" ) ) {
         if ( number.length() == 16 || number.length() == 18 || number.length() == 19 ) {
 
           /*
@@ -176,7 +177,7 @@ public class CreditCardVerifier {
           valid = SWITCH;
         }
       } else if ( digit4.equals( "6304" )
-          || digit4.equals( "6706" ) || digit4.equals( "6771" ) || digit4.equals( "6709" ) ) {
+        || digit4.equals( "6706" ) || digit4.equals( "6771" ) || digit4.equals( "6709" ) ) {
         if ( number.length() >= 16 && number.length() <= 19 ) {
 
           /*
@@ -217,7 +218,7 @@ public class CreditCardVerifier {
           valid = EN_ROUTE;
         }
       } else if ( digit2.equals( "36" )
-          || digit2.equals( "38" ) || ( digit3.compareTo( "300" ) >= 0 && digit3.compareTo( "305" ) <= 0 ) ) {
+        || digit2.equals( "38" ) || ( digit3.compareTo( "300" ) >= 0 && digit3.compareTo( "305" ) <= 0 ) ) {
         if ( number.length() == 14 ) {
 
           /*
@@ -254,8 +255,8 @@ public class CreditCardVerifier {
           valid = JCB2;
         }
       } else if ( digit4.equals( "5610" )
-          || digit4.equals( "560221" ) || digit4.equals( "560222" ) || digit4.equals( "560223" )
-          || digit4.equals( "560224" ) || digit4.equals( "560225" ) ) {
+        || digit4.equals( "560221" ) || digit4.equals( "560222" ) || digit4.equals( "560223" )
+        || digit4.equals( "560224" ) || digit4.equals( "560225" ) ) {
         if ( number.length() == 16 ) {
 
           /*
@@ -265,8 +266,8 @@ public class CreditCardVerifier {
           valid = BANKCARD;
         }
       } else if ( digit4.equals( "5018" )
-          || digit4.equals( "5020" ) || digit4.equals( "5038" ) || digit4.equals( "6304" ) || digit4.equals( "6759" )
-          || digit4.equals( "6761" ) || digit4.equals( "6763" ) ) {
+        || digit4.equals( "5020" ) || digit4.equals( "5038" ) || digit4.equals( "6304" )
+        || digit4.equals( "6759" ) || digit4.equals( "6761" ) || digit4.equals( "6763" ) ) {
         if ( number.length() == 12 || number.length() == 13 || number.length() >= 14 && number.length() <= 19 ) {
 
           /*

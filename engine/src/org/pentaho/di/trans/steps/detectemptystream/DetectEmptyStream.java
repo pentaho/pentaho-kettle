@@ -36,23 +36,23 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Detect empty stream. Pass one row data to the next steps.
- * 
+ *
  * @author Samatar
  * @since 30-08-2008
  */
 public class DetectEmptyStream extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DetectEmptyStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DetectEmptyStreamMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DetectEmptyStreamData data;
 
-  public DetectEmptyStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public DetectEmptyStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Build an empty row based on the meta-data.
-   * 
+   *
    * @return
    */
   private Object[] buildOneRow() throws KettleStepException {

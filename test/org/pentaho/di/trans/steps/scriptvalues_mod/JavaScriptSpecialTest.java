@@ -49,7 +49,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the Modified Javascript step for the special functions. Things tested: LuhnCheck().
- * 
+ *
  * @author Sven Boden
  */
 public class JavaScriptSpecialTest extends TestCase {
@@ -94,7 +94,7 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "bool", ValueMeta.TYPE_BOOLEAN ) };
+    { new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "bool", ValueMeta.TYPE_BOOLEAN ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -148,9 +148,10 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ), new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
-            new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
+      new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -181,12 +182,13 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ), new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
-            new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), new ValueMeta( "long1", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "number1", ValueMeta.TYPE_NUMBER ), new ValueMeta( "string1", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "long2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "number2", ValueMeta.TYPE_NUMBER ),
-            new ValueMeta( "string2", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
+      new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), new ValueMeta( "long1", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "number1", ValueMeta.TYPE_NUMBER ), new ValueMeta( "string1", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "long2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "number2", ValueMeta.TYPE_NUMBER ),
+      new ValueMeta( "string2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -201,21 +203,21 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = createRowMetaInterface4();
 
     Object[] r1 =
-        new Object[] {
-            new Long( 1 ), new Double( 1.0D ), "1", new Long( 2 ), new Double( 2.0D ), "2", new Long( 2 ),
-            new Double( 2.0D ), "2" };
+      new Object[] {
+        new Long( 1 ), new Double( 1.0D ), "1", new Long( 2 ), new Double( 2.0D ), "2", new Long( 2 ),
+        new Double( 2.0D ), "2" };
     Object[] r2 =
-        new Object[] {
-            new Long( 2 ), new Double( 2.0D ), "2", new Long( 3 ), new Double( 3.0D ), "3", new Long( 3 ),
-            new Double( 3.0D ), "3" };
+      new Object[] {
+        new Long( 2 ), new Double( 2.0D ), "2", new Long( 3 ), new Double( 3.0D ), "3", new Long( 3 ),
+        new Double( 3.0D ), "3" };
     Object[] r3 =
-        new Object[] {
-            new Long( 3 ), new Double( 3.0D ), "3", new Long( 4 ), new Double( 4.0D ), "4", new Long( 4 ),
-            new Double( 4.0D ), "4" };
+      new Object[] {
+        new Long( 3 ), new Double( 3.0D ), "3", new Long( 4 ), new Double( 4.0D ), "4", new Long( 4 ),
+        new Double( 4.0D ), "4" };
     Object[] r4 =
-        new Object[] {
-            new Long( 4 ), new Double( 4.0D ), "4", new Long( 5 ), new Double( 5.0D ), "5", new Long( 5 ),
-            new Double( 5.0D ), "5" };
+      new Object[] {
+        new Long( 4 ), new Double( 4.0D ), "4", new Long( 5 ), new Double( 5.0D ), "5", new Long( 5 ),
+        new Double( 5.0D ), "5" };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );
@@ -294,8 +296,8 @@ public class JavaScriptSpecialTest extends TestCase {
     ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
 
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var str = string;\n" + "var bool = LuhnCheck(str);" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var str = string;\n" + "var bool = LuhnCheck(str);" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "bool" } );
     svm.setRename( new String[] { "" } );
@@ -396,9 +398,9 @@ public class JavaScriptSpecialTest extends TestCase {
 
     // process 3 rows and skip the rest.
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT, "script", "trans_Status = CONTINUE_TRANSFORMATION;\n"
-                + "if (getProcessCount(\"r\") > 3) {\n" + " \ttrans_Status = SKIP_TRANSFORMATION;\n" + "}" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script", "trans_Status = CONTINUE_TRANSFORMATION;\n"
+          + "if (getProcessCount(\"r\") > 3) {\n" + " \ttrans_Status = SKIP_TRANSFORMATION;\n" + "}" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] {} );
     svm.setRename( new String[] {} );
@@ -497,23 +499,26 @@ public class JavaScriptSpecialTest extends TestCase {
 
     // process 3 rows and skip the rest.
     ScriptValuesScript[] js =
-        new ScriptValuesScript[] { new ScriptValuesScript(
-            ScriptValuesScript.TRANSFORM_SCRIPT,
-            "script1",
-            "java;\n\n"
-                + "var obj     = new Packages.org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest();\n"
-                + "var long1   = obj.add1ToLong(getInputRowMeta().getInteger(row, 0));\n"
-                + "var number1 = obj.add1ToNumber(getInputRowMeta().getNumber(row, 1));\n"
-                + "var string1 = obj.add1ToString(getInputRowMeta().getString(row, 2));\n"
-                + "var long2   = Packages.org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest.add1ToLongStatic(getInputRowMeta().getInteger(row, 0));\n"
-                + "var number2 = Packages.org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest.add1ToNumberStatic(getInputRowMeta().getNumber(row, 1));\n"
-                + "var string2 = Packages.org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest.add1ToStringStatic(getInputRowMeta().getString(row, 2));\n" ) };
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT,
+        "script1",
+        "java;\n\n"
+          + "var obj     = new Packages.org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptTest();\n"
+          + "var long1   = obj.add1ToLong(getInputRowMeta().getInteger(row, 0));\n"
+          + "var number1 = obj.add1ToNumber(getInputRowMeta().getNumber(row, 1));\n"
+          + "var string1 = obj.add1ToString(getInputRowMeta().getString(row, 2));\n"
+          + "var long2   = Packages.org.pentaho.di.trans.steps.scriptvalues_mod."
+          + "JavaScriptTest.add1ToLongStatic(getInputRowMeta().getInteger(row, 0));\n"
+          + "var number2 = Packages.org.pentaho.di.trans.steps.scriptvalues_mod."
+          + "JavaScriptTest.add1ToNumberStatic(getInputRowMeta().getNumber(row, 1));\n"
+          + "var string2 = Packages.org.pentaho.di.trans.steps.scriptvalues_mod."
+          + "JavaScriptTest.add1ToStringStatic(getInputRowMeta().getString(row, 2));\n" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "long1", "number1", "string1", "long2", "number2", "string2" } );
     svm.setRename( new String[] { "long1", "number1", "string1", "long2", "number2", "string2" } );
     svm.setType( new int[] {
-        ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING, ValueMeta.TYPE_INTEGER,
-        ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING, } );
+      ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING, ValueMeta.TYPE_INTEGER,
+      ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING, } );
     svm.setLength( new int[] { -1, -1, -1, -1, -1, -1, -1 } );
     svm.setPrecision( new int[] { -1, -1, -1, -1, -1, -1, -1 } );
     svm.setReplace( new boolean[] { false, false, false, false, false, false, } );

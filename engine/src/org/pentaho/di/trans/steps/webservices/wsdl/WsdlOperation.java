@@ -78,7 +78,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Create a new wsdl operation instance for the specified binding and operation.
-   * 
+   *
    * @param binding
    *          Binding for the operation.
    * @param op
@@ -119,7 +119,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the faults defined for this operation.
-   * 
+   *
    * @return WsdlOpFaultList
    */
   public WsdlOpFaultList getFaults() {
@@ -128,7 +128,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the operation's QName.
-   * 
+   *
    * @return Operation QName.
    */
   public QName getOperationQName() {
@@ -137,7 +137,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the SOAP action uri for this operation.
-   * 
+   *
    * @return String, null if SOAPAction not defined for this operation.
    */
   public String getSOAPAction() {
@@ -146,7 +146,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the SOAPBinding Style.
-   * 
+   *
    * @return A SOAPBindingStyle enum type value.
    */
   public SOAPBindingStyle getSOAPBindingStyle() {
@@ -155,7 +155,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the SOAPBinding use.
-   * 
+   *
    * @return A SOAPBindingUse enum type value.
    */
   public SOAPBindingUse getSOAPBindingUse() {
@@ -164,7 +164,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the SOAPParameter style.
-   * 
+   *
    * @return A SOAPParameterStyle enum type value.
    */
   public SOAPParameterStyle getSOAPParameterStyle() {
@@ -173,7 +173,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the parameter list for this operation.
-   * 
+   *
    * @return An ordered list of parameters, empty list if this operation has no parameters.
    */
   public WsdlOpParameterList getParameters() {
@@ -182,7 +182,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Get the return type for this operation.
-   * 
+   *
    * @return A WsdlOpReturnType instance, null if this operation does not have a return value.
    */
   public WsdlOpReturnType getReturnType() {
@@ -191,7 +191,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Is this a oneway operation?
-   * 
+   *
    * @return true if this is a oneway operation.
    */
   public boolean isOneway() {
@@ -200,7 +200,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Create the fault list for this operation.
-   * 
+   *
    * @param op
    *          Operation
    */
@@ -214,7 +214,7 @@ public final class WsdlOperation implements java.io.Serializable {
 
   /**
    * Create the parameter list for this operations parameter set.
-   * 
+   *
    * @param op
    *          Operation.
    * @throws KettleStepException

@@ -52,7 +52,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** database connection */
   private DatabaseMeta databaseMeta;
@@ -183,7 +183,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
     this.sqlfieldname = sqlfieldname;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -206,8 +207,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
       sqlfieldname = XMLHandler.getTagValue( stepnode, "sql_fieldname" );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException(
-          BaseMessages.getString( PKG, "DynamicSQLRowMeta.Exception.UnableToLoadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "DynamicSQLRowMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -222,7 +223,7 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( databaseMeta == null ) {
       return;
@@ -242,8 +243,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
       add = db.getQueryFields( realSQL, false );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleStepException( BaseMessages.getString(
-          PKG, "DynamicSQLRowMeta.Exception.UnableToDetermineQueryFields" )
-          + Const.CR + sql, dbe );
+        PKG, "DynamicSQLRowMeta.Exception.UnableToDetermineQueryFields" )
+        + Const.CR + sql, dbe );
     }
 
     if ( add != null ) { // Cache hit, just return it this...
@@ -264,8 +265,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
         row.addRowMeta( add );
         db.disconnect();
       } catch ( KettleDatabaseException dbe ) {
-        throw new KettleStepException(
-            BaseMessages.getString( PKG, "DynamicSQLRowMeta.Exception.ErrorObtainingFields" ), dbe );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "DynamicSQLRowMeta.Exception.ErrorObtainingFields" ), dbe );
       }
     }
   }
@@ -273,7 +274,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append( "    " + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) ); //$NON-NLS-3$
+    retval
+      .append( "    " + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " + XMLHandler.addTagValue( "rowlimit", rowLimit ) );
     retval.append( "    " + XMLHandler.addTagValue( "sql", sql ) );
     retval.append( "    " + XMLHandler.addTagValue( "outer_join", outerJoin ) );
@@ -296,7 +298,7 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
       queryonlyonchange = rep.getStepAttributeBoolean( id_step, "query_only_on_change" );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "DynamicSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+        PKG, "DynamicSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -317,45 +319,45 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "DynamicSQLRowMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "DynamicSQLRowMeta.CheckResult.ReceivingInfo" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "DynamicSQLRowMeta.CheckResult.ReceivingInfo" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "DynamicSQLRowMeta.CheckResult.NoInputReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "DynamicSQLRowMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check for SQL field
     if ( Const.isEmpty( sqlfieldname ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldNameMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldNameMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       ValueMetaInterface vfield = prev.searchValueMeta( sqlfieldname );
       if ( vfield == null ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldNotFound", sqlfieldname ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldNotFound", sqlfieldname ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldFound", sqlfieldname, vfield.getOrigin() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldFound", sqlfieldname, vfield.getOrigin() ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -373,8 +375,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
           RowMetaInterface r = db.getQueryFields( sql, true );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                    PKG, "DynamicSQLRowMeta.CheckResult.QueryOK" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "DynamicSQLRowMeta.CheckResult.QueryOK" ), stepMeta );
             remarks.add( cr );
           } else {
             error_message = BaseMessages.getString( PKG, "DynamicSQLRowMeta.CheckResult.InvalidDBQuery" );
@@ -383,7 +385,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
           }
         }
       } catch ( KettleException e ) {
-        error_message = BaseMessages.getString( PKG, "DynamicSQLRowMeta.CheckResult.ErrorOccurred" ) + e.getMessage();
+        error_message =
+          BaseMessages.getString( PKG, "DynamicSQLRowMeta.CheckResult.ErrorOccurred" ) + e.getMessage();
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
@@ -397,7 +400,7 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new DynamicSQLRow( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -406,8 +409,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
 
     RowMetaInterface out = prev.clone();
     getFields( out, stepMeta.getName(), new RowMetaInterface[] { info, }, null, transMeta, repository, metaStore );
@@ -415,9 +418,10 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
       for ( int i = 0; i < out.size(); i++ ) {
         ValueMetaInterface outvalue = out.getValueMeta( i );
         DatabaseImpact di =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-                .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql, BaseMessages
-                .getString( PKG, "DynamicSQLRowMeta.DatabaseImpact.Title" ) );
+          new DatabaseImpact(
+            DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
+              .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
+            BaseMessages.getString( PKG, "DynamicSQLRowMeta.DatabaseImpact.Title" ) );
         impact.add( di );
 
       }

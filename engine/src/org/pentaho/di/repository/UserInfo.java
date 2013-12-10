@@ -29,7 +29,7 @@ package org.pentaho.di.repository;
 
 public class UserInfo implements IUser {
   // private static Class<?> PKG = UserInfo.class; // for i18n purposes,
-  // needed by Translator2!! $NON-NLS-1$
+  // needed by Translator2!!
 
   public static final String REPOSITORY_ELEMENT_TYPE = "user";
 
@@ -43,7 +43,7 @@ public class UserInfo implements IUser {
 
   /**
    * copy constructor
-   * 
+   *
    * @param copyFrom
    */
   public UserInfo( IUser copyFrom ) {
@@ -159,7 +159,7 @@ public class UserInfo implements IUser {
 
   /**
    * Set the name of the user.
-   * 
+   *
    * @param name
    *          The name of the user maps to the login id.
    */

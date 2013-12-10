@@ -68,13 +68,13 @@ import org.snmp4j.smi.UdpAddress;
 
 /**
  * This dialog allows you to edit the Syslog job entry settings.
- * 
+ *
  * @author Samatar
  * @since 19-06-2003
  */
 
 public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySyslog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySyslog.class; // for i18n purposes, needed by Translator2!!
 
   private LabelText wName;
 
@@ -186,8 +186,8 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
 
     // Job entry name line
     wName =
-        new LabelText( shell, BaseMessages.getString( PKG, "JobEntrySyslog.Name.Label" ), BaseMessages.getString(
-            PKG, "JobEntrySyslog.Name.Tooltip" ) );
+      new LabelText( shell, BaseMessages.getString( PKG, "JobEntrySyslog.Name.Label" ), BaseMessages.getString(
+        PKG, "JobEntrySyslog.Name.Tooltip" ) );
     wName.addModifyListener( lsMod );
     fdName = new FormData();
     fdName.top = new FormAttachment( 0, 0 );
@@ -228,9 +228,9 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
 
     // Server port line
     wServerName =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobEntrySyslog.Server.Label" ), BaseMessages
-                .getString( PKG, "JobEntrySyslog.Server.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobEntrySyslog.Server.Label" ), BaseMessages
+          .getString( PKG, "JobEntrySyslog.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -241,9 +241,9 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
 
     // Server port line
     wPort =
-        new LabelTextVar(
-            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobEntrySyslog.Port.Label" ), BaseMessages
-                .getString( PKG, "JobEntrySyslog.Port.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobEntrySyslog.Port.Label" ), BaseMessages
+          .getString( PKG, "JobEntrySyslog.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -433,8 +433,8 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
     wlMessage.setLayoutData( fdlMessage );
 
     wMessage =
-        new StyledTextComp(
-            jobEntry, wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( jobEntry, wMessageGroup, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wMessage );
     wMessage.addModifyListener( lsMod );
     fdMessage = new FormData();
@@ -568,7 +568,7 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobEntrySyslog.Connected.NOK.ConnectionBad", hostname )
-          + Const.CR + errMsg + Const.CR );
+        + Const.CR + errMsg + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobEntrySyslog.Connected.Title.Bad" ) );
       mb.open();
     }

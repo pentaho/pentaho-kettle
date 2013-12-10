@@ -44,8 +44,8 @@ public class StepIOMeta implements StepIOMetaInterface, Cloneable {
    * @param inputAcceptor
    * @param outputProducer
    */
-  public StepIOMeta( boolean inputAcceptor, boolean outputProducer, boolean inputOptional, boolean sortedDataRequired,
-      boolean inputDynamic, boolean outputDynamic ) {
+  public StepIOMeta( boolean inputAcceptor, boolean outputProducer, boolean inputOptional,
+    boolean sortedDataRequired, boolean inputDynamic, boolean outputDynamic ) {
     this.inputAcceptor = inputAcceptor;
     this.outputProducer = outputProducer;
     this.inputOptional = inputOptional;
@@ -111,7 +111,7 @@ public class StepIOMeta implements StepIOMetaInterface, Cloneable {
   /**
    * @return the info streams of this step. Important: Modifying this list does not have any effect on the Steps IO
    *         metadata.
-   * 
+   *
    */
   public List<StreamInterface> getInfoStreams() {
     List<StreamInterface> list = new ArrayList<StreamInterface>();
@@ -128,7 +128,7 @@ public class StepIOMeta implements StepIOMetaInterface, Cloneable {
   /**
    * @return the target streams of this step. Important: Modifying this list does not have any effect on the Steps IO
    *         metadata.
-   * 
+   *
    */
   public List<StreamInterface> getTargetStreams() {
     List<StreamInterface> list = new ArrayList<StreamInterface>();
@@ -181,7 +181,7 @@ public class StepIOMeta implements StepIOMetaInterface, Cloneable {
 
   /**
    * Replace the info steps with the supplied source steps.
-   * 
+   *
    * @param infoSteps
    */
   public void setInfoSteps( StepMeta[] infoSteps ) {

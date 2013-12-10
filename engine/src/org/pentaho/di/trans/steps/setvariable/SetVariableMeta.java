@@ -48,11 +48,11 @@ import org.w3c.dom.Node;
 
 /**
  * Sets environment variables based on content in certain fields of a single input row.
- * 
+ *
  * Created on 27-apr-2006
  */
 public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SetVariableMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SetVariableMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int VARIABLE_TYPE_JVM = 0;
   public static final int VARIABLE_TYPE_PARENT_JOB = 1;
@@ -61,8 +61,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static final String[] variableTypeCode = { "JVM", "PARENT_JOB", "GP_JOB", "ROOT_JOB" };
   private static final String[] variableTypeDesc = {
-      "Valid in the Java Virtual Machine", "Valid in the parent job", "Valid in the grand-parent job",
-      "Valid in the root job" };
+    "Valid in the Java Virtual Machine", "Valid in the parent job", "Valid in the grand-parent job",
+    "Valid in the root job" };
 
   private String[] fieldName;
   private String[] variableName;
@@ -176,7 +176,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     return variableTypeDesc;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -225,7 +226,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
       usingFormatting = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_formatting" ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "SetVariableMeta.RuntimeError.UnableToReadXML.SETVARIABLE0004" ), e );
+        PKG, "SetVariableMeta.RuntimeError.UnableToReadXML.SETVARIABLE0004" ), e );
     }
   }
 
@@ -254,7 +255,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "        " ).append( XMLHandler.addTagValue( "field_name", fieldName[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "variable_name", variableName[i] ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "variable_type", getVariableTypeCode( variableType[i] ) ) );
+        XMLHandler.addTagValue( "variable_type", getVariableTypeCode( variableType[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "default_value", defaultValue[i] ) );
       retval.append( "        </field>" ).append( Const.CR );
     }
@@ -282,7 +283,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
       usingFormatting = rep.getStepAttributeBoolean( id_step, 0, "use_formatting", false );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SetVariableMeta.RuntimeError.UnableToReadRepository.SETVARIABLE0005" ), e );
+        PKG, "SetVariableMeta.RuntimeError.UnableToReadRepository.SETVARIABLE0005" ), e );
     }
   }
 
@@ -291,52 +292,53 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", Const.isEmpty( fieldName[i] )
-            ? "" : fieldName[i] );
+          ? "" : fieldName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "variable_name", variableName[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "variable_type", getVariableTypeCode( variableType[i] ) );
+        rep.saveStepAttribute(
+          id_transformation, id_step, i, "variable_type", getVariableTypeCode( variableType[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "default_value", defaultValue[i] );
       }
 
       rep.saveStepAttribute( id_transformation, id_step, 0, "use_formatting", usingFormatting );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SetVariableMeta.RuntimeError.UnableToSaveRepository.SETVARIABLE0006", "" + id_step ), e );
+        PKG, "SetVariableMeta.RuntimeError.UnableToSaveRepository.SETVARIABLE0006", "" + id_step ), e );
     }
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "SetVariableMeta.CheckResult.NotReceivingFieldsFromPreviousSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "SetVariableMeta.CheckResult.NotReceivingFieldsFromPreviousSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SetVariableMeta.CheckResult.ReceivingFieldsFromPreviousSteps", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SetVariableMeta.CheckResult.ReceivingFieldsFromPreviousSteps", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SetVariableMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SetVariableMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SetVariableMeta.CheckResult.NotReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SetVariableMeta.CheckResult.NotReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SetVariable( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

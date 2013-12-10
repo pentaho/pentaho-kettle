@@ -51,7 +51,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
-  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Flag indicating that we use authentication for connection */
   private boolean useAuthentication;
@@ -113,9 +113,9 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
    * The search scopes description
    */
   public static final String[] searchScopeDesc = {
-      BaseMessages.getString( PKG, "LDAPInputMeta.SearchScope.Object" ),
-      BaseMessages.getString( PKG, "LDAPInputMeta.SearchScope.OneLevel" ),
-      BaseMessages.getString( PKG, "LDAPInputMeta.SearchScope.Subtree" ) };
+    BaseMessages.getString( PKG, "LDAPInputMeta.SearchScope.Object" ),
+    BaseMessages.getString( PKG, "LDAPInputMeta.SearchScope.OneLevel" ),
+    BaseMessages.getString( PKG, "LDAPInputMeta.SearchScope.Subtree" ) };
 
   /**
    * The search scope codes
@@ -490,7 +490,8 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     this.rowNumberField = rowNumberField;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -521,7 +522,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     retval.append( "    " ).append( XMLHandler.addTagValue( "host", Host ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "username", userName ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "port", port ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "filterstring", filterString ) );
@@ -536,13 +537,14 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", inputFields[i].getName() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "attribute", inputFields[i].getAttribute() ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "attribute_fetch_as", inputFields[i].getFetchAttributeAsCode() ) );
+        XMLHandler.addTagValue( "attribute_fetch_as", inputFields[i].getFetchAttributeAsCode() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "sorted_key", inputFields[i].isSortedKey() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "type", inputFields[i].getTypeDesc() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "format", inputFields[i].getFormat() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", inputFields[i].getLength() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", inputFields[i].getPrecision() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "currency", inputFields[i].getCurrencySymbol() ) );
+      retval
+        .append( "        " ).append( XMLHandler.addTagValue( "currency", inputFields[i].getCurrencySymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", inputFields[i].getDecimalSymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "group", inputFields[i].getGroupSymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", inputFields[i].getTrimTypeCode() ) );
@@ -564,7 +566,8 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     retval.append( "    " ).append( XMLHandler.addTagValue( "protocol", protocol ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trustStorePath", trustStorePath ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
+      XMLHandler
+        .addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trustAllCertificates", trustAllCertificates ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "useCertificate", useCertificate ) );
 
@@ -606,7 +609,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         inputFields[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
         inputFields[i].setAttribute( XMLHandler.getTagValue( fnode, "attribute" ) );
         inputFields[i].setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByCode( XMLHandler.getTagValue(
-            fnode, "attribute_fetch_as" ) ) );
+          fnode, "attribute_fetch_as" ) ) );
         String sortedkey = XMLHandler.getTagValue( fnode, "sorted_key" );
         if ( sortedkey != null ) {
           inputFields[i].setSortedKey( YES.equalsIgnoreCase( sortedkey ) );
@@ -640,14 +643,14 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       dynamicFilter = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamicfilter" ) );
       dynamicFilterFieldName = XMLHandler.getTagValue( stepnode, "dynamicfilterfieldname" );
       searchScope =
-          getSearchScopeByCode( Const.NVL(
-              XMLHandler.getTagValue( stepnode, "searchScope" ),
-              getSearchScopeCode( LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE ) ) );
+        getSearchScopeByCode( Const.NVL(
+          XMLHandler.getTagValue( stepnode, "searchScope" ),
+          getSearchScopeCode( LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE ) ) );
 
       protocol = XMLHandler.getTagValue( stepnode, "protocol" );
       trustStorePath = XMLHandler.getTagValue( stepnode, "trustStorePath" );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
       trustAllCertificates = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "trustAllCertificates" ) );
       useCertificate = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useCertificate" ) );
 
@@ -710,7 +713,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     int i;
     for ( i = 0; i < inputFields.length; i++ ) {
@@ -721,7 +724,8 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         type = ValueMeta.TYPE_STRING;
       }
       try {
-        ValueMetaInterface v = ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
+        ValueMetaInterface v =
+          ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
         v.setLength( field.getLength(), field.getPrecision() );
         v.setOrigin( name );
         r.addValueMeta( v );
@@ -766,7 +770,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       protocol = rep.getStepAttributeString( id_step, "protocol" );
       trustStorePath = rep.getStepAttributeString( id_step, "trustStorePath" );
       trustStorePassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
       trustAllCertificates = rep.getStepAttributeBoolean( id_step, "trustAllCertificates" );
       useCertificate = rep.getStepAttributeBoolean( id_step, "useCertificate" );
 
@@ -780,7 +784,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setAttribute( rep.getStepAttributeString( id_step, i, "field_attribute" ) );
         field.setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByCode( rep.getStepAttributeString(
-            id_step, i, "field_attribute_fetch_as" ) ) );
+          id_step, i, "field_attribute_fetch_as" ) ) );
         field.setSortedKey( rep.getStepAttributeBoolean( id_step, i, "sorted_key" ) );
         field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
@@ -789,18 +793,19 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( LDAPInputField
-            .getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( LDAPInputField.getTrimTypeByCode( rep.getStepAttributeString(
+          id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         inputFields[i] = field;
       }
       searchScope =
-          getSearchScopeByCode( Const.NVL(
-              rep.getStepAttributeString( id_step, "searchScope" ),
-              getSearchScopeCode( LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE ) ) );
+        getSearchScopeByCode( Const.NVL(
+          rep.getStepAttributeString( id_step, "searchScope" ),
+          getSearchScopeCode( LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE ) ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LDAPInputMeta.Exception.ErrorReadingRepository" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "LDAPInputMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
@@ -843,9 +848,8 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       rep.saveStepAttribute( id_transformation, id_step, "rownum_field", rowNumberField );
       rep.saveStepAttribute( id_transformation, id_step, "host", Host );
       rep.saveStepAttribute( id_transformation, id_step, "username", userName );
-      rep
-          .saveStepAttribute( id_transformation, id_step, "password", Encr
-              .encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "port", port );
       rep.saveStepAttribute( id_transformation, id_step, "filterstring", filterString );
@@ -861,7 +865,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       rep.saveStepAttribute( id_transformation, id_step, "protocol", protocol );
       rep.saveStepAttribute( id_transformation, id_step, "trustStorePath", trustStorePath );
       rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", Encr
-          .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
+        .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
       rep.saveStepAttribute( id_transformation, id_step, "trustAllCertificates", trustAllCertificates );
       rep.saveStepAttribute( id_transformation, id_step, "useCertificate", useCertificate );
 
@@ -871,7 +875,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_attribute", field.getAttribute() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_attribute_fetch_as", field
-            .getFetchAttributeAsCode() );
+          .getFetchAttributeAsCode() );
         rep.saveStepAttribute( id_transformation, id_step, i, "sorted_key", field.isSortedKey() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field.getTypeDesc() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", field.getFormat() );
@@ -886,98 +890,98 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       }
       rep.saveStepAttribute( id_transformation, id_step, "searchScope", getSearchScopeCode( searchScope ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LDAPInputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LDAPInputMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     // Check output fields
     if ( inputFields.length == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "LDAPInputMeta.CheckResult.NoOutputFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "LDAPInputMeta.CheckResult.NoOutputFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "LDAPInputMeta.CheckResult.OutputFieldsOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "LDAPInputMeta.CheckResult.OutputFieldsOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "LDAPInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "LDAPInputMeta.CheckResult.NoInputExpected" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages
-              .getString( PKG, "LDAPInputMeta.CheckResult.NoInput" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "LDAPInputMeta.CheckResult.NoInput" ), stepMeta );
     }
     remarks.add( cr );
 
     // Check hostname
     if ( Const.isEmpty( Host ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "LDAPInputMeta.CheckResult.HostnameMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "LDAPInputMeta.CheckResult.HostnameMissing" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "LDAPInputMeta.CheckResult.HostnameOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "LDAPInputMeta.CheckResult.HostnameOk" ), stepMeta );
     }
     remarks.add( cr );
 
     if ( isDynamicSearch() ) {
       if ( Const.isEmpty( dynamicSeachFieldName ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.DynamicSearchBaseFieldNameMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.DynamicSearchBaseFieldNameMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.DynamicSearchBaseFieldNameOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.DynamicSearchBaseFieldNameOk" ), stepMeta );
       }
       remarks.add( cr );
     } else {
       // Check search base
       if ( Const.isEmpty( searchBase ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.SearchBaseMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.SearchBaseMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.SearchBaseOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.SearchBaseOk" ), stepMeta );
       }
       remarks.add( cr );
     }
     if ( isDynamicFilter() ) {
       if ( Const.isEmpty( dynamicFilterFieldName ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.DynamicFilterFieldNameMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.DynamicFilterFieldNameMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.DynamicFilterFieldNameOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.DynamicFilterFieldNameOk" ), stepMeta );
       }
       remarks.add( cr );
     } else {
       // Check filter String
       if ( Const.isEmpty( filterString ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.FilterStringMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.FilterStringMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "LDAPInputMeta.CheckResult.FilterStringOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "LDAPInputMeta.CheckResult.FilterStringOk" ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -985,7 +989,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new LDAPInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

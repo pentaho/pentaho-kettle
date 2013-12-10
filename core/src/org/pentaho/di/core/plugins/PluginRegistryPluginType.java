@@ -30,7 +30,7 @@ import org.pentaho.di.core.gui.GUIOption;
 
 /**
  * Plugins of this type can extend to capabilities of the PluginRegiestry
- * 
+ *
  * User: nbaker Date: 3/14/11
  */
 @PluginMainClassType( PluginRegistryExtension.class )

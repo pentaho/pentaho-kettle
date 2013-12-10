@@ -69,7 +69,7 @@ public class SqlTransMeta {
 
   /**
    * Generate the transformation metadata for
-   * 
+   *
    * @return
    */
   public TransMeta generateTransMeta() throws KettleException {
@@ -122,8 +122,8 @@ public class SqlTransMeta {
     List<SQLField> aggFields = sql.getSelectFields().getAggregateFields();
     if ( sql.getHavingCondition() != null ) {
       List<SQLField> havingFields =
-          sql.getHavingCondition().extractHavingFields(
-              sql.getSelectFields().getFields(), aggFields, transMeta.getStepFields( lastStep ) );
+        sql.getHavingCondition().extractHavingFields(
+          sql.getSelectFields().getFields(), aggFields, transMeta.getStepFields( lastStep ) );
       aggFields.addAll( havingFields );
     }
     List<SQLField> groupFields = sql.getGroupFields().getFields();
@@ -212,7 +212,7 @@ public class SqlTransMeta {
 
   /**
    * This method generates a 4 steps for every IIF clause... TODO: replace with one step...
-   * 
+   *
    * @param iifField
    * @param lastStep
    * @param transMeta
@@ -404,7 +404,7 @@ public class SqlTransMeta {
   }
 
   private StepMeta generateGroupByStep( List<SQLField> aggFields, List<SQLField> groupFields,
-      RowMetaInterface inputFields ) throws KettleException {
+    RowMetaInterface inputFields ) throws KettleException {
     MemoryGroupByMeta meta = new MemoryGroupByMeta();
     meta.allocate( groupFields.size(), aggFields.size() );
 
@@ -515,7 +515,7 @@ public class SqlTransMeta {
       }
       if ( valueMeta == null ) {
         throw new KettleException( "Unable to find field to sort on: "
-            + sqlField.getField() + " nor the alias: " + sqlField.getAlias() );
+          + sqlField.getField() + " nor the alias: " + sqlField.getAlias() );
       }
 
       meta.getFieldName()[i] = valueMeta.getName();

@@ -62,7 +62,8 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
     super( jobMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -115,7 +116,8 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       JobConfiguration jobConfiguration = new JobConfiguration( jobMeta, jobExecutionConfiguration );
 
       String carteObjectId = UUID.randomUUID().toString();
-      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+      SimpleLoggingObject servletLoggingObject =
+        new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
       servletLoggingObject.setLogLevel( logLevel );
 
@@ -168,7 +170,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
     } catch ( Exception ex ) {
 
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-          PKG, "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+        PKG, "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
   }
 
@@ -193,7 +195,8 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
           directoryPath = job.substring( 0, lastSlash );
           name = job.substring( lastSlash + 1 );
         }
-        RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
+        RepositoryDirectoryInterface directory =
+          repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
 
         ObjectId jobID = repository.getJobId( name, directory );
 

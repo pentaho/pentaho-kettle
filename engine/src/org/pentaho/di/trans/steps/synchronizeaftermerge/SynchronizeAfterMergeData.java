@@ -38,7 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Performs an insert/update/delete depending on the value of a field.
- * 
+ *
  * @author Samatar
  * @since 13-10-2008
  */

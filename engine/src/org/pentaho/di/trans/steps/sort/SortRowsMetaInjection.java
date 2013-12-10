@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * This takes care of the external metadata injection into the SortRowsMeta class
- * 
+ *
  * @author Matt
  */
 public class SortRowsMetaInjection implements StepMetaInjectionInterface {
@@ -40,16 +40,16 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     SORT_SIZE_ROWS( ValueMetaInterface.TYPE_STRING, "In memory sort size (in rows)" ), SORT_DIRECTORY(
-        ValueMetaInterface.TYPE_STRING, "The sort directory" ), SORT_FILE_PREFIX(
-        ValueMetaInterface.TYPE_STRING, "The sort file prefix" ), FREE_MEMORY_TRESHOLD(
-        ValueMetaInterface.TYPE_STRING, "The free memory treshold (in %)" ), ONLY_PASS_UNIQUE_ROWS(
-        ValueMetaInterface.TYPE_STRING, "Only pass unique rows? (Y/N)" ), COMPRESS_TEMP_FILES(
-        ValueMetaInterface.TYPE_STRING, "Compress temporary files? (Y/N)" ),
+      ValueMetaInterface.TYPE_STRING, "The sort directory" ), SORT_FILE_PREFIX(
+      ValueMetaInterface.TYPE_STRING, "The sort file prefix" ), FREE_MEMORY_TRESHOLD(
+      ValueMetaInterface.TYPE_STRING, "The free memory treshold (in %)" ), ONLY_PASS_UNIQUE_ROWS(
+      ValueMetaInterface.TYPE_STRING, "Only pass unique rows? (Y/N)" ), COMPRESS_TEMP_FILES(
+      ValueMetaInterface.TYPE_STRING, "Compress temporary files? (Y/N)" ),
 
-    FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields to sort" ), FIELD(
+      FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields to sort" ), FIELD(
         ValueMetaInterface.TYPE_NONE, "One field to sort" ),
 
-    NAME( ValueMetaInterface.TYPE_STRING, "Field name" ), SORT_ASCENDING(
+      NAME( ValueMetaInterface.TYPE_STRING, "Field name" ), SORT_ASCENDING(
         ValueMetaInterface.TYPE_STRING, "Sort ascending? (Y/N)" ), IGNORE_CASE(
         ValueMetaInterface.TYPE_STRING, "Ignore case? (Y/N)" ), PRESORTED(
         ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)" ), ;
@@ -92,25 +92,25 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
     List<StepInjectionMetaEntry> all = new ArrayList<StepInjectionMetaEntry>();
 
     Entry[] topEntries =
-        new Entry[] {
-            Entry.SORT_SIZE_ROWS, Entry.ONLY_PASS_UNIQUE_ROWS, Entry.COMPRESS_TEMP_FILES, Entry.SORT_DIRECTORY,
-            Entry.SORT_FILE_PREFIX, Entry.FREE_MEMORY_TRESHOLD, };
+      new Entry[] {
+        Entry.SORT_SIZE_ROWS, Entry.ONLY_PASS_UNIQUE_ROWS, Entry.COMPRESS_TEMP_FILES, Entry.SORT_DIRECTORY,
+        Entry.SORT_FILE_PREFIX, Entry.FREE_MEMORY_TRESHOLD, };
     for ( Entry topEntry : topEntries ) {
       all.add( new StepInjectionMetaEntry( topEntry.name(), topEntry.getValueType(), topEntry.getDescription() ) );
     }
 
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
+      new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
+      new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
     fieldsEntry.getDetails().add( fieldEntry );
 
     Entry[] fieldsEntries = new Entry[] { Entry.NAME, Entry.SORT_ASCENDING, Entry.IGNORE_CASE, Entry.PRESORTED };
     for ( Entry entry : fieldsEntries ) {
       StepInjectionMetaEntry metaEntry =
-          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
       fieldEntry.getDetails().add( metaEntry );
     }
 

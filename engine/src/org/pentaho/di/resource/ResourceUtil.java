@@ -40,12 +40,12 @@ import org.pentaho.metastore.api.IMetaStore;
 
 public class ResourceUtil {
 
-  private static Class<?> PKG = ResourceUtil.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ResourceUtil.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * Serializes the referenced resource export interface (Job, Transformation, Mapping, Step, Job Entry, etc) to a ZIP
    * file.
-   * 
+   *
    * @param zipFilename
    *          The ZIP file to put the content in
    * @param resourceExportInterface
@@ -60,17 +60,17 @@ public class ResourceUtil {
    * @throws KettleException
    *           in case anything goes wrong during serialization
    */
-  public static final TopLevelResource
-    serializeResourceExportInterface( String zipFilename, ResourceExportInterface resourceExportInterface,
-        VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleException {
+  public static final TopLevelResource serializeResourceExportInterface( String zipFilename,
+    ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
+    IMetaStore metaStore ) throws KettleException {
     return serializeResourceExportInterface(
-        zipFilename, resourceExportInterface, space, repository, metaStore, null, null );
+      zipFilename, resourceExportInterface, space, repository, metaStore, null, null );
   }
 
   /**
    * Serializes the referenced resource export interface (Job, Transformation, Mapping, Step, Job Entry, etc) to a ZIP
    * file.
-   * 
+   *
    * @param zipFilename
    *          The ZIP file to put the content in
    * @param resourceExportInterface
@@ -88,8 +88,8 @@ public class ResourceUtil {
    *           in case anything goes wrong during serialization
    */
   public static final TopLevelResource serializeResourceExportInterface( String zipFilename,
-      ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
-      IMetaStore metaStore, String injectXML, String injectFilename ) throws KettleException {
+    ResourceExportInterface resourceExportInterface, VariableSpace space, Repository repository,
+    IMetaStore metaStore, String injectXML, String injectFilename ) throws KettleException {
 
     ZipOutputStream out = null;
 
@@ -106,7 +106,7 @@ public class ResourceUtil {
       ResourceNamingInterface namingInterface = new SequenceResourceNaming();
 
       String topLevelResource =
-          resourceExportInterface.exportResources( space, definitions, namingInterface, repository, metaStore );
+        resourceExportInterface.exportResources( space, definitions, namingInterface, repository, metaStore );
 
       if ( topLevelResource != null && !definitions.isEmpty() ) {
 
@@ -124,9 +124,9 @@ public class ResourceUtil {
           ZipEntry zipEntry = new ZipEntry( resourceDefinition.getFilename() );
 
           String comment =
-              BaseMessages.getString(
-                  PKG, "ResourceUtil.SerializeResourceExportInterface.ZipEntryComment.OriginatingFile", filename, Const
-                      .NVL( resourceDefinition.getOrigin(), "-" ) );
+            BaseMessages.getString(
+              PKG, "ResourceUtil.SerializeResourceExportInterface.ZipEntryComment.OriginatingFile", filename,
+              Const.NVL( resourceDefinition.getOrigin(), "-" ) );
           zipEntry.setComment( comment );
           out.putNextEntry( zipEntry );
 
@@ -140,21 +140,21 @@ public class ResourceUtil {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "ResourceUtil.Exception.ErrorSerializingExportInterface", resourceExportInterface.toString() ), e );
+        PKG, "ResourceUtil.Exception.ErrorSerializingExportInterface", resourceExportInterface.toString() ), e );
     } finally {
       if ( out != null ) {
         try {
           out.close();
         } catch ( IOException e ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "ResourceUtil.Exception.ErrorClosingZipStream", zipFilename ) );
+            PKG, "ResourceUtil.Exception.ErrorClosingZipStream", zipFilename ) );
         }
       }
     }
   }
 
   public static String getExplanation( String zipFilename, String launchFile,
-      ResourceExportInterface resourceExportInterface ) {
+    ResourceExportInterface resourceExportInterface ) {
 
     String commandString = "";
     if ( Const.isWindows() ) {
@@ -178,8 +178,8 @@ public class ResourceUtil {
     }
 
     String message =
-        BaseMessages.getString(
-            PKG, "ResourceUtil.ExportResourcesExplanation", zipFilename, commandString, launchFile, Const.CR );
+      BaseMessages.getString(
+        PKG, "ResourceUtil.ExportResourcesExplanation", zipFilename, commandString, launchFile, Const.CR );
     return message;
   }
 }

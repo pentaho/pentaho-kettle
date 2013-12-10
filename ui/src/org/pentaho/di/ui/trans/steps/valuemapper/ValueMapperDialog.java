@@ -57,7 +57,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ValueMapperDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStepname;
   private Text wStepname;
@@ -210,16 +210,17 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.SourceValue" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.SourceValue" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.TargetValue" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.TargetValue" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -297,8 +298,8 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

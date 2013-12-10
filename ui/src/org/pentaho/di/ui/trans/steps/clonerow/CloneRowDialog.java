@@ -56,7 +56,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CloneRowDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CloneRowMeta input;
 
@@ -393,8 +393,8 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "CloneRowDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "CloneRowDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "CloneRowDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "CloneRowDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

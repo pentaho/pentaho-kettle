@@ -24,7 +24,7 @@ package org.pentaho.di.core;
 
 public enum ObjectLocationSpecificationMethod {
   FILENAME( "filename", "Filename" ), REPOSITORY_BY_NAME( "rep_name", "Specify by name in repository" ),
-  REPOSITORY_BY_REFERENCE( "rep_ref", "Specify by reference in repository" );
+    REPOSITORY_BY_REFERENCE( "rep_ref", "Specify by reference in repository" );
 
   private String code;
   private String description;

@@ -52,18 +52,18 @@ import com.healthmarketscience.jackcess.Database;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 24-05-2007
  */
 public class AccessInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = AccessInput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AccessInput.class; // for i18n purposes, needed by Translator2!!
 
   private AccessInputMeta meta;
   private AccessInputData data;
 
   public AccessInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -264,7 +264,7 @@ public class AccessInput extends BaseStep implements StepInterface {
           for ( int i = 0; i < data.convertRowMeta.size(); i++ ) {
             ValueMetaInterface valueMeta = data.convertRowMeta.getValueMeta( i );
             data.convertRowMeta.setValueMeta( i, ValueMetaFactory.cloneValueMeta(
-                valueMeta, ValueMetaInterface.TYPE_STRING ) );
+              valueMeta, ValueMetaInterface.TYPE_STRING ) );
           }
 
           // Check is filename field is provided
@@ -279,9 +279,9 @@ public class AccessInput extends BaseStep implements StepInterface {
             if ( data.indexOfFilenameField < 0 ) {
               // The field is unreachable !
               logError( BaseMessages.getString( PKG, "AccessInput.Log.ErrorFindingField" )
-                  + "[" + meta.getDynamicFilenameField() + "]" );
-              throw new KettleException( BaseMessages.getString( PKG, "AccessInput.Exception.CouldnotFindField", meta
-                  .getDynamicFilenameField() ) );
+                + "[" + meta.getDynamicFilenameField() + "]" );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "AccessInput.Exception.CouldnotFindField", meta.getDynamicFilenameField() ) );
             }
           }
 
@@ -289,8 +289,8 @@ public class AccessInput extends BaseStep implements StepInterface {
 
         String filename = getInputRowMeta().getString( data.readrow, data.indexOfFilenameField );
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString(
-              PKG, "AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(), filename ) );
+          logDetailed( BaseMessages.getString( PKG, "AccessInput.Log.FilenameInStream", meta
+            .getDynamicFilenameField(), filename ) );
         }
 
         data.file = KettleVFS.getFileObject( filename, getTransMeta() );
@@ -333,7 +333,7 @@ public class AccessInput extends BaseStep implements StepInterface {
       if ( meta.isAddResultFile() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "AccessInput.Log.FileAddedResult" ) );
         addResultFile( resultFile );
       }
@@ -354,8 +354,8 @@ public class AccessInput extends BaseStep implements StepInterface {
         logDetailed( BaseMessages.getString( PKG, "AccessInput.Log.FileOpened", data.file.toString() ) );
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString(
-          PKG, "AccessInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e.toString() ) );
+      logError( BaseMessages.getString( PKG, "AccessInput.Log.UnableToOpenFile", "" + data.filenr, data.file
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -368,7 +368,7 @@ public class AccessInput extends BaseStep implements StepInterface {
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
       logError( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
-          PKG, "AccessInput.Log.RequiredFiles", message ) );
+        PKG, "AccessInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesMissing", message ) );
     }
@@ -377,16 +377,16 @@ public class AccessInput extends BaseStep implements StepInterface {
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
       logError( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
-          PKG, "AccessInput.Log.RequiredNotAccessibleFiles", message ) );
+        PKG, "AccessInput.Log.RequiredNotAccessibleFiles", message ) );
 
       throw new KettleException( BaseMessages.getString(
-          PKG, "AccessInput.Log.RequiredNotAccessibleFilesMissing", message ) );
+        PKG, "AccessInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -427,7 +427,7 @@ public class AccessInput extends BaseStep implements StepInterface {
           for ( int i = 0; i < data.convertRowMeta.size(); i++ ) {
             ValueMetaInterface valueMeta = data.convertRowMeta.getValueMeta( i );
             data.convertRowMeta.setValueMeta( i, ValueMetaFactory.cloneValueMeta(
-                valueMeta, ValueMetaInterface.TYPE_STRING ) );
+              valueMeta, ValueMetaInterface.TYPE_STRING ) );
           }
         } catch ( Exception e ) {
           logError( BaseMessages.getString( PKG, "AccessInput.ErrorInit", e.toString() ) );
@@ -486,6 +486,7 @@ public class AccessInput extends BaseStep implements StepInterface {
     // DO CONVERSIONS...
     //
     ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta( data.totalpreviousfields + index );
-    return targetValueMeta.convertData( sourceValueMetaAndData.getValueMeta(), sourceValueMetaAndData.getValueData() );
+    return targetValueMeta.convertData( sourceValueMetaAndData.getValueMeta(), sourceValueMetaAndData
+      .getValueData() );
   }
 }

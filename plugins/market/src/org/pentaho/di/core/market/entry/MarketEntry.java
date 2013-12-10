@@ -33,12 +33,12 @@ import org.w3c.dom.Node;
 /**
  * This class defines a single PDI market entry. It defines the type of plugin,
  * the version, where to download the archive package and so on.
- * 
+ *
  * @author matt
  */
 public class MarketEntry implements XMLInterface {
-  public static String XML_TAG = "market_entry"; 
-  
+  public static String XML_TAG = "market_entry";
+
   private String id;
   private MarketEntryType type;
   private String name;
@@ -58,17 +58,17 @@ public class MarketEntry implements XMLInterface {
   private String supportUrl;
   private String minPdiVersion;
   private String maxPdiVersion;
-  
+
   private transient boolean installed;
   private transient String installedBranch;
   private transient String installedVersion;
-  private transient String installedBuildId;  
-  
+  private transient String installedBuildId;
+
   private transient String marketPlaceName;
 
   public MarketEntry() {
   }
-  
+
   /**
    * @param id
    * @param type;
@@ -110,12 +110,12 @@ public class MarketEntry implements XMLInterface {
     this.supportUrl = supportUrl;
     this.minPdiVersion = minPdiVersion;
     this.maxPdiVersion = maxPdiVersion;
-    
+
     if (type==null) {
       throw new KettleException("The market entry type can't be null");
     }
   }
-  
+
   public MarketEntry(String id, MarketEntryType type) throws KettleException {
     this(id, type, null, null, null, null, null, null, null, null, null, null, null, SupportLevel.NOT_SUPPORTED, null, null, null, null, null);
   }
@@ -124,32 +124,32 @@ public class MarketEntry implements XMLInterface {
   public boolean equals(Object obj) {
     if (!(obj instanceof MarketEntry)) return false;
     if (obj == this) return true;
-    
+
     return ((MarketEntry)obj).getId().equals(id);
   }
-  
+
   @Override
   public int hashCode() {
     return id.hashCode();
   }
-  
+
   @Override
   public String toString() {
     return "MarketEntry:"+getType().name()+":"+id;
   }
-  
+
   @Override
   public String getXML() throws KettleException {
     StringBuilder xml = new StringBuilder();
-    
+
     xml.append(XMLHandler.openTag(XML_TAG));
     xml.append(XMLHandler.addTagValue("id", id, false));
     xml.append(XMLHandler.addTagValue("type", type.toString(), false));
     xml.append(XMLHandler.addTagValue("name", name, false));
     xml.append(XMLHandler.addTagValue("description", description, false));
-    
+
     // for now, support a single version
-    
+
     xml.append(XMLHandler.openTag("versions"));
     xml.append(XMLHandler.openTag("version"));
     xml.append(XMLHandler.addTagValue("version", version, false));
@@ -159,7 +159,7 @@ public class MarketEntry implements XMLInterface {
     xml.append(XMLHandler.addTagValue("source_url", sourceUrl, false));
     xml.append(XMLHandler.closeTag("version"));
     xml.append(XMLHandler.closeTag("versions"));
-    
+
     xml.append(XMLHandler.addTagValue("author", author, false));
     xml.append(XMLHandler.addTagValue("documentation_url", documentationUrl, false));
     xml.append(XMLHandler.addTagValue("forum_url", forumUrl, false));
@@ -173,7 +173,7 @@ public class MarketEntry implements XMLInterface {
     xml.append(XMLHandler.closeTag(XML_TAG));
     return xml.toString();
   }
-  
+
   public MarketEntry(Node node) {
     this();
     id = XMLHandler.getTagValue(node, "id");
@@ -183,7 +183,7 @@ public class MarketEntry implements XMLInterface {
     author = XMLHandler.getTagValue(node, "author");
 
     // for now read the first version from the metadata
-    
+
     List<Node> versionsNodes = XMLHandler.getNodes(node, "versions");
     for (Node versionsNode : versionsNodes) {
       List<Node> versionNodes = XMLHandler.getNodes(versionsNode, "version");
@@ -197,7 +197,7 @@ public class MarketEntry implements XMLInterface {
       }
       break;
     }
-    
+
     documentationUrl = XMLHandler.getTagValue(node, "documentation_url");
     forumUrl = XMLHandler.getTagValue(node, "forum_url");
     casesUrl = XMLHandler.getTagValue(node, "cases_url");
@@ -208,7 +208,7 @@ public class MarketEntry implements XMLInterface {
     supportOrganization = XMLHandler.getTagValue(node, "support_organization");
     supportUrl = XMLHandler.getTagValue(node, "support_url");
   }
-  
+
   /**
    * @return the id
    */
@@ -488,7 +488,7 @@ public class MarketEntry implements XMLInterface {
   public void setMaxPdiVersion(String maxPdiVersion) {
     this.maxPdiVersion = maxPdiVersion;
   }
-  
+
   public boolean isInstalled() {
     return installed;
   }
@@ -496,11 +496,11 @@ public class MarketEntry implements XMLInterface {
   public void setInstalled(boolean installed) {
       this.installed = installed;
   }
-  
+
   public String getInstalledBranch() {
       return installedBranch;
   }
-  
+
   public void setInstalledBranch(String installedBranch) {
       this.installedBranch = installedBranch;
   }
@@ -523,9 +523,9 @@ public class MarketEntry implements XMLInterface {
   public String getInstalledVersion() {
     return installedVersion;
   }
-  
+
   public void setInstalledVersion(String installedVersion) {
       this.installedVersion = installedVersion;
   }
-  
+
 }

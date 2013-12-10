@@ -91,7 +91,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
     return true;
   }
 
-  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
   protected Listener lsOK, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
 
@@ -119,7 +119,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
   }
 
   public BaseStepXulDialog( String xulFile, Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta,
-      String stepname ) {
+    String stepname ) {
 
     super( xulFile, parent, baseStepMeta, transMeta, stepname );
 
@@ -182,7 +182,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
    * <LI><code>right</code>
    * </UL>
    * NOTE: if the alignment is not provided or contains an invalid value, <code>center</code> will be used as a default
-   * 
+   *
    * @return a constant which indicates the button alignment
    */
   protected static int getButtonAlignment() {
@@ -248,7 +248,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
 
   /**
    * Gets unused fields from previous steps and inserts them as rows into a table view.
-   * 
+   *
    * @param row
    *          the input fields
    * @param tableView
@@ -268,7 +268,8 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
    *          the provided row
    */
   public static final void getFieldsFromPrevious( RowMetaInterface row, XulTree tableView, int keyColumn,
-      int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn, TableItemInsertListener listener ) {
+    int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn,
+    TableItemInsertListener listener ) {
     if ( row == null || row.size() == 0 ) {
       return; // nothing to do
     }
@@ -293,14 +294,14 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       //
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
-          new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-          null, BaseMessages.getString(
-              PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
-              MessageDialog.WARNING, new String[] {
-                  BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-                  BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-                  BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-                  BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+        new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+        null, BaseMessages.getString(
+          PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
+          MessageDialog.WARNING, new String[] {
+            BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       int idx = md.open();
       choice = idx & 0xFF;
@@ -350,7 +351,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
 
         if ( listener != null ) {
           if ( !listener.tableItemInserted( table.getItem( tRow.getParent().getParent().getChildNodes().indexOf(
-              tRow.getParent() ) ), v ) ) {
+            tRow.getParent() ) ), v ) ) {
             tRow.getParent().getParent().removeChild( tRow.getParent() );
           }
         }
@@ -363,7 +364,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
 
   /**
    * Gets fields from previous steps and populate a ComboVar.
-   * 
+   *
    * @param comboVar
    *          the comboVar to populate
    * @param TransMeta
@@ -395,14 +396,14 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
 
     } catch ( KettleException ke ) {
       new ErrorDialog( comboVar.getShell(), BaseMessages.getString(
-          PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString(
-          PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
+        PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString(
+        PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
     }
   }
 
   /**
    * Create a new field mapping between source and target steps.
-   * 
+   *
    * @param shell
    *          the shell of the parent window
    * @param sourceFields
@@ -415,7 +416,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
    *           in case something goes wrong during the field mapping
    */
   public static final void generateFieldMapping( Shell shell, RowMetaInterface sourceFields,
-      RowMetaInterface targetFields, java.util.List<SourceToTargetMapping> fieldMapping ) throws KettleException {
+    RowMetaInterface targetFields, java.util.List<SourceToTargetMapping> fieldMapping ) throws KettleException {
     // Build the mapping: let the user decide!!
     String[] source = sourceFields.getFieldNames();
     for ( int i = 0; i < source.length; i++ ) {
@@ -433,7 +434,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
   }
 
   public static void getFieldsFromPrevious( RowMetaInterface row, XulTree tableView, List<Object> fields,
-      StepTableDataObject field, TableItemInsertXulListener listener ) {
+    StepTableDataObject field, TableItemInsertXulListener listener ) {
     if ( row == null || row.size() == 0 ) {
       return; // nothing to do
     }
@@ -452,14 +453,14 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       //
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
-          new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-          null, BaseMessages.getString(
-              PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
-              MessageDialog.WARNING, new String[] {
-                  BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-                  BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-                  BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-                  BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+        new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+        null, BaseMessages.getString(
+          PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
+          MessageDialog.WARNING, new String[] {
+            BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       int idx = md.open();
       choice = idx & 0xFF;

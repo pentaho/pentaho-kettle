@@ -44,9 +44,9 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 
 /**
- * 
+ *
  * On page one we select the name of the target job and the directory.
- * 
+ *
  * @author Matt
  * @since 17-apr-04
  */
@@ -191,7 +191,8 @@ public class RipDatabaseWizardPage3 extends WizardPage {
   }
 
   public boolean canFinish() {
-    return !Const.isEmpty( getJobname() ) && ( getRepositoryDirectory() != null || !Const.isEmpty( getDirectory() ) );
+    return !Const.isEmpty( getJobname() )
+      && ( getRepositoryDirectory() != null || !Const.isEmpty( getDirectory() ) );
   }
 
   /**

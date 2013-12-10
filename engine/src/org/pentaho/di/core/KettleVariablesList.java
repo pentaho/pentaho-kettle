@@ -56,7 +56,7 @@ public class KettleVariablesList {
     }
     if ( inputStream == null ) {
       throw new KettlePluginException( "Unable to find standard kettle variables definition file: "
-          + Const.KETTLE_VARIABLES_FILE );
+        + Const.KETTLE_VARIABLES_FILE );
     }
 
     try {

@@ -57,7 +57,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** fields in input streams with which we look up values */
   private String[] keystream;
@@ -198,7 +198,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     this.valueName = valueName;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -258,7 +259,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "StreamLookupMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+        PKG, "StreamLookupMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -299,7 +300,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( info != null && info.length == 1 && info[0] != null ) {
       for ( int i = 0; i < valueName.length; i++ ) {
         ValueMetaInterface v = info[0].searchValueMeta( value[i] );
@@ -312,7 +313,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
           row.addValueMeta( v );
         } else {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "StreamLookupMeta.Exception.ReturnValueCanNotBeFound", value[i] ) );
+            PKG, "StreamLookupMeta.Exception.ReturnValueCanNotBeFound", value[i] ) );
         }
       }
     } else {
@@ -332,7 +333,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     StringBuffer retval = new StringBuffer();
 
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
-    retval.append( "    " + XMLHandler.addTagValue( "from", infoStream.getStepname() ) ); //$NON-NLS-3$
+    retval.append( "    " + XMLHandler.addTagValue( "from", infoStream.getStepname() ) );
     retval.append( "    " + XMLHandler.addTagValue( "input_sorted", inputSorted ) );
     retval.append( "    " + XMLHandler.addTagValue( "preserve_memory", memoryPreservationActive ) );
     retval.append( "    " + XMLHandler.addTagValue( "sorted_list", usingSortedList ) );
@@ -367,9 +368,9 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       infoStream.setSubject( lookupFromStepname );
 
       inputSorted = rep.getStepAttributeBoolean( id_step, "input_sorted" );
-      memoryPreservationActive = rep.getStepAttributeBoolean( id_step, "preserve_memory" ); // $NON-NLS-1$
-      usingSortedList = rep.getStepAttributeBoolean( id_step, "sorted_list" ); // $NON-NLS-1$
-      usingIntegerPair = rep.getStepAttributeBoolean( id_step, "integer_pair" ); // $NON-NLS-1$
+      memoryPreservationActive = rep.getStepAttributeBoolean( id_step, "preserve_memory" );
+      usingSortedList = rep.getStepAttributeBoolean( id_step, "sorted_list" );
+      usingIntegerPair = rep.getStepAttributeBoolean( id_step, "integer_pair" );
 
       int nrkeys = rep.countNrStepAttributes( id_step, "lookup_key_name" );
       int nrvalues = rep.countNrStepAttributes( id_step, "return_value_name" );
@@ -389,7 +390,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "StreamLookupMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository" ), e );
+        PKG, "StreamLookupMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -399,9 +400,9 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
       rep.saveStepAttribute( id_transformation, id_step, "lookup_from_step", infoStream.getStepname() );
       rep.saveStepAttribute( id_transformation, id_step, "input_sorted", inputSorted );
-      rep.saveStepAttribute( id_transformation, id_step, "preserve_memory", memoryPreservationActive ); // $NON-NLS-1$
-      rep.saveStepAttribute( id_transformation, id_step, "sorted_list", usingSortedList ); // $NON-NLS-1$
-      rep.saveStepAttribute( id_transformation, id_step, "integer_pair", usingIntegerPair ); // $NON-NLS-1$
+      rep.saveStepAttribute( id_transformation, id_step, "preserve_memory", memoryPreservationActive );
+      rep.saveStepAttribute( id_transformation, id_step, "sorted_list", usingSortedList );
+      rep.saveStepAttribute( id_transformation, id_step, "integer_pair", usingIntegerPair );
 
       for ( int i = 0; i < keystream.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "lookup_key_name", keystream[i] );
@@ -413,24 +414,24 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_rename", valueName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_default", valueDefault[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_type", ValueMeta
-            .getTypeDesc( valueDefaultType[i] ) );
+          .getTypeDesc( valueDefaultType[i] ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "StreamLookupMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+        PKG, "StreamLookupMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -447,28 +448,28 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       }
       if ( error_found ) {
         error_message =
-            BaseMessages.getString( PKG, "StreamLookupMeta.CheckResult.FieldsNotFound" )
-                + Const.CR + Const.CR + error_message;
+          BaseMessages.getString( PKG, "StreamLookupMeta.CheckResult.FieldsNotFound" )
+            + Const.CR + Const.CR + error_message;
 
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "StreamLookupMeta.CheckResult.AllFieldsFound" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StreamLookupMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( info != null && info.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.StepReceivingLookupData", info.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.StepReceivingLookupData", info.size() + "" ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -484,15 +485,15 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       }
       if ( error_found ) {
         error_message =
-            BaseMessages.getString( PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream" )
-                + Const.CR + Const.CR + error_message;
+          BaseMessages.getString( PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream" )
+            + Const.CR + Const.CR + error_message;
 
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream" ), stepMeta );
         remarks.add( cr );
       }
 
@@ -506,21 +507,21 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       }
       if ( error_found ) {
         error_message =
-            BaseMessages.getString( PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream2" )
-                + Const.CR + Const.CR + error_message;
+          BaseMessages.getString( PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream2" )
+            + Const.CR + Const.CR + error_message;
 
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream2" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream2" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundFromInLookupSep" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.FieldsNotFoundFromInLookupSep" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -528,26 +529,26 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
     if ( infoStream.getStepMeta() == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.SourceStepNotSelected" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.SourceStepNotSelected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.SourceStepIsSelected" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.SourceStepIsSelected" ), stepMeta );
       remarks.add( cr );
 
       // See if the step exists!
       //
       if ( info != null ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "StreamLookupMeta.CheckResult.SourceStepExist", infoStream.getStepname() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StreamLookupMeta.CheckResult.SourceStepExist", infoStream.getStepname() ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "StreamLookupMeta.CheckResult.SourceStepDoesNotExist", infoStream.getStepname() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "StreamLookupMeta.CheckResult.SourceStepDoesNotExist", infoStream.getStepname() ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -555,19 +556,19 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length >= 2 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.StepReceivingInfoFromInputSteps", input.length + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.StepReceivingInfoFromInputSteps", input.length + "" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "StreamLookupMeta.CheckResult.NeedAtLeast2InputStreams", Const.CR, Const.CR ), stepMeta ); //$NON-NLS-3$
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "StreamLookupMeta.CheckResult.NeedAtLeast2InputStreams", Const.CR, Const.CR ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new StreamLookup( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -619,9 +620,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
       StreamInterface stream =
-          new Stream(
-              StreamType.INFO, null, BaseMessages.getString( PKG, "StreamLookupMeta.InfoStream.Description" ),
-              StreamIcon.INFO, null );
+        new Stream( StreamType.INFO, null, BaseMessages.getString(
+          PKG, "StreamLookupMeta.InfoStream.Description" ), StreamIcon.INFO, null );
       ioMeta.addStream( stream );
     }
 

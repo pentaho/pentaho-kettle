@@ -34,7 +34,7 @@ public class LogMessage implements LogMessageInterface {
 
   /**
    * Backward compatibility : no registry used, just log the subject as part of the message
-   * 
+   *
    * @param message
    * @param logChannelId
    */
@@ -47,7 +47,7 @@ public class LogMessage implements LogMessageInterface {
 
   /**
    * Recommended use :
-   * 
+   *
    * @param message
    * @param logChannelId
    * @param level

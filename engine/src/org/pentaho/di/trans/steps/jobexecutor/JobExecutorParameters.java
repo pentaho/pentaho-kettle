@@ -33,11 +33,11 @@ import org.w3c.dom.Node;
 /**
  * The job to be executed in the transformation can receive parameters. These are either coming from an input row (the
  * first row in a group of rows) or from a static variable or value.
- * 
+ *
  * @author matt
  * @version 4.3
  * @since 2011-AUG-29
- * 
+ *
  */
 public class JobExecutorParameters implements Cloneable {
 

@@ -211,7 +211,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     try {
       snippitsHelper = UserDefinedJavaClassCodeSnippits.getSnippitsHelper();
     } catch ( Exception e ) {
-      new ErrorDialog( shell, "Unexpected error", "There was an unexpected error reading the code snippits file", e );
+      new ErrorDialog(
+        shell, "Unexpected error", "There was an unexpected error reading the code snippits file", e );
     }
 
   }
@@ -275,7 +276,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
     // Script line
     Label wlScriptFunctions = new Label( wTop, SWT.NONE );
-    wlScriptFunctions.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ClassesAndSnippits.Label" ) );
+    wlScriptFunctions
+      .setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ClassesAndSnippits.Label" ) );
     props.setLook( wlScriptFunctions );
     FormData fdlScriptFunctions = new FormData();
     fdlScriptFunctions.left = new FormAttachment( 0, 0 );
@@ -390,7 +392,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     wTest = new Button( shell, SWT.PUSH );
     wTest.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.TestClass.Button" ) );
     // wCreatePlugin = new Button(shell, SWT.PUSH);
-    //wCreatePlugin.setText("Create Plug-in"); //$NON-NLS-1$
+    //wCreatePlugin.setText("Create Plug-in");
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
@@ -450,7 +452,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
           MessageBox messageBox = new MessageBox( shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES );
           messageBox.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.DeleteItem.Label" ) );
           messageBox.setMessage( BaseMessages.getString(
-              PKG, "UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", cItem.getText() ) );
+            PKG, "UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", cItem.getText() ) );
           switch ( messageBox.open() ) {
             case SWT.YES:
               modifyTabTree( cItem, TabActions.DELETE_ITEM );
@@ -550,12 +552,12 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         // Allow dragging snippits and field helpers
         if ( item != null && item.getParentItem() != null ) {
           if ( "Snippits Category".equals( item.getParentItem().getData() )
-              && !"Snippits Category".equals( item.getData() ) ) {
+            && !"Snippits Category".equals( item.getData() ) ) {
             doit = true;
           } else if ( "Field Helpers".equals( item.getParentItem().getData() ) ) {
             doit = true;
           } else if ( item.getParentItem().getParentItem() != null
-              && "Field Helpers".equals( item.getParentItem().getParentItem().getData() ) ) {
+            && "Field Helpers".equals( item.getParentItem().getParentItem().getData() ) ) {
             doit = true;
           }
         }
@@ -603,16 +605,16 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
       pw.flush();
       pw.close();
       ShowMessageDialog msgDialog =
-          new ShowMessageDialog( shell, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(
-              PKG, "UserDefinedJavaClassDialog.Plugin.CreateSuccess" ), BaseMessages.getString(
-              PKG, "UserDefinedJavaClassDialog.Plugin.CreatedFile", pluginFile.getPath() ), false );
+        new ShowMessageDialog( shell, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(
+          PKG, "UserDefinedJavaClassDialog.Plugin.CreateSuccess" ), BaseMessages.getString(
+          PKG, "UserDefinedJavaClassDialog.Plugin.CreatedFile", pluginFile.getPath() ), false );
       msgDialog.open();
 
     } catch ( IOException e ) {
       e.printStackTrace();
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorTitle" ), BaseMessages
-              .getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorMessage", stepname ), e );
+        shell, BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorTitle" ), BaseMessages
+          .getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorMessage", stepname ), e );
     }
 
     return true;
@@ -640,7 +642,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     wlFields.setLayoutData( fdlFields );
 
     wClearResultFields = new Button( wBottom, SWT.CHECK );
-    wClearResultFields.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ClearResultFields.Label" ) );
+    wClearResultFields
+      .setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ClearResultFields.Label" ) );
     props.setLook( wClearResultFields );
     FormData fdClearResultFields = new FormData();
     fdClearResultFields.right = new FormAttachment( 100, 0 );
@@ -650,23 +653,23 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     final int fieldsRows = input.getFieldInfo().size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Filename" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Type" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Length" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Precision" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Filename" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Type" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Length" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Precision" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wFields =
-        new TableView(
-            transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -707,19 +710,20 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
     final int nrRows = input.getInfoStepDefinitions().size();
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, prevStepNames ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepDescription" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, prevStepNames ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepDescription" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wInfoSteps =
-        new TableView( transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props );
+      new TableView(
+        transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -759,19 +763,20 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
     final int nrRows = input.getTargetStepDefinitions().size();
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepDescription" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepName" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepDescription" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wTargetSteps =
-        new TableView( transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props );
+      new TableView(
+        transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -791,8 +796,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
   private void addParametersTab() {
     parametersTab = new CTabItem( wTabFolder, SWT.NONE );
     parametersTab.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Tabs.Parameters.Title" ) );
-    parametersTab.setToolTipText( BaseMessages
-        .getString( PKG, "UserDefinedJavaClassDialog.Tabs.Parameters.TooltipText" ) );
+    parametersTab.setToolTipText( BaseMessages.getString(
+      PKG, "UserDefinedJavaClassDialog.Tabs.Parameters.TooltipText" ) );
 
     Composite wBottom = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wBottom );
@@ -812,20 +817,21 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
     final int nrRows = input.getUsageParameters().size();
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterTag" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterValue" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterDescription" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterTag" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterValue" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterDescription" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[1].setUsingVariables( true );
 
     wParameters =
-        new TableView( transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props );
+      new TableView(
+        transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -862,8 +868,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         break;
     }
     StyledTextComp wScript =
-        new StyledTextComp( transMeta, item.getParent(), SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL, item
-            .getText(), false );
+      new StyledTextComp( transMeta, item.getParent(), SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL, item
+        .getText(), false );
     if ( ( tabCode != null ) && tabCode.length() > 0 ) {
       wScript.setText( tabCode );
     } else {
@@ -1055,7 +1061,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
       colnr++;
     }
     wlPosition.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Position.Label2" )
-        + linenr + ", " + colnr );
+      + linenr + ", " + colnr );
   }
 
   /**
@@ -1082,14 +1088,14 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         definitions = new ArrayList<UserDefinedJavaClassDef>();
         // Note the tab name isn't i18n because it is a Java Class name and i18n characters might make it choke.
         definitions.add( new UserDefinedJavaClassDef(
-            UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", UserDefinedJavaClassCodeSnippits
-                .getSnippitsHelper().getDefaultCode() ) );
+          UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", UserDefinedJavaClassCodeSnippits
+            .getSnippitsHelper().getDefaultCode() ) );
         input.replaceDefinitions( definitions );
       } catch ( KettleXMLException e ) {
         e.printStackTrace();
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorTitle" ), BaseMessages
-                .getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorMessage", stepname ), e );
+          shell, BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorTitle" ),
+          BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateErrorMessage", stepname ), e );
       }
     }
     for ( UserDefinedJavaClassDef def : definitions ) {
@@ -1158,9 +1164,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     if ( input.hasChanged() ) {
       MessageBox box = new MessageBox( shell, SWT.YES | SWT.NO | SWT.APPLICATION_MODAL );
       box.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.WarningDialogChanged.Title" ) );
-      box
-          .setMessage( BaseMessages
-              .getString( PKG, "UserDefinedJavaClassDialog.WarningDialogChanged.Message", Const.CR ) );
+      box.setMessage( BaseMessages.getString(
+        PKG, "UserDefinedJavaClassDialog.WarningDialogChanged.Message", Const.CR ) );
       int answer = box.open();
 
       if ( answer == SWT.NO ) {
@@ -1179,7 +1184,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       newFields.add( new FieldInfo( item.getText( 1 ), ValueMeta.getType( item.getText( 2 ) ), Const.toInt( item
-          .getText( 3 ), -1 ), Const.toInt( item.getText( 4 ), -1 ) ) );
+        .getText( 3 ), -1 ), Const.toInt( item.getText( 4 ), -1 ) ) );
     }
     meta.replaceFields( newFields );
 
@@ -1188,8 +1193,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
       List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>( cTabs.length );
       for ( int i = 0; i < cTabs.length; i++ ) {
         UserDefinedJavaClassDef def =
-            new UserDefinedJavaClassDef( ClassType.NORMAL_CLASS, cTabs[i].getText(), getStyledTextComp( cTabs[i] )
-                .getText() );
+          new UserDefinedJavaClassDef( ClassType.NORMAL_CLASS, cTabs[i].getText(), getStyledTextComp( cTabs[i] )
+            .getText() );
         if ( cTabs[i].getImage().equals( imageActiveScript ) ) {
           def.setClassType( ClassType.TRANSFORM_CLASS );
         }
@@ -1299,7 +1304,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
       } else if ( udjcMeta.cookErrors.size() > 1 ) {
         Exception e = udjcMeta.cookErrors.get( 0 );
         new ErrorDialog( shell, "Errors during class compilation", String.format(
-            "Multiple errors during class compilation. First error:\n%s", e.toString() ), e );
+          "Multiple errors during class compilation. First error:\n%s", e.toString() ), e );
         return false;
       }
 
@@ -1367,12 +1372,12 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
           }
         }
         StepMeta genStep =
-            new StepMeta( registry.getPluginId( StepPluginType.class, genMeta ), "## TEST DATA ##", genMeta );
+          new StepMeta( registry.getPluginId( StepPluginType.class, genMeta ), "## TEST DATA ##", genMeta );
         genStep.setLocation( 50, 50 );
 
         StepMeta scriptStep =
-            new StepMeta( registry.getPluginId( StepPluginType.class, udjcMeta ), Const.NVL(
-                scriptStepName, "## SCRIPT ##" ), udjcMeta );
+          new StepMeta( registry.getPluginId( StepPluginType.class, udjcMeta ), Const.NVL(
+            scriptStepName, "## SCRIPT ##" ), udjcMeta );
         scriptStepName = scriptStep.getName();
         scriptStep.setLocation( 150, 50 );
 
@@ -1383,7 +1388,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         // Generate a new test transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName( wStepname.getText() + " - PREVIEW" ); // $NON-NLS-1$
+        transMeta.setName( wStepname.getText() + " - PREVIEW" );
         transMeta.addStep( genStep );
         transMeta.addStep( scriptStep );
         transMeta.addTransHop( hop );
@@ -1394,8 +1399,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
           // Now run this transformation and grab the results...
           //
           TransPreviewProgressDialog progressDialog =
-              new TransPreviewProgressDialog( shell, transMeta, new String[] { scriptStepName, }, new int[] { Const
-                  .toInt( genMeta.getRowLimit(), 10 ), } );
+            new TransPreviewProgressDialog(
+              shell, transMeta, new String[] { scriptStepName, }, new int[] { Const.toInt( genMeta
+                .getRowLimit(), 10 ), } );
           progressDialog.open();
 
           Trans trans = progressDialog.getTrans();
@@ -1404,9 +1410,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
           if ( !progressDialog.isCancelled() ) {
             if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
               EnterTextDialog etd =
-                  new EnterTextDialog(
-                      shell, BaseMessages.getString( "System.Dialog.PreviewError.Title" ), BaseMessages
-                          .getString( "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                  shell, BaseMessages.getString( "System.Dialog.PreviewError.Title" ), BaseMessages
+                    .getString( "System.Dialog.PreviewError.Message" ), loggingText, true );
               etd.setReadOnly();
               etd.open();
             }
@@ -1417,8 +1423,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
           if ( previewRowsMeta != null && previewRows != null && previewRows.size() > 0 ) {
             PreviewRowsDialog prd =
-                new PreviewRowsDialog(
-                    shell, transMeta, SWT.NONE, wStepname.getText(), previewRowsMeta, previewRows, loggingText );
+              new PreviewRowsDialog(
+                shell, transMeta, SWT.NONE, wStepname.getText(), previewRowsMeta, previewRows, loggingText );
             prd.open();
           }
         }
@@ -1426,12 +1432,12 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         return true;
       } else {
         throw new KettleException( BaseMessages.getString(
-            PKG, "UserDefinedJavaClassDialog.Exception.CouldNotGetFields" ) );
+          PKG, "UserDefinedJavaClassDialog.Exception.CouldNotGetFields" ) );
       }
     } catch ( Exception e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.TestFailed.DialogTitle" ), BaseMessages
-              .getString( PKG, "UserDefinedJavaClassDialog.TestFailed.DialogMessage" ), e );
+        shell, BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.TestFailed.DialogTitle" ), BaseMessages
+          .getString( PKG, "UserDefinedJavaClassDialog.TestFailed.DialogMessage" ), e );
       return false;
     }
 
@@ -1637,7 +1643,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
           MessageBox messageBox = new MessageBox( shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES );
           messageBox.setText( BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.DeleteItem.Label" ) );
           messageBox.setMessage( BaseMessages.getString(
-              PKG, "UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", tItem.getText() ) );
+            PKG, "UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", tItem.getText() ) );
           switch ( messageBox.open() ) {
             case SWT.YES:
               modifyCTabItem( tItem, TabActions.DELETE_ITEM, "" );

@@ -44,9 +44,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id = "OpenERPObjectOutputImport", 
-		image = "OpenERPObjectOutput.png", 
-		i18nPackageName="org.pentaho.di.trans.steps.openerp.objectoutput", 
+@Step(id = "OpenERPObjectOutputImport",
+		image = "OpenERPObjectOutput.png",
+		i18nPackageName="org.pentaho.di.trans.steps.openerp.objectoutput",
 		name = "OpenERPObjectOutput.TransName",
 		description="OpenERPObjectOutput.TransDescription",
 		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP")
@@ -70,7 +70,7 @@ import org.w3c.dom.Node;
 			
 			ValueMetaInterface v = new ValueMeta(outputIDFieldName, ValueMetaInterface.TYPE_INTEGER);
 	        v.setOrigin(name);
-	        
+	
 	        row.addValueMeta( v );
 		}
     }

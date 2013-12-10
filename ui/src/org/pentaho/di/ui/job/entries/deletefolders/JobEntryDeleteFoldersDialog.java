@@ -61,12 +61,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Delete Folders job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 13-05-2008
  */
 public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryDeleteFolders.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDeleteFolders.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
   private Text wName;
@@ -267,8 +267,8 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wLimitFolders =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobDeleteFolders.LimitFolders.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobDeleteFolders.LimitFolders.Tooltip" ) );
     props.setLook( wLimitFolders );
     wLimitFolders.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();
@@ -381,14 +381,16 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] { new ColumnInfo(
-            BaseMessages.getString( PKG, "JobDeleteFolders.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "JobDeleteFolders.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobDeleteFolders.Fields.Column" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

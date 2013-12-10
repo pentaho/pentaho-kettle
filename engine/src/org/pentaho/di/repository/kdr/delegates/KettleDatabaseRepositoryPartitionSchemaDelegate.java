@@ -35,7 +35,7 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
-  // private static Class<?> PKG = PartitionSchema.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  // private static Class<?> PKG = PartitionSchema.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryPartitionSchemaDelegate( KettleDatabaseRepository repository ) {
     super( repository );
@@ -43,21 +43,21 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
   public RowMetaAndData getPartitionSchema( ObjectId id_partition_schema ) throws KettleException {
     return repository.connectionDelegate.getOneRow(
-        quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ),
-        quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ), id_partition_schema );
+      quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ),
+      quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ), id_partition_schema );
   }
 
   public RowMetaAndData getPartition( ObjectId id_partition ) throws KettleException {
     return repository.connectionDelegate.getOneRow(
-        quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ),
-        quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION ), id_partition );
+      quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ),
+      quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION ), id_partition );
   }
 
   public synchronized ObjectId getPartitionSchemaID( String name ) throws KettleException {
     return repository.connectionDelegate.getIDWithValue(
-        quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ),
-        quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ),
-        quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME ), name );
+      quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ),
+      quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ),
+      quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME ), name );
   }
 
   public void savePartitionSchema( PartitionSchema partitionSchema ) throws KettleException {
@@ -65,7 +65,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
   }
 
   public void savePartitionSchema( PartitionSchema partitionSchema, ObjectId id_transformation,
-      boolean isUsedByTransformation ) throws KettleException {
+    boolean isUsedByTransformation ) throws KettleException {
     try {
       savePartitionSchema( partitionSchema, id_transformation, isUsedByTransformation, false );
     } catch ( KettleObjectExistsException e ) {
@@ -75,7 +75,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
   }
 
   public void savePartitionSchema( PartitionSchema partitionSchema, ObjectId id_transformation,
-      boolean isUsedByTransformation, boolean overwrite ) throws KettleException {
+    boolean isUsedByTransformation, boolean overwrite ) throws KettleException {
     // Look up the ID again (import scenario!)
     //
     if ( partitionSchema.getObjectId() == null ) {
@@ -98,7 +98,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
           repository.delPartitions( partitionSchema.getObjectId() );
         } else {
           throw new KettleObjectExistsException( "Failed to save object to repository. Object ["
-              + partitionSchema.getName() + "] already exists." );
+            + partitionSchema.getName() + "] already exists." );
         }
       } else {
         // There are no naming collisions (either it is the same object or the name is unique)
@@ -145,29 +145,33 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
     if ( getPartitionSchemaID( partitionSchema.getName() ) != null ) {
       // This partition schema name is already in use. Throw an exception.
       throw new KettleObjectExistsException( "Failed to create object in repository. Object ["
-          + partitionSchema.getName() + "] already exists." );
+        + partitionSchema.getName() + "] already exists." );
     }
 
     ObjectId id = repository.connectionDelegate.getNextPartitionSchemaID();
 
     RowMetaAndData table = new RowMetaAndData();
 
+    table
+      .addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA,
+          ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER ), id );
+      KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING ), partitionSchema
+      .getName() );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING ),
-        partitionSchema.getName() );
-    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN ),
+      partitionSchema.isDynamicallyDefined() );
+    table
+      .addValue(
         new ValueMeta(
-            KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN ),
-        partitionSchema.isDynamicallyDefined() );
-    table.addValue(
-        new ValueMeta(
-            KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING ),
-        partitionSchema.getNumberOfPartitionsPerSlave() );
+          KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE,
+          ValueMetaInterface.TYPE_STRING ), partitionSchema.getNumberOfPartitionsPerSlave() );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
-        table.getRowMeta(), KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA );
+      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();
@@ -177,21 +181,22 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
   public synchronized void updatePartitionSchema( PartitionSchema partitionSchema ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING ), partitionSchema
+      .getName() );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING ),
-        partitionSchema.getName() );
-    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN ),
+      partitionSchema.isDynamicallyDefined() );
+    table
+      .addValue(
         new ValueMeta(
-            KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN ),
-        partitionSchema.isDynamicallyDefined() );
-    table.addValue(
-        new ValueMeta(
-            KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING ),
-        partitionSchema.getNumberOfPartitionsPerSlave() );
+          KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE,
+          ValueMetaInterface.TYPE_STRING ), partitionSchema.getNumberOfPartitionsPerSlave() );
 
     repository.connectionDelegate.updateTableRow(
-        KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA,
-        KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, table, partitionSchema.getObjectId() );
+      KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA,
+      KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, table, partitionSchema.getObjectId() );
   }
 
   public synchronized ObjectId insertPartition( ObjectId id_partition_schema, String partition_id )
@@ -201,15 +206,16 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER ), id );
+      KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER ),
-        id_partition_schema );
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER ),
+      id_partition_schema );
     table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING ), partition_id );
+      KettleDatabaseRepository.FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING ), partition_id );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
-        table.getRowMeta(), KettleDatabaseRepository.TABLE_R_PARTITION );
+      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_PARTITION );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();
@@ -226,14 +232,13 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
     if ( transList.length == 0 ) {
       repository.connectionDelegate.performDelete( "DELETE FROM "
-          + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ) + " WHERE "
-          + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA ) + " = ? ", id_partition_schema );
-      repository.connectionDelegate
-          .performDelete(
-              "DELETE FROM "
-                  + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ) + " WHERE "
-                  + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " = ? ",
-              id_partition_schema );
+        + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA ) + " = ? ", id_partition_schema );
+      repository.connectionDelegate.performDelete(
+        "DELETE FROM "
+          + quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ) + " WHERE "
+          + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " = ? ",
+        id_partition_schema );
     } else {
       StringBuffer message = new StringBuffer();
 
@@ -244,8 +249,8 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
       message.append( Const.CR );
 
       KettleDependencyException e = new KettleDependencyException( message.toString() );
-      throw new KettleDependencyException( "This partition schema is still in use by one or more transformations ("
-          + transList.length + ") :", e );
+      throw new KettleDependencyException(
+        "This partition schema is still in use by one or more transformations (" + transList.length + ") :", e );
     }
   }
 }

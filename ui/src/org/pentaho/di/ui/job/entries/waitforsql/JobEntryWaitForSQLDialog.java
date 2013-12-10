@@ -72,12 +72,12 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * This dialog allows you to edit the Wait for SQL job entry settings.
- * 
+ *
  * @author Samatar
  * @since 27-10-2008
  */
 public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryWaitForSQL.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryWaitForSQL.class; // for i18n purposes, needed by Translator2!!
 
   private Button wbTable, wbSQLTable;
 
@@ -345,8 +345,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     wlRowsCountValue.setLayoutData( fdlRowsCountValue );
 
     wRowsCountValue =
-        new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobEntryWaitForSQL.RowsCountValue.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobEntryWaitForSQL.RowsCountValue.Tooltip" ) );
     props.setLook( wRowsCountValue );
     wRowsCountValue.addModifyListener( lsMod );
     fdRowsCountValue = new FormData();
@@ -557,7 +557,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     wbSQLTable.setLayoutData( fdbSQLTable );
 
     wSQL =
-        new StyledTextComp( jobEntry, wCustomGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( jobEntry, wCustomGroup, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
     wSQL.addModifyListener( lsMod );
     fdSQL = new FormData();
@@ -676,9 +677,9 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
       DatabaseExplorerDialog std = new DatabaseExplorerDialog( shell, SWT.NONE, inf, jobMeta.getDatabases() );
       if ( std.open() ) {
         String sql =
-            "SELECT *"
-                + Const.CR + "FROM " + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() )
-                + Const.CR;
+          "SELECT *"
+            + Const.CR + "FROM "
+            + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() ) + Const.CR;
         wSQL.setText( sql );
 
         MessageBox yn = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
@@ -708,12 +709,14 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
                   sql += inf.quoteField( field.getName() ) + Const.CR;
                 }
                 sql +=
-                    "FROM " + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() ) + Const.CR;
+                  "FROM "
+                    + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() )
+                    + Const.CR;
                 wSQL.setText( sql );
               } else {
                 MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
                 mb.setMessage( BaseMessages.getString( PKG, "JobEntryWaitForSQL.ERROR_CouldNotRetrieveFields" )
-                    + Const.CR + BaseMessages.getString( PKG, "JobEntryWaitForSQL.PerhapsNoPermissions" ) );
+                  + Const.CR + BaseMessages.getString( PKG, "JobEntryWaitForSQL.PerhapsNoPermissions" ) );
                 mb.setText( BaseMessages.getString( PKG, "JobEntryWaitForSQL.DialogCaptionError2" ) );
                 mb.open();
               }
@@ -721,7 +724,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
               mb.setText( BaseMessages.getString( PKG, "JobEntryWaitForSQL.DialogCaptionError3" ) );
               mb.setMessage( BaseMessages.getString( PKG, "JobEntryWaitForSQL.AnErrorOccurred" )
-                  + Const.CR + e.getMessage() );
+                + Const.CR + e.getMessage() );
               mb.open();
             } finally {
               db.disconnect();
@@ -752,7 +755,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
       posnr--;
       colnr++;
     }
-    wlPosition.setText( BaseMessages.getString( PKG, "JobEntryWaitForSQL.Position.Label", "" + linenr, "" + colnr ) );
+    wlPosition
+      .setText( BaseMessages.getString( PKG, "JobEntryWaitForSQL.Position.Label", "" + linenr, "" + colnr ) );
 
   }
 

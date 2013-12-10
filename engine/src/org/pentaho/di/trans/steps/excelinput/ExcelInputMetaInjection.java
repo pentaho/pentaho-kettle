@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * To keep it simple, this metadata injection interface only supports the fields in the spreadsheet for the time being.
- * 
+ *
  * @author Matt
  */
 public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
@@ -52,17 +52,18 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
     // Add the fields...
     //
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
+      new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS
+        .getDescription() );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
+      new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
     fieldsEntry.getDetails().add( fieldEntry );
 
     for ( Entry entry : Entry.values() ) {
       if ( entry.getParent() == Entry.FIELD ) {
         StepInjectionMetaEntry metaEntry =
-            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
         fieldEntry.getDetails().add( metaEntry );
       }
     }
@@ -70,17 +71,18 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
     // And the sheets
     //
     StepInjectionMetaEntry sheetsEntry =
-        new StepInjectionMetaEntry( Entry.SHEETS.name(), Entry.SHEETS.getValueType(), Entry.SHEETS.getDescription() );
+      new StepInjectionMetaEntry( Entry.SHEETS.name(), Entry.SHEETS.getValueType(), Entry.SHEETS
+        .getDescription() );
     all.add( sheetsEntry );
 
     StepInjectionMetaEntry sheetEntry =
-        new StepInjectionMetaEntry( Entry.SHEET.name(), Entry.SHEET.getValueType(), Entry.SHEET.getDescription() );
+      new StepInjectionMetaEntry( Entry.SHEET.name(), Entry.SHEET.getValueType(), Entry.SHEET.getDescription() );
     sheetsEntry.getDetails().add( sheetEntry );
 
     for ( Entry entry : Entry.values() ) {
       if ( entry.getParent() == Entry.SHEET ) {
         StepInjectionMetaEntry metaEntry =
-            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
         sheetEntry.getDetails().add( metaEntry );
       }
     }
@@ -90,20 +92,20 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
     // The file name lines
     //
     StepInjectionMetaEntry filesEntry =
-        new StepInjectionMetaEntry(
-            Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINES.description );
+      new StepInjectionMetaEntry(
+        Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINES.description );
     all.add( filesEntry );
     StepInjectionMetaEntry fileEntry =
-        new StepInjectionMetaEntry(
-            Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINE.description );
+      new StepInjectionMetaEntry(
+        Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINE.description );
     filesEntry.getDetails().add( fileEntry );
 
     Entry[] fieldsEntries =
-        new Entry[] {
-            Entry.FILENAME, Entry.FILEMASK, Entry.EXCLUDE_FILEMASK, Entry.FILE_REQUIRED, Entry.INCLUDE_SUBFOLDERS, };
+      new Entry[] {
+        Entry.FILENAME, Entry.FILEMASK, Entry.EXCLUDE_FILEMASK, Entry.FILE_REQUIRED, Entry.INCLUDE_SUBFOLDERS, };
     for ( Entry entry : fieldsEntries ) {
       StepInjectionMetaEntry metaEntry =
-          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
       fileEntry.getDetails().add( metaEntry );
     }
 
@@ -305,9 +307,9 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" ), FIELD(
-        ValueMetaInterface.TYPE_NONE, "One field" ),
+      ValueMetaInterface.TYPE_NONE, "One field" ),
 
-    NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), TYPE(
+      NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), TYPE(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field data type" ), LENGTH(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field length" ), PRECISION(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field precision" ), TRIM_TYPE(
@@ -318,7 +320,7 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
         FIELD, ValueMetaInterface.TYPE_STRING, "Field group symbol" ), REPEAT(
         FIELD, ValueMetaInterface.TYPE_STRING, "Field repeat (Y/N)" ),
 
-    FILENAME_LINES( ValueMetaInterface.TYPE_NONE, "The list of file definitions" ), FILENAME_LINE(
+      FILENAME_LINES( ValueMetaInterface.TYPE_NONE, "The list of file definitions" ), FILENAME_LINE(
         ValueMetaInterface.TYPE_NONE, "One file definition line" ), FILENAME(
         ValueMetaInterface.TYPE_STRING, "The filename or directory" ), FILEMASK(
         ValueMetaInterface.TYPE_STRING, "The file mask (regex)" ), EXCLUDE_FILEMASK(
@@ -326,10 +328,10 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
         ValueMetaInterface.TYPE_STRING, "Is this a required file (Y/N)" ), INCLUDE_SUBFOLDERS(
         ValueMetaInterface.TYPE_STRING, "Include sub-folders when searching files? (Y/N)" ),
 
-    SHEETS( ValueMetaInterface.TYPE_NONE, "All the sheets in the spreadsheets" ), SHEET(
+      SHEETS( ValueMetaInterface.TYPE_NONE, "All the sheets in the spreadsheets" ), SHEET(
         ValueMetaInterface.TYPE_NONE, "One sheet in the spreadsheet" ),
 
-    SHEET_NAME( SHEET, ValueMetaInterface.TYPE_STRING, "Sheet name" ), SHEET_START_ROW(
+      SHEET_NAME( SHEET, ValueMetaInterface.TYPE_STRING, "Sheet name" ), SHEET_START_ROW(
         SHEET, ValueMetaInterface.TYPE_STRING, "Sheet start row" ), SHEET_START_COL(
         SHEET, ValueMetaInterface.TYPE_STRING, "Sheet start col" ), ;
 

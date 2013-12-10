@@ -61,12 +61,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Allows the user to make a selection from a list of values.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class EnterSelectionDialog extends Dialog {
-  private static Class<?> PKG = EnterSelectionDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterSelectionDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlSelection;
   private List wSelection;
@@ -116,7 +116,7 @@ public class EnterSelectionDialog extends Dialog {
 
   /**
    * Create a new dialog allow someone to pick one value out of a list of values
-   * 
+   *
    * @param parent
    *          the parent shell.
    * @param choices
@@ -144,7 +144,7 @@ public class EnterSelectionDialog extends Dialog {
   }
 
   public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message,
-      HasDatabasesInterface databasesInterface ) {
+    HasDatabasesInterface databasesInterface ) {
     this( parent, choices, shellText, message );
     this.databasesInterface = databasesInterface;
   }
@@ -171,8 +171,8 @@ public class EnterSelectionDialog extends Dialog {
     Display display = parent.getDisplay();
 
     shell =
-        new Shell( parent, SWT.DIALOG_TRIM
-            | ( modal ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) | SWT.RESIZE | SWT.MIN | SWT.MAX );
+      new Shell( parent, SWT.DIALOG_TRIM
+        | ( modal ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) | SWT.RESIZE | SWT.MIN | SWT.MAX );
     props.setLook( shell );
 
     FormLayout formLayout = new FormLayout();

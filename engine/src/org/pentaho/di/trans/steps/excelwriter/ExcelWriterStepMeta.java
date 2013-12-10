@@ -56,7 +56,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ExcelWriterStepMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelWriterStepMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String IF_FILE_EXISTS_REUSE = "reuse";
   public static final String IF_FILE_EXISTS_CREATE_NEW = "new";
@@ -545,7 +545,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     this.leaveExistingStylesUnchanged = leaveExistingStylesUnchanged;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -580,9 +581,9 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       startingCell = XMLHandler.getTagValue( stepnode, "startingCell" );
       rowWritingMethod = XMLHandler.getTagValue( stepnode, "rowWritingMethod" );
       forceFormulaRecalculation =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "forceFormulaRecalculation" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "forceFormulaRecalculation" ) );
       leaveExistingStylesUnchanged =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "leaveExistingStylesUnchanged" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "leaveExistingStylesUnchanged" ) );
 
       String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
       if ( Const.isEmpty( addToResult ) ) {
@@ -595,7 +596,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
 
       doNotOpenNewFileInit =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
       stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
       dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
       timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
@@ -610,7 +611,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       splitEvery = Const.toInt( XMLHandler.getTagValue( stepnode, "file", "splitevery" ), 0 );
 
       templateEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "template", "enabled" ) );
-      templateSheetEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "template", "sheet_enabled" ) );
+      templateSheetEnabled =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "template", "sheet_enabled" ) );
       templateFileName = XMLHandler.getTagValue( stepnode, "template", "filename" );
       templateSheetName = XMLHandler.getTagValue( stepnode, "template", "sheetname" );
       sheetname = XMLHandler.getTagValue( stepnode, "file", "sheetname" );
@@ -635,7 +637,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         outputFields[i].setCommentField( XMLHandler.getTagValue( fnode, "commentField" ) );
         outputFields[i].setCommentAuthorField( XMLHandler.getTagValue( fnode, "commentAuthorField" ) );
         outputFields[i].setFormula( XMLHandler.getTagValue( fnode, "formula" ) != null
-            && XMLHandler.getTagValue( fnode, "formula" ).equalsIgnoreCase( "Y" ) );
+          && XMLHandler.getTagValue( fnode, "formula" ).equalsIgnoreCase( "Y" ) );
         outputFields[i].setHyperlinkField( XMLHandler.getTagValue( fnode, "hyperlinkField" ) );
       }
 
@@ -766,7 +768,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
     if ( r == null ) {
       r = new RowMeta(); // give back values
     }
@@ -786,9 +788,10 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     retval.append( "    " ).append( XMLHandler.addTagValue( "appendOffset", appendOffset ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "appendEmpty", appendEmpty ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rowWritingMethod", rowWritingMethod ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "forceFormulaRecalculation", forceFormulaRecalculation ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged ) );
+      XMLHandler.addTagValue( "forceFormulaRecalculation", forceFormulaRecalculation ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged ) );
     retval.append( "    " + XMLHandler.addTagValue( "appendLines", appendLines ) );
     retval.append( "    " + XMLHandler.addTagValue( "add_to_result_filenames", addToResultFilenames ) );
 
@@ -806,7 +809,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     retval.append( "      " ).append( XMLHandler.addTagValue( "stream_data", streamingData ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "protect_sheet", protectsheet ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "protected_by", protectedBy ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "splitevery", splitEvery ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "if_file_exists", ifFileExists ) );
@@ -835,7 +838,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         retval.append( "        " ).append( XMLHandler.addTagValue( "styleCell", field.getStyleCell() ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "commentField", field.getCommentField() ) );
         retval.append( "        " ).append(
-            XMLHandler.addTagValue( "commentAuthorField", field.getCommentAuthorField() ) );
+          XMLHandler.addTagValue( "commentAuthorField", field.getCommentAuthorField() ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "formula", field.isFormula() ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "hyperlinkField", field.getHyperlinkField() ) );
         retval.append( "      </field>" ).append( Const.CR );
@@ -908,7 +911,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         outputFields[i].setTitleStyleCell( rep.getStepAttributeString( id_step, i, "field_title_style_cell" ) );
         outputFields[i].setStyleCell( rep.getStepAttributeString( id_step, i, "field_style_cell" ) );
         outputFields[i].setCommentField( rep.getStepAttributeString( id_step, i, "field_comment_field" ) );
-        outputFields[i].setCommentAuthorField( rep.getStepAttributeString( id_step, i, "field_comment_author_field" ) );
+        outputFields[i].setCommentAuthorField( rep.getStepAttributeString(
+          id_step, i, "field_comment_author_field" ) );
         outputFields[i].setFormula( rep.getStepAttributeBoolean( id_step, i, "field_formula" ) );
         outputFields[i].setHyperlinkField( rep.getStepAttributeString( id_step, i, "field_hyperlink_field" ) );
 
@@ -935,7 +939,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
       rep.saveStepAttribute( id_transformation, id_step, "do_not_open_newfile_init", doNotOpenNewFileInit );
       rep.saveStepAttribute( id_transformation, id_step, "forceFormulaRecalculation", forceFormulaRecalculation );
-      rep.saveStepAttribute( id_transformation, id_step, "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "leaveExistingStylesUnchanged", leaveExistingStylesUnchanged );
 
       rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
       rep.saveStepAttribute( id_transformation, id_step, "file_split", splitEvery );
@@ -949,9 +954,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, "stream_data", streamingData );
       rep.saveStepAttribute( id_transformation, id_step, "protect_sheet", protectsheet );
       rep.saveStepAttribute( id_transformation, id_step, "protected_by", protectedBy );
-      rep
-          .saveStepAttribute( id_transformation, id_step, "password", Encr
-              .encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveStepAttribute( id_transformation, id_step, "template_enabled", templateEnabled );
       rep.saveStepAttribute( id_transformation, id_step, "template_filename", templateFileName );
       rep.saveStepAttribute( id_transformation, id_step, "template_sheet_enabled", templateSheetEnabled );
@@ -971,7 +975,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         rep.saveStepAttribute( id_transformation, id_step, i, "field_style_cell", field.getStyleCell() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_comment_field", field.getCommentField() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_comment_author_field", field
-            .getCommentAuthorField() );
+          .getCommentAuthorField() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_formula", field.isFormula() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_hyperlink_field", field.getHyperlinkField() );
 
@@ -981,16 +985,16 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ExcelWriterStepMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ExcelWriterStepMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -1005,13 +1009,14 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         }
       }
       if ( error_found ) {
-        error_message = BaseMessages.getString( PKG, "ExcelWriterStepMeta.CheckResult.FieldsNotFound", error_message );
+        error_message =
+          BaseMessages.getString( PKG, "ExcelWriterStepMeta.CheckResult.FieldsNotFound", error_message );
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "ExcelWriterStepMeta.CheckResult.AllFieldsFound" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "ExcelWriterStepMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -1019,19 +1024,19 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ExcelWriterStepMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ExcelWriterStepMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "ExcelWriterStepMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ExcelWriterStepMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
-            PKG, "ExcelWriterStepMeta.CheckResult.FilesNotChecked" ), stepMeta );
+      new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "ExcelWriterStepMeta.CheckResult.FilesNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 
@@ -1044,11 +1049,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
@@ -1069,8 +1074,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ExcelWriterStep( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

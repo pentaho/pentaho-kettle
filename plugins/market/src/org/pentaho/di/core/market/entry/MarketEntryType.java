@@ -40,7 +40,7 @@ public enum MarketEntryType {
   HadoopShim,
   General,
   ;
-  
+
   public static MarketEntryType getMarketEntryType(String code) {
     for (MarketEntryType type : values()) {
       if (type.name().equalsIgnoreCase(code)) return type;

@@ -45,23 +45,27 @@ public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
   public void testRule() throws Exception {
 
     JobMeta jobMeta = new JobMeta();
-    DatabaseMeta logDbMeta = new DatabaseMeta( "LOGDB", "MYSQL", "JDBC", "localhost", "test", "3306", "foo", "bar" );
+    DatabaseMeta logDbMeta =
+      new DatabaseMeta( "LOGDB", "MYSQL", "JDBC", "localhost", "test", "3306", "foo", "bar" );
     jobMeta.addDatabase( logDbMeta );
     JobLogTable logTable = jobMeta.getJobLogTable();
 
     PluginRegistry registry = PluginRegistry.getInstance();
 
     PluginInterface plugin = registry.findPluginWithId( ImportRulePluginType.class, "JobHasJobLogConfigured" );
-    assertNotNull( "The 'job has job log table configured' rule could not be found in the plugin registry!", plugin );
+    assertNotNull(
+      "The 'job has job log table configured' rule could not be found in the plugin registry!", plugin );
 
     JobHasJobLogConfiguredImportRule rule = (JobHasJobLogConfiguredImportRule) registry.loadClass( plugin );
-    assertNotNull( "The 'job has job log table configured' class could not be loaded by the plugin registry!", plugin );
+    assertNotNull(
+      "The 'job has job log table configured' class could not be loaded by the plugin registry!", plugin );
 
     rule.setEnabled( true );
 
     List<ImportValidationFeedback> feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has job log table configured'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     logTable.setTableName( "SCHEMA" );
     logTable.setTableName( "LOGTABLE" );
@@ -69,7 +73,8 @@ public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     // Make the rules stricter!
     //
@@ -79,7 +84,8 @@ public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     // Break the rule
     //
@@ -88,21 +94,24 @@ public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
     rule.setConnectionName( logDbMeta.getName() );
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has description rule'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setSchemaName( "SCHEMA" );
     rule.setTableName( "INCORRECT_LOGTABLE" );
     rule.setConnectionName( logDbMeta.getName() );
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has description rule'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setSchemaName( "SCHEMA" );
     rule.setTableName( "LOGTABLE" );
     rule.setConnectionName( "INCORRECT_DATABASE" );
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has description rule'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     // No feedback expected!
     //
@@ -110,7 +119,7 @@ public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
 
     feedback = rule.verifyRule( jobMeta );
     assertTrue(
-        "We didn't expect any feedback from the 'job has job log table configured' since the rule is not enabled",
-        feedback.isEmpty() );
+      "We didn't expect any feedback from the 'job has job log table configured' since the rule is not enabled",
+      feedback.isEmpty() );
   }
 }

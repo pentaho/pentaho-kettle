@@ -54,7 +54,8 @@ public class MetricsDuration {
    * @param logChannelId
    * @param duration
    */
-  public MetricsDuration( Date date, String description, String subject, String logChannelId, Long duration, Long count ) {
+  public MetricsDuration( Date date, String description, String subject, String logChannelId, Long duration,
+    Long count ) {
     this.date = date;
     this.description = description;
     this.subject = subject;
@@ -68,12 +69,12 @@ public class MetricsDuration {
   public String toString() {
     if ( Const.isEmpty( subject ) ) {
       return description
-          + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
-          + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
+        + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
+        + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
     } else {
       return description
-          + " / " + subject + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
-          + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
+        + " / " + subject + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
+        + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
     }
   }
 

@@ -76,21 +76,22 @@ import org.xml.sax.SAXParseException;
  * </ul>
  * </li>
  * </ul>
- * 
+ *
  * Notes:
- * 
+ *
  * Turn on debug logging to see the full stack trace from a handled error. <br />
- * 
+ *
  * @author Samatar
  * @since 13-10-2007
  */
 public class RssInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!
 
   private RssInputMeta meta;
   private RssInputData data;
 
-  public RssInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public RssInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -130,9 +131,10 @@ public class RssInput extends BaseStep implements StepInterface {
           data.indexOfUrlField = data.inputRowMeta.indexOfValue( meta.getUrlFieldname() );
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "RssInput.Log.ErrorFindingField" ) + "[" + meta.getUrlFieldname() + "]" ); //$NON-NLS-3$
+            logError( BaseMessages.getString( PKG, "RssInput.Log.ErrorFindingField" )
+              + "[" + meta.getUrlFieldname() + "]" );
             throw new KettleException( BaseMessages.getString( PKG, "RssInput.Exception.ErrorFindingField", meta
-                .getUrlFieldname() ) );
+              .getUrlFieldname() ) );
           }
         }
 
@@ -210,7 +212,7 @@ public class RssInput extends BaseStep implements StepInterface {
     FeedItem item = data.feed.getItem( data.itemsnr );
 
     if ( ( Const.isEmpty( meta.getRealReadFrom() ) || ( !Const.isEmpty( meta.getRealReadFrom() ) && item
-        .getPubDate().compareTo( data.readfromdatevalide ) > 0 ) ) ) {
+      .getPubDate().compareTo( data.readfromdatevalide ) > 0 ) ) ) {
 
       // Execute for each Input field...
       for ( int j = 0; j < meta.getInputFields().length; j++ ) {
@@ -366,7 +368,7 @@ public class RssInput extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data.
-   * 
+   *
    * @return
    */
   private Object[] buildEmptyRow() {

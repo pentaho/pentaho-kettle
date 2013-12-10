@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
  * @version $Revision
- * 
+ *
  */
 public final class Assert { // NOPMD
 
@@ -196,7 +196,8 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if collection is null or empty.
    */
-  public static void assertNotNullOrEmpty( final Object[] array, final String message ) throws IllegalArgumentException {
+  public static void assertNotNullOrEmpty( final Object[] array, final String message )
+    throws IllegalArgumentException {
     if ( array == null || array.length == 0 ) {
       throw new IllegalArgumentException( message );
     }
@@ -222,7 +223,8 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if collection is null or empty.
    */
-  public static void assertNotNullOrEmpty( final Map<?, ?> map, final String message ) throws IllegalArgumentException {
+  public static void assertNotNullOrEmpty( final Map<?, ?> map, final String message )
+    throws IllegalArgumentException {
     if ( map == null || map.isEmpty() ) {
       throw new IllegalArgumentException( message );
     }
@@ -374,7 +376,8 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if value is null or <= 0.
    */
-  public static void assertGreaterZero( final Integer value, final String message ) throws IllegalArgumentException {
+  public static void assertGreaterZero( final Integer value, final String message )
+    throws IllegalArgumentException {
     if ( value == null || value <= 0 ) {
       throw new IllegalArgumentException( message );
     }

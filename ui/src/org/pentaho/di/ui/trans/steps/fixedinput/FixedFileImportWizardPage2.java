@@ -48,7 +48,7 @@ import org.pentaho.di.trans.steps.fixedinput.FixedInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
 public class FixedFileImportWizardPage2 extends WizardPage {
-  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private List wFields;
   private FormData fdFields;
@@ -98,9 +98,9 @@ public class FixedFileImportWizardPage2 extends WizardPage {
 
   /*
    * private Label wlIgnore; private Button wIgnore; private FormData fdlIgnore, fdIgnore;
-   * 
+   *
    * private Label wlRepeat; private Button wRepeat; private FormData fdlRepeat, fdRepeat;
-   * 
+   *
    * private Label wlNull; private Text wNull; private FormData fdlNull, fdNull;
    */
 
@@ -117,7 +117,7 @@ public class FixedFileImportWizardPage2 extends WizardPage {
   private Shell shell;
 
   public FixedFileImportWizardPage2( String arg, PropsUI props, java.util.List<String> rows,
-      java.util.List<FixedFileInputField> fields ) {
+    java.util.List<FixedFileInputField> fields ) {
     super( arg );
     this.props = props;
     this.rows = rows;
@@ -251,7 +251,7 @@ public class FixedFileImportWizardPage2 extends WizardPage {
      * props.setLook(wIgnore); fdIgnore=new FormData(); fdIgnore.left = new FormAttachment(middle, margin); fdIgnore.top
      * = new FormAttachment(wFormat, margin); fdIgnore.right= new FormAttachment(right, 0);
      * wIgnore.setLayoutData(fdIgnore);
-     * 
+     *
      * // Trimtype line wlTrimtype=new Label(composite, SWT.RIGHT); wlTrimtype.setText(BaseMessages.getString(PKG,
      * "FixedFileImportWizardPage2.TrimType.Label")); props.setLook(wlTrimtype); fdlTrimtype=new FormData();
      * fdlTrimtype.left = new FormAttachment(wFields, 0); fdlTrimtype.top = new FormAttachment(wIgnore, margin);
@@ -338,7 +338,7 @@ public class FixedFileImportWizardPage2 extends WizardPage {
      * props.setLook(wRepeat); fdRepeat=new FormData(); fdRepeat.left = new FormAttachment(middle, margin); fdRepeat.top
      * = new FormAttachment(wGroup, margin); fdRepeat.right= new FormAttachment(right, 0);
      * wRepeat.setLayoutData(fdRepeat);
-     * 
+     *
      * // Null line wlNull=new Label(composite, SWT.RIGHT); wlNull.setText(BaseMessages.getString(PKG,
      * "FixedFileImportWizardPage2.Null.Label")); props.setLook(wlNull); fdlNull=new FormData(); fdlNull.left = new
      * FormAttachment(wFields, 0); fdlNull.top = new FormAttachment(wRepeat, margin); fdlNull.right= new
@@ -475,7 +475,8 @@ public class FixedFileImportWizardPage2 extends WizardPage {
     wGuessAll.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-        mb.setMessage( BaseMessages.getString( PKG, "FixedFileImportWizardPage2.OverwriteTypeSettings.DialogMessage" ) );
+        mb.setMessage( BaseMessages.getString(
+          PKG, "FixedFileImportWizardPage2.OverwriteTypeSettings.DialogMessage" ) );
         mb.setText( BaseMessages.getString( PKG, "FixedFileImportWizardPage2.OverwriteTypeSettings.DialogTitle" ) );
         int answer = mb.open();
         if ( answer == SWT.YES ) {
@@ -541,7 +542,7 @@ public class FixedFileImportWizardPage2 extends WizardPage {
      * wNull.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) { int idx =
      * wFields.getSelectionIndex(); if (idx>=0) { TextFileInputField field = (TextFileInputField)fields.get(idx);
      * field.setNullString(wNull.getText()); } } } );
-     * 
+     *
      * wTrimtype.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { int idx =
      * wFields.getSelectionIndex(); if (idx>=0) { int trimType =
      * TextFileInputMeta.getTrimTypeByDesc(wTrimtype.getText()); TextFileInputField field =

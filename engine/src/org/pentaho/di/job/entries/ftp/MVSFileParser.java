@@ -37,10 +37,10 @@ import com.enterprisedt.net.ftp.FTPFileParser;
 /**
  * MVS Folder Listing Parser The purpose of this parser is to be able handle responses from an MVS z/OS mainframe FTP
  * server.
- * 
+ *
  * Many places on the 'net were consulted for input to this parser. Importantly, this information from
  * com.os.os2.networking.tcp-ip group:
- * 
+ *
  * http://groups.google.com/group/comp.os.os2.networking.tcp-ip/msg/25acc89563f1e93e
  * http://groups.google.com/group/comp.
  * os.os2.networking.tcp-ip/browse_frm/thread/11af1ba1bc6b0edd?hl=en&lr&ie=UTF-8&oe=UTF
@@ -48,19 +48,19 @@ import com.enterprisedt.net.ftp.FTPFileParser;
  * %2Bdata%2Bset%2Bdirectory%26hl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26selm
  * %3D4e7k0p%2524t1v%2540blackice.winternet.com%26rnum%3D6&pli=1
  * http://publibz.boulder.ibm.com/cgi-bin/bookmgr_OS390/BOOKS/F1AA2032/1.5.15?SHELF=&DT=20001127174124
- * 
+ *
  * Implementation Details 1- This supports folders and partitioned data sets only. This does not support JCL or HFS 2-
  * You must treat partitioned data sets (Dsorg PO/PO-E) like folders and CD to them 3- Dsorg=PS is a downloadable file
  * as are all the contents of a Partitioned Data Set. 4- When downloading from a folder, the Recfm must start with V or
  * F.
- * 
+ *
  * Note - the location for this is completely up for debate. I modeled this after the ftpsget/FTPSConnection and how
  * ftpsput reaches up and into the ftpsget package to get it. However, I think a better solution is to have an
  * entry/common. James and I agreed (in Matt's absense) to model the behavior after something already existing rather
  * than introduce a new folder (like entry/common or entry/util).
- * 
+ *
  * @author mbatchelor September 2010
- * 
+ *
  */
 
 public class MVSFileParser extends FTPFileParser {
@@ -95,19 +95,19 @@ public class MVSFileParser extends FTPFileParser {
   /************************ Abstract Class Implementations *************************/
 
   /*
-   * 
+   *
    * This method decides whether this parser can handle this directory listing
-   * 
+   *
    * Directory listing format ------------------------ Volume Unit Referred Ext Used Recfm Lrecl BlkSz Dsorg Dsname
    * BALP4B 3390 2010/09/09 6 57 FB 80 800 PO BMS BALP8E 3390 2010/09/07 1 2 FB 80 800 PO BMS.BACKUP ARCIVE Not Direct
    * Access Device KJ.IOP998.ERROR.PL.UNITTEST USS018 3308 2010/01/15 1 15 VB 259 8000 PS NFS.DOC Migrated
    * OAQPS.INTERIM.CNTYIM.V1.DATA
-   * 
+   *
    * Partitioned Dataset listing format: ----------------------------------- Name VV.MM Created Changed Size Init Mod Id
    * A 01.03 2007/10/22 2009/05/27 20:18 30 3 0 TR6JAM AAA 01.01 2007/06/01 2009/01/27 03:50 183 11 0 TR6AAJ AAJSUSU
    * 01.00 2005/08/29 2005/08/29 15:11 20 20 0 TR6MGM ADERESSO 01.01 2007/03/15 2007/03/15 16:38 45 45 0 TR6CCU
-   * 
-   * 
+   *
+   *
    * Note: Date Format needs to be deciphered since for other sites it looks like this: BALP4B 3390 09/12/95 6 57 FB 80
    * 800 PO BMS
    */
@@ -141,7 +141,7 @@ public class MVSFileParser extends FTPFileParser {
 
   /**
    * This parses an individual line from the directory listing.
-   * 
+   *
    */
   @Override
   public FTPFile parse( String raw ) throws ParseException {
@@ -179,7 +179,7 @@ public class MVSFileParser extends FTPFileParser {
 
   /**
    * Parses a Partitioned Dataset Entry, and returns an FTPFile object.
-   * 
+   *
    * @param aLine
    *          Split line
    * @param raw
@@ -209,10 +209,10 @@ public class MVSFileParser extends FTPFileParser {
 
   /**
    * Parses a line from a folder listing.
-   * 
+   *
    * Note: Returns NULL if it's the header line, if it is ARCIVE or Migrated, if the record format doesn't start with
    * 'F' or 'V', and if the dsorg doesn't start with 'P'.
-   * 
+   *
    * @param aLine
    *          Line split apart
    * @param raw
@@ -289,7 +289,7 @@ public class MVSFileParser extends FTPFileParser {
    * This is a split + trim function. The String.split method doesn't work well if there are a multiple contiguous
    * white-space characters. StringTokenizer handles this very well. This should never fail to return an array, even if
    * the array is empty. In other words, this should never return null.
-   * 
+   *
    * @param raw
    *          The string to tokenize from the MainFrame
    * @return String array of all the elements from the parse.
@@ -311,7 +311,7 @@ public class MVSFileParser extends FTPFileParser {
 
   /**
    * Returns true if this seems to be a recognized MVS folder (not PDS) listing.
-   * 
+   *
    * @param listing
    * @return true if by all appearances this is a listing of an MVS folder
    */
@@ -344,7 +344,7 @@ public class MVSFileParser extends FTPFileParser {
 
   /**
    * Returns true if this seems to be a recognized MVS PDS listing (not folder).
-   * 
+   *
    * @param listing
    * @return true if by all appearances this is a listing of the contents of a PDS
    */
@@ -371,10 +371,10 @@ public class MVSFileParser extends FTPFileParser {
    * This method will try the date format string to make sure it knows how to parse the dates. If it fails a parse it
    * will try the alternate format if available. For example, if the first three files have these dates: 2010/03/04
    * 2010/07/09 2010/23/06
-   * 
+   *
    * For the first two, either yyyy/MM/dd or yyyy/dd/MM would work. When the parse on 2010/23/06 fails, it will try the
    * alternate, succeed, and carry on.
-   * 
+   *
    * The weakness of this approach is if all files have valid inter- changable day/month on all dates. In that case, all
    * would be detected as yyyy/MM/dd which may be incorrect. If this is a problem, the correct fix is to set the date
    * format on the parser, or play with the Locale and see if that can be used to figure out what the real format from
@@ -414,12 +414,12 @@ public class MVSFileParser extends FTPFileParser {
   /**
    * This method will look at the incoming date string and try to figure out the format of the date. Googling on the
    * internet showed several possible looks to the date:
-   * 
+   *
    * dd/MM/yy yy/MM/dd MM/dd/yy yyyy/MM/dd yyyy/dd/MM
-   * 
+   *
    * I never saw samples showing dd/MM/yyyy but I suppose it's possible. Not happy with this algorithm because it feels
    * clumsy. It works, but it's not very elegant (time crunch).
-   * 
+   *
    * @param dateStr
    */
   protected void guessDateFormat( String dateStr ) {
@@ -480,7 +480,8 @@ public class MVSFileParser extends FTPFileParser {
       this.dateFormatString = fmt.toString();
       this.dateFormat = new SimpleDateFormat( dateFormatString );
       if ( log.isDebug() ) {
-        log.logDebug( BaseMessages.getString( PKG, "MVSFileParser.DEBUG.Guess.Date.Decided", this.dateFormatString ) );
+        log.logDebug( BaseMessages
+          .getString( PKG, "MVSFileParser.DEBUG.Guess.Date.Decided", this.dateFormatString ) );
       }
       try {
         dateFormat.parse( dateStr );
@@ -510,7 +511,7 @@ public class MVSFileParser extends FTPFileParser {
 
   /**
    * Returns the date format string in use for parsing date in the listing.
-   * 
+   *
    * @return string format
    */
   public String getDateFormatString() {
@@ -519,7 +520,7 @@ public class MVSFileParser extends FTPFileParser {
 
   /**
    * Provides ability to pre-specify the format that the parser will use to parse dates.
-   * 
+   *
    * @param value
    *          the string to set.
    */

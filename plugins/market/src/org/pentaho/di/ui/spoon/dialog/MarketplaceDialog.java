@@ -71,7 +71,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MarketplaceDialog extends Dialog {
   private static Class<?> MARKET_PKG = Market.class; // for i18n purposes, needed by Translator2!!
-  
+
   private Label wlMarketplaces;
   private Button wClose;
   private Shell shell;
@@ -82,7 +82,7 @@ public class MarketplaceDialog extends Dialog {
   private Text selectionFilter;
   private Button checkInstalled;
   private Button checkNotinstalled;
-  
+
   //used by market entry control for long-running operations
   private ProgressMonitorDialog pmd = null;
   private SelectionAdapter upgradeSelectionListener;
@@ -90,12 +90,12 @@ public class MarketplaceDialog extends Dialog {
 
   private static MarketEntries marketEntries = null;
   private Map<MarketEntry, Composite> marketEntryControls = new HashMap<MarketEntry, Composite>();
-  
+
   public MarketplaceDialog(Shell parent) {
     super(parent, SWT.NONE);
     props = PropsUI.getInstance();
   }
-  
+
   public void open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -109,7 +109,7 @@ public class MarketplaceDialog extends Dialog {
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(MARKET_PKG, "Marketplace.Dialog.Title")); 
+    shell.setText(BaseMessages.getString(MARKET_PKG, "Marketplace.Dialog.Title"));
     shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 
     margin = Const.MARGIN;
@@ -122,7 +122,7 @@ public class MarketplaceDialog extends Dialog {
     fdlMarketplaces.left = new FormAttachment(0, 0);
     fdlMarketplaces.top = new FormAttachment(0, margin);
     wlMarketplaces.setLayoutData(fdlMarketplaces);
-    
+
     selectionFilter = new Text(shell, SWT.SINGLE | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH
             | SWT.ICON_CANCEL);
     selectionFilter.setFont(GUIResource.getInstance().getFontSmall());
@@ -137,14 +137,14 @@ public class MarketplaceDialog extends Dialog {
         filter();
       }
     });
-    
+
     //Add an expand listener to allow lazy loading of the market entry controls
     expandBar = new ExpandBar(shell, SWT.V_SCROLL | SWT.H_SCROLL);
     expandBar.addExpandListener(new ExpandListener(){
       public void itemCollapsed(ExpandEvent e){
-        
+
       }
-      
+
       public void itemExpanded(ExpandEvent e){
         ExpandItem item = (ExpandItem)(e.item == null ? e.getSource() : e.item);
         //if the control is not null, it was already loaded
@@ -152,7 +152,7 @@ public class MarketplaceDialog extends Dialog {
         initExpandItemControl(item);
       }
     });
-    
+
     FormData fdBar = new FormData();
     fdBar.left = new FormAttachment(0, 0);
     fdBar.top = new FormAttachment(wlMarketplaces, margin);
@@ -270,15 +270,15 @@ public class MarketplaceDialog extends Dialog {
         }
       }
     };
-    
+
     addMarketPlaceEntries();
-    
+
     SelectionAdapter checkListener = new SelectionAdapter(){
       public void widgetSelected(SelectionEvent e){
         filter();
       }
     };
-    
+
     checkInstalled = new Button(shell, SWT.CHECK);
     checkInstalled.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.CheckInstalled"));
     checkInstalled.setSelection(true);
@@ -289,7 +289,7 @@ public class MarketplaceDialog extends Dialog {
     fdInstalled.top = new FormAttachment(expandBar, margin);
     fdInstalled.right = new FormAttachment(100, 0);
     checkInstalled.setLayoutData(fdInstalled);
-    
+
     checkNotinstalled = new Button(shell, SWT.CHECK);
     checkNotinstalled.setText(BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.CheckNotinstalled"));
     checkNotinstalled.setSelection(true);
@@ -300,7 +300,7 @@ public class MarketplaceDialog extends Dialog {
     fdNotinstalled.top = new FormAttachment(checkInstalled, margin);
     fdNotinstalled.right = new FormAttachment(100, 0);
     checkNotinstalled.setLayoutData(fdNotinstalled);
-    
+
     wClose = new Button(shell, SWT.PUSH);
     wClose.setText(BaseMessages.getString(MARKET_PKG, "System.Button.Close"));
     wClose.addSelectionListener(new SelectionAdapter() {
@@ -326,7 +326,7 @@ public class MarketplaceDialog extends Dialog {
         display.sleep();
     }
   }
-    
+
   private ExpandItem findExpandItem(final MarketEntry marketEntry) {
     //finds the expand item associated with the specified marketEntry.
     Composite composite = marketEntryControls.get(marketEntry);
@@ -336,7 +336,7 @@ public class MarketplaceDialog extends Dialog {
     }
     return null;
   }
-  
+
   private Composite getMarketEntryControl(MarketEntry marketEntry){
     Composite composite;
     if (marketEntryControls.containsKey(marketEntry)) {
@@ -348,14 +348,14 @@ public class MarketplaceDialog extends Dialog {
     }
     return composite;
   }
-  
+
   private void initExpandItemControl(final ExpandItem expandItem){
     MarketEntry marketEntry = (MarketEntry)expandItem.getData("marketEntry");
     Composite composite = getMarketEntryControl(marketEntry);
     expandItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+30);
     expandItem.setControl(composite);
   }
-  
+
   private ExpandItem createExpandItem(final MarketEntry marketEntry){
     ExpandItem expandItem = new ExpandItem(expandBar, SWT.NONE);
     expandItem.setData("marketEntry", marketEntry);
@@ -389,7 +389,7 @@ public class MarketplaceDialog extends Dialog {
     expandItem.setImage(image);
     return expandItem;
   }
-  
+
   private Composite createMarketEntryControl(final MarketEntry marketEntry){
     final Composite composite = new Composite(expandBar, SWT.NONE);
     composite.setData("marketEntry", marketEntry);
@@ -477,7 +477,7 @@ public class MarketplaceDialog extends Dialog {
     installedButton.setData("id", "installedButton");
     setButtonLabel(installedButton, marketEntry.isInstalled());
     installedButton.addSelectionListener(installSelectionListener);
-    
+
     // Allow for upgrade
    	final Button upgradeButton = new Button(composite, SWT.PUSH);
     upgradeButton.setData("id", "upgradeButton");
@@ -527,15 +527,15 @@ public class MarketplaceDialog extends Dialog {
 	      }
 	    });
     */
-    
+
     BaseStepDialog.positionBottomButtons(composite, new Button[] {installedButton,  upgradeButton}, margin, lastControl);
-    boolean showUpgradeButton = marketEntry.isInstalled() && 
-        ( marketEntry.getInstalledVersion()==null || 
-          marketEntry.getVersion()==null || 
+    boolean showUpgradeButton = marketEntry.isInstalled() &&
+        ( marketEntry.getInstalledVersion()==null ||
+          marketEntry.getVersion()==null ||
           marketEntry.getInstalledVersion().compareTo(marketEntry.getVersion())<0
         ) ;
     upgradeButton.setVisible(showUpgradeButton);
-    
+
 /*
     // Create runner for installation/uninstallation
     final ProgressMonitorRunner installRunner = new ProgressMonitorRunner(new Runnable() {
@@ -567,7 +567,7 @@ public class MarketplaceDialog extends Dialog {
         }
       }
     });
-    
+
     installedButton.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         try {
@@ -603,7 +603,7 @@ public class MarketplaceDialog extends Dialog {
     wlName.setLayoutData(fdlName);
     return composite;
   }
-  
+
   private void addMarketPlaceEntries(){
     //initial creating of market place entries.
     //we create and cache controls to go inside the expand items
@@ -629,14 +629,14 @@ public class MarketplaceDialog extends Dialog {
     }
     button.setText(BaseMessages.getString(MARKET_PKG, text));
   }
-  
-  
-  
+
+
+
   private void setPluginName(MarketEntry marketEntry) {
     ExpandItem expandItem = findExpandItem(marketEntry);
     setPluginName(expandItem, marketEntry.getName(), marketEntry.isInstalled());
   }
-  
+
   private void setPluginName(ExpandItem expandItem, String name, boolean isInstalled) {
     if (isInstalled) {
       expandItem.setText(BaseMessages.getString(MARKET_PKG, "Marketplaces.Dialog.PluginInstalled.message", name));
@@ -680,10 +680,10 @@ public class MarketplaceDialog extends Dialog {
     fdLabel.left = new FormAttachment(middle/2, margin);
     fdLabel.right = new FormAttachment(100, 0);
     label.setLayoutData(fdLabel);
-    
+
     return label;
   }
-  
+
   private Control addRightURL(Composite composite, final String string, Control lastControl) {
     Link link = new Link(composite, SWT.LEFT);
     props.setLook(link);
@@ -697,17 +697,17 @@ public class MarketplaceDialog extends Dialog {
     fdLabel.left = new FormAttachment(middle/2, margin);
     fdLabel.right = new FormAttachment(100, 0);
     link.setLayoutData(fdLabel);
-    
+
     link.addSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetSelected(SelectionEvent arg0) {
         Spoon.getInstance().addSpoonBrowser(string, string);
       }
     });
-    
+
     return link;
   }
-  
+
   public void dispose()
 	{
     clearExpandItems();
@@ -715,15 +715,15 @@ public class MarketplaceDialog extends Dialog {
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();
 	}
-  
+
   private class ProgressMonitorRunner implements IRunnableWithProgress {
-	  
+	
 	  private Runnable runnable;
-	  
+	
 	  public ProgressMonitorRunner(Runnable runnable) {
 		  this.runnable = runnable;
 	  }
-	  
+	
 	  public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 		{
 			try
@@ -736,7 +736,7 @@ public class MarketplaceDialog extends Dialog {
 			}
 		}
   }
-  
+
   private void clearExpandItems(){
     for (ExpandItem item: expandBar.getItems()){
       item.setExpanded(false);
@@ -744,11 +744,11 @@ public class MarketplaceDialog extends Dialog {
       item.dispose();
     }
   }
-  
+
   private void filter(){
     filter(selectionFilter.getText());
   }
-  
+
   private void filter(String filter) {
     //expand items can't be shown or hidden; they are either there or not.
     //so, we first wipe all expand items, then add only those that match the filter.

@@ -56,12 +56,12 @@ import org.w3c.dom.NodeList;
 
 /**
  * Converts input rows to one or more XML files.
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
  */
 public class AddXML extends BaseStep implements StepInterface {
-  private static Class<?> PKG = AddXML.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AddXML.class; // for i18n purposes, needed by Translator2!!
 
   private AddXMLMeta meta;
   private AddXMLData data;

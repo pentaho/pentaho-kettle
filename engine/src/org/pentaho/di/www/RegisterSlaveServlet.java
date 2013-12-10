@@ -52,7 +52,8 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
     super( detections, isJetty );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getRequestURI().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -95,8 +96,8 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
       if ( index < 0 ) {
         getDetections().add( slaveServerDetection );
         message =
-            "Slave server detection '"
-                + slaveServerDetection.getSlaveServer().getName() + "' was replaced in the list.";
+          "Slave server detection '"
+            + slaveServerDetection.getSlaveServer().getName() + "' was replaced in the list.";
       } else {
         // replace the data in the old one...
         //
@@ -113,7 +114,8 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
           old.setLastInactiveDate( slaveServerDetection.getLastInactiveDate() );
         }
         message =
-            "Slave server detection '" + slaveServerDetection.getSlaveServer().getName() + "' was added to the list.";
+          "Slave server detection '"
+            + slaveServerDetection.getSlaveServer().getName() + "' was added to the list.";
       }
 
       out.println( new WebResult( WebResult.STRING_OK, message ) );

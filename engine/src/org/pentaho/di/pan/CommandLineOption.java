@@ -34,7 +34,7 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 
 /**
  * This class allows you to define command-line options.
- * 
+ *
  * @author Matt Casters
  */
 public class CommandLineOption {
@@ -95,7 +95,7 @@ public class CommandLineOption {
 
   /**
    * Creates a new command line option.
-   * 
+   *
    * @param option
    *          The option string
    * @param description
@@ -108,13 +108,13 @@ public class CommandLineOption {
    *          true if this option should not be shown in the usage list.
    */
   public CommandLineOption( String option, String description, StringBuffer argument, boolean yesNo,
-      boolean hiddenOption ) {
+    boolean hiddenOption ) {
     this( option, description, argument, yesNo, hiddenOption, false );
   }
 
   /**
    * Creates a new command line option.
-   * 
+   *
    * @param option
    *          The option string
    * @param description
@@ -129,7 +129,7 @@ public class CommandLineOption {
    *          true if this is an extra parameter after the regular options (filenames and so on)
    */
   public CommandLineOption( String option, String description, StringBuffer argument, boolean yesNo,
-      boolean hiddenOption, boolean extraParameter ) {
+    boolean hiddenOption, boolean extraParameter ) {
     this.option = option;
     this.description = description;
     this.arrayParams = null;
@@ -142,7 +142,7 @@ public class CommandLineOption {
 
   /**
    * Creates a new "array" command line option.
-   * 
+   *
    * @param option
    *          The option string
    * @param description
@@ -164,7 +164,7 @@ public class CommandLineOption {
 
   /**
    * Creates a new normal command line option
-   * 
+   *
    * @param option
    *          The option string
    * @param description
@@ -178,7 +178,7 @@ public class CommandLineOption {
 
   /**
    * Creates a new normal command line option without a description
-   * 
+   *
    * @param option
    *          The option string
    */
@@ -233,7 +233,7 @@ public class CommandLineOption {
 
   /**
    * @return the usage description
-   * 
+   *
    */
   public String getUsageDescription() {
     String optionStart = "  -";
@@ -249,7 +249,7 @@ public class CommandLineOption {
 
   /**
    * Gets the value of a commandline option
-   * 
+   *
    * @param arg
    *          The command line argument
    * @return The value of the commandline option specified.
@@ -263,7 +263,7 @@ public class CommandLineOption {
       for ( int d = 0; d < optionDelim.length; d++ ) {
         int optLength = optionDelim[d].length();
         if ( arg != null
-            && arg.length() > osLength && arg.toUpperCase().substring( osLength ).equals( option.toUpperCase() ) ) {
+          && arg.length() > osLength && arg.toUpperCase().substring( osLength ).equals( option.toUpperCase() ) ) {
           // OK, this is it.
           // Do we expect anything after this?
           // after the start, the option and the delimiter?
@@ -309,7 +309,7 @@ public class CommandLineOption {
 
   /**
    * Parse and set the command line arguments using the defined options.
-   * 
+   *
    * @param args
    *          The list of arguments to parse
    * @param options
@@ -380,8 +380,8 @@ public class CommandLineOption {
               // we did not get a valid value
               if ( log != null ) {
                 log.logError(
-                    "Command Line Options", "Option " + optionName + " expects an argument",
-                    new Object[] { optionName } );
+                  "Command Line Options", "Option " + optionName + " expects an argument",
+                  new Object[] { optionName } );
               }
               return false;
             }
@@ -407,16 +407,18 @@ public class CommandLineOption {
                 }
               } catch ( DuplicateParamException e ) {
                 if ( log != null ) {
-                  log.logError( "Command Line Options", "Parameter '"
-                      + key + "' is specified multiple times, first occurrence is used.", new Object[] { optionName } );
+                  log.logError(
+                    "Command Line Options", "Parameter '"
+                      + key + "' is specified multiple times, first occurrence is used.",
+                    new Object[] { optionName } );
                 }
               }
             } else {
               if ( log != null ) {
                 log.logError(
-                    "Command Line Options", "Option "
-                        + optionName + " expects an argument of the format KEY=VALUE (missing '=')",
-                    new Object[] { optionName } );
+                  "Command Line Options", "Option "
+                    + optionName + " expects an argument of the format KEY=VALUE (missing '=')",
+                  new Object[] { optionName } );
               }
               return false;
             }
@@ -436,8 +438,8 @@ public class CommandLineOption {
               // we did not get a valid value
               if ( log != null ) {
                 log.logError(
-                    "Command Line Options", "Option " + optionName + " expects an argument",
-                    new Object[] { optionName } );
+                  "Command Line Options", "Option " + optionName + " expects an argument",
+                  new Object[] { optionName } );
               }
               return false;
             }
@@ -468,7 +470,7 @@ public class CommandLineOption {
 
   /**
    * Print the usage of an application using the command line options.
-   * 
+   *
    * @param options
    *          the options to use
    */

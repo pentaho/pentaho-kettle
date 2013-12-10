@@ -132,7 +132,8 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public List<String> getElementIds( String namespace, IMetaStoreElementType elementType ) throws MetaStoreException {
+  public List<String> getElementIds( String namespace, IMetaStoreElementType elementType )
+    throws MetaStoreException {
     List<String> ids = new ArrayList<String>();
     for ( IMetaStoreElement element : getElements( namespace, elementType ) ) {
       ids.add( element.getId() );
@@ -169,7 +170,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
       IMetaStoreElement exists = getElementByName( namespace, elementType, element.getId() );
       if ( exists != null ) {
         throw new MetaStoreException( "The shared objects meta store already contains an element with type name '"
-            + elementType.getName() + "' and element name '" + element.getName() );
+          + elementType.getName() + "' and element name '" + element.getName() );
       }
 
       if ( elementType.getName().equals( databaseElementType.getName() ) ) {
@@ -180,7 +181,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
         return;
       }
       throw new MetaStoreException( "Storing elements with element type name '"
-          + elementType.getName() + "' is not supported in the shared objects meta store" );
+        + elementType.getName() + "' is not supported in the shared objects meta store" );
     } catch ( Exception e ) {
       throw new MetaStoreException( "Unexpected error creating an element in the shared objects meta store", e );
     }
@@ -192,7 +193,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
     try {
       if ( elementType.getName().equals( databaseElementType.getName() ) ) {
         sharedObjects.removeObject( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement( this, getElement(
-            namespace, elementType, elementId ) ) );
+          namespace, elementType, elementId ) ) );
         sharedObjects.saveToFile();
         return;
       }

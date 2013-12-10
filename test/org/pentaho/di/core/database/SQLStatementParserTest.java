@@ -33,14 +33,14 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Verify the {@link BaseDatabaseMeta} can properly parse a script for individual statements
- * 
+ *
  * @author Jordan Ganoff (jganoff@pentaho.com)
- * 
+ *
  */
 public class SQLStatementParserTest extends TestCase {
   /**
    * Simple concrete class specifically created to facilitate testing the base class.
-   * 
+   *
    */
   private class BaseDatabaseMetaForTest extends BaseDatabaseMeta {
     @Override
@@ -50,7 +50,7 @@ public class SQLStatementParserTest extends TestCase {
 
     @Override
     public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-        boolean add_fieldname, boolean add_cr ) {
+      boolean add_fieldname, boolean add_cr ) {
       return null;
     }
 
@@ -66,13 +66,13 @@ public class SQLStatementParserTest extends TestCase {
 
     @Override
     public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-        String pk, boolean semicolon ) {
+      String pk, boolean semicolon ) {
       return null;
     }
 
     @Override
-    public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-        String pk, boolean semicolon ) {
+    public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk,
+      boolean use_autoinc, String pk, boolean semicolon ) {
       return null;
     }
 

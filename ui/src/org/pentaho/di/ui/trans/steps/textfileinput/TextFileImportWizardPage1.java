@@ -42,7 +42,7 @@ import org.pentaho.di.ui.core.widget.TableDraw;
 
 public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 {
-  private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableDraw wTable;
   private FormData fdTable;
@@ -52,7 +52,7 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
   private Vector<TextFileInputFieldInterface> fields;
 
   public TextFileImportWizardPage1( String arg, PropsUI props, List<String> rows,
-      Vector<TextFileInputFieldInterface> fields ) {
+    Vector<TextFileInputFieldInterface> fields ) {
     super( arg );
     this.props = props;
     this.rows = rows;

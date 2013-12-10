@@ -57,31 +57,31 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 /**
  * Test class for database lookup. H2 is used as database in memory to get an easy playground for database tests. H2
  * does not support all SQL features but it should proof enough for most of our tests.
- * 
+ *
  * Still to do: - cache testing. - Do not pass rows functionality/eat rows on failed lookup - Fail on multiple rows -
  * Order by - Different comparators
- * 
+ *
  * @author Sven Boden
  */
 public class ExecSQLRowTest {
   static Database database;
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
-      "Exec SQL Row test", LoggingObjectType.GENERAL, null );
+    "Exec SQL Row test", LoggingObjectType.GENERAL, null );
 
   public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>", };
+    + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+    + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+    + "<password></password>" + "</connection>", };
 
   private static String execsqlrow_testtable = "execsqlrow_testtable";
 
   private static String[] insertStatement = {
-      // New rows for the source
-      "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (1)",
-      "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (2)",
-      "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (3)",
-      "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (4)", };
+    // New rows for the source
+    "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (1)",
+    "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (2)",
+    "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (3)",
+    "INSERT INTO " + execsqlrow_testtable + "(ID) VALUES (4)", };
 
   public static RowMetaInterface createSourceRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
@@ -100,7 +100,7 @@ public class ExecSQLRowTest {
    */
   public static void createTables( Database db ) throws Exception {
     String source =
-        db.getCreateTableStatement( execsqlrow_testtable, createSourceRowMetaInterface(), null, false, null, true );
+      db.getCreateTableStatement( execsqlrow_testtable, createSourceRowMetaInterface(), null, false, null, true );
     try {
       db.execStatement( source );
     } catch ( KettleException ex ) {
@@ -110,7 +110,7 @@ public class ExecSQLRowTest {
 
   /**
    * Insert data in the source table.
-   * 
+   *
    * @param db
    *          database to use.
    */
@@ -289,7 +289,7 @@ public class ExecSQLRowTest {
     String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
     StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
     execSqlRowStep.setDescription( "Deletes information from table ["
-        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+      + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
     transMeta.addStep( execSqlRowStep );
 
     TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
@@ -367,7 +367,7 @@ public class ExecSQLRowTest {
     String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
     StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
     execSqlRowStep.setDescription( "Deletes information from table ["
-        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+      + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
     transMeta.addStep( execSqlRowStep );
 
     TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
@@ -445,7 +445,7 @@ public class ExecSQLRowTest {
     String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
     StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
     execSqlRowStep.setDescription( "Deletes information from table ["
-        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+      + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
     transMeta.addStep( execSqlRowStep );
 
     TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
@@ -524,7 +524,7 @@ public class ExecSQLRowTest {
     String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
     StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
     execSqlRowStep.setDescription( "Deletes information from table ["
-        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+      + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
     transMeta.addStep( execSqlRowStep );
 
     TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );

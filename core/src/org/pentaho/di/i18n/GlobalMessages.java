@@ -50,18 +50,18 @@ public class GlobalMessages extends AbstractMessageHandler {
   protected static final String BUNDLE_NAME = "messages.messages";
 
   protected static final Map<String, ResourceBundle> locales = Collections
-      .synchronizedMap( new HashMap<String, ResourceBundle>() );
+    .synchronizedMap( new HashMap<String, ResourceBundle>() );
 
   protected static final LogChannelInterface log = new LogChannel( "i18n" );
 
   public static final String[] localeCodes = {
-      "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR", "pt_PT", "es_AR", "no_NO", "it_IT", "ja_JP",
-      "ko_KR" };
+    "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR", "pt_PT", "es_AR", "no_NO", "it_IT", "ja_JP",
+    "ko_KR" };
 
   public static final String[] localeDescr = {
-      "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol (Spain)", "Fran\u00E7ais", "Deutsch",
-      "Portuguese (Brazil)", "Portuguese (Portugal)", "Espa\u00F1ol (Argentina)", "Norwegian (Norway)",
-      "Italian (Italy)", "Japanese (Japan)", "Korean (Korea)", };
+    "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol (Spain)", "Fran\u00E7ais", "Deutsch",
+    "Portuguese (Brazil)", "Portuguese (Portugal)", "Espa\u00F1ol (Argentina)", "Norwegian (Norway)",
+    "Italian (Italy)", "Japanese (Japan)", "Korean (Korea)", };
 
   protected static GlobalMessages GMinstance = null;
 
@@ -116,7 +116,7 @@ public class GlobalMessages extends AbstractMessageHandler {
 
   /**
    * Retrieve a resource bundle of the default or fail-over locale.
-   * 
+   *
    * @param packageName
    *          The package to search in
    * @return The resource bundle
@@ -129,7 +129,7 @@ public class GlobalMessages extends AbstractMessageHandler {
 
   /**
    * Retrieve a resource bundle of the default or fail-over locale.
-   * 
+   *
    * @param packageName
    *          The package to search in
    * @param resourceClass
@@ -138,7 +138,8 @@ public class GlobalMessages extends AbstractMessageHandler {
    * @throws MissingResourceException
    *           in case both resource bundles couldn't be found.
    */
-  public static ResourceBundle getBundle( String packageName, Class<?> resourceClass ) throws MissingResourceException {
+  public static ResourceBundle getBundle( String packageName, Class<?> resourceClass )
+    throws MissingResourceException {
     ResourceBundle bundle;
     try {
       // First try to load the bundle in the default locale
@@ -155,8 +156,8 @@ public class GlobalMessages extends AbstractMessageHandler {
         // If nothing usable could be found throw an exception...
         //
         throw new MissingResourceException( "Unable to find properties file in the default '"
-            + LanguageChoice.getInstance().getDefaultLocale() + "' nor the failore locale '"
-            + LanguageChoice.getInstance().getFailoverLocale() + "'", packageName, packageName );
+          + LanguageChoice.getInstance().getDefaultLocale() + "' nor the failore locale '"
+          + LanguageChoice.getInstance().getFailoverLocale() + "'", packageName, packageName );
       }
     }
   }
@@ -185,14 +186,14 @@ public class GlobalMessages extends AbstractMessageHandler {
           bundle = new PropertyResourceBundle( inputStream );
           locales.put( filename, bundle );
         } else {
-          throw new MissingResourceException(
-              "Unable to find properties file [" + filename + "]", locale.toString(), packageName );
+          throw new MissingResourceException( "Unable to find properties file [" + filename + "]", locale
+            .toString(), packageName );
         }
       }
       return bundle;
     } catch ( IOException e ) {
-      throw new MissingResourceException( "Unable to find properties file [" + filename + "] : " + e.toString(), locale
-          .toString(), packageName );
+      throw new MissingResourceException(
+        "Unable to find properties file [" + filename + "] : " + e.toString(), locale.toString(), packageName );
     } finally {
       if ( inputStream != null ) {
         try {
@@ -210,7 +211,7 @@ public class GlobalMessages extends AbstractMessageHandler {
   }
 
   protected String findString( String packageName, Locale locale, String key, Object[] parameters,
-      Class<?> resourceClass ) throws MissingResourceException {
+    Class<?> resourceClass ) throws MissingResourceException {
     try {
       ResourceBundle bundle = getBundle( locale, packageName + "." + BUNDLE_NAME, resourceClass );
       String unformattedString = bundle.getString( key );
@@ -218,8 +219,8 @@ public class GlobalMessages extends AbstractMessageHandler {
       return string;
     } catch ( IllegalArgumentException e ) {
       String message =
-          "Format problem with key=["
-              + key + "], locale=[" + locale + "], package=" + packageName + " : " + e.toString();
+        "Format problem with key=["
+          + key + "], locale=[" + locale + "], package=" + packageName + " : " + e.toString();
       log.logError( message );
       log.logError( Const.getStackTracker( e ) );
       throw new MissingResourceException( message, packageName, key );
@@ -271,7 +272,7 @@ public class GlobalMessages extends AbstractMessageHandler {
 
     string = "!" + key + "!";
     String message =
-        "Message not found in the preferred and failover locale: key=[" + key + "], package=" + packageName;
+      "Message not found in the preferred and failover locale: key=[" + key + "], package=" + packageName;
     log.logDetailed( Const.getStackTracker( new KettleException( message ) ) );
 
     return string;

@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
 
 /**
  * Contains the meta data for the ReservoirSampling step.
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho.org)
  * @version 1.0
  */
@@ -72,7 +72,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Get the sample size to generate.
-   * 
+   *
    * @return the sample size
    */
   public String getSampleSize() {
@@ -81,7 +81,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Set the size of the sample to generate
-   * 
+   *
    * @param sampleS
    *          the size of the sample
    */
@@ -91,7 +91,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Get the random seed
-   * 
+   *
    * @return the random seed
    */
   public String getSeed() {
@@ -100,7 +100,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Set the seed value for the random number generator
-   * 
+   *
    * @param seed
    *          the seed value
    */
@@ -110,7 +110,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Return the XML describing this (configured) step
-   * 
+   *
    * @return a <code>String</code> containing the XML
    */
   public String getXML() {
@@ -127,7 +127,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Check for equality
-   * 
+   *
    * @param obj
    *          an <code>Object</code> to compare with
    * @return true if equal to the supplied object
@@ -151,7 +151,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Clone this step's meta data
-   * 
+   *
    * @return the cloned meta data
    */
   public Object clone() {
@@ -161,13 +161,14 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Loads the meta data for this (configured) step from XML.
-   * 
+   *
    * @param stepnode
    *          the step to load
    * @exception KettleXMLException
    *              if an error occurs
    */
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
 
     int nrSteps = XMLHandler.countNodes( stepnode, XML_TAG );
 
@@ -182,7 +183,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Read this step's configuration from a repository
-   * 
+   *
    * @param rep
    *          the repository to access
    * @param metaStore
@@ -193,7 +194,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
    *              if an error occurs
    */
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases,
-      Map<String, Counter> counters ) throws KettleException {
+    Map<String, Counter> counters ) throws KettleException {
 
     m_sampleSize = rep.getStepAttributeString( id_step, 0, "sample_size" );
     m_randomSeed = rep.getStepAttributeString( id_step, 0, "seed" );
@@ -201,7 +202,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Save this step's meta data to a repository
-   * 
+   *
    * @param rep
    *          the repository to save to
    * @param id_transformation
@@ -219,24 +220,26 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // nothing to do, as no fields are added/deleted
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     if ( ( prev == null ) || ( prev.size() == 0 ) ) {
-      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
+      cr =
+        new CheckResult(
+          CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
-              + prev.size() + " fields", stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
+          + prev.size() + " fields", stepMeta );
       remarks.add( cr );
     }
 
@@ -252,7 +255,7 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * Get the executing step, needed by Trans to launch a step.
-   * 
+   *
    * @param stepMeta
    *          the step info
    * @param stepDataInterface
@@ -267,14 +270,14 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
    * @return a <code>StepInterface</code> value
    */
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new ReservoirSampling( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
   /**
    * Get a new instance of the appropriate data class. This data class implements the StepDataInterface. It basically
    * contains the persisting data that needs to live on, even if a worker thread is terminated.
-   * 
+   *
    * @return a <code>StepDataInterface</code> value
    */
   public StepDataInterface getStepData() {

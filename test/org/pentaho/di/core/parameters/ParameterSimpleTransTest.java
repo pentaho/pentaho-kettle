@@ -48,7 +48,7 @@ import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
 
 /**
  * Test class for parameters in transformations.
- * 
+ *
  * @author Sven Boden
  */
 public class ParameterSimpleTransTest extends TestCase {
@@ -56,7 +56,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -81,7 +81,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -106,7 +106,9 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "${JAVA_HOME}", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "${JAVA_HOME}", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -131,7 +133,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -156,7 +158,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -179,7 +181,7 @@ public class ParameterSimpleTransTest extends TestCase {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          first row set to compare
    * @param rows2
@@ -221,7 +223,7 @@ public class ParameterSimpleTransTest extends TestCase {
 
   /**
    * Test case for parameters using a simple transformation.
-   * 
+   *
    * @throws Exception
    *           exception on any problem.
    */
@@ -311,7 +313,7 @@ public class ParameterSimpleTransTest extends TestCase {
   /**
    * Test case for parameters using a simple transformation. Here 1 parameter is not provided as value, so the default
    * will be used.
-   * 
+   *
    * @throws Exception
    *           exception on any problem.
    */
@@ -400,7 +402,7 @@ public class ParameterSimpleTransTest extends TestCase {
 
   /**
    * Test case for parameters using a simple transformation. Here blocking some unwise usage of parameters.
-   * 
+   *
    * @throws Exception
    *           exception on any problem.
    */
@@ -489,7 +491,7 @@ public class ParameterSimpleTransTest extends TestCase {
 
   /**
    * Test case for parameters using a simple transformation. Check whether parameters override variables.
-   * 
+   *
    * @throws Exception
    *           exception on any problem.
    */
@@ -581,7 +583,7 @@ public class ParameterSimpleTransTest extends TestCase {
 
   /**
    * Test case for parameters using a simple transformation. Check whether parameters override variables.
-   * 
+   *
    * @throws Exception
    *           exception on any problem.
    */
@@ -673,7 +675,7 @@ public class ParameterSimpleTransTest extends TestCase {
 
   /**
    * Test case for parameters using a simple transformation. Check whether parameters override variables.
-   * 
+   *
    * @throws Exception
    *           exception on any problem.
    */

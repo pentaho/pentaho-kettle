@@ -43,7 +43,7 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
   public static final String METASTORE_STAR_DOMAIN_TYPE_DESCRIPTION = "This contains a star domain, a collection of star models and shared dimensions";
 
   protected static String namespace = PentahoDefaults.NAMESPACE;
-  
+
   public enum Attribute {
     ID_STAR_DOMAIN_DESCRIPTION("description"),
     ;
@@ -52,12 +52,12 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
       this.id = id;
     }
   }
-  
+
   protected static String defaultLocale = LanguageChoice.getInstance().getDefaultLocale().toString();
-  
+
   public static IMetaStoreElementType getStarDomainElementType(IMetaStore metaStore) throws MetaStoreException {
     verifyNamespaceCreated(metaStore, namespace);
-    
+
     IMetaStoreElementType elementType = metaStore.getElementTypeByName(namespace, METASTORE_STAR_DOMAIN_TYPE_NAME);
     if (elementType==null) {
       // create the type
@@ -66,13 +66,13 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
     }
     return elementType;
   }
-  
+
   public static IMetaStoreElementType createStarDomainElementType(IMetaStore metaStore) throws MetaStoreElementTypeExistsException, MetaStoreException {
     IMetaStoreElementType elementType = metaStore.newElementType(namespace);
     elementType.setName(METASTORE_STAR_DOMAIN_TYPE_NAME);
     elementType.setDescription(METASTORE_STAR_DOMAIN_TYPE_DESCRIPTION);
     metaStore.createElementType(namespace, elementType);
-  
+
     return elementType;
   }
 
@@ -83,8 +83,8 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
       // verify the ID!
       //
       element = metaStore.getElement(namespace, elementType, starDomain.getObjectId().toString());
-    } 
-    
+    }
+
     if (element==null) {
       // Create a new element
       //
@@ -126,7 +126,7 @@ public class StarDomainMetaStoreUtil extends MetaStoreUtil {
     starDomain.setObjectId(new StringObjectId(id));
     starDomain.setName(element.getName());
     starDomain.setDescription(getChildString(element, Attribute.ID_STAR_DOMAIN_DESCRIPTION.id));
-    
+
     return starDomain;
   }
 

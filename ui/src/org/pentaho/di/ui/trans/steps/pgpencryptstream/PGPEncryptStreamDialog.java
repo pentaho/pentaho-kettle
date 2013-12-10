@@ -57,7 +57,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class PGPEncryptStreamDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = PGPEncryptStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGPEncryptStreamMeta.class; // for i18n purposes, needed by Translator2!!
   private boolean gotPreviousFields = false;
 
   private Label wlGPGLocation;
@@ -91,7 +91,7 @@ public class PGPEncryptStreamDialog extends BaseStepDialog implements StepDialog
   private FormData fdGPGGroup;
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString(
-      PKG, "PGPEncryptStreamDialog.Filetype.All" ) };
+    PKG, "PGPEncryptStreamDialog.Filetype.All" ) };
 
   public PGPEncryptStreamDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -229,7 +229,8 @@ public class PGPEncryptStreamDialog extends BaseStepDialog implements StepDialog
     wlKeyNameFromField.setLayoutData( fdlKeyNameFromField );
     wKeyNameFromField = new Button( wGPGGroup, SWT.CHECK );
     props.setLook( wKeyNameFromField );
-    wKeyNameFromField.setToolTipText( BaseMessages.getString( PKG, "PGPEncryptStreamDialog.KeyNameFromField.Tooltip" ) );
+    wKeyNameFromField.setToolTipText( BaseMessages.getString(
+      PKG, "PGPEncryptStreamDialog.KeyNameFromField.Tooltip" ) );
     fdKeyNameFromField = new FormData();
     fdKeyNameFromField.left = new FormAttachment( middle, 0 );
     fdKeyNameFromField.top = new FormAttachment( wKeyName, margin );
@@ -461,9 +462,9 @@ public class PGPEncryptStreamDialog extends BaseStepDialog implements StepDialog
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+          PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

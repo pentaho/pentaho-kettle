@@ -25,7 +25,7 @@ package org.pentaho.di.core.listeners;
 /**
  * @see ContentChangedListener
  * @author matt
- * 
+ *
  */
 public class ContentChangedAdapter implements ContentChangedListener {
   @Override

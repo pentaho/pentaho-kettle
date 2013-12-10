@@ -65,15 +65,16 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Copy Files job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 
 public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryCopyFiles.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryCopyFiles.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobCopyFiles.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "JobCopyFiles.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -318,7 +319,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 
     // Create destination folder/parent folder
     wlCreateDestinationFolder = new Label( wSettings, SWT.RIGHT );
-    wlCreateDestinationFolder.setText( BaseMessages.getString( PKG, "JobCopyFiles.CreateDestinationFolder.Label" ) );
+    wlCreateDestinationFolder
+      .setText( BaseMessages.getString( PKG, "JobCopyFiles.CreateDestinationFolder.Label" ) );
     props.setLook( wlCreateDestinationFolder );
     fdlCreateDestinationFolder = new FormData();
     fdlCreateDestinationFolder.left = new FormAttachment( 0, 0 );
@@ -328,7 +330,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wCreateDestinationFolder = new Button( wSettings, SWT.CHECK );
     props.setLook( wCreateDestinationFolder );
     wCreateDestinationFolder.setToolTipText( BaseMessages.getString(
-        PKG, "JobCopyFiles.CreateDestinationFolder.Tooltip" ) );
+      PKG, "JobCopyFiles.CreateDestinationFolder.Tooltip" ) );
     fdCreateDestinationFolder = new FormData();
     fdCreateDestinationFolder.left = new FormAttachment( middle, 0 );
     fdCreateDestinationFolder.top = new FormAttachment( wCopyEmptyFolders, margin );
@@ -556,7 +558,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wbDestinationFileFolder.setLayoutData( fdbDestinationFileFolder );
 
     wDestinationFileFolder = new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wDestinationFileFolder.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.DestinationFileFolder.Tooltip" ) );
+    wDestinationFileFolder.setToolTipText( BaseMessages.getString(
+      PKG, "JobCopyFiles.DestinationFileFolder.Tooltip" ) );
     props.setLook( wDestinationFileFolder );
     wDestinationFileFolder.addModifyListener( lsMod );
     fdDestinationFileFolder = new FormData();
@@ -629,20 +632,21 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
-            ? 0 : jobEntry.source_filefolder.length );
+      jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+        ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Tooltip" ) );
@@ -652,8 +656,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     colinf[2].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Tooltip" ) );
 
     wFields =
-        new TableView(
-            jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -667,8 +671,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFields
-            .add( new String[] { wSourceFileFolder.getText(), wDestinationFileFolder.getText(), wWildcard.getText() } );
+        wFields.add( new String[] {
+          wSourceFileFolder.getText(), wDestinationFileFolder.getText(), wWildcard.getText() } );
         wSourceFileFolder.setText( "" );
         wDestinationFileFolder.setText( "" );
         wWildcard.setText( "" );
@@ -916,7 +920,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wOverwriteFiles.setSelection( jobEntry.overwrite_files );
     wIncludeSubfolders.setSelection( jobEntry.include_subfolders );
     wRemoveSourceFiles.setSelection( jobEntry.remove_source_files );
-    wDestinationIsAFile.setSelection( jobEntry.destination_is_a_file );
+    wDestinationIsAFile.setSelection( jobEntry.destinationIsFile );
     wCreateDestinationFolder.setSelection( jobEntry.create_destination_folder );
 
     wAddFileToResult.setSelection( jobEntry.add_result_filesname );

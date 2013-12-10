@@ -30,7 +30,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 
 public abstract class SpoonDelegate {
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
-      "Spoon (delegate)", LoggingObjectType.SPOON, null );
+    "Spoon (delegate)", LoggingObjectType.SPOON, null );
 
   protected Spoon spoon;
   protected LogChannelInterface log;

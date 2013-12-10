@@ -178,7 +178,7 @@ public class NormalExecutionTest extends TestCase {
       // Get the RowMeta for the injector step (it will be an Integer named 'a' of length 1)
       RowMeta injectorRowMeta = new RowMeta();
       ( (BaseStepMeta) injector.getStepMeta().getStepMetaInterface() ).getFields(
-          injectorRowMeta, null, null, null, null, null, null );
+        injectorRowMeta, null, null, null, null, null, null );
 
       RowProducer producer = trans.addRowProducer( injector.getStepname(), 0 );
 
@@ -201,11 +201,11 @@ public class NormalExecutionTest extends TestCase {
       assertTrue( trans.isFinished() );
 
       /*
-       * 
+       *
        * // Make sure we collect all output so we can report how long it actually took long start =
        * System.currentTimeMillis(); while (countingListener.getWritten() + countingListener.getIgnoredWritten() !=
        * ROWS) { Thread.sleep(0, 10); } long end = System.currentTimeMillis();
-       * 
+       *
        * System.out.println("Run report for RowListener on last step in transformation, iteration #"+(t+1)+" :\n");
        * System.out.println("Rows read             : " + countingListener.getRead());
        * System.out.println("Rows written          : " + countingListener.getWritten());
@@ -225,15 +225,15 @@ public class NormalExecutionTest extends TestCase {
   /*
    * public void testStartThreads_only_one_TransListener() throws Exception { TransMeta transMeta = new
    * TransMeta("testfiles/NormalExecutionTest - WaitUntilFinished.ktr");
-   * 
+   *
    * Trans trans = new Trans(transMeta); trans.setLogLevel(LogLevel.NOTHING);
-   * 
+   *
    * trans.prepareExecution(null); trans.startThreads(); trans.waitUntilFinished();
-   * 
+   *
    * // Record original number of trans listeners int numTransListeners = trans.getTransListeners().size();
-   * 
+   *
    * trans.prepareExecution(null); trans.startThreads(); trans.waitUntilFinished();
-   * 
+   *
    * assertEquals("TransListeners on Trans are growing", numTransListeners, trans.getTransListeners().size()); }
    */
 }

@@ -64,7 +64,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class IfNullDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!!
 
   private IfNullMeta input;
 
@@ -296,25 +296,27 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
 
     ColumnInfo[] colval = new ColumnInfo[FieldsCols];
     colval[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "IfNullDialog.ValueType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            ValueMetaInterface.typeCodes );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.ValueType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        ValueMetaInterface.typeCodes );
     colval[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colval[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ), ColumnInfo.COLUMN_TYPE_CCOMBO, Const
-                .getDateFormats() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        Const.getDateFormats() );
     colval[3] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] {
-                BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] {
+          BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     colval[1].setUsingVariables( true );
     wValueTypes =
-        new TableView(
-            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colval, ValueTypesRows, oldlsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colval, ValueTypesRows, oldlsMod, props );
 
     fdValueTypes = new FormData();
     fdValueTypes.left = new FormAttachment( 0, 0 );
@@ -420,25 +422,27 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     wlFields.setLayoutData( fdlFields );
 
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "IfNullDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] {}, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] {}, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[2] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ), ColumnInfo.COLUMN_TYPE_CCOMBO, Const
-                .getDateFormats() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        Const.getDateFormats() );
     colinf[1].setUsingVariables( true );
     colinf[3] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] {
-                BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] {
+          BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     wFields =
-        new TableView(
-            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -495,11 +499,12 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
           }
         };
 
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
+        BaseStepDialog
+          .getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }
@@ -566,8 +571,8 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
       if ( input.getTypeReplaceMask()[i] != null ) {
         ti.setText( 3, input.getTypeReplaceMask()[i] );
       }
-      ti.setText( 4, input.isSetTypeEmptyString()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" ) );
+      ti.setText( 4, input.isSetTypeEmptyString()[i]
+        ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
 
     }
 
@@ -591,8 +596,8 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
       if ( input.getReplaceMask()[i] != null ) {
         ti.setText( 3, input.getReplaceMask()[i] );
       }
-      ti.setText( 4, input.isSetEmptyString()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" ) );
+      ti.setText( 4, input.isSetEmptyString()[i]
+        ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
     }
 
     wFields.setRowNums();
@@ -641,7 +646,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
       TableItem ti = wValueTypes.getNonEmpty( i );
       input.getTypeName()[i] = ti.getText( 1 );
       input.isSetTypeEmptyString()[i] =
-          BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
       if ( input.isSetTypeEmptyString()[i] ) {
         input.getTypeReplaceValue()[i] = "";
         input.getTypeReplaceMask()[i] = "";
@@ -656,7 +661,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );
       input.isSetEmptyString()[i] =
-          BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
       if ( input.isSetEmptyString()[i] ) {
         input.getReplaceValue()[i] = "";
         input.getReplaceMask()[i] = "";

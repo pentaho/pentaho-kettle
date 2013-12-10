@@ -37,18 +37,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Removes the same consequetive rows from the input stream(s).
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class UniqueRows extends BaseStep implements StepInterface {
-  private static Class<?> PKG = UniqueRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = UniqueRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private UniqueRowsMeta meta;
   private UniqueRowsData data;
 
   public UniqueRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (UniqueRowsMeta) getStepMeta().getStepMetaInterface();
@@ -87,7 +87,8 @@ public class UniqueRows extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getCompareFields().length; i++ ) {
         data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getCompareFields()[i] );
         if ( data.fieldnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "UniqueRows.Log.CouldNotFindFieldInRow", meta.getCompareFields()[i] ) );
+          logError( BaseMessages.getString(
+            PKG, "UniqueRows.Log.CouldNotFindFieldInRow", meta.getCompareFields()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -98,8 +99,8 @@ public class UniqueRows extends BaseStep implements StepInterface {
 
         if ( data.sendDuplicateRows ) {
           data.compareFields =
-              data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields
-                  + "," + meta.getCompareFields()[i];
+            data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields
+              + "," + meta.getCompareFields()[i];
         }
       }
       if ( data.sendDuplicateRows && !Const.isEmpty( meta.getErrorDescription() ) ) {
@@ -131,7 +132,7 @@ public class UniqueRows extends BaseStep implements StepInterface {
       data.counter++;
       if ( data.sendDuplicateRows && !first ) {
         putError( getInputRowMeta(), r, 1, data.realErrorDescription, Const.isEmpty( data.compareFields )
-            ? null : data.compareFields, "UNR001" );
+          ? null : data.compareFields, "UNR001" );
       }
     }
 

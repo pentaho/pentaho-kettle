@@ -41,7 +41,7 @@ import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
 
 public class CustomSocketFactory extends SSLSocketFactory {
 
-  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static boolean configured;
 
@@ -98,8 +98,8 @@ public class CustomSocketFactory extends SSLSocketFactory {
         keyStore = KeyStore.getInstance( "JKS" );
       }
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "KettleTrustManager.Exception.CouldNotCreateCertStore" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "KettleTrustManager.Exception.CouldNotCreateCertStore" ), e );
     }
 
     trustManagers = new KettleTrustManager[] { new KettleTrustManager( keyStore, path, password ) };
@@ -120,8 +120,8 @@ public class CustomSocketFactory extends SSLSocketFactory {
   }
 
   @Override
-  public Socket createSocket( String host, int port, InetAddress client_host, int client_port ) throws IOException,
-    UnknownHostException {
+  public Socket createSocket( String host, int port, InetAddress client_host, int client_port )
+    throws IOException, UnknownHostException {
     return factory.createSocket( host, port, client_host, client_port );
   }
 

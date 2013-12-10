@@ -35,16 +35,16 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 
 /**
- * 
+ *
  * Dialog that allows you to edit the settings of a database connection.
- * 
+ *
  * @see <code>DatabaseInfo</code>
  * @author Matt
  * @since 18-05-2003
- * 
+ *
  */
 public class DatabaseDialog extends XulDatabaseDialog {
-  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
   public DatabaseDialog( Shell parent ) {
     super( parent );
@@ -76,15 +76,15 @@ public class DatabaseDialog extends XulDatabaseDialog {
         // 012345
         //
         variableName =
-            password.substring( StringUtil.UNIX_OPEN.length(), password.length() - StringUtil.UNIX_CLOSE.length() );
+          password.substring( StringUtil.UNIX_OPEN.length(), password.length() - StringUtil.UNIX_CLOSE.length() );
       }
       if ( ( password.startsWith( StringUtil.WINDOWS_OPEN ) && password.endsWith( StringUtil.WINDOWS_CLOSE ) ) ) {
         // %VAR%
         // 01234
         //
         variableName =
-            password
-                .substring( StringUtil.WINDOWS_OPEN.length(), password.length() - StringUtil.WINDOWS_CLOSE.length() );
+          password.substring( StringUtil.WINDOWS_OPEN.length(), password.length()
+            - StringUtil.WINDOWS_CLOSE.length() );
       }
 
       // If there is a variable name in there AND if it's defined in the system properties...
@@ -109,9 +109,9 @@ public class DatabaseDialog extends XulDatabaseDialog {
       String reportMessage = dbinfo.testConnection();
 
       EnterTextDialog dialog =
-          new EnterTextDialog(
-              shell, BaseMessages.getString( PKG, "DatabaseDialog.ConnectionReport.title" ), BaseMessages.getString(
-                  PKG, "DatabaseDialog.ConnectionReport.description" ), reportMessage.toString() );
+        new EnterTextDialog(
+          shell, BaseMessages.getString( PKG, "DatabaseDialog.ConnectionReport.title" ), BaseMessages
+            .getString( PKG, "DatabaseDialog.ConnectionReport.description" ), reportMessage.toString() );
       dialog.setReadOnly();
       dialog.setFixed( true );
       dialog.setModal();

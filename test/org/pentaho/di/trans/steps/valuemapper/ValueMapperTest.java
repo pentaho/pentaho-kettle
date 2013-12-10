@@ -50,7 +50,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the ValueMapper step.
- * 
+ *
  * @author Sven Boden
  */
 public class ValueMapperTest extends TestCase {
@@ -101,7 +101,7 @@ public class ValueMapperTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "new_field", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "new_field", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -336,7 +336,7 @@ public class ValueMapperTest extends TestCase {
   /**
    * Test case for valuemapper step. Injector step to a valuemapper step to a dummy step. Rows go in and should be
    * mapped accordingly.
-   * 
+   *
    * This test will write the mappings in a new field.
    */
   public void testValueMapper1() throws Exception {
@@ -446,7 +446,7 @@ public class ValueMapperTest extends TestCase {
   /**
    * Test case for valuemapper step. Injector step to a valuemapper step to a dummy step. Rows go in and should be
    * mapped accordingly.
-   * 
+   *
    * This test will write the mappings in the same field.
    */
   public void testValueMapper2() throws Exception {
@@ -556,7 +556,7 @@ public class ValueMapperTest extends TestCase {
   /**
    * Test case for valuemapper step. Injector step to a valuemapper step to a dummy step. Rows go in and should be
    * mapped accordingly.
-   * 
+   *
    * This test will explicitly test the empty field processing.
    */
   public void testValueMapper3() throws Exception {
@@ -667,7 +667,7 @@ public class ValueMapperTest extends TestCase {
   /**
    * Test case for valuemapper step. Injector step to a valuemapper step to a dummy step. Rows go in and should be
    * mapped accordingly.
-   * 
+   *
    * This test will write the mappings in a new field, using a non matching default.
    */
   public void testValueMapper4() throws Exception {
@@ -778,7 +778,7 @@ public class ValueMapperTest extends TestCase {
   /**
    * Test case for valuemapper step. Injector step to a valuemapper step to a dummy step. Rows go in and should be
    * mapped accordingly.
-   * 
+   *
    * This test will write the mappings in the same field. Using a non matching default.
    */
   public void testValueMapper5() throws Exception {
@@ -889,7 +889,7 @@ public class ValueMapperTest extends TestCase {
   /**
    * Test case for valuemapper step. Injector step to a valuemapper step to a dummy step. Rows go in and should be
    * mapped accordingly.
-   * 
+   *
    * This test will explicitly test the empty field processing. using a non matching default.
    */
   public void testValueMapper6() throws Exception {

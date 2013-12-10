@@ -31,10 +31,10 @@ import org.pentaho.di.core.Const;
 
 /**
  * This class contains a Value of type Date.
- * 
+ *
  * @author Matt
  * @since 15-10-2004
- * 
+ *
  */
 public class ValueDate implements ValueInterface, Cloneable {
   public static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss.SSS";

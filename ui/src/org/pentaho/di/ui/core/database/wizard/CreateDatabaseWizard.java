@@ -33,10 +33,10 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
  * Shows a wizard that creates a new database connection... (Code 'normalized' from Spoon)
- * 
+ *
  * @author Matt, Jens
  * @since 29-mar-2006
- * 
+ *
  */
 public class CreateDatabaseWizard {
 
@@ -44,7 +44,7 @@ public class CreateDatabaseWizard {
 
   /**
    * Shows a wizard that creates a new database connection...
-   * 
+   *
    * @param shell
    * @param props
    * @param databases
@@ -56,7 +56,8 @@ public class CreateDatabaseWizard {
 
     final CreateDatabaseWizardPage1 page1 = new CreateDatabaseWizardPage1( "1", props, newDBInfo, databases );
 
-    final CreateDatabaseWizardPageInformix pageifx = new CreateDatabaseWizardPageInformix( "ifx", props, newDBInfo );
+    final CreateDatabaseWizardPageInformix pageifx =
+      new CreateDatabaseWizardPageInformix( "ifx", props, newDBInfo );
 
     final CreateDatabaseWizardPageJDBC pagejdbc = new CreateDatabaseWizardPageJDBC( "jdbc", props, newDBInfo );
 
@@ -64,12 +65,13 @@ public class CreateDatabaseWizard {
 
     final CreateDatabaseWizardPageODBC pageodbc = new CreateDatabaseWizardPageODBC( "odbc", props, newDBInfo );
 
-    final CreateDatabaseWizardPageOracle pageoracle = new CreateDatabaseWizardPageOracle( "oracle", props, newDBInfo );
+    final CreateDatabaseWizardPageOracle pageoracle =
+      new CreateDatabaseWizardPageOracle( "oracle", props, newDBInfo );
 
     final CreateDatabaseWizardPageSAPR3 pageSAPR3 = new CreateDatabaseWizardPageSAPR3( "SAPR3", props, newDBInfo );
 
     final CreateDatabaseWizardPageGeneric pageGeneric =
-        new CreateDatabaseWizardPageGeneric( "generic", props, newDBInfo );
+      new CreateDatabaseWizardPageGeneric( "generic", props, newDBInfo );
 
     final CreateDatabaseWizardPage2 page2 = new CreateDatabaseWizardPage2( "2", props, newDBInfo );
 

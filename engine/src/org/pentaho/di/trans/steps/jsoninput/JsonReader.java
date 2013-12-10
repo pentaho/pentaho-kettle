@@ -39,7 +39,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class JsonReader {
-  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String JAVA_SCRIPT = "JavaScript";
   private static final String JSON_SCRIPT = "json.js";

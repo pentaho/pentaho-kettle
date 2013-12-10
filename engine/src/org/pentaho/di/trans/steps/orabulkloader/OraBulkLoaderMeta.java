@@ -57,11 +57,12 @@ import org.w3c.dom.Node;
 
 /**
  * Created on 20-feb-2007
- * 
+ *
  * @author Sven Boden
  */
-public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation {
-  private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
+  ProvidesDatabaseConnectionInformation {
+  private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static int DEFAULT_COMMIT_SIZE = 100000; // The bigger the better for Oracle
   private static int DEFAULT_BIND_SIZE = 0;
@@ -305,7 +306,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     this.altRecordTerm = altRecordTerm;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -329,7 +331,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       // String csize, bsize, rsize, serror;
       // int nrvalues;
@@ -395,7 +398,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
           dateMask[i] = "";
         } else {
           if ( OraBulkLoaderMeta.DATE_MASK_DATE.equals( locDateMask )
-              || OraBulkLoaderMeta.DATE_MASK_DATETIME.equals( locDateMask ) ) {
+            || OraBulkLoaderMeta.DATE_MASK_DATETIME.equals( locDateMask ) ) {
             dateMask[i] = locDateMask;
           } else {
             dateMask[i] = "";
@@ -404,7 +407,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "OraBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+        PKG, "OraBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -445,7 +448,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     StringBuffer retval = new StringBuffer( 300 );
 
     retval
-        .append( "    " ).append( XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) ); //$NON-NLS-3$
+      .append( "    " ).append(
+        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "commit", commitSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "bind_size", bindSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "read_size", readSize ) );
@@ -525,7 +529,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "OraBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+        PKG, "OraBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -572,19 +576,19 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "OraBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+        PKG, "OraBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -596,8 +600,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
         if ( !Const.isEmpty( tableName ) ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                  PKG, "OraBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "OraBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -606,13 +610,13 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
           // Check fields in table
           String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                  .environmentSubstitute( tableName ) );
+            databaseMeta.getQuotedSchemaTableCombination(
+              transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                    PKG, "OraBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "OraBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             // How about the fields to insert/dateMask in the table?
@@ -628,8 +632,9 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
                 if ( first ) {
                   first = false;
                   error_message +=
-                      BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable" )
-                          + Const.CR;
+                    BaseMessages.getString(
+                      PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable" )
+                      + Const.CR;
                 }
                 error_found = true;
                 error_message += "\t\t" + field + Const.CR;
@@ -639,8 +644,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                      PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
@@ -653,8 +658,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                  PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -667,7 +672,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
               if ( first ) {
                 first = false;
                 error_message +=
-                    BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
+                  BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
               }
               error_found = true;
               error_message += "\t\t" + fieldStream[i] + Const.CR;
@@ -677,19 +682,19 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                    PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "OraBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
         } else {
           error_message =
-              BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
+            BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
           cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleException e ) {
         error_message =
-            BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.DatabaseErrorOccurred" ) + e.getMessage();
+          BaseMessages.getString( PKG, "OraBulkLoaderMeta.CheckResult.DatabaseErrorOccurred" ) + e.getMessage();
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
@@ -704,19 +709,19 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "OraBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "OraBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "OraBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    Repository repository, IMetaStore metaStore ) throws KettleStepException {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
@@ -743,8 +748,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
             db.connect();
 
             String schemaTable =
-                databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                    .environmentSubstitute( tableName ) );
+              databaseMeta.getQuotedSchemaTableCombination(
+                transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
             String sql = db.getDDL( schemaTable, tableFields, null, false, null, true );
 
             if ( sql.length() == 0 ) {
@@ -753,7 +758,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
               retval.setSQL( sql );
             }
           } catch ( KettleException e ) {
-            retval.setError( BaseMessages.getString( PKG, "OraBulkLoaderMeta.GetSQL.ErrorOccurred" ) + e.getMessage() );
+            retval.setError( BaseMessages.getString( PKG, "OraBulkLoaderMeta.GetSQL.ErrorOccurred" )
+              + e.getMessage() );
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "OraBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection" ) );
@@ -769,8 +775,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
     if ( prev != null ) {
       /* DEBUG CHECK THIS */
       // Insert dateMask fields : read/write
@@ -778,17 +784,17 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
         ValueMetaInterface v = prev.searchValueMeta( fieldStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact(
-                DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                    .getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i], fieldStream[i],
-                v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
+          new DatabaseImpact(
+            DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+              .getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
+            fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() );
         impact.add( ii );
       }
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new OraBulkLoader( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -841,7 +847,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
           throw new KettleException( BaseMessages.getString( PKG, "OraBulkLoaderMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "OraBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "OraBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }

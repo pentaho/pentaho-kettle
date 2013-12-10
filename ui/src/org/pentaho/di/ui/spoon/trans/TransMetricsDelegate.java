@@ -67,7 +67,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
 public class TransMetricsDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   // private static final LogWriter log = LogWriter.getInstance();
 
@@ -204,7 +204,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
           event.gc.fillRectangle( new Rectangle( 0, 0, bounds.width, bounds.height ) );
           event.gc.setForeground( GUIResource.getInstance().getColorBlack() );
           String metricsMessage =
-              BaseMessages.getString( PKG, "TransMetricsDelegate.TransformationIsNotRunning.Message" );
+            BaseMessages.getString( PKG, "TransMetricsDelegate.TransformationIsNotRunning.Message" );
           org.eclipse.swt.graphics.Point extent = event.gc.textExtent( metricsMessage );
           event.gc.drawText( metricsMessage, ( bounds.width - extent.x ) / 2, ( bounds.height - extent.y ) / 2 );
         }
@@ -246,7 +246,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
             }
             System.out.println( duration.toString() );
             LoggingObjectInterface loggingObject =
-                LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
+              LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
             if ( loggingObject == null ) {
               continue;
             }
@@ -259,7 +259,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 
     /*
      * canvas.addControlListener(new ControlAdapter() {
-     * 
+     *
      * @Override public void controlResized(ControlEvent arg0) { lastRefreshTime=0; // force a refresh } });
      */
   }
@@ -286,8 +286,8 @@ public class TransMetricsDelegate extends SpoonDelegate {
       public void run() {
 
         if ( metricsComposite != null
-            && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed() && transMetricsTab != null
-            && !transMetricsTab.isDisposed() ) {
+          && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed() && transMetricsTab != null
+          && !transMetricsTab.isDisposed() ) {
           if ( transMetricsTab.isShowing() ) {
             canvas.redraw();
           }
@@ -346,7 +346,8 @@ public class TransMetricsDelegate extends SpoonDelegate {
     canvas.setSize( bounds.width, bounds.height );
 
     SWTGC gc =
-        new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI.getInstance().getIconSize() );
+      new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI
+        .getInstance().getIconSize() );
     MetricsPainter painter = new MetricsPainter( gc, height );
     drawAreas = painter.paint( durations );
     image = (Image) gc.getImage();

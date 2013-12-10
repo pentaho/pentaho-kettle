@@ -73,7 +73,7 @@ public class JsonOutputData extends BaseStepData implements StepDataInterface {
   public int nrRowsInBloc;
 
   /**
-     * 
+     *
      */
   public JsonOutputData() {
     super();

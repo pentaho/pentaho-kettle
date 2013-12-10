@@ -86,7 +86,7 @@ public class RepositoriesDialog {
         runner.initialize();
       } catch ( XulException e ) {
         SpoonFactory.getInstance().messageBox(
-            e.getLocalizedMessage(), "Service Initialization Failed", false, Const.ERROR );
+          e.getLocalizedMessage(), "Service Initialization Failed", false, Const.ERROR );
         log.error( resourceBundle.getString( "RepositoryLoginDialog.ErrorStartingXulApplication" ), e );
       }
     } catch ( XulException e ) {

@@ -55,20 +55,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
- * 
+ *
  * @author Matt
  * @since 2007-07-05
  */
 public class MetaInject extends BaseStep implements StepInterface {
   private static Class<?> PKG = MetaInject.class; // for i18n purposes, needed
                                                   // by Translator2!!
-                                                  // $NON-NLS-1$
 
   private MetaInjectMeta meta;
   private MetaInjectData data;
 
   public MetaInject( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -184,7 +183,7 @@ public class MetaInject extends BaseStep implements StepInterface {
                       } else {
                         if ( log.isDetailed() ) {
                           logDetailed( "No detail source found for key: "
-                              + rowEntry.getKey() + " and target step: " + targetStep );
+                            + rowEntry.getKey() + " and target step: " + targetStep );
                         }
                       }
                     }
@@ -227,7 +226,8 @@ public class MetaInject extends BaseStep implements StepInterface {
         os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
         os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
       } catch ( IOException e ) {
-        throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'", e );
+        throw new KettleException( "Unable to write target file (ktr after injection) to file '"
+          + targetFile + "'", e );
       } finally {
         if ( os != null ) {
           try {
@@ -303,7 +303,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   private StepInjectionMetaEntry findDetailRootEntry( List<StepInjectionMetaEntry> metadataEntries,
-      StepInjectionMetaEntry entry ) {
+    StepInjectionMetaEntry entry ) {
     for ( StepInjectionMetaEntry rowsEntry : metadataEntries ) {
       for ( StepInjectionMetaEntry rowEntry : rowsEntry.getDetails() ) {
         for ( StepInjectionMetaEntry detailEntry : rowEntry.getDetails() ) {
@@ -316,8 +316,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     return null;
   }
 
-  private SourceStepField findDetailSource( Map<TargetStepAttribute, SourceStepField> targetMap, String targetStep,
-      String key ) {
+  private SourceStepField findDetailSource( Map<TargetStepAttribute, SourceStepField> targetMap,
+    String targetStep, String key ) {
     return targetMap.get( new TargetStepAttribute( targetStep, key, true ) );
   }
 
@@ -371,7 +371,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       try {
         data.transMeta =
-            MetaInjectMeta.loadTransformationMeta( meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
+          MetaInjectMeta.loadTransformationMeta(
+            meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
         data.transMeta.copyVariablesFrom( this );
 
         // Get a mapping between the step name and the injection...
@@ -379,7 +380,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         data.stepInjectionMap = new HashMap<String, StepMetaInjectionInterface>();
         for ( StepMeta stepMeta : data.transMeta.getUsedSteps() ) {
           StepMetaInjectionInterface injectionInterface =
-              stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
+            stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
           if ( injectionInterface != null ) {
             data.stepInjectionMap.put( stepMeta.getName(), injectionInterface );
           }

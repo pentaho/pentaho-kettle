@@ -45,7 +45,7 @@ public class CellSetFormatter {
 
     /**
      * Creates an AxisInfo.
-     * 
+     *
      * @param ordinalCount
      *          Number of hierarchies on this axis
      */
@@ -58,7 +58,7 @@ public class CellSetFormatter {
 
     /**
      * Returns the number of matrix columns required by this axis. The sum of the width of the hierarchies on this axis.
-     * 
+     *
      * @return Width of axis
      */
     public int getWidth() {
@@ -179,7 +179,7 @@ public class CellSetFormatter {
 
   /**
    * Computes a description of an axis.
-   * 
+   *
    * @param axis
    *          Axis
    * @return Description of axis
@@ -208,7 +208,7 @@ public class CellSetFormatter {
 
   /**
    * Formats a two-dimensional page.
-   * 
+   *
    * @param cellSet
    *          Cell set
    * @param pw
@@ -225,7 +225,7 @@ public class CellSetFormatter {
    *          Description of rows axis
    */
   private Matrix formatPage( final CellSet cellSet, final int[] pageCoords, final CellSetAxis columnsAxis,
-      final AxisInfo columnsAxisInfo, final CellSetAxis rowsAxis, final AxisInfo rowsAxisInfo ) {
+    final AxisInfo columnsAxisInfo, final CellSetAxis rowsAxis, final AxisInfo rowsAxisInfo ) {
 
     // Figure out the dimensions of the blank rectangle in the top left
     // corner.
@@ -234,8 +234,8 @@ public class CellSetFormatter {
 
     // Populate a string matrix
     final Matrix matrix =
-        new Matrix( xOffsset + ( columnsAxis == null ? 1 : columnsAxis.getPositions().size() ), yOffset
-            + ( rowsAxis == null ? 1 : rowsAxis.getPositions().size() ) );
+      new Matrix( xOffsset + ( columnsAxis == null ? 1 : columnsAxis.getPositions().size() ), yOffset
+        + ( rowsAxis == null ? 1 : rowsAxis.getPositions().size() ) );
 
     // Populate corner
     for ( int x = 0; x < xOffsset; x++ ) {
@@ -315,7 +315,7 @@ public class CellSetFormatter {
 
   /**
    * Populates cells in the matrix corresponding to a particular axis.
-   * 
+   *
    * @param matrix
    *          Matrix to populate
    * @param axis
@@ -328,7 +328,7 @@ public class CellSetFormatter {
    *          Ordinal of first cell to populate in matrix
    */
   private void populateAxis( final Matrix matrix, final CellSetAxis axis, final AxisInfo axisInfo,
-      final boolean isColumns, final int offset ) {
+    final boolean isColumns, final int offset ) {
     if ( axis == null ) {
       return;
     }
@@ -366,8 +366,9 @@ public class CellSetFormatter {
 
           if ( i < axis.getPositions().size() - 1 ) {
             if ( axis.getPositions().get( i + 1 ).getMembers().get( z ).getParentMember() != null
-                && axis.getPositions().get( i + 1 ).getMembers().get( z ).getParentMember().equals( member ) ) {
-              if ( member == null || position.getMembers().get( z ).getUniqueName().equals( member.getUniqueName() ) ) {
+              && axis.getPositions().get( i + 1 ).getMembers().get( z ).getParentMember().equals( member ) ) {
+              if ( member == null
+                || position.getMembers().get( z ).getUniqueName().equals( member.getUniqueName() ) ) {
                 break;
               }
             }

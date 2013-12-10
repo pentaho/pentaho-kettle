@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Runtime data for the RegexEval step.
- * 
+ *
  * @author Samatar Hassan
  * @author Daniel Einspanjer
  * @since 27-03-2008

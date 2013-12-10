@@ -118,15 +118,15 @@ public class DatabaseDialogHarness {
       String carriageReturn = System.getProperty( "line.separator" );
       try {
         message =
-            "Name: "
-                .concat( database.getName() ).concat( carriageReturn ).concat( "Database Name: " ).concat(
-                    database.getDatabaseName() ).concat( carriageReturn ).concat( "Host Name: " ).concat(
-                    database.getHostname() ).concat( carriageReturn ).concat( "Port Number: " ).concat(
-                    database.getDatabasePortNumberString() ).concat( carriageReturn ).concat( "User Name: " ).concat(
-                    database.getUsername() ).concat( carriageReturn ).concat( "Password: " ).concat(
-                    database.getPassword() ).concat( carriageReturn ).concat( "Driver Class: " ).concat(
-                    database.getDriverClass() ).concat( carriageReturn ).concat( "URL: " ).concat( database.getURL() )
-                .concat( carriageReturn );
+          "Name: "
+            .concat( database.getName() ).concat( carriageReturn ).concat( "Database Name: " ).concat(
+              database.getDatabaseName() ).concat( carriageReturn ).concat( "Host Name: " ).concat(
+              database.getHostname() ).concat( carriageReturn ).concat( "Port Number: " ).concat(
+              database.getDatabasePortNumberString() ).concat( carriageReturn ).concat( "User Name: " )
+            .concat( database.getUsername() ).concat( carriageReturn ).concat( "Password: " ).concat(
+              database.getPassword() ).concat( carriageReturn ).concat( "Driver Class: " ).concat(
+              database.getDriverClass() ).concat( carriageReturn ).concat( "URL: " ).concat(
+              database.getURL() ).concat( carriageReturn );
 
         Iterator<String> keys = database.getExtraOptions().keySet().iterator();
         message = message.concat( carriageReturn ).concat( "Option Parameters:" ).concat( carriageReturn );
@@ -134,23 +134,23 @@ public class DatabaseDialogHarness {
           String parameter = keys.next();
           String value = database.getExtraOptions().get( parameter );
           message =
-              message.concat( carriageReturn ).concat( parameter ).concat( ": " ).concat( value ).concat(
-                  carriageReturn );
+            message.concat( carriageReturn ).concat( parameter ).concat( ": " ).concat( value ).concat(
+              carriageReturn );
         }
 
         message =
-            message
-                .concat( carriageReturn ).concat( "SQL: " ).concat(
-                    database.getConnectSQL() != null ? database.getConnectSQL() : "" ).concat( carriageReturn ).concat(
-                    "Quote Identifiers: " ).concat( Boolean.toString( database.isQuoteAllFields() ) ).concat(
-                    carriageReturn ).concat( "Upper Case Identifiers: " ).concat(
-                    Boolean.toString( database.isForcingIdentifiersToUpperCase() ) ).concat( carriageReturn ).concat(
-                    "Lower Case Identifiers: " )
-                .concat( Boolean.toString( database.isForcingIdentifiersToLowerCase() ) ).concat( carriageReturn );
+          message
+            .concat( carriageReturn ).concat( "SQL: " ).concat(
+              database.getConnectSQL() != null ? database.getConnectSQL() : "" ).concat( carriageReturn )
+            .concat( "Quote Identifiers: " ).concat( Boolean.toString( database.isQuoteAllFields() ) ).concat(
+              carriageReturn ).concat( "Upper Case Identifiers: " ).concat(
+              Boolean.toString( database.isForcingIdentifiersToUpperCase() ) ).concat( carriageReturn )
+            .concat( "Lower Case Identifiers: " ).concat(
+              Boolean.toString( database.isForcingIdentifiersToLowerCase() ) ).concat( carriageReturn );
 
         message =
-            message.concat( carriageReturn ).concat( "Is Partitioned: " ).concat(
-                Boolean.toString( database.isPartitioned() ) ).concat( carriageReturn );
+          message.concat( carriageReturn ).concat( "Is Partitioned: " ).concat(
+            Boolean.toString( database.isPartitioned() ) ).concat( carriageReturn );
 
         if ( database.isPartitioned() ) {
           PartitionDatabaseMeta[] partitions = database.getPartitioningInformation();
@@ -158,12 +158,12 @@ public class DatabaseDialogHarness {
             for ( int i = 0; i < partitions.length; i++ ) {
               PartitionDatabaseMeta pdm = partitions[i];
               message =
-                  message
-                      .concat( carriageReturn ).concat( Integer.toString( i ) ).concat( ". ID: " ).concat(
-                          pdm.getPartitionId() ).concat( ", Host: " ).concat( pdm.getHostname() ).concat( ", Db: " )
-                      .concat( pdm.getDatabaseName() ).concat( ", Port: " ).concat( pdm.getPort() ).concat( ", User: " )
-                      .concat( pdm.getUsername() ).concat( ", Pass: " ).concat( pdm.getPassword() ).concat(
-                          carriageReturn );
+                message
+                  .concat( carriageReturn ).concat( Integer.toString( i ) ).concat( ". ID: " ).concat(
+                    pdm.getPartitionId() ).concat( ", Host: " ).concat( pdm.getHostname() )
+                  .concat( ", Db: " ).concat( pdm.getDatabaseName() ).concat( ", Port: " ).concat(
+                    pdm.getPort() ).concat( ", User: " ).concat( pdm.getUsername() ).concat( ", Pass: " )
+                  .concat( pdm.getPassword() ).concat( carriageReturn );
             }
           }
         }
@@ -173,8 +173,8 @@ public class DatabaseDialogHarness {
           String parameter = (String) poolKeys.next();
           String value = database.getConnectionPoolingProperties().getProperty( parameter );
           message =
-              message.concat( carriageReturn ).concat( parameter ).concat( ": " ).concat( value ).concat(
-                  carriageReturn );
+            message.concat( carriageReturn ).concat( parameter ).concat( ": " ).concat( value ).concat(
+              carriageReturn );
         }
 
       } catch ( Exception e ) {

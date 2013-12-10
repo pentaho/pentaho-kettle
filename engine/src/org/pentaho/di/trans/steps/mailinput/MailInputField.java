@@ -26,12 +26,12 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Describes an Mail input field
- * 
+ *
  * @author Samatar Hassan
  * @since 24-03-2009
  */
 public class MailInputField implements Cloneable {
-  private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int COLUMN_MESSAGE_NR = 0;
   public static final int COLUMN_SUBJECT = 1;
@@ -55,31 +55,31 @@ public class MailInputField implements Cloneable {
   public static final int COLUMN_BODY_CONTENT_TYPE = 19;
 
   public static final String[] ColumnCode = {
-      "messagenumber", "subject", "sender", "replyto", "recipients", "description", "body", "receiveddate",
-      "sendeddate", "contenttype", "folder", "size", "flag_new", "flag_read", "flag_flagged", "flag_draft",
-      "flag_deleted", "attached_files_count", "header", "body_contenttype" };
+    "messagenumber", "subject", "sender", "replyto", "recipients", "description", "body", "receiveddate",
+    "sendeddate", "contenttype", "folder", "size", "flag_new", "flag_read", "flag_flagged", "flag_draft",
+    "flag_deleted", "attached_files_count", "header", "body_contenttype" };
 
   public static final String[] ColumnDesc = {
-      BaseMessages.getString( PKG, "MailInputField.Column.MessageNumber" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Subject" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Sender" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.ReplyTo" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Recipients" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Description" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Body" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.ReceivedDate" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.SentDate" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.ContentType" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Folder" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Size" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.FlagNew" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.FlagRead" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.FlagFlagged" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.FlagDraft" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.FlagDeleted" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.AttachedFilesCount" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.Header" ),
-      BaseMessages.getString( PKG, "MailInputField.Column.BodyContentType" ), };
+    BaseMessages.getString( PKG, "MailInputField.Column.MessageNumber" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Subject" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Sender" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.ReplyTo" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Recipients" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Description" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Body" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.ReceivedDate" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.SentDate" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.ContentType" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Folder" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Size" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.FlagNew" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.FlagRead" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.FlagFlagged" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.FlagDraft" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.FlagDeleted" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.AttachedFilesCount" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.Header" ),
+    BaseMessages.getString( PKG, "MailInputField.Column.BodyContentType" ), };
 
   private String name;
   private int column;

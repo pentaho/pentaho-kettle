@@ -39,7 +39,7 @@ public class LdapTlsProtocol extends LdapSslProtocol {
   private StartTlsResponse startTlsResponse;
 
   public LdapTlsProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
-      Collection<String> binaryAttributes ) {
+    Collection<String> binaryAttributes ) {
     super( log, variableSpace, meta, binaryAttributes );
   }
 

@@ -188,7 +188,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               if ( transMeta != null && path[2].equals( Spoon.STRING_CLUSTERS ) ) {
                 ClusterSchema clusterSchema = transMeta.findClusterSchema( path[3] );
                 object =
-                    new TreeSelection( path[4], clusterSchema.findSlaveServer( path[4] ), clusterSchema, transMeta );
+                  new TreeSelection( path[4], clusterSchema.findSlaveServer( path[4] ), clusterSchema, transMeta );
               }
             }
             break;
@@ -241,8 +241,8 @@ public class SpoonTreeDelegate extends SpoonDelegate {
             if ( spoon.showTrans ) {
               // Steps
               object =
-                  new TreeSelection( path[1], PluginRegistry.getInstance().findPluginWithName(
-                      StepPluginType.class, path[1] ) );
+                new TreeSelection( path[1], PluginRegistry.getInstance().findPluginWithName(
+                  StepPluginType.class, path[1] ) );
             }
             break;
           default:
@@ -280,8 +280,8 @@ public class SpoonTreeDelegate extends SpoonDelegate {
         // JobMeta jobMeta = spoon.getActiveJob();
 
         if ( object instanceof StepMeta
-            || object instanceof PluginInterface || ( object instanceof DatabaseMeta && transMeta != null )
-            || object instanceof TransHopMeta || object instanceof JobEntryCopy ) {
+          || object instanceof PluginInterface || ( object instanceof DatabaseMeta && transMeta != null )
+          || object instanceof TransHopMeta || object instanceof JobEntryCopy ) {
           event.doit = true;
         } else {
           event.doit = false;

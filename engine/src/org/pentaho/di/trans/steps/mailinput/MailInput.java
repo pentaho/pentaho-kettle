@@ -50,20 +50,21 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read data from POP3/IMAP server and input data to the next steps.
- * 
+ *
  * @author Samatar
  * @since 21-08-2009
  */
 
 public class MailInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MailInputMeta meta;
   private MailInputData data;
 
   private MessageParser instance = new MessageParser();
 
-  public MailInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public MailInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -81,7 +82,7 @@ public class MailInput extends BaseStep implements StepInterface {
 
     if ( isRowLevel() ) {
       log.logRowlevel( toString(), BaseMessages.getString( PKG, "MailInput.Log.OutputRow", data.outputRowMeta
-          .getString( outputRowData ) ) );
+        .getString( outputRowData ) ) );
     }
     putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
@@ -104,8 +105,9 @@ public class MailInput extends BaseStep implements StepInterface {
       if ( folderslist0 == null || folderslist0.length == 0 ) {
         // mstor's default folder has no name
         folderslist =
-            data.mailConn.getProtocol() == MailConnectionMeta.PROTOCOL_MBOX
-                ? new String[] { "" } : new String[] { Const.NVL( realIMAPFolder, MailConnectionMeta.INBOX_FOLDER ) };
+          data.mailConn.getProtocol() == MailConnectionMeta.PROTOCOL_MBOX
+            ? new String[] { "" }
+            : new String[] { Const.NVL( realIMAPFolder, MailConnectionMeta.INBOX_FOLDER ) };
       } else {
         folderslist = new String[folderslist0.length + 1];
         folderslist[0] = Const.NVL( realIMAPFolder, MailConnectionMeta.INBOX_FOLDER );
@@ -115,8 +117,9 @@ public class MailInput extends BaseStep implements StepInterface {
       }
     } else {
       folderslist =
-          data.mailConn.getProtocol() == MailConnectionMeta.PROTOCOL_MBOX ? new String[] { "" } : new String[] { Const
-              .NVL( realIMAPFolder, MailConnectionMeta.INBOX_FOLDER ) };
+        data.mailConn.getProtocol() == MailConnectionMeta.PROTOCOL_MBOX
+          ? new String[] { "" }
+          : new String[] { Const.NVL( realIMAPFolder, MailConnectionMeta.INBOX_FOLDER ) };
     }
     return folderslist;
   }
@@ -196,7 +199,7 @@ public class MailInput extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -294,7 +297,8 @@ public class MailInput extends BaseStep implements StepInterface {
 
           data.indexOfFolderField = data.inputRowMeta.indexOfValue( meta.getFolderField() );
           if ( data.indexOfFolderField < 0 ) {
-            logError( BaseMessages.getString( PKG, "MailInput.Error.DynamicFolderUnreachable", meta.getFolderField() ) );
+            logError( BaseMessages.getString( PKG, "MailInput.Error.DynamicFolderUnreachable", meta
+              .getFolderField() ) );
             stopAll();
             setErrors( 1 );
             return false;
@@ -304,7 +308,7 @@ public class MailInput extends BaseStep implements StepInterface {
           String foldername = data.inputRowMeta.getString( data.readrow, data.indexOfFolderField );
           if ( isDebug() ) {
             logDebug( BaseMessages.getString(
-                PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(), foldername ) );
+              PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(), foldername ) );
           }
           data.folders = getFolders( foldername );
         } // end if first
@@ -342,10 +346,11 @@ public class MailInput extends BaseStep implements StepInterface {
 
       if ( meta.useBatch() ) { // get data by pieces
         data.folderIterator =
-            new BatchFolderIterator( data.mailConn.getFolder(), meta.getBatchSize(), data.start, data.end ); // TODO:args
+          new BatchFolderIterator( data.mailConn.getFolder(), meta.getBatchSize(), data.start, data.end ); // TODO:args
 
         if ( data.mailConn.getSearchTerm() != null ) { // add search filter
-          data.folderIterator = new SearchEnabledFolderIterator( data.folderIterator, data.mailConn.getSearchTerm() );
+          data.folderIterator =
+            new SearchEnabledFolderIterator( data.folderIterator, data.mailConn.getSearchTerm() );
         }
       } else { // fetch all
         data.mailConn.retrieveMessages();
@@ -389,7 +394,7 @@ public class MailInput extends BaseStep implements StepInterface {
 
       String realserver = environmentSubstitute( meta.getServerName() );
       if ( meta.getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_MBOX )
-          && StringUtils.startsWith( realserver, "file://" ) ) {
+        && StringUtils.startsWith( realserver, "file://" ) ) {
         realserver = StringUtils.remove( realserver, "file://" );
       }
 
@@ -414,19 +419,22 @@ public class MailInput extends BaseStep implements StepInterface {
           case MailConnectionMeta.CONDITION_DATE_SMALLER:
             String realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
             if ( Const.isEmpty( realBeginDate ) ) {
-              throw new KettleException( BaseMessages.getString( PKG, "MailInput.Error.ReceivedDateSearchTermEmpty" ) );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "MailInput.Error.ReceivedDateSearchTermEmpty" ) );
             }
             beginDate = df.parse( realBeginDate );
             break;
           case MailConnectionMeta.CONDITION_DATE_BETWEEN:
             realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
             if ( Const.isEmpty( realBeginDate ) ) {
-              throw new KettleException( BaseMessages.getString( PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
             }
             beginDate = df.parse( realBeginDate );
             String realEndDate = environmentSubstitute( meta.getReceivedDate2() );
             if ( Const.isEmpty( realEndDate ) ) {
-              throw new KettleException( BaseMessages.getString( PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
             }
             endDate = df.parse( realEndDate );
             break;
@@ -441,9 +449,10 @@ public class MailInput extends BaseStep implements StepInterface {
       try {
         // create a mail connection object
         data.mailConn =
-            new MailConnection(
-                log, MailConnectionMeta.getProtocolFromString( meta.getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ),
-                realserver, realport, realusername, realpassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername );
+          new MailConnection(
+            log, MailConnectionMeta.getProtocolFromString(
+              meta.getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realusername,
+            realpassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername );
         // connect
         data.mailConn.connect();
         // Need to apply search filters?
@@ -497,7 +506,7 @@ public class MailInput extends BaseStep implements StepInterface {
 
   /**
    * Extracted message parse algorithm to be able to unit test separately
-   * 
+   *
    */
   class MessageParser {
 

@@ -58,13 +58,13 @@ import org.w3c.dom.Node;
 /**
  * This defines a 'create folder' job entry. Its main use would be to create empty folder that can be used to control
  * the flow in ETL cycles.
- * 
+ *
  * @author Sven/Samatar
  * @since 18-10-2007
- * 
+ *
  */
 public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!!
 
   private String foldername;
   private int filescount;
@@ -104,8 +104,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       foldername = XMLHandler.getTagValue( entrynode, "foldername" );
@@ -118,7 +118,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       foldername = rep.getJobEntryAttributeString( id_jobentry, "foldername" );
       includeSubfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "include_subfolders" );
@@ -126,7 +126,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
     } catch ( KettleException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'create Folder' from the repository for id_jobentry=" + id_jobentry, dbe );
+        "Unable to load job entry of type 'create Folder' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -138,7 +139,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'create Folder' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -185,7 +186,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   public Result execute( Result previousResult, int nr ) {
     // see PDI-10270 for details
     boolean oldBehavior =
-        "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
+      "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
 
     Result result = previousResult;
     result.setResult( false );
@@ -270,7 +271,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
             if ( info.getFile().getParent().equals( info.getBaseFolder() ) ) {
               // We are in the Base folder
               if ( ( isSpecifyWildcard() && GetFileWildcard( info.getFile().getName().getBaseName() ) )
-                  || !isSpecifyWildcard() ) {
+                || !isSpecifyWildcard() ) {
                 if ( log.isDetailed() ) {
                   log.logDetailed( "We found file : " + info.getFile().toString() );
                 }
@@ -281,7 +282,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
               // We are in the Base folder
               if ( isIncludeSubFolders() ) {
                 if ( ( isSpecifyWildcard() && GetFileWildcard( info.getFile().getName().getBaseName() ) )
-                    || !isSpecifyWildcard() ) {
+                  || !isSpecifyWildcard() ) {
                   if ( log.isDetailed() ) {
                     log.logDetailed( "We found file : " + info.getFile().toString() );
                   }
@@ -297,7 +298,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 
       } catch ( Exception e ) {
         log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString(
-            PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
+          PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
         returncode = false;
       } finally {
         if ( file_name != null ) {
@@ -317,7 +318,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   }
 
   /**********************************************************
-   * 
+   *
    * @param selectedfile
    * @param wildcard
    * @return True if the selectedfile matches the wildcard
@@ -338,8 +339,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
   }
 }

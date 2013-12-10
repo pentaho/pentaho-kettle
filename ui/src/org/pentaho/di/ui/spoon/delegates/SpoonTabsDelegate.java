@@ -57,7 +57,7 @@ import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
 public class SpoonTabsDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * This contains a list of the tab map entries
@@ -221,7 +221,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
         tabItem.setControl( browser.getComposite() );
 
         tabMapEntry =
-            new TabMapEntry( tabItem, isURL ? urlString : null, name, null, null, browser, ObjectType.BROWSER );
+          new TabMapEntry( tabItem, isURL ? urlString : null, name, null, null, browser, ObjectType.BROWSER );
         tabMap.add( tabMapEntry );
       }
       int idx = tabfolder.indexOf( tabMapEntry.getTabItem() );
@@ -281,7 +281,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   /**
    * Finds the tab for the transformation that matches the metadata provided (either the file must be the same or the
    * repository id).
-   * 
+   *
    * @param trans
    *          Transformation metadata to look for
    * @return Tab with transformation open whose metadata matches {@code trans} or {@code null} if no tab exists.
@@ -348,7 +348,8 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           JobMeta jobMeta = (JobMeta) managedObject;
           entry.getTabItem().setText( makeTabName( jobMeta, entry.isShowingLocation() ) );
           String toolTipText =
-              BaseMessages.getString( PKG, "Spoon.TabJob.Tooltip", makeTabName( jobMeta, entry.isShowingLocation() ) );
+            BaseMessages.getString(
+              PKG, "Spoon.TabJob.Tooltip", makeTabName( jobMeta, entry.isShowingLocation() ) );
           if ( Const.isWindows() && !Const.isEmpty( jobMeta.getFilename() ) ) {
             toolTipText += Const.CR + Const.CR + jobMeta.getFilename();
           }
@@ -358,10 +359,10 @@ public class SpoonTabsDelegate extends SpoonDelegate {
 
       /*
        * String after = entry.getTabItem().getText();
-       * 
+       *
        * if (!beforeText.equals(after)) // PDI-1683, could be improved to rename all the time {
        * entry.setObjectName(after);
-       * 
+       *
        * // Also change the transformation map if (entry.getObject() instanceof TransGraph) {
        * spoon.delegates.trans.removeTransformation(beforeText); spoon.delegates.trans.addTransformation(after,
        * (TransMeta) entry.getObject().getManagedObject()); } // Also change the job map if (entry.getObject()
@@ -382,7 +383,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     }
 
     if ( Const.isEmpty( transMeta.getName() )
-        || spoon.delegates.trans.isDefaultTransformationName( transMeta.getName() ) ) {
+      || spoon.delegates.trans.isDefaultTransformationName( transMeta.getName() ) ) {
       transMeta.nameFromFilename();
     }
 

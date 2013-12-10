@@ -44,7 +44,7 @@ public interface SpoonInterface extends OverwritePrompter {
   public void addJobGraph( JobMeta jobMeta );
 
   public Object[] messageDialogWithToggle( String dialogTitle, Object image, String message, int dialogImageType,
-      String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState );
+    String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState );
 
   public boolean messageBox( String message, String text, boolean allowCancel, int type );
 }

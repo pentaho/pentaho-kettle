@@ -37,9 +37,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class contains the metadata to handle proper error handling on a step level.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneable {
   public static final String XML_TAG = "error";
@@ -81,7 +81,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
 
   /**
    * Create a new step error handling metadata object
-   * 
+   *
    * @param sourceStep
    *          The source step that can send the error rows
    */
@@ -93,7 +93,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
 
   /**
    * Create a new step error handling metadata object
-   * 
+   *
    * @param sourceStep
    *          The source step that can send the error rows
    * @param targetStep
@@ -108,7 +108,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
 
   /**
    * Create a new step error handling metadata object
-   * 
+   *
    * @param sourceStep
    *          The source step that can send the error rows
    * @param targetStep
@@ -124,7 +124,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
    *          the name of the field value to contain the error code(s) (null or empty means it's not needed)
    */
   public StepErrorMeta( VariableSpace space, StepMeta sourceStep, StepMeta targetStep, String nrErrorsValuename,
-      String errorDescriptionsValuename, String errorFieldsValuename, String errorCodesValuename ) {
+    String errorDescriptionsValuename, String errorFieldsValuename, String errorCodesValuename ) {
     this.sourceStep = sourceStep;
     this.targetStep = targetStep;
     this.enabled = false;
@@ -148,12 +148,14 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
 
     xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     xml.append( "        " ).append(
-        XMLHandler.addTagValue( "source_step", sourceStep != null ? sourceStep.getName() : "" ) );
+      XMLHandler.addTagValue( "source_step", sourceStep != null ? sourceStep.getName() : "" ) );
     xml.append( "        " ).append(
-        XMLHandler.addTagValue( "target_step", targetStep != null ? targetStep.getName() : "" ) );
+      XMLHandler.addTagValue( "target_step", targetStep != null ? targetStep.getName() : "" ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "is_enabled", enabled ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "nr_valuename", nrErrorsValuename ) );
-    xml.append( "        " ).append( XMLHandler.addTagValue( "descriptions_valuename", errorDescriptionsValuename ) );
+    xml
+      .append( "        " ).append(
+        XMLHandler.addTagValue( "descriptions_valuename", errorDescriptionsValuename ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "fields_valuename", errorFieldsValuename ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "codes_valuename", errorCodesValuename ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "max_errors", maxErrors ) );
@@ -288,8 +290,8 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     return getErrorRowMeta( 0L, null, null, null );
   }
 
-  public RowMetaInterface
-    getErrorRowMeta( long nrErrors, String errorDescriptions, String fieldNames, String errorCodes ) {
+  public RowMetaInterface getErrorRowMeta( long nrErrors, String errorDescriptions, String fieldNames,
+    String errorCodes ) {
     RowMetaInterface row = new RowMeta();
 
     String nrErr = variables.environmentSubstitute( getNrErrorsValuename() );
@@ -318,7 +320,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
   }
 
   public void addErrorRowData( Object[] row, int startIndex, long nrErrors, String errorDescriptions,
-      String fieldNames, String errorCodes ) {
+    String fieldNames, String errorCodes ) {
     int index = startIndex;
 
     String nrErr = variables.environmentSubstitute( getNrErrorsValuename() );

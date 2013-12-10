@@ -60,12 +60,12 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'Set variables' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 public class JobEntrySetVariables extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntrySetVariables.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySetVariables.class; // for i18n purposes, needed by Translator2!!
 
   public boolean replaceVars;
 
@@ -85,10 +85,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
   private static final String[] variableTypeCode = { "JVM", "CURRENT_JOB", "PARENT_JOB", "ROOT_JOB" };
   private static final String[] variableTypeDesc = {
-      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.JVM" ),
-      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.CurrentJob" ),
-      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.ParentJob" ),
-      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.RootJob" ), };
+    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.JVM" ),
+    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.CurrentJob" ),
+    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.ParentJob" ),
+    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.RootJob" ), };
 
   public JobEntrySetVariables( String n ) {
     super( n, "" );
@@ -115,7 +115,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "file_variable_type", getVariableTypeCode( fileVariableType ) ) );
+      XMLHandler.addTagValue( "file_variable_type", getVariableTypeCode( fileVariableType ) ) );
 
     retval.append( "      <fields>" ).append( Const.CR );
     if ( variableName != null ) {
@@ -124,7 +124,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
         retval.append( "          " ).append( XMLHandler.addTagValue( "variable_name", variableName[i] ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "variable_value", variableValue[i] ) );
         retval.append( "          " ).append(
-            XMLHandler.addTagValue( "variable_type", getVariableTypeCode( variableType[i] ) ) );
+          XMLHandler.addTagValue( "variable_type", getVariableTypeCode( variableType[i] ) ) );
         retval.append( "        </field>" ).append( Const.CR );
       }
     }
@@ -133,8 +133,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       replaceVars = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "replacevars" ) );
@@ -160,12 +160,12 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       }
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntrySetVariables.Meta.UnableLoadXML", xe
-          .getMessage() ), xe );
+        .getMessage() ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       replaceVars = rep.getJobEntryAttributeBoolean( id_jobentry, "replacevars" );
 
@@ -186,7 +186,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       }
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntrySetVariables.Meta.UnableLoadRep", String
-          .valueOf( id_jobentry ), dbe.getMessage() ), dbe );
+        .valueOf( id_jobentry ), dbe.getMessage() ), dbe );
     }
   }
 
@@ -195,19 +195,21 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       rep.saveJobEntryAttribute( id_job, getObjectId(), "replacevars", replaceVars );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "filename", filename );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "file_variable_type", getVariableTypeCode( fileVariableType ) );
+      rep.saveJobEntryAttribute(
+        id_job, getObjectId(), "file_variable_type", getVariableTypeCode( fileVariableType ) );
 
       // save the variableName...
       if ( variableName != null ) {
         for ( int i = 0; i < variableName.length; i++ ) {
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "variable_name", variableName[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "variable_value", variableValue[i] );
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "variable_type", getVariableTypeCode( variableType[i] ) );
+          rep.saveJobEntryAttribute(
+            id_job, getObjectId(), i, "variable_type", getVariableTypeCode( variableType[i] ) );
         }
       }
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntrySetVariables.Meta.UnableSaveRep", String
-          .valueOf( id_job ), dbe.getMessage() ), dbe );
+        .valueOf( id_job ), dbe.getMessage() ), dbe );
     }
   }
 
@@ -233,7 +235,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "JobEntrySetVariables.Error.UnableReadPropertiesFile", realFilename ) );
+          PKG, "JobEntrySetVariables.Error.UnableReadPropertiesFile", realFilename ) );
       }
 
       for ( int i = 0; i < variableName.length; i++ ) {
@@ -280,7 +282,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
               parentJob.setVariable( varname, value );
             } else {
               throw new KettleJobException( BaseMessages.getString(
-                  PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
+                PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
             }
             break;
 
@@ -294,11 +296,11 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
                 gpJob.setVariable( varname, value );
               } else {
                 throw new KettleJobException( BaseMessages.getString(
-                    PKG, "JobEntrySetVariables.Error.UnableSetVariableParentJob", varname ) );
+                  PKG, "JobEntrySetVariables.Error.UnableSetVariableParentJob", varname ) );
               }
             } else {
               throw new KettleJobException( BaseMessages.getString(
-                  PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
+                PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
             }
             break;
 
@@ -401,8 +403,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     return variableTypeDesc;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "variableName", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {

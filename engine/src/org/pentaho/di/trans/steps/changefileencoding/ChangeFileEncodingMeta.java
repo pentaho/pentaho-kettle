@@ -48,7 +48,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ChangeFileEncoding.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ChangeFileEncoding.class; // for i18n purposes, needed by Translator2!!
 
   private boolean addsourceresultfilenames;
   private boolean addtargetresultfilenames;
@@ -149,7 +149,8 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     this.createparentfolder = createparentfolder;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -175,26 +176,31 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     retval.append( "    " + XMLHandler.addTagValue( "targetfilenamefield", targetfilenamefield ) );
     retval.append( "    " + XMLHandler.addTagValue( "sourceencoding", sourceencoding ) );
     retval.append( "    " + XMLHandler.addTagValue( "targetencoding", targetencoding ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "addsourceresultfilenames", addsourceresultfilenames ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "addtargetresultfilenames", addtargetresultfilenames ) );
+    retval
+      .append( "    " ).append( XMLHandler.addTagValue( "addsourceresultfilenames", addsourceresultfilenames ) );
+    retval
+      .append( "    " ).append( XMLHandler.addTagValue( "addtargetresultfilenames", addtargetresultfilenames ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "createparentfolder", createparentfolder ) );
 
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       filenamefield = XMLHandler.getTagValue( stepnode, "filenamefield" );
       targetfilenamefield = XMLHandler.getTagValue( stepnode, "targetfilenamefield" );
       sourceencoding = XMLHandler.getTagValue( stepnode, "sourceencoding" );
       targetencoding = XMLHandler.getTagValue( stepnode, "targetencoding" );
-      addsourceresultfilenames = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addsourceresultfilenames" ) );
-      addtargetresultfilenames = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addtargetresultfilenames" ) );
+      addsourceresultfilenames =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addsourceresultfilenames" ) );
+      addtargetresultfilenames =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addtargetresultfilenames" ) );
       createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "createparentfolder" ) );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "ChangeFileEncodingMeta.Exception.UnableToReadStepInfo" ), e );
+        PKG, "ChangeFileEncodingMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -212,7 +218,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "ChangeFileEncodingMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+        PKG, "ChangeFileEncodingMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -229,14 +235,15 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
       rep.saveStepAttribute( id_transformation, id_step, "createparentfolder", createparentfolder );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncodingMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "ChangeFileEncodingMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -282,20 +289,20 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ChangeFileEncodingMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ChangeFileEncodingMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "ChangeFileEncodingMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ChangeFileEncodingMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ChangeFileEncoding( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

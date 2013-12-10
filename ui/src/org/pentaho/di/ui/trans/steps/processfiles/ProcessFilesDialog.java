@@ -55,7 +55,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ProcessFilesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ProcessFilesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlSourceFileNameField;
   private CCombo wSourceFileNameField;
@@ -197,7 +197,8 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wSettingsGroup, SWT.CHECK );
     props.setLook( wCreateParentFolder );
-    wCreateParentFolder.setToolTipText( BaseMessages.getString( PKG, "ProcessFilesDialog.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder.setToolTipText( BaseMessages.getString(
+      PKG, "ProcessFilesDialog.CreateParentFolder.Tooltip" ) );
     wCreateParentFolder.addSelectionListener( lsButtonChanged );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -386,22 +387,22 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
   }
 
   private void updateOperation() {
-    wlOverwriteTarget
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
-    wOverwriteTarget
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
-    wlAddResult
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
-    wAddResult
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
-    wlTargetFileNameField
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
-    wTargetFileNameField
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
-    wlCreateParentFolder
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
-    wCreateParentFolder
-        .setEnabled( ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wlOverwriteTarget.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wOverwriteTarget.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wlAddResult.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wAddResult.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wlTargetFileNameField.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wTargetFileNameField.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wlCreateParentFolder.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
+    wCreateParentFolder.setEnabled(
+      ProcessFilesMeta.getOperationTypeByDesc( wOperation.getText() ) != ProcessFilesMeta.OPERATION_TYPE_DELETE );
   }
 
   /**
@@ -472,8 +473,8 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

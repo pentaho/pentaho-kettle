@@ -26,9 +26,9 @@ import org.pentaho.di.core.exception.KettleException;
 
 /**
  * Utility class to allow only certain methods of TransListener to be overridden.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class TransAdapter implements TransListener {
 

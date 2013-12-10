@@ -71,8 +71,10 @@ public class BuildVersionUnitTest {
 
   private void initEnvironmentVariableGetter( String version, String revision, String date, String user ) {
     try {
-      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_VERSION ) ).thenReturn( version );
-      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_REVISION ) ).thenReturn( revision );
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_VERSION ) )
+        .thenReturn( version );
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_REVISION ) ).thenReturn(
+        revision );
       when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_DATE ) ).thenReturn( date );
       when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_USER ) ).thenReturn( user );
     } catch ( Exception e ) {

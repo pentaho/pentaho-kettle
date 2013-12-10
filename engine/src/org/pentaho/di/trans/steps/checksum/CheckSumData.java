@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Data class for the Cheksum class
- * 
+ *
  * @author Samatar Hassan
  * @since 16-06-2008
  */

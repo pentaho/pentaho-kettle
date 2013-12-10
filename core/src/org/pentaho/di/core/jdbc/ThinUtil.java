@@ -387,13 +387,14 @@ public class ThinUtil {
 
     if ( index + 1 > sql.length() ) {
       throw new KettleSQLException( "No closing "
-          + nextChar + " found, starting at location " + quoteIndex + " in : [" + sql + "]" );
+        + nextChar + " found, starting at location " + quoteIndex + " in : [" + sql + "]" );
     }
     index++;
     return index;
   }
 
-  public static int findNextBracket( String sql, char skipChar, char nextChar, int index ) throws KettleSQLException {
+  public static int findNextBracket( String sql, char skipChar, char nextChar, int index )
+    throws KettleSQLException {
     return findNextBracket( sql, skipChar, nextChar, index, false );
   }
 
@@ -419,7 +420,7 @@ public class ThinUtil {
     }
 
     throw new KettleSQLException( "No closing "
-        + nextChar + " bracket found for " + skipChar + " at location " + index + " in : [" + sql + "]" );
+      + nextChar + " bracket found for " + skipChar + " at location " + index + " in : [" + sql + "]" );
   }
 
   public static String stripQuotes( String string, char... quoteChars ) {
@@ -427,7 +428,7 @@ public class ThinUtil {
     for ( char quoteChar : quoteChars ) {
       if ( countQuotes( builder.toString(), quoteChar ) == 2 ) {
         if ( builder.length() > 0
-            && builder.charAt( 0 ) == quoteChar && builder.charAt( builder.length() - 1 ) == quoteChar ) {
+          && builder.charAt( 0 ) == quoteChar && builder.charAt( builder.length() - 1 ) == quoteChar ) {
           // If there are quotes in between, don't do it...
           //
           builder.deleteCharAt( builder.length() - 1 );

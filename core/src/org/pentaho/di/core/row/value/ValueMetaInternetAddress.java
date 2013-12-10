@@ -111,13 +111,14 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
       case TYPE_BOOLEAN:
-        throw new KettleValueException( toString() + " : I don't know how to convert a boolean to a Internet address." );
+        throw new KettleValueException( toString()
+          + " : I don't know how to convert a boolean to a Internet address." );
       case TYPE_BINARY:
         throw new KettleValueException( toString()
-            + " : I don't know how to convert a binary value to Internet address." );
+          + " : I don't know how to convert a binary value to Internet address." );
       case TYPE_SERIALIZABLE:
         throw new KettleValueException( toString()
-            + " : I don't know how to convert a serializable value to Internet address." );
+          + " : I don't know how to convert a serializable value to Internet address." );
 
       default:
         throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
@@ -126,7 +127,8 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
   @Override
   public Date getDate( Object object ) throws KettleValueException {
-    throw new KettleValueException( toStringMeta() + ": it's not possible to convert from Internet Address to a date" );
+    throw new KettleValueException( toStringMeta()
+      + ": it's not possible to convert from Internet Address to a date" );
   }
 
   @Override
@@ -140,7 +142,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
     if ( addr.length > 8 ) {
       throw new KettleValueException( "Unable to convert Internet Address v6 to an Integer: "
-          + getString( object ) + " (The precision is too high to be contained in a long integer value)" );
+        + getString( object ) + " (The precision is too high to be contained in a long integer value)" );
     }
 
     for ( int i = 0; i < addr.length; i++ ) {
@@ -172,7 +174,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
   @Override
   public Boolean getBoolean( Object object ) throws KettleValueException {
     throw new KettleValueException( toStringMeta()
-        + ": it's not possible to convert from an Internet Address to a Boolean" );
+      + ": it's not possible to convert from an Internet Address to a Boolean" );
   }
 
   @Override
@@ -232,12 +234,13 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     try {
       return InetAddress.getByName( string );
     } catch ( Exception e ) {
-      throw new KettleValueException(
-          toString() + " : couldn't convert string [" + string + "] to an internet address", e );
+      throw new KettleValueException( toString()
+        + " : couldn't convert string [" + string + "] to an internet address", e );
     }
   }
 
-  protected synchronized String convertInternetAddressToString( InetAddress inetAddress ) throws KettleValueException {
+  protected synchronized String convertInternetAddressToString( InetAddress inetAddress )
+    throws KettleValueException {
 
     if ( inetAddress == null ) {
       return null;
@@ -248,7 +251,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
   @Override
   public Object convertDataFromString( String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull,
-      int trim_type ) throws KettleValueException {
+    int trim_type ) throws KettleValueException {
     // null handling and conversion of value to null
     //
     String null_value = nullIf;
@@ -289,7 +292,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Const.isEmpty( pol )
-          || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+        || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -363,7 +366,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
   /**
    * Convert the specified data to the data type specified in this object.
-   * 
+   *
    * @param meta2
    *          the metadata of the object to be converted
    * @param data2
@@ -404,7 +407,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
   @Override
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name, ResultSetMetaData rm,
-      int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
+    int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
 
     try {
       int type = rm.getColumnType( index );
@@ -437,14 +440,14 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
     } catch ( Exception e ) {
       throw new KettleDatabaseException( toStringMeta()
-          + " : Unable to get Internet Address from resultset at index " + index, e );
+        + " : Unable to get Internet Address from resultset at index " + index, e );
     }
 
   }
 
   @Override
-  public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement, int index,
-      Object data ) throws KettleDatabaseException {
+  public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement,
+    int index, Object data ) throws KettleDatabaseException {
 
     try {
 
@@ -452,14 +455,14 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
     } catch ( Exception e ) {
       throw new KettleDatabaseException( toStringMeta()
-          + " : Unable to set Internet address value on prepared statement on index " + index, e );
+        + " : Unable to set Internet address value on prepared statement on index " + index, e );
     }
 
   }
 
   @Override
   public String getDatabaseColumnTypeDefinition( DatabaseInterface databaseInterface, String tk, String pk,
-      boolean use_autoinc, boolean add_fieldname, boolean add_cr ) {
+    boolean use_autoinc, boolean add_fieldname, boolean add_cr ) {
 
     String retval = null;
     if ( databaseInterface instanceof PostgreSQLDatabaseMeta ) {

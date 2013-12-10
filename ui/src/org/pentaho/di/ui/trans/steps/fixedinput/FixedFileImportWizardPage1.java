@@ -40,7 +40,7 @@ import org.pentaho.di.ui.core.PropsUI;
 
 public class FixedFileImportWizardPage1 extends WizardPage // implements Listener
 {
-  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FixedTableDraw wTable;
   private FormData fdTable;

@@ -36,17 +36,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * NullIf step, put null as value when the original field matches a specific value.
- * 
+ *
  * @author Matt
  * @since 4-aug-2003
  */
 public class NullIf extends BaseStep implements StepInterface {
-  private static Class<?> PKG = NullIfMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = NullIfMeta.class; // for i18n purposes, needed by Translator2!!
 
   private NullIfMeta meta;
   private NullIfData data;
 
-  public NullIf( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public NullIf( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -80,14 +81,14 @@ public class NullIf extends BaseStep implements StepInterface {
         data.nullValueMeta[i] = data.outputRowMeta.getValueMeta( data.keynr[i] );
         // convert from input string entered by the user
         data.nullValue[i] =
-            data.nullValueMeta[i].convertData( new ValueMeta( null, ValueMetaInterface.TYPE_STRING ), meta
-                .getFieldValue()[i] );
+          data.nullValueMeta[i].convertData( new ValueMeta( null, ValueMetaInterface.TYPE_STRING ), meta
+            .getFieldValue()[i] );
       }
     }
 
     if ( log.isRowLevel() ) {
       logRowlevel( BaseMessages.getString( PKG, "NullIf.Log.ConvertFieldValuesToNullForRow" )
-          + data.outputRowMeta.getString( r ) );
+        + data.outputRowMeta.getString( r ) );
     }
 
     for ( int i = 0; i < meta.getFieldValue().length; i++ ) {

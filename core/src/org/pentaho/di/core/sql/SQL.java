@@ -58,7 +58,7 @@ public class SQL {
   /**
    * Create a new SQL object by parsing the supplied SQL string. This is a simple implementation with only one table
    * allows
-   * 
+   *
    * @param sqlString
    *          the SQL string to parse
    * @param serviceName
@@ -78,11 +78,11 @@ public class SQL {
     // First get the major blocks...
     /*
      * SELECT A, B, C FROM Step
-     * 
+     *
      * SELECT A, B, C FROM Step WHERE D > 6 AND E = 'abcd'
-     * 
+     *
      * SELECT A, B, C FROM Step ORDER BY B, A, C
-     * 
+     *
      * SELECT A, B, sum(C) FROM Step WHERE D > 6 AND E = 'abcd' GROUP BY A, B HAVING sum(C) > 100 ORDER BY sum(C) DESC
      */
     //
@@ -116,7 +116,8 @@ public class SQL {
         serviceName = ThinUtil.stripQuotes( list.get( 1 ), '"' );
       }
       if ( list.size() > 2 ) {
-        throw new KettleSQLException( "Too many parts detected in table name specification [" + serviceClause + "]" );
+        throw new KettleSQLException( "Too many parts detected in table name specification ["
+          + serviceClause + "]" );
       }
     }
 

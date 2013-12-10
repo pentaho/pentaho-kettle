@@ -70,7 +70,7 @@ import org.w3c.dom.Node;
  */
 
 public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface {
-  private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
 
@@ -102,7 +102,8 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     allocate( 0 );
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -186,7 +187,8 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getName() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( field.getType() ) ) );
+      retval.append( "        " ).append(
+        XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( field.getType() ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "format", field.getFormat() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "currency", field.getCurrencySymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", field.getDecimalSymbol() ) );
@@ -194,7 +196,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", field.getLength() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", field.getPrecision() ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( field.getTrimType() ) ) );
+        XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( field.getTrimType() ) ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
     retval.append( "    </fields>" ).append( Const.CR );
@@ -234,7 +236,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         inputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         inputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
         inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString(
-            id_step, i, "field_trim_type" ) ) );
+          id_step, i, "field_trim_type" ) ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -261,7 +263,8 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         TextFileInputField field = inputFields[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc( field.getType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
+          .getTypeDesc( field.getType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", field.getFormat() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", field.getCurrencySymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol() );
@@ -269,7 +272,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field.getLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta.getTrimTypeCode( field
-            .getTrimType() ) );
+          .getTrimType() ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
@@ -277,7 +280,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
       rowMeta.clear(); // Start with a clean slate, eats the input
 
@@ -304,7 +307,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         // This layout is then taken further down the road by the metadata through the transformation.
         //
         ValueMetaInterface storageMetadata =
-            ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_STRING );
+          ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_STRING );
         storageMetadata.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         storageMetadata.setLength( -1, -1 ); // we don't really know the lengths of the strings read in advance.
         valueMeta.setStorageMetadata( storageMetadata );
@@ -336,38 +339,38 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ParGzipCsvInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ParGzipCsvInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "ParGzipCsvInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ParGzipCsvInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "ParGzipCsvInputMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ParGzipCsvInputMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "ParGzipCsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ParGzipCsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new ParGzipCsvInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -477,7 +480,8 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
       // Add the filename to the references, including a reference to this
       // step meta data.
       //
-      reference.getEntries().add( new ResourceEntry( transMeta.environmentSubstitute( filename ), ResourceType.FILE ) );
+      reference.getEntries().add(
+        new ResourceEntry( transMeta.environmentSubstitute( filename ), ResourceType.FILE ) );
     }
     return references;
   }
@@ -648,7 +652,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -657,11 +661,11 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

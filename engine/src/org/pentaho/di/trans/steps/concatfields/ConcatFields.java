@@ -45,13 +45,13 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutput;
  */
 public class ConcatFields extends TextFileOutput implements StepInterface {
 
-  private static Class<?> PKG = ConcatFields.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ConcatFields.class; // for i18n purposes, needed by Translator2!!
 
   public ConcatFieldsMeta meta;
   public ConcatFieldsData data;
 
   public ConcatFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans ); // allocate TextFileOutput
   }
 
@@ -74,12 +74,13 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
       // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
       // otherwise trim(), padding etc. will not work
       data.inputRowMetaModified = getInputRowMeta().clone();
-      meta.getFieldsModifyInput( data.inputRowMetaModified, getStepname(), null, null, this, repository, metaStore );
+      meta
+        .getFieldsModifyInput( data.inputRowMetaModified, getStepname(), null, null, this, repository, metaStore );
 
       data.posTargetField = data.outputRowMeta.indexOfValue( meta.getTargetFieldName() );
       if ( data.posTargetField < 0 ) {
         throw new KettleStepException( BaseMessages.getString(
-            PKG, "ConcatFields.Error.TargetFieldNotFoundOutputStream", "" + meta.getTargetFieldName() ) );
+          PKG, "ConcatFields.Error.TargetFieldNotFoundOutputStream", "" + meta.getTargetFieldName() ) );
       }
 
       if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) // See if we have to write a
@@ -97,8 +98,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.fieldnrs[i] = data.inputRowMetaModified.indexOfValue( meta.getOutputFields()[i].getName() );
         if ( data.fieldnrs[i] < 0 ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "ConcatFields.Error.FieldNotFoundInputStream", ""
-              + meta.getOutputFields()[i].getName() ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "ConcatFields.Error.FieldNotFoundInputStream", "" + meta.getOutputFields()[i].getName() ) );
         }
       }
 
@@ -121,15 +122,15 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
           data.remainingFieldsInputOutputMapping[i] = data.inputRowMetaModified.indexOfValue( fieldNames[i] );
           if ( data.remainingFieldsInputOutputMapping[i] < 0 ) {
             throw new KettleStepException( BaseMessages.getString(
-                PKG, "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[i] ) );
+              PKG, "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[i] ) );
           }
         }
       }
     }
 
     if ( ( r == null && data.outputRowMeta != null && meta.isFooterEnabled() )
-        || ( r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0 && ( ( getLinesWritten() + 1 ) % meta
-            .getSplitEvery() ) == 0 ) ) {
+      || ( r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0 && ( ( getLinesWritten() + 1 ) % meta
+        .getSplitEvery() ) == 0 ) ) {
       if ( data.outputRowMeta != null ) {
         if ( meta.isFooterEnabled() ) {
           writeHeader();
@@ -173,7 +174,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
     if ( log.isRowLevel() ) {
       logRowlevel( BaseMessages.getString( PKG, "ConcatFields.Log.WriteRow" )
-          + getLinesWritten() + " : " + data.outputRowMeta.getString( r ) );
+        + getLinesWritten() + " : " + data.outputRowMeta.getString( r ) );
     }
     if ( checkFeedback( getLinesRead() ) ) {
       if ( log.isBasic() ) {
@@ -206,7 +207,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
           outputRowData[data.posTargetField] = new String( targetBinary, meta.getEncoding() );
         } catch ( UnsupportedEncodingException e ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "ConcatFields.Error.UnsupportedEncoding", ""
-              + meta.getEncoding() ) );
+            + meta.getEncoding() ) );
         }
       }
     } else {

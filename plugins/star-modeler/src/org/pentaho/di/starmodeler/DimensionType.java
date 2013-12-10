@@ -31,8 +31,8 @@ public enum DimensionType {
   TIME,
   OTHER,
   ;
-  
-  
+
+
   public static DimensionType getDimensionType(String typeString) {
     if (Const.isEmpty(typeString)) {
       return DimensionType.OTHER;

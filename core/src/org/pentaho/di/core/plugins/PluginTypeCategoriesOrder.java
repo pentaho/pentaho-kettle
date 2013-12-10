@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
  * This annotation when applied to a PluginTypeInterface instance describes an ordered list of categories. The
  * categories are internationalized when applied using the Messages located in the package where i18nPackageClass is
  * located.
- * 
+ *
  * @author nbaker
- * 
+ *
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )

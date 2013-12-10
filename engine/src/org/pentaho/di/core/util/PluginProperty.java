@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public interface PluginProperty {
 
@@ -102,11 +102,11 @@ public interface PluginProperty {
    * @throws KettleException
    *           ...
    */
-  void saveToRepositoryStep( final Repository repository, final IMetaStore metaStore, final ObjectId transformationId,
-      final ObjectId stepId ) throws KettleException;
+  void saveToRepositoryStep( final Repository repository, final IMetaStore metaStore,
+    final ObjectId transformationId, final ObjectId stepId ) throws KettleException;
 
   /**
-   * 
+   *
    * @param repository
    *          the repository.
    * @param stepId

@@ -51,15 +51,15 @@ public class NumberRangeSetTest extends TestCase {
     setUp();
 
     assertEquals( "Wrong values calculated for 0", VALUE_LESS_10
-        + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 0 ) );
+      + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 0 ) );
     assertEquals( "Wrong values calculated for negative value", "", numberRange.evaluateDouble( -10 ) );
     assertEquals( "Wrong values calculated for value below first lower bound", VALUE_LESS_10
-        + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 9.999 ) );
+      + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 9.999 ) );
 
     assertEquals( "Wrong values calculated for first lower bound", VALUE_10_20
-        + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 10 ) );
+      + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 10 ) );
     assertEquals( "Wrong values calculated within range", VALUE_10_20
-        + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 15 ) );
+      + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluateDouble( 15 ) );
     assertEquals( "Wrong values calculated at upper bound", VALUE_MORE_20, numberRange.evaluateDouble( 20 ) );
     assertEquals( "Wrong values calculated above upper bound", VALUE_MORE_20, numberRange.evaluateDouble( 50 ) );
   }
@@ -68,7 +68,7 @@ public class NumberRangeSetTest extends TestCase {
     setUp();
 
     assertEquals( "Wrong values calculated if double is passed", VALUE_LESS_10
-        + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluate( "0" ) );
+      + NumberRangeSet.getMultiValueSeparator() + VALUE_TO_20, numberRange.evaluate( "0" ) );
     try {
       numberRange.evaluate( "10 EUR" );
       assertTrue( "String to number worked for '10 EUR' when it was expected to fail", false );

@@ -56,7 +56,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ExecProcessDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlProcess;
   private CCombo wProcess;
@@ -180,7 +180,8 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     fdlFailWhenNotSuccess.right = new FormAttachment( middle, -margin );
     wlFailWhenNotSuccess.setLayoutData( fdlFailWhenNotSuccess );
     wFailWhenNotSuccess = new Button( shell, SWT.CHECK );
-    wFailWhenNotSuccess.setToolTipText( BaseMessages.getString( PKG, "ExecProcessDialog.FailWhenNotSuccess.Tooltip" ) );
+    wFailWhenNotSuccess.setToolTipText( BaseMessages.getString(
+      PKG, "ExecProcessDialog.FailWhenNotSuccess.Tooltip" ) );
     props.setLook( wFailWhenNotSuccess );
     fdFailWhenNotSuccess = new FormData();
     fdFailWhenNotSuccess.left = new FormAttachment( middle, 0 );
@@ -414,8 +415,8 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

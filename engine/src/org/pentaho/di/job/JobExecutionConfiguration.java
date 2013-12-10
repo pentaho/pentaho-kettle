@@ -390,9 +390,8 @@ public class JobExecutionConfiguration implements Cloneable {
       // File base repositories doesn't have user info
       if ( repository.getUserInfo() != null ) {
         xml.append( XMLHandler.addTagValue( "login", repository.getUserInfo().getLogin() ) );
-        xml
-            .append( XMLHandler
-                .addTagValue( "password", Encr.encryptPassword( repository.getUserInfo().getPassword() ) ) );
+        xml.append( XMLHandler.addTagValue( "password", Encr.encryptPassword( repository
+          .getUserInfo().getPassword() ) ) );
       }
       xml.append( XMLHandler.closeTag( "repository" ) );
     }
@@ -486,7 +485,8 @@ public class JobExecutionConfiguration implements Cloneable {
       try {
         repositoriesMeta.readData();
       } catch ( Exception e ) {
-        throw new KettleException( "Unable to get a list of repositories to locate repository '" + repositoryName + "'" );
+        throw new KettleException( "Unable to get a list of repositories to locate repository '"
+          + repositoryName + "'" );
       }
       RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
       if ( repositoryMeta == null ) {
@@ -498,7 +498,7 @@ public class JobExecutionConfiguration implements Cloneable {
       // repositoryMeta, PluginClassType.MainClassType);
 
       Repository rep =
-          PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
+        PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
       rep.init( repositoryMeta );
 
       try {

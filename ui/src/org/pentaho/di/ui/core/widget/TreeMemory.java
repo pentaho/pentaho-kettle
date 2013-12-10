@@ -34,9 +34,9 @@ import org.pentaho.di.ui.core.ConstUI;
 /**
  * This singleton class remembers whether or not a TreeItem is expanded. When the tree is refreshed, it remembers,
  * making for a better user experience.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class TreeMemory {
   private static TreeMemory treeMemory;
@@ -142,7 +142,7 @@ public class TreeMemory {
   /**
    * This method creates, adds and returns a tree listener that will keep track of the expanded/collapsed state of the
    * TreeItems. This state will then be stored in the TreeMemory singleton.
-   * 
+   *
    * @param tree
    *          The tree to add the listener to
    * @return The created/added TreeListener
@@ -170,7 +170,7 @@ public class TreeMemory {
 
   /**
    * Expand of collapse all TreeItems in the complete tree based on the values stored in memory.
-   * 
+   *
    * @param tree
    *          The tree to format.
    */

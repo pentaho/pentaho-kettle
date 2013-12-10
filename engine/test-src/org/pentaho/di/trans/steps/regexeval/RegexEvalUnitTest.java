@@ -22,9 +22,10 @@ public class RegexEvalUnitTest {
   @Before
   public void setup() {
     stepMockHelper =
-        new StepMockHelper<RegexEvalMeta, RegexEvalData>( "REGEX EVAL TEST", RegexEvalMeta.class, RegexEvalData.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      new StepMockHelper<RegexEvalMeta, RegexEvalData>(
+        "REGEX EVAL TEST", RegexEvalMeta.class, RegexEvalData.class );
+    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -36,9 +37,9 @@ public class RegexEvalUnitTest {
   @Test
   public void testOutputIsMuchBiggerThanInputDoesntThrowArrayIndexOutOfBounds() throws KettleException {
     RegexEval regexEval =
-        new RegexEval(
-            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
+      new RegexEval(
+        stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans );
     when( stepMockHelper.processRowsStepMetaInterface.isAllowCaptureGroupsFlagSet() ).thenReturn( true );
     String[] outFields = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k" };
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( outFields );
@@ -56,6 +57,7 @@ public class RegexEvalUnitTest {
     regexEval.getInputRowSets().add( inputRowSet );
 
     regexEval.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    regexEval.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
+    regexEval
+      .processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
   }
 }

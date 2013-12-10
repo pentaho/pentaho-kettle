@@ -34,15 +34,15 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Do nothing. Pass all input data to the next steps.
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class DummyTrans extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DummyTransMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DummyTransMeta.class; // for i18n purposes, needed by Translator2!!
 
   public DummyTrans( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

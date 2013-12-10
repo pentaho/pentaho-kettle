@@ -56,7 +56,7 @@ public class SearchEnabledFolderIterator implements Iterator<Message> {
 
   /**
    * Not implemented.
-   * 
+   *
    * @throws UnsupportedOperationException
    */
   @Override

@@ -63,7 +63,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = UniqueRowsByHashSetMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = UniqueRowsByHashSetMeta.class; // for i18n purposes, needed by Translator2!!
 
   private UniqueRowsByHashSetMeta input;
 
@@ -164,8 +164,8 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 
     wStoreValues = new Button( wSettings, SWT.CHECK );
     props.setLook( wStoreValues );
-    wStoreValues.setToolTipText( BaseMessages
-        .getString( PKG, "UniqueRowsByHashSetDialog.StoreValues.ToolTip", Const.CR ) );
+    wStoreValues.setToolTipText( BaseMessages.getString(
+      PKG, "UniqueRowsByHashSetDialog.StoreValues.ToolTip", Const.CR ) );
     fdStoreValues = new FormData();
     fdStoreValues.left = new FormAttachment( middle, 0 );
     fdStoreValues.top = new FormAttachment( wStepname, margin );
@@ -177,7 +177,8 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
     } );
 
     wlRejectDuplicateRow = new Label( wSettings, SWT.RIGHT );
-    wlRejectDuplicateRow.setText( BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.Label" ) );
+    wlRejectDuplicateRow.setText( BaseMessages.getString(
+      PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.Label" ) );
     props.setLook( wlRejectDuplicateRow );
     fdlRejectDuplicateRow = new FormData();
     fdlRejectDuplicateRow.left = new FormAttachment( 0, 0 );
@@ -188,7 +189,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
     wRejectDuplicateRow = new Button( wSettings, SWT.CHECK );
     props.setLook( wRejectDuplicateRow );
     wRejectDuplicateRow.setToolTipText( BaseMessages.getString(
-        PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.ToolTip", Const.CR ) );
+      PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.ToolTip", Const.CR ) );
     fdRejectDuplicateRow = new FormData();
     fdRejectDuplicateRow.left = new FormAttachment( middle, 0 );
     fdRejectDuplicateRow.top = new FormAttachment( wStoreValues, margin );
@@ -248,12 +249,13 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
     final int FieldsRows = input.getCompareFields() == null ? 0 : input.getCompareFields().length;
 
     colinf =
-        new ColumnInfo[] { new ColumnInfo(
-            BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.ColumnInfo.Fieldname" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.ColumnInfo.Fieldname" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -414,9 +416,9 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+        PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 

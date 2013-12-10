@@ -50,7 +50,7 @@ import org.scannotation.AnnotationDB;
 import org.w3c.dom.Node;
 
 public abstract class BasePluginType implements PluginTypeInterface {
-  protected static Class<?> PKG = BasePluginType.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  protected static Class<?> PKG = BasePluginType.class; // for i18n purposes, needed by Translator2!!
 
   protected String id;
   protected String name;
@@ -88,7 +88,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
   /**
    * this is a utility method for subclasses so they can easily register which folders contain plugins
-   * 
+   *
    * @param xmlSubfolder
    *          the sub-folder where xml plugin definitions can be found
    */
@@ -190,7 +190,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   }
 
   protected static String getTranslation( String string, String packageName, String altPackageName,
-      Class<?> resourceClass ) {
+    Class<?> resourceClass ) {
     if ( string == null ) {
       return null;
     }
@@ -264,7 +264,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
                 for ( String fil : impls ) {
                   classFiles.add( new JarFileAnnotationPlugin( fil, fileObject.getURL(), fileObject
-                      .getParent().getURL() ) );
+                    .getParent().getURL() ) );
                 }
               }
             }
@@ -314,7 +314,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   /**
    * This method allows for custom registration of plugins that are on the main classpath. This was originally created
    * so that test environments could register test plugins programmatically.
-   * 
+   *
    * @param clazz
    *          the plugin implementation to register
    * @param category
@@ -336,14 +336,14 @@ public abstract class BasePluginType implements PluginTypeInterface {
     PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation( PluginMainClassType.class );
     classMap.put( mainClassTypesAnnotation.value(), clazz.getName() );
     PluginInterface stepPlugin =
-        new Plugin(
-            new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false, false,
-            classMap, new ArrayList<String>(), null, null, null, null, null );
+      new Plugin(
+        new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false,
+        false, classMap, new ArrayList<String>(), null, null, null, null, null );
     registry.registerPlugin( pluginType, stepPlugin );
   }
 
   protected PluginInterface registerPluginFromXmlResource( Node pluginNode, String path,
-      Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin, URL pluginFolder )
+    Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin, URL pluginFolder )
     throws KettlePluginException {
     try {
 
@@ -375,7 +375,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
       Map<String, String> localizedCategories = readPluginLocale( pluginNode, "localized_category", "category" );
       category = getAlternativeTranslation( category, localizedCategories );
 
-      Map<String, String> localDescriptions = readPluginLocale( pluginNode, "localized_description", "description" );
+      Map<String, String> localDescriptions =
+        readPluginLocale( pluginNode, "localized_description", "description" );
       description = getAlternativeTranslation( description, localDescriptions );
 
       Map<String, String> localizedTooltips = readPluginLocale( pluginNode, "localized_tooltip", "tooltip" );
@@ -411,16 +412,16 @@ public abstract class BasePluginType implements PluginTypeInterface {
       }
 
       PluginInterface pluginInterface =
-          new Plugin(
-              id.split( "," ), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip,
-              iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder, documentationUrl,
-              casesUrl, forumUrl );
+        new Plugin(
+          id.split( "," ), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip,
+          iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder,
+          documentationUrl, casesUrl, forumUrl );
       registry.registerPlugin( pluginType, pluginInterface );
 
       return pluginInterface;
     } catch ( Throwable e ) {
       throw new KettlePluginException( BaseMessages.getString(
-          PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001" ), e );
+        PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001" ), e );
     }
   }
 
@@ -433,7 +434,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   }
 
   /**
-   * 
+   *
    * @param input
    * @param localizedMap
    * @return
@@ -487,7 +488,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   /**
    * Create a new URL class loader with the jar file specified. Also include all the jar files in the lib folder next to
    * that file.
-   * 
+   *
    * @param jarFileUrl
    *          The jar file to include
    * @param classLoader
@@ -510,7 +511,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
       }
     } catch ( Exception e ) {
       LogChannel.GENERAL.logError( "Unexpected error searching for jar files in lib/ folder next to '"
-          + jarFileUrl + "'", e );
+        + jarFileUrl + "'", e );
     }
 
     urls.add( jarFileUrl );
@@ -541,7 +542,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   /**
    * When set to true the FluginFolder objects created by this type will be instructed to search for additional plugins
    * in the lib directory of plugin folders.
-   * 
+   *
    * @param transverseLibDirs
    */
   protected void setTransverseLibDirs( boolean transverseLibDirs ) {
@@ -552,7 +553,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
     List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles( pluginType.getName() );
     for ( JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins ) {
 
-      URLClassLoader urlClassLoader = createUrlClassLoader( jarFilePlugin.getJarFile(), getClass().getClassLoader() );
+      URLClassLoader urlClassLoader =
+        createUrlClassLoader( jarFilePlugin.getJarFile(), getClass().getClassLoader() );
 
       try {
         Class<?> clazz = urlClassLoader.loadClass( jarFilePlugin.getClassName() );
@@ -593,13 +595,14 @@ public abstract class BasePluginType implements PluginTypeInterface {
           }
         } catch ( Exception e ) {
           throw new KettlePluginException( "Unexpected error loading class "
-              + clazz.getName() + " of plugin type: " + pluginType, e );
+            + clazz.getName() + " of plugin type: " + pluginType, e );
         }
 
         handlePluginAnnotation( clazz, annotation, libraries, false, jarFilePlugin.getPluginFolder() );
       } catch ( Exception e ) {
         // Ignore for now, don't know if it's even possible.
-        LogChannel.GENERAL.logError( "Unexpected error registering jar plugin file: " + jarFilePlugin.getJarFile(), e );
+        LogChannel.GENERAL.logError(
+          "Unexpected error registering jar plugin file: " + jarFilePlugin.getJarFile(), e );
       } finally {
         if ( urlClassLoader != null && urlClassLoader instanceof KettleURLClassLoader ) {
           ( (KettleURLClassLoader) urlClassLoader ).closeClassLoader();
@@ -610,7 +613,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
   /**
    * Handle an annotated plugin
-   * 
+   *
    * @param clazz
    *          The class to use
    * @param annotation
@@ -625,7 +628,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
    */
   @Override
   public void handlePluginAnnotation( Class<?> clazz, java.lang.annotation.Annotation annotation,
-      List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
+    List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
 
     String idList = extractID( annotation );
     if ( Const.isEmpty( idList ) ) {
@@ -659,25 +662,25 @@ public abstract class BasePluginType implements PluginTypeInterface {
      * null){ for(int i=0; i< extraTypes.classTypes().length; i++){ Class<?> extraClass = extraTypes.classTypes()[i]; //
      * The extra class name is stored in an annotation. // The name of the annotation is known //
      * ((RepositoryPlugin)annotation).dialogClass() String extraClassName = extraTypes.classTypes()[i].getName();
-     * 
+     *
      * classMap.put(extraClass, extraClassName); } }
      */
 
     PluginInterface plugin =
-        new Plugin(
-            ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
-            nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl, forumUrl );
+      new Plugin(
+        ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
+        nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl, forumUrl );
     registry.registerPlugin( this.getClass(), plugin );
 
     if ( libraries != null && libraries.size() > 0 ) {
       LogChannel.GENERAL.logDetailed( "Plugin with id ["
-          + ids[0] + "] has " + libraries.size() + " libaries in its private class path" );
+        + ids[0] + "] has " + libraries.size() + " libaries in its private class path" );
     }
   }
 
   /**
    * Extract extra classes information from a plugin annotation.
-   * 
+   *
    * @param classMap
    * @param clazz
    * @param annotation

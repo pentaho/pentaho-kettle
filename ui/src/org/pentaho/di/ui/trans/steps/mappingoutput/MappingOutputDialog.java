@@ -48,7 +48,7 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MappingOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MappingOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MappingOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MappingOutputMeta input;
 

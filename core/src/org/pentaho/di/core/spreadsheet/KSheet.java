@@ -24,13 +24,13 @@ package org.pentaho.di.core.spreadsheet;
 
 /**
  * The interface that is needed by ExcelInput to handle a single numeric data sheet in a workbook.
- * 
+ *
  * @author matt
  */
 public interface KSheet {
   /**
    * Get one row of cells in the sheets
-   * 
+   *
    * @param rownr
    *          The row number to get
    * @return the cells of the row
@@ -51,7 +51,7 @@ public interface KSheet {
 
   /**
    * Get a cell in the sheet by specification of its coordinates.
-   * 
+   *
    * @param colnr
    *          The column number
    * @param rownr

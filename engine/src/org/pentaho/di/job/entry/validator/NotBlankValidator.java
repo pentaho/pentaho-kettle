@@ -31,7 +31,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
 
 /**
  * Fails if the field's value is either <code>null</code>, an empty string, or a string containing only whitespace.
- * 
+ *
  * @author mlowery
  */
 public class NotBlankValidator implements JobEntryValidator {
@@ -40,12 +40,13 @@ public class NotBlankValidator implements JobEntryValidator {
 
   private static final String VALIDATOR_NAME = "notBlank";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context ) {
+  public boolean validate( CheckResultSourceInterface source, String propertyName,
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
     String value = ValidatorUtils.getValueAsString( source, propertyName );
     if ( GenericValidator.isBlankOrNull( value ) ) {
-      JobEntryValidatorUtils.addFailureRemark( source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils
-          .getLevelOnFail( context, VALIDATOR_NAME ) );
+      JobEntryValidatorUtils.addFailureRemark(
+        source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils.getLevelOnFail(
+          context, VALIDATOR_NAME ) );
       return false;
     } else {
       return true;

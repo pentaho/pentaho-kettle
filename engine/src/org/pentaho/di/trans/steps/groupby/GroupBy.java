@@ -59,18 +59,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Groups informations based on aggregation rules. (sum, count, ...)
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class GroupBy extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GroupByMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GroupByMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GroupByMeta meta;
 
   private GroupByData data;
 
-  public GroupBy( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public GroupBy( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (GroupByMeta) getStepMeta().getStepMetaInterface();
@@ -120,7 +121,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         }
         if ( data.subjectnrs[i] < 0 ) {
           logError( BaseMessages.getString( PKG, "GroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
-              .getSubjectField()[i] ) );
+            .getSubjectField()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -569,8 +570,8 @@ public class GroupBy extends BaseStep implements StepInterface {
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM:
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE:
           vMeta =
-              new ValueMeta( meta.getAggregateField()[i], subjMeta.isNumeric()
-                  ? subjMeta.getType() : ValueMetaInterface.TYPE_NUMBER );
+            new ValueMeta( meta.getAggregateField()[i], subjMeta.isNumeric()
+              ? subjMeta.getType() : ValueMetaInterface.TYPE_NUMBER );
           switch ( subjMeta.getType() ) {
             case ValueMetaInterface.TYPE_BIGNUMBER:
               v = new BigDecimal( "0" );
@@ -623,8 +624,8 @@ public class GroupBy extends BaseStep implements StepInterface {
       }
 
       if ( meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ALL
-          && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_DISTINCT
-          && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ANY ) {
+        && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_DISTINCT
+        && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ANY ) {
         vMeta.setLength( subjMeta.getLength(), subjMeta.getPrecision() );
       }
       if ( v != null ) {
@@ -680,8 +681,8 @@ public class GroupBy extends BaseStep implements StepInterface {
             break;
           case GroupByMeta.TYPE_GROUP_AVERAGE:
             ag =
-                ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
-                    "c", ValueMetaInterface.TYPE_INTEGER ), new Long( data.counts[i] ) );
+              ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
+                "c", ValueMetaInterface.TYPE_INTEGER ), new Long( data.counts[i] ) );
             break;
           case GroupByMeta.TYPE_GROUP_MEDIAN:
           case GroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -732,13 +733,14 @@ public class GroupBy extends BaseStep implements StepInterface {
       if ( data.rowsOnFile == 0 ) {
         try {
           data.tempFile =
-              File.createTempFile( meta.getPrefix(), ".tmp", new File( environmentSubstitute( meta.getDirectory() ) ) );
+            File.createTempFile(
+              meta.getPrefix(), ".tmp", new File( environmentSubstitute( meta.getDirectory() ) ) );
           data.fos = new FileOutputStream( data.tempFile );
           data.dos = new DataOutputStream( data.fos );
           data.firstRead = true;
         } catch ( IOException e ) {
-          throw new KettleFileException(
-              BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCreateTemporaryFile" ), e );
+          throw new KettleFileException( BaseMessages.getString(
+            PKG, "GroupBy.Exception.UnableToCreateTemporaryFile" ), e );
         }
       }
       // OK, save the oldest rows to disk!
@@ -759,7 +761,7 @@ public class GroupBy extends BaseStep implements StepInterface {
           data.firstRead = false;
         } catch ( IOException e ) {
           throw new KettleFileException( BaseMessages.getString(
-              PKG, "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile" ), e );
+            PKG, "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile" ), e );
         }
       }
 
@@ -796,7 +798,8 @@ public class GroupBy extends BaseStep implements StepInterface {
       }
       data.firstRead = true;
     } catch ( IOException e ) {
-      throw new KettleFileException( BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream" ), e );
+      throw new KettleFileException(
+        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream" ), e );
     }
   }
 
@@ -811,7 +814,8 @@ public class GroupBy extends BaseStep implements StepInterface {
         data.dis = null;
       }
     } catch ( IOException e ) {
-      throw new KettleFileException( BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream" ), e );
+      throw new KettleFileException(
+        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream" ), e );
     }
   }
 

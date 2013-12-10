@@ -57,12 +57,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Displays the meta-data on the Values in a row as well as the Step origin of the Value.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class StepFieldsDialog extends Dialog {
-  private static Class<?> PKG = StepFieldsDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepFieldsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStepname;
 
@@ -155,46 +155,48 @@ public class StepFieldsDialog extends Dialog {
     final int FieldsRows = input.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Fieldname" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Type" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-                true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-                true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Origin" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-                true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.StorageType" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.ConversionMask" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-                true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-                true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.TrimType" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Comments" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Fieldname" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Type" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Origin" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.StorageType" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.ConversionMask" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Group" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.TrimType" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "StepFieldsDialog.TableCol.Comments" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ), };
 
-    wFields = new TableView( variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, true, // read-only
-    null, props );
+    wFields =
+      new TableView( variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
+        true, // read-only
+        null, props );
     wFields.optWidth( true );
 
     fdFields = new FormData();

@@ -42,12 +42,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * This wizard page let's you select the table that need to be ripped.
- * 
+ *
  * @author Matt
  * @since 29-mar-05
  */
 public class CopyTableWizardPage2 extends WizardPage {
-  private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!!
 
   private PropsUI props;
 
@@ -126,8 +126,8 @@ public class CopyTableWizardPage2 extends WizardPage {
       input = sourceDb.getTablenames();
     } catch ( KettleDatabaseException dbe ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogTitle" ), BaseMessages
-              .getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogMessage" ), dbe );
+        shell, BaseMessages.getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogTitle" ),
+        BaseMessages.getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogMessage" ), dbe );
       input = null;
       return false;
     } finally {

@@ -80,10 +80,10 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * Description: Dialog class for the Farrago Streaming Loader step.
- * 
+ *
  * @author Ray Zhang
  * @since Jan-05-2010
- * 
+ *
  */
 public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements StepDialogInterface {
 
@@ -355,13 +355,13 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     wOperation.setLayoutData( fdOperation );
 
     final String[] operations =
-        new String[] {
-            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item1" ),
-            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2" ),
-            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3" ),
-            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4" )
+      new String[] {
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item1" ),
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2" ),
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3" ),
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4" )
 
-        };
+      };
 
     wOperation.setItems( operations );
 
@@ -443,7 +443,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
     }
 
-    );
+      );
 
     // TabFolder
     wTabFolder = new CTabFolder( shell, SWT.BORDER );
@@ -480,13 +480,13 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     wlKeysTb.setLayoutData( fdlKeysTb );
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column1" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column2" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column1" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column2" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     wKeysTb = new TableView( transMeta, wKeysComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, lsMod, props );
 
     fdKeysTb = new FormData();
@@ -558,18 +558,18 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     wlFieldsTb.setLayoutData( fdlFieldsTb );
 
     ColumnInfo[] colinf1 =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column1" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column2" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column3" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true )
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column1" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column2" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column3" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true )
 
-        };
+      };
 
     wFieldsTb = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf1, 0, lsMod, props );
 
@@ -642,7 +642,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     wlCustomTb.setLayoutData( fdlCustomTb );
 
     wCustomTb =
-        new StyledTextComp( transMeta, wCustomComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( transMeta, wCustomComp, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wCustomTb, Props.WIDGET_STYLE_FIXED );
     wCustomTb.addModifyListener( lsMod );
 
@@ -767,7 +768,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
       wOperation.select( wOperation.indexOf( input.getOperation() ) );
       if ( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2" ).equals(
-          input.getOperation() ) ) {
+        input.getOperation() ) ) {
         wTabFolder.setSelection( 1 );
       } else {
         wTabFolder.setSelection( 0 );
@@ -829,7 +830,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
     int fieldWidth = wFieldsTb.table.getColumn( 3 ).getWidth();
     if ( input.getOperation() != null
-        && "INSERT".equalsIgnoreCase( wOperation.getItem( wOperation.getSelectionIndex() ) ) ) {
+      && "INSERT".equalsIgnoreCase( wOperation.getItem( wOperation.getSelectionIndex() ) ) ) {
       wFieldsTb.table.getColumn( 3 ).setWidth( 0 );
     } else {
       wFieldsTb.table.getColumn( 3 ).setWidth( fieldWidth );
@@ -858,7 +859,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
       myTb = wFieldsTb;
       // Hidden Update Field when select operation INSERT
       if ( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2" ).equalsIgnoreCase(
-          wOperation.getItem( wOperation.getSelectionIndex() ) ) ) {
+        wOperation.getItem( wOperation.getSelectionIndex() ) ) ) {
 
         flag = true;
       }
@@ -876,8 +877,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -888,8 +889,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -912,30 +913,34 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString(
-                PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
+              .toString() )
+            + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString(
-                PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
+              .toString() )
+            + Const.CR;
       }
       message += Const.CR;
       message +=
-          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" )
+          + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString(
-              PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+        MessageDialog.openConfirm( shell, BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-        new EnterMappingDialog( LucidDBStreamingLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
-            .getFieldNames(), mappings );
+      new EnterMappingDialog(
+        LucidDBStreamingLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(),
+        mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -1005,7 +1010,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     inf.getTabIsEnable()[1] = wFieldsTab.getControl().getEnabled();
     inf.getTabIsEnable()[2] = wCustomTab.getControl().getEnabled();
     if ( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4" ).equals(
-        inf.getOperation() ) ) {
+      inf.getOperation() ) ) {
       inf.setCustom_sql( wCustomTb.getText() );
 
     }
@@ -1015,7 +1020,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
   /**
    * Description: When click button called get Field, return all fields in table
-   * 
+   *
    * @param tabName
    */
   private void getFields( String tabName ) {
@@ -1034,7 +1039,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
       myTb = wFieldsTb;
 
       if ( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2" ).equalsIgnoreCase(
-          wOperation.getItem( wOperation.getSelectionIndex() ) ) ) {
+        wOperation.getItem( wOperation.getSelectionIndex() ) ) ) {
         flag = true;
       }
 
@@ -1071,8 +1076,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         }
       } else {
         count =
-            ( ( fieldNamesOfStream.length >= fieldsNamesOfTbl.length )
-                ? fieldNamesOfStream.length : fieldsNamesOfTbl.length );
+          ( ( fieldNamesOfStream.length >= fieldsNamesOfTbl.length )
+            ? fieldNamesOfStream.length : fieldsNamesOfTbl.length );
         myTb.table.setItemCount( count );
         for ( int i = 0; i < count; i++ ) {
           TableItem item = myTb.table.getItem( i );
@@ -1110,7 +1115,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
     if ( input.getDatabaseMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.InvalidConnection.DialogMessage" ) );
+      mb
+        .setMessage( BaseMessages
+          .getString( PKG, "LucidDBStreamingLoaderDialog.InvalidConnection.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.InvalidConnection.DialogTitle" ) );
       mb.open();
     }
@@ -1127,7 +1134,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     }
 
     if ( inf != null ) {
-      logDebug( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Log.LookingAtConnection" ) + inf.toString() );
+      logDebug( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Log.LookingAtConnection" )
+        + inf.toString() );
 
       DatabaseExplorerDialog std = new DatabaseExplorerDialog( shell, SWT.NONE, inf, transMeta.getDatabases() );
       std.setSelectedSchemaAndTable( wSchema.getText(), wTable.getText() );
@@ -1137,7 +1145,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
       }
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.InvalidConnection.DialogMessage" ) );
+      mb
+        .setMessage( BaseMessages
+          .getString( PKG, "LucidDBStreamingLoaderDialog.InvalidConnection.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.InvalidConnection.DialogTitle" ) );
       mb.open();
     }
@@ -1152,14 +1162,15 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
       String name = stepname; // new name might not yet be linked to other steps!
       StepMeta stepMeta =
-          new StepMeta( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.StepMeta.Title" ), name, info );
+        new StepMeta( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+              .getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -1174,9 +1185,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages.getString(
+        PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }

@@ -54,7 +54,7 @@ public class LdapProtocolTest {
     public Hashtable<String, String> contextEnv = null;
 
     public TestableLdapProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
-        Collection<String> binaryAttributes ) {
+      Collection<String> binaryAttributes ) {
       super( log, variableSpace, meta, binaryAttributes );
     }
 
@@ -87,12 +87,12 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portVar ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals(
-        testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete, testableLdapProtocol.contextEnv
-            .get( Context.PROVIDER_URL ) );
+      testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete,
+      testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
   }
 
   @Test
@@ -109,11 +109,11 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( "com.sun.jndi.ldap.LdapCtxFactory", testableLdapProtocol.contextEnv
-        .get( Context.INITIAL_CONTEXT_FACTORY ) );
+      .get( Context.INITIAL_CONTEXT_FACTORY ) );
   }
 
   @Test
@@ -131,7 +131,7 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( deref, testableLdapProtocol.contextEnv.get( "java.naming.ldap.derefAliases" ) );
@@ -152,7 +152,7 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( referral, testableLdapProtocol.contextEnv.get( Context.REFERRAL ) );
@@ -171,12 +171,12 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals(
-        testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete, testableLdapProtocol.contextEnv
-            .get( Context.PROVIDER_URL ) );
+      testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete,
+      testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
   }
 
   @Test
@@ -193,12 +193,12 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals(
-        testableLdapProtocol.getConnectionPrefix() + hostnameConcrete + ":" + portConcrete,
-        testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
+      testableLdapProtocol.getConnectionPrefix() + hostnameConcrete + ":" + portConcrete,
+      testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
   }
 
   @Test
@@ -217,7 +217,7 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( username, password );
 
     assertEquals( username, testableLdapProtocol.contextEnv.get( Context.SECURITY_PRINCIPAL ) );
@@ -239,7 +239,7 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( "none", testableLdapProtocol.contextEnv.get( Context.SECURITY_AUTHENTICATION ) );
@@ -267,7 +267,7 @@ public class LdapProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, binaryAttributes );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, binaryAttributes );
     testableLdapProtocol.connect( null, null );
 
     String attributesString = testableLdapProtocol.contextEnv.get( "java.naming.ldap.attributes.binary" );

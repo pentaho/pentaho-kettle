@@ -32,9 +32,9 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * This class contains and handles all the translations for the keys specified in the Java source code.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class TranslationsStore {
 
@@ -57,7 +57,7 @@ public class TranslationsStore {
    * @param map
    */
   public TranslationsStore( LogChannelInterface log, List<String> localeList, String mainLocale,
-      Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences ) {
+    Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences ) {
     super();
     this.log = log;
     this.localeList = localeList;
@@ -69,7 +69,7 @@ public class TranslationsStore {
 
   /**
    * Read all the translated messages for all the specified locale and all the specified locale
-   * 
+   *
    * @param directories
    *          The reference source directories to search packages in
    * @throws KettleException
@@ -122,7 +122,7 @@ public class TranslationsStore {
 
   /**
    * Look up the translation for a key in a certain locale
-   * 
+   *
    * @param locale
    *          the locale to hunt for
    * @param sourceFolder

@@ -41,18 +41,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Use values from input streams to joins with values in a database. Freehand SQL can be used to do this.
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
  */
 public class DatabaseJoin extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseJoinMeta meta;
   private DatabaseJoinData data;
 
   public DatabaseJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -62,8 +62,8 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
       data.outputRowMeta = rowMeta.clone();
       meta.getFields(
-          data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this, repository,
-          metaStore );
+        data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
+        repository, metaStore );
 
       data.lookupRowMeta = new RowMeta();
 
@@ -77,7 +77,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
         data.keynrs[i] = rowMeta.indexOfValue( meta.getParameterField()[i] );
         if ( data.keynrs[i] < 0 ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "DatabaseJoin.Exception.FieldNotFound", meta
-              .getParameterField()[i] ) );
+            .getParameterField()[i] ) );
         }
 
         data.lookupRowMeta.addValueMeta( rowMeta.getValueMeta( data.keynrs[i] ).clone() );
@@ -114,7 +114,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "DatabaseJoin.Log.PutoutRow" )
-            + data.outputRowMeta.getString( newRow ) );
+          + data.outputRowMeta.getString( newRow ) );
       }
 
       // Get a new row

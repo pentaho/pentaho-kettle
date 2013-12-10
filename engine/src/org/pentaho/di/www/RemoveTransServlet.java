@@ -38,7 +38,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 public class RemoveTransServlet extends BaseHttpServlet implements CartePluginInterface {
-  private static Class<?> PKG = RemoveTransServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RemoveTransServlet.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 6618979989596401783L;
 
@@ -51,7 +51,8 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -120,11 +121,11 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( "<H3>"
-            + encoder.encodeForHTML( BaseMessages.getString(
-                PKG, "RemoveTransServlet.TheTransWasRemoved", transName, id ) ) + "</H3>" );
+          + encoder.encodeForHTML( BaseMessages.getString(
+            PKG, "RemoveTransServlet.TheTransWasRemoved", transName, id ) ) + "</H3>" );
         out.print( "<a href=\""
-            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
         out.println( "<p>" );
         out.println( "</BODY>" );
         out.println( "</HTML>" );
@@ -132,14 +133,14 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
     } else {
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-            PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
+          PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
       } else {
         out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString(
-                PKG, "RemoveTransServlet.TransRemoved.Log.CoundNotFindTrans", transName, id ) ) + "</H1>" );
+          + encoder.encodeForHTML( BaseMessages.getString(
+            PKG, "RemoveTransServlet.TransRemoved.Log.CoundNotFindTrans", transName, id ) ) + "</H1>" );
         out.println( "<a href=\""
-            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }
   }

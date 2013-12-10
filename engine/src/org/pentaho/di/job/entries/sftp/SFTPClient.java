@@ -70,7 +70,7 @@ public class SFTPClient {
 
   /**
    * Init Helper Class with connection settings
-   * 
+   *
    * @param serverIP
    *          IP address of remote server
    * @param serverPort
@@ -85,7 +85,7 @@ public class SFTPClient {
 
   /**
    * Init Helper Class with connection settings
-   * 
+   *
    * @param serverIP
    *          IP address of remote server
    * @param serverPort
@@ -103,7 +103,7 @@ public class SFTPClient {
 
   /**
    * Init Helper Class with connection settings
-   * 
+   *
    * @param serverIP
    *          IP address of remote server
    * @param serverPort
@@ -116,12 +116,12 @@ public class SFTPClient {
    *          passphrase
    * @throws KettleJobException
    */
-  public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename, String passPhrase )
-    throws KettleJobException {
+  public SFTPClient( InetAddress serverIP, int serverPort, String userName, String privateKeyFilename,
+    String passPhrase ) throws KettleJobException {
 
     if ( serverIP == null || serverPort < 0 || userName == null || userName.equals( "" ) ) {
       throw new KettleJobException(
-          "For a SFTP connection server name and username must be set and server port must be greater than zero." );
+        "For a SFTP connection server name and username must be set and server port must be greater than zero." );
     }
 
     this.serverIP = serverIP;
@@ -140,9 +140,9 @@ public class SFTPClient {
           passphrasebytes = GetPrivateKeyPassPhrase().getBytes();
         }
         jsch.addIdentity( getUserName(), FileUtil.getContent( KettleVFS.getFileObject( prvkey ) ), // byte[] privateKey
-            null, // byte[] publicKey
-            passphrasebytes // byte[] passPhrase
-            );
+          null, // byte[] publicKey
+          passphrasebytes // byte[] passPhrase
+          );
       }
       s = jsch.getSession( userName, serverIP.getHostAddress(), serverPort );
     } catch ( IOException e ) {

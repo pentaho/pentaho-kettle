@@ -58,7 +58,8 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -87,8 +88,8 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       out.println( "<HEAD>" );
       out.println( "<TITLE>" + BaseMessages.getString( PKG, "StartTransServlet.Log.StartOfTrans" ) + "</TITLE>" );
       out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
-          + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-          + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
+        + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+        + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
@@ -126,7 +127,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
 
         String carteObjectId = UUID.randomUUID().toString();
         SimpleLoggingObject servletLoggingObject =
-            new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+          new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
         servletLoggingObject.setContainerObjectId( carteObjectId );
         servletLoggingObject.setLogLevel( trans.getLogLevel() );
         trans.setParent( servletLoggingObject );
@@ -140,9 +141,9 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
 
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
           out.println( "<a href=\""
-              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       } else {
         String message = BaseMessages.getString( PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName );
@@ -151,14 +152,14 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
           out.println( "<a href=\""
-              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
     } catch ( Exception ex ) {
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-            PKG, "StartTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+          PKG, "StartTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );

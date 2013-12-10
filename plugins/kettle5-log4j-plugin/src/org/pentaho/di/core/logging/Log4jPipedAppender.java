@@ -36,16 +36,16 @@ public class Log4jPipedAppender implements Appender
 {
     private Layout layout;
     private Filter filter;
-    
+
     private String  name;
-    
+
     private PipedOutputStream pipedOutputStream;
-    
+
     public Log4jPipedAppender()
     {
         pipedOutputStream = new PipedOutputStream();
     }
-    
+
     public void addFilter(Filter filter)
     {
         this.filter = filter;

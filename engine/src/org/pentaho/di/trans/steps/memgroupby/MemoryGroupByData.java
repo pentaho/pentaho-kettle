@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class MemoryGroupByData extends BaseStepData implements StepDataInterface {
   public class HashEntry {

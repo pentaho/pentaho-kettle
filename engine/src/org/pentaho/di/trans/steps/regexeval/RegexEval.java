@@ -41,7 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Use regular expression to validate a field or capture new fields out of an existing field.
- * 
+ *
  * @author deinspanjer
  * @since 27-03-2008
  * @author Matt
@@ -51,12 +51,12 @@ public class RegexEval extends BaseStep implements StepInterface {
   private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes,
   // needed by
   // Translator2!!
-  // $NON-NLS-1$
 
   private RegexEvalMeta meta;
   private RegexEvalData data;
 
-  public RegexEval( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public RegexEval( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -86,7 +86,8 @@ public class RegexEval extends BaseStep implements StepInterface {
         if ( !meta.isAllowCaptureGroupsFlagSet() ) {
           // Result field is missing !
           logError( BaseMessages.getString( PKG, "RegexEval.Log.ErrorResultFieldMissing" ) );
-          throw new KettleStepException( BaseMessages.getString( PKG, "RegexEval.Exception.ErrorResultFieldMissing" ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "RegexEval.Exception.ErrorResultFieldMissing" ) );
         }
         data.indexOfResultField = -1;
       } else {
@@ -112,7 +113,7 @@ public class RegexEval extends BaseStep implements StepInterface {
         // The field is unreachable !
         logError( BaseMessages.getString( PKG, "RegexEval.Log.ErrorFindingField" ) + "[" + meta.getMatcher() + "]" );
         throw new KettleStepException( BaseMessages.getString( PKG, "RegexEval.Exception.CouldnotFindField", meta
-            .getMatcher() ) );
+          .getMatcher() ) );
       }
 
       // Cache the position of the CaptureGroups
@@ -161,11 +162,11 @@ public class RegexEval extends BaseStep implements StepInterface {
         if ( meta.isAllowCaptureGroupsFlagSet() && data.positions.length != m.groupCount() ) {
           // Runtime exception case. The number of capture groups in the
           // regex doesn't match the number of fields.
-          logError( BaseMessages.getString( PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf( m
-              .groupCount() ), String.valueOf( data.positions.length ) ) );
+          logError( BaseMessages.getString( PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String
+            .valueOf( m.groupCount() ), String.valueOf( data.positions.length ) ) );
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf( m.groupCount() ), String
-                  .valueOf( data.positions.length ) ) );
+            PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf( m.groupCount() ), String
+              .valueOf( data.positions.length ) ) );
         }
 
         for ( int i = 0; i < data.positions.length; i++ ) {
@@ -190,8 +191,8 @@ public class RegexEval extends BaseStep implements StepInterface {
           ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta( index );
           ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta( index );
           Object convertedValue =
-              valueMeta.convertDataFromString( value, conversionValueMeta, meta.getFieldNullIf()[i], meta
-                  .getFieldIfNull()[i], meta.getFieldTrimType()[i] );
+            valueMeta.convertDataFromString( value, conversionValueMeta, meta.getFieldNullIf()[i], meta
+              .getFieldIfNull()[i], meta.getFieldTrimType()[i] );
 
           outputRow[index] = convertedValue;
         }
@@ -202,7 +203,8 @@ public class RegexEval extends BaseStep implements StepInterface {
       }
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "RegexEval.Log.ReadRow" ) + " " + getInputRowMeta().getString( row ) );
+        logRowlevel( BaseMessages.getString( PKG, "RegexEval.Log.ReadRow" )
+          + " " + getInputRowMeta().getString( row ) );
       }
 
       // copy row to output rowset(s);

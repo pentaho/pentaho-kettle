@@ -36,7 +36,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while saving a job...
- * 
+ *
  * @author Matt
  * @since 13-mrt-2005
  */

@@ -39,7 +39,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Storage class for table output step.
- * 
+ *
  * @author Matt
  * @since 24-jan-2005
  */

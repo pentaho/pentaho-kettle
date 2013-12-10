@@ -69,9 +69,9 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 	public OpenERPHelper(DatabaseMeta databaseMeta){
 		openERPConnection = new Session(
 				databaseMeta.environmentSubstitute(databaseMeta.getHostname()),
-				Integer.parseInt(databaseMeta.environmentSubstitute(databaseMeta.getDatabasePortNumberString())), 
+				Integer.parseInt(databaseMeta.environmentSubstitute(databaseMeta.getDatabasePortNumberString())),
 				databaseMeta.environmentSubstitute(databaseMeta.getDatabaseName()),
-				databaseMeta.environmentSubstitute(databaseMeta.getUsername()), 
+				databaseMeta.environmentSubstitute(databaseMeta.getUsername()),
 				databaseMeta.environmentSubstitute(databaseMeta.getPassword()));
 	}
 
@@ -80,7 +80,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		
 		commands = openERPConnection.getOpenERPCommand();
 		
-		// Don't automatically filter out active items in any steps 
+		// Don't automatically filter out active items in any steps
 		openERPConnection.getContext().setActiveTest(false);
 		
 		try {

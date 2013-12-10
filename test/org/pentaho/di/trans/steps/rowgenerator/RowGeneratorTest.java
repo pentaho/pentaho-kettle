@@ -48,9 +48,9 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 /**
  * Test class for the RowGenerator step.
- * 
+ *
  * TODO For the moment only the basic stuff is verified. Formats, lengths, precision should best also be tested.
- * 
+ *
  * @author Sven Boden
  */
 public class RowGeneratorTest extends TestCase {
@@ -58,9 +58,10 @@ public class RowGeneratorTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "boolean", ValueMeta.TYPE_BOOLEAN ),
-            new ValueMeta( "integer", ValueMeta.TYPE_INTEGER ), new ValueMeta( "timestamp", ValueMeta.TYPE_TIMESTAMP ) };
+    {
+      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "boolean", ValueMeta.TYPE_BOOLEAN ),
+      new ValueMeta( "integer", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "timestamp", ValueMeta.TYPE_TIMESTAMP ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -75,7 +76,8 @@ public class RowGeneratorTest extends TestCase {
     RowMetaInterface rm = createRowMetaInterface();
 
     Object[] r1 =
-        new Object[] { "string_value", Boolean.TRUE, new Long( 20L ), Timestamp.valueOf( "1970-01-01 00:00:00.000" ) };
+      new Object[] {
+        "string_value", Boolean.TRUE, new Long( 20L ), Timestamp.valueOf( "1970-01-01 00:00:00.000" ) };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r1 ) );

@@ -47,7 +47,7 @@ import org.w3c.dom.Node;
 @Step(id = "HL7Input", image = "hl7-input.png", i18nPackageName="org.pentaho.di.trans.steps.hl7input", name="HL7Input.Name", description = "HL7Input.TooltipDesc", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input")
 public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!
 	
 	private String messageField;
 
@@ -99,11 +99,11 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface
 	  ValueMetaInterface valueMeta = new ValueMeta("ParentGroup", ValueMetaInterface.TYPE_STRING);
 	  valueMeta.setOrigin(origin);
 	  rowMeta.addValueMeta(valueMeta);
-	  
+	
 	  valueMeta = new ValueMeta("Group", ValueMetaInterface.TYPE_STRING);
       valueMeta.setOrigin(origin);
       rowMeta.addValueMeta(valueMeta);
-      
+
       valueMeta = new ValueMeta("HL7Version", ValueMetaInterface.TYPE_STRING);
       valueMeta.setOrigin(origin);
       rowMeta.addValueMeta(valueMeta);
@@ -143,24 +143,24 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.NotReceivingFields"), stepMeta); 
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.NotReceivingFields"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);  
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.StepRecevingData",prev.size()+""), stepMeta);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.StepRecevingData2"), stepMeta); 
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.StepRecevingData2"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); 
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "HL7InputMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta);
 			remarks.add(cr);
 		}
 	}
@@ -187,5 +187,5 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface
    */
   public void setMessageField(String messageField) {
     this.messageField = messageField;
-  }  
+  }
 }

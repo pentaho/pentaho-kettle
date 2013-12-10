@@ -31,9 +31,9 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * Read the messages files for the source folders of the specified locale.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SourceStore {
 
@@ -48,7 +48,7 @@ public class SourceStore {
   private String sourceFolder;
 
   public SourceStore( LogChannelInterface log, String locale, String sourceFolder,
-      Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences ) {
+    Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences ) {
     this.log = log;
     this.locale = locale;
     this.sourceFolder = sourceFolder;
@@ -60,7 +60,8 @@ public class SourceStore {
   public void read( List<String> directories ) throws KettleException {
     Map<String, List<KeyOccurrence>> po = sourcePackageOccurrences.get( sourceFolder );
     for ( String messagesPackage : po.keySet() ) {
-      MessagesStore messagesStore = new MessagesStore( locale, sourceFolder, messagesPackage, sourcePackageOccurrences );
+      MessagesStore messagesStore =
+        new MessagesStore( locale, sourceFolder, messagesPackage, sourcePackageOccurrences );
       try {
         messagesStore.read( directories );
         messagesMap.put( messagesPackage, messagesStore );

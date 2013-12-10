@@ -37,19 +37,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Prioritize INPUT Streams.
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class PrioritizeStreams extends BaseStep implements StepInterface {
-  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private PrioritizeStreamsMeta meta;
   private PrioritizeStreamsData data;
 
-  public PrioritizeStreams( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public PrioritizeStreams( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -129,12 +129,12 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
 
   /**
    * Checks whether 2 template rows are compatible for the mergestep.
-   * 
+   *
    * @param referenceRow
    *          Reference row
    * @param compareRow
    *          Row to compare to
-   * 
+   *
    * @return true when templates are compatible.
    * @throws KettleRowException
    *           in case there is a compatibility error.

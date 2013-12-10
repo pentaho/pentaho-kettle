@@ -49,9 +49,9 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the SplitFieldToRows step.
- * 
+ *
  * The expected results were obtained by running the "Split field To Rows" Kettle step with Spoon 4.3.0.
- * 
+ *
  * @author Sean Flatley
  */
 public class SplitFieldToRowsTest extends TestCase {
@@ -59,7 +59,7 @@ public class SplitFieldToRowsTest extends TestCase {
   private static final String FIELD_TO_SPLIT_NAME = "FieldToSplit";
   private static final String NEW_FIELD_NAME = "NewFieldName";
   private static final String TEST_OUTPUT_HEADER_FOOTER =
-      "------------------------------------------------------------------------------";
+    "------------------------------------------------------------------------------";
 
   /**
    * Change this boolean to TRUE to have a more verbose output
@@ -68,7 +68,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Creates the row meta interface.
-   * 
+   *
    * @return the row meta interface
    */
   public RowMetaInterface createRowMetaInterface() {
@@ -85,7 +85,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Create a list of RowMetaAndData from the passed value and returns it.
-   * 
+   *
    * @param value
    * @return List<RowMetaAndData>
    */
@@ -100,7 +100,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Execute a test with the passed parameters.
-   * 
+   *
    * @param testName
    * @param stringToSplit
    * @param isDelimiterRegex
@@ -110,17 +110,17 @@ public class SplitFieldToRowsTest extends TestCase {
    * @return
    * @throws Exception
    */
-  public List<RowMetaAndData> test( String testName, String stringToSplit, boolean isDelimiterRegex, String delimiter,
-      String delimiterVariableValue, String[] expectedResult ) throws Exception {
+  public List<RowMetaAndData> test( String testName, String stringToSplit, boolean isDelimiterRegex,
+    String delimiter, String delimiterVariableValue, String[] expectedResult ) throws Exception {
     List<RowMetaAndData> result =
-        splitFieldToRows( testName, stringToSplit, isDelimiterRegex, delimiter, delimiterVariableValue );
+      splitFieldToRows( testName, stringToSplit, isDelimiterRegex, delimiter, delimiterVariableValue );
     assertTrue( isSameData( expectedResult, result ) );
     return result;
   }
 
   /**
    * Execute a test with the passed parameters.
-   * 
+   *
    * @param testName
    * @param stringToSplit
    * @param isDelimiterRegex
@@ -129,9 +129,10 @@ public class SplitFieldToRowsTest extends TestCase {
    * @return
    * @throws Exception
    */
-  public List<RowMetaAndData> test( String testName, String stringToSplit, boolean isDelimiterRegex, String delimiter,
-      String[] expectedResult ) throws Exception {
-    List<RowMetaAndData> result = test( testName, stringToSplit, isDelimiterRegex, delimiter, null, expectedResult );
+  public List<RowMetaAndData> test( String testName, String stringToSplit, boolean isDelimiterRegex,
+    String delimiter, String[] expectedResult ) throws Exception {
+    List<RowMetaAndData> result =
+      test( testName, stringToSplit, isDelimiterRegex, delimiter, null, expectedResult );
     assertTrue( isSameData( expectedResult, result ) );
     return result;
   }
@@ -140,7 +141,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Non regex, delimiter = ";"
-   * 
+   *
    * @throws Exception
    */
   public void testNonRegex1() throws Exception {
@@ -150,7 +151,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Non regex, delimiter = "!;"
-   * 
+   *
    * @throws Exception
    */
   public void testNonRegex2() throws Exception {
@@ -160,7 +161,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Non regex, delimiter = ";", "!" appears in field.
-   * 
+   *
    * @throws Exception
    */
   public void testNonRegex3() throws Exception {
@@ -170,7 +171,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Non regex, delimiter = "."
-   * 
+   *
    * @throws Exception
    */
   public void testNonRegex4() throws Exception {
@@ -180,7 +181,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Non regex, delimiter = "\\.", delmiter "." appears in field.
-   * 
+   *
    * @throws Exception
    */
   public void testNonRegex5() throws Exception {
@@ -190,7 +191,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Non regex, delimiter = "${DELIMITER}, value of delimiter = ";"
-   * 
+   *
    * @throws Exception
    */
   public void testNonRegex6() throws Exception {
@@ -202,7 +203,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Regex test, delimiter = ";"
-   * 
+   *
    * @throws Exception
    */
   public void testRegex1() throws Exception {
@@ -212,7 +213,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Regex, delimiter = "!;"
-   * 
+   *
    * @throws Exception
    */
   public void testRegex2() throws Exception {
@@ -222,7 +223,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Regex, delimiter = ";", "!;" appears in the field.
-   * 
+   *
    * @throws Exception
    */
   public void testRegex3() throws Exception {
@@ -232,7 +233,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Regex, delimiter = "."
-   * 
+   *
    * @throws Exception
    */
   public void testRegex4() throws Exception {
@@ -242,7 +243,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Regex, delimiter = "\\."
-   * 
+   *
    * @throws Exception
    */
   public void testRegex5() throws Exception {
@@ -252,7 +253,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Test: Regex, delimiter = "[0-9]"
-   * 
+   *
    * @throws Exception
    */
   public void testRegex6() throws Exception {
@@ -263,7 +264,7 @@ public class SplitFieldToRowsTest extends TestCase {
   /**
    * Splits the "stringToSplit" with the passed "delimiter". The "isDelimiterRegex" parameter will process the use regex
    * for pattern matching if true.
-   * 
+   *
    * @param testName
    * @param stringToSplit
    * @param isDelimiterRegex
@@ -272,7 +273,7 @@ public class SplitFieldToRowsTest extends TestCase {
    * @throws Exception
    */
   public List<RowMetaAndData> splitFieldToRows( String testName, String stringToSplit, boolean isDelimiterRegex,
-      String delimiter ) throws Exception {
+    String delimiter ) throws Exception {
 
     return splitFieldToRows( testName, stringToSplit, isDelimiterRegex, delimiter, null );
   }
@@ -280,9 +281,9 @@ public class SplitFieldToRowsTest extends TestCase {
   /**
    * Splits the "stringToSplit" with the passed "delimiter". The "delimiter" is assumed by this method to be a Kettle
    * variable. The parameter "delimiterVariableValue" should contain the variables value.
-   * 
+   *
    * The "isDelimiterRegex" parameter will process the use regex for pattern matching if true.
-   * 
+   *
    * @param testName
    * @param stringToSplit
    * @param isDelimiterRegex
@@ -292,7 +293,7 @@ public class SplitFieldToRowsTest extends TestCase {
    * @throws Exception
    */
   public List<RowMetaAndData> splitFieldToRows( String testName, String stringToSplit, boolean isDelimiterRegex,
-      String delimiter, String delimiterVariableValue ) throws Exception {
+    String delimiter, String delimiterVariableValue ) throws Exception {
     KettleEnvironment.init();
 
     // Create a new transformation...
@@ -380,7 +381,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Compares the passed parameters and returns truf if they contain the same data.
-   * 
+   *
    * @param expectedData
    * @param result
    * @return
@@ -405,14 +406,14 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Prints (more verbose) test information.
-   * 
+   *
    * @param testName
    * @param stringToSplit
    * @param splitFieldToRowsMeta
    * @param transMeta
    */
   private void printTestInfo( String testName, String stringToSplit, SplitFieldToRowsMeta splitFieldToRowsMeta,
-      TransMeta transMeta ) {
+    TransMeta transMeta ) {
     print( TEST_OUTPUT_HEADER_FOOTER );
     print( testName );
     print( "Field to split: " + stringToSplit );
@@ -426,7 +427,7 @@ public class SplitFieldToRowsTest extends TestCase {
 
   /**
    * Will print the passed "string" if SplitFieldToRowsTest.PRINT_RESULTS is true.
-   * 
+   *
    * @param string
    */
   private void print( String string ) {

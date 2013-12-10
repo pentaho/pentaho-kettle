@@ -62,12 +62,12 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'delete folders' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 13-05-2008
  */
 public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryDeleteFolders.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDeleteFolders.class; // for i18n purposes, needed by Translator2!!
 
   public boolean argFromPrevious;
 
@@ -126,8 +126,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
@@ -152,7 +152,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
       limit_folders = rep.getJobEntryAttributeString( id_jobentry, "limit_folders" );
@@ -168,7 +168,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
       }
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryDeleteFolders.UnableToLoadFromRepo", String
-          .valueOf( id_jobentry ) ), dbe );
+        .valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -186,7 +186,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
       }
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryDeleteFolders.UnableToSaveToRepo", String
-          .valueOf( id_job ) ), dbe );
+        .valueOf( id_job ) ), dbe );
     }
   }
 
@@ -206,14 +206,15 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     if ( argFromPrevious ) {
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFolders.FoundPreviousRows", String
-            .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
+          .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
       }
     }
 
     if ( argFromPrevious && rows != null ) {
       for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++ ) {
         if ( successConditionBroken ) {
-          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken", "" + NrErrors ) );
+          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken", ""
+            + NrErrors ) );
           result.setNrErrors( NrErrors );
           result.setNrLinesDeleted( NrSuccess );
           return result;
@@ -234,7 +235,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     } else if ( arguments != null ) {
       for ( int i = 0; i < arguments.length && !parentJob.isStopped(); i++ ) {
         if ( successConditionBroken ) {
-          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken", "" + NrErrors ) );
+          logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.Error.SuccessConditionbroken", ""
+            + NrErrors ) );
           result.setNrErrors( NrErrors );
           result.setNrLinesDeleted( NrSuccess );
           return result;
@@ -280,7 +282,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   private boolean checkIfSuccessConditionBroken() {
     boolean retval = false;
     if ( ( NrErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrErrors >= limitFolders && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrErrors >= limitFolders && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
     return retval;
@@ -294,8 +296,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     boolean retval = false;
 
     if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrSuccess >= limitFolders && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED ) )
-        || ( NrErrors <= limitFolders && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrSuccess >= limitFolders && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FOLDERS_DELETED ) )
+      || ( NrErrors <= limitFolders && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
 
@@ -321,7 +323,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFolders.TotalDeleted", foldername, String
-                .valueOf( Nr ) ) );
+              .valueOf( Nr ) ) );
           }
           rcode = true;
         } else {
@@ -336,7 +338,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
         rcode = true;
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage() ), e );
+      logError(
+        BaseMessages.getString( PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage() ), e );
     } finally {
       if ( filefolder != null ) {
         try {
@@ -369,8 +372,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     return true;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {

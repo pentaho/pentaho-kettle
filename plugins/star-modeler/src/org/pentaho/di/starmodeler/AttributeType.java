@@ -37,15 +37,15 @@ public enum AttributeType {
   DEGENERATE_DIMENSION,
   OTHER,
   ;
-  
+
   public static AttributeType getAttributeType(String typeString) {
     try {
       return valueOf(typeString);
     } catch(Exception e) {
-      return OTHER; 
+      return OTHER;
     }
   }
-  
+
   public boolean isAttribute() {
     return this==ATTRIBUTE || this==ATTRIBUTE_OVERWRITE || this==ATTRIBUTE_HISTORICAL;
   }

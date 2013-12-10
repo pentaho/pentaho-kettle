@@ -41,9 +41,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the extension point plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( ExtensionPointInterface.class )
 @PluginAnnotationType( ExtensionPoint.class )
@@ -99,7 +99,7 @@ public class ExtensionPointPluginType extends BasePluginType implements PluginTy
 
   @Override
   public void handlePluginAnnotation( Class<?> clazz, Annotation annotation, List<String> libraries,
-      boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
+    boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
     super.handlePluginAnnotation( clazz, annotation, libraries, nativePluginType, pluginFolder );
   }
 

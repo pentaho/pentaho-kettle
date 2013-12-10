@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.RowListener;
 /**
  * Helper class for testcases. You can add an instance of this class to a step to read all of the Rows the step read or
  * wrote.
- * 
+ *
  * @author Sven Boden
  */
 public class RowStepCollector implements RowListener {

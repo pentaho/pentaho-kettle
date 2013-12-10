@@ -27,9 +27,9 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 /**
  * This class provides a wrapper around NamingException or other exceptions that may occur when trying to get a data
  * source by name.
- * 
+ *
  * @author mbatchel Jan 9, 2009
- * 
+ *
  */
 
 public class DataSourceNamingException extends KettleDatabaseException {

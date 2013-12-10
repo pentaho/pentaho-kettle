@@ -54,12 +54,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntry Success object.
- * 
+ *
  * @author Samatar
  * @since 10-03-2007
  */
 public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySuccess.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySuccess.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 

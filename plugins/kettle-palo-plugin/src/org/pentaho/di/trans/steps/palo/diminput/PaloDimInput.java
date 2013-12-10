@@ -44,7 +44,7 @@ public class PaloDimInput extends BaseStep implements StepInterface {
   private abstract class ListenerWithException implements PaloHelper.Listener {
 	  protected Exception throwedException = null;
   }
-	  
+	
   public boolean processRow(final StepMetaInterface smi, final StepDataInterface sdi) throws KettleException {
     this.logBasic("Getting Dimension Row Meta.");
 
@@ -88,7 +88,7 @@ public class PaloDimInput extends BaseStep implements StepInterface {
             }
         }
       };
-      
+
     data.helper.getDimensionRows(meta.getDimension(), rowMeta, meta.getBaseElementsOnly(), listener);
     if (listener.throwedException != null)
         throw new KettleException("Failed to fetch some row", listener.throwedException);

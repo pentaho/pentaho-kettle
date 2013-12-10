@@ -74,7 +74,8 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
     outputFields = new ArrayList<SasInputField>();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     try {
       acceptingField = XMLHandler.getTagValue( stepnode, "accept_field" );
       int nrFields = XMLHandler.countNodes( stepnode, XML_TAG_FIELD );
@@ -85,7 +86,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-          PKG, "SASInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
+        PKG, "SASInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
     }
   }
 
@@ -100,7 +101,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     for ( SasInputField field : outputFields ) {
       try {
@@ -143,7 +144,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "SASInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
+        PKG, "SASInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
     }
   }
 
@@ -155,28 +156,28 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields.get( i ).saveRep( rep, metaStore, id_transformation, id_step, i );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages
-          .getString( PKG, "SASInputMeta.Exception.UnableToSaveMetaDataToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SASInputMeta.Exception.UnableToSaveMetaDataToRepository" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     if ( Const.isEmpty( getAcceptingField() ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SASInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SASInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new SasInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

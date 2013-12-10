@@ -24,18 +24,18 @@ package org.pentaho.di.trans.steps.jsonoutput;
 
 /**
  * Describes a single field in an Json output file
- * 
+ *
  * @author Samatar
  * @since 14-june-2010
- * 
+ *
  */
 public class JsonOutputField implements Cloneable {
   private String fieldName;
   private String elementName;
 
-  public JsonOutputField( String fieldName, String elementName, int type, String format, int length, int precision,
-      String currencySymbol, String decimalSymbol, String groupSymbol, String nullString, boolean attribute,
-      String attributeParentName ) {
+  public JsonOutputField( String fieldName, String elementName, int type, String format, int length,
+    int precision, String currencySymbol, String decimalSymbol, String groupSymbol, String nullString,
+    boolean attribute, String attributeParentName ) {
     this.fieldName = fieldName;
     this.elementName = elementName;
   }

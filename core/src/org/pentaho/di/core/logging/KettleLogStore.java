@@ -57,7 +57,7 @@ public class KettleLogStore {
 
   /**
    * Create the central log store with optional limitation to the size
-   * 
+   *
    * @param maxSize
    *          the maximum size
    * @param maxLogTimeoutMinutes
@@ -108,7 +108,7 @@ public class KettleLogStore {
 
   /**
    * Initialize the central log store with optional limitation to the size and redirect of stdout and stderr
-   * 
+   *
    * @param maxSize
    *          the maximum size
    * @param maxLogTimeoutMinutes
@@ -128,7 +128,7 @@ public class KettleLogStore {
 
   /**
    * Initialize the central log store with optional limitation to the size
-   * 
+   *
    * @param maxSize
    *          the maximum size
    * @param maxLogTimeoutHours
@@ -136,18 +136,18 @@ public class KettleLogStore {
    */
   public static void init( int maxSize, int maxLogTimeoutMinutes ) {
     init( maxSize, maxLogTimeoutMinutes, EnvUtil
-        .getSystemProperty( Const.KETTLE_REDIRECT_STDOUT, "N" ).equalsIgnoreCase( "Y" ), EnvUtil.getSystemProperty(
-        Const.KETTLE_REDIRECT_STDERR, "N" ).equalsIgnoreCase( "Y" ) );
+      .getSystemProperty( Const.KETTLE_REDIRECT_STDOUT, "N" ).equalsIgnoreCase( "Y" ), EnvUtil
+      .getSystemProperty( Const.KETTLE_REDIRECT_STDERR, "N" ).equalsIgnoreCase( "Y" ) );
   }
 
   public static void init() {
     init( EnvUtil.getSystemProperty( Const.KETTLE_REDIRECT_STDOUT, "N" ).equalsIgnoreCase( "Y" ), EnvUtil
-        .getSystemProperty( Const.KETTLE_REDIRECT_STDERR, "N" ).equalsIgnoreCase( "Y" ) );
+      .getSystemProperty( Const.KETTLE_REDIRECT_STDERR, "N" ).equalsIgnoreCase( "Y" ) );
   }
 
   /**
    * Initialize the central log store with arguments specifying whether to redirect of stdout and stderr
-   * 
+   *
    * @param redirectStdOut
    *          a boolean indicating whether to redirect stdout to the logging framework
    * @param redirectStdErr
@@ -155,20 +155,21 @@ public class KettleLogStore {
    */
   public static void init( boolean redirectStdOut, boolean redirectStdErr ) {
     int maxSize = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_MAX_LOG_SIZE_IN_LINES ), 5000 );
-    int maxLogTimeoutMinutes = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES ), 1440 );
+    int maxLogTimeoutMinutes =
+      Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES ), 1440 );
     init0( maxSize, maxLogTimeoutMinutes, redirectStdOut, redirectStdErr );
   }
 
   /**
    * Initialize the central log store. If it has already been initialized the configuration will be updated.
-   * 
+   *
    * @param maxSize
    *          the maximum size of the log buffer
    * @param maxLogTimeoutMinutes
    *          The maximum time that a log line times out in minutes
    */
   private static synchronized void init0( int maxSize, int maxLogTimeoutMinutes, boolean redirectStdOut,
-      boolean redirectStdErr ) {
+    boolean redirectStdErr ) {
     if ( store != null ) {
       // CentralLogStore already initialized. Just update the values.
       store.appender.setMaxNrLines( maxSize );
@@ -194,9 +195,9 @@ public class KettleLogStore {
   }
 
   /**
-   * 
+   *
    * Get all the log lines pertaining to the specified parent log channel id (including all children)
-   * 
+   *
    * @param parentLogChannelId
    *          the parent log channel ID to grab
    * @param includeGeneral
@@ -206,13 +207,13 @@ public class KettleLogStore {
    * @return the log lines found
    */
   public static List<KettleLoggingEvent> getLogBufferFromTo( String parentLogChannelId, boolean includeGeneral,
-      int from, int to ) {
+    int from, int to ) {
     return getInstance().appender.getLogBufferFromTo( parentLogChannelId, includeGeneral, from, to );
   }
 
   /**
    * Get all the log lines for the specified parent log channel id (including all children)
-   * 
+   *
    * @param channelId
    *          channel IDs to grab
    * @param includeGeneral
@@ -221,8 +222,8 @@ public class KettleLogStore {
    * @param to
    * @return
    */
-  public static List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral, int from,
-      int to ) {
+  public static List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral,
+    int from, int to ) {
     return getInstance().appender.getLogBufferFromTo( channelId, includeGeneral, from, to );
   }
 
@@ -236,7 +237,7 @@ public class KettleLogStore {
 
   /**
    * Discard all the lines for the specified log channel id AND all the children.
-   * 
+   *
    * @param parentLogChannelId
    *          the parent log channel id to be removed along with all its children.
    */
@@ -263,11 +264,6 @@ public class KettleLogStore {
     if ( includeGeneralMessages ) {
       bufferAppender.removeGeneralMessages();
     }
-
-    // int afterSize = bufferAppender.size();
-    // System.out.println("Bufferlines discarded for parent log channel id ["+parentLogChannelId+"], before="+beforeSize+", after="+afterSize);
-    // System.out.println("Left over lines:");
-    // System.out.println(bufferAppender.getBuffer().toString());
   }
 
   public static boolean isInitialized() {

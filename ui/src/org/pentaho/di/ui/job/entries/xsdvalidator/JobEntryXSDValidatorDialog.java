@@ -56,20 +56,20 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the XSD Validator job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-04-2007
  */
 public class JobEntryXSDValidatorDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES_XML = new String[] {
-      BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.Xml" ),
-      BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.All" ) };
+    BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.Xml" ),
+    BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.All" ) };
 
   private static final String[] FILETYPES_XSD = new String[] {
-      BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.Xsd" ),
-      BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.All" ) };
+    BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.Xsd" ),
+    BaseMessages.getString( PKG, "JobEntryXSDValidator.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;

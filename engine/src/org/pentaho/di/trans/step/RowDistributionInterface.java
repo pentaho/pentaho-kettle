@@ -40,7 +40,7 @@ public interface RowDistributionInterface {
 
   /**
    * Do the actual row distribution in the step
-   * 
+   *
    * @param rowMeta
    *          the meta-data of the row to distribute
    * @param row
@@ -54,7 +54,7 @@ public interface RowDistributionInterface {
 
   /**
    * Which mini-icon needs to be shown on the hop?
-   * 
+   *
    * @return the available code EImage or null if the standard icon needs to be used.
    */
   public EImage getDistributionImage();

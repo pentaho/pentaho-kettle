@@ -37,7 +37,7 @@ public interface LogTableInterface extends LogTableCoreInterface {
 
   /**
    * Load the information for this logging table from the job XML node
-   * 
+   *
    * @param jobnode
    *          the node to load from
    * @param databases

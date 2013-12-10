@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 19-11-2009
- * 
+ *
  */
 public class TableCompareData extends BaseStepData implements StepDataInterface {
 

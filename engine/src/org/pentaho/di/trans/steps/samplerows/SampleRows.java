@@ -36,19 +36,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Sample rows. Filter rows based on line number
- * 
+ *
  * @author Samatar
  * @since 2-jun-2003
  */
 
 public class SampleRows extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SampleRowsMeta meta;
   private SampleRowsData data;
 
   public SampleRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -95,7 +95,7 @@ public class SampleRows extends BaseStep implements StepInterface {
         } else if ( rangePart[i].matches( "\\d+\\.\\.\\d+" ) ) {
           String[] rangeMultiPart = rangePart[i].split( "\\.\\." );
           for ( int j = Integer.valueOf( rangeMultiPart[0] ).intValue(); j < Integer
-              .valueOf( rangeMultiPart[1] ).intValue() + 1; j++ ) {
+            .valueOf( rangeMultiPart[1] ).intValue() + 1; j++ ) {
             if ( log.isDebug() ) {
               logDebug( BaseMessages.getString( PKG, "SampleRows.Log.RangeValue", "" + j ) );
             }
@@ -131,7 +131,7 @@ public class SampleRows extends BaseStep implements StepInterface {
 
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "SampleRows.Log.LineNumber", getLinesRead()
-              + " : " + getInputRowMeta().getString( r ) ) );
+            + " : " + getInputRowMeta().getString( r ) ) );
         }
       }
 

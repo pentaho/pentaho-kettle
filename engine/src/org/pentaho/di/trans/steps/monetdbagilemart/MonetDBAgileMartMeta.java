@@ -79,8 +79,8 @@ public class MonetDBAgileMartMeta extends MonetDBBulkLoaderMeta {
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
 
     setupDatabaseMeta();
 

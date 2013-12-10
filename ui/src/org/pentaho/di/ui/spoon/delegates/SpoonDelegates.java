@@ -66,7 +66,8 @@ public class SpoonDelegates {
     }
     SpoonTransformationDelegate origTrans = trans;
     try {
-      trans = (SpoonTransformationDelegate) SpoonDelegateRegistry.getInstance().constructSpoonTransDelegate( spoon );
+      trans =
+        (SpoonTransformationDelegate) SpoonDelegateRegistry.getInstance().constructSpoonTransDelegate( spoon );
     } catch ( InstanceCreationException e ) {
       trans = new SpoonTransformationDelegate( spoon );
     }

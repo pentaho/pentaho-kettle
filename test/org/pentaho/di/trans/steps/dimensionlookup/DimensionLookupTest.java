@@ -109,7 +109,8 @@ public class DimensionLookupTest {
   }
 
   @Test
-  public void testDimInsertPreparesStatementWithReturnKeysForNullTechnicalKey() throws KettleException, SQLException {
+  public void testDimInsertPreparesStatementWithReturnKeysForNullTechnicalKey() throws KettleException,
+    SQLException {
     RowMetaInterface mockMetaInterface = mock( RowMetaInterface.class );
     Object[] row = new Object[0];
     Long technicalKey = null;
@@ -126,7 +127,8 @@ public class DimensionLookupTest {
   }
 
   @Test
-  public void testDimInsertPreparesStatementWithReturnKeysForNotNullTechnicalKey() throws KettleException, SQLException {
+  public void testDimInsertPreparesStatementWithReturnKeysForNotNullTechnicalKey() throws KettleException,
+    SQLException {
     RowMetaInterface mockMetaInterface = mock( RowMetaInterface.class );
     Object[] row = new Object[0];
     Long technicalKey = 1L;

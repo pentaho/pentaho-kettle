@@ -40,7 +40,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 /**
  * Fragment handler deals with the logistics of replacing a portion of the dialog from a XUL fragment when the
  * combination of database connection type and database access method calls for a replacement.
- * 
+ *
  * @author gmoran
  * @created Mar 19, 2008
  */
@@ -90,7 +90,8 @@ public class FragmentHandler extends AbstractXulEventHandler {
     Object connectionKey = DataHandler.connectionNametoID.get( connectionBox.getSelectedItem() );
     String databaseName = null;
     try {
-      databaseName = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "" + connectionKey ).getIds()[0];
+      databaseName =
+        PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "" + connectionKey ).getIds()[0];
     } catch ( Exception e ) {
       e.printStackTrace();
     }

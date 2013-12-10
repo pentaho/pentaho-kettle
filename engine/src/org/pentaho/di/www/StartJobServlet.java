@@ -59,7 +59,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
     super( jobMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -87,8 +88,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       out.println( "<HEAD>" );
       out.println( "<TITLE>Start job</TITLE>" );
       out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
-          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( jobName, "UTF-8" )
-          + "\">" );
+        + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( jobName, "UTF-8" )
+        + "\">" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
@@ -127,7 +128,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           //
           if ( job.getRep() != null && !job.getRep().isConnected() ) {
             if ( job.getRep().getUserInfo() != null ) {
-              job.getRep().connect( job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword() );
+              job.getRep().connect(
+                job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword() );
             } else {
               job.getRep().connect( null, null );
             }
@@ -141,7 +143,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
             String carteObjectId = UUID.randomUUID().toString();
             SimpleLoggingObject servletLoggingObject =
-                new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+              new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
             servletLoggingObject.setContainerObjectId( carteObjectId );
 
             Job newJob = new Job( job.getRep(), job.getJobMeta(), servletLoggingObject );
@@ -165,9 +167,9 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
           out.println( "<a href=\""
-              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-              + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p>" );
+            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p>" );
         }
       } else {
         String message = BaseMessages.getString( PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName );
@@ -176,14 +178,14 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
           out.println( "<a href=\""
-              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
     } catch ( Exception ex ) {
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
-            PKG, "StartJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+          PKG, "StartJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );

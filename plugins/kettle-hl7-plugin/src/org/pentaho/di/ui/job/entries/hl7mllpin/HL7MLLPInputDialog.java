@@ -49,7 +49,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the HL7 MPPL Input job entry.
- * 
+ *
  * @since 24-03-2011
  * @author matt
  */
@@ -57,7 +57,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class HL7MLLPInputDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?>  PKG = HL7MLLPInput.class; // for i18n purposes,
                                                      // needed by Translator2!!
-                                                     // $NON-NLS-1$
+
 
   private LabelText        wName;
 

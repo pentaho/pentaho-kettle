@@ -53,13 +53,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a table exists job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
- * 
+ *
  */
 public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryTableExists.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTableExists.class; // for i18n purposes, needed by Translator2!!
 
   private String tablename;
   private String schemaname;
@@ -90,13 +90,13 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
     retval.append( "      " ).append( XMLHandler.addTagValue( "tablename", tablename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "schemaname", schemaname ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
+      XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
 
@@ -110,14 +110,15 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       tablename = rep.getJobEntryAttributeString( id_jobentry, "tablename" );
       schemaname = rep.getJobEntryAttributeString( id_jobentry, "schemaname" );
 
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "TableExists.Meta.UnableLoadRep", "" + id_jobentry ), dbe );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "TableExists.Meta.UnableLoadRep", "" + id_jobentry ), dbe );
     }
   }
 
@@ -229,8 +230,8 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "tablename", remarks, putValidators( notBlankValidator() ) );
   }
 

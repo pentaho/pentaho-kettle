@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains DB2 specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -35,7 +35,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -89,7 +90,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -106,13 +107,13 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -129,13 +130,13 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP COLUMN " + v.getName() + Const.CR;
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -152,16 +153,17 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     String retval = "";
     retval += "ALTER TABLE " + tablename + " DROP COLUMN " + v.getName() + Const.CR + ";" + Const.CR;
-    retval += "ALTER TABLE " + tablename + " ADD COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    retval +=
+      "ALTER TABLE " + tablename + " ADD COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
     return retval;
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -244,61 +246,63 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see DatabaseInterface#getReservedWords()
    */
   @Override
   public String[] getReservedWords() {
     return new String[] {
-        // http://publib.boulder.ibm.com/infocenter/db2luw/v8/index.jsp?topic=/com.ibm.db2.udb.doc/admin/r0001095.htm
-        // For portability across the DB2 Universal Database products, the following should be considered reserved
-        // words.
-        // The following list also contains the ISO/ANSI SQL99 reserved words for future compatibility.
-        "ABSOLUTE", "ACTION", "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALLOW", "ALTER",
-        "AND", "ANY", "APPLICATION", "ARE", "ARRAY", "AS", "ASC", "ASSERTION", "ASSOCIATE", "ASUTIME", "AT", "AUDIT",
-        "AUTHORIZATION", "AUX", "AUXILIARY", "BEFORE", "BEGIN", "BETWEEN", "BINARY", "BIT", "BLOB", "BOOLEAN", "BOTH",
-        "BREADTH", "BUFFERPOOL", "BY", "CACHE", "CALL", "CALLED", "CAPTURE", "CARDINALITY", "CASCADE", "CASCADED",
-        "CASE", "CAST", "CATALOG", "CCSID", "CHAR", "CHARACTER", "CHECK", "CLASS", "CLOB", "CLOSE", "CLUSTER",
-        "COLLATE", "COLLATION", "COLLECTION", "COLLID", "COLUMN", "COMMENT", "COMMIT", "COMPLETION", "CONCAT",
-        "CONDITION", "CONNECT", "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR", "CONTAINS", "CONTINUE",
-        "CORRESPONDING", "COUNT", "COUNT_BIG", "CREATE", "CROSS", "CUBE", "CURRENT", "CURRENT_DATE",
-        "CURRENT_LC_CTYPE", "CURRENT_PATH", "CURRENT_ROLE", "CURRENT_SERVER", "CURRENT_TIME", "CURRENT_TIMESTAMP",
-        "CURRENT_TIMEZONE", "CURRENT_USER", "CURSOR", "CYCLE", "DATA", "DATABASE", "DATE", "DAY", "DAYS", "DB2GENERAL",
-        "DB2GENRL", "DB2SQL", "DBINFO", "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFAULTS", "DEFERRABLE",
-        "DEFERRED", "DEFINITION", "DELETE", "DEPTH", "DEREF", "DESC", "DESCRIBE", "DESCRIPTOR", "DESTROY",
-        "DESTRUCTOR", "DETERMINISTIC", "DIAGNOSTICS", "DICTIONARY", "DISALLOW", "DISCONNECT", "DISTINCT", "DO",
-        "DOMAIN", "DOUBLE", "DROP", "DSNHATTR", "DSSIZE", "DYNAMIC", "EACH", "EDITPROC", "ELSE", "ELSEIF", "ENCODING",
-        "END", "END-EXEC", "END-EXEC1", "EQUALS", "ERASE", "ESCAPE", "EVERY", "EXCEPT", "EXCEPTION", "EXCLUDING",
-        "EXEC", "EXECUTE", "EXISTS", "EXIT", "EXTERNAL", "FALSE", "FENCED", "FETCH", "FIELDPROC", "FILE", "FINAL",
-        "FIRST", "FLOAT", "FOR", "FOREIGN", "FOUND", "FREE", "FROM", "FULL", "FUNCTION", "GENERAL", "GENERATED", "GET",
-        "GLOBAL", "GO", "GOTO", "GRANT", "GRAPHIC", "GROUP", "GROUPING", "HANDLER", "HAVING", "HOLD", "HOST", "HOUR",
-        "HOURS", "IDENTITY", "IF", "IGNORE", "IMMEDIATE", "IN", "INCLUDING", "INCREMENT", "INDEX", "INDICATOR",
-        "INHERIT", "INITIALIZE", "INITIALLY", "INNER", "INOUT", "INPUT", "INSENSITIVE", "INSERT", "INT", "INTEGER",
-        "INTEGRITY", "INTERSECT", "INTERVAL", "INTO", "IS", "ISOBID", "ISOLATION", "ITERATE", "JAR", "JAVA", "JOIN",
-        "KEY", "LABEL", "LANGUAGE", "LARGE", "LAST", "LATERAL", "LC_CTYPE", "LEADING", "LEAVE", "LEFT", "LESS",
-        "LEVEL", "LIKE", "LIMIT", "LINKTYPE", "LOCAL", "LOCALE", "LOCALTIME", "LOCALTIMESTAMP", "LOCATOR", "LOCATORS",
-        "LOCK", "LOCKMAX", "LOCKSIZE", "LONG", "LOOP", "MAP", "MATCH", "MAXVALUE", "MICROSECOND", "MICROSECONDS",
-        "MINUTE", "MINUTES", "MINVALUE", "MODE", "MODIFIES", "MODIFY", "MODULE", "MONTH", "MONTHS", "NAMES",
-        "NATIONAL", "NATURAL", "NCHAR", "NCLOB", "NEW", "NEW_TABLE", "NEXT", "NO", "NOCACHE", "NOCYCLE", "NODENAME",
-        "NODENUMBER", "NOMAXVALUE", "NOMINVALUE", "NONE", "NOORDER", "NOT", "NULL", "NULLS", "NUMERIC", "NUMPARTS",
-        "OBID", "OBJECT", "OF", "OFF", "OLD", "OLD_TABLE", "ON", "ONLY", "OPEN", "OPERATION", "OPTIMIZATION",
-        "OPTIMIZE", "OPTION", "OR", "ORDER", "ORDINALITY", "OUT", "OUTER", "OUTPUT", "OVERRIDING", "PACKAGE", "PAD",
-        "PARAMETER", "PARAMETERS", "PART", "PARTIAL", "PARTITION", "PATH", "PIECESIZE", "PLAN", "POSITION", "POSTFIX",
-        "PRECISION", "PREFIX", "PREORDER", "PREPARE", "PRESERVE", "PRIMARY", "PRIOR", "PRIQTY", "PRIVILEGES",
-        "PROCEDURE", "PROGRAM", "PSID", "PUBLIC", "QUERYNO", "READ", "READS", "REAL", "RECOVERY", "RECURSIVE", "REF",
-        "REFERENCES", "REFERENCING", "RELATIVE", "RELEASE", "RENAME", "REPEAT", "RESET", "RESIGNAL", "RESTART",
-        "RESTRICT", "RESULT", "RESULT_SET_LOCATOR", "RETURN", "RETURNS", "REVOKE", "RIGHT", "ROLE", "ROLLBACK",
-        "ROLLUP", "ROUTINE", "ROW", "ROWS", "RRN", "RUN", "SAVEPOINT", "SCHEMA", "SCOPE", "SCRATCHPAD", "SCROLL",
-        "SEARCH", "SECOND", "SECONDS", "SECQTY", "SECTION", "SECURITY", "SELECT", "SENSITIVE", "SEQUENCE", "SESSION",
-        "SESSION_USER", "SET", "SETS", "SIGNAL", "SIMPLE", "SIZE", "SMALLINT", "SOME", "SOURCE", "SPACE", "SPECIFIC",
-        "SPECIFICTYPE", "SQL", "SQLEXCEPTION", "SQLID", "SQLSTATE", "SQLWARNING", "STANDARD", "START", "STATE",
-        "STATEMENT", "STATIC", "STAY", "STOGROUP", "STORES", "STRUCTURE", "STYLE", "SUBPAGES", "SUBSTRING", "SYNONYM",
-        "SYSFUN", "SYSIBM", "SYSPROC", "SYSTEM", "SYSTEM_USER", "TABLE", "TABLESPACE", "TEMPORARY", "TERMINATE",
-        "THAN", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO", "TRAILING", "TRANSACTION",
-        "TRANSLATION", "TREAT", "TRIGGER", "TRIM", "TRUE", "TYPE", "UNDER", "UNDO", "UNION", "UNIQUE", "UNKNOWN",
-        "UNNEST", "UNTIL", "UPDATE", "USAGE", "USER", "USING", "VALIDPROC", "VALUE", "VALUES", "VARCHAR", "VARIABLE",
-        "VARIANT", "VARYING", "VCAT", "VIEW", "VOLUMES", "WHEN", "WHENEVER", "WHERE", "WHILE", "WITH", "WITHOUT",
-        "WLM", "WORK", "WRITE", "YEAR", "YEARS", "ZONE" };
+      // http://publib.boulder.ibm.com/infocenter/db2luw/v8/index.jsp?topic=/com.ibm.db2.udb.doc/admin/r0001095.htm
+      // For portability across the DB2 Universal Database products, the following should be considered reserved
+      // words.
+      // The following list also contains the ISO/ANSI SQL99 reserved words for future compatibility.
+      "ABSOLUTE", "ACTION", "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALLOW", "ALTER",
+      "AND", "ANY", "APPLICATION", "ARE", "ARRAY", "AS", "ASC", "ASSERTION", "ASSOCIATE", "ASUTIME", "AT",
+      "AUDIT", "AUTHORIZATION", "AUX", "AUXILIARY", "BEFORE", "BEGIN", "BETWEEN", "BINARY", "BIT", "BLOB",
+      "BOOLEAN", "BOTH", "BREADTH", "BUFFERPOOL", "BY", "CACHE", "CALL", "CALLED", "CAPTURE", "CARDINALITY",
+      "CASCADE", "CASCADED", "CASE", "CAST", "CATALOG", "CCSID", "CHAR", "CHARACTER", "CHECK", "CLASS", "CLOB",
+      "CLOSE", "CLUSTER", "COLLATE", "COLLATION", "COLLECTION", "COLLID", "COLUMN", "COMMENT", "COMMIT",
+      "COMPLETION", "CONCAT", "CONDITION", "CONNECT", "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR",
+      "CONTAINS", "CONTINUE", "CORRESPONDING", "COUNT", "COUNT_BIG", "CREATE", "CROSS", "CUBE", "CURRENT",
+      "CURRENT_DATE", "CURRENT_LC_CTYPE", "CURRENT_PATH", "CURRENT_ROLE", "CURRENT_SERVER", "CURRENT_TIME",
+      "CURRENT_TIMESTAMP", "CURRENT_TIMEZONE", "CURRENT_USER", "CURSOR", "CYCLE", "DATA", "DATABASE", "DATE",
+      "DAY", "DAYS", "DB2GENERAL", "DB2GENRL", "DB2SQL", "DBINFO", "DEALLOCATE", "DEC", "DECIMAL", "DECLARE",
+      "DEFAULT", "DEFAULTS", "DEFERRABLE", "DEFERRED", "DEFINITION", "DELETE", "DEPTH", "DEREF", "DESC",
+      "DESCRIBE", "DESCRIPTOR", "DESTROY", "DESTRUCTOR", "DETERMINISTIC", "DIAGNOSTICS", "DICTIONARY",
+      "DISALLOW", "DISCONNECT", "DISTINCT", "DO", "DOMAIN", "DOUBLE", "DROP", "DSNHATTR", "DSSIZE", "DYNAMIC",
+      "EACH", "EDITPROC", "ELSE", "ELSEIF", "ENCODING", "END", "END-EXEC", "END-EXEC1", "EQUALS", "ERASE",
+      "ESCAPE", "EVERY", "EXCEPT", "EXCEPTION", "EXCLUDING", "EXEC", "EXECUTE", "EXISTS", "EXIT", "EXTERNAL",
+      "FALSE", "FENCED", "FETCH", "FIELDPROC", "FILE", "FINAL", "FIRST", "FLOAT", "FOR", "FOREIGN", "FOUND",
+      "FREE", "FROM", "FULL", "FUNCTION", "GENERAL", "GENERATED", "GET", "GLOBAL", "GO", "GOTO", "GRANT",
+      "GRAPHIC", "GROUP", "GROUPING", "HANDLER", "HAVING", "HOLD", "HOST", "HOUR", "HOURS", "IDENTITY", "IF",
+      "IGNORE", "IMMEDIATE", "IN", "INCLUDING", "INCREMENT", "INDEX", "INDICATOR", "INHERIT", "INITIALIZE",
+      "INITIALLY", "INNER", "INOUT", "INPUT", "INSENSITIVE", "INSERT", "INT", "INTEGER", "INTEGRITY",
+      "INTERSECT", "INTERVAL", "INTO", "IS", "ISOBID", "ISOLATION", "ITERATE", "JAR", "JAVA", "JOIN", "KEY",
+      "LABEL", "LANGUAGE", "LARGE", "LAST", "LATERAL", "LC_CTYPE", "LEADING", "LEAVE", "LEFT", "LESS", "LEVEL",
+      "LIKE", "LIMIT", "LINKTYPE", "LOCAL", "LOCALE", "LOCALTIME", "LOCALTIMESTAMP", "LOCATOR", "LOCATORS",
+      "LOCK", "LOCKMAX", "LOCKSIZE", "LONG", "LOOP", "MAP", "MATCH", "MAXVALUE", "MICROSECOND", "MICROSECONDS",
+      "MINUTE", "MINUTES", "MINVALUE", "MODE", "MODIFIES", "MODIFY", "MODULE", "MONTH", "MONTHS", "NAMES",
+      "NATIONAL", "NATURAL", "NCHAR", "NCLOB", "NEW", "NEW_TABLE", "NEXT", "NO", "NOCACHE", "NOCYCLE",
+      "NODENAME", "NODENUMBER", "NOMAXVALUE", "NOMINVALUE", "NONE", "NOORDER", "NOT", "NULL", "NULLS",
+      "NUMERIC", "NUMPARTS", "OBID", "OBJECT", "OF", "OFF", "OLD", "OLD_TABLE", "ON", "ONLY", "OPEN",
+      "OPERATION", "OPTIMIZATION", "OPTIMIZE", "OPTION", "OR", "ORDER", "ORDINALITY", "OUT", "OUTER", "OUTPUT",
+      "OVERRIDING", "PACKAGE", "PAD", "PARAMETER", "PARAMETERS", "PART", "PARTIAL", "PARTITION", "PATH",
+      "PIECESIZE", "PLAN", "POSITION", "POSTFIX", "PRECISION", "PREFIX", "PREORDER", "PREPARE", "PRESERVE",
+      "PRIMARY", "PRIOR", "PRIQTY", "PRIVILEGES", "PROCEDURE", "PROGRAM", "PSID", "PUBLIC", "QUERYNO", "READ",
+      "READS", "REAL", "RECOVERY", "RECURSIVE", "REF", "REFERENCES", "REFERENCING", "RELATIVE", "RELEASE",
+      "RENAME", "REPEAT", "RESET", "RESIGNAL", "RESTART", "RESTRICT", "RESULT", "RESULT_SET_LOCATOR", "RETURN",
+      "RETURNS", "REVOKE", "RIGHT", "ROLE", "ROLLBACK", "ROLLUP", "ROUTINE", "ROW", "ROWS", "RRN", "RUN",
+      "SAVEPOINT", "SCHEMA", "SCOPE", "SCRATCHPAD", "SCROLL", "SEARCH", "SECOND", "SECONDS", "SECQTY",
+      "SECTION", "SECURITY", "SELECT", "SENSITIVE", "SEQUENCE", "SESSION", "SESSION_USER", "SET", "SETS",
+      "SIGNAL", "SIMPLE", "SIZE", "SMALLINT", "SOME", "SOURCE", "SPACE", "SPECIFIC", "SPECIFICTYPE", "SQL",
+      "SQLEXCEPTION", "SQLID", "SQLSTATE", "SQLWARNING", "STANDARD", "START", "STATE", "STATEMENT", "STATIC",
+      "STAY", "STOGROUP", "STORES", "STRUCTURE", "STYLE", "SUBPAGES", "SUBSTRING", "SYNONYM", "SYSFUN",
+      "SYSIBM", "SYSPROC", "SYSTEM", "SYSTEM_USER", "TABLE", "TABLESPACE", "TEMPORARY", "TERMINATE", "THAN",
+      "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO", "TRAILING", "TRANSACTION",
+      "TRANSLATION", "TREAT", "TRIGGER", "TRIM", "TRUE", "TYPE", "UNDER", "UNDO", "UNION", "UNIQUE", "UNKNOWN",
+      "UNNEST", "UNTIL", "UPDATE", "USAGE", "USER", "USING", "VALIDPROC", "VALUE", "VALUES", "VARCHAR",
+      "VARIABLE", "VARIANT", "VARYING", "VCAT", "VIEW", "VOLUMES", "WHEN", "WHENEVER", "WHERE", "WHILE", "WITH",
+      "WITHOUT", "WLM", "WORK", "WRITE", "YEAR", "YEARS", "ZONE" };
   }
 
   @Override
@@ -317,7 +321,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   /**
    * Get the maximum length of a text field (VARCHAR) for this database connection. If this size is exceeded use a CLOB.
-   * 
+   *
    * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() -
    *         CLOB_LENGTH)
    */
@@ -355,7 +359,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   /**
    * Check if a sequence exists.
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The SQL to get the name of the sequence back from the databases data dictionary
@@ -364,8 +368,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
   public String getSQLSequenceExists( String sequenceName ) {
     if ( sequenceName.contains( "." ) ) {
       return "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQSCHEMA = '"
-          + sequenceName.substring( 0, sequenceName.indexOf( '.' ) ).toUpperCase() + "' AND SEQNAME = '"
-          + sequenceName.substring( sequenceName.indexOf( '.' ) + 1, sequenceName.length() ).toUpperCase() + "'";
+        + sequenceName.substring( 0, sequenceName.indexOf( '.' ) ).toUpperCase() + "' AND SEQNAME = '"
+        + sequenceName.substring( sequenceName.indexOf( '.' ) + 1, sequenceName.length() ).toUpperCase() + "'";
     } else {
       return "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQNAME = '" + sequenceName.toUpperCase() + "'";
     }
@@ -373,7 +377,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   /**
    * Get the current value of a database sequence
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The current value of a database sequence
@@ -385,7 +389,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   /**
    * Get the SQL to get the next value of a sequence. (Oracle only)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence. (Oracle only)
@@ -416,7 +420,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
   /**
    * @return true if the database requires you to cast a parameter to varchar before comparing to null. Only required
    *         for DB2 and Vertica
-   * 
+   *
    */
   @Override
   public boolean requiresCastToVariousForIsNull() {
@@ -426,7 +430,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
   /**
    * @return Handles the special case of DB2 where the display size returned is twice the precision. In that case, the
    *         length is the precision.
-   * 
+   *
    */
   @Override
   public boolean isDisplaySizeTwiceThePrecision() {
@@ -443,7 +447,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 
   /**
    * Get the SQL to insert a new empty unknown record in a dimension.
-   * 
+   *
    * @param schemaTable
    *          the schema-table name to insert into
    * @param keyField

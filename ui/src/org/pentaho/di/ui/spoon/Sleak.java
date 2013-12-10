@@ -43,9 +43,9 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Instructions on how to use the Sleak tool with a standlaone SWT example:
- * 
+ *
  * Modify the main method below to launch your application. Run Sleak.
- * 
+ *
  */
 public class Sleak {
   List list;

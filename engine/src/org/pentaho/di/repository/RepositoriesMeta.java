@@ -50,11 +50,11 @@ import org.w3c.dom.Node;
 /*
  * Created on 31-mrt-2004
  *
- * This class contains information regarding the defined Kettle repositories 
+ * This class contains information regarding the defined Kettle repositories
  */
 
 public class RepositoriesMeta {
-  private static Class<?> PKG = RepositoriesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RepositoriesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private List<DatabaseMeta> databases; // Repository connections
   private List<RepositoryMeta> repositories; // List of repositories
@@ -175,7 +175,7 @@ public class RepositoriesMeta {
     File file = new File( Const.getKettleLocalRepositoriesFile() );
     if ( !file.exists() || !file.isFile() ) {
       log.logDetailed( BaseMessages.getString( PKG, "RepositoryMeta.Log.NoRepositoryFileInLocalDirectory", file
-          .getAbsolutePath() ) );
+        .getAbsolutePath() ) );
       file = new File( Const.getKettleUserRepositoriesFile() );
       if ( !file.exists() || !file.isFile() ) {
         return true; // nothing to read!
@@ -200,7 +200,7 @@ public class RepositoriesMeta {
           doc = db.parse( is );
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "RepositoryMeta.Error.OpeningFile", file
-              .getAbsoluteFile() ), ef );
+            .getAbsoluteFile() ), ef );
 
         }
       }
@@ -274,7 +274,7 @@ public class RepositoriesMeta {
       }
       try {
         RepositoryMeta repositoryMeta =
-            PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, id, RepositoryMeta.class );
+          PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, id, RepositoryMeta.class );
         if ( repositoryMeta != null ) {
           repositoryMeta.loadXML( repnode, databases );
           // Backward compatibility. Description is now required as it will be what gets displayed on the
@@ -283,7 +283,8 @@ public class RepositoriesMeta {
             repositoryMeta.setDescription( repositoryMeta.getName() );
           }
           addRepository( repositoryMeta );
-          log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadRepository", repositoryMeta.getName() ) );
+          log.logDebug( BaseMessages
+            .getString( PKG, "RepositoryMeta.Log.ReadRepository", repositoryMeta.getName() ) );
         } else {
           unableToReadIds.append( id );
           unableToReadIds.append( "," );
@@ -306,8 +307,8 @@ public class RepositoriesMeta {
     }
     if ( unableToReadIds != null && unableToReadIds.length() > 0 ) {
       errorMessage =
-          BaseMessages.getString( PKG, "RepositoryMeta.Error.ReadRepositoryIdNotAvailable", unableToReadIds.substring(
-              0, unableToReadIds.lastIndexOf( "," ) - 1 ) );
+        BaseMessages.getString( PKG, "RepositoryMeta.Error.ReadRepositoryIdNotAvailable", unableToReadIds
+          .substring( 0, unableToReadIds.lastIndexOf( "," ) - 1 ) );
     }
     if ( kettleException != null ) {
       throw kettleException;

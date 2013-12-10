@@ -107,12 +107,12 @@ public class MDXValuesHighlight implements LineStyleListener {
   void initializeColors() {
     // Display display = Display.getDefault();
     colors = new Color[] { GUIResource.getInstance().getColor( 0, 0, 0 ), // black
-        GUIResource.getInstance().getColor( 255, 0, 0 ), // red
-        GUIResource.getInstance().getColor( 63, 127, 95 ), // green
-        GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
-        GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
+      GUIResource.getInstance().getColor( 255, 0, 0 ), // red
+      GUIResource.getInstance().getColor( 63, 127, 95 ), // green
+      GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
+      GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
 
-        };
+    };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
     tokenColors[WHITE] = 0;
@@ -161,7 +161,7 @@ public class MDXValuesHighlight implements LineStyleListener {
           Color color = getColor( token );
           if ( color != colors[0] ) { // hardcoded default foreground color, black
             StyleRange style =
-                new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
+              new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
             // if ( token == KEY ) {
             // style.fontStyle = SWT.BOLD;
             // }
@@ -258,23 +258,25 @@ public class MDXValuesHighlight implements LineStyleListener {
     protected boolean fEofSeen = false;
 
     private String[] kfKeywords = {
-        "Ancestor", "ClosingPeriod", "Cousin", "FirstChild", "FirstSibling", "Item", "Lag", "LastChild", "LastSibling",
-        "Lead", "LinkMember", "OpeningPeriod", "ParallelPeriod", "Parent", "PrevMember", "StrToMember",
-        "UnknownMember", "ValidMeasure", "Error", "Current", "Item", "Root", "StrToTuple", "Leaves", "This",
-        "UserName", "UniqueName", "TupleToStr", "SetToStr", "Properties", "Name", "MemberToStr", "LookupCube", "IIf",
-        "Generate", "CoalesceEmpty", "CalculationPassValue", "ISEMPTY", "ABSOLUTE", "COUNT", "AVERAGE", "min", "max"
+      "Ancestor", "ClosingPeriod", "Cousin", "FirstChild", "FirstSibling", "Item", "Lag", "LastChild",
+      "LastSibling", "Lead", "LinkMember", "OpeningPeriod", "ParallelPeriod", "Parent", "PrevMember",
+      "StrToMember", "UnknownMember", "ValidMeasure", "Error", "Current", "Item", "Root", "StrToTuple",
+      "Leaves", "This", "UserName", "UniqueName", "TupleToStr", "SetToStr", "Properties", "Name", "MemberToStr",
+      "LookupCube", "IIf", "Generate", "CoalesceEmpty", "CalculationPassValue", "ISEMPTY", "ABSOLUTE", "COUNT",
+      "AVERAGE", "min", "max"
 
     };
 
     private String[] fgKeywords = {
-        "ABSOLUTE", "DESC", "LEAVES", "SELF_BEFORE_AFTER", "INTERSECT", "SELECT", "on", "column", "crossjoin", "join",
-        "or", "by", "non", "set", "all", "after", "distinct", "asc", "as", "and", "axis", "false", "true", "for",
-        "null", "union", "global", "select", "columns", "row", "rows", "from", "cell", "call", "filter", "topsum",
-        "freeze", "tree", "totals", "topcount", "type", "unique", "use", "pass", "post", "ignore", "value", "where",
-        "with", "xor", "lead", "LASTCHILD", "value", "group", "generate", "cell", "calculations", "totals", "drop",
-        "sort", "level", "sort", "DESCENDANTS", "DRILLDOWNLEVEL", "DRILLDOWNLEVELBOTTOM", "members", "DEFAULT_MEMBER",
-        "DEFAULTMEMBER", "CHILDREN", "PAGES", "DIMENSIONS", "DIMENSION", "INDEX", "var", "RECURSIVE", "WITH", "CACHE",
-        "filter", "NEXTMEMBER", "EMPTY", "MEASURE", "DISTINCTCOUNT", "UPDATE", "CUBE", "error" };
+      "ABSOLUTE", "DESC", "LEAVES", "SELF_BEFORE_AFTER", "INTERSECT", "SELECT", "on", "column", "crossjoin",
+      "join", "or", "by", "non", "set", "all", "after", "distinct", "asc", "as", "and", "axis", "false", "true",
+      "for", "null", "union", "global", "select", "columns", "row", "rows", "from", "cell", "call", "filter",
+      "topsum", "freeze", "tree", "totals", "topcount", "type", "unique", "use", "pass", "post", "ignore",
+      "value", "where", "with", "xor", "lead", "LASTCHILD", "value", "group", "generate", "cell",
+      "calculations", "totals", "drop", "sort", "level", "sort", "DESCENDANTS", "DRILLDOWNLEVEL",
+      "DRILLDOWNLEVELBOTTOM", "members", "DEFAULT_MEMBER", "DEFAULTMEMBER", "CHILDREN", "PAGES", "DIMENSIONS",
+      "DIMENSION", "INDEX", "var", "RECURSIVE", "WITH", "CACHE", "filter", "NEXTMEMBER", "EMPTY", "MEASURE",
+      "DISTINCTCOUNT", "UPDATE", "CUBE", "error" };
 
     public JavaScanner() {
       initialize();

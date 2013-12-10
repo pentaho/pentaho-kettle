@@ -61,13 +61,14 @@ public class KettleFileRepositoryTest extends TestCase {
     File dirFile = new File( dirName );
     if ( !dirFile.mkdir() ) {
       throw new KettleException( "bad luck, directory '"
-          + dirName + "' already exists and can't be used to put a file repository in it." );
+        + dirName + "' already exists and can't be used to put a file repository in it." );
     }
 
     System.out.println( "Using folder '" + dirName + "' to store a file repository in." );
 
     try {
-      repositoryMeta = new KettleFileRepositoryMeta( "KettleFileRepository", "FileRep", "File repository", dirName );
+      repositoryMeta =
+        new KettleFileRepositoryMeta( "KettleFileRepository", "FileRep", "File repository", dirName );
       repository = new KettleFileRepository();
       repository.init( repositoryMeta );
 
@@ -85,7 +86,8 @@ public class KettleFileRepositoryTest extends TestCase {
       //
       RepositoryDirectoryInterface fooDirectory = repository.createRepositoryDirectory( tree, "foo" );
       RepositoryDirectoryInterface barDirectory = repository.createRepositoryDirectory( fooDirectory, "bar" );
-      RepositoryDirectoryInterface samplesDirectory = repository.createRepositoryDirectory( fooDirectory, "samples" );
+      RepositoryDirectoryInterface samplesDirectory =
+        repository.createRepositoryDirectory( fooDirectory, "samples" );
 
       // Test directory path lookup
       RepositoryDirectoryInterface checkBar = tree.findDirectory( "/foo/bar" );
@@ -168,7 +170,8 @@ public class KettleFileRepositoryTest extends TestCase {
 
     // Verify the number of stored files, see if we can find them all again.
     //
-    System.out.println( "Stored " + files.length + " transformation samples in folder " + samplesDirectory.getPath() );
+    System.out.println( "Stored "
+      + files.length + " transformation samples in folder " + samplesDirectory.getPath() );
     String[] transformationNames = repository.getTransformationNames( samplesDirectory.getObjectId(), false );
     assertEquals( files.length, transformationNames.length );
   }

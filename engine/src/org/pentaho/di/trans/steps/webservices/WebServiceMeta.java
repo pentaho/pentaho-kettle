@@ -114,7 +114,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     fieldsOut = new ArrayList<WebServiceField>();
   }
 
-  public WebServiceMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public WebServiceMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     this();
     loadXML( stepnode, databases, metaStore );
   }
@@ -127,7 +128,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Input rows and output rows are different in the webservice step
     //
     if ( !isPassingInputData() ) {
@@ -172,17 +173,19 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     passingInputData = true; // Pass input data by default.
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
-      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
+      cr =
+        new CheckResult(
+          CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
-              + prev.size() + " fields", stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
+          + prev.size() + " fields", stepMeta );
       remarks.add( cr );
     }
 
@@ -254,7 +257,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     // Load the URL
     //
     setUrl( XMLHandler.getTagValue( stepnode, "wsURL" ) );
@@ -418,8 +422,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     this.operationName = operationName;
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans disp ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans disp ) {
     return new WebService( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 
@@ -441,7 +445,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Returns the WebServicesField for the given wsName.
-   * 
+   *
    * @param wsName
    *          The name of the WebServiceField to return
    * @param ignoreWsNsPrefix

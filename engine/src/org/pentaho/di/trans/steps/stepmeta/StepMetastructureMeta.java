@@ -50,7 +50,7 @@ import org.w3c.dom.Node;
 
 public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInterface {
 
-  private static Class<?> PKG = StepMetastructureMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepMetastructureMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String fieldName;
   private String comments;
@@ -63,7 +63,8 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
   private boolean outputRowcount;
   private String rowcountField;
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -113,7 +114,7 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new StepMetastructure( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -121,9 +122,9 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
     return new StepMetastructureData();
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Not implemented", stepMeta );
@@ -132,7 +133,7 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // we create a new output row structure - clear r
     r.clear();
 

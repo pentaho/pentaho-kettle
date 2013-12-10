@@ -37,7 +37,7 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class MappingData extends BaseStepData implements StepDataInterface {
   public Trans mappingTrans;

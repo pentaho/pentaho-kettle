@@ -44,11 +44,11 @@ import org.w3c.dom.Node;
 /**
  * A partition schema allow you to partition a step according into a number of partitions that run independendly. It
  * allows us to "map"
- * 
+ *
  * @author Matt
  */
-public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, ResourceHolderInterface,
-    RepositoryElementInterface, XMLInterface {
+public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface,
+  ResourceHolderInterface, RepositoryElementInterface, XMLInterface {
   public static final String XML_TAG = "partitionschema";
 
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.PARTITION_SCHEMA;
@@ -159,7 +159,9 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     }
 
     xml.append( "          " ).append( XMLHandler.addTagValue( "dynamic", dynamicallyDefined ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "partitions_per_slave", numberOfPartitionsPerSlave ) );
+    xml
+      .append( "          " ).append(
+        XMLHandler.addTagValue( "partitions_per_slave", numberOfPartitionsPerSlave ) );
 
     xml.append( "        </" ).append( XML_TAG ).append( ">" ).append( Const.CR );
     return xml.toString();
@@ -207,7 +209,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
   }
 
   public String getHolderType() {
-    return "PARTITION_SCHEMA"; // $NON-NLS-1 $
+    return "PARTITION_SCHEMA";
   }
 
   public String getTypeId() {
@@ -270,7 +272,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
    * Slave 0 : 0, 2, 4<br>
    * Slave 1 : 1, 3, 5<br>
    * --> slaveNumber == partitionNr % slaveCount<br>
-   * 
+   *
    * @param slaveCount
    * @param slaveNumber
    */

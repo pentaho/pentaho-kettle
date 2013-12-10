@@ -53,7 +53,7 @@ import org.pentaho.di.version.BuildVersion;
 
 /**
  * Displays the Kettle splash screen
- * 
+ *
  * @author Matt
  * @since 14-mrt-2005
  */
@@ -73,7 +73,7 @@ public class Splash {
 
   private int licFontSize = 8;
 
-  private static Class<?> PKG = Splash.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Splash.class; // for i18n purposes, needed by Translator2!!
 
   private static LogChannelInterface log;
 
@@ -82,9 +82,12 @@ public class Splash {
 
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
-    kettle_image = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "splash_image" ) ); // "kettle_splash.png"
-    kettle_icon = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "splash_icon" ) ); // "spoon.ico"
-    exclamation_image = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "exclamation_image" ) ); // "exclamation.png"
+    // "kettle_splash.png"
+    kettle_image = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "splash_image" ) );
+    // "spoon.ico"
+    kettle_icon = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "splash_icon" ) );
+    // "exclamation.png"
+    exclamation_image = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "exclamation_image" ) );
 
     verFont = new Font( display, "Helvetica", 11, SWT.BOLD );
     licFont = new Font( display, "Helvetica", licFontSize, SWT.NORMAL );
@@ -102,15 +105,15 @@ public class Splash {
     splash.addPaintListener( new PaintListener() {
       public void paintControl( PaintEvent e ) {
         String versionText =
-            BaseMessages.getString( PKG, "SplashDialog.Version" ) + " " + BuildVersion.getInstance().getVersion();
+          BaseMessages.getString( PKG, "SplashDialog.Version" ) + " " + BuildVersion.getInstance().getVersion();
 
         StringBuilder sb = new StringBuilder();
         String line = null;
 
         try {
           BufferedReader reader =
-              new BufferedReader( new InputStreamReader( Splash.class.getClassLoader().getResourceAsStream(
-                  "org/pentaho/di/ui/core/dialog/license/license.txt" ) ) );
+            new BufferedReader( new InputStreamReader( Splash.class.getClassLoader().getResourceAsStream(
+              "org/pentaho/di/ui/core/dialog/license/license.txt" ) ) );
 
           while ( ( line = reader.readLine() ) != null ) {
             sb.append( line + System.getProperty( "line.separator" ) );

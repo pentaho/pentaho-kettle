@@ -41,16 +41,16 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  * The source step is an Injector step.<br>
  * The target step is a dummy step.<br>
  * The middle step is the step specified.<br>
- * 
+ *
  * @author Matt Casters (mcasters@pentaho.org)
- * 
+ *
  */
 public class TransTestFactory {
   public static final String INJECTOR_STEPNAME = "injector";
   public static final String DUMMY_STEPNAME = "dummy";
 
   public static TransMeta generateTestTransformation( VariableSpace parent, StepMetaInterface oneMeta,
-      String oneStepname ) {
+    String oneStepname ) {
     PluginRegistry registry = PluginRegistry.getInstance();
 
     TransMeta previewMeta = new TransMeta( parent );
@@ -58,7 +58,8 @@ public class TransTestFactory {
     // First the injector step...
     //
     InjectorMeta zeroMeta = new InjectorMeta();
-    StepMeta zero = new StepMeta( registry.getPluginId( StepPluginType.class, zeroMeta ), INJECTOR_STEPNAME, zeroMeta );
+    StepMeta zero =
+      new StepMeta( registry.getPluginId( StepPluginType.class, zeroMeta ), INJECTOR_STEPNAME, zeroMeta );
     zero.setLocation( 50, 50 );
     zero.setDraw( true );
     previewMeta.addStep( zero );
@@ -89,7 +90,7 @@ public class TransTestFactory {
   }
 
   public static List<RowMetaAndData> executeTestTransformation( TransMeta transMeta, String injectorStepname,
-      String testStepname, String dummyStepname, List<RowMetaAndData> inputData ) throws KettleException {
+    String testStepname, String dummyStepname, List<RowMetaAndData> inputData ) throws KettleException {
     // Now execute the transformation...
     Trans trans = new Trans( transMeta );
 

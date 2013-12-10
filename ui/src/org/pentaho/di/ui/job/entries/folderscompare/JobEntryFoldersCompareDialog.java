@@ -59,15 +59,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Folders compare job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 25-11-2007
  */
 public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryFoldersCompare.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFoldersCompare.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString(
-      PKG, "JobFoldersCompare.Filetype.All" ) };
+    PKG, "JobFoldersCompare.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -191,7 +191,8 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
     wlIncludeSubfolders.setLayoutData( fdlIncludeSubfolders );
     wIncludeSubfolders = new Button( wSettings, SWT.CHECK );
     props.setLook( wIncludeSubfolders );
-    wIncludeSubfolders.setToolTipText( BaseMessages.getString( PKG, "JobFoldersCompare.IncludeSubfolders.Tooltip" ) );
+    wIncludeSubfolders
+      .setToolTipText( BaseMessages.getString( PKG, "JobFoldersCompare.IncludeSubfolders.Tooltip" ) );
     fdIncludeSubfolders = new FormData();
     fdIncludeSubfolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubfolders.top = new FormAttachment( wName, margin );
@@ -244,8 +245,8 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
     fdlWildcard.right = new FormAttachment( middle, -margin );
     wlWildcard.setLayoutData( fdlWildcard );
     wWildcard =
-        new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobFoldersCompare.Wildcard.Tooltip" ) );
+      new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFoldersCompare.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();
@@ -286,7 +287,8 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
     wlCompareFileContent.setLayoutData( fdlCompareFileContent );
     wCompareFileContent = new Button( wSettings, SWT.CHECK );
     props.setLook( wCompareFileContent );
-    wCompareFileContent.setToolTipText( BaseMessages.getString( PKG, "JobFoldersCompare.CompareFileContent.Tooltip" ) );
+    wCompareFileContent.setToolTipText( BaseMessages.getString(
+      PKG, "JobFoldersCompare.CompareFileContent.Tooltip" ) );
     fdCompareFileContent = new FormData();
     fdCompareFileContent.left = new FormAttachment( middle, 0 );
     fdCompareFileContent.top = new FormAttachment( wCompareFileSize, margin );

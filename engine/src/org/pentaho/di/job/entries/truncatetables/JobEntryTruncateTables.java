@@ -57,13 +57,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a Truncate Tables job entry.
- * 
+ *
  * @author Samatar
  * @since 22-07-2008
- * 
+ *
  */
 public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryTruncateTables.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTruncateTables.class; // for i18n purposes, needed by Translator2!!
 
   public boolean argFromPrevious;
 
@@ -100,7 +100,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 
     retval.append( super.getXML() );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", this.connection == null ? null : this.connection.getName() ) );
+      XMLHandler.addTagValue( "connection", this.connection == null ? null : this.connection.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "arg_from_previous", this.argFromPrevious ) );
     retval.append( "      <fields>" ).append( Const.CR );
     if ( arguments != null ) {
@@ -115,8 +115,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
 
@@ -143,7 +143,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
 
@@ -160,8 +160,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
       }
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "JobEntryTruncateTables.UnableLoadRep", "" + id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString( PKG, "JobEntryTruncateTables.UnableLoadRep", ""
+        + id_jobentry ), dbe );
     }
   }
 
@@ -179,7 +179,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
       }
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException(
-          BaseMessages.getString( PKG, "JobEntryTruncateTables.UnableSaveRep", "" + id_job ), dbe );
+        BaseMessages.getString( PKG, "JobEntryTruncateTables.UnableSaveRep", "" + id_job ), dbe );
     }
   }
 
@@ -227,7 +227,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
       }
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobEntryTruncateTables.Error.CanNotTruncateTables", realTablename, e
-          .toString() ) );
+        .toString() ) );
     }
     return retval;
   }
@@ -245,7 +245,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     if ( argFromPrevious ) {
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryTruncateTables.FoundPreviousRows", String
-            .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
+          .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
       }
       if ( rows.size() == 0 ) {
         return result;
@@ -269,7 +269,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
             if ( !Const.isEmpty( tablename_previous ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString(
-                    PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous ) );
+                  PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous ) );
               }
 
               // let's truncate table
@@ -290,7 +290,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
             if ( !Const.isEmpty( realTablename ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString(
-                    PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i] ) );
+                  PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i] ) );
               }
 
               // let's truncate table
@@ -300,7 +300,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
                 updateErrors();
               }
             } else {
-              logError( BaseMessages.getString( PKG, "JobEntryTruncateTables.ArgEmpty", arguments[i], schemaname[i] ) );
+              logError( BaseMessages.getString(
+                PKG, "JobEntryTruncateTables.ArgEmpty", arguments[i], schemaname[i] ) );
             }
           }
         }
@@ -336,8 +337,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     return new DatabaseMeta[] { connection, };
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {

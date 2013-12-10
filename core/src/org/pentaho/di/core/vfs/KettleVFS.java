@@ -51,7 +51,7 @@ import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactor
 import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleVFS {
-  private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 
   private static final KettleVFS kettleVFS = new KettleVFS();
   private final DefaultFileSystemManager fsm;
@@ -102,7 +102,8 @@ public class KettleVFS {
     return getFileObject( vfsFilename, space, null );
   }
 
-  public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions ) throws KettleFileException {
+  public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions )
+    throws KettleFileException {
     return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
   }
 
@@ -153,19 +154,19 @@ public class KettleVFS {
       return fileObject;
     } catch ( IOException e ) {
       throw new KettleFileException( "Unable to get VFS File object for filename '"
-          + vfsFilename + "' : " + e.getMessage() );
+        + vfsFilename + "' : " + e.getMessage() );
     }
   }
 
   private static FileSystemOptions buildFsOptions( VariableSpace varSpace, FileSystemOptions sourceOptions,
-      String vfsFilename, String scheme ) throws IOException {
+    String vfsFilename, String scheme ) throws IOException {
     if ( varSpace == null || vfsFilename == null ) {
       // We cannot extract settings from a non-existant variable space
       return null;
     }
 
     IKettleFileSystemConfigBuilder configBuilder =
-        KettleFileSystemConfigBuilderFactory.getConfigBuilder( varSpace, scheme );
+      KettleFileSystemConfigBuilderFactory.getConfigBuilder( varSpace, scheme );
 
     FileSystemOptions fsOptions = ( sourceOptions == null ) ? new FileSystemOptions() : sourceOptions;
 
@@ -186,7 +187,7 @@ public class KettleVFS {
 
   /**
    * Read a text file (like an XML document). WARNING DO NOT USE FOR DATA FILES.
-   * 
+   *
    * @param vfsFilename
    *          the filename or URL to read from
    * @param charSetName
@@ -268,7 +269,7 @@ public class KettleVFS {
     if ( parent != null ) {
       if ( !parent.exists() ) {
         throw new IOException( BaseMessages.getString(
-            PKG, "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename( parent ) ) );
+          PKG, "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename( parent ) ) );
       }
     }
     try {
@@ -306,8 +307,8 @@ public class KettleVFS {
     }
   }
 
-  public static OutputStream getOutputStream( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions,
-      boolean append ) throws KettleFileException {
+  public static OutputStream getOutputStream( String vfsFilename, VariableSpace space,
+    FileSystemOptions fsOptions, boolean append ) throws KettleFileException {
     try {
       FileObject fileObject = getFileObject( vfsFilename, space, fsOptions );
       return getOutputStream( fileObject, append );
@@ -337,7 +338,8 @@ public class KettleVFS {
     return fileString;
   }
 
-  public static FileObject createTempFile( String prefix, String suffix, String directory ) throws KettleFileException {
+  public static FileObject createTempFile( String prefix, String suffix, String directory )
+    throws KettleFileException {
     return createTempFile( prefix, suffix, directory, null );
   }
 
@@ -352,8 +354,8 @@ public class KettleVFS {
         // being
         // duplicated which would cause the sort to fail.
         String filename =
-            new StringBuffer( 50 ).append( directory ).append( '/' ).append( prefix ).append( '_' ).append(
-                UUIDUtil.getUUIDAsString() ).append( suffix ).toString();
+          new StringBuffer( 50 ).append( directory ).append( '/' ).append( prefix ).append( '_' ).append(
+            UUIDUtil.getUUIDAsString() ).append( suffix ).toString();
         fileObject = getFileObject( filename, space );
       } while ( fileObject.exists() );
       return fileObject;
@@ -375,7 +377,7 @@ public class KettleVFS {
 
   /**
    * Get a FileInputStream for a local file. Local files can be read with NIO.
-   * 
+   *
    * @param fileObject
    * @return a FileInputStream
    * @throws IOException

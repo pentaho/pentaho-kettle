@@ -32,9 +32,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * This class will hand out value meta objects from the plugin registry.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class ValueMetaFactory {
 
@@ -79,7 +79,8 @@ public class ValueMetaFactory {
     target.setGroupingSymbol( source.getGroupingSymbol() );
     target.setStorageType( source.getStorageType() );
     if ( source.getStorageMetadata() != null ) {
-      target.setStorageMetadata( cloneValueMeta( source.getStorageMetadata(), source.getStorageMetadata().getType() ) );
+      target.setStorageMetadata( cloneValueMeta( source.getStorageMetadata(), source
+        .getStorageMetadata().getType() ) );
     }
     target.setStringEncoding( source.getStringEncoding() );
     target.setTrimType( source.getTrimType() );

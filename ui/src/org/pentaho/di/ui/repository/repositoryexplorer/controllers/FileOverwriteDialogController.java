@@ -45,9 +45,9 @@ import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 /**
  * Displays all files to overwrite in a list and prompts the user to continue or cancel.
- * 
+ *
  * @author cboyden
- * 
+ *
  */
 public class FileOverwriteDialogController extends AbstractXulEventHandler {
   private static final String name = "fileOverwriteDialogController";
@@ -81,8 +81,8 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
       swtLoader.setOuterContext( shell );
       swtLoader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
       XulDomContainer container =
-          swtLoader.loadXul(
-              "org/pentaho/di/ui/repository/repositoryexplorer/xul/file-overwrite-dialog.xul", resourceBundle );
+        swtLoader.loadXul(
+          "org/pentaho/di/ui/repository/repositoryexplorer/xul/file-overwrite-dialog.xul", resourceBundle );
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer( container );
 
@@ -110,11 +110,11 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
       bf.setDocument( container.getDocumentRoot() );
 
       bf.setBindingType( Binding.Type.ONE_WAY );
-      bf.createBinding( objects, "children", "file-list", "elements" ).fireSourceChanged(); //$NON-NLS-3$
+      bf.createBinding( objects, "children", "file-list", "elements" ).fireSourceChanged();
     } catch ( Exception e ) {
       new ErrorDialog( (Shell) container.getOuterContext(), BaseMessages.getString(
-          PKG, "FileOverwriteDialog.ErrorDialog.Title" ), BaseMessages.getString(
-          PKG, "FileOverwriteDialog.ErrorDialog.Message" ), e );
+        PKG, "FileOverwriteDialog.ErrorDialog.Title" ), BaseMessages.getString(
+        PKG, "FileOverwriteDialog.ErrorDialog.Message" ), e );
     }
   }
 

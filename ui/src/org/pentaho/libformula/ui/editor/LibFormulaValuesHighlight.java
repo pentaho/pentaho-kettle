@@ -31,10 +31,10 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * This class provides color coding for recognized keywords, values, numbers, functions, strings, etc.
- * 
+ *
  * @author matt
  * @since 2008-dec-17
- * 
+ *
  */
 public class LibFormulaValuesHighlight implements LineStyleListener {
   LibFormulaScanner scanner = new LibFormulaScanner();
@@ -95,12 +95,12 @@ public class LibFormulaValuesHighlight implements LineStyleListener {
   void initializeColors() {
     Display display = Display.getDefault();
     colors = new Color[] { new Color( display, new RGB( 0, 0, 0 ) ), // black
-        new Color( display, new RGB( 255, 0, 0 ) ), // red
-        new Color( display, new RGB( 63, 127, 95 ) ), // green
-        new Color( display, new RGB( 0, 0, 255 ) ), // blue
-        new Color( display, new RGB( 255, 0, 255 ) ) // SQL Functions / Rose
+      new Color( display, new RGB( 255, 0, 0 ) ), // red
+      new Color( display, new RGB( 63, 127, 95 ) ), // green
+      new Color( display, new RGB( 0, 0, 255 ) ), // blue
+      new Color( display, new RGB( 255, 0, 255 ) ) // SQL Functions / Rose
 
-        };
+    };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
     tokenColors[WHITE] = 0;
@@ -155,7 +155,7 @@ public class LibFormulaValuesHighlight implements LineStyleListener {
           Color color = getColor( token );
           if ( color != colors[0] ) { // hardcoded default foreground color, black
             StyleRange style =
-                new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
+              new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
             if ( token == KEY ) {
               style.fontStyle = SWT.BOLD;
             }
@@ -252,60 +252,61 @@ public class LibFormulaValuesHighlight implements LineStyleListener {
     protected boolean fEofSeen = false;
 
     private String[] valueNames = {
-        "+",
-        "-",
-        "*",
-        "/", // basic computation
-        "%", // Percentage
-        "^", // Power
-        "&", // String concatenation
-        "=", "<>",
-        "<",
-        "<=",
-        ">",
-        ">=", // Comparisons
-        "(",
-        ")", // Braces in formulas
+      "+",
+      "-",
+      "*",
+      "/", // basic computation
+      "%", // Percentage
+      "^", // Power
+      "&", // String concatenation
+      "=", "<>",
+      "<",
+      "<=",
+      ">",
+      ">=", // Comparisons
+      "(",
+      ")", // Braces in formulas
 
-        // Category Rounding
-        "INT",
+      // Category Rounding
+      "INT",
 
-        // Category Information
-        "CHOOSE", "HASCHANGED", "ISBLANK", "ISERR", "ISERROR", "ISEVEN", "ISLOGICAL", "ISNA", "ISNONTEXT", "ISNUMBER",
-        "ISODD", "ISREF", "ISTEXT", "NA",
+      // Category Information
+      "CHOOSE", "HASCHANGED", "ISBLANK", "ISERR", "ISERROR", "ISEVEN", "ISLOGICAL", "ISNA", "ISNONTEXT",
+      "ISNUMBER", "ISODD", "ISREF", "ISTEXT", "NA",
 
-        // Category Text
-        "EXACT", "FIND", "LEFT", "LEN", "LOWER", "MID", "REPLACE", "REPT", "RIGHT", "SUBSTITUTE", "T", "TEXT", "TRIM",
-        "UPPER", "URLENCODE",
+      // Category Text
+      "EXACT", "FIND", "LEFT", "LEN", "LOWER", "MID", "REPLACE", "REPT", "RIGHT", "SUBSTITUTE", "T", "TEXT",
+      "TRIM", "UPPER", "URLENCODE",
 
-        // Category Mathematical
-        "ABS", "AVERAGE", "EVEN", "MAX", "MIN", "MOD", "ODD", "SUM",
+      // Category Mathematical
+      "ABS", "AVERAGE", "EVEN", "MAX", "MIN", "MOD", "ODD", "SUM",
 
-        // Category Date/Time
-        "DATE", "DATEDIF", "DATEVALUE", "DAY", "HOUR", "MONTH", "NOW", "TIME", "TODAY", "WEEKDAY", "YEAR",
+      // Category Date/Time
+      "DATE", "DATEDIF", "DATEVALUE", "DAY", "HOUR", "MONTH", "NOW", "TIME", "TODAY", "WEEKDAY", "YEAR",
 
-        // Category Logical
-        "AND", "FALSE", "IF", "NOT", "OR", "TRUE", "XOR",
+      // Category Logical
+      "AND", "FALSE", "IF", "NOT", "OR", "TRUE", "XOR",
 
-        // Export type...
-        "ISEXPORTTYPE", };
+      // Export type...
+      "ISEXPORTTYPE", };
 
     private String[] fgKeywords = {
-        "create", "procedure", "as", "set", "nocount", "on", "declare", "varchar", "print", "table", "int", "select",
-        "from", "where", "and", "or", "insert", "into", "cursor", "read_only", "for", "open", "fetch", "next", "end",
-        "deallocate", "table", "drop", "exec", "begin", "close", "update", "delete", "truncate", "inner", "outer",
-        "left", "join", "union", "all", "float", "when", "nolock", "with", "false", "datetime", "dare", "time", "hour",
-        "array", "minute", "second", "millisecond", "view", "function", "catch", "const", "continue", "compute",
-        "browse", "option", "date", "default", "delete", "do", "raw", "auto", "explicit", "xmldata", "elements",
-        "binary", "base64", "read", "outfile", "asc", "desc", "else", "eval", "escape", "having", "limit", "offset",
-        "of", "intersect", "except", "using", "variance", "specific", "language", "body", "returns", "specific",
-        "deterministic", "not", "external", "action", "reads", "static", "inherit", "called", "order", "group", "by",
-        "natural", "full", "exists", "between", "some", "any", "unique", "match", "value", "limite", "minus",
-        "references", "grant", "on", "top", "index", "bigint", "text", "char", "use", "move", "exec", "init", "name",
-        "noskip", "skip", "noformat", "format", "stats", "disk", "from", "to", "rownum", "alter", "add", "delete",
-        "remove", "if", "else", "in", "new", "Number", "null", "string", "switch", "this", "then", "throw", "true",
-        "false", "try", "return", "with", "while", "start", "connect", "optimize", "first", "only", "rows", "sequence",
-        "blob", "clob", "image", "binary", "column", "decimal", "distinct", "primary", "key" };
+      "create", "procedure", "as", "set", "nocount", "on", "declare", "varchar", "print", "table", "int",
+      "select", "from", "where", "and", "or", "insert", "into", "cursor", "read_only", "for", "open", "fetch",
+      "next", "end", "deallocate", "table", "drop", "exec", "begin", "close", "update", "delete", "truncate",
+      "inner", "outer", "left", "join", "union", "all", "float", "when", "nolock", "with", "false", "datetime",
+      "dare", "time", "hour", "array", "minute", "second", "millisecond", "view", "function", "catch", "const",
+      "continue", "compute", "browse", "option", "date", "default", "delete", "do", "raw", "auto", "explicit",
+      "xmldata", "elements", "binary", "base64", "read", "outfile", "asc", "desc", "else", "eval", "escape",
+      "having", "limit", "offset", "of", "intersect", "except", "using", "variance", "specific", "language",
+      "body", "returns", "specific", "deterministic", "not", "external", "action", "reads", "static", "inherit",
+      "called", "order", "group", "by", "natural", "full", "exists", "between", "some", "any", "unique",
+      "match", "value", "limite", "minus", "references", "grant", "on", "top", "index", "bigint", "text",
+      "char", "use", "move", "exec", "init", "name", "noskip", "skip", "noformat", "format", "stats", "disk",
+      "from", "to", "rownum", "alter", "add", "delete", "remove", "if", "else", "in", "new", "Number", "null",
+      "string", "switch", "this", "then", "throw", "true", "false", "try", "return", "with", "while", "start",
+      "connect", "optimize", "first", "only", "rows", "sequence", "blob", "clob", "image", "binary", "column",
+      "decimal", "distinct", "primary", "key" };
 
     public LibFormulaScanner() {
       initialize();

@@ -51,8 +51,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // If the data type doesn't exist, it's an empty list...
     //
     IMetaStoreElementType elementType =
-        metaStore.getElementTypeByName(
-            PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+      metaStore.getElementTypeByName(
+        PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
     if ( elementType == null ) {
       return databases;
     }
@@ -64,14 +64,15 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
         databases.add( databaseMeta );
       } catch ( Exception e ) {
         throw new MetaStoreException( "Unable to load database from element with name '"
-            + element.getName() + "' and type '" + elementType.getName() + "'", e );
+          + element.getName() + "' and type '" + elementType.getName() + "'", e );
       }
     }
 
     return databases;
   }
 
-  public static void createDatabaseElement( IMetaStore metaStore, DatabaseMeta databaseMeta ) throws MetaStoreException {
+  public static void createDatabaseElement( IMetaStore metaStore, DatabaseMeta databaseMeta )
+    throws MetaStoreException {
 
     // If the Pentaho namespace doesn't exist, create it!
     //
@@ -82,8 +83,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // If the database connection element type doesn't exist, create it
     //
     IMetaStoreElementType elementType =
-        metaStore.getElementTypeByName(
-            PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+      metaStore.getElementTypeByName(
+        PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
     if ( elementType == null ) {
       elementType = populateDatabaseElementType( metaStore );
       metaStore.createElementType( PentahoDefaults.NAMESPACE, elementType );
@@ -98,7 +99,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     metaStore.createElement( PentahoDefaults.NAMESPACE, databaseElement.getElementType(), databaseElement );
   }
 
-  public static IMetaStoreElementType populateDatabaseElementType( IMetaStore metaStore ) throws MetaStoreException {
+  public static IMetaStoreElementType populateDatabaseElementType( IMetaStore metaStore )
+    throws MetaStoreException {
 
     // The new type will typically have an ID so all we need to do is give the type a name and a description.
     //
@@ -121,8 +123,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // If the data type doesn't exist, error out...
     //
     IMetaStoreElementType elementType =
-        metaStore.getElementTypeByName(
-            PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+      metaStore.getElementTypeByName(
+        PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
     if ( elementType == null ) {
       throw new MetaStoreException( "Unable to find the database connection type" );
     }
@@ -137,22 +139,24 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
 
     element.setName( databaseMeta.getName() );
 
-    element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_DESCRIPTION, databaseMeta.getDescription() ) );
-    element
-        .addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_ACCESS_TYPE, databaseMeta.getAccessTypeDesc() ) );
+    element.addChild( metaStore
+      .newAttribute( MetaStoreConst.DB_ATTR_ID_DESCRIPTION, databaseMeta.getDescription() ) );
+    element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_ACCESS_TYPE, databaseMeta
+      .getAccessTypeDesc() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_HOSTNAME, databaseMeta.getHostname() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_PORT, databaseMeta
-        .getDatabasePortNumberString() ) );
-    element
-        .addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_DATABASE_NAME, databaseMeta.getDatabaseName() ) );
+      .getDatabasePortNumberString() ) );
+    element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_DATABASE_NAME, databaseMeta
+      .getDatabaseName() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_USERNAME, databaseMeta.getUsername() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_PASSWORD, metaStore
-        .getTwoWayPasswordEncoder().encode( databaseMeta.getPassword() ) ) );
-    element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_SERVERNAME, databaseMeta.getServername() ) );
+      .getTwoWayPasswordEncoder().encode( databaseMeta.getPassword() ) ) );
+    element
+      .addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_SERVERNAME, databaseMeta.getServername() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_DATA_TABLESPACE, databaseMeta
-        .getDataTablespace() ) );
+      .getDataTablespace() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_INDEX_TABLESPACE, databaseMeta
-        .getIndexTablespace() ) );
+      .getIndexTablespace() ) );
 
     IMetaStoreAttribute attributesChild = metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_ATTRIBUTES, null );
     element.addChild( attributesChild );
@@ -173,7 +177,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     //
     // The driver class
     //
-    element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_DRIVER_CLASS, databaseMeta.getDriverClass() ) );
+    element
+      .addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_DRIVER_CLASS, databaseMeta.getDriverClass() ) );
 
     // The URL
     //
@@ -210,8 +215,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
       }
     }
     if ( Const.isEmpty( pluginId ) ) {
-      throw new KettlePluginException( "The 'plugin_id' attribute could not be determined using 'driver_class' value '"
-          + driverClassName + "'" );
+      throw new KettlePluginException(
+        "The 'plugin_id' attribute could not be determined using 'driver_class' value '" + driverClassName + "'" );
     }
 
     // Look for the plugin
@@ -236,7 +241,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     databaseMeta.setDBName( getChildString( element, MetaStoreConst.DB_ATTR_ID_DATABASE_NAME ) );
     databaseMeta.setUsername( getChildString( element, MetaStoreConst.DB_ATTR_ID_USERNAME ) );
     databaseMeta.setPassword( metaStore.getTwoWayPasswordEncoder().decode(
-        getChildString( element, MetaStoreConst.DB_ATTR_ID_PASSWORD ) ) );
+      getChildString( element, MetaStoreConst.DB_ATTR_ID_PASSWORD ) ) );
     databaseMeta.setServername( getChildString( element, MetaStoreConst.DB_ATTR_ID_SERVERNAME ) );
     databaseMeta.setDataTablespace( getChildString( element, MetaStoreConst.DB_ATTR_ID_DATA_TABLESPACE ) );
     databaseMeta.setIndexTablespace( getChildString( element, MetaStoreConst.DB_ATTR_ID_INDEX_TABLESPACE ) );

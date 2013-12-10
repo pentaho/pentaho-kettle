@@ -54,19 +54,19 @@ import junit.framework.TestCase;
 public class XsltTest extends TestCase {
 
   private static final String TEST1_XML =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?><message>Yep, it worked!</message>";
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><message>Yep, it worked!</message>";
 
   private static final String TEST1_XSL = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<xsl:stylesheet version = \"1.0\" xmlns:xsl = \"http://www.w3.org/1999/XSL/Transform\">"
-      + "<xsl:output method = \"text\" encoding = \"UTF-8\"/>" + "<!--simply copy the message to the result tree -->"
-      + "<xsl:template match = \"/\">" + "<xsl:value-of select = \"message\"/>" + "</xsl:template>"
-      + "</xsl:stylesheet>";
+    + "<xsl:stylesheet version = \"1.0\" xmlns:xsl = \"http://www.w3.org/1999/XSL/Transform\">"
+    + "<xsl:output method = \"text\" encoding = \"UTF-8\"/>"
+    + "<!--simply copy the message to the result tree -->" + "<xsl:template match = \"/\">"
+    + "<xsl:value-of select = \"message\"/>" + "</xsl:template>" + "</xsl:stylesheet>";
 
   private static final String TEST1_FNAME = "template.xsl";
 
   /**
    * Write the file to be used as input (as a temporary file).
-   * 
+   *
    * @return Absolute file name/path of the created file.
    * @throws IOException
    *           UPON
@@ -91,9 +91,9 @@ public class XsltTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "XML", ValueMeta.TYPE_STRING ), new ValueMeta( "XSL", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "XML", ValueMeta.TYPE_STRING ), new ValueMeta( "XSL", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -118,9 +118,9 @@ public class XsltTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "XML", ValueMeta.TYPE_STRING ), new ValueMeta( "XSL", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "filename", ValueMeta.TYPE_STRING ), new ValueMeta( "result", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "XML", ValueMeta.TYPE_STRING ), new ValueMeta( "XSL", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "filename", ValueMeta.TYPE_STRING ), new ValueMeta( "result", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -131,7 +131,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Create result data for test case 1.
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -148,7 +148,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          set 1 of rows to compare
    * @param rows2
@@ -194,7 +194,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Test case for XSLT step, getting the filename from a field, JAXP factory
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -206,7 +206,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Test case for XSLT step, getting the filename from a field, SAXON factory
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -218,7 +218,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Test case for XSLT step, getting the XSL from a field, JAXP factory
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -228,7 +228,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Test case for XSLT step, getting the XSL from a field, SAXON factory
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -238,7 +238,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Test case for XSLT step, getting the XSL from a file, JAXP factory
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -249,7 +249,7 @@ public class XsltTest extends TestCase {
 
   /**
    * Test case for XSLT step, getting the XSL from a file, SAXON factory
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -259,7 +259,7 @@ public class XsltTest extends TestCase {
   }
 
   public void runTestWithParams( String xmlFieldname, String resultFieldname, boolean xslInField,
-      boolean xslFileInField, String xslFileField, String xslFilename, String xslFactory ) throws Exception {
+    boolean xslFileInField, String xslFileField, String xslFilename, String xslFactory ) throws Exception {
 
     KettleEnvironment.init();
 

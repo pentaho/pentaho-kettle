@@ -36,10 +36,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Describes a single field in a text file
- * 
+ *
  * @author Matt
  * @since 19-04-2004
- * 
+ *
  */
 public class TextFileInputField implements Cloneable, TextFileInputFieldInterface {
   private String name;
@@ -69,12 +69,12 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
   // private boolean containsComma;
 
   private static final String[] date_formats = new String[] {
-      "yyyy/MM/dd HH:mm:ss.SSS", "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy/MM/dd", "yyyy-MM-dd",
-      "yyyyMMdd", "ddMMyyyy", "d-M-yyyy", "d/M/yyyy", "d-M-yy", "d/M/yy", };
+    "yyyy/MM/dd HH:mm:ss.SSS", "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy/MM/dd", "yyyy-MM-dd",
+    "yyyyMMdd", "ddMMyyyy", "d-M-yyyy", "d/M/yyyy", "d-M-yy", "d/M/yy", };
 
   private static final String[] number_formats = new String[] {
-      "", "#", Const.DEFAULT_NUMBER_FORMAT, "0.00", "0000000000000", "###,###,###.#######",
-      "###############.###############", "#####.###############%", };
+    "", "#", Const.DEFAULT_NUMBER_FORMAT, "0.00", "0000000000000", "###,###,###.#######",
+    "###############.###############", "#####.###############%", };
 
   public TextFileInputField( String fieldname, int position, int length ) {
     this.name = fieldname;
@@ -397,7 +397,8 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
       } else {
         for ( int x = 0; x < field.length() && isnumber; x++ ) {
           char ch = field.charAt( x );
-          if ( !Character.isDigit( ch ) && ch != '.' && ch != ',' && ( ch != '-' || x > 0 ) && ch != 'E' && ch != 'e' // exponential
+          if ( !Character.isDigit( ch )
+            && ch != '.' && ch != ',' && ( ch != '-' || x > 0 ) && ch != 'E' && ch != 'e' // exponential
           ) {
             isnumber = false;
             numfmt_cnt = 0;

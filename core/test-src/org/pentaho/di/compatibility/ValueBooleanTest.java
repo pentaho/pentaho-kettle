@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of ValueBoolean.
- * 
+ *
  * @author Sven Boden
  */
 public class ValueBooleanTest extends TestCase {

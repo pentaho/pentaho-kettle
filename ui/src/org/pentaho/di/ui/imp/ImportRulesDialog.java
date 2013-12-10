@@ -152,7 +152,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
       }
     } );
 
-    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wImport, wExport, wCancel, }, Const.MARGIN, null );
+    BaseStepDialog.positionBottomButtons(
+      shell, new Button[] { wOK, wImport, wExport, wCancel, }, Const.MARGIN, null );
 
     // Put a toolbar at the very top...
     //
@@ -228,10 +229,9 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
       swtToolbar.layout( true, true );
     } catch ( Throwable t ) {
       LogChannel.GENERAL.logError( Const.getStackTracker( t ) );
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title" ), BaseMessages
-              .getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ),
-          new Exception( t ) );
+      new ErrorDialog( shell, BaseMessages
+        .getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+        PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -269,7 +269,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
       }
 
       EnterSelectionDialog esd =
-          new EnterSelectionDialog( shell, names, "Select a rule", "Select a new rule to add to the list:" );
+        new EnterSelectionDialog( shell, names, "Select a rule", "Select a new rule to add to the list:" );
       String name = esd.open();
       if ( name != null ) {
         try {
@@ -297,7 +297,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
   }
 
   public void removeRule() {
-    MessageBox box = new MessageBox( shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.YES | SWT.NO );
+    MessageBox box =
+      new MessageBox( shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.YES | SWT.NO );
     box.setText( "Warning" );
     box.setMessage( "Are you sure you want to remove the selected rules from the list?" );
     int answer = box.open();
@@ -324,8 +325,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
     FileDialog dialog = new FileDialog( shell, SWT.SAVE );
     dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
     dialog.setFilterNames( new String[] {
-        BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+      BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+      BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
     if ( dialog.open() != null ) {
       String filename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
 
@@ -352,7 +353,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
    */
   protected void importRules() {
     if ( !importRules.getRules().isEmpty() ) {
-      MessageBox box = new MessageBox( shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.YES | SWT.NO );
+      MessageBox box =
+        new MessageBox( shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.YES | SWT.NO );
       box.setText( "Warning" );
       box.setMessage( "Are you sure you want to load a new set of rules, replacing the current list?" );
       int answer = box.open();
@@ -364,8 +366,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
     FileDialog dialog = new FileDialog( shell, SWT.OPEN );
     dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
     dialog.setFilterNames( new String[] {
-        BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+      BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+      BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
     if ( dialog.open() != null ) {
       String filename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
 
@@ -380,7 +382,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
       } catch ( Exception e ) {
         new ErrorDialog(
-            shell, "Error", "There was an error during the import of the import rules file, verify the XML format.", e );
+          shell, "Error",
+          "There was an error during the import of the import rules file, verify the XML format.", e );
       }
 
     }
@@ -494,8 +497,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
     Shell shell = new Shell( display );
 
     ImportRules importRules = new ImportRules();
-    importRules
-        .loadXML( XMLHandler.getSubNode( XMLHandler.loadXMLFile( "bin/import-rules.xml" ), ImportRules.XML_TAG ) );
+    importRules.loadXML( XMLHandler.getSubNode(
+      XMLHandler.loadXMLFile( "bin/import-rules.xml" ), ImportRules.XML_TAG ) );
 
     ImportRulesDialog dialog = new ImportRulesDialog( shell, importRules );
     if ( dialog.open() ) {
@@ -507,7 +510,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -517,7 +520,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -526,7 +529,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -536,7 +539,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -546,7 +549,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -556,7 +559,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {

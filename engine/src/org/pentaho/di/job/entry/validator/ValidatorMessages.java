@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 
 /**
  * Utility class for getting formatted strings from validator resource bundle.
- * 
+ *
  * @author mlowery
  */
 public class ValidatorMessages {

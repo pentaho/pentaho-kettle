@@ -52,7 +52,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
+
   private MODE mode;
   private Label wlBaseDir;
 
@@ -99,7 +99,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
   private String masterRepositoryName;
 
   public KettleFileRepositoryDialog( Shell parent, int style, RepositoryMeta repositoryMeta,
-      RepositoriesMeta repositoriesMeta ) {
+    RepositoriesMeta repositoriesMeta ) {
     this.display = parent.getDisplay();
     this.props = PropsUI.getInstance();
     this.input = (KettleFileRepositoryMeta) repositoryMeta;
@@ -172,7 +172,8 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
     // HidesHiddenFiles line
     wlHidesHiddenFiles = new Label( shell, SWT.RIGHT );
-    wlHidesHiddenFiles.setText( BaseMessages.getString( PKG, "KettleFileRepositoryDialog.Label.HidesHiddenFiles" ) );
+    wlHidesHiddenFiles
+      .setText( BaseMessages.getString( PKG, "KettleFileRepositoryDialog.Label.HidesHiddenFiles" ) );
     props.setLook( wlHidesHiddenFiles );
     fdlHidesHiddenFiles = new FormData();
     fdlHidesHiddenFiles.left = new FormAttachment( 0, 0 );

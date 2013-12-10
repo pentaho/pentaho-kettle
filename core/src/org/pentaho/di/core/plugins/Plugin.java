@@ -31,9 +31,9 @@ import org.pentaho.di.core.Const;
 /**
  * This describes the plugin itself, the IDs it listens too, what libraries (jar files) it uses, the names, the i18n
  * details, etc.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class Plugin implements PluginInterface {
 
@@ -66,12 +66,13 @@ public class Plugin implements PluginInterface {
    * @param classMap
    * @param libraries
    */
-  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category,
-      String name, String description, String imageFile, boolean separateClassLoaderNeeded, boolean nativePlugin,
-      Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile, URL pluginFolder ) {
+  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
+    String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+    boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
+    URL pluginFolder ) {
     this(
-        ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, nativePlugin,
-        classMap, libraries, errorHelpFile, pluginFolder, null, null, null );
+      ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, null, null, null );
   }
 
   /**
@@ -86,10 +87,10 @@ public class Plugin implements PluginInterface {
    * @param classMap
    * @param libraries
    */
-  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category,
-      String name, String description, String imageFile, boolean separateClassLoaderNeeded, boolean nativePlugin,
-      Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile, URL pluginFolder,
-      String documentationUrl, String casesUrl, String forumUrl ) {
+  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
+    String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+    boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
+    URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
 
     this.ids = ids;
     this.pluginType = pluginType;

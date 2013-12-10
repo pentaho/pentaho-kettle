@@ -26,9 +26,9 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * 
+ *
  * @author cboyden
- * 
+ *
  */
 
 public class Rules {

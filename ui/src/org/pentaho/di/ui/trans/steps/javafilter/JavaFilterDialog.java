@@ -60,7 +60,7 @@ import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = JavaFilterMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JavaFilterMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Text wStepname;
   private CCombo wTrueTo;
@@ -213,8 +213,8 @@ public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterf
     fdlCondition.right = new FormAttachment( middle, -margin );
     wlCondition.setLayoutData( fdlCondition );
     wCondition =
-        new StyledTextComp(
-            transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( transMeta, wSettingsGroup, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wCondition );
     wCondition.addModifyListener( lsMod );
     FormData fdCondition = new FormData();

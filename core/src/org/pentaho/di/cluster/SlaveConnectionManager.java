@@ -28,9 +28,9 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 /**
  * Encapsulates the Apache commons HTTP connection manager with a singleton. We can use this to limit the number of open
  * connections to slave servers.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SlaveConnectionManager {
 

@@ -49,10 +49,10 @@ import org.pentaho.di.i18n.BaseMessages;
  */
 public class GPLoadDataOutput
 {
-   private static Class<?> PKG = GPLoadDataOutput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-   
+   private static Class<?> PKG = GPLoadDataOutput.class; // for i18n purposes, needed by Translator2!!
+
    protected LogChannelInterface        log;
-   
+
    private GPLoad            gpLoad = null;
 	private GPLoadMeta        meta;
 	private PrintWriter       output = null;
@@ -69,7 +69,7 @@ public class GPLoadDataOutput
 		this.gpLoad = gpLoad;
 	}
 	
-	public GPLoadDataOutput(GPLoad gpLoad, GPLoadMeta meta, LogLevel logLevel) 
+	public GPLoadDataOutput(GPLoad gpLoad, GPLoadMeta meta, LogLevel logLevel)
 	{
       this(gpLoad, meta);
       log = new LogChannel(this);
@@ -79,7 +79,7 @@ public class GPLoadDataOutput
 	public void open(VariableSpace space, Process sqlldrProcess) throws KettleException
 	{
 		// String loadMethod = meta.getLoadMethod();
-		try 
+		try
 		{
 			OutputStream os = null;
 
@@ -103,7 +103,7 @@ public class GPLoadDataOutput
 				   throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DataFileMissing"));
 				}
 				
-            log.logDetailed("Creating temporary load file "+dataFile);  
+            log.logDetailed("Creating temporary load file "+dataFile);
 	         os = new FileOutputStream(dataFile, false);
 		//	}	
 			
@@ -151,7 +151,7 @@ public class GPLoadDataOutput
         if ( first )
         {
             first = false;
-     
+
             enclosure = meta.getEnclosure();
             if (enclosure == null) {
                enclosure = "";
@@ -159,7 +159,7 @@ public class GPLoadDataOutput
             else {
                enclosure = gpLoad.environmentSubstitute(enclosure);
             }
-            
+
             delimiter = meta.getDelimiter();
             if (delimiter == null) {
                throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DelimiterMissing"));
@@ -170,11 +170,11 @@ public class GPLoadDataOutput
                   throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DelimiterMissing"));
                }
             }
-            
+
             // Setup up the fields we need to take for each of the rows
             // as this speeds up processing.
             fieldNumbers=new int[meta.getFieldStream().length];
-			   for (int i=0;i<fieldNumbers.length;i++) 
+			   for (int i=0;i<fieldNumbers.length;i++)
 			   {
 				   fieldNumbers[i]=mi.indexOfValue(meta.getFieldStream()[i]);
 			   	if (fieldNumbers[i]<0)
@@ -186,12 +186,12 @@ public class GPLoadDataOutput
 			   sdfDate = new SimpleDateFormat("yyyy-MM-dd");
 			   sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
          }
-        
+
         // Write the data to the output
         ValueMetaInterface v = null;
         int number = 0;
-        
-		for (int i=0;i<fieldNumbers.length;i++) 
+
+		for (int i=0;i<fieldNumbers.length;i++)
 		{
 		   //  TODO:  variable substitution
 			if ( i!=0 ) output.print(delimiter);
@@ -260,7 +260,7 @@ public class GPLoadDataOutput
 					{
 						// Default is date format
 						output.print(sdfDate.format(dt));
-					}					   
+					}					
 					output.print(enclosure);
 					break;
 				case ValueMetaInterface.TYPE_BOOLEAN:
@@ -277,7 +277,7 @@ public class GPLoadDataOutput
 					output.print("<startlob>");
 					output.print(byt);
 					output.print("<endlob>");
-					break;			    
+					break;			
 				default:
 					throw new KettleException(BaseMessages.getString(PKG, "GPLoadDataOutput.Exception.TypeNotSupported", v.getType()));
 				}

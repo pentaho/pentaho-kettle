@@ -50,9 +50,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs a streaming bulk load to a VectorWise table.
- * 
+ *
  * Based on Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author matt
  * @since 14-apr-2009
  */
@@ -65,7 +65,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   private IngresVectorwiseLoaderData data;
 
   public IngresVectorwiseLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -118,7 +118,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // masquerading the password for log
         if ( meta.isUseDynamicVNode() ) {
           logDetailed( "Executing command: "
-              + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]" + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
+            + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]"
+            + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
         } else {
           logDetailed( "Executing command: " + cmd );
         }
@@ -176,7 +177,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   private String createLoadCommand() {
     String loadCommand = "";
     loadCommand +=
-        "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, meta.getTableName() ) + " ";
+      "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, meta.getTableName() ) + " ";
 
     // Build list of column names to set
     //
@@ -283,12 +284,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   /**
    * Create the command line for a sql process depending on the meta information supplied.
-   * 
+   *
    * @param meta
    *          The meta data to create the command line from
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */
@@ -297,7 +298,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     if ( !Const.isEmpty( meta.getSqlPath() ) ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getSqlPath() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getSqlPath() ), getTransMeta() );
         String sqlexec = Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) );
         sb.append( sqlexec );
         // sql @tc-dwh-test.timocom.net,tcp_ip,VW[ingres,pwd]::dwh
@@ -322,17 +324,17 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     if ( dm != null ) {
       String databaseName = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
       String password =
-          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm
-              .getDatabaseInterface().getPassword(), "" ) ) );
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm
+          .getDatabaseInterface().getPassword(), "" ) ) );
       String port = environmentSubstitute( Const.NVL( dm.getDatabasePortNumberString(), "" ) ).replace( "7", "" );
       String username = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getUsername(), "" ) );
       String hostname = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getHostname(), "" ) );
       String schemaTable = dm.getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
       String encoding = environmentSubstitute( Const.NVL( meta.getEncoding(), "" ) );
       String fifoFile =
-          Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getFifoFileName(), "" ) ) );
+        Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getFifoFileName(), "" ) ) );
       String errorFile =
-          Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getErrorFileName(), "" ) ) );
+        Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getErrorFileName(), "" ) ) );
       int maxNrErrors = Const.toInt( environmentSubstitute( Const.NVL( meta.getMaxNrErrors(), "0" ) ), 0 );
 
       if ( meta.isUsingVwload() ) {
@@ -356,9 +358,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       } else if ( meta.isUseDynamicVNode() ) {
         // logical portname in JDBC use a 7
 
-        sb
-            .append( " @" ).append( hostname ).append( "," ).append( port ).append( "[" ).append( username ).append(
-                "," ).append( password ).append( "]::" ).append( databaseName );
+        sb.append( " @" ).append( hostname ).append( "," ).append( port ).append( "[" ).append( username ).append(
+          "," ).append( password ).append( "]::" ).append( databaseName );
       } else {
         // Database Name
         //
@@ -607,7 +608,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+          null, environmentSubstitute( meta.getTableName() ) );
 
       data.encoding = environmentSubstitute( meta.getEncoding() );
       data.isEncoding = !Const.isEmpty( environmentSubstitute( meta.getEncoding() ) );

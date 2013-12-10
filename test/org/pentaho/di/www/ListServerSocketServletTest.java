@@ -68,9 +68,9 @@ public class ListServerSocketServletTest {
     when( mockRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING );
     when( mockResponse.getOutputStream() ).thenReturn( servletOutputStream );
     when(
-        mockTransformationMap.allocateServerSocketPort(
-            anyInt(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
-            anyString(), anyString() ) ).thenReturn( mockSocketPortAllocation );
+      mockTransformationMap.allocateServerSocketPort(
+        anyInt(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
+        anyString(), anyString() ) ).thenReturn( mockSocketPortAllocation );
 
     listServerSocketServlet.doGet( mockRequest, mockResponse );
 

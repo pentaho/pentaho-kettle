@@ -56,7 +56,7 @@ import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySpecial.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySpecial.class; // for i18n purposes, needed by Translator2!!
 
   private static final String NOSCHEDULING = BaseMessages.getString( PKG, "JobSpecial.Type.NoScheduling" );
 
@@ -152,13 +152,15 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
     wIntervalSeconds = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wIntervalSeconds.setMinimum( 0 );
     wIntervalSeconds.setMaximum( Integer.MAX_VALUE );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.IntervalSeconds.Label" ), wIntervalSeconds, wType );
+    placeControl(
+      shell, BaseMessages.getString( PKG, "JobSpecial.IntervalSeconds.Label" ), wIntervalSeconds, wType );
 
     wIntervalMinutes = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wIntervalMinutes.setMinimum( 0 );
     wIntervalMinutes.setMaximum( Integer.MAX_VALUE );
     placeControl(
-        shell, BaseMessages.getString( PKG, "JobSpecial.IntervalMinutes.Label" ), wIntervalMinutes, wIntervalSeconds );
+      shell, BaseMessages.getString( PKG, "JobSpecial.IntervalMinutes.Label" ), wIntervalMinutes,
+      wIntervalSeconds );
 
     Composite time = new Composite( shell, SWT.NONE );
     time.setLayout( new FillLayout() );

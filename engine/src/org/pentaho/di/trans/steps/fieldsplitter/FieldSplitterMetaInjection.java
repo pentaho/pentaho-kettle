@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * This takes care of the external metadata injection into the FieldSplitterMeta class
- * 
+ *
  * @author Matt
  */
 public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
@@ -42,16 +42,16 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     FIELD_TO_SPLIT( ValueMetaInterface.TYPE_STRING, "The name of the field to split" ), DELIMITER(
-        ValueMetaInterface.TYPE_STRING, "The delimiter" ),
+      ValueMetaInterface.TYPE_STRING, "The delimiter" ),
 
-    FIELDS( ValueMetaInterface.TYPE_NONE, "All the resulting fields" ), FIELD(
+      FIELDS( ValueMetaInterface.TYPE_NONE, "All the resulting fields" ), FIELD(
         ValueMetaInterface.TYPE_NONE, "One result field" ),
 
-    NAME( ValueMetaInterface.TYPE_STRING, "Field name" ), ID( ValueMetaInterface.TYPE_STRING, "The ID" ), REMOVE_ID(
-        ValueMetaInterface.TYPE_STRING, "Remove ID? (Y/N)" ), DATA_TYPE(
+      NAME( ValueMetaInterface.TYPE_STRING, "Field name" ), ID( ValueMetaInterface.TYPE_STRING, "The ID" ),
+      REMOVE_ID( ValueMetaInterface.TYPE_STRING, "Remove ID? (Y/N)" ), DATA_TYPE(
         ValueMetaInterface.TYPE_STRING, "Data type (String, Number, ...)" ), LENGTH(
-        ValueMetaInterface.TYPE_STRING, "Length" ), PRECISION( ValueMetaInterface.TYPE_STRING, "Precision" ), FORMAT(
-        ValueMetaInterface.TYPE_STRING, "The format (mask)" ), GROUPING(
+        ValueMetaInterface.TYPE_STRING, "Length" ), PRECISION( ValueMetaInterface.TYPE_STRING, "Precision" ),
+      FORMAT( ValueMetaInterface.TYPE_STRING, "The format (mask)" ), GROUPING(
         ValueMetaInterface.TYPE_STRING, "The grouping symbol" ), DECIMAL(
         ValueMetaInterface.TYPE_STRING, "The decimal symbol" ), CURRENCY(
         ValueMetaInterface.TYPE_STRING, "The currency symbol" ), NULL_IF(
@@ -102,20 +102,20 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
     }
 
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
+      new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
+      new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
     fieldsEntry.getDetails().add( fieldEntry );
 
     Entry[] fieldsEntries =
-        new Entry[] {
-            Entry.NAME, Entry.ID, Entry.REMOVE_ID, Entry.DATA_TYPE, Entry.LENGTH, Entry.PRECISION, Entry.FORMAT,
-            Entry.GROUPING, Entry.DECIMAL, Entry.CURRENCY, Entry.NULL_IF, Entry.DEFAULT, Entry.TRIM_TYPE, };
+      new Entry[] {
+        Entry.NAME, Entry.ID, Entry.REMOVE_ID, Entry.DATA_TYPE, Entry.LENGTH, Entry.PRECISION, Entry.FORMAT,
+        Entry.GROUPING, Entry.DECIMAL, Entry.CURRENCY, Entry.NULL_IF, Entry.DEFAULT, Entry.TRIM_TYPE, };
     for ( Entry entry : fieldsEntries ) {
       StepInjectionMetaEntry metaEntry =
-          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
       fieldEntry.getDetails().add( metaEntry );
     }
 

@@ -51,13 +51,13 @@ import org.w3c.dom.Node;
 
 /**
  * Generate secret key. for symmetric algorithms
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */
 
 public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SecretKeyGeneratorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SecretKeyGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String[] algorithm;
   private String[] scheme;
@@ -186,7 +186,8 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     this.secretKeyLength = fieldType;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -260,7 +261,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     ValueMetaInterface v;
     if ( isOutputKeyInBinary() ) {
@@ -351,44 +352,44 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     // See if we have input streams leading to this step!
     int nrRemarks = remarks.size();
     for ( int i = 0; i < algorithm.length; i++ ) {
       int len = Const.toInt( transMeta.environmentSubstitute( getSecretKeyLength()[i] ), -1 );
       if ( len < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "SecretKeyGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "SecretKeyGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
       int size = Const.toInt( transMeta.environmentSubstitute( getSecretKeyCount()[i] ), -1 );
       if ( size < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "SecretKeyGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "SecretKeyGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SecretKeyGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SecretKeyGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( Const.isEmpty( getSecretKeyFieldName() ) ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SecretKeyGeneratorMeta.CheckResult.secretKeyFieldMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SecretKeyGeneratorMeta.CheckResult.secretKeyFieldMissing" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SecretKeyGenerator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

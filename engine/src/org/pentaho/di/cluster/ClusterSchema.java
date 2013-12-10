@@ -52,13 +52,13 @@ import org.w3c.dom.Node;
  * A cluster schema combines a list of slave servers so that they can be set altogether. It (can) also contain a number
  * of performance tuning options regarding this cluster. For example options regarding communications with the master
  * node of the nodes themselves come to mind.
- * 
+ *
  * @author Matt
  * @since 17-nov-2006
  */
 public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
-    RepositoryElementInterface, XMLInterface {
-  private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  RepositoryElementInterface, XMLInterface {
+  private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "clusterschema";
 

@@ -27,9 +27,9 @@ import java.util.List;
 
 /**
  * A set of step injection metadata entries.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class StepInjectionMetaEntrySet {
   private List<StepInjectionMetaEntry> entries;

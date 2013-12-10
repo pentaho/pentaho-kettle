@@ -54,14 +54,14 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 /**
  * Test class for tableinput. H2 is used as database in memory to get an easy playground for database tests. H2 does not
  * support all SQL features but it should proof enough for most of our tests.
- * 
+ *
  * @author Sven Boden
  */
 public class TableOutputTest extends TestCase {
   public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>", };
+    + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+    + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+    + "<password></password>" + "</connection>", };
 
   private static String target_table = "table";
   private static String target_table1 = "table1";
@@ -96,7 +96,9 @@ public class TableOutputTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ), new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ), };
+    {
+      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -136,10 +138,10 @@ public class TableOutputTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
-            new ValueMeta( "TABLE", ValueMeta.TYPE_STRING, 30, 0 ),
-            new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ), };
+    {
+      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "TABLE", ValueMeta.TYPE_STRING, 30, 0 ),
+      new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -241,14 +243,15 @@ public class TableOutputTest extends TestCase {
 
   /**
    * Check the results in the target dimension table.
-   * 
+   *
    * @param db
    *          database to use.
    */
   public void checkResultsNormal( Database db ) throws Exception {
     String query = "SELECT ID, CODE FROM " + target_table + " ORDER BY ID";
 
-    String[] correctResults = { "100|1000", "101|1001", "102|1002", "103|1003", "104|1004", "105|1005", "106|1006", };
+    String[] correctResults =
+    { "100|1000", "101|1001", "102|1002", "103|1003", "104|1004", "105|1005", "106|1006", };
 
     ResultSet rs = db.openQuery( query );
     int idx = 0;
@@ -272,7 +275,7 @@ public class TableOutputTest extends TestCase {
 
   /**
    * Check the results in the target dimension table.
-   * 
+   *
    * @param db
    *          database to use.
    */

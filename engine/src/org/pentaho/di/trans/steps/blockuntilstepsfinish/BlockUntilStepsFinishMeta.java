@@ -55,7 +55,6 @@ import org.w3c.dom.Node;
 
 public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = BlockUntilStepsFinishMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   /** by which steps to display? */
   private String[] stepName;
@@ -65,7 +64,8 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -120,7 +120,7 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
   }
 
@@ -198,24 +198,24 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "BlockUntilStepsFinishMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "BlockUntilStepsFinishMeta.CheckResult.NotReceivingFields" ), stepMeta );
     } else {
       if ( stepName.length > 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "BlockUntilStepsFinishMeta.CheckResult.AllStepsFound" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "BlockUntilStepsFinishMeta.CheckResult.AllStepsFound" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-                PKG, "BlockUntilStepsFinishMeta.CheckResult.NoStepsEntered" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+            PKG, "BlockUntilStepsFinishMeta.CheckResult.NoStepsEntered" ), stepMeta );
       }
 
     }
@@ -224,19 +224,19 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "BlockUntilStepsFinishMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "BlockUntilStepsFinishMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "BlockUntilStepsFinishMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "BlockUntilStepsFinishMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
 
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new BlockUntilStepsFinish( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

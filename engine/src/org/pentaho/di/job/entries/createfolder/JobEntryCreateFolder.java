@@ -58,10 +58,10 @@ import org.w3c.dom.Node;
 /**
  * This defines a 'create folder' job entry. Its main use would be to create empty folder that can be used to control
  * the flow in ETL cycles.
- * 
+ *
  * @author Sven/Samatar
  * @since 18-10-2007
- * 
+ *
  */
 public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, JobEntryInterface {
   private String foldername;
@@ -93,8 +93,8 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       foldername = XMLHandler.getTagValue( entrynode, "foldername" );
@@ -105,13 +105,14 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       foldername = rep.getJobEntryAttributeString( id_jobentry, "foldername" );
       failOfFolderExists = rep.getJobEntryAttributeBoolean( id_jobentry, "fail_of_folder_exists" );
     } catch ( KettleException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'create Folder' from the repository for id_jobentry=" + id_jobentry, dbe );
+        "Unable to load job entry of type 'create Folder' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -121,7 +122,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
       rep.saveJobEntryAttribute( id_job, getObjectId(), "fail_of_folder_exists", failOfFolderExists );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'create Folder' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -217,8 +218,8 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     System.out.printf( "Remarks: %s\n", remarks );
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notNullValidator(), fileDoesNotExistValidator() );

@@ -66,16 +66,16 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Move Files job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 20-02-2008
  */
 
 public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryPGPDecryptFiles.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryPGPDecryptFiles.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString(
-      PKG, "JobPGPDecryptFiles.Filetype.All" ) };
+    PKG, "JobPGPDecryptFiles.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -237,7 +237,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
   private Button wSpecifyMoveFormat;
   private FormData fdlSpecifyMoveFormat, fdSpecifyMoveFormat;
 
-  public JobEntryPGPDecryptFilesDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntryPGPDecryptFilesDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryPGPDecryptFiles) jobEntryInt;
 
@@ -374,7 +375,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wlIncludeSubfolders.setLayoutData( fdlIncludeSubfolders );
     wIncludeSubfolders = new Button( wSettings, SWT.CHECK );
     props.setLook( wIncludeSubfolders );
-    wIncludeSubfolders.setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.IncludeSubfolders.Tooltip" ) );
+    wIncludeSubfolders.setToolTipText( BaseMessages
+      .getString( PKG, "JobPGPDecryptFiles.IncludeSubfolders.Tooltip" ) );
     fdIncludeSubfolders = new FormData();
     fdIncludeSubfolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubfolders.top = new FormAttachment( wGpgExe, margin );
@@ -479,7 +481,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wbaSourceFileFolder.setLayoutData( fdbaSourceFileFolder );
 
     wSourceFileFolder = new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wSourceFileFolder.setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.SourceFileFolder.Tooltip" ) );
+    wSourceFileFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.SourceFileFolder.Tooltip" ) );
 
     props.setLook( wSourceFileFolder );
     wSourceFileFolder.addModifyListener( lsMod );
@@ -512,7 +515,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 
     // Destination
     wlDestinationFileFolder = new Label( wGeneralComp, SWT.RIGHT );
-    wlDestinationFileFolder.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.DestinationFileFolder.Label" ) );
+    wlDestinationFileFolder.setText( BaseMessages
+      .getString( PKG, "JobPGPDecryptFiles.DestinationFileFolder.Label" ) );
     props.setLook( wlDestinationFileFolder );
     fdlDestinationFileFolder = new FormData();
     fdlDestinationFileFolder.left = new FormAttachment( 0, 0 );
@@ -559,7 +563,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 
     wDestinationFileFolder = new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wDestinationFileFolder.setToolTipText( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.DestinationFileFolder.Tooltip" ) );
+      PKG, "JobPGPDecryptFiles.DestinationFileFolder.Tooltip" ) );
     props.setLook( wDestinationFileFolder );
     wDestinationFileFolder.addModifyListener( lsMod );
     fdDestinationFileFolder = new FormData();
@@ -586,7 +590,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wbdSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbdSourceFileFolder );
     wbdSourceFileFolder.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.FilenameDelete.Button" ) );
-    wbdSourceFileFolder.setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.FilenameDelete.Tooltip" ) );
+    wbdSourceFileFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.FilenameDelete.Tooltip" ) );
     fdbdSourceFileFolder = new FormData();
     fdbdSourceFileFolder.right = new FormAttachment( 100, 0 );
     fdbdSourceFileFolder.top = new FormAttachment( wDestinationFileFolder, 40 );
@@ -632,24 +637,24 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
-            ? 0 : jobEntry.source_filefolder.length );
+      jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+        ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.SourceFileFolder.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.PassPhrase.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.DestinationFileFolder.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.SourceFileFolder.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.Wildcard.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.PassPhrase.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.DestinationFileFolder.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.SourceFileFolder.Tooltip" ) );
@@ -660,11 +665,12 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     colinf[2].setToolTip( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.PassPhrase.Tooltip" ) );
     colinf[2].setPasswordField( true );
     colinf[3].setUsingVariables( true );
-    colinf[3].setToolTip( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.DestinationFileFolder.Tooltip" ) );
+    colinf[3]
+      .setToolTip( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fields.DestinationFileFolder.Tooltip" ) );
 
     wFields =
-        new TableView(
-            jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -679,7 +685,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         wFields.add( new String[] {
-            wSourceFileFolder.getText(), wWildcard.getText(), null, wDestinationFileFolder.getText() } );
+          wSourceFileFolder.getText(), wWildcard.getText(), null, wDestinationFileFolder.getText() } );
         wSourceFileFolder.setText( "" );
         wDestinationFileFolder.setText( "" );
         wWildcard.setText( "" );
@@ -763,8 +769,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 
     // Create destination folder/parent folder
     wlCreateDestinationFolder = new Label( wDestinationFile, SWT.RIGHT );
-    wlCreateDestinationFolder
-        .setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.CreateDestinationFolder.Label" ) );
+    wlCreateDestinationFolder.setText( BaseMessages.getString(
+      PKG, "JobPGPDecryptFiles.CreateDestinationFolder.Label" ) );
     props.setLook( wlCreateDestinationFolder );
     fdlCreateDestinationFolder = new FormData();
     fdlCreateDestinationFolder.left = new FormAttachment( 0, 0 );
@@ -774,7 +780,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wCreateDestinationFolder = new Button( wDestinationFile, SWT.CHECK );
     props.setLook( wCreateDestinationFolder );
     wCreateDestinationFolder.setToolTipText( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.CreateDestinationFolder.Tooltip" ) );
+      PKG, "JobPGPDecryptFiles.CreateDestinationFolder.Tooltip" ) );
     fdCreateDestinationFolder = new FormData();
     fdCreateDestinationFolder.left = new FormAttachment( middle, 0 );
     fdCreateDestinationFolder.top = new FormAttachment( 0, margin );
@@ -797,7 +803,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wlDestinationIsAFile.setLayoutData( fdlDestinationIsAFile );
     wDestinationIsAFile = new Button( wDestinationFile, SWT.CHECK );
     props.setLook( wDestinationIsAFile );
-    wDestinationIsAFile.setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.DestinationIsAFile.Tooltip" ) );
+    wDestinationIsAFile.setToolTipText( BaseMessages.getString(
+      PKG, "JobPGPDecryptFiles.DestinationIsAFile.Tooltip" ) );
     fdDestinationIsAFile = new FormData();
     fdDestinationIsAFile.left = new FormAttachment( middle, 0 );
     fdDestinationIsAFile.top = new FormAttachment( wCreateDestinationFolder, margin );
@@ -813,7 +820,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     // Do not keep folder structure?
     wlDoNotKeepFolderStructure = new Label( wDestinationFile, SWT.RIGHT );
     wlDoNotKeepFolderStructure.setText( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.DoNotKeepFolderStructure.Label" ) );
+      PKG, "JobPGPDecryptFiles.DoNotKeepFolderStructure.Label" ) );
     props.setLook( wlDoNotKeepFolderStructure );
     fdlDoNotKeepFolderStructure = new FormData();
     fdlDoNotKeepFolderStructure.left = new FormAttachment( 0, 0 );
@@ -823,7 +830,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wDoNotKeepFolderStructure = new Button( wDestinationFile, SWT.CHECK );
     props.setLook( wDoNotKeepFolderStructure );
     wDoNotKeepFolderStructure.setToolTipText( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.DoNotKeepFolderStructure.Tooltip" ) );
+      PKG, "JobPGPDecryptFiles.DoNotKeepFolderStructure.Tooltip" ) );
     fdDoNotKeepFolderStructure = new FormData();
     fdDoNotKeepFolderStructure.left = new FormAttachment( middle, 0 );
     fdDoNotKeepFolderStructure.top = new FormAttachment( wDestinationIsAFile, margin );
@@ -933,7 +940,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 
     // Add Date before extension?
     wlAddDateBeforeExtension = new Label( wDestinationFile, SWT.RIGHT );
-    wlAddDateBeforeExtension.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.AddDateBeforeExtension.Label" ) );
+    wlAddDateBeforeExtension.setText( BaseMessages.getString(
+      PKG, "JobPGPDecryptFiles.AddDateBeforeExtension.Label" ) );
     props.setLook( wlAddDateBeforeExtension );
     fdlAddDateBeforeExtension = new FormData();
     fdlAddDateBeforeExtension.left = new FormAttachment( 0, 0 );
@@ -943,7 +951,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wAddDateBeforeExtension = new Button( wDestinationFile, SWT.CHECK );
     props.setLook( wAddDateBeforeExtension );
     wAddDateBeforeExtension.setToolTipText( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.AddDateBeforeExtension.Tooltip" ) );
+      PKG, "JobPGPDecryptFiles.AddDateBeforeExtension.Tooltip" ) );
     fdAddDateBeforeExtension = new FormData();
     fdAddDateBeforeExtension.left = new FormAttachment( middle, 0 );
     fdAddDateBeforeExtension.top = new FormAttachment( wDateTimeFormat, margin );
@@ -1074,7 +1082,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wlCreateMoveToFolder.setLayoutData( fdlCreateMoveToFolder );
     wCreateMoveToFolder = new Button( wMoveToGroup, SWT.CHECK );
     props.setLook( wCreateMoveToFolder );
-    wCreateMoveToFolder.setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.CreateMoveToFolder.Tooltip" ) );
+    wCreateMoveToFolder.setToolTipText( BaseMessages.getString(
+      PKG, "JobPGPDecryptFiles.CreateMoveToFolder.Tooltip" ) );
     fdCreateMoveToFolder = new FormData();
     fdCreateMoveToFolder.left = new FormAttachment( middle, 0 );
     fdCreateMoveToFolder.top = new FormAttachment( wDestinationFolder, margin );
@@ -1144,7 +1153,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wlSpecifyMoveFormat.setLayoutData( fdlSpecifyMoveFormat );
     wSpecifyMoveFormat = new Button( wMoveToGroup, SWT.CHECK );
     props.setLook( wSpecifyMoveFormat );
-    wSpecifyMoveFormat.setToolTipText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.SpecifyMoveFormat.Tooltip" ) );
+    wSpecifyMoveFormat.setToolTipText( BaseMessages
+      .getString( PKG, "JobPGPDecryptFiles.SpecifyMoveFormat.Tooltip" ) );
     fdSpecifyMoveFormat = new FormData();
     fdSpecifyMoveFormat.left = new FormAttachment( middle, 0 );
     fdSpecifyMoveFormat.top = new FormAttachment( wAddMovedTime, margin );
@@ -1184,7 +1194,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     // Add Date before extension?
     wlAddMovedDateBeforeExtension = new Label( wMoveToGroup, SWT.RIGHT );
     wlAddMovedDateBeforeExtension.setText( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.AddMovedDateBeforeExtension.Label" ) );
+      PKG, "JobPGPDecryptFiles.AddMovedDateBeforeExtension.Label" ) );
     props.setLook( wlAddMovedDateBeforeExtension );
     fdlAddMovedDateBeforeExtension = new FormData();
     fdlAddMovedDateBeforeExtension.left = new FormAttachment( 0, 0 );
@@ -1194,7 +1204,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wAddMovedDateBeforeExtension = new Button( wMoveToGroup, SWT.CHECK );
     props.setLook( wAddMovedDateBeforeExtension );
     wAddMovedDateBeforeExtension.setToolTipText( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.AddMovedDateBeforeExtension.Tooltip" ) );
+      PKG, "JobPGPDecryptFiles.AddMovedDateBeforeExtension.Tooltip" ) );
     fdAddMovedDateBeforeExtension = new FormData();
     fdAddMovedDateBeforeExtension.left = new FormAttachment( middle, 0 );
     fdAddMovedDateBeforeExtension.top = new FormAttachment( wMovedDateTimeFormat, margin );
@@ -1216,10 +1226,12 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     fdlIfMovedFileExists.top = new FormAttachment( wAddMovedDateBeforeExtension, margin );
     wlIfMovedFileExists.setLayoutData( fdlIfMovedFileExists );
     wIfMovedFileExists = new CCombo( wMoveToGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-    wIfMovedFileExists.add( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Do_Nothing_IfMovedFileExists.Label" ) );
+    wIfMovedFileExists
+      .add( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Do_Nothing_IfMovedFileExists.Label" ) );
     wIfMovedFileExists.add( BaseMessages.getString(
-        PKG, "JobPGPDecryptFiles.Overwrite_Filename_IffMovedFileExists.Label" ) );
-    wIfMovedFileExists.add( BaseMessages.getString( PKG, "JobPGPDecryptFiles.UniqueName_IfMovedFileExists.Label" ) );
+      PKG, "JobPGPDecryptFiles.Overwrite_Filename_IffMovedFileExists.Label" ) );
+    wIfMovedFileExists
+      .add( BaseMessages.getString( PKG, "JobPGPDecryptFiles.UniqueName_IfMovedFileExists.Label" ) );
     wIfMovedFileExists.add( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Fail_IfMovedFileExists.Label" ) );
     wIfMovedFileExists.select( 0 ); // +1: starts at -1
 
@@ -1329,8 +1341,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wNrErrorsLessThan =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobPGPDecryptFiles.NrErrorsLessThan.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobPGPDecryptFiles.NrErrorsLessThan.Tooltip" ) );
     props.setLook( wNrErrorsLessThan );
     wNrErrorsLessThan.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();
@@ -1503,9 +1515,9 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 
   private void setAddDateBeforeExtension() {
     wlAddDateBeforeExtension.setEnabled( wAddDate.getSelection()
-        || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
+      || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
     wAddDateBeforeExtension.setEnabled( wAddDate.getSelection()
-        || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
+      || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
     if ( !wAddDate.getSelection() && !wAddTime.getSelection() && !wSpecifyFormat.getSelection() ) {
       wAddDateBeforeExtension.setSelection( false );
     }
@@ -1513,9 +1525,9 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 
   private void setAddMovedDateBeforeExtension() {
     wlAddMovedDateBeforeExtension.setEnabled( wAddMovedDate.getSelection()
-        || wAddMovedTime.getSelection() || wSpecifyMoveFormat.getSelection() );
+      || wAddMovedTime.getSelection() || wSpecifyMoveFormat.getSelection() );
     wAddMovedDateBeforeExtension.setEnabled( wAddMovedDate.getSelection()
-        || wAddMovedTime.getSelection() || wSpecifyMoveFormat.getSelection() );
+      || wAddMovedTime.getSelection() || wSpecifyMoveFormat.getSelection() );
     if ( !wAddMovedDate.getSelection() && !wAddMovedTime.getSelection() && !wSpecifyMoveFormat.getSelection() ) {
       wAddMovedDateBeforeExtension.setSelection( false );
     }

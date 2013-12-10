@@ -423,7 +423,7 @@ public class SQLFieldTest extends TestCase {
 
   /**
    * Mondrian generated CASE WHEN <condition> THEN true-value ELSE false-value END
-   * 
+   *
    * @throws KettleSQLException
    */
   public void testSqlFieldCaseWhen01() throws KettleSQLException {

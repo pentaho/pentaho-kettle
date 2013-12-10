@@ -31,7 +31,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
  * Boolean ANDs the results of all validators. If one validator fails, <code>false</code> is immediately returned. The
  * validators list (a <code>List&lt;JobEntryValidator></code>) should be stored under the <code>KEY_VALIDATORS</code>
  * key.
- * 
+ *
  * @author mlowery
  */
 public class AndValidator implements JobEntryValidator {
@@ -42,8 +42,8 @@ public class AndValidator implements JobEntryValidator {
 
   private static final String VALIDATOR_NAME = "and";
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context ) {
+  public boolean validate( CheckResultSourceInterface source, String propertyName,
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
     // Object o = context.get(KEY_VALIDATORS);
 
     Object[] validators = (Object[]) context.get( KEY_VALIDATORS );
@@ -68,7 +68,7 @@ public class AndValidator implements JobEntryValidator {
   /**
    * Uses varargs to conveniently add validators to the list of validators consumed by <code>AndValidator</code>. This
    * method creates and returns a new context.
-   * 
+   *
    * @see #putValidators(ValidatorContext, JobEntryValidator[])
    */
   public static ValidatorContext putValidators( JobEntryValidator... validators ) {
@@ -80,7 +80,7 @@ public class AndValidator implements JobEntryValidator {
   /**
    * Uses varargs to conveniently add validators to the list of validators consumed by <code>AndValidator</code>. This
    * method adds to an existing map.
-   * 
+   *
    * @see #putValidators(JobEntryValidator[])
    */
   public static void putValidators( ValidatorContext context, JobEntryValidator... validators ) {

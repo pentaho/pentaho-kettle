@@ -34,7 +34,7 @@ public class ExtensionPointHandler {
   /**
    * This method looks up the extension point plugins with the given ID in the plugin registry. If one or more are
    * found, their corresponding interfaces are instantiated and the callExtensionPoint() method is invoked.
-   * 
+   *
    * @param log
    *          the logging channel to write debugging information to
    * @param id
@@ -50,9 +50,10 @@ public class ExtensionPointHandler {
     List<PluginInterface> extensionPointPlugins = registry.getPlugins( ExtensionPointPluginType.class );
     for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
       if ( id.equals( extensionPointPlugin.getName() ) ) {
-        ExtensionPointInterface extensionPoint = (ExtensionPointInterface) registry.loadClass( extensionPointPlugin );
+        ExtensionPointInterface extensionPoint =
+          (ExtensionPointInterface) registry.loadClass( extensionPointPlugin );
         log.logDetailed( "Handling extension point for plugin with id '"
-            + extensionPointPlugin.getIds()[0] + "' and extension point id '" + id + "'" );
+          + extensionPointPlugin.getIds()[0] + "' and extension point id '" + id + "'" );
         extensionPoint.callExtensionPoint( log, object );
       }
     }

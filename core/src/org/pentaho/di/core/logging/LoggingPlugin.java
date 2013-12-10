@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
 /**
  * Classes annotated with "LoggingPlugin" are automatically recognized and registered as a new logging channel. They are
  * added to the central logging store as listeners.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

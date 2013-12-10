@@ -69,9 +69,9 @@ public class BasePainter {
 
   private int noteFontHeight;
 
-  public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori, ScrollBarInterface vert,
-      Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize, int linewidth, int gridsize,
-      int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight ) {
+  public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
+    ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,
+    int linewidth, int gridsize, int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight ) {
     this.gc = gc;
     this.subject = subject;
     this.area = area;
@@ -134,7 +134,7 @@ public class BasePainter {
     } else {
 
       gc.setFont( Const.NVL( notePadMeta.getFontName(), noteFontName ), notePadMeta.getFontSize() == -1
-          ? noteFontHeight : notePadMeta.getFontSize(), notePadMeta.isFontBold(), notePadMeta.isFontItalic() );
+        ? noteFontHeight : notePadMeta.getFontSize(), notePadMeta.isFontBold(), notePadMeta.isFontItalic() );
 
       ext = gc.textExtent( notePadMeta.getNote() );
     }
@@ -155,12 +155,12 @@ public class BasePainter {
 
     int[] noteshape = new int[] { note.x, note.y, // Top left
     note.x + width + 2 * margin, note.y, // Top right
-        note.x + width + 2 * margin, note.y + height, // bottom right 1
-        note.x + width, note.y + height + 2 * margin, // bottom right 2
-        note.x + width, note.y + height, // bottom right 3
-        note.x + width + 2 * margin, note.y + height, // bottom right 1
-        note.x + width, note.y + height + 2 * margin, // bottom right 2
-        note.x, note.y + height + 2 * margin // bottom left
+      note.x + width + 2 * margin, note.y + height, // bottom right 1
+      note.x + width, note.y + height + 2 * margin, // bottom right 2
+      note.x + width, note.y + height, // bottom right 3
+      note.x + width + 2 * margin, note.y + height, // bottom right 1
+      note.x + width, note.y + height + 2 * margin, // bottom right 2
+      note.x, note.y + height + 2 * margin // bottom left
     };
 
     // Draw shadow around note?
@@ -168,23 +168,24 @@ public class BasePainter {
       int s = shadowSize;
       int[] shadowa = new int[] { note.x + s, note.y + s, // Top left
       note.x + width + 2 * margin + s, note.y + s, // Top right
-          note.x + width + 2 * margin + s, note.y + height + s, // bottom right 1
-          note.x + width + s, note.y + height + 2 * margin + s, // bottom right 2
-          note.x + s, note.y + height + 2 * margin + s // bottom left
+        note.x + width + 2 * margin + s, note.y + height + s, // bottom right 1
+        note.x + width + s, note.y + height + 2 * margin + s, // bottom right 2
+        note.x + s, note.y + height + 2 * margin + s // bottom left
       };
       gc.setBackground( EColor.LIGHTGRAY );
       gc.fillPolygon( shadowa );
     }
     gc.setBackground( notePadMeta.getBackGroundColorRed(), notePadMeta.getBackGroundColorGreen(), notePadMeta
-        .getBackGroundColorBlue() );
+      .getBackGroundColorBlue() );
     gc.setForeground( notePadMeta.getBorderColorRed(), notePadMeta.getBorderColorGreen(), notePadMeta
-        .getBorderColorBlue() );
+      .getBorderColorBlue() );
 
     gc.fillPolygon( noteshape );
     gc.drawPolygon( noteshape );
 
     if ( !Const.isEmpty( notePadMeta.getNote() ) ) {
-      gc.setForeground( notePadMeta.getFontColorRed(), notePadMeta.getFontColorGreen(), notePadMeta.getFontColorBlue() );
+      gc.setForeground( notePadMeta.getFontColorRed(), notePadMeta.getFontColorGreen(), notePadMeta
+        .getFontColorBlue() );
       gc.drawText( notePadMeta.getNote(), note.x + margin, note.y + margin, true );
     }
 

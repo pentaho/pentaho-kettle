@@ -35,15 +35,15 @@ import org.pentaho.di.core.database.DatabaseTransactionListener;
 
 /**
  * This class contains a map between on the one hand
- * 
+ *
  * the transformation name/thread the partition ID the connection group
- * 
+ *
  * And on the other hand
- * 
+ *
  * The database connection The number of times it was opened
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class DatabaseConnectionMap {
   private Map<String, Database> map;

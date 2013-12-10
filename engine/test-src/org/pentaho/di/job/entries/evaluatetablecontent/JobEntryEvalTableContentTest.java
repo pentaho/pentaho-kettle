@@ -33,8 +33,8 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
 /*
- * tests fix for PDI-1044 
- * Job entry: Evaluate rows number in a table: 
+ * tests fix for PDI-1044
+ * Job entry: Evaluate rows number in a table:
  * PDI Server logs with error from Quartz even though the job finishes successfully.
  */
 public class JobEntryEvalTableContentTest {
@@ -50,7 +50,7 @@ public class JobEntryEvalTableContentTest {
 
     @Override
     public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-        boolean add_fieldname, boolean add_cr ) {
+      boolean add_fieldname, boolean add_cr ) {
       // TODO Auto-generated method stub
       return null;
     }
@@ -67,14 +67,14 @@ public class JobEntryEvalTableContentTest {
 
     @Override
     public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-        String pk, boolean semicolon ) {
+      String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
-    public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-        String pk, boolean semicolon ) {
+    public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk,
+      boolean use_autoinc, String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
     }
@@ -102,16 +102,16 @@ public class JobEntryEvalTableContentTest {
     Map<Class<?>, String> classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaString" );
     Plugin p1 =
-        new Plugin(
-            new String[] { "2" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false, true,
-            classes, null, null, null );
+      new Plugin(
+        new String[] { "2" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
+        true, classes, null, null, null );
 
     classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaInteger" );
     Plugin p2 =
-        new Plugin(
-            new String[] { "5" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false, true,
-            classes, null, null, null );
+      new Plugin(
+        new String[] { "5" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
+        true, classes, null, null, null );
 
     PluginRegistry.getInstance().registerPlugin( ValueMetaPluginType.class, p1 );
     PluginRegistry.getInstance().registerPlugin( ValueMetaPluginType.class, p2 );
@@ -180,7 +180,8 @@ public class JobEntryEvalTableContentTest {
     Result res = entry.execute( new Result(), 0 );
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
-    assertEquals( "No errors should be reported in result object accoding to the new behavior", res.getNrErrors(), 0 );
+    assertEquals(
+      "No errors should be reported in result object accoding to the new behavior", res.getNrErrors(), 0 );
   }
 
   @Test
@@ -194,7 +195,8 @@ public class JobEntryEvalTableContentTest {
     Result res = entry.execute( new Result(), 0 );
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
-    assertEquals( "An error should be reported in result object accoding to the old behavior", res.getNrErrors(), 1 );
+    assertEquals(
+      "An error should be reported in result object accoding to the old behavior", res.getNrErrors(), 1 );
   }
 
   @Test

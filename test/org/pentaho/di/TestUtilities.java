@@ -47,7 +47,7 @@ public class TestUtilities {
 
   /**
    * Return the end of line character based on value returned by getFileFormat.
-   * 
+   *
    * @return the end of line character sequence
    */
   public static String getEndOfLineCharacters() {
@@ -57,7 +57,7 @@ public class TestUtilities {
   /**
    * Return the file format based on the OS type. We set the file format to DOS if it is Windows since that is the only
    * Windows file type that shows up in the TextFileInput dialog.
-   * 
+   *
    * @return String the file format
    */
   public static String getFileFormat() {
@@ -70,14 +70,15 @@ public class TestUtilities {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          set 1 of rows to compare
    * @param rows2
    *          set 2 of rows to compare
    * @throws TestFailedException
    */
-  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2 ) throws TestFailedException {
+  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2 )
+    throws TestFailedException {
 
     // we call this passing in -1 as the fileNameColumn
     checkRows( rows1, rows2, -1 );
@@ -85,7 +86,7 @@ public class TestUtilities {
 
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   * 
+   *
    * @param rows1
    *          set 1 of rows to compare
    * @param rows2
@@ -137,7 +138,7 @@ public class TestUtilities {
 
   /**
    * Creates a dummy
-   * 
+   *
    * @param name
    * @param pluginRegistry
    * @return StepMata
@@ -152,7 +153,7 @@ public class TestUtilities {
 
   /**
    * Create an injector step.
-   * 
+   *
    * @param name
    * @param registry
    * @return StepMeta
@@ -170,7 +171,7 @@ public class TestUtilities {
 
   /**
    * Create an empty temp file and return it's absolute path.
-   * 
+   *
    * @param fileName
    * @return
    * @throws IOException
@@ -181,7 +182,7 @@ public class TestUtilities {
 
   /**
    * Create an empty temp file and return it's absolute path.
-   * 
+   *
    * @param fileName
    * @param suffix
    *          A suffix to add at the end of the file name
@@ -196,14 +197,14 @@ public class TestUtilities {
 
   /**
    * Creates a the folder folderName under the java io temp directory. We suffix the file with ???
-   * 
+   *
    * @param folderName
    * @return
    */
   public static synchronized String createTempFolder( String folderName ) {
 
     String absoluteFolderPath =
-        System.getProperty( "java.io.tmpdir" ) + "/" + folderName + "_" + System.currentTimeMillis();
+      System.getProperty( "java.io.tmpdir" ) + "/" + folderName + "_" + System.currentTimeMillis();
 
     if ( new File( absoluteFolderPath ).mkdir() ) {
       return absoluteFolderPath;
@@ -214,7 +215,7 @@ public class TestUtilities {
 
   /**
    * Returns the current date using this classes DATE_FORMAT_NOW format string.
-   * 
+   *
    * @return
    */
   public static String now() {
@@ -225,7 +226,7 @@ public class TestUtilities {
 
   /**
    * Write the file to be used as input (as a temporary file).
-   * 
+   *
    * @return Absolute file name/path of the created file.
    * @throws IOException
    *           UPON
@@ -239,9 +240,12 @@ public class TestUtilities {
 
     FileWriter fout = new FileWriter( file );
     fout.write( "A" + delimiter + "B" + delimiter + "C" + delimiter + "D" + delimiter + "E" + endOfLineCharacters );
-    fout.write( "1" + delimiter + "b1" + delimiter + "c1" + delimiter + "d1" + delimiter + "e1" + endOfLineCharacters );
-    fout.write( "2" + delimiter + "b2" + delimiter + "c2" + delimiter + "d2" + delimiter + "e2" + endOfLineCharacters );
-    fout.write( "3" + delimiter + "b3" + delimiter + "c3" + delimiter + "d3" + delimiter + "e3" + endOfLineCharacters );
+    fout.write( "1"
+      + delimiter + "b1" + delimiter + "c1" + delimiter + "d1" + delimiter + "e1" + endOfLineCharacters );
+    fout.write( "2"
+      + delimiter + "b2" + delimiter + "c2" + delimiter + "d2" + delimiter + "e2" + endOfLineCharacters );
+    fout.write( "3"
+      + delimiter + "b3" + delimiter + "c3" + delimiter + "d3" + delimiter + "e3" + endOfLineCharacters );
 
     fout.close();
 
@@ -250,7 +254,7 @@ public class TestUtilities {
 
   /**
    * Create and return a SortRows step.
-   * 
+   *
    * @param name
    * @param sortFields
    *          [] Fields to sort by
@@ -267,7 +271,7 @@ public class TestUtilities {
    * @return
    */
   public static synchronized StepMeta createSortRowsStep( String name, String[] sortFields, boolean[] ascending,
-      boolean[] caseSensitive, String directory, int sortSize, PluginRegistry pluginRegistry ) {
+    boolean[] caseSensitive, String directory, int sortSize, PluginRegistry pluginRegistry ) {
 
     SortRowsMeta sortRowsMeta = new SortRowsMeta();
     sortRowsMeta.setSortSize( Integer.toString( sortSize / 10 ) );

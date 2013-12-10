@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains the wrapper for the Kettle Think JDBC driver database connection information through static final members
- * 
+ *
  * @author Matt
  * @since 9-jul-2012
  */
@@ -35,7 +35,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -65,7 +66,7 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -121,7 +122,7 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
-   * 
+   *
    * @return true if the database supports retrieval of query metadata from a prepared statement. False if the query
    *         needs to be executed first.
    */
@@ -132,19 +133,19 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     return "// Unsupported";
   }
 
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "// Unsupported";
   }
 
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "// Unsupported";
   }
 

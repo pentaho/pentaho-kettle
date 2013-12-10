@@ -31,7 +31,7 @@ import com.trilead.ssh2.Connection;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class SSHData extends BaseStepData implements StepDataInterface {
   public int indexOfCommand;

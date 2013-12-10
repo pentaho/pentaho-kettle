@@ -33,7 +33,7 @@ public interface RepositoryKeyValueInterface {
 
   /**
    * Store a value in the repository using the key/value interface
-   * 
+   *
    * @param namespace
    *          the name-space to reference
    * @param key
@@ -47,7 +47,7 @@ public interface RepositoryKeyValueInterface {
 
   /**
    * Remove a value from the repository key/value store
-   * 
+   *
    * @param namespace
    *          the name-space to reference
    * @param key
@@ -59,7 +59,7 @@ public interface RepositoryKeyValueInterface {
 
   /**
    * Load a value from the repository
-   * 
+   *
    * @param namespace
    *          The name-space to use
    * @param key
@@ -81,7 +81,7 @@ public interface RepositoryKeyValueInterface {
 
   /**
    * List the keys for a given name-space in the repository
-   * 
+   *
    * @param namespace
    *          The name-space to query
    * @return The list of keys in the name-space
@@ -93,10 +93,10 @@ public interface RepositoryKeyValueInterface {
   /**
    * This method lists the key/value entries for a given name-space. Even though this method returns a
    * {@link RepositoryValueInterface} it does NOT (need to) load the actual object mentioned in it.
-   * 
+   *
    * @param namespace
    *          The name-space to query
-   * 
+   *
    * @return A list of value entries, unsorted.
    * @throws KettleException
    *           in case there is an unexpected repository error

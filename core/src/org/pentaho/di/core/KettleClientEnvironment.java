@@ -40,9 +40,9 @@ import org.pentaho.di.i18n.BaseMessages;
 /**
  * This singleton is responsible for initializing the Kettle client environment and remembering if it is initialized.
  * More specifically it loads client plugins like value meta plugins and other core Kettle functionality.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class KettleClientEnvironment {
   /** For i18n purposes, needed by Translator2!! */
@@ -122,7 +122,7 @@ public class KettleClientEnvironment {
 
   /**
    * Creates the default kettle properties file, containing the standard header.
-   * 
+   *
    * @param directory
    *          the directory
    */
@@ -136,18 +136,19 @@ public class KettleClientEnvironment {
         out = new FileOutputStream( file );
         out.write( Const.getKettlePropertiesFileHeader().getBytes() );
       } catch ( IOException e ) {
-        System.err.println( BaseMessages.getString(
-            PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile ) );
+        System.err
+          .println( BaseMessages.getString(
+            PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES,
+            kpFile ) );
         System.err.println( e.getStackTrace() );
       } finally {
         if ( out != null ) {
           try {
             out.close();
           } catch ( IOException e ) {
-            System.err
-                .println( BaseMessages.getString(
-                    PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES,
-                    kpFile ) );
+            System.err.println( BaseMessages.getString(
+              PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES,
+              kpFile ) );
             System.err.println( e.getStackTrace() );
           }
         }
@@ -165,7 +166,7 @@ public class KettleClientEnvironment {
 
   /**
    * Return this singleton. Craete it if it hasn't been.
-   * 
+   *
    * @return
    */
   public static KettleClientEnvironment getInstance() {

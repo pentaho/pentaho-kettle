@@ -38,7 +38,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Get information from the System or the supervising transformation.
- * 
+ *
  * @author Matt
  * @since 4-aug-2003
  */
@@ -47,7 +47,7 @@ public class GetVariable extends BaseStep implements StepInterface {
   private GetVariableData data;
 
   public GetVariable( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

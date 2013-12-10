@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
 
 public class JobFileListener implements FileListener {
 
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   public boolean open( Node jobNode, String fname, boolean importfile ) {
     Spoon spoon = Spoon.getInstance();
@@ -58,7 +58,8 @@ public class JobFileListener implements FileListener {
       return true;
 
     } catch ( KettleException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ), BaseMessages
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ), BaseMessages
           .getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
           + fname, e );
     }

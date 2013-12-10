@@ -59,7 +59,7 @@ import org.pentaho.di.ui.core.widget.ConditionEditor;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlTrueTo;
   private CCombo wTrueTo;
@@ -201,8 +201,8 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
     } catch ( KettleException ke ) {
       inputfields = new RowMeta();
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
     // Some buttons

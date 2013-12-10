@@ -35,19 +35,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Writes results to a next transformation in a Job
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class RowsToResult extends BaseStep implements StepInterface {
-  private static Class<?> PKG = RowsToResult.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RowsToResult.class; // for i18n purposes, needed by Translator2!!
 
   private RowsToResultMeta meta;
 
   private RowsToResultData data;
 
   public RowsToResult( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

@@ -48,18 +48,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Performs a lookup in a database table. If the key doesn't exist it inserts values into the table, otherwise it
  * performs an update of the changed values. If nothing changed, do nothing.
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
  */
 public class InsertUpdate extends BaseStep implements StepInterface {
-  private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
   private InsertUpdateMeta meta;
   private InsertUpdateData data;
 
   public InsertUpdate( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -84,7 +84,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
 
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "InsertUpdate.Log.ValuesSetForLookup" )
-          + data.lookupParameterRowMeta.getString( lookupRow ) );
+        + data.lookupParameterRowMeta.getString( lookupRow ) );
     }
     Object[] add = data.db.getLookup( data.prepStatementLookup );
     incrementLinesInput();
@@ -92,7 +92,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
     if ( add == null ) {
       /*
        * nothing was found:
-       * 
+       *
        * INSERT ROW
        */
       if ( log.isRowLevel() ) {
@@ -117,12 +117,13 @@ public class InsertUpdate extends BaseStep implements StepInterface {
     } else {
       if ( !meta.isUpdateBypassed() ) {
         if ( log.isRowLevel() ) {
-          logRowlevel( BaseMessages.getString( PKG, "InsertUpdate.Log.FoundRowForUpdate" ) + rowMeta.getString( row ) );
+          logRowlevel( BaseMessages.getString( PKG, "InsertUpdate.Log.FoundRowForUpdate" )
+            + rowMeta.getString( row ) );
         }
 
         /*
          * Row was found:
-         * 
+         *
          * UPDATE row or do nothing?
          */
         boolean update = false;
@@ -156,7 +157,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
 
           if ( log.isRowLevel() ) {
             logRowlevel( BaseMessages.getString( PKG, "InsertUpdate.Log.UpdateRow" )
-                + data.lookupParameterRowMeta.getString( lookupRow ) );
+              + data.lookupParameterRowMeta.getString( lookupRow ) );
           }
           data.db.setValues( data.updateParameterRowMeta, updateRow, data.prepStatementUpdate );
           data.db.insertRow( data.prepStatementUpdate );
@@ -195,8 +196,8 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
-              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       // lookup the values!
       if ( log.isDebug() ) {
@@ -210,11 +211,11 @@ public class InsertUpdate extends BaseStep implements StepInterface {
         int keynr = getInputRowMeta().indexOfValue( meta.getKeyStream()[i] );
 
         if ( keynr < 0 && // couldn't find field!
-            !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
-            !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
+          !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
+          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "InsertUpdate.Exception.FieldRequired", meta
-              .getKeyStream()[i] ) );
+            .getKeyStream()[i] ) );
         }
         keynrs.add( keynr );
 
@@ -226,16 +227,16 @@ public class InsertUpdate extends BaseStep implements StepInterface {
 
         int keynr2 = getInputRowMeta().indexOfValue( meta.getKeyStream2()[i] );
         if ( keynr2 < 0 && // couldn't find field!
-            "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
+          "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
         ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "InsertUpdate.Exception.FieldRequired", meta
-              .getKeyStream2()[i] ) );
+            .getKeyStream2()[i] ) );
         }
         keynrs2.add( keynr2 );
 
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "InsertUpdate.Log.FieldHasDataNumbers", meta.getKeyStream()[i] )
-              + "" + keynrs.get( keynrs.size() - 1 ) );
+            + "" + keynrs.get( keynrs.size() - 1 ) );
         }
       }
 
@@ -251,11 +252,12 @@ public class InsertUpdate extends BaseStep implements StepInterface {
           // couldn't find field!
 
           throw new KettleStepException( BaseMessages.getString( PKG, "InsertUpdate.Exception.FieldRequired", meta
-              .getUpdateStream()[i] ) );
+            .getUpdateStream()[i] ) );
         }
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "InsertUpdate.Log.FieldHasDataNumbers", meta.getUpdateStream()[i] )
-              + data.valuenrs[i] );
+          logDebug( BaseMessages
+            .getString( PKG, "InsertUpdate.Log.FieldHasDataNumbers", meta.getUpdateStream()[i] )
+            + data.valuenrs[i] );
         }
       }
 
@@ -275,12 +277,12 @@ public class InsertUpdate extends BaseStep implements StepInterface {
           data.insertRowMeta.addValueMeta( insertValue );
         } else {
           throw new KettleStepException( "The same column can't be inserted into the target row twice: "
-              + insValue.getName() ); // TODO i18n
+            + insValue.getName() ); // TODO i18n
         }
       }
       data.db.prepareInsert(
-          data.insertRowMeta, environmentSubstitute( meta.getSchemaName() ),
-          environmentSubstitute( meta.getTableName() ) );
+        data.insertRowMeta, environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
+          .getTableName() ) );
 
       if ( !meta.isUpdateBypassed() ) {
         List<String> updateColumns = new ArrayList<String>();
@@ -352,7 +354,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
         data.lookupParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream2()[i] ) );
       } else {
         if ( "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] )
-            || "IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
+          || "IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
           sql += " " + meta.getKeyCondition()[i] + " ";
         } else if ( "= ~NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
 
@@ -424,7 +426,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
         data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream()[i] ) );
         data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta( meta.getKeyStream2()[i] ) );
       } else if ( "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] )
-          || "IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
+        || "IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
         sql += " " + meta.getKeyCondition()[i] + " ";
       } else if ( "= ~NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) ) {
 
@@ -481,7 +483,8 @@ public class InsertUpdate extends BaseStep implements StepInterface {
 
         return true;
       } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "InsertUpdate.Log.ErrorOccurredDuringStepInitialize" ) + ke.getMessage() );
+        logError( BaseMessages.getString( PKG, "InsertUpdate.Log.ErrorOccurredDuringStepInitialize" )
+          + ke.getMessage() );
       }
     }
     return false;

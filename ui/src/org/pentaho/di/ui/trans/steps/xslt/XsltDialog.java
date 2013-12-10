@@ -70,7 +70,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FormData fdResultField, fdlField, fdField, fdTabFolder, fdlXSLFilename, fdbXSLFilename, fdXSLFilename,
       fdXSLField, fdlXSLField;
@@ -238,9 +238,9 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Output Fieldame
     wResultField =
-        new LabelTextVar(
-            transMeta, wOutputField, BaseMessages.getString( PKG, "XsltDialog.ResultField.Label" ), BaseMessages
-                .getString( PKG, "XsltDialog.ResultField.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, wOutputField, BaseMessages.getString( PKG, "XsltDialog.ResultField.Label" ), BaseMessages
+          .getString( PKG, "XsltDialog.ResultField.Tooltip" ) );
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
     fdResultField = new FormData();
@@ -450,20 +450,20 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     final int OutputPropertiesRows = input.getOutputPropertyName().length;
 
     colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Name" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Value" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Name" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Value" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[0].setComboValues( XsltMeta.outputProperties );
     colinf[1].setUsingVariables( true );
 
     wOutputProperties =
-        new TableView(
-            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, OutputPropertiesRows,
-            lsMod, props );
+      new TableView(
+        transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, OutputPropertiesRows,
+        lsMod, props );
     fdOutputProperties = new FormData();
     fdOutputProperties.left = new FormAttachment( 0, 0 );
     fdOutputProperties.top = new FormAttachment( wlOutputProperties, margin );
@@ -491,17 +491,19 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     final int FieldsRows = input.getParameterField().length;
 
     colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
     colinf[1].setUsingVariables( true );
 
     wFields =
-        new TableView(
-            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
+        props );
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );
@@ -607,8 +609,8 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
         }
 
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "XsltDialog.FileType" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "XsltDialog.FileType" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
           String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -667,7 +669,8 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
         cc.setText( initValue );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "XsltDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "XsltDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "XsltDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
@@ -783,7 +786,8 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "XsltDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "XsltDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "XsltDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }

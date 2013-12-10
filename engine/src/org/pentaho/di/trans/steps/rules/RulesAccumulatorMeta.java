@@ -54,7 +54,8 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
   // Contain storage keys in single location to cut down on save/load bugs
   private static enum StorageKeys {
-    NODE_FIELDS( "fields" ), SUBNODE_FIELD( "field" ), COLUMN_NAME( "column-name" ), COLUMN_TYPE( "column-type" ), RULE_FILE( //$NON-NLS-3$ //$NON-NLS-4$
+    NODE_FIELDS( "fields" ), SUBNODE_FIELD( "field" ), COLUMN_NAME( "column-name" ), COLUMN_TYPE( "column-type" ),
+      RULE_FILE(
         "rule-file" ), RULE_DEFINITION( "rule-definition" );
 
     private final String storageKey;
@@ -111,7 +112,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+    TransMeta transMeta, Trans trans ) {
     return new RulesAccumulator( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -121,7 +122,8 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void loadXML( Node stepnode, List<DatabaseMeta> _databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> _databases, IMetaStore metaStore )
+    throws KettleXMLException {
     try {
       Node fields = XMLHandler.getSubNode( stepnode, StorageKeys.NODE_FIELDS.toString() );
       int nrfields = XMLHandler.countNodes( fields, StorageKeys.SUBNODE_FIELD.toString() );
@@ -151,15 +153,15 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
     for ( int i = 0; i < ruleResultColumns.size(); i++ ) {
       retval.append( "      <" + StorageKeys.SUBNODE_FIELD + ">" ).append( Const.CR );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( StorageKeys.COLUMN_NAME.toString(), ruleResultColumns.get( i ).getName() ) );
+        XMLHandler.addTagValue( StorageKeys.COLUMN_NAME.toString(), ruleResultColumns.get( i ).getName() ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns.get( i ).getTypeDesc() ) );
+        XMLHandler.addTagValue( StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns.get( i ).getTypeDesc() ) );
       retval.append( "      </" + StorageKeys.SUBNODE_FIELD + ">" ).append( Const.CR );
     }
     retval.append( "    </" + StorageKeys.NODE_FIELDS + ">" ).append( Const.CR );
     retval.append( "    " ).append( XMLHandler.addTagValue( StorageKeys.RULE_FILE.toString(), getRuleFile() ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( StorageKeys.RULE_DEFINITION.toString(), getRuleDefinition() ) );
+      XMLHandler.addTagValue( StorageKeys.RULE_DEFINITION.toString(), getRuleDefinition() ) );
 
     return retval.toString();
   }
@@ -190,9 +192,9 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
     for ( int i = 0; i < ruleResultColumns.size(); i++ ) {
       rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_NAME.toString(), ruleResultColumns
-          .get( i ).getName() );
+        .get( i ).getName() );
       rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns
-          .get( i ).getTypeDesc() );
+        .get( i ).getTypeDesc() );
     }
 
     rep.saveStepAttribute( idTransformation, idStep, StorageKeys.RULE_FILE.toString(), getRuleFile() );
@@ -205,7 +207,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
   @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !keepInputFields ) {
       row.clear();
     }

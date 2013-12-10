@@ -36,7 +36,7 @@ import org.pentaho.di.version.BuildVersion;
 
 /**
  * This class is an implementation of VariableSpace
- * 
+ *
  * @author Sven Boden
  */
 public class Variables implements VariableSpace {
@@ -169,14 +169,14 @@ public class Variables implements VariableSpace {
    * Substitutes field values in <code>aString</code>. Field values are of the form "?{<field name>}". The values are
    * retrieved from the specified row. Please note that the getString() method is used to convert to a String, for all
    * values in the row.
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param rowMeta
    *          The row metadata to use.
    * @param rowData
    *          The row data to use
-   * 
+   *
    * @return the string with the substitution applied.
    * @throws KettleValueException
    *           In case there is a String conversion error
@@ -234,7 +234,7 @@ public class Variables implements VariableSpace {
 
   /**
    * Get a default variable space as a placeholder. Everytime you will get a new instance.
-   * 
+   *
    * @return a default variable space.
    */
   public static synchronized VariableSpace getADefaultVariableSpace() {

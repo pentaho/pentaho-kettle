@@ -124,9 +124,9 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
     int defaultStringLenNameValueElements =
-        Const.toInt( space.environmentSubstitute( defaultStringLen ), new Integer( DEFAULT_STRING_LEN ) );
+      Const.toInt( space.environmentSubstitute( defaultStringLen ), new Integer( DEFAULT_STRING_LEN ) );
 
     if ( includeFilenameField ) {
       ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( filenameField ), ValueMeta.TYPE_STRING );
@@ -142,7 +142,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     }
     if ( includeXmlDataTypeNumericField ) {
       ValueMetaInterface vdtn =
-          new ValueMeta( space.environmentSubstitute( xmlDataTypeNumericField ), ValueMeta.TYPE_INTEGER );
+        new ValueMeta( space.environmentSubstitute( xmlDataTypeNumericField ), ValueMeta.TYPE_INTEGER );
       vdtn.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vdtn.setOrigin( name );
       r.addValueMeta( vdtn );
@@ -150,7 +150,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlDataTypeDescriptionField ) {
       ValueMetaInterface vdtd =
-          new ValueMeta( space.environmentSubstitute( xmlDataTypeDescriptionField ), ValueMeta.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( xmlDataTypeDescriptionField ), ValueMeta.TYPE_STRING );
       vdtd.setLength( 25 );
       vdtd.setOrigin( name );
       r.addValueMeta( vdtd );
@@ -158,7 +158,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlLocationLineField ) {
       ValueMetaInterface vline =
-          new ValueMeta( space.environmentSubstitute( xmlLocationLineField ), ValueMeta.TYPE_INTEGER );
+        new ValueMeta( space.environmentSubstitute( xmlLocationLineField ), ValueMeta.TYPE_INTEGER );
       vline.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vline.setOrigin( name );
       r.addValueMeta( vline );
@@ -166,7 +166,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlLocationColumnField ) {
       ValueMetaInterface vcol =
-          new ValueMeta( space.environmentSubstitute( xmlLocationColumnField ), ValueMeta.TYPE_INTEGER );
+        new ValueMeta( space.environmentSubstitute( xmlLocationColumnField ), ValueMeta.TYPE_INTEGER );
       vcol.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vcol.setOrigin( name );
       r.addValueMeta( vcol );
@@ -223,7 +223,8 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     try {
       filename = Const.NVL( XMLHandler.getTagValue( stepnode, "filename" ), "" );
       addResultFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addResultFile" ) );
@@ -244,49 +245,53 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
       rowNumberField = Const.NVL( XMLHandler.getTagValue( stepnode, "rowNumberField" ), rowNumberField );
 
       includeXmlDataTypeNumericField =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeDataTypeNumericField" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeDataTypeNumericField" ) );
       xmlDataTypeNumericField =
-          Const.NVL( XMLHandler.getTagValue( stepnode, "dataTypeNumericField" ), xmlDataTypeNumericField );
+        Const.NVL( XMLHandler.getTagValue( stepnode, "dataTypeNumericField" ), xmlDataTypeNumericField );
 
       includeXmlDataTypeDescriptionField =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeDataTypeDescriptionField" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeDataTypeDescriptionField" ) );
       xmlDataTypeDescriptionField =
-          Const.NVL( XMLHandler.getTagValue( stepnode, "dataTypeDescriptionField" ), xmlDataTypeDescriptionField );
+        Const.NVL( XMLHandler.getTagValue( stepnode, "dataTypeDescriptionField" ), xmlDataTypeDescriptionField );
 
       includeXmlLocationLineField =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlLocationLineField" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlLocationLineField" ) );
       xmlLocationLineField =
-          Const.NVL( XMLHandler.getTagValue( stepnode, "xmlLocationLineField" ), xmlLocationLineField );
+        Const.NVL( XMLHandler.getTagValue( stepnode, "xmlLocationLineField" ), xmlLocationLineField );
 
       includeXmlLocationColumnField =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlLocationColumnField" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlLocationColumnField" ) );
       xmlLocationColumnField =
-          Const.NVL( XMLHandler.getTagValue( stepnode, "xmlLocationColumnField" ), xmlLocationColumnField );
+        Const.NVL( XMLHandler.getTagValue( stepnode, "xmlLocationColumnField" ), xmlLocationColumnField );
 
-      includeXmlElementIDField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlElementIDField" ) );
+      includeXmlElementIDField =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlElementIDField" ) );
       xmlElementIDField = Const.NVL( XMLHandler.getTagValue( stepnode, "xmlElementIDField" ), xmlElementIDField );
 
       includeXmlParentElementIDField =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlParentElementIDField" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlParentElementIDField" ) );
       xmlParentElementIDField =
-          Const.NVL( XMLHandler.getTagValue( stepnode, "xmlParentElementIDField" ), xmlParentElementIDField );
+        Const.NVL( XMLHandler.getTagValue( stepnode, "xmlParentElementIDField" ), xmlParentElementIDField );
 
       includeXmlElementLevelField =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlElementLevelField" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlElementLevelField" ) );
       xmlElementLevelField =
-          Const.NVL( XMLHandler.getTagValue( stepnode, "xmlElementLevelField" ), xmlElementLevelField );
+        Const.NVL( XMLHandler.getTagValue( stepnode, "xmlElementLevelField" ), xmlElementLevelField );
 
       includeXmlPathField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlPathField" ) );
       xmlPathField = Const.NVL( XMLHandler.getTagValue( stepnode, "xmlPathField" ), xmlPathField );
 
       includeXmlParentPathField =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlParentPathField" ) );
-      xmlParentPathField = Const.NVL( XMLHandler.getTagValue( stepnode, "xmlParentPathField" ), xmlParentPathField );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlParentPathField" ) );
+      xmlParentPathField =
+        Const.NVL( XMLHandler.getTagValue( stepnode, "xmlParentPathField" ), xmlParentPathField );
 
-      includeXmlDataNameField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlDataNameField" ) );
+      includeXmlDataNameField =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlDataNameField" ) );
       xmlDataNameField = Const.NVL( XMLHandler.getTagValue( stepnode, "xmlDataNameField" ), xmlDataNameField );
 
-      includeXmlDataValueField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlDataValueField" ) );
+      includeXmlDataValueField =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeXmlDataValueField" ) );
       xmlDataValueField = Const.NVL( XMLHandler.getTagValue( stepnode, "xmlDataValueField" ), xmlDataValueField );
 
     } catch ( Exception e ) {
@@ -320,23 +325,26 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     retval.append( "    " + XMLHandler.addTagValue( "includeRowNumberField", includeRowNumberField ) );
     retval.append( "    " + XMLHandler.addTagValue( "rowNumberField", rowNumberField ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "includeDataTypeNumericField", includeXmlDataTypeNumericField ) );
+    retval
+      .append( "    " + XMLHandler.addTagValue( "includeDataTypeNumericField", includeXmlDataTypeNumericField ) );
     retval.append( "    " + XMLHandler.addTagValue( "dataTypeNumericField", xmlDataTypeNumericField ) );
 
     retval.append( "    "
-        + XMLHandler.addTagValue( "includeDataTypeDescriptionField", includeXmlDataTypeDescriptionField ) );
+      + XMLHandler.addTagValue( "includeDataTypeDescriptionField", includeXmlDataTypeDescriptionField ) );
     retval.append( "    " + XMLHandler.addTagValue( "dataTypeDescriptionField", xmlDataTypeDescriptionField ) );
 
     retval.append( "    " + XMLHandler.addTagValue( "includeXmlLocationLineField", includeXmlLocationLineField ) );
     retval.append( "    " + XMLHandler.addTagValue( "xmlLocationLineField", xmlLocationLineField ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "includeXmlLocationColumnField", includeXmlLocationColumnField ) );
+    retval.append( "    "
+      + XMLHandler.addTagValue( "includeXmlLocationColumnField", includeXmlLocationColumnField ) );
     retval.append( "    " + XMLHandler.addTagValue( "xmlLocationColumnField", xmlLocationColumnField ) );
 
     retval.append( "    " + XMLHandler.addTagValue( "includeXmlElementIDField", includeXmlElementIDField ) );
     retval.append( "    " + XMLHandler.addTagValue( "xmlElementIDField", xmlElementIDField ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "includeXmlParentElementIDField", includeXmlParentElementIDField ) );
+    retval.append( "    "
+      + XMLHandler.addTagValue( "includeXmlParentElementIDField", includeXmlParentElementIDField ) );
     retval.append( "    " + XMLHandler.addTagValue( "xmlParentElementIDField", xmlParentElementIDField ) );
 
     retval.append( "    " + XMLHandler.addTagValue( "includeXmlElementLevelField", includeXmlElementLevelField ) );
@@ -433,42 +441,47 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
       includeXmlDataTypeNumericField = rep.getStepAttributeBoolean( id_step, "includeDataTypeNumericField" );
       xmlDataTypeNumericField =
-          Const.NVL( rep.getStepAttributeString( id_step, "dataTypeNumericField" ), xmlDataTypeNumericField );
+        Const.NVL( rep.getStepAttributeString( id_step, "dataTypeNumericField" ), xmlDataTypeNumericField );
 
-      includeXmlDataTypeDescriptionField = rep.getStepAttributeBoolean( id_step, "includeDataTypeDescriptionField" );
+      includeXmlDataTypeDescriptionField =
+        rep.getStepAttributeBoolean( id_step, "includeDataTypeDescriptionField" );
       xmlDataTypeDescriptionField =
-          Const.NVL( rep.getStepAttributeString( id_step, "dataTypeDescriptionField" ), xmlDataTypeDescriptionField );
+        Const.NVL(
+          rep.getStepAttributeString( id_step, "dataTypeDescriptionField" ), xmlDataTypeDescriptionField );
 
       includeXmlLocationLineField = rep.getStepAttributeBoolean( id_step, "includeXmlLocationLineField" );
       xmlLocationLineField =
-          Const.NVL( rep.getStepAttributeString( id_step, "xmlLocationLineField" ), xmlLocationLineField );
+        Const.NVL( rep.getStepAttributeString( id_step, "xmlLocationLineField" ), xmlLocationLineField );
 
       includeXmlLocationColumnField = rep.getStepAttributeBoolean( id_step, "includeXmlLocationColumnField" );
       xmlLocationColumnField =
-          Const.NVL( rep.getStepAttributeString( id_step, "xmlLocationColumnField" ), xmlLocationColumnField );
+        Const.NVL( rep.getStepAttributeString( id_step, "xmlLocationColumnField" ), xmlLocationColumnField );
 
       includeXmlElementIDField = rep.getStepAttributeBoolean( id_step, "includeXmlElementIDField" );
-      xmlElementIDField = Const.NVL( rep.getStepAttributeString( id_step, "xmlElementIDField" ), xmlElementIDField );
+      xmlElementIDField =
+        Const.NVL( rep.getStepAttributeString( id_step, "xmlElementIDField" ), xmlElementIDField );
 
       includeXmlParentElementIDField = rep.getStepAttributeBoolean( id_step, "includeXmlParentElementIDField" );
       xmlParentElementIDField =
-          Const.NVL( rep.getStepAttributeString( id_step, "xmlParentElementIDField" ), xmlParentElementIDField );
+        Const.NVL( rep.getStepAttributeString( id_step, "xmlParentElementIDField" ), xmlParentElementIDField );
 
       includeXmlElementLevelField = rep.getStepAttributeBoolean( id_step, "includeXmlElementLevelField" );
       xmlElementLevelField =
-          Const.NVL( rep.getStepAttributeString( id_step, "xmlElementLevelField" ), xmlElementLevelField );
+        Const.NVL( rep.getStepAttributeString( id_step, "xmlElementLevelField" ), xmlElementLevelField );
 
       includeXmlPathField = rep.getStepAttributeBoolean( id_step, "includeXmlPathField" );
       xmlPathField = Const.NVL( rep.getStepAttributeString( id_step, "xmlPathField" ), xmlPathField );
 
       includeXmlParentPathField = rep.getStepAttributeBoolean( id_step, "includeXmlParentPathField" );
-      xmlParentPathField = Const.NVL( rep.getStepAttributeString( id_step, "xmlParentPathField" ), xmlParentPathField );
+      xmlParentPathField =
+        Const.NVL( rep.getStepAttributeString( id_step, "xmlParentPathField" ), xmlParentPathField );
 
       includeXmlDataNameField = rep.getStepAttributeBoolean( id_step, "includeXmlDataNameField" );
       xmlDataNameField = Const.NVL( rep.getStepAttributeString( id_step, "xmlDataNameField" ), xmlDataNameField );
 
       includeXmlDataValueField = rep.getStepAttributeBoolean( id_step, "includeXmlDataValueField" );
-      xmlDataValueField = Const.NVL( rep.getStepAttributeString( id_step, "xmlDataValueField" ), xmlDataValueField );
+      xmlDataValueField =
+        Const.NVL( rep.getStepAttributeString( id_step, "xmlDataValueField" ), xmlDataValueField );
 
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -495,29 +508,31 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute( id_transformation, id_step, "includeRowNumberField", includeRowNumberField );
       rep.saveStepAttribute( id_transformation, id_step, "rowNumberField", rowNumberField );
 
-      rep.saveStepAttribute( id_transformation, id_step, "includeDataTypeNumericField", includeXmlDataTypeNumericField );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "includeDataTypeNumericField", includeXmlDataTypeNumericField );
       rep.saveStepAttribute( id_transformation, id_step, "dataTypeNumericField", xmlDataTypeNumericField );
 
       rep.saveStepAttribute(
-          id_transformation, id_step, "includeDataTypeDescriptionField", includeXmlDataTypeDescriptionField );
+        id_transformation, id_step, "includeDataTypeDescriptionField", includeXmlDataTypeDescriptionField );
       rep.saveStepAttribute( id_transformation, id_step, "dataTypeDescriptionField", xmlDataTypeDescriptionField );
 
-      rep.saveStepAttribute( id_transformation, id_step, "includeXmlLocationLineField", includeXmlLocationLineField );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "includeXmlLocationLineField", includeXmlLocationLineField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlLocationLineField", xmlLocationLineField );
 
-      rep
-          .saveStepAttribute(
-              id_transformation, id_step, "includeXmlLocationColumnField", includeXmlLocationColumnField );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "includeXmlLocationColumnField", includeXmlLocationColumnField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlLocationColumnField", xmlLocationColumnField );
 
       rep.saveStepAttribute( id_transformation, id_step, "includeXmlElementIDField", includeXmlElementIDField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlElementIDField", xmlElementIDField );
 
       rep.saveStepAttribute(
-          id_transformation, id_step, "includeXmlParentElementIDField", includeXmlParentElementIDField );
+        id_transformation, id_step, "includeXmlParentElementIDField", includeXmlParentElementIDField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlParentElementIDField", xmlParentElementIDField );
 
-      rep.saveStepAttribute( id_transformation, id_step, "includeXmlElementLevelField", includeXmlElementLevelField );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "includeXmlElementLevelField", includeXmlElementLevelField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlElementLevelField", xmlElementLevelField );
 
       rep.saveStepAttribute( id_transformation, id_step, "includeXmlPathField", includeXmlPathField );
@@ -537,9 +552,9 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     // TODO externalize messages
     CheckResult cr;
     if ( Const.isEmpty( filename ) ) {
@@ -551,33 +566,33 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlDataTypeNumericField || includeXmlDataTypeDescriptionField ) {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_COMMENT,
-              "At least one Data Type field (numeric or description) is in the data stream", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_COMMENT,
+          "At least one Data Type field (numeric or description) is in the data stream", stepMeta );
     } else {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_WARNING,
-              "Data Type field (numeric or description) is missing in the data stream", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_WARNING,
+          "Data Type field (numeric or description) is missing in the data stream", stepMeta );
     }
     remarks.add( cr );
 
     if ( includeXmlDataValueField && includeXmlDataNameField ) {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_COMMENT, "Data Name and Data Value fields are in the data stream",
-              stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_COMMENT, "Data Name and Data Value fields are in the data stream",
+          stepMeta );
     } else {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_WARNING,
-              "Both Data Name and Data Value fields should be in the data stream", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_WARNING,
+          "Both Data Name and Data Value fields should be in the data stream", stepMeta );
     }
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new XMLInputStream( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

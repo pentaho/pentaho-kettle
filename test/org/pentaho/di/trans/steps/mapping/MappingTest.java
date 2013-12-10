@@ -47,7 +47,7 @@ public class MappingTest extends TestCase {
 
   /**
    * Builds a {@link RowGenerator} Step with a single String field.
-   * 
+   *
    * @param registry
    *          Plugin Registry.
    * @param stepName
@@ -87,8 +87,8 @@ public class MappingTest extends TestCase {
     return rowGeneratorStep;
   }
 
-  private MappingIODefinition createMappingDef( String inputStepName, String mappingStepName, String sourceValueName,
-      String targetValueName ) {
+  private MappingIODefinition createMappingDef( String inputStepName, String mappingStepName,
+    String sourceValueName, String targetValueName ) {
     MappingIODefinition def = new MappingIODefinition();
     def.setInputStepname( inputStepName );
     def.setOutputStepname( mappingStepName );
@@ -117,7 +117,7 @@ public class MappingTest extends TestCase {
     mappingMeta.setFileName( "test/org/pentaho/di/trans/steps/mapping/subtrans.ktr" );
     String mappingInputStepName = "input";
     mappingMeta.setInputMappings( Collections.singletonList( createMappingDef(
-        rowGenerator.getName(), mappingInputStepName, "string", "a" ) ) );
+      rowGenerator.getName(), mappingInputStepName, "string", "a" ) ) );
     String mappingPid = registry.getPluginId( StepPluginType.class, mappingMeta );
     StepMeta mapping = new StepMeta( mappingPid, mappingName, mappingMeta );
     transMeta.addStep( mapping );
@@ -194,7 +194,7 @@ public class MappingTest extends TestCase {
 
     // Create the main data path mapping
     MappingIODefinition mainMappingDef =
-        createMappingDef( rowGeneratorMain.getName(), mappingInputStepName, "string", "a" );
+      createMappingDef( rowGeneratorMain.getName(), mappingInputStepName, "string", "a" );
     mainMappingDef.setMainDataPath( true );
     inputMappings.add( mainMappingDef );
 

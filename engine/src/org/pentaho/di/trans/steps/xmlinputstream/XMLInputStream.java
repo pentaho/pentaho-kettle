@@ -51,13 +51,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Use a StAX parser to read XML in a flexible and fast way.
- * 
+ *
  * @author Jens Bleuel
  * @since 2011-01-13
  */
 // TODO black box testing
 public class XMLInputStream extends BaseStep implements StepInterface {
-  private static Class<?> PKG = XMLInputStream.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLInputStream.class; // for i18n purposes, needed by Translator2!!
 
   private static int PARENT_ID_ALLOCATE_SIZE = 1000; // max. number of nested elements, we may let the user configure
                                                      // this
@@ -67,12 +67,12 @@ public class XMLInputStream extends BaseStep implements StepInterface {
   private XMLInputStreamData data;
 
   static final String[] eventDescription = {
-      "UNKNOWN", "START_ELEMENT", "END_ELEMENT", "PROCESSING_INSTRUCTION", "CHARACTERS", "COMMENT", "SPACE", //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-      "START_DOCUMENT", "END_DOCUMENT", "ENTITY_REFERENCE", "ATTRIBUTE", "DTD", "CDATA", "NAMESPACE", //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-      "NOTATION_DECLARATION", "ENTITY_DECLARATION" };
+    "UNKNOWN", "START_ELEMENT", "END_ELEMENT", "PROCESSING_INSTRUCTION", "CHARACTERS", "COMMENT", "SPACE",
+    "START_DOCUMENT", "END_DOCUMENT", "ENTITY_REFERENCE", "ATTRIBUTE", "DTD", "CDATA", "NAMESPACE",
+    "NOTATION_DECLARATION", "ENTITY_DECLARATION" };
 
   public XMLInputStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -121,7 +121,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       if ( meta.isAddResultFile() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.fileObject, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.fileObject, getTransMeta().getName(), getStepname() );
         resultFile.setComment( "File was read by an XML Input Stream step" ); // TODO externalize
         addResultFile( resultFile );
       }
@@ -262,7 +262,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
         // store simple path
         if ( data.pos_xml_data_name >= 0 ) {
           data.elementPath[data.elementLevel] =
-              data.elementPath[data.elementLevel - 1] + "/" + outputRowData[data.pos_xml_data_name];
+            data.elementPath[data.elementLevel - 1] + "/" + outputRowData[data.pos_xml_data_name];
         }
 
         // write Namespaces out

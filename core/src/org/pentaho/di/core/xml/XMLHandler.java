@@ -70,10 +70,10 @@ import org.xml.sax.InputSource;
 
 /**
  * This class contains a number of (static final) methods to facilitate the retrieval of information from XML Node(s).
- * 
+ *
  * @author Matt
  * @since 04-04-2003
- * 
+ *
  */
 public class XMLHandler {
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
@@ -81,7 +81,7 @@ public class XMLHandler {
 
   /**
    * The header string to specify encoding in UTF-8 for XML files
-   * 
+   *
    * @return The XML header.
    */
   public static final String getXMLHeader() {
@@ -90,7 +90,7 @@ public class XMLHandler {
 
   /**
    * The header string to specify encoding in an XML file
-   * 
+   *
    * @param encoding
    *          The desired encoding to use in the XML file
    * @return The XML header.
@@ -101,7 +101,7 @@ public class XMLHandler {
 
   /**
    * Get the value of a tag in a node
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -114,7 +114,7 @@ public class XMLHandler {
 
   /**
    * Get the value of a tag in a node
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -143,7 +143,7 @@ public class XMLHandler {
 
   /**
    * Get the value of a tag in a node
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -162,7 +162,7 @@ public class XMLHandler {
     for ( int i = 0; i < children.getLength(); i++ ) {
       childnode = children.item( i );
       if ( childnode.getNodeName().equalsIgnoreCase( tag )
-          && childnode.getAttributes().getNamedItem( attribute ) != null ) {
+        && childnode.getAttributes().getNamedItem( attribute ) != null ) {
         if ( childnode.getFirstChild() != null ) {
           return childnode.getFirstChild().getNodeValue();
         }
@@ -173,7 +173,7 @@ public class XMLHandler {
 
   /**
    * Search a node for a certain tag, in that subnode search for a certain subtag. Return the value of that subtag.
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -211,7 +211,7 @@ public class XMLHandler {
 
   /**
    * Count nodes with a certain tag
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -241,7 +241,7 @@ public class XMLHandler {
 
   /**
    * Get nodes with a certain tag one level down
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -271,7 +271,7 @@ public class XMLHandler {
 
   /**
    * Get node child with a certain subtag set to a certain value
-   * 
+   *
    * @param n
    *          The node to search in
    * @param tag
@@ -311,7 +311,7 @@ public class XMLHandler {
 
   /**
    * Get node child with a certain subtag set to a certain value
-   * 
+   *
    * @param n
    *          The node to search in
    * @param tag
@@ -324,7 +324,8 @@ public class XMLHandler {
    *          The nr of occurance of the value
    * @return The node found or null if we couldn't find anything.
    */
-  public static final Node getNodeWithAttributeValue( Node n, String tag, String attributeName, String attributeValue ) {
+  public static final Node getNodeWithAttributeValue( Node n, String tag, String attributeName,
+    String attributeValue ) {
     NodeList children;
     Node childnode;
 
@@ -345,7 +346,7 @@ public class XMLHandler {
 
   /**
    * Search for a subnode in the node with a certain tag.
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -376,7 +377,7 @@ public class XMLHandler {
 
   /**
    * Search a node for a child of child
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -396,7 +397,7 @@ public class XMLHandler {
   /**
    * Get a subnode in a node by nr.<br>
    * This method uses caching and assumes you loop over subnodes in sequential order (nr is increasing by 1 each call)
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -413,7 +414,7 @@ public class XMLHandler {
    * Get a subnode in a node by nr.<br>
    * It optially allows you to use caching.<br>
    * Caching assumes that you loop over subnodes in sequential order (nr is increasing by 1 each call)
-   * 
+   *
    * @param n
    *          The node to look in
    * @param tag
@@ -470,7 +471,7 @@ public class XMLHandler {
 
   /**
    * Find the value entry in a node
-   * 
+   *
    * @param n
    *          The node
    * @return The value entry as a string
@@ -512,7 +513,7 @@ public class XMLHandler {
 
   /**
    * Load a file into an XML document
-   * 
+   *
    * @param filename
    *          The filename to load into a document
    * @return the Document if all went well, null if an error occurred!
@@ -527,7 +528,7 @@ public class XMLHandler {
 
   /**
    * Load a file into an XML document
-   * 
+   *
    * @param filename
    *          The filename to load into a document
    * @return the Document if all went well, null if an error occured!
@@ -538,7 +539,7 @@ public class XMLHandler {
 
   /**
    * Load a file into an XML document
-   * 
+   *
    * @param filename
    *          The filename to load into a document
    * @param systemId
@@ -550,7 +551,7 @@ public class XMLHandler {
    * @return the Document if all went well, null if an error occured!
    */
   public static final Document loadXMLFile( FileObject fileObject, String systemID, boolean ignoreEntities,
-      boolean namespaceAware ) throws KettleXMLException {
+    boolean namespaceAware ) throws KettleXMLException {
     try {
       return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
     } catch ( IOException e ) {
@@ -560,7 +561,7 @@ public class XMLHandler {
 
   /**
    * Read in an XML file from the passed input stream and return an XML document
-   * 
+   *
    * @param inputStream
    *          The filename input stream to read the document from
    * @return the Document if all went well, null if an error occurred!
@@ -571,7 +572,7 @@ public class XMLHandler {
 
   /**
    * Load a file into an XML document
-   * 
+   *
    * @param inputStream
    *          The stream to load a document from
    * @param systemId
@@ -583,7 +584,7 @@ public class XMLHandler {
    * @return the Document if all went well, null if an error occured!
    */
   public static final Document loadXMLFile( InputStream inputStream, String systemID, boolean ignoreEntities,
-      boolean namespaceAware ) throws KettleXMLException {
+    boolean namespaceAware ) throws KettleXMLException {
     DocumentBuilderFactory dbf;
     DocumentBuilder db;
     Document doc;
@@ -645,7 +646,7 @@ public class XMLHandler {
 
   /**
    * Load a file into an XML document
-   * 
+   *
    * @param file
    *          The file to load into a document
    * @return the Document if all went well, null if an error occured!
@@ -676,7 +677,7 @@ public class XMLHandler {
 
   /**
    * Calls loadXMLString with deferNodeExpansion = TRUE
-   * 
+   *
    * @param string
    * @return
    * @throws KettleXMLException
@@ -689,7 +690,7 @@ public class XMLHandler {
 
   /**
    * Loads the XML document in parameter xml and returns the 'tag' entry.
-   * 
+   *
    * @param xml
    *          the XML to load
    * @param tag
@@ -705,7 +706,7 @@ public class XMLHandler {
 
   /**
    * Load a String into an XML document
-   * 
+   *
    * @param string
    *          The XML text to load into a document
    * @param Boolean
@@ -746,7 +747,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag String value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param val
@@ -763,7 +764,7 @@ public class XMLHandler {
 
     for ( int i = 0; i < attributes.length; i += 2 ) {
       value.append( " " ).append( encoder.encodeForXMLAttribute( attributes[i] ) ).append( "=\"" ).append(
-          attributes[i + 1] ).append( "\" " );
+        attributes[i + 1] ).append( "\" " );
     }
 
     if ( val != null && val.length() > 0 ) {
@@ -787,7 +788,7 @@ public class XMLHandler {
   /**
    * Take the characters from string val and append them to the value stringbuffer In case a character is not allowed in
    * XML, we convert it to an XML code
-   * 
+   *
    * @param value
    *          the stringbuffer to append to
    * @param string
@@ -800,7 +801,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag String value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param val
@@ -813,7 +814,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag String value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param val
@@ -826,7 +827,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag boolean value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param bool
@@ -839,7 +840,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag boolean value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param bool
@@ -852,7 +853,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag boolean value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param bool
@@ -867,7 +868,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag long integer value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param l
@@ -880,7 +881,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag long integer value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param l
@@ -897,7 +898,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (with carriage return) for a certain tag integer value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param i
@@ -910,7 +911,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (with carriage return) for a certain tag integer value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param i
@@ -923,7 +924,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag integer value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param i
@@ -938,7 +939,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (with carriage return) for a certain tag double value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param d
@@ -951,7 +952,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag double value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param d
@@ -966,7 +967,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (with carriage return) for a certain tag Date value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param date
@@ -979,7 +980,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag Date value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param date
@@ -994,7 +995,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag BigDecimal value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param val
@@ -1007,12 +1008,12 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag BigDecimal value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param val
    *          The BigDecimal value of the tag
-   * 
+   *
    * @return The XML String for the tag.
    */
   public static final String addTagValue( String tag, BigDecimal val, boolean cr ) {
@@ -1021,7 +1022,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag binary (byte[]) value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param val
@@ -1036,7 +1037,7 @@ public class XMLHandler {
 
   /**
    * Build an XML string (including a carriage return) for a certain tag binary (byte[]) value
-   * 
+   *
    * @param tag
    *          The XML tag
    * @param val
@@ -1069,7 +1070,7 @@ public class XMLHandler {
 
   /**
    * Get all the attributes in a certain node (on the root level)
-   * 
+   *
    * @param node
    *          The node to examine
    * @return an array of strings containing the names of the attributes.
@@ -1135,7 +1136,7 @@ public class XMLHandler {
 
   /**
    * Convert a XML encoded binary string back to binary format
-   * 
+   *
    * @param string
    *          the (Byte64/GZip) encoded string
    * @return the decoded binary (byte[]) object
@@ -1214,10 +1215,10 @@ public class XMLHandler {
 
 /**
  * Handle external references and return an empty dummy document.
- * 
+ *
  * @author jb
  * @since 2007-12-21
- * 
+ *
  */
 class DTDIgnoringEntityResolver implements EntityResolver {
   public DTDIgnoringEntityResolver() {

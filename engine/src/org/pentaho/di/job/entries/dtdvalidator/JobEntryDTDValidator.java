@@ -54,10 +54,10 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'dtdvalidator' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-04-2007
- * 
+ *
  */
 
 public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, JobEntryInterface {
@@ -94,8 +94,8 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
 
     try {
       super.loadXML( entrynode, databases, slaveServers );
@@ -109,15 +109,16 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       xmlfilename = rep.getJobEntryAttributeString( id_jobentry, "xmlfilename" );
       dtdfilename = rep.getJobEntryAttributeString( id_jobentry, "dtdfilename" );
       dtdintern = rep.getJobEntryAttributeBoolean( id_jobentry, "dtdintern" );
 
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'DTDvalidator' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'DTDvalidator' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -128,7 +129,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
       rep.saveJobEntryAttribute( id_job, getObjectId(), "dtdintern", dtdintern );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'DTDvalidator' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -214,8 +215,8 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );

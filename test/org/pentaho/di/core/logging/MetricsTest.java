@@ -40,9 +40,9 @@ public class MetricsTest extends TestCase {
   public static final String STRING_TEST_TASK_CODE = "TEST_TASK";
   public static final String STRING_TEST_TASK_DESCRIPTION = "Test task";
   public static Metrics METRIC_START = new Metrics(
-      MetricsSnapshotType.START, STRING_TEST_TASK_CODE, STRING_TEST_TASK_DESCRIPTION );
+    MetricsSnapshotType.START, STRING_TEST_TASK_CODE, STRING_TEST_TASK_DESCRIPTION );
   public static Metrics METRIC_STOP = new Metrics(
-      MetricsSnapshotType.STOP, STRING_TEST_TASK_CODE, STRING_TEST_TASK_DESCRIPTION );
+    MetricsSnapshotType.STOP, STRING_TEST_TASK_CODE, STRING_TEST_TASK_DESCRIPTION );
 
   @Override
   protected void setUp() throws Exception {
@@ -58,7 +58,7 @@ public class MetricsTest extends TestCase {
     log.snap( METRIC_STOP );
 
     Deque<MetricsSnapshotInterface> snapshotList =
-        MetricsRegistry.getInstance().getSnapshotList( log.getLogChannelId() );
+      MetricsRegistry.getInstance().getSnapshotList( log.getLogChannelId() );
     assertEquals( 2, snapshotList.size() );
 
     List<MetricsDuration> durationList = MetricsUtil.getDuration( log.getLogChannelId(), METRIC_START );
@@ -80,11 +80,11 @@ public class MetricsTest extends TestCase {
     LogChannelInterface log = trans.getLogChannel();
 
     Deque<MetricsSnapshotInterface> snapshotList =
-        MetricsRegistry.getInstance().getSnapshotList( log.getLogChannelId() );
+      MetricsRegistry.getInstance().getSnapshotList( log.getLogChannelId() );
     assertTrue( snapshotList.size() >= 4 );
 
     List<MetricsDuration> durationList =
-        MetricsUtil.getDuration( log.getLogChannelId(), Metrics.METRIC_TRANSFORMATION_EXECUTION_START );
+      MetricsUtil.getDuration( log.getLogChannelId(), Metrics.METRIC_TRANSFORMATION_EXECUTION_START );
     assertEquals( 1, durationList.size() );
     MetricsDuration duration = durationList.get( 0 );
     assertTrue( duration.getDuration() >= 20 && duration.getDuration() <= 5000 );

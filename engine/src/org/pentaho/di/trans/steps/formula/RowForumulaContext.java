@@ -62,7 +62,7 @@ public class RowForumulaContext implements FormulaContext {
 
   /**
    * We return the content of a Value with the given name. We cache the position of the field indexes.
-   * 
+   *
    * @see org.jfree.formula.FormulaContext#resolveReference(java.lang.Object)
    */
   public Object resolveReference( Object name ) throws EvaluationException {

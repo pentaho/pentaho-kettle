@@ -73,7 +73,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = FuzzyMatchMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FuzzyMatchMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStep;
   private CCombo wStep;
@@ -624,16 +624,17 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.FieldReturn" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.FieldReturn" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.NewName" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.NewName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
 
     wReturn =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER
-            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+      new TableView( transMeta, wFieldsComp, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
 
     fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
@@ -816,13 +817,11 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
     if ( infoStream.getStepMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       if ( Const.isEmpty( wStep.getText() ) ) {
-        mb
-            .setMessage( BaseMessages.getString( PKG, "FuzzyMatchDialog.NotStepSpecified.DialogMessage", wStep
-                .getText() ) );
+        mb.setMessage( BaseMessages.getString( PKG, "FuzzyMatchDialog.NotStepSpecified.DialogMessage", wStep
+          .getText() ) );
       } else {
-        mb
-            .setMessage( BaseMessages
-                .getString( PKG, "FuzzyMatchDialog.StepCanNotFound.DialogMessage", wStep.getText() ) );
+        mb.setMessage( BaseMessages.getString( PKG, "FuzzyMatchDialog.StepCanNotFound.DialogMessage", wStep
+          .getText() ) );
       }
 
       mb.setText( BaseMessages.getString( PKG, "FuzzyMatchDialog.StepCanNotFound.DialogTitle" ) );
@@ -846,8 +845,8 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       if ( field != null ) {
         wMainStreamField.setText( field );
@@ -867,9 +866,9 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
           wLookupField.setItems( r.getFieldNames() );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogMessage" ), ke );
+        new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogTitle" ), BaseMessages.getString(
+          PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogMessage" ), ke );
       }
       if ( field != null ) {
         wLookupField.setText( field );
@@ -880,13 +879,18 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 
   private void activegetCloserValue() {
     boolean enableRange =
-        ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_NEEDLEMAN_WUNSH
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_JARO
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER || FuzzyMatchMeta
-            .getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY )
-            && !wgetCloserValue.getSelection();
+      ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_NEEDLEMAN_WUNSH
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_JARO
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER || FuzzyMatchMeta
+        .getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY )
+        && !wgetCloserValue.getSelection();
 
     wlseparator.setEnabled( enableRange );
     wseparator.setEnabled( enableRange );
@@ -898,11 +902,15 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 
   private void activeAddFields() {
     boolean activate =
-        wgetCloserValue.getSelection()
-            || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
-            || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX )
-            || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX )
-            || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_METAPHONE );
+      wgetCloserValue.getSelection()
+        || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
+        || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX )
+        || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX )
+        || ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_METAPHONE );
 
     wlReturn.setEnabled( activate );
     wReturn.setEnabled( activate );
@@ -911,12 +919,17 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 
   private void activeAlgorithm() {
     boolean enable =
-        ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_NEEDLEMAN_WUNSH
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_JARO
-            || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER || FuzzyMatchMeta
-            .getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY );
+      ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_NEEDLEMAN_WUNSH
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_JARO
+        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+          == FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER || FuzzyMatchMeta
+        .getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY );
 
     wlgetCloserValue.setEnabled( enable );
     wgetCloserValue.setEnabled( enable );
@@ -925,9 +938,12 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
     wlmaxValue.setEnabled( enable );
     wmaxValue.setEnabled( enable );
 
-    if ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_JARO
-        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER
-        || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY ) {
+    if ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+        == FuzzyMatchMeta.OPERATION_TYPE_JARO
+      || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+        == FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER
+      || FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+        == FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY ) {
       if ( Const.toDouble( transMeta.environmentSubstitute( wminValue.getText() ), 0 ) > 1 ) {
         wminValue.setText( String.valueOf( 1 ) );
       }
@@ -937,8 +953,9 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     boolean enableCaseSensitive =
-        ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN || FuzzyMatchMeta
-            .getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN );
+      ( FuzzyMatchMeta.getAlgorithmTypeByDesc( wAlgorithm.getText() )
+      == FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN || FuzzyMatchMeta
+        .getAlgorithmTypeByDesc( wAlgorithm.getText() ) == FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN );
     wlcaseSensitive.setEnabled( enableCaseSensitive );
     wcaseSensitive.setEnabled( enableCaseSensitive );
     activegetCloserValue();
@@ -965,8 +982,8 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
+        shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }

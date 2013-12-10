@@ -71,17 +71,20 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Send file to SFTP host.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-April-2012
  */
 public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface {
+  //for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = org.pentaho.di.trans.steps.sftpput.SFTPPutMeta.class;
+
   private boolean gotPreviousFields = false;
 
-  private static Class<?> PKG = org.pentaho.di.trans.steps.sftpput.SFTPPutMeta.class; // for i18n purposes, needed by
-                                                                                      // Translator2!! $NON-NLS-1$
-  private static final String[] FILETYPES = new String[] {
-      BaseMessages.getString( PKG, "SFTPPUT.Filetype.Pem" ), BaseMessages.getString( PKG, "SFTPPUT.Filetype.All" ) };
+  private static final String[] FILETYPES =
+    new String[] {
+      BaseMessages.getString( PKG, "SFTPPUT.Filetype.Pem" ),
+      BaseMessages.getString( PKG, "SFTPPUT.Filetype.All" ) };
 
   private SFTPPutMeta input;
 
@@ -425,9 +428,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // keyfilePass line
     wkeyfilePass =
-        new LabelTextVar(
-            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.keyfilePass.Label" ), BaseMessages
-                .getString( PKG, "SFTPPUT.keyfilePass.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.keyfilePass.Label" ), BaseMessages
+          .getString( PKG, "SFTPPUT.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
     wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
@@ -464,9 +467,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy host line
     wProxyHost =
-        new LabelTextVar(
-            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyHost.Label" ), BaseMessages
-                .getString( PKG, "SFTPPUT.ProxyHost.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyHost.Label" ), BaseMessages
+          .getString( PKG, "SFTPPUT.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -477,9 +480,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy port line
     wProxyPort =
-        new LabelTextVar(
-            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPort.Label" ), BaseMessages
-                .getString( PKG, "SFTPPUT.ProxyPort.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPort.Label" ), BaseMessages
+          .getString( PKG, "SFTPPUT.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -490,9 +493,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy username line
     wProxyUsername =
-        new LabelTextVar(
-            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyUsername.Label" ), BaseMessages
-                .getString( PKG, "SFTPPUT.ProxyUsername.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyUsername.Label" ), BaseMessages
+          .getString( PKG, "SFTPPUT.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -503,9 +506,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy password line
     wProxyPassword =
-        new LabelTextVar(
-            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPassword.Label" ), BaseMessages
-                .getString( PKG, "SFTPPUT.ProxyPassword.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPassword.Label" ), BaseMessages
+          .getString( PKG, "SFTPPUT.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
@@ -715,7 +718,8 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wlDestinationFolderFieldName.setLayoutData( fdlDestinationFolderFieldName );
 
     wDestinationFolderFieldName = new CCombo( wSourceFiles, SWT.BORDER | SWT.READ_ONLY );
-    wDestinationFolderFieldName.setToolTipText( BaseMessages.getString( PKG, "SFTPPUT.DestinationFolder.Tooltip" ) );
+    wDestinationFolderFieldName
+      .setToolTipText( BaseMessages.getString( PKG, "SFTPPUT.DestinationFolder.Tooltip" ) );
     props.setLook( wDestinationFolderFieldName );
     wDestinationFolderFieldName.addModifyListener( lsMod );
     fdDestinationFolderFieldName = new FormData();
@@ -728,7 +732,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wDestinationFolderFieldName.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         wDestinationFolderFieldName.setToolTipText( transMeta.environmentSubstitute( wDestinationFolderFieldName
-            .getText() ) );
+          .getText() ) );
       }
     } );
 
@@ -755,7 +759,8 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     fdlCreateDestinationFolder.right = new FormAttachment( middle, -margin );
     wlCreateDestinationFolder.setLayoutData( fdlCreateDestinationFolder );
     wCreateDestinationFolder = new Button( wSourceFiles, SWT.CHECK );
-    wCreateDestinationFolder.setToolTipText( BaseMessages.getString( PKG, "SFTPPUT.CreateDestinationFolder.Tooltip" ) );
+    wCreateDestinationFolder.setToolTipText( BaseMessages.getString(
+      PKG, "SFTPPUT.CreateDestinationFolder.Tooltip" ) );
     props.setLook( wCreateDestinationFolder );
     fdCreateDestinationFolder = new FormData();
     fdCreateDestinationFolder.left = new FormAttachment( middle, 0 );
@@ -1074,12 +1079,14 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
   private void setDefaulProxyPort() {
     if ( wProxyType.getText().equals( SFTPClient.PROXY_TYPE_HTTP ) ) {
       if ( Const.isEmpty( wProxyPort.getText() )
-          || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals( SFTPClient.SOCKS5_DEFAULT_PORT ) ) ) {
+        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals(
+          SFTPClient.SOCKS5_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.HTTP_DEFAULT_PORT );
       }
     } else {
       if ( Const.isEmpty( wProxyPort.getText() )
-          || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals( SFTPClient.HTTP_DEFAULT_PORT ) ) ) {
+        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort
+          .getText().equals( SFTPClient.HTTP_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.SOCKS5_DEFAULT_PORT );
       }
     }
@@ -1087,9 +1094,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
   private void AfterFTPPutActivate() {
     boolean moveFile =
-        JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE;
+      JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE;
     boolean doNothing =
-        JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING;
+      JobEntrySFTPPUT.getAfterSFTPPutByDesc( wAfterFTPPut.getText() ) == JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING;
 
     wlDestinationFolderFieldName.setEnabled( moveFile );
     wDestinationFolderFieldName.setEnabled( moveFile );
@@ -1117,7 +1124,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "SFTPPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-          + Const.CR );
+        + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SFTPPUT.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -1130,18 +1137,18 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
       if ( sftpclient == null ) {
         // Create sftp client to host ...
         sftpclient =
-            new SFTPClient(
-                InetAddress.getByName( transMeta.environmentSubstitute( wServerName.getText() ) ), Const.toInt(
-                    transMeta.environmentSubstitute( wServerPort.getText() ), 22 ), transMeta
-                    .environmentSubstitute( wUserName.getText() ), transMeta.environmentSubstitute( wKeyFilename
-                    .getText() ), transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
+          new SFTPClient(
+            InetAddress.getByName( transMeta.environmentSubstitute( wServerName.getText() ) ), Const.toInt(
+              transMeta.environmentSubstitute( wServerPort.getText() ), 22 ), transMeta
+              .environmentSubstitute( wUserName.getText() ), transMeta.environmentSubstitute( wKeyFilename
+              .getText() ), transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
         // Set proxy?
         String realProxyHost = transMeta.environmentSubstitute( wProxyHost.getText() );
         if ( !Const.isEmpty( realProxyHost ) ) {
           // Set proxy
           sftpclient.setProxy( realProxyHost, transMeta.environmentSubstitute( wProxyPort.getText() ), transMeta
-              .environmentSubstitute( wProxyUsername.getText() ), transMeta.environmentSubstitute( wProxyPassword
-              .getText() ), wProxyType.getText() );
+            .environmentSubstitute( wProxyUsername.getText() ), transMeta.environmentSubstitute( wProxyPassword
+            .getText() ), wProxyType.getText() );
         }
         // login to ftp host ...
         sftpclient.login( transMeta.environmentSubstitute( wPassword.getText() ) );
@@ -1154,8 +1161,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     } catch ( Exception e ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "SFTPPUT.ErrorConnect.NOK", wServerName.getText(), e.getMessage() )
-          + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "SFTPPUT.ErrorConnect.NOK", wServerName.getText(), e
+        .getMessage() )
+        + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SFTPPUT.ErrorConnect.Title.Bad" ) );
       mb.open();
     }
@@ -1198,8 +1206,8 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

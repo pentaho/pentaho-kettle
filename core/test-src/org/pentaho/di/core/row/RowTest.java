@@ -32,8 +32,9 @@ public class RowTest extends TestCase {
   public void testNormalStringConversion() throws Exception {
     SimpleDateFormat fmt = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     Object[] rowData1 =
-        new Object[] { "sampleString", fmt.parse( "2007/05/07 13:04:13.203" ), new Double( 9123.00 ),
-          new Long( 12345 ), new BigDecimal( "123456789012345678.9349" ), Boolean.TRUE, };
+      new Object[] {
+        "sampleString", fmt.parse( "2007/05/07 13:04:13.203" ), new Double( 9123.00 ), new Long( 12345 ),
+        new BigDecimal( "123456789012345678.9349" ), Boolean.TRUE, };
     RowMetaInterface rowMeta1 = createTestRowMetaNormalStringConversion1();
 
     assertEquals( "sampleString", rowMeta1.getString( rowData1, 0 ) );
@@ -45,8 +46,9 @@ public class RowTest extends TestCase {
 
     fmt = new SimpleDateFormat( "yyyyMMddHHmmss" );
     Object[] rowData2 =
-        new Object[] { null, fmt.parse( "20070507130413" ), new Double( 9123.9 ), new Long( 12345 ),
-          new BigDecimal( "123456789012345678.9349" ), Boolean.FALSE, };
+      new Object[] {
+        null, fmt.parse( "20070507130413" ), new Double( 9123.9 ), new Long( 12345 ),
+        new BigDecimal( "123456789012345678.9349" ), Boolean.FALSE, };
     RowMetaInterface rowMeta2 = createTestRowMetaNormalStringConversion2();
 
     assertTrue( rowMeta2.getString( rowData2, 0 ) == null );
@@ -63,8 +65,9 @@ public class RowTest extends TestCase {
     // create some timezone friendly dates
     SimpleDateFormat fmt = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     Date[] dates =
-        new Date[] { fmt.parse( "2007/05/07 13:04:13.203" ), null, fmt.parse( "2007/05/05 05:15:49.349" ),
-          fmt.parse( "2007/05/05 19:08:44.736" ), };
+      new Date[] {
+        fmt.parse( "2007/05/07 13:04:13.203" ), null, fmt.parse( "2007/05/05 05:15:49.349" ),
+        fmt.parse( "2007/05/05 19:08:44.736" ), };
 
     RowMetaInterface rowMeta = createTestRowMetaIndexedStringConversion1( colors, dates );
 

@@ -61,17 +61,17 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
- * 
+ *
  * Dialog that allows you to edit the settings of the partition schema
- * 
+ *
  * @see PartitionSchema
  * @author Matt
  * @since 17-11-2006
- * 
+ *
  */
 
 public class PartitionSchemaDialog extends Dialog {
-  private static Class<?> PKG = PartitionSchemaDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PartitionSchemaDialog.class; // for i18n purposes, needed by Translator2!!
 
   private PartitionSchema partitionSchema;
 
@@ -104,7 +104,7 @@ public class PartitionSchemaDialog extends Dialog {
   private VariableSpace variableSpace;
 
   public PartitionSchemaDialog( Shell par, PartitionSchema partitionSchema, List<DatabaseMeta> databases,
-      VariableSpace variableSpace ) {
+    VariableSpace variableSpace ) {
     super( par, SWT.NONE );
     this.partitionSchema = (PartitionSchema) partitionSchema.clone();
     this.originalSchema = partitionSchema;
@@ -206,8 +206,8 @@ public class PartitionSchemaDialog extends Dialog {
     wlNumber.setLayoutData( fdlNumber );
 
     wNumber =
-        new TextVar( variableSpace, shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE, BaseMessages.getString(
-            PKG, "PartitionSchemaDialog.Number.Tooltip" ) );
+      new TextVar( variableSpace, shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE, BaseMessages.getString(
+        PKG, "PartitionSchemaDialog.Number.Tooltip" ) );
     props.setLook( wNumber );
     FormData fdNumber = new FormData();
     fdNumber.top = new FormAttachment( wDynamic, margin );
@@ -226,11 +226,11 @@ public class PartitionSchemaDialog extends Dialog {
     wlPartitions.setLayoutData( fdlPartitions );
 
     ColumnInfo[] partitionColumns =
-        new ColumnInfo[] { new ColumnInfo(
-            BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionID.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionID.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false, false ), };
     wPartitions = new TableView( Variables.getADefaultVariableSpace(), // probably better push this up. TODO
-        shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, partitionColumns, 1, lsMod, props );
+      shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, partitionColumns, 1, lsMod, props );
     props.setLook( wPartitions );
     FormData fdPartitions = new FormData();
     fdPartitions.left = new FormAttachment( middle, margin );
@@ -357,9 +357,9 @@ public class PartitionSchemaDialog extends Dialog {
 
     if ( dbNames.length > 0 ) {
       EnterSelectionDialog dialog =
-          new EnterSelectionDialog(
-              shell, dbNames, BaseMessages.getString( PKG, "PartitionSchema.SelectDatabase" ), BaseMessages.getString(
-                  PKG, "PartitionSchema.SelectPartitionnedDatabase" ) );
+        new EnterSelectionDialog(
+          shell, dbNames, BaseMessages.getString( PKG, "PartitionSchema.SelectDatabase" ), BaseMessages
+            .getString( PKG, "PartitionSchema.SelectPartitionnedDatabase" ) );
       String dbName = dialog.open();
       if ( dbName != null ) {
         DatabaseMeta databaseMeta = DatabaseMeta.findDatabase( databases, dbName );

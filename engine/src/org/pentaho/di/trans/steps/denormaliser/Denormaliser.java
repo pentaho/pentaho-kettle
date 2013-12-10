@@ -49,18 +49,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Denormalises data based on key-value pairs
- * 
+ *
  * @author Matt
  * @since 17-jan-2006
  */
 public class Denormaliser extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DenormaliserMeta meta;
   private DenormaliserData data;
 
   public Denormaliser( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (DenormaliserMeta) getStepMeta().getStepMetaInterface();
@@ -106,7 +106,8 @@ public class Denormaliser extends BaseStep implements StepInterface {
         // See if by accident, the value fieldname isn't the same as the key fieldname.
         // This is not supported of-course and given the complexity of the step, you can miss:
         if ( data.fieldNameIndex[i] == data.keyFieldNr ) {
-          logError( BaseMessages.getString( PKG, "Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName() ) );
+          logError( BaseMessages
+            .getString( PKG, "Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName() ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -131,7 +132,8 @@ public class Denormaliser extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getGroupField().length; i++ ) {
         data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
         if ( data.groupnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "Denormaliser.Log.GroupingFieldNotFound", meta.getGroupField()[i] ) );
+          logError( BaseMessages
+            .getString( PKG, "Denormaliser.Log.GroupingFieldNotFound", meta.getGroupField()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -236,8 +238,8 @@ public class Denormaliser extends BaseStep implements StepInterface {
           }
           if ( field.getTargetType() != ValueMetaInterface.TYPE_INTEGER ) {
             resultValue =
-                data.outputRowMeta.getValueMeta( outputIndex ).convertData(
-                    new ValueMeta( "num_values_aggregation", ValueMetaInterface.TYPE_INTEGER ), resultValue );
+              data.outputRowMeta.getValueMeta( outputIndex ).convertData(
+                new ValueMeta( "num_values_aggregation", ValueMetaInterface.TYPE_INTEGER ), resultValue );
           }
           break;
         default:
@@ -273,7 +275,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
   /**
    * This method de-normalizes a single key-value pair. It looks up the key and determines the value name to store it
    * in. It converts it to the right type and stores it in the result row.
-   * 
+   *
    * @param r
    * @throws KettleValueException
    */
@@ -302,7 +304,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
             // What is the target value metadata??
             //
             ValueMetaInterface targetMeta =
-                data.outputRowMeta.getValueMeta( data.inputRowMeta.size() - data.removeNrs.length + idx );
+              data.outputRowMeta.getValueMeta( data.inputRowMeta.size() - data.removeNrs.length + idx );
             // What was the previous target in the result row?
             //
             Object prevTargetData = data.targetResult[idx];

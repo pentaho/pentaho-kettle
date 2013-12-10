@@ -63,7 +63,7 @@ import org.w3c.dom.Node;
  *
  */
 public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
   private int rowLimit;
@@ -73,7 +73,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -134,7 +135,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
       addfilenameresult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addfilenameresult" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToLoadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -145,7 +147,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     GZIPInputStream fis = null;
     DataInputStream dis = null;
     try {
@@ -159,10 +161,11 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
       r.mergeRowMeta( add );
     } catch ( KettleFileException kfe ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToReadMetaData" ), kfe );
+      throw new KettleStepException(
+        BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToReadMetaData" ), kfe );
     } catch ( IOException e ) {
       throw new KettleStepException( BaseMessages.getString(
-          PKG, "CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile" ), e );
+        PKG, "CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile" ), e );
     } finally {
       try {
         if ( fis != null ) {
@@ -172,8 +175,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
           dis.close();
         }
       } catch ( IOException ioe ) {
-        throw new KettleStepException(
-            BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToCloseCubeFile" ), ioe );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "CubeInputMeta.Exception.UnableToCloseCubeFile" ), ioe );
       }
     }
   }
@@ -199,7 +202,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
+        PKG, "CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
     }
   }
 
@@ -212,23 +215,23 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     } catch ( KettleException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
-            PKG, "CubeInputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
+      new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "CubeInputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new CubeInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -245,11 +248,11 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

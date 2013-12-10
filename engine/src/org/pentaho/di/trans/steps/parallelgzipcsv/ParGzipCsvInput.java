@@ -47,18 +47,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
- * 
+ *
  * @author Matt
  * @since 2007-07-05
  */
 public class ParGzipCsvInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ParGzipCsvInputMeta meta;
   private ParGzipCsvInputData data;
 
   public ParGzipCsvInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -152,7 +152,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRowData ); // copy row to possible alternate rowset(s).
       if ( checkFeedback( getLinesInput() ) ) {
         if ( log.isBasic() ) {
-          logBasic( BaseMessages.getString( PKG, "ParGzipCsvInput.Log.LineNumber", Long.toString( getLinesInput() ) ) );
+          logBasic( BaseMessages
+            .getString( PKG, "ParGzipCsvInput.Log.LineNumber", Long.toString( getLinesInput() ) ) );
         }
       }
     }
@@ -176,14 +177,14 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       // The number of bytes to skip is nrOfSteps*BufferSize
       //
       long positionToReach =
-          ( data.blockNr * data.blockSize * data.totalNumberOfSteps ) + data.stepNumber * data.blockSize;
+        ( data.blockNr * data.blockSize * data.totalNumberOfSteps ) + data.stepNumber * data.blockSize;
 
       // How many bytes do we need to skip to get where we need to be?
       //
       long bytesToSkip = positionToReach - data.fileReadPosition;
 
       logBasic( "Skipping "
-          + bytesToSkip + " bytes to go to position " + positionToReach + " for step copy " + data.stepNumber );
+        + bytesToSkip + " bytes to go to position " + positionToReach + " for step copy " + data.stepNumber );
 
       // Get into position...
       //
@@ -239,7 +240,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
         index = getInputRowMeta().indexOfValue( filenameField );
         if ( index < 0 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "ParGzipCsvInput.Exception.FilenameFieldNotFound", filenameField ) );
+            PKG, "ParGzipCsvInput.Exception.FilenameFieldNotFound", filenameField ) );
         }
       }
 
@@ -252,7 +253,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
     data.filenames = filenames.toArray( new String[filenames.size()] );
 
     logBasic( BaseMessages.getString( PKG, "ParGzipCsvInput.Log.ReadingFromNrFiles", Integer
-        .toString( data.filenames.length ) ) );
+      .toString( data.filenames.length ) ) );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -325,7 +326,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
           // Get into position for block 0
           //
           logBasic( "Skipping "
-              + bytesToSkip + " bytes to go to position " + bytesToSkip + " for step copy " + data.stepNumber );
+            + bytesToSkip + " bytes to go to position " + bytesToSkip + " for step copy " + data.stepNumber );
 
           long bytesSkipped = 0L;
           while ( bytesSkipped < bytesToSkip ) {
@@ -375,7 +376,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       // Add filename to result filenames ?
       if ( meta.isAddResultFile() ) {
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString() );
         resultFile.setComment( "File was read by a Csv input step" );
         addResultFile( resultFile );
       }
@@ -399,7 +400,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
   /**
    * Check to see if the buffer size is large enough given the data.endBuffer pointer.<br>
    * Resize the buffer if there is not enough room.
-   * 
+   *
    * @return false if everything is OK, true if there is a problem and we should stop.
    * @throws IOException
    *           in case there is a I/O problem (read error)
@@ -420,7 +421,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
 
   /**
    * Read a single row of data from the file...
-   * 
+   *
    * @param doConversions
    *          if you want to do conversions, set to false for the header row.
    * @return a row of data...

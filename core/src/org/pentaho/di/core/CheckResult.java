@@ -26,17 +26,17 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * This class is used to store results of transformation and step verifications.
- * 
+ *
  * @author Matt
  * @since 11-01-04
- * 
+ *
  */
 public class CheckResult implements CheckResultInterface {
-  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] typeDesc = {
-      "", BaseMessages.getString( PKG, "CheckResult.OK" ), BaseMessages.getString( PKG, "CheckResult.Remark" ),
-      BaseMessages.getString( PKG, "CheckResult.Warning" ), BaseMessages.getString( PKG, "CheckResult.Error" ) };
+    "", BaseMessages.getString( PKG, "CheckResult.OK" ), BaseMessages.getString( PKG, "CheckResult.Remark" ),
+    BaseMessages.getString( PKG, "CheckResult.Warning" ), BaseMessages.getString( PKG, "CheckResult.Error" ) };
 
   private int type;
 

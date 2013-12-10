@@ -51,13 +51,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id = "PaloCellInput", 
-		image = "PaloCellInput.png", 
+@Step(id = "PaloCellInput",
+		image = "PaloCellInput.png",
 		i18nPackageName="org.pentaho.di.trans.steps.palo.cellinput",
-		name = "PaloCellInput.TransName", 
-		description="PaloCellInput.TransDescription", 
+		name = "PaloCellInput.TransName",
+		description="PaloCellInput.TransDescription",
 		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo")
-public class PaloCellInputMeta extends BaseStepMeta 
+public class PaloCellInputMeta extends BaseStepMeta
 implements StepMetaInterface {
     private DatabaseMeta databaseMeta = null;
     private String cube = "";
@@ -66,23 +66,23 @@ implements StepMetaInterface {
     public PaloCellInputMeta() {
         super();
     }
-    
+
     /**
      * @return Returns the database.
      */
     public DatabaseMeta getDatabaseMeta() {
         return databaseMeta;
     }
-    
+
     /**
      * @param database The database to set.
      */
     public void setDatabaseMeta(final DatabaseMeta database) {
         this.databaseMeta = database;
     }
-    
-    public void loadXML(final Node stepnode, 
-            final List <DatabaseMeta> databases, 
+
+    public void loadXML(final Node stepnode,
+            final List <DatabaseMeta> databases,
             final IMetaStore metaStore) throws KettleXMLException {
         readData(stepnode, databases);
     }
@@ -91,8 +91,8 @@ implements StepMetaInterface {
         PaloCellInputMeta retval = (PaloCellInputMeta) super.clone();
         return retval;
     }
-    
-    private void readData(final Node stepnode, 
+
+    private void readData(final Node stepnode,
             final List <? extends SharedObjectInterface> databases)
             throws KettleXMLException {
         try {
@@ -101,16 +101,16 @@ implements StepMetaInterface {
             String cubeMeasureName = XMLHandler.getTagValue(stepnode, "cubemeasurename");
             String cubeMeasureType = XMLHandler.getTagValue(stepnode, "cubemeasuretype");
             this.cubeMeasure = new DimensionField("Measure",cubeMeasureName,cubeMeasureType);
-            
-            
+
+
             this.fields = new ArrayList < DimensionField >();
-            
+
             Node levels = XMLHandler.getSubNode(stepnode,"fields");
             int nrLevels = XMLHandler.countNodes(levels,"field");
 
             for (int i=0;i<nrLevels;i++) {
                 Node fnode = XMLHandler.getSubNodeByNr(levels, "field", i);
-                    
+
                 String dimensionName = XMLHandler.getTagValue(fnode, "dimensionname");
                 String fieldName = XMLHandler.getTagValue(fnode, "fieldname");
                 String fieldType = XMLHandler.getTagValue(fnode, "fieldtype");
@@ -124,12 +124,12 @@ implements StepMetaInterface {
     public void setDefault() {
     }
 
-    public void getFields(final RowMetaInterface row, final String origin, 
-            final RowMetaInterface[] info, final StepMeta nextStep, 
+    public void getFields(final RowMetaInterface row, final String origin,
+            final RowMetaInterface[] info, final StepMeta nextStep,
             final VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
-        if (databaseMeta == null) 
+        if (databaseMeta == null)
             throw new KettleStepException("There is no Palo database server connection defined");
-        
+
 
         final PaloHelper helper = new PaloHelper(databaseMeta, DefaultLogLevel.getLogLevel());
         try {
@@ -147,12 +147,12 @@ implements StepMetaInterface {
 
     public String getXML() {
         StringBuffer retval = new StringBuffer();
-        
+
         retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));
         retval.append("    ").append(XMLHandler.addTagValue("cube", this.cube));
         retval.append("    ").append(XMLHandler.addTagValue("cubemeasurename", this.cubeMeasure.getFieldName()));
         retval.append("    ").append(XMLHandler.addTagValue("cubemeasuretype", this.cubeMeasure.getFieldType()));
-        
+
         retval.append("    <fields>").append(Const.CR);
         for (DimensionField field : this.fields) {
             retval.append("      <field>").append(Const.CR);
@@ -164,7 +164,7 @@ implements StepMetaInterface {
         retval.append("    </fields>").append(Const.CR);
         return retval.toString();
     }
-    
+
     public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases) throws KettleException {
         try {
             this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
@@ -172,9 +172,9 @@ implements StepMetaInterface {
             String cubeMeasureName = rep.getStepAttributeString(idStep, "cubemeasurename");
             String cubeMeasureType = rep.getStepAttributeString(idStep, "cubemeasuretype");
             this.cubeMeasure = new DimensionField("Measure",cubeMeasureName,cubeMeasureType);
-            
+
             int nrFields = rep.countNrStepAttributes(idStep, "dimensionname");
-            
+
             for (int i=0;i<nrFields;i++) {
                 String dimensionName = rep.getStepAttributeString (idStep, i, "dimensionname");
                 String fieldName = rep.getStepAttributeString (idStep, i, "fieldname");
@@ -186,32 +186,32 @@ implements StepMetaInterface {
                     + " information from the repository", e);
         }
     }
-    
+
     public void saveRep(Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep) throws KettleException {
         try {
             rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", databaseMeta);
             rep.saveStepAttribute(idTransformation, idStep, "cube", this.cube);
             rep.saveStepAttribute(idTransformation, idStep, "cubemeasurename", this.cubeMeasure.getFieldName());
             rep.saveStepAttribute(idTransformation, idStep, "cubemeasuretype", this.cubeMeasure.getFieldType());
-            
+
             for (int i=0;i<this.fields.size();i++) {
                 rep.saveStepAttribute(idTransformation, idStep, i, "dimensionname", this.fields.get(i).getDimensionName());
                 rep.saveStepAttribute(idTransformation, idStep, i, "fieldname", this.fields.get(i).getFieldName());
                 rep.saveStepAttribute(idTransformation, idStep, i, "fieldtype", this.fields.get(i).getFieldType());
             }
-            
+
         } catch (Exception e) {
             throw new KettleException("Unable to save step information to the repository for idStep=" + idStep, e);
         }
     }
 
 
-    public void check(final List <CheckResultInterface> remarks, 
-            final TransMeta transMeta, final StepMeta stepMeta, 
-            final RowMetaInterface prev, final String input[], 
+    public void check(final List <CheckResultInterface> remarks,
+            final TransMeta transMeta, final StepMeta stepMeta,
+            final RowMetaInterface prev, final String input[],
             final String output[], final RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
         CheckResult cr;
-        
+
         if (databaseMeta != null) {
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection exists", stepMeta);
             remarks.add(cr);
@@ -267,13 +267,13 @@ implements StepMetaInterface {
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta);
             remarks.add(cr);
         }
-        
+
     }
 
-    public StepInterface getStep(final StepMeta stepMeta, 
-            final StepDataInterface stepDataInterface, final int cnr, 
+    public StepInterface getStep(final StepMeta stepMeta,
+            final StepDataInterface stepDataInterface, final int cnr,
             final TransMeta transMeta, final Trans trans) {
-        return new PaloCellInput(stepMeta, stepDataInterface, cnr, 
+        return new PaloCellInput(stepMeta, stepDataInterface, cnr,
                 transMeta, trans);
     }
 
@@ -284,7 +284,7 @@ implements StepMetaInterface {
             return null;
         }
     }
-    
+
     public DatabaseMeta[] getUsedDatabaseConnections() {
         if (databaseMeta != null) {
             return new DatabaseMeta[] {databaseMeta};
@@ -306,12 +306,12 @@ implements StepMetaInterface {
     public void setCube(String cube) {
         this.cube = cube;
     }
-    
+
     public List < DimensionField > getFields() {
         return this.fields;
     }
     public void setLevels(List < DimensionField > fields) {
-        this.fields = fields; 
+        this.fields = fields;
     }
     /**
     * @return the cube measure name
@@ -326,6 +326,6 @@ implements StepMetaInterface {
    public void setCubeMeasureName(DimensionField cubeMeasure) {
        this.cubeMeasure = cubeMeasure;
    }
-   
-    
+
+
 }

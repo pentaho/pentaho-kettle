@@ -67,7 +67,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to define the palo cube you want to create
- * 
+ *
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
@@ -84,7 +84,7 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 	private Label labelCubeName;
 	private Text textCubeName;
 	
-	private ColumnInfo[] colinf; 
+	private ColumnInfo[] colinf;
 	private TableView tableViewFields;
 	
 	private Button wOK, wCancel;
@@ -94,7 +94,7 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 	private Shell       	shell;
 	private PropsUI       	props;
 
-	private ColumnInfo comboDropDown; 
+	private ColumnInfo comboDropDown;
 	
 	private SelectionAdapter lsDef;
 
@@ -121,9 +121,9 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 		props.setLook(shell);
 		JobDialog.setShellImage(shell, jobEntry);
 
-		ModifyListener lsMod = new ModifyListener() 
+		ModifyListener lsMod = new ModifyListener()
 		{
-			public void modifyText(ModifyEvent e) 
+			public void modifyText(ModifyEvent e)
 			{	
 				jobEntry.setChanged();
 			}
@@ -135,14 +135,14 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.PaloCubeCreate")); 
+		shell.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.PaloCubeCreate"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		labelStepName=new Label(shell, SWT.RIGHT);
-		labelStepName.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.StepName")); 
+		labelStepName.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.StepName"));
 		props.setLook( labelStepName );
 		FormData fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
@@ -172,7 +172,7 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 
 		// Get cube name to delete
 		labelCubeName = new Label(shell, SWT.RIGHT);
-		labelCubeName.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.CubeName")); 
+		labelCubeName.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.CubeName"));
 		props.setLook(labelCubeName);
 
 		fd = new FormData();
@@ -194,28 +194,28 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 		colinf=new ColumnInfo[] {
                 new ColumnInfo(getLocalizedColumn(0),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false)
                 };
-        
-        tableViewFields = new TableView(null, shell,  
-                                                  SWT.NONE | SWT.BORDER, 
-                                                  colinf, 
-                                                  10, true, 
+
+        tableViewFields = new TableView(null, shell,
+                                                  SWT.NONE | SWT.BORDER,
+                                                  colinf,
+                                                  10, true,
                                                   lsMod,
                                                   props
                                                   );
-        
+
         tableViewFields.setSize(477, 105);
         tableViewFields.setBounds(5, 250, 477, 105);
         tableViewFields.setReadonly(false);
         tableViewFields.table.removeAll();
         tableViewFields.optWidth(true);
-        
+
         fd=new FormData();
         fd.left  = new FormAttachment(0, margin);
         fd.top   = new FormAttachment(textCubeName, 3*margin);
         fd.right = new FormAttachment(100, 0);
         fd.bottom= new FormAttachment(100, -50);
         tableViewFields.setLayoutData(fd);
-        
+
         tableViewFields.table.addFocusListener(new FocusListener() {
 			
 			public void focusLost(FocusEvent arg0) {
@@ -224,16 +224,16 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 			public void focusGained(FocusEvent arg0) {
 				doBuildDimensionList();
 			}
-		});        
+		});
 
-        
+
         props.setLook(tableViewFields);
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG,"System.Button.OK")); 
+		wOK.setText(BaseMessages.getString(PKG,"System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG,"System.Button.Cancel")); 
+		wCancel.setText(BaseMessages.getString(PKG,"System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, tableViewFields);
 
@@ -311,15 +311,15 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 	
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
+	 */
 	public void getData()
 	{
-		if (jobEntry.getName()    != null) 
+		if (jobEntry.getName()    != null)
 			textStepName.setText( jobEntry.getName() );
 		textStepName.selectAll();
 
 		int index = addConnectionLine.indexOf(jobEntry.getDatabaseMeta() != null ? jobEntry.getDatabaseMeta().getName() : "");
-		if (index >=0) 
+		if (index >=0)
 			addConnectionLine.select(index);
 
 		if (jobEntry.getCubeName() != null)
@@ -327,14 +327,14 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 		
 		tableViewFields.table.removeAll();
 
-        if(jobEntry.getDimensionNames() != null 
-        		&& jobEntry.getDimensionNames().size() > 0) 
+        if(jobEntry.getDimensionNames() != null
+        		&& jobEntry.getDimensionNames().size() > 0)
             for (String dimensionName : jobEntry.getDimensionNames())
                 tableViewFields.add(dimensionName);
-        
+
         if (tableViewFields.table.getItemCount() == 0)
         	tableViewFields.add("");
-        
+
 		tableViewFields.setRowNums();
 		
 	}
@@ -351,9 +351,9 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 		tableViewFields.removeEmptyRows();
 		List <String> dimensionNames = new ArrayList<String>();
 		
-		for (int i = 0; i < tableViewFields.table.getItemCount(); i++) 
+		for (int i = 0; i < tableViewFields.table.getItemCount(); i++)
         	dimensionNames.add(tableViewFields.table.getItem(i).getText(1));
-        
+
 
 		jobEntry.setName(textStepName.getText());
 		jobEntry.setDatabaseMeta(DatabaseMeta.findDatabase(jobMeta.getDatabases(), addConnectionLine.getText()));

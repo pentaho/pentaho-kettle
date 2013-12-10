@@ -65,7 +65,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Does bulk insert of data into ElasticSearch
- * 
+ *
  * @author webdetails
  * @since 16-02-2011
  */
@@ -109,8 +109,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   private IndexRequest.OpType opType = OpType.CREATE;
 
-  public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -149,7 +149,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   /**
    * Initialize <code>this.data</code>
-   * 
+   *
    * @throws KettleStepException
    */
   private void setupData() throws KettleStepException {
@@ -197,8 +197,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @param outputRowData
    */
 
@@ -233,7 +233,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoNodesFound" ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.Exception", e
-          .getLocalizedMessage() ), e );
+        .getLocalizedMessage() ), e );
     }
   }
 
@@ -241,7 +241,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    * @param row
    * @param requestBuilder
    */
-  private void addSourceFromJsonString( Object[] row, IndexRequestBuilder requestBuilder ) throws KettleStepException {
+  private void addSourceFromJsonString( Object[] row, IndexRequestBuilder requestBuilder )
+    throws KettleStepException {
     Object jsonString = row[jsonFieldIdx];
     if ( jsonString instanceof byte[] ) {
       requestBuilder.setSource( (byte[]) jsonString );
@@ -301,7 +302,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.ErrorOccurredDuringStepInitialize" )
-            + e.getMessage() );
+          + e.getMessage() );
       }
       return true;
     }
@@ -326,7 +327,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     this.hasFields = columnsToJson.size() > 0;
 
     this.opType =
-        StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
+      StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
 
   }
 
@@ -343,7 +344,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
         response = actionFuture.actionGet();
       }
     } catch ( ElasticSearchException e ) {
-      String msg = BaseMessages.getString( PKG, "ElasticSearchBulk.Error.BatchExecuteFail", e.getLocalizedMessage() );
+      String msg =
+        BaseMessages.getString( PKG, "ElasticSearchBulk.Error.BatchExecuteFail", e.getLocalizedMessage() );
       if ( e instanceof ElasticSearchTimeoutException ) {
         msg = BaseMessages.getString( PKG, "ElasticSearchBulk.Error.Timeout" );
       }
@@ -421,14 +423,14 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private void addIdToRow( String id, int rowIndex ) {
 
     data.inputRowBuffer[rowIndex] =
-        RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
+      RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
     data.inputRowBuffer[rowIndex][getInputRowMeta().size()] = id;
 
   }
 
   /**
    * Send input row to output
-   * 
+   *
    * @param rowIndex
    */
   private void echoRow( int rowIndex ) {
@@ -445,7 +447,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   /**
    * Send input row to error.
-   * 
+   *
    * @param index
    * @param errorMsg
    */

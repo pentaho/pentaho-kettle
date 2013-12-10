@@ -34,7 +34,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Test class for the basic functionality of the blocking & batching row set.
- * 
+ *
  * @author Matt Casters
  */
 public class BlockingBatchingRowSetTest extends TestCase {

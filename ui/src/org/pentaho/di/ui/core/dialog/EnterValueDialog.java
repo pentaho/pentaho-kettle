@@ -56,14 +56,14 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog to enter a Kettle Value
- * 
+ *
  * @author Matt
  * @since 01-11-2004
- * 
+ *
  */
 public class EnterValueDialog extends Dialog {
 
-  private static Class<?> PKG = EnterValueDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterValueDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Display display;
 
@@ -130,7 +130,8 @@ public class EnterValueDialog extends Dialog {
     display = parent.getDisplay();
 
     shell =
-        new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | ( modalDialog ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) );
+      new Shell( parent, SWT.DIALOG_TRIM
+        | SWT.RESIZE | ( modalDialog ? SWT.APPLICATION_MODAL | SWT.SHEET : SWT.NONE ) );
     props.setLook( shell );
     shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
@@ -329,7 +330,7 @@ public class EnterValueDialog extends Dialog {
     switch ( type ) {
       case ValueMetaInterface.TYPE_INTEGER:
         wFormat.setItems( Const.getNumberFormats() );
-        int index = ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#" ); // default;
+        int index = ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#" );
         // ... then we have a custom format mask
         if ( ( !Const.isEmpty( formatString ) ) && ( index < 0 ) ) {
           wFormat.add( formatString );
@@ -339,7 +340,7 @@ public class EnterValueDialog extends Dialog {
         break;
       case ValueMetaInterface.TYPE_NUMBER:
         wFormat.setItems( Const.getNumberFormats() );
-        index = ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#.#" ); // default;
+        index = ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#.#" );
         // ... then we have a custom format mask
         if ( ( !Const.isEmpty( formatString ) ) && ( index < 0 ) ) {
           wFormat.add( formatString );
@@ -350,8 +351,8 @@ public class EnterValueDialog extends Dialog {
       case ValueMetaInterface.TYPE_DATE:
         wFormat.setItems( Const.getDateFormats() );
         index =
-            ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat
-                .indexOf( "yyyy/MM/dd HH:mm:ss" ); // default;
+          ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat
+            .indexOf( "yyyy/MM/dd HH:mm:ss" ); // default;
         // ... then we have a custom format mask
         if ( ( !Const.isEmpty( formatString ) ) && ( index < 0 ) ) {
           wFormat.add( formatString );
@@ -452,7 +453,7 @@ public class EnterValueDialog extends Dialog {
 
   /**
    * Test the entered value
-   * 
+   *
    */
   public void test() {
     try {

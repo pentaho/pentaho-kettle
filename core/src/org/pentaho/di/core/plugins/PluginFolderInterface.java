@@ -27,9 +27,9 @@ import org.pentaho.di.core.exception.KettleFileException;
 
 /**
  * Describes a possible location for a plugin
- * 
+ *
  * @author matt
- * 
+ *
  */
 public interface PluginFolderInterface {
 
@@ -50,7 +50,7 @@ public interface PluginFolderInterface {
 
   /**
    * Find all the jar files in this plugin folder
-   * 
+   *
    * @return The jar files
    * @throws KettleFileException
    *           In case there is a problem reading

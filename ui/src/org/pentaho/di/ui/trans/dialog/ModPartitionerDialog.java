@@ -54,7 +54,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ModPartitionerDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   private StepPartitioningMeta partitioningMeta;
   private StepMeta stepMeta;
@@ -66,9 +66,9 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
   private FormData fdlFieldname, fdFieldname;
 
   public ModPartitionerDialog( Shell parent, StepMeta stepMeta, StepPartitioningMeta partitioningMeta,
-      TransMeta transMeta ) {
+    TransMeta transMeta ) {
     super( parent, (BaseStepMeta) stepMeta.getStepMetaInterface(), transMeta, partitioningMeta
-        .getPartitioner().getDescription() );
+      .getPartitioner().getDescription() );
     this.stepMeta = stepMeta;
     this.partitioningMeta = partitioningMeta;
     partitioner = (ModPartitioner) partitioningMeta.getPartitioner();

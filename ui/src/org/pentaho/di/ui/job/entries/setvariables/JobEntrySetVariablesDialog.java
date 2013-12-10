@@ -60,13 +60,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Set variables job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 
 public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySetVariables.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySetVariables.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
   private Text wName;
@@ -258,25 +258,27 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.variableName == null ? 1 : ( jobEntry.variableName.length == 0 ? 0 : jobEntry.variableName.length );
+      jobEntry.variableName == null
+        ? 1 : ( jobEntry.variableName.length == 0 ? 0 : jobEntry.variableName.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableName" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableType" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false ), };
+    {
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableName" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false ),
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.Value" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false ),
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableType" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false ), };
     colinf[0].setUsingVariables( true );
     colinf[1].setUsingVariables( true );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

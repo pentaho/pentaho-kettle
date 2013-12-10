@@ -41,13 +41,13 @@ import org.pentaho.di.i18n.BaseMessages;
 /**
  * We use Props to store all kinds of user interactive information such as the selected colors, fonts, positions of
  * windows, etc.
- * 
+ *
  * @author Matt
  * @since 15-12-2003
- * 
+ *
  */
 public class Props implements Cloneable {
-  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
   private static final String STRING_USER_PREFERENCES = "User preferences";
 
@@ -171,7 +171,7 @@ public class Props implements Cloneable {
 
   /**
    * Initialize the properties: load from disk.
-   * 
+   *
    * @param display
    *          The Display
    * @param t
@@ -188,7 +188,7 @@ public class Props implements Cloneable {
 
   /**
    * Initialize the properties: load from disk.
-   * 
+   *
    * @param display
    *          The Display
    * @param filename
@@ -205,7 +205,7 @@ public class Props implements Cloneable {
 
   /**
    * Check to see whether the Kettle properties where loaded.
-   * 
+   *
    * @return true if the Kettle properties where loaded.
    */
   public static boolean isInitialized() {
@@ -450,7 +450,7 @@ public class Props implements Cloneable {
 
   /**
    * Set the custom parameter
-   * 
+   *
    * @param parameterName
    *          The name of the parameter
    * @param value
@@ -473,7 +473,7 @@ public class Props implements Cloneable {
 
   /**
    * Convert "argument 1" to 1
-   * 
+   *
    * @param value
    *          The value to determine the argument number for
    * @return The argument number
@@ -503,7 +503,7 @@ public class Props implements Cloneable {
 
   /**
    * Set the last arguments so that we can recall it the next time...
-   * 
+   *
    * @param args
    *          the arguments to save
    */
@@ -517,7 +517,7 @@ public class Props implements Cloneable {
 
   /**
    * Get the last entered arguments...
-   * 
+   *
    * @return the last entered arguments...
    */
   public String[] getLastArguments() {
@@ -530,7 +530,7 @@ public class Props implements Cloneable {
 
   /**
    * Get the list of recently used step
-   * 
+   *
    * @return a list of strings: the plug-in IDs
    */
   public List<ObjectUsageCount> getPluginHistory() {
@@ -556,7 +556,7 @@ public class Props implements Cloneable {
 
   /*
    * /** Set the last plugin used in the plugin history
-   * 
+   *
    * @param pluginID The last plugin ID
    */
   public void addPluginHistory( String pluginID, int uses ) {
@@ -566,7 +566,7 @@ public class Props implements Cloneable {
 
   /**
    * Load the plugin history from the properties file
-   * 
+   *
    */
   protected void loadPluginHistory() {
     pluginHistory = new ArrayList<ObjectUsageCount>();

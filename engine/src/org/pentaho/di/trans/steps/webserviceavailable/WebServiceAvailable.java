@@ -40,20 +40,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Check if a webservice is available *
- * 
+ *
  * @author Samatar
  * @since 03-01-2010
- * 
+ *
  */
 
 public class WebServiceAvailable extends BaseStep implements StepInterface {
-  private static Class<?> PKG = WebServiceAvailableMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WebServiceAvailableMeta.class; // for i18n purposes, needed by Translator2!!
 
   private WebServiceAvailableMeta meta;
   private WebServiceAvailableData data;
 
-  public WebServiceAvailable( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public WebServiceAvailable( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -87,9 +87,9 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
       if ( data.indexOfURL < 0 ) {
         // The field is unreachable !
         logError( BaseMessages.getString( PKG, "WebServiceAvailable.Exception.CouldnotFindField" )
-            + "[" + meta.getURLField() + "]" );
-        throw new KettleException( BaseMessages.getString( PKG, "WebServiceAvailable.Exception.CouldnotFindField", meta
-            .getURLField() ) );
+          + "[" + meta.getURLField() + "]" );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "WebServiceAvailable.Exception.CouldnotFindField", meta.getURLField() ) );
       }
     } // End If first
 
@@ -138,7 +138,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
 
       if ( isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "FileExists.LineNumber", getLinesRead()
-            + " : " + getInputRowMeta().getString( r ) ) );
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       boolean sendToErrorRow = false;

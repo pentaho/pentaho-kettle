@@ -55,11 +55,11 @@ import org.w3c.dom.Node;
 /**
  * Metadata class to allow a java program to inject rows of data into a transformation. This step can be used as a
  * starting point in such a "headless" transformation.
- * 
+ *
  * @since 22-jun-2006
  */
 public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String[] fieldname;
   private int[] type;
@@ -131,7 +131,8 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
     allocate( 0 );
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -197,7 +198,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "InjectorMeta.Exception.ErrorReadingStepInfoFromRepository" ), e );
+        PKG, "InjectorMeta.Exception.ErrorReadingStepInfoFromRepository" ), e );
     }
 
   }
@@ -212,14 +213,14 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", precision[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages
-          .getString( PKG, "InjectorMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "InjectorMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < this.fieldname.length; i++ ) {
       ValueMetaInterface v = new ValueMeta( this.fieldname[i], type[i], length[i], precision[i] );
       inputRowMeta.addValueMeta( v );
@@ -229,36 +230,36 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   @Deprecated
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space ) throws KettleStepException {
+    VariableSpace space ) throws KettleStepException {
     getFields( inputRowMeta, name, info, nextStep, space, null, null );
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "InjectorMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "InjectorMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "InjectorMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "InjectorMeta.CheckResult.NoInputReceivedError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   @Deprecated
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) {
     check( remarks, transMeta, stepMeta, prev, input, output, info, transMeta, repository, repository != null
-        ? repository.getMetaStore() : null );
+      ? repository.getMetaStore() : null );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new Injector( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

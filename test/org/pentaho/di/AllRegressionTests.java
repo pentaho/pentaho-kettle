@@ -67,7 +67,7 @@ import org.pentaho.di.ui.dialog.TipsDialogTest;
 
 /**
  * Regression tests for the PDI framework.
- * 
+ *
  * @author sboden
  */
 public class AllRegressionTests {

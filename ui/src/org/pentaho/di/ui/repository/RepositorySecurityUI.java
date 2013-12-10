@@ -37,14 +37,14 @@ public class RepositorySecurityUI {
 
   /**
    * Verify a repository operation, show an error dialog if needed.
-   * 
+   *
    * @param repositoryMeta
    *          The repository meta object
    * @param userinfo
    *          The user information
    * @param operations
    *          the operations you want to perform with the supplied user.
-   * 
+   *
    * @return true if there is an error, false if all is OK.
    */
   public static boolean verifyOperations( Shell shell, Repository repository, RepositoryOperation... operations ) {
@@ -65,7 +65,7 @@ public class RepositorySecurityUI {
       repository.getSecurityProvider().validateAction( operations );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, "Security error", "There was a security error performing operations:"
-          + Const.CR + operationsDesc, e );
+        + Const.CR + operationsDesc, e );
       return true;
     }
     return false;
@@ -104,7 +104,7 @@ public class RepositorySecurityUI {
   public static boolean showVersionCommentMandatoryDialog( Shell shell ) {
     MessageBox box = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_ERROR );
     box.setMessage( "Version comments are mandatory for this repository."
-        + Const.CR + "Do you want to enter a comment?" );
+      + Const.CR + "Do you want to enter a comment?" );
     box.setText( "Version comments are mandatory!" );
     return box.open() == SWT.YES;
   }

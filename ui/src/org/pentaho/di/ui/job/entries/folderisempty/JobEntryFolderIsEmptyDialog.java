@@ -56,12 +56,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Create Folder job entry settings.
- * 
+ *
  * @author Sven/Samatar
  * @since 17-10-2007
  */
 public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFolderIsEmpty.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
   private Text wName;
@@ -183,7 +183,8 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
     wlIncludeSubFolders.setLayoutData( fdlIncludeSubFolders );
     wIncludeSubFolders = new Button( shell, SWT.CHECK );
     props.setLook( wIncludeSubFolders );
-    wIncludeSubFolders.setToolTipText( BaseMessages.getString( PKG, "JobFolderIsEmpty.IncludeSubFolders.Tooltip" ) );
+    wIncludeSubFolders
+      .setToolTipText( BaseMessages.getString( PKG, "JobFolderIsEmpty.IncludeSubFolders.Tooltip" ) );
     fdIncludeSubFolders = new FormData();
     fdIncludeSubFolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubFolders.top = new FormAttachment( wFoldername, margin );

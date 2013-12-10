@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 16-06-2008
- * 
+ *
  */
 public class PrioritizeStreamsData extends BaseStepData implements StepDataInterface {
 

@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class MailInputData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface inputRowMeta;

@@ -55,21 +55,21 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 public class InsertUpdateTest extends TestCase {
 
   public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>", };
+    + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+    + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+    + "<password></password>" + "</connection>", };
 
   public static final String TARGET_TABLE = "insertupdate_step_test_case_table";
 
   private static String[] insertStatement = {
-      // New rows for the source
-      "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (NULL, NULL, 'null_id_code', 1)",
+    // New rows for the source
+    "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (NULL, NULL, 'null_id_code', 1)",
 
-      "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (NULL, 1, 'null_id', 3)",
+    "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (NULL, 1, 'null_id', 3)",
 
-      "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (1, NULL, 'null_code', 5)",
+    "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (1, NULL, 'null_code', 5)",
 
-      "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (2, 2, 'non_null_keys', 7)",
+    "INSERT INTO " + TARGET_TABLE + "(ID, CODE, VALUE, ROW_ORDER) " + "VALUES (2, 2, 'non_null_keys', 7)",
 
   };
 
@@ -91,10 +91,11 @@ public class InsertUpdateTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ), new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
-            new ValueMeta( "VALUE", ValueMeta.TYPE_STRING, 255, 0 ),
-            new ValueMeta( "ROW_ORDER", ValueMeta.TYPE_INTEGER, 8, 0 ), };
+    {
+      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "VALUE", ValueMeta.TYPE_STRING, 255, 0 ),
+      new ValueMeta( "ROW_ORDER", ValueMeta.TYPE_INTEGER, 8, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -288,7 +289,7 @@ public class InsertUpdateTest extends TestCase {
     // now the 1,null and 2,2 record should have been updated
     // the others got inserted
     String[] expected =
-        { "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code_insupd", "updated" };
+    { "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code_insupd", "updated" };
     assertArrayEquals( "Unexpected changes by insert/update step", expected, rows );
 
   }
@@ -302,9 +303,9 @@ public class InsertUpdateTest extends TestCase {
 
     // now the 2,2 record should have been updated
     String[] expected =
-        {
-            "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code", "null_code_insupd",
-            "updated" };
+    {
+      "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code", "null_code_insupd",
+      "updated" };
     assertArrayEquals( "Unexpected changes by insert/update step", expected, rows );
 
   }
@@ -345,7 +346,7 @@ public class InsertUpdateTest extends TestCase {
 
     // now [null,1], [2,2] records should have been updated, rest inserted
     String[] expected =
-        { "null_id_code", "null_id_code_insupd", "null_id_insupd", "null_code", "null_code_insupd", "updated" };
+    { "null_id_code", "null_id_code_insupd", "null_id_insupd", "null_code", "null_code_insupd", "updated" };
     assertArrayEquals( "Unexpected changes by insert/update step", expected, rows );
 
   }
@@ -384,9 +385,9 @@ public class InsertUpdateTest extends TestCase {
 
     // now [2,2] record should have been updated, rest is inserted
     String[] expected =
-        {
-            "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code", "null_code_insupd",
-            "updated" };
+    {
+      "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code", "null_code_insupd",
+      "updated" };
     assertArrayEquals( "Unexpected changes by insert/update step", expected, rows );
 
   }
@@ -401,7 +402,7 @@ public class InsertUpdateTest extends TestCase {
 
     // now [1,null], [2,2] records should have been updated, rest inserted
     String[] expected =
-        { "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code_insupd", "updated" };
+    { "null_id_code", "null_id_code_insupd", "null_id", "null_id_insupd", "null_code_insupd", "updated" };
     assertArrayEquals( "Unexpected changes by insert/update step", expected, rows );
 
   }

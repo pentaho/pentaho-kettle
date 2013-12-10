@@ -58,7 +58,7 @@ public class LdapSslProtocolTest {
     public String trustStorePassword = null;
 
     public TestableLdapProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
-        Collection<String> binaryAttributes ) {
+      Collection<String> binaryAttributes ) {
       super( log, variableSpace, meta, binaryAttributes );
     }
 
@@ -70,7 +70,7 @@ public class LdapSslProtocolTest {
 
     @Override
     protected void configureSocketFactory( boolean trustAllCertificates, String trustStorePath,
-        String trustStorePassword ) throws KettleException {
+      String trustStorePassword ) throws KettleException {
       this.trustAllCertificates = trustAllCertificates;
       this.trustStorePath = trustStorePath;
       this.trustStorePassword = trustStorePassword;
@@ -97,12 +97,12 @@ public class LdapSslProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals(
-        testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete, testableLdapProtocol.contextEnv
-            .get( Context.PROVIDER_URL ) );
+      testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete,
+      testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
   }
 
   @Test
@@ -119,12 +119,12 @@ public class LdapSslProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals(
-        testableLdapProtocol.getConnectionPrefix() + hostnameConcrete + ":" + portConcrete,
-        testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
+      testableLdapProtocol.getConnectionPrefix() + hostnameConcrete + ":" + portConcrete,
+      testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
   }
 
   @Test
@@ -140,7 +140,7 @@ public class LdapSslProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( "ssl", testableLdapProtocol.contextEnv.get( Context.SECURITY_PROTOCOL ) );
@@ -159,11 +159,11 @@ public class LdapSslProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( CustomSocketFactory.class.getCanonicalName(), testableLdapProtocol.contextEnv
-        .get( "java.naming.ldap.factory.socket" ) );
+      .get( "java.naming.ldap.factory.socket" ) );
   }
 
   @Test
@@ -186,7 +186,7 @@ public class LdapSslProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( false, testableLdapProtocol.trustAllCertificates );
@@ -214,7 +214,7 @@ public class LdapSslProtocolTest {
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
     TestableLdapProtocol testableLdapProtocol =
-        new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
     testableLdapProtocol.connect( null, null );
 
     assertEquals( true, testableLdapProtocol.trustAllCertificates );

@@ -45,24 +45,25 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 /**
  * Merge rows from 2 sorted streams and output joined rows with matched key fields. Use this instead of hash join is
  * both your input streams are too big to fit in memory. Note that both the inputs must be sorted on the join key.
- * 
+ *
  * This is a first prototype implementation that only handles two streams and inner join. It also always outputs all
  * values from both streams. Ideally, we should: 1) Support any number of incoming streams 2) Allow user to choose the
  * join type (inner, outer) for each stream 3) Allow user to choose which fields to push to next step 4) Have multiple
  * output ports as follows: a) Containing matched records b) Unmatched records for each input port 5) Support incoming
  * rows to be sorted either on ascending or descending order. The currently implementation only supports ascending
- * 
+ *
  * @author Biswapesh
  * @since 24-nov-2006
  */
 
 public class MergeJoin extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MergeJoinMeta meta;
   private MergeJoinData data;
 
-  public MergeJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public MergeJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -81,13 +82,13 @@ public class MergeJoin extends BaseStep implements StepInterface {
       data.oneRowSet = findInputRowSet( infoStreams.get( 0 ).getStepname() );
       if ( data.oneRowSet == null ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 0 ).getStepname() ) );
+          PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 0 ).getStepname() ) );
       }
 
       data.twoRowSet = findInputRowSet( infoStreams.get( 1 ).getStepname() );
       if ( data.twoRowSet == null ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 1 ).getStepname() ) );
+          PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 1 ).getStepname() ) );
       }
 
       data.one = getRowFrom( data.oneRowSet );
@@ -119,8 +120,8 @@ public class MergeJoin extends BaseStep implements StepInterface {
           data.keyNrs1[i] = data.oneMeta.indexOfValue( meta.getKeyFields1()[i] );
           if ( data.keyNrs1[i] < 0 ) {
             String message =
-                BaseMessages.getString( PKG, "MergeJoin.Exception.UnableToFindFieldInReferenceStream", meta
-                    .getKeyFields1()[i] );
+              BaseMessages.getString( PKG, "MergeJoin.Exception.UnableToFindFieldInReferenceStream", meta
+                .getKeyFields1()[i] );
             logError( message );
             throw new KettleStepException( message );
           }
@@ -134,8 +135,8 @@ public class MergeJoin extends BaseStep implements StepInterface {
           data.keyNrs2[i] = data.twoMeta.indexOfValue( meta.getKeyFields2()[i] );
           if ( data.keyNrs2[i] < 0 ) {
             String message =
-                BaseMessages.getString( PKG, "MergeJoin.Exception.UnableToFindFieldInReferenceStream", meta
-                    .getKeyFields2()[i] );
+              BaseMessages.getString( PKG, "MergeJoin.Exception.UnableToFindFieldInReferenceStream", meta
+                .getKeyFields2()[i] );
             logError( message );
             throw new KettleStepException( message );
           }
@@ -152,7 +153,7 @@ public class MergeJoin extends BaseStep implements StepInterface {
 
     if ( log.isRowLevel() ) {
       logRowlevel( BaseMessages.getString( PKG, "MergeJoin.Log.DataInfo", data.oneMeta.getString( data.one ) + "" )
-          + data.twoMeta.getString( data.two ) );
+        + data.twoMeta.getString( data.two ) );
     }
 
     /*
@@ -160,7 +161,7 @@ public class MergeJoin extends BaseStep implements StepInterface {
      * join type is INNER or LEFT OUTER c) Second stream is empty and join type is INNER or RIGHT OUTER
      */
     if ( ( data.one == null && data.two == null )
-        || ( data.one == null && data.one_optional == false ) || ( data.two == null && data.two_optional == false ) ) {
+      || ( data.one == null && data.one_optional == false ) || ( data.two == null && data.two_optional == false ) ) {
       // Before we stop processing, we have to make sure that all rows from both input streams are depleted!
       // If we don't do this, the transformation can stall.
       //
@@ -198,9 +199,11 @@ public class MergeJoin extends BaseStep implements StepInterface {
         data.two_next = getRowFrom( data.twoRowSet );
 
         int compare1 =
-            ( data.one_next == null ) ? -1 : data.oneMeta.compare( data.one, data.one_next, data.keyNrs1, data.keyNrs1 );
+          ( data.one_next == null ) ? -1 : data.oneMeta.compare(
+            data.one, data.one_next, data.keyNrs1, data.keyNrs1 );
         int compare2 =
-            ( data.two_next == null ) ? -1 : data.twoMeta.compare( data.two, data.two_next, data.keyNrs2, data.keyNrs2 );
+          ( data.two_next == null ) ? -1 : data.twoMeta.compare(
+            data.two, data.two_next, data.keyNrs2, data.keyNrs2 );
         if ( compare1 == 0 || compare2 == 0 ) { // Duplicate keys
 
           if ( data.ones == null ) {
@@ -221,7 +224,7 @@ public class MergeJoin extends BaseStep implements StepInterface {
             for ( ; !isStopped(); ) {
               data.one_next = getRowFrom( data.oneRowSet );
               if ( 0 != ( ( data.one_next == null ) ? -1 : data.oneMeta.compare(
-                  data.one, data.one_next, data.keyNrs1, data.keyNrs1 ) ) ) {
+                data.one, data.one_next, data.keyNrs1, data.keyNrs1 ) ) ) {
                 break;
               }
               data.ones.add( data.one_next );
@@ -237,7 +240,7 @@ public class MergeJoin extends BaseStep implements StepInterface {
             for ( ; !isStopped(); ) {
               data.two_next = getRowFrom( data.twoRowSet );
               if ( 0 != ( ( data.two_next == null ) ? -1 : data.twoMeta.compare(
-                  data.two, data.two_next, data.keyNrs2, data.keyNrs2 ) ) ) {
+                data.two, data.two_next, data.keyNrs2, data.keyNrs2 ) ) ) {
                 break;
               }
               data.twos.add( data.two_next );
@@ -421,12 +424,12 @@ public class MergeJoin extends BaseStep implements StepInterface {
   /**
    * Checks whether incoming rows are join compatible. This essentially means that the keys being compared should be of
    * the same datatype and both rows should have the same number of keys specified
-   * 
+   *
    * @param row1
    *          Reference row
    * @param row2
    *          Row to compare to
-   * 
+   *
    * @return true when templates are compatible.
    */
   protected boolean isInputLayoutValid( RowMetaInterface row1, RowMetaInterface row2 ) {

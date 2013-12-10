@@ -63,14 +63,14 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to specify the palo cube you want to delete
- * 
+ *
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
 
 public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-	private static Class<?> PKG = PaloCubeDelete.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+	private static Class<?> PKG = PaloCubeDelete.class; // for i18n purposes, needed by Translator2!!
 	
 	private Text textStepName;
 	private Label labelStepName;
@@ -112,9 +112,9 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 		props.setLook(shell);
 		JobDialog.setShellImage(shell, jobEntry);
 
-		ModifyListener lsMod = new ModifyListener() 
+		ModifyListener lsMod = new ModifyListener()
 		{
-			public void modifyText(ModifyEvent e) 
+			public void modifyText(ModifyEvent e)
 			{
 				jobEntry.setChanged();
 			}
@@ -126,14 +126,14 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.PaloCubeDelete")); 
+		shell.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.PaloCubeDelete"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		labelStepName=new Label(shell, SWT.RIGHT);
-		labelStepName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.StepName")); 
+		labelStepName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.StepName"));
 		props.setLook( labelStepName );
 		FormData fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
@@ -161,7 +161,7 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 
 		// Get cube name to delete
 		labelCubeName = new Label(shell, SWT.RIGHT);
-		labelCubeName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.CubeName")); 
+		labelCubeName.setText(BaseMessages.getString(PKG,"PaloCubeDeleteDialog.CubeName"));
 		props.setLook(labelCubeName);
 
 		fd = new FormData();
@@ -192,9 +192,9 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG,"System.Button.OK")); 
+		wOK.setText(BaseMessages.getString(PKG,"System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG,"System.Button.Cancel")); 
+		wCancel.setText(BaseMessages.getString(PKG,"System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, comboCubeName);
 
@@ -236,7 +236,7 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
         	if(clearCurrentData) {
         		comboCubeName.removeAll();
             }
-            
+
         	if (comboCubeName.getItemCount() > 1)
         		return;
         	
@@ -261,15 +261,15 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 	
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
+	 */
 	public void getData()
 	{
-		if (jobEntry.getName()    != null) 
+		if (jobEntry.getName()    != null)
 			textStepName.setText( jobEntry.getName() );
 		textStepName.selectAll();
 
 		int index = addConnectionLine.indexOf(jobEntry.getDatabaseMeta() != null ? jobEntry.getDatabaseMeta().getName() : "");
-		if (index >=0) 
+		if (index >=0)
 			addConnectionLine.select(index);
 
 		if (jobEntry.getCubeName() != null) {

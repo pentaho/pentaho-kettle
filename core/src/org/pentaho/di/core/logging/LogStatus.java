@@ -24,9 +24,9 @@ package org.pentaho.di.core.logging;
 
 /**
  * This enumeration describes the logging status in a logging table for transformations and jobs.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public enum LogStatus {
 
@@ -53,7 +53,7 @@ public enum LogStatus {
 
   /**
    * Find the LogStatus based on the string description of the status.
-   * 
+   *
    * @param status
    *          the status string to search for
    * @return the LogStatus or null if none is found

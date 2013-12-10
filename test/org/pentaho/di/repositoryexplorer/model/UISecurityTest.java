@@ -41,34 +41,34 @@ public class UISecurityTest {
     /*
      * roles.add(adminRole); roles.add(anonymousRole); roles.add(authenticatedRole); roles.add(ceoRole);
      * roles.add(ctoRole); roles.add(devRole); roles.add(devmgrRole); roles.add(isRole);
-     * 
+     *
      * joeUser = new UserInfo("joe", "password", "joe","joe", true); patUser = new UserInfo("pat", "password",
      * "pat","pat", true); suzyUser = new UserInfo("suzy", "password", "suzy","suzy", true); tiffanyUser = new
      * UserInfo("tiffany", "password", "tiffany","tiffany", true);
-     * 
+     *
      * joeUser.addRole(roles.get(0)); joeUser.addRole(roles.get(2)); joeUser.addRole(roles.get(3));
-     * 
+     *
      * suzyUser.addRole(roles.get(2)); suzyUser.addRole(roles.get(4)); suzyUser.addRole(roles.get(7));
-     * 
+     *
      * patUser.addRole(roles.get(2)); patUser.addRole(roles.get(5));
-     * 
+     *
      * tiffanyUser.addRole(roles.get(2)); tiffanyUser.addRole(roles.get(5)); tiffanyUser.addRole(roles.get(6));
-     * 
+     *
      * adminRole.addUser(joeUser); adminRole.addUser(patUser);
-     * 
+     *
      * anonymousRole.addUser(tiffanyUser);
-     * 
+     *
      * authenticatedRole.addUser(joeUser); authenticatedRole.addUser(patUser); authenticatedRole.addUser(suzyUser);
      * authenticatedRole.addUser(tiffanyUser);
-     * 
+     *
      * ceoRole.addUser(joeUser);
-     * 
+     *
      * ctoRole.addUser(patUser);
-     * 
+     *
      * devmgrRole.addUser(joeUser); devmgrRole.addUser(patUser);
-     * 
+     *
      * isRole.addUser(joeUser); isRole.addUser(suzyUser);
-     * 
+     *
      * users.add(joeUser); users.add(patUser); users.add(suzyUser); users.add(tiffanyUser); rroles = new
      * ArrayList<UIRepositoryRole>(); for(RoleInfo roleInfo:roles) { rroles.add(new UIRepositoryRole(roleInfo)); }
      * rusers = new ArrayList<UIRepositoryUser>(); for(UserInfo userInfo:users) { rusers.add(new
@@ -79,7 +79,7 @@ public class UISecurityTest {
   /*
    * private UIRepositoryUser findUser(String username) { for(UIRepositoryUser user:security.getUserList()) {
    * if(user.getName().equals(username)) { return user; } } return null; }
-   * 
+   *
    * private UIRepositoryRole findRole(String rolename) { for(UIRepositoryRole role:security.getRoleList()) {
    * if(role.getName().equals(rolename)) { return role; } } return null; }
    */
@@ -104,7 +104,7 @@ public class UISecurityTest {
      * userToAdd.setPassword("newpassword"); userToAdd.setDescription("new description"); Set<RoleInfo> rolesToAssign =
      * new HashSet<RoleInfo>(); rolesToAssign.add(ctoRole); rolesToAssign.add(isRole); rolesToAssign.add(adminRole);
      * rolesToAssign.add(authenticatedRole); userToAdd.setRoles(rolesToAssign); security.addUser(userToAdd);
-     * 
+     *
      * UIRepositoryUser selectedUser = security.getSelectedUser(); selectedUser.setPassword("newpassword123");
      * selectedUser.setDescription("new description 123"); selectedUser.addRole(ctoRole); selectedUser.addRole(isRole);
      * selectedUser.removeRole(adminRole); selectedUser.removeRole(authenticatedRole);
@@ -121,7 +121,7 @@ public class UISecurityTest {
      * userToAdd.setPassword("newpassword"); userToAdd.setDescription("new description"); Set<RoleInfo> rolesToAssign =
      * new HashSet<RoleInfo>(); rolesToAssign.add(ctoRole); rolesToAssign.add(isRole); rolesToAssign.add(adminRole);
      * rolesToAssign.add(authenticatedRole); userToAdd.setRoles(rolesToAssign); security.addUser(userToAdd);
-     * 
+     *
      * UIRepositoryUser selectedUser = security.getSelectedUser(); int removeUserIndex =
      * security.getSelectedUserIndex(); security.removeUser("newuser"); assertEquals(security.getSelectedUserIndex(),
      * removeUserIndex-1); assertEquals(security.getUserList().size(), 4); } catch (Exception e) { Assert.fail(); }
@@ -147,7 +147,7 @@ public class UISecurityTest {
      * roleToAdd.setDescription("new description"); Set<UserInfo> usersToAssign = new HashSet<UserInfo>();
      * usersToAssign.add(suzyUser); usersToAssign.add(tiffanyUser); usersToAssign.add(joeUser);
      * security.addRole(roleToAdd);
-     * 
+     *
      * security.setSelectedRole(findRole("newrole")); UIRepositoryRole selectedRole = security.getSelectedRole();
      * selectedRole.setDescription("new description 123"); selectedRole.addUser(patUser);
      * selectedRole.removeUser(suzyUser); selectedRole.removeUser(tiffanyUser); security.updateRole(selectedRole);
@@ -163,7 +163,7 @@ public class UISecurityTest {
      * roleToAdd.setDescription("new description"); Set<UserInfo> usersToAssign = new HashSet<UserInfo>();
      * usersToAssign.add(suzyUser); usersToAssign.add(tiffanyUser); usersToAssign.add(joeUser);
      * security.addRole(roleToAdd);
-     * 
+     *
      * UIRepositoryRole selectedRole = security.getSelectedRole(); int removeRoleIndex =
      * security.getSelectedRoleIndex(); security.removeRole("newrole"); assertEquals(security.getSelectedRoleIndex(),
      * removeRoleIndex-1); assertEquals(security.getRoleList().size(), 8); } catch (Exception e) { Assert.fail(); }

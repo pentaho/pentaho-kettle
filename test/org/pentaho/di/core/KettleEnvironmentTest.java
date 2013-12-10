@@ -42,7 +42,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 
 /**
  * Tests for the Kettle Environment
- * 
+ *
  */
 public class KettleEnvironmentTest {
 
@@ -100,13 +100,13 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-        .isInitialized() );
+      .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, MockLifecycleListener.class.getName() );
     KettleEnvironment.init();
 
     PluginInterface pi = PluginRegistry.getInstance().findPluginWithId( KettleLifecyclePluginType.class, pluginId );
     MockLifecycleListener l =
-        (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
+      (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
     assertNotNull( "Test plugin not registered properly", l );
 
     assertTrue( environmentInitCalled.get() );
@@ -119,13 +119,13 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback_exception_thrown() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-        .isInitialized() );
+      .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, FailingMockLifecycleListener.class.getName() );
     KettleEnvironment.init();
 
     PluginInterface pi = PluginRegistry.getInstance().findPluginWithId( KettleLifecyclePluginType.class, pluginId );
     MockLifecycleListener l =
-        (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
+      (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
     assertNotNull( "Test plugin not registered properly", l );
 
     assertTrue( environmentInitCalled.get() );
@@ -139,7 +139,7 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback_exception_thrown_severe() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-        .isInitialized() );
+      .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, SevereFailingMockLifecycleListener.class.getName() );
     try {
       KettleEnvironment.init();
@@ -155,7 +155,7 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback_throwable_thrown() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-        .isInitialized() );
+      .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, ThrowableFailingMockLifecycleListener.class.getName() );
     try {
       KettleEnvironment.init();

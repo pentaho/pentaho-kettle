@@ -45,11 +45,11 @@ import org.w3c.dom.Node;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
- * 
+ *
  */
 public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaInterface {
 
@@ -85,7 +85,7 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
 
   /**
    * Saves properties to preferences.
-   * 
+   *
    * @throws BackingStoreException
    *           ...
    */
@@ -105,7 +105,7 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#loadXML(org.w3c.dom.Node, java.util.List, java.util.Map)
    */
   public void loadXML( final Node node, final List<DatabaseMeta> databaseMeta, final IMetaStore metaStore )
@@ -126,7 +126,7 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStepMeta#getXML()
    */
   @Override
@@ -136,30 +136,30 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#readRep(org.pentaho.di.repository.Repository, long,
    *      java.util.List, java.util.Map)
    */
   public void readRep( final Repository repo, final IMetaStore metaStore, final ObjectId stepId,
-      final List<DatabaseMeta> databaseList ) throws KettleException {
+    final List<DatabaseMeta> databaseList ) throws KettleException {
     PluginPropertyHandler.walk( this.getProperties(), new ReadFromRepository( repo, metaStore, stepId ) );
     initDbMeta( databaseList );
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#saveRep(org.pentaho.di.repository.Repository, long, long)
    */
   public void saveRep( final Repository repo, final IMetaStore metaStore, final ObjectId transformationId,
-      final ObjectId stepId ) throws KettleException {
+    final ObjectId stepId ) throws KettleException {
     final SaveToRepository handler = new SaveToRepository( repo, metaStore, transformationId, stepId );
     PluginPropertyHandler.walk( this.getProperties(), handler );
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStepData()
    */
   public StepDataInterface getStepData() {

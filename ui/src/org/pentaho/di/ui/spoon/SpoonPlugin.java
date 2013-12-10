@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
 /**
  * Xul-based Spoon plugin. Implementations can modify the look of Spoon, register a SpoonLifecycleListener and add a
  * SpoonPerspective.
- * 
+ *
  * @author nbaker
- * 
+ *
  */
 
 @Documented

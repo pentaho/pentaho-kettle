@@ -38,25 +38,26 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class ConnectionPoolUtil {
-  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
   private static PoolingDriver pd = new PoolingDriver();
 
   public static final int defaultInitialNrOfConnections = 5;
   public static final int defaultMaximumNrOfConnections = 10;
 
-  private static boolean isPoolRegistered( DatabaseMeta dbMeta, String partitionId ) throws KettleDatabaseException {
+  private static boolean isPoolRegistered( DatabaseMeta dbMeta, String partitionId )
+    throws KettleDatabaseException {
     try {
       String name = dbMeta.getName() + Const.NVL( partitionId, "" );
       return Const.indexOfString( name, pd.getPoolNames() ) >= 0;
     } catch ( Exception e ) {
       throw new KettleDatabaseException( BaseMessages.getString(
-          PKG, "Database.UnableToCheckIfConnectionPoolExists.Exception" ), e );
+        PKG, "Database.UnableToCheckIfConnectionPoolExists.Exception" ), e );
     }
   }
 
   private static void createPool( LogChannelInterface log, DatabaseMeta databaseMeta, String partitionId,
-      int initialSize, int maximumSize ) throws KettleDatabaseException {
+    int initialSize, int maximumSize ) throws KettleDatabaseException {
     log.logBasic( BaseMessages.getString( PKG, "Database.CreatingConnectionPool", databaseMeta.getName() ) );
     GenericObjectPool gpool = new GenericObjectPool();
 
@@ -69,7 +70,7 @@ public class ConnectionPoolUtil {
       Class.forName( clazz ).newInstance();
     } catch ( Exception e ) {
       throw new KettleDatabaseException( BaseMessages.getString(
-          PKG, "Database.UnableToLoadConnectionPoolDriver.Exception", databaseMeta.getName(), clazz ), e );
+        PKG, "Database.UnableToLoadConnectionPoolDriver.Exception", databaseMeta.getName(), clazz ), e );
     }
 
     String url;
@@ -112,7 +113,7 @@ public class ConnectionPoolUtil {
         gpool.addObject();
       } catch ( Exception e ) {
         throw new KettleDatabaseException( BaseMessages.getString(
-            PKG, "Database.UnableToPreLoadConnectionToConnectionPool.Exception" ), e );
+          PKG, "Database.UnableToPreLoadConnectionToConnectionPool.Exception" ), e );
       }
     }
 
@@ -127,7 +128,7 @@ public class ConnectionPoolUtil {
   }
 
   public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId,
-      int initialSize, int maximumSize ) throws Exception {
+    int initialSize, int maximumSize ) throws Exception {
     if ( !isPoolRegistered( dbMeta, partitionId ) ) {
       createPool( log, dbMeta, partitionId, initialSize, maximumSize );
     }

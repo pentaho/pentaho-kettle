@@ -70,14 +70,14 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'unzip' job entry. Its main use would be to unzip files in a directory
- * 
+ *
  * @author Samatar Hassan
  * @since 25-09-2007
- * 
+ *
  */
 
 public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryUnZip.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryUnZip.class; // for i18n purposes, needed by Translator2!!
 
   private String zipFilename;
   public int afterunzip;
@@ -119,19 +119,20 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
   public static final String[] typeIfFileExistsCode = /* WARNING: DO NOT TRANSLATE THIS. */
   {
-      "SKIP", "OVERWRITE", "UNIQ", "FAIL", "OVERWRITE_DIFF_SIZE", "OVERWRITE_EQUAL_SIZE", "OVERWRITE_ZIP_BIG",
-      "OVERWRITE_ZIP_BIG_EQUAL", "OVERWRITE_ZIP_BIG_SMALL", "OVERWRITE_ZIP_BIG_SMALL_EQUAL", };
+    "SKIP", "OVERWRITE", "UNIQ", "FAIL", "OVERWRITE_DIFF_SIZE", "OVERWRITE_EQUAL_SIZE", "OVERWRITE_ZIP_BIG",
+    "OVERWRITE_ZIP_BIG_EQUAL", "OVERWRITE_ZIP_BIG_SMALL", "OVERWRITE_ZIP_BIG_SMALL_EQUAL", };
 
   public static final String[] typeIfFileExistsDesc = {
-      BaseMessages.getString( PKG, "JobUnZip.Skip.Label" ), BaseMessages.getString( PKG, "JobUnZip.Overwrite.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.Give_Unique_Name.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.Fail.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.OverwriteIfSizeDifferent.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.OverwriteIfSizeEquals.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipBigger.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipBiggerOrEqual.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipSmaller.Label" ),
-      BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipSmallerOrEqual.Label" ), };
+    BaseMessages.getString( PKG, "JobUnZip.Skip.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.Overwrite.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.Give_Unique_Name.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.Fail.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.OverwriteIfSizeDifferent.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.OverwriteIfSizeEquals.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipBigger.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipBiggerOrEqual.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipSmaller.Label" ),
+    BaseMessages.getString( PKG, "JobUnZip.OverwriteIfZipSmallerOrEqual.Label" ), };
 
   private int NrErrors = 0;
   private int NrSuccess = 0;
@@ -200,15 +201,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append( "      " ).append( XMLHandler.addTagValue( "nr_limit", nr_limit ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "wildcardSource", wildcardSource ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "success_condition", success_condition ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "iffileexists", getIfFileExistsCode( iffileexist ) ) );
+    retval
+      .append( "      " ).append( XMLHandler.addTagValue( "iffileexists", getIfFileExistsCode( iffileexist ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_move_to_directory", createMoveToDirectory ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "setOriginalModificationDate", setOriginalModificationDate ) );
+      XMLHandler.addTagValue( "setOriginalModificationDate", setOriginalModificationDate ) );
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       zipFilename = XMLHandler.getTagValue( entrynode, "zipfilename" );
@@ -234,16 +236,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
         success_condition = SUCCESS_IF_NO_ERRORS;
       }
       iffileexist = getIfFileExistsInt( XMLHandler.getTagValue( entrynode, "iffileexists" ) );
-      createMoveToDirectory = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_move_to_directory" ) );
+      createMoveToDirectory =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_move_to_directory" ) );
       setOriginalModificationDate =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "setOriginalModificationDate" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "setOriginalModificationDate" ) );
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( "Unable to load job entry of type 'unzip' from XML node", xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       zipFilename = rep.getJobEntryAttributeString( id_jobentry, "zipfilename" );
       afterunzip = (int) rep.getJobEntryAttributeInteger( id_jobentry, "afterunzip" );
@@ -271,7 +274,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       setOriginalModificationDate = rep.getJobEntryAttributeBoolean( id_jobentry, "setOriginalModificationDate" );
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'unzip' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -297,9 +300,12 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "success_condition", success_condition );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "iffileexists", getIfFileExistsCode( iffileexist ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_move_to_directory", createMoveToDirectory );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "setOriginalModificationDate", setOriginalModificationDate );
+      rep
+        .saveJobEntryAttribute(
+          id_job, getObjectId(), "setOriginalModificationDate", setOriginalModificationDate );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'unzip' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type 'unzip' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -326,9 +332,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
     if ( isfromprevious ) {
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobUnZip.Log.ArgFromPrevious.Found", ( rows != null
-            ? rows.size() : 0 )
-            + "" ) );
+        logDetailed( BaseMessages.getString( PKG, "JobUnZip.Log.ArgFromPrevious.Found", ( rows != null ? rows
+          .size() : 0 )
+          + "" ) );
       }
 
       if ( rows.size() == 0 ) {
@@ -369,13 +375,13 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
         } else {
           log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-              PKG, "JobUnZip.TargetFolderNotFound.Label" ) );
+            PKG, "JobUnZip.TargetFolderNotFound.Label" ) );
           exitjobentry = true;
         }
       } else {
         if ( !( targetdir.getType() == FileType.FOLDER ) ) {
           log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-              PKG, "JobUnZip.TargetFolderNotFolder.Label", realTargetdirectory ) );
+            PKG, "JobUnZip.TargetFolderNotFolder.Label", realTargetdirectory ) );
           exitjobentry = true;
         } else {
           if ( log.isDetailed() ) {
@@ -389,7 +395,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       if ( afterunzip == 2 ) {
         if ( Const.isEmpty( movetodirectory ) ) {
           log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-              PKG, "JobUnZip.MoveToDirectoryEmpty.Label" ) );
+            PKG, "JobUnZip.MoveToDirectoryEmpty.Label" ) );
           exitjobentry = true;
         } else {
           movetodir = KettleVFS.getFileObject( realMovetodirectory, this );
@@ -401,7 +407,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
               }
             } else {
               log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-                  PKG, "JobUnZip.MoveToDirectoryNotExists.Label" ) );
+                PKG, "JobUnZip.MoveToDirectoryNotExists.Label" ) );
               exitjobentry = true;
             }
           }
@@ -435,8 +441,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
             fileObject = KettleVFS.getFileObject( realFilenameSource, this );
             if ( fileObject.exists() ) {
               processOneFile(
-                  result, parentJob, fileObject, realTargetdirectory, realWildcard, realWildcardExclude, movetodir,
-                  realMovetodirectory, realWildcardSource );
+                result, parentJob, fileObject, realTargetdirectory, realWildcard, realWildcardExclude,
+                movetodir, realMovetodirectory, realWildcardSource );
             } else {
               updateErrors();
               logError( BaseMessages.getString( PKG, "JobUnZip.Error.CanNotFindFile", realFilenameSource ) );
@@ -447,7 +453,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
         fileObject = KettleVFS.getFileObject( realFilenameSource, this );
         if ( !fileObject.exists() ) {
           log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-              PKG, "JobUnZip.ZipFile.NotExists.Label", realFilenameSource ) );
+            PKG, "JobUnZip.ZipFile.NotExists.Label", realFilenameSource ) );
           return result;
         }
 
@@ -456,17 +462,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
         }
         if ( Const.isEmpty( sourcedirectory ) ) {
           log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-              PKG, "JobUnZip.TargetFolderNotFound.Label" ) );
+            PKG, "JobUnZip.TargetFolderNotFound.Label" ) );
           return result;
         }
 
         processOneFile(
-            result, parentJob, fileObject, realTargetdirectory, realWildcard, realWildcardExclude, movetodir,
-            realMovetodirectory, realWildcardSource );
+          result, parentJob, fileObject, realTargetdirectory, realWildcard, realWildcardExclude, movetodir,
+          realMovetodirectory, realWildcardSource );
       }
     } catch ( Exception e ) {
       log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-          PKG, "JobUnZip.ErrorUnzip.Label", realFilenameSource, e.getMessage() ) );
+        PKG, "JobUnZip.ErrorUnzip.Label", realFilenameSource, e.getMessage() ) );
       updateErrors();
     } finally {
       if ( fileObject != null ) {
@@ -509,16 +515,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   private boolean processOneFile( Result result, Job parentJob, FileObject fileObject, String realTargetdirectory,
-      String realWildcard, String realWildcardExclude, FileObject movetodir, String realMovetodirectory,
-      String realWildcardSource ) {
+    String realWildcard, String realWildcardExclude, FileObject movetodir, String realMovetodirectory,
+    String realWildcardSource ) {
     boolean retval = false;
 
     try {
       if ( fileObject.getType().equals( FileType.FILE ) ) {
         // We have to unzip one zip file
         if ( !unzipFile(
-            fileObject, realTargetdirectory, realWildcard, realWildcardExclude, result, parentJob, fileObject,
-            movetodir, realMovetodirectory ) ) {
+          fileObject, realTargetdirectory, realWildcard, realWildcardExclude, result, parentJob, fileObject,
+          movetodir, realMovetodirectory ) ) {
           updateErrors();
         } else {
           updateSuccess();
@@ -554,8 +560,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
             }
             if ( unzip ) {
               if ( !unzipFile(
-                  children[i], realTargetdirectory, realWildcard, realWildcardExclude, result, parentJob, fileObject,
-                  movetodir, realMovetodirectory ) ) {
+                children[i], realTargetdirectory, realWildcard, realWildcardExclude, result, parentJob,
+                fileObject, movetodir, realMovetodirectory ) ) {
                 updateErrors();
               } else {
                 updateSuccess();
@@ -579,8 +585,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   private boolean unzipFile( FileObject sourceFileObject, String realTargetdirectory, String realWildcard,
-      String realWildcardExclude, Result result, Job parentJob, FileObject fileObject, FileObject movetodir,
-      String realMovetodirectory ) {
+    String realWildcardExclude, Result result, Job parentJob, FileObject fileObject, FileObject movetodir,
+    String realMovetodirectory ) {
     boolean retval = false;
     String unzipToFolder = realTargetdirectory;
     try {
@@ -608,7 +614,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
               logDetailed( BaseMessages.getString( PKG, "JobUnZip.Log.RootFolderCreated", foldername ) );
             }
           } catch ( Exception e ) {
-            throw new Exception( BaseMessages.getString( PKG, "JobUnZip.Error.CanNotCreateRootFolder", foldername ), e );
+            throw new Exception(
+              BaseMessages.getString( PKG, "JobUnZip.Error.CanNotCreateRootFolder", foldername ), e );
           }
         }
         unzipToFolder = foldername;
@@ -660,7 +667,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
           try {
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString(
-                  PKG, "JobUnZip.Log.ProcessingZipEntry", item.getName().getURI(), sourceFileObject.toString() ) );
+                PKG, "JobUnZip.Log.ProcessingZipEntry", item.getName().getURI(), sourceFileObject.toString() ) );
             }
 
             // get real destination filename
@@ -702,8 +709,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
               if ( getIt && !getItexclude && take ) {
                 if ( log.isDetailed() ) {
-                  logDetailed( BaseMessages.getString(
-                      PKG, "JobUnZip.ExtractingEntry.Label", item.getName().getURI(), newFileName ) );
+                  logDetailed( BaseMessages.getString( PKG, "JobUnZip.ExtractingEntry.Label", item
+                    .getName().getURI(), newFileName ) );
                 }
 
                 if ( iffileexist == IF_FILE_EXISTS_UNIQ ) {
@@ -716,9 +723,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
                   }
 
                   newFileName =
-                      newFileName.substring( 0, lastindexOfDot )
-                          + StringUtil.getFormattedDateTimeNow( true )
-                          + newFileName.substring( lastindexOfDot, lenstring );
+                    newFileName.substring( 0, lastindexOfDot )
+                      + StringUtil.getFormattedDateTimeNow( true )
+                      + newFileName.substring( lastindexOfDot, lenstring );
 
                   if ( log.isDebug() ) {
                     logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.CreatingUniqFile", newFileName ) );
@@ -760,8 +767,10 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
             }
           } catch ( Exception e ) {
             updateErrors();
-            logError( BaseMessages.getString(
-                PKG, "JobUnZip.Error.CanNotProcessZipEntry", item.getName().getURI(), sourceFileObject.toString() ), e );
+            logError(
+              BaseMessages.getString(
+                PKG, "JobUnZip.Error.CanNotProcessZipEntry", item.getName().getURI(), sourceFileObject
+                  .toString() ), e );
           } finally {
             if ( newFileObject != null ) {
               try {
@@ -814,12 +823,13 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
           // File moved
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString(
-                PKG, "JobUnZip.Log.FileMovedTo", sourceFileObject.toString(), realMovetodirectory ) );
+              PKG, "JobUnZip.Log.FileMovedTo", sourceFileObject.toString(), realMovetodirectory ) );
           }
         } catch ( Exception e ) {
           updateErrors();
           logError( BaseMessages.getString(
-              PKG, "JobUnZip.Cant_Move_File.Label", sourceFileObject.toString(), realMovetodirectory, e.getMessage() ) );
+            PKG, "JobUnZip.Cant_Move_File.Label", sourceFileObject.toString(), realMovetodirectory, e
+              .getMessage() ) );
         } finally {
           if ( destFile != null ) {
             try {
@@ -834,7 +844,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     } catch ( Exception e ) {
       updateErrors();
       log.logError( BaseMessages.getString( PKG, "JobUnZip.Error.Label" ), BaseMessages.getString(
-          PKG, "JobUnZip.ErrorUnzip.Label", sourceFileObject.toString(), e.getMessage() ), e );
+        PKG, "JobUnZip.ErrorUnzip.Label", sourceFileObject.toString(), e.getMessage() ), e );
     }
 
     return retval;
@@ -844,8 +854,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     if ( addfiletoresult ) {
       // Add file to result files name
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( newfile, this ), parentJob
-              .getJobname(), toString() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( newfile, this ), parentJob
+          .getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
     }
   }
@@ -865,7 +875,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   private boolean checkIfSuccessConditionBroken() {
     boolean retval = false;
     if ( ( NrErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrErrors >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrErrors >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
     return retval;
@@ -875,8 +885,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     boolean retval = false;
 
     if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrSuccess >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED ) )
-        || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrSuccess >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED ) )
+      || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
 
@@ -920,14 +930,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_DIFF_SIZE ) {
       if ( entrySize != destinationSize ) {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileDiffSize.Diff", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileDiffSize.Diff", sourceFile.getName().getURI(), "" + entrySize,
+            destinationFile, "" + destinationSize ) );
         }
         return true;
       } else {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileDiffSize.Same", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileDiffSize.Same", sourceFile.getName().getURI(), "" + entrySize,
+            destinationFile, "" + destinationSize ) );
         }
         return false;
       }
@@ -935,14 +947,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE ) {
       if ( entrySize == destinationSize ) {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileEqualSize.Same", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileEqualSize.Same", sourceFile.getName().getURI(), "" + entrySize,
+            destinationFile, "" + destinationSize ) );
         }
         return true;
       } else {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileEqualSize.Diff", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileEqualSize.Diff", sourceFile.getName().getURI(), "" + entrySize,
+            destinationFile, "" + destinationSize ) );
         }
         return false;
       }
@@ -951,13 +965,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       if ( entrySize > destinationSize ) {
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigSize.Big", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+            + entrySize, destinationFile, "" + destinationSize ) );
         }
         return true;
       } else {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigSize.Small", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileBigSize.Small", sourceFile.getName().getURI(), "" + entrySize,
+            destinationFile, "" + destinationSize ) );
         }
         return false;
       }
@@ -965,15 +980,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_BIG_EQUAL ) {
       if ( entrySize >= destinationSize ) {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigEqualSize.Big", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigEqualSize.Big", sourceFile
+            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
         }
         return true;
       } else {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-              PKG, "JobUnZip.Log.FileBigEqualSize.Small", sourceFile.getName().getURI(), "" + entrySize,
-              destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigEqualSize.Small", sourceFile
+            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
         }
         return false;
       }
@@ -981,14 +995,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL ) {
       if ( entrySize < destinationSize ) {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSmallSize.Small", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileSmallSize.Small", sourceFile.getName().getURI(), "" + entrySize,
+            destinationFile, "" + destinationSize ) );
         }
         return true;
       } else {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSmallSize.Big", sourceFile.getName().getURI(), ""
-              + entrySize, destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileSmallSize.Big", sourceFile.getName().getURI(), "" + entrySize,
+            destinationFile, "" + destinationSize ) );
         }
         return false;
       }
@@ -996,16 +1012,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL_EQUAL ) {
       if ( entrySize <= destinationSize ) {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-              PKG, "JobUnZip.Log.FileSmallEqualSize.Small", sourceFile.getName().getURI(), "" + entrySize,
-              destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSmallEqualSize.Small", sourceFile
+            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
         }
         return true;
       } else {
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-              PKG, "JobUnZip.Log.FileSmallEqualSize.Big", sourceFile.getName().getURI(), "" + entrySize,
-              destinationFile, "" + destinationSize ) );
+          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSmallEqualSize.Big", sourceFile
+            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
         }
         return false;
       }
@@ -1208,7 +1222,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   /**
    * @param string
    *          the filename from
-   * 
+   *
    * @return the calculated target filename
    */
   protected String getTargetFilename( FileObject file ) throws FileSystemException {
@@ -1279,8 +1293,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx1 = new ValidatorContext();
     putVariableSpace( ctx1, getVariables() );
     putValidators( ctx1, notBlankValidator(), fileDoesNotExistValidator() );

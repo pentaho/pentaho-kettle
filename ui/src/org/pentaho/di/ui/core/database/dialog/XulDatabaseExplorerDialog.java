@@ -57,7 +57,7 @@ public class XulDatabaseExplorerDialog {
   private String selectedTable;
 
   public XulDatabaseExplorerDialog( Shell aShell, DatabaseMeta aDatabaseMeta, List<DatabaseMeta> aDataBases,
-      boolean aLook ) {
+    boolean aLook ) {
     this.shell = aShell;
     this.databaseMeta = aDatabaseMeta;
     this.databases = aDataBases;
@@ -70,19 +70,19 @@ public class XulDatabaseExplorerDialog {
       KettleXulLoader theLoader = new KettleXulLoader();
       theLoader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
       theLoader.setSettingsManager( new DefaultSettingsManager( new File( Const.getKettleDirectory()
-          + Const.FILE_SEPARATOR + "xulSettings.properties" ) ) );
+        + Const.FILE_SEPARATOR + "xulSettings.properties" ) ) );
       theLoader.setOuterContext( this.shell );
 
       this.container = theLoader.loadXul( XUL, new XulDatabaseExplorerResourceBundle() );
 
       XulDialog theExplorerDialog =
-          (XulDialog) this.container.getDocumentRoot().getElementById( "databaseExplorerDialog" );
+        (XulDialog) this.container.getDocumentRoot().getElementById( "databaseExplorerDialog" );
 
       SpoonPluginManager.getInstance().applyPluginsForContainer( "database_dialog", container );
 
       this.controller =
-          new XulDatabaseExplorerController(
-              (Shell) theExplorerDialog.getRootObject(), this.databaseMeta, this.databases, look );
+        new XulDatabaseExplorerController(
+          (Shell) theExplorerDialog.getRootObject(), this.databaseMeta, this.databases, look );
 
       this.container.addEventHandler( this.controller );
 

@@ -30,7 +30,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Vertica Analytic Database version 5 and later (changed driver class name)
- * 
+ *
  * @author DEinspanjer
  * @since 2009-03-16
  * @author Matt
@@ -60,7 +60,7 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
 
   /**
    * This method allows a database dialect to convert database specific data types to Kettle data types.
-   * 
+   *
    * @param resultSet
    *          The result set to use
    * @param valueMeta
@@ -71,7 +71,8 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
    * @throws KettleDatabaseException
    */
   @Override
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i )
+    throws KettleDatabaseException {
     Object data = null;
 
     try {
@@ -92,7 +93,7 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
       }
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Unable to get value '"
-          + val.toStringMeta() + "' from database resultset, index " + i, e );
+        + val.toStringMeta() + "' from database resultset, index " + i, e );
     }
 
     return data;

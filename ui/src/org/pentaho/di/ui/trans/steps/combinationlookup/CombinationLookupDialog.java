@@ -78,7 +78,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class CombinationLookupDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -333,18 +333,18 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.DimensionField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.DimensionField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.FieldInStream" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.FieldInStream" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     tableFieldColumns.add( ciKey[0] );
     wKey =
-        new TableView(
-            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
-            nrKeyRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrKeyRows, lsMod, props );
 
     // THE BUTTONS
     wOK = new Button( shell, SWT.PUSH );
@@ -455,7 +455,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     wTableMax.setSelection( false );
     GridData gdTableMax = new GridData();
     wTableMax.setLayoutData( gdTableMax );
-    wTableMax.setToolTipText( BaseMessages.getString( PKG, "CombinationLookupDialog.TableMaximum.Tooltip", Const.CR ) );
+    wTableMax.setToolTipText( BaseMessages.getString(
+      PKG, "CombinationLookupDialog.TableMaximum.Tooltip", Const.CR ) );
     wlTableMax = new Label( gTechGroup, SWT.LEFT );
     wlTableMax.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.TableMaximum.Label" ) );
     props.setLook( wlTableMax );
@@ -470,7 +471,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     wSeqButton.setSelection( false );
     GridData gdSeqButton = new GridData();
     wSeqButton.setLayoutData( gdSeqButton );
-    wSeqButton.setToolTipText( BaseMessages.getString( PKG, "CombinationLookupDialog.Sequence.Tooltip", Const.CR ) );
+    wSeqButton
+      .setToolTipText( BaseMessages.getString( PKG, "CombinationLookupDialog.Sequence.Tooltip", Const.CR ) );
     wlSeqButton = new Label( gTechGroup, SWT.LEFT );
     wlSeqButton.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.Sequence.Label" ) );
     props.setLook( wlSeqButton );
@@ -500,7 +502,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     wAutoinc.setSelection( false );
     GridData gdAutoinc = new GridData();
     wAutoinc.setLayoutData( gdAutoinc );
-    wAutoinc.setToolTipText( BaseMessages.getString( PKG, "CombinationLookupDialog.AutoincButton.Tooltip", Const.CR ) );
+    wAutoinc.setToolTipText( BaseMessages.getString(
+      PKG, "CombinationLookupDialog.AutoincButton.Tooltip", Const.CR ) );
     wlAutoinc = new Label( gTechGroup, SWT.LEFT );
     wlAutoinc.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.Autoincrement.Label" ) );
     props.setLook( wlAutoinc );
@@ -665,7 +668,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-              wSchema.getText();
+            wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -679,8 +682,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
                 db.connect();
 
                 String schemaTable =
-                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                        .environmentSubstitute( tableName ) );
+                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                    .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
@@ -908,9 +911,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-                  PKG, "CombinationLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
-                  .getString( PKG, "CombinationLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
+            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+              PKG, "CombinationLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
+              .getString( PKG, "CombinationLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -924,8 +927,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "CombinationLookupDialog.ErrorGettingSchemas" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "CombinationLookupDialog.ErrorGettingSchemas" ), e );
       } finally {
         database.disconnect();
       }
@@ -963,17 +966,17 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
         BaseStepDialog.getFieldsFromPrevious(
-            r, wKey, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, new TableItemInsertListener() {
-              public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
-                tableItem.setText( 3, "N" );
-                return true;
-              }
-            } );
+          r, wKey, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, new TableItemInsertListener() {
+            public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
+              tableItem.setText( 3, "N" );
+              return true;
+            }
+          } );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages.getString(
-          PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages.getString(
+        PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogMessage" ), ke );
     }
   }
 
@@ -987,14 +990,15 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       getInfo( info );
       String name = stepname; // new name might not yet be linked to other steps!
       StepMeta stepMeta =
-          new StepMeta( BaseMessages.getString( PKG, "CombinationLookupDialog.StepMeta.Title" ), name, info );
+        new StepMeta( BaseMessages.getString( PKG, "CombinationLookupDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+              .getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -1009,9 +1013,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogTitle" ), BaseMessages
-              .getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages
+        .getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogTitle" ), BaseMessages.getString(
+        PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogMessage" ), ke );
     }
   }
 }

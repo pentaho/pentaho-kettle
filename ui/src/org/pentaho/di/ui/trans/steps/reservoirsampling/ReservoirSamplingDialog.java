@@ -50,13 +50,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * The UI class for the ReservoirSampling step
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho.org
  * @version 1.0
  */
 public class ReservoirSamplingDialog extends BaseStepDialog implements StepDialogInterface {
 
-  private static Class<?> PKG = ReservoirSamplingMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ReservoirSamplingMeta.class; // for i18n purposes, needed by Translator2!!
 
   // various UI bits and pieces
   private Label m_wlStepname;
@@ -92,7 +92,7 @@ public class ReservoirSamplingDialog extends BaseStepDialog implements StepDialo
 
   /**
    * Open the dialog
-   * 
+   *
    * @return the step name
    */
   public String open() {

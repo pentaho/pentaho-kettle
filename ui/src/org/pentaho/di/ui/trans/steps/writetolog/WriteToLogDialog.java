@@ -68,7 +68,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WriteToLogMeta.class; // for i18n purposes, needed by Translator2!!
 
   private WriteToLogMeta input;
   private Label wlLoglevel;
@@ -241,7 +241,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
     wlLogMessage.setLayoutData( fdlLogMessage );
 
     wLogMessage =
-        new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+      new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wLogMessage, Props.WIDGET_STYLE_FIXED );
     wLogMessage.addModifyListener( lsMod );
     fdLogMessage = new FormData();
@@ -274,11 +274,12 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "WriteToLogDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "WriteToLogDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -387,11 +388,12 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
+        BaseStepDialog
+          .getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }

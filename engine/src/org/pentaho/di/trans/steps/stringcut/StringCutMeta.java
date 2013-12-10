@@ -55,7 +55,7 @@ import org.w3c.dom.Node;
  */
 public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 
-  private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String[] fieldInStream;
 
@@ -115,7 +115,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
     this.cutTo = cutTo;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -159,8 +160,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         cutTo[i] = Const.NVL( XMLHandler.getTagValue( fnode, "cut_to" ), "" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException(
-          BaseMessages.getString( PKG, "StringCutMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "StringCutMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -207,7 +208,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-          PKG, "StringCutMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+        PKG, "StringCutMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -223,15 +224,16 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "StringCutMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldOutStream.length; i++ ) {
       if ( !Const.isEmpty( fieldOutStream[i] ) ) {
-        ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( fieldOutStream[i] ), ValueMeta.TYPE_STRING );
+        ValueMetaInterface v =
+          new ValueMeta( space.environmentSubstitute( fieldOutStream[i] ), ValueMeta.TYPE_STRING );
         v.setLength( 100, -1 );
         v.setOrigin( name );
         inputRowMeta.addValueMeta( v );
@@ -239,9 +241,9 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
     String error_message = "";
@@ -262,7 +264,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
           if ( first ) {
             first = false;
             error_message +=
-                BaseMessages.getString( PKG, "StringCutMeta.CheckResult.MissingInStreamFields" ) + Const.CR;
+              BaseMessages.getString( PKG, "StringCutMeta.CheckResult.MissingInStreamFields" ) + Const.CR;
           }
           error_found = true;
           error_message += "\t\t" + field + Const.CR;
@@ -272,8 +274,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "StringCutMeta.CheckResult.FoundInStreamFields" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StringCutMeta.CheckResult.FoundInStreamFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -289,7 +291,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
             if ( first ) {
               first = false;
               error_message +=
-                  BaseMessages.getString( PKG, "StringCutMeta.CheckResult.OperationOnNonStringFields" ) + Const.CR;
+                BaseMessages.getString( PKG, "StringCutMeta.CheckResult.OperationOnNonStringFields" ) + Const.CR;
             }
             error_found = true;
             error_message += "\t\t" + field + Const.CR;
@@ -300,8 +302,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "StringCutMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StringCutMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -309,10 +311,10 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
           if ( Const.isEmpty( fieldInStream[idx] ) ) {
             cr =
-                new CheckResult(
-                    CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-                        PKG, "StringCutMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 ).toString() ),
-                    stepinfo );
+              new CheckResult(
+                CheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString( PKG, "StringCutMeta.CheckResult.InStreamFieldMissing", new Integer(
+                  idx + 1 ).toString() ), stepinfo );
             remarks.add( cr );
 
           }
@@ -322,8 +324,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new StringCut( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

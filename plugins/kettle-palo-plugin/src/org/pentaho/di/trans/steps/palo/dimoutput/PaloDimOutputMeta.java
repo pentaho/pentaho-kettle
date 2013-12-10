@@ -53,15 +53,15 @@ import org.w3c.dom.Node;
 /**
  *
  */
-@Step(id = "PaloDimOutput", 
-		image = "PaloDimOutput.png", 
+@Step(id = "PaloDimOutput",
+		image = "PaloDimOutput.png",
 		i18nPackageName="org.pentaho.di.trans.steps.palo.dimoutput",
-		name = "PaloDimOutput.TransName", 
-		description="PaloDimOutput.TransDescription", 
+		name = "PaloDimOutput.TransName",
+		description="PaloDimOutput.TransDescription",
 		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo")
-public class PaloDimOutputMeta extends BaseStepMeta 
+public class PaloDimOutputMeta extends BaseStepMeta
     implements StepMetaInterface {
-    
+
     private DatabaseMeta databaseMeta;
     private String dimension = "";
     private String elementType = "";
@@ -71,29 +71,29 @@ public class PaloDimOutputMeta extends BaseStepMeta
     private boolean recreateDimension;
     private boolean enableElementCache = true;
     private boolean preloadElementCache = true;
-    
+
     private List < PaloDimensionLevel > levels = new ArrayList < PaloDimensionLevel >();
-    
+
     public PaloDimOutputMeta() {
         super();
     }
-    
+
     /**
      * @return Returns the database.
      */
     public final DatabaseMeta getDatabaseMeta() {
         return databaseMeta;
     }
-    
+
     /**
      * @param database The database to set.
      */
     public final void setDatabaseMeta(final DatabaseMeta database) {
         this.databaseMeta = database;
     }
-    
-    public final void loadXML(final Node stepnode, 
-            final List < DatabaseMeta > databases, 
+
+    public final void loadXML(final Node stepnode,
+            final List < DatabaseMeta > databases,
             final IMetaStore metaStore) throws KettleXMLException {
         readData(stepnode, databases);
     }
@@ -102,8 +102,8 @@ public class PaloDimOutputMeta extends BaseStepMeta
         PaloDimOutputMeta retval = (PaloDimOutputMeta) super.clone();
         return retval;
     }
-    
-    private void readData(final Node stepnode, 
+
+    private void readData(final Node stepnode,
             final List < ? extends SharedObjectInterface > databases)
             throws KettleXMLException {
         try {
@@ -120,13 +120,13 @@ public class PaloDimOutputMeta extends BaseStepMeta
     			XMLHandler.getTagValue(stepnode, "enableElementCache").equals("Y") ? true : false);
             preloadElementCache = (XMLHandler.getTagValue(stepnode, "preloadElementCache") == null ? false :
     			XMLHandler.getTagValue(stepnode, "preloadElementCache").equals("Y") ? true : false);
-            
+
             Node levels = XMLHandler.getSubNode(stepnode,"levels");
             int nrLevels = XMLHandler.countNodes(levels,"level");
 
             for (int i=0;i<nrLevels;i++) {
                 Node fnode = XMLHandler.getSubNodeByNr(levels, "level", i);
-                    
+
                 String levelName = XMLHandler.getTagValue(fnode, "levelname");
                 String levelNumber = XMLHandler.getTagValue(fnode, "levelnumber");
                 String fieldName = XMLHandler.getTagValue(fnode, "fieldname");
@@ -144,36 +144,36 @@ public class PaloDimOutputMeta extends BaseStepMeta
 
     public final String getXML() {
         StringBuffer retval = new StringBuffer();
-        
+
         retval.append("    ")
             .append(XMLHandler.addTagValue(
-                        "connection", databaseMeta == null ? "" 
+                        "connection", databaseMeta == null ? ""
                                 : databaseMeta.getName()));
         retval.append("    ")
             .append(XMLHandler.addTagValue("dimension", dimension));
-        
+
         retval.append("    ")
             .append(XMLHandler.addTagValue("elementtype", elementType));
 
         retval.append("    ")
         .append(XMLHandler.addTagValue("createdimension", createNewDimension));
-        
+
          retval.append("    ")
         .append(XMLHandler.addTagValue("cleardimension", clearDimension));
-        
+
          retval.append("    ")
          .append(XMLHandler.addTagValue("clearconsolidations", clearConsolidations));
-         
+
          retval.append("    ")
          .append(XMLHandler.addTagValue("recreatedimension", recreateDimension));
-         
+
          retval.append("    ")
          .append(XMLHandler.addTagValue("enableElementCache", enableElementCache));
-         
+
          retval.append("    ")
          .append(XMLHandler.addTagValue("preloadElementCache", preloadElementCache));
-         
-        
+
+
         retval.append("    <levels>").append(Const.CR);
         for (PaloDimensionLevel level : levels) {
             retval.append("      <level>").append(Const.CR);
@@ -184,10 +184,10 @@ public class PaloDimOutputMeta extends BaseStepMeta
             retval.append("      </level>").append(Const.CR);
         }
         retval.append("    </levels>").append(Const.CR);
-        
+
         return retval.toString();
     }
-    
+
     public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases) throws KettleException {
         try {
             this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
@@ -199,9 +199,9 @@ public class PaloDimOutputMeta extends BaseStepMeta
             this.recreateDimension = rep.getStepAttributeBoolean(idStep, "recreatedimension");
             this.enableElementCache = rep.getStepAttributeBoolean(idStep, "enableElementCache");
             this.preloadElementCache = rep.getStepAttributeBoolean(idStep, "preloadElementCache");
-            
+
             int nrLevels = rep.countNrStepAttributes(idStep, "levelname");
-            
+
             for (int i=0;i<nrLevels;i++) {
                 String levelName = rep.getStepAttributeString (idStep, i, "levelname");
                 int levelNumber = (int)rep.getStepAttributeInteger(idStep, i, "levelnumber");
@@ -214,7 +214,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
             throw new KettleException("Unexpected error reading step information from the repository", e);
         }
     }
-    
+
     public void saveRep(Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep) throws KettleException {
         try {
             rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", databaseMeta);
@@ -226,7 +226,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
             rep.saveStepAttribute(idTransformation, idStep, "recreatedimension", this.recreateDimension);
             rep.saveStepAttribute(idTransformation, idStep, "enableElementCache", this.enableElementCache);
             rep.saveStepAttribute(idTransformation, idStep, "preloadElementCache", this.preloadElementCache);
-            
+
             for (int i=0;i<levels.size();i++) {
                 rep.saveStepAttribute(idTransformation, idStep, i, "levelname", this.levels.get(i).getLevelName());
                 rep.saveStepAttribute(idTransformation, idStep, i, "levelnumber", this.levels.get(i).getLevelNumber());
@@ -234,33 +234,33 @@ public class PaloDimOutputMeta extends BaseStepMeta
                 rep.saveStepAttribute(idTransformation, idStep, i, "fieldtype", this.levels.get(i).getFieldType());
                 rep.saveStepAttribute(idTransformation, idStep, i, "consolidationfieldname", this.levels.get(i).getConsolidationFieldName());
             }
-            
+
         } catch (Exception e) {
             throw new KettleException("Unable to save step information to the repository for idStep=" + idStep, e);
         }
     }
 
-    public final void check(final List < CheckResultInterface > remarks, 
-            final TransMeta transMeta, final StepMeta stepMeta, 
-            final RowMetaInterface prev, final String input[], 
+    public final void check(final List < CheckResultInterface > remarks,
+            final TransMeta transMeta, final StepMeta stepMeta,
+            final RowMetaInterface prev, final String input[],
             final String output[], final RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore) {
-        
+
         CheckResult cr;
-        
+
         if (databaseMeta != null) {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, 
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK,
                     "Connection exists", stepMeta);
             remarks.add(cr);
 
             final PaloHelper helper = new PaloHelper(databaseMeta, DefaultLogLevel.getLogLevel());
             try {
                 helper.connect();
-                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, 
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK,
                         "Connection to database OK", stepMeta);
                 remarks.add(cr);
 
                 if (!Const.isEmpty(dimension)) {
-                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, 
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK,
                             "The name of the dimension is entered", stepMeta);
                     remarks.add(cr);
                 } else {
@@ -268,7 +268,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
                             "The name of the dimension is missing.", stepMeta);
                     remarks.add(cr);
                 }
-                
+
                 if(this.levels == null || this.levels.size()==0) {
                     cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Dimension Output Fields are empty.",stepMeta);
                     remarks.add(cr);
@@ -289,26 +289,26 @@ public class PaloDimOutputMeta extends BaseStepMeta
                     }
                 }
             } catch (KettleException e) {
-                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR,
                         "An error occurred: " + e.getMessage(), stepMeta);
                 remarks.add(cr);
             } finally {
                 helper.disconnect();
             }
-            
+
         } else {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR,
                     "Please select or create a connection to use", stepMeta);
             remarks.add(cr);
         }
-        
+
     }
 
-    public final StepInterface getStep(final StepMeta stepMeta, 
-            final StepDataInterface stepDataInterface, final int cnr, 
+    public final StepInterface getStep(final StepMeta stepMeta,
+            final StepDataInterface stepDataInterface, final int cnr,
             final TransMeta transMeta, final Trans trans) {
-        
-        return new PaloDimOutput(stepMeta, stepDataInterface, cnr, 
+
+        return new PaloDimOutput(stepMeta, stepDataInterface, cnr,
                 transMeta, trans);
     }
 
@@ -319,7 +319,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
             return null;
         }
     }
-    
+
     public final DatabaseMeta[] getUsedDatabaseConnections() {
         if (databaseMeta != null) {
             return new DatabaseMeta[] {databaseMeta};
@@ -352,7 +352,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
         return this.levels;
     }
     public void setLevels(List < PaloDimensionLevel > levels) {
-        this.levels = levels; 
+        this.levels = levels;
     }
     public void setCreateNewDimension(boolean create) {
         this.createNewDimension = create;

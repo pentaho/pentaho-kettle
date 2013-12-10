@@ -66,8 +66,8 @@ public class TimedTransRunner {
     System.out.println();
     System.out.println( "Transformation name         : " + transMeta.getName() );
     System.out.println( "Transformation description  : " + Const.NVL( transMeta.getDescription(), "" ) );
-    System.out
-        .println( "-----------------------------------------------------------------------------------------------------" );
+    System.out.println(
+      "-----------------------------------------------------------------------------------------------------" );
   }
 
   private static DecimalFormat recordsDF = new DecimalFormat( "###,###,##0" );
@@ -76,8 +76,8 @@ public class TimedTransRunner {
 
   private void printStats( String prefix, long lines, double runTime, double speed ) {
     System.out.println( prefix
-        + ", rows: " + recordsDF.format( lines ) + ",   runtime: " + runtimeDF.format( runTime ) + "s,   speed: "
-        + speedDF.format( speed ) + " rows/s" );
+      + ", rows: " + recordsDF.format( lines ) + ",   runtime: " + runtimeDF.format( runTime ) + "s,   speed: "
+      + speedDF.format( speed ) + " rows/s" );
   }
 
   public boolean runEngine() throws KettleException {

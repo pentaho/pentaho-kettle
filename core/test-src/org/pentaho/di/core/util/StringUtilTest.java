@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of StringUtil.
- * 
+ *
  * @author Sven Boden
  */
 public class StringUtilTest extends TestCase {
@@ -53,7 +53,7 @@ public class StringUtilTest extends TestCase {
 
   /**
    * Create an example map to be used for variable resolution.
-   * 
+   *
    * @return Map of variablenames/values.
    */
   Map<String, String> createVariables1( String open, String close ) {

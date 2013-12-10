@@ -55,7 +55,7 @@ public class LdapProtocolFactoryTest {
   public void testLdapProtocolFactoryReturnsLdapProtocolForName() throws KettleException {
     when( mockLdapMeta.getProtocol() ).thenReturn( LdapProtocol.getName() );
     LdapProtocol protocol =
-        new LdapProtocolFactory( null ).createLdapProtocol( mock( VariableSpace.class ), mockLdapMeta, null );
+      new LdapProtocolFactory( null ).createLdapProtocol( mock( VariableSpace.class ), mockLdapMeta, null );
     assertTrue( protocol.getClass().equals( LdapProtocol.class ) );
   }
 
@@ -63,7 +63,7 @@ public class LdapProtocolFactoryTest {
   public void testLdapProtocolFactoryReturnsLdapSslProtocolForName() throws KettleException {
     when( mockLdapMeta.getProtocol() ).thenReturn( LdapSslProtocol.getName() );
     LdapProtocol protocol =
-        new LdapProtocolFactory( null ).createLdapProtocol( mock( VariableSpace.class ), mockLdapMeta, null );
+      new LdapProtocolFactory( null ).createLdapProtocol( mock( VariableSpace.class ), mockLdapMeta, null );
     assertTrue( protocol.getClass().equals( LdapSslProtocol.class ) );
   }
 
@@ -71,7 +71,7 @@ public class LdapProtocolFactoryTest {
   public void testLdapProtocolFactoryReturnsLdapTlsProtocolForName() throws KettleException {
     when( mockLdapMeta.getProtocol() ).thenReturn( LdapTlsProtocol.getName() );
     LdapProtocol protocol =
-        new LdapProtocolFactory( null ).createLdapProtocol( mock( VariableSpace.class ), mockLdapMeta, null );
+      new LdapProtocolFactory( null ).createLdapProtocol( mock( VariableSpace.class ), mockLdapMeta, null );
     assertTrue( protocol.getClass().equals( LdapTlsProtocol.class ) );
   }
 }

@@ -28,7 +28,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 /**
  * A simplified rowset for steps that always only need to only have a single row on input...
- * 
+ *
  * @author matt
  */
 public class SingleRowRowSet extends BaseRowSet implements Comparable<RowSet>, RowSet {

@@ -40,18 +40,18 @@ import org.pentaho.di.trans.steps.ldapinput.LDAPConnection;
 
 /**
  * Write to LDAP.
- * 
+ *
  * @author Samatar
  * @since 21-09-2007
  */
 public class LDAPOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = LDAPOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDAPOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private LDAPOutputMeta meta;
   private LDAPOutputData data;
 
   public LDAPOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -68,14 +68,15 @@ public class LDAPOutput extends BaseStep implements StepInterface {
       first = false;
 
       if ( meta.getOperationType() != LDAPOutputMeta.OPERATION_TYPE_DELETE
-          && meta.getOperationType() != LDAPOutputMeta.OPERATION_TYPE_RENAME ) {
+        && meta.getOperationType() != LDAPOutputMeta.OPERATION_TYPE_RENAME ) {
 
         // get total fields in the grid
         data.nrfields = meta.getUpdateLookup().length;
 
         // Check if field list is filled
         if ( data.nrfields == 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.FieldsMissing.DialogMessage" ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "LDAPOutputUpdateDialog.FieldsMissing.DialogMessage" ) );
         }
 
         // Take care of variable
@@ -89,10 +90,11 @@ public class LDAPOutput extends BaseStep implements StepInterface {
 
         for ( int i = 0; i < data.nrfields; i++ ) {
 
-          data.fieldStream[i] = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getUpdateStream()[i] ) );
+          data.fieldStream[i] =
+            getInputRowMeta().indexOfValue( environmentSubstitute( meta.getUpdateStream()[i] ) );
           if ( data.fieldStream[i] < 0 ) {
             throw new KettleException( "Field ["
-                + meta.getUpdateStream()[i] + "] couldn't be found in the input stream!" );
+              + meta.getUpdateStream()[i] + "] couldn't be found in the input stream!" );
           }
           data.fieldsAttribute[i] = environmentSubstitute( meta.getUpdateLookup()[i] );
 
@@ -193,9 +195,9 @@ public class LDAPOutput extends BaseStep implements StepInterface {
             data.attributesToUpdate[i] = getInputRowMeta().getString( outputRowData, data.fieldStreamToUpdate[i] );
           }
           int status =
-              data.connection.upsert(
-                  dn, data.fieldsAttribute, data.attributes, data.fieldsAttributeToUpdate, data.attributesToUpdate,
-                  data.separator );
+            data.connection.upsert(
+              dn, data.fieldsAttribute, data.attributes, data.fieldsAttributeToUpdate,
+              data.attributesToUpdate, data.separator );
           switch ( status ) {
             case LDAPConnection.STATUS_INSERTED:
               incrementLinesOutput();
@@ -221,7 +223,8 @@ public class LDAPOutput extends BaseStep implements StepInterface {
           break;
         case LDAPOutputMeta.OPERATION_TYPE_ADD:
           status =
-              data.connection.add( dn, data.fieldsAttribute, data.attributes, data.separator, meta.isFailIfNotExist() );
+            data.connection.add( dn, data.fieldsAttribute, data.attributes, data.separator, meta
+              .isFailIfNotExist() );
           switch ( status ) {
             case LDAPConnection.STATUS_ADDED:
               incrementLinesUpdated();
@@ -260,7 +263,7 @@ public class LDAPOutput extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "LDAPOutput.log.ReadRow" ), getInputRowMeta().getString(
-            outputRowData ) );
+          outputRowData ) );
       }
 
       if ( checkFeedback( getLinesInput() ) ) {

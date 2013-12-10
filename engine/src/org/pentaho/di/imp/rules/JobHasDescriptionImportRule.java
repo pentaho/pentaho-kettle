@@ -68,11 +68,11 @@ public class JobHasDescriptionImportRule extends BaseImportRule implements Impor
     String description = transMeta.getDescription();
 
     if ( description != null && description.length() > minLength ) {
-      feedback
-          .add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL, "A description is present" ) );
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.APPROVAL, "A description is present" ) );
     } else {
       feedback.add( new ImportValidationFeedback(
-          this, ImportValidationResultType.ERROR, "A description is not present or too short" ) );
+        this, ImportValidationResultType.ERROR, "A description is not present or too short" ) );
     }
 
     return feedback;

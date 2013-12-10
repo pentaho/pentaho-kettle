@@ -61,17 +61,16 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Delete Files job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 
 public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryCheckFilesLocked.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString(
-      PKG, "JobCheckFilesLocked.Filetype.All" ) };
+    PKG, "JobCheckFilesLocked.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -116,7 +115,8 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
   private Button wbaFilename; // Add or change
   private FormData fdbeFilename, fdbaFilename, fdbdFilename;
 
-  public JobEntryCheckFilesLockedDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntryCheckFilesLockedDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryCheckFilesLocked) jobEntryInt;
 
@@ -192,7 +192,8 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
     wlIncludeSubfolders.setLayoutData( fdlIncludeSubfolders );
     wIncludeSubfolders = new Button( wSettings, SWT.CHECK );
     props.setLook( wIncludeSubfolders );
-    wIncludeSubfolders.setToolTipText( BaseMessages.getString( PKG, "JobCheckFilesLocked.IncludeSubfolders.Tooltip" ) );
+    wIncludeSubfolders.setToolTipText( BaseMessages.getString(
+      PKG, "JobCheckFilesLocked.IncludeSubfolders.Tooltip" ) );
     fdIncludeSubfolders = new FormData();
     fdIncludeSubfolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubfolders.top = new FormAttachment( wName, margin );
@@ -332,8 +333,8 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
     fdlFilemask.right = new FormAttachment( middle, -margin );
     wlFilemask.setLayoutData( fdlFilemask );
     wFilemask =
-        new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobCheckFilesLocked.Wildcard.Tooltip" ) );
+      new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobCheckFilesLocked.Wildcard.Tooltip" ) );
     props.setLook( wFilemask );
     wFilemask.addModifyListener( lsMod );
     fdFilemask = new FormData();
@@ -375,13 +376,13 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Argument.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Wildcard.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Argument.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Wildcard.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Column" ) );
@@ -389,7 +390,8 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobCheckFilesLocked.Wildcard.Column" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

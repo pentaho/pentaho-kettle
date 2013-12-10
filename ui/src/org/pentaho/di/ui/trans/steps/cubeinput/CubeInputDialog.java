@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CubeInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFilename;
   private Button wbFilename;
@@ -204,10 +204,11 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
           dialog.setFileName( wFilename.getText() );
         }
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "CubeInputDialog.FilterNames.CubeFiles" ),
-            BaseMessages.getString( PKG, "CubeInputDialog.FilterNames.AllFiles" ) } );
+          BaseMessages.getString( PKG, "CubeInputDialog.FilterNames.CubeFiles" ),
+          BaseMessages.getString( PKG, "CubeInputDialog.FilterNames.AllFiles" ) } );
         if ( dialog.open() != null ) {
-          wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
+          wFilename.setText( dialog.getFilterPath()
+            + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );

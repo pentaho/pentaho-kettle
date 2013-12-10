@@ -28,13 +28,13 @@ import org.pentaho.di.core.exception.KettleValueException;
 
 /**
  * Test cases for encryption, to make sure that encrypted password remain the same between versions.
- * 
+ *
  * @author Sven Boden
  */
 public class EncrTest extends TestCase {
   /**
    * Test password encryption.
-   * 
+   *
    * @throws KettleValueException
    */
   public void testEncryptPassword() throws KettleValueException {
@@ -67,7 +67,7 @@ public class EncrTest extends TestCase {
 
   /**
    * Test password decryption.
-   * 
+   *
    * @throws KettleValueException
    */
   public void testDecryptPassword() throws KettleValueException {
@@ -109,7 +109,7 @@ public class EncrTest extends TestCase {
 
   /**
    * Test password encryption (variable style).
-   * 
+   *
    * @throws KettleValueException
    */
   public void testEncryptPasswordIfNotUsingVariables() throws KettleValueException {
@@ -139,7 +139,7 @@ public class EncrTest extends TestCase {
 
   /**
    * Test password decryption (variable style).
-   * 
+   *
    * @throws KettleValueException
    */
   public void testDecryptPasswordIfNotUsingVariables() throws KettleValueException {

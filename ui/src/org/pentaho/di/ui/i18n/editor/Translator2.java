@@ -87,9 +87,9 @@ import org.w3c.dom.Node;
 
 /**
  * Class to allow non-developers to edit translation messages files.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class Translator2 {
   /** for i18n purposes, needed by Translator2! */
@@ -204,7 +204,8 @@ public class Translator2 {
             // We don't want the system keys, just the regular ones.
             //
             if ( showKey( keyOccurrence.getKey(), keyOccurrence.getMessagesPackage() ) ) {
-              String value = store.lookupKeyValue( locale, keyOccurrence.getMessagesPackage(), keyOccurrence.getKey() );
+              String value =
+                store.lookupKeyValue( locale, keyOccurrence.getMessagesPackage(), keyOccurrence.getKey() );
               if ( !Const.isEmpty( value ) ) {
                 keyCounts[i]++;
               }
@@ -249,16 +250,16 @@ public class Translator2 {
           double donePct = 100 * (double) keyCounts[i] / nrKeys;
           int missingKeys = nrKeys - keyCounts[i];
           String statusKeys =
-              "# "
-                  + nrFormat.format( i + 1 ) + " : " + locales[i] + " : " + pctFormat.format( donePct ) + "% "
-                  + BaseMessages.getString( PKG, "i18n.Log.CompleteKeys", keyCounts[i] )
-                  + ( missingKeys != 0 ? BaseMessages.getString( PKG, "i18n.Log.MissingKeys", missingKeys ) : "" );
+            "# "
+              + nrFormat.format( i + 1 ) + " : " + locales[i] + " : " + pctFormat.format( donePct ) + "% "
+              + BaseMessages.getString( PKG, "i18n.Log.CompleteKeys", keyCounts[i] )
+              + ( missingKeys != 0 ? BaseMessages.getString( PKG, "i18n.Log.MissingKeys", missingKeys ) : "" );
           System.out.println( statusKeys );
         }
       }
     } catch ( Exception e ) {
       throw new KettleFileException( BaseMessages.getString( PKG, "i18n.Log.UnableToGetFiles", rootDirectories
-          .toString() ), e );
+        .toString() ), e );
 
     }
   }
@@ -366,7 +367,7 @@ public class Translator2 {
         System.out.println( BaseMessages.getString( PKG, "i18n.Log.XMLFoldersToScan", xmlFolders.size() ) );
         for ( SourceCrawlerXMLFolder xmlFolder : xmlFolders ) {
           System.out.println( BaseMessages.getString( PKG, "i18n.Log.Folder", xmlFolder.getFolder(), xmlFolder
-              .getWildcard(), xmlFolder.getElements().size() ) );
+            .getWildcard(), xmlFolder.getElements().size() ) );
         }
       } catch ( Exception e ) {
         log.logError( "Translator", "Error reading translator.xml", e );
@@ -383,7 +384,8 @@ public class Translator2 {
     try {
       readFiles();
     } catch ( Exception e ) {
-      new ErrorDialog( shell, "Error reading translations", "There was an unexpected error reading the translations", e );
+      new ErrorDialog(
+        shell, "Error reading translations", "There was an unexpected error reading the translations", e );
     }
 
     // Put something on the screen
@@ -452,9 +454,8 @@ public class Translator2 {
     java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
     if ( changedMessagesStores.size() > 0 ) {
       MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_WARNING );
-      mb
-          .setMessage( BaseMessages.getString( PKG, "i18nDialog.ChangedFilesWhenExit", changedMessagesStores.size()
-              + "" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "i18nDialog.ChangedFilesWhenExit", changedMessagesStores.size()
+        + "" ) );
       mb.setText( BaseMessages.getString( PKG, "i18nDialog.Warning" ) );
 
       int answer = mb.open();
@@ -489,15 +490,16 @@ public class Translator2 {
     wLocale.setLayoutData( fdLocale );
 
     ColumnInfo[] colinfo =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "i18nDialog.SourceFolder" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "i18nDialog.Packagename" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "i18nDialog.SourceFolder" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "i18nDialog.Packagename" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     wPackages =
-        new TableView(
-            new Variables(), composite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, true, null, props );
+      new TableView(
+        new Variables(), composite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, true, null,
+        props );
     FormData fdPackages = new FormData();
     fdPackages.left = new FormAttachment( 0, 0 );
     fdPackages.right = new FormAttachment( 100, 0 );
@@ -548,13 +550,13 @@ public class Translator2 {
     wClose.setText( BaseMessages.getString( PKG, "i18nDialog.Close" ) );
 
     BaseStepDialog.positionBottomButtons(
-        composite, new Button[] { wReload, wSave, wZip, wClose, }, Const.MARGIN * 3, null );
+      composite, new Button[] { wReload, wSave, wZip, wClose, }, Const.MARGIN * 3, null );
 
     /*
      * wSearchG = new Button(composite, SWT.PUSH); wSearchG.setText("   Search &key  "); FormData fdSearchG = new
      * FormData(); fdSearchG.left = new FormAttachment(0, 0); fdSearchG.bottom = new FormAttachment(100, 0);
      * wSearchG.setLayoutData(fdSearchG);
-     * 
+     *
      * wNextG = new Button(composite, SWT.PUSH); wNextG.setText("   Next ke&y  "); FormData fdNextG = new FormData();
      * fdNextG.left = new FormAttachment(wSearchG, Const.MARGIN); fdNextG.bottom = new FormAttachment(100, 0);
      * wNextG.setLayoutData(fdNextG);
@@ -809,18 +811,19 @@ public class Translator2 {
       }
 
       EnterTextDialog dialog =
-          new EnterTextDialog( shell, BaseMessages.getString( PKG, "i18nDialog.ChangedFiles" ), BaseMessages.getString(
-              PKG, "i18nDialog.ChangedMessagesFiles" ), msg.toString() );
+        new EnterTextDialog( shell, BaseMessages.getString( PKG, "i18nDialog.ChangedFiles" ), BaseMessages
+          .getString( PKG, "i18nDialog.ChangedMessagesFiles" ), msg.toString() );
       if ( dialog.open() != null ) {
         try {
           for ( MessagesStore messagesStore : changedMessagesStores ) {
             messagesStore.write();
-            log.logBasic( BaseMessages.getString( PKG, "i18n.Log.SavedMessagesFile", messagesStore.getFilename() ) );
+            log
+              .logBasic( BaseMessages.getString( PKG, "i18n.Log.SavedMessagesFile", messagesStore.getFilename() ) );
           }
         } catch ( KettleException e ) {
           new ErrorDialog(
-              shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
-              "There was an error saving the changed messages files:", e );
+            shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
+            "There was an error saving the changed messages files:", e );
           return false;
         }
         return true;
@@ -846,7 +849,8 @@ public class Translator2 {
           // Find the main locale variation for this messages store...
           //
           MessagesStore mainLocaleMessagesStore =
-              store.findMainLocaleMessagesStore( messagesStore.getSourceFolder(), messagesStore.getMessagesPackage() );
+            store.findMainLocaleMessagesStore( messagesStore.getSourceFolder(), messagesStore
+              .getMessagesPackage() );
           String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory( rootDirectories );
           String filename = messagesStore.getSaveFilename( sourceDirectory );
           messagesStore.setFilename( filename );
@@ -858,10 +862,11 @@ public class Translator2 {
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
         dialog.setFilterExtensions( new String[] { "*.zip", "*" } );
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.ZIPFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "System.FileType.ZIPFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
-          String zipFilename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
+          String zipFilename =
+            dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
 
           try {
             ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFilename ) );
@@ -879,8 +884,8 @@ public class Translator2 {
             out.close();
           } catch ( Exception e ) {
             new ErrorDialog(
-                shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
-                "There was an error saving the changed messages files:", e );
+              shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
+              "There was an error saving the changed messages files:", e );
           }
 
         }
@@ -893,9 +898,10 @@ public class Translator2 {
     // Ask for the search string...
     //
     EnterStringDialog dialog =
-        new EnterStringDialog( shell, Const.NVL( searchString, "" ), BaseMessages.getString(
-            PKG, "i18nDialog.SearchKey" ), BaseMessages.getString( PKG, "i18nDialog.SearchLocale1" )
-            + " '" + Const.NVL( searchLocale, "" ) + "' " + BaseMessages.getString( PKG, "i18nDialog.SearchLocale2" ) );
+      new EnterStringDialog( shell, Const.NVL( searchString, "" ), BaseMessages.getString(
+        PKG, "i18nDialog.SearchKey" ), BaseMessages.getString( PKG, "i18nDialog.SearchLocale1" )
+        + " '" + Const.NVL( searchLocale, "" ) + "' "
+        + BaseMessages.getString( PKG, "i18nDialog.SearchLocale2" ) );
     searchString = dialog.open();
 
     lastFoundKey = null;
@@ -918,7 +924,7 @@ public class Translator2 {
       // package
       //
       java.util.List<MessagesStore> mainLocaleMessagesStores =
-          store.getMessagesStores( searchLocale, selectedMessagesPackage );
+        store.getMessagesStores( searchLocale, selectedMessagesPackage );
       for ( MessagesStore messagesStore : mainLocaleMessagesStores ) {
         for ( String key : messagesStore.getMessagesMap().keySet() ) {
           String value = messagesStore.getMessagesMap().get( key );
@@ -988,9 +994,9 @@ public class Translator2 {
 
     selectedLocale = wLocale.getSelectionCount() == 0 ? null : wLocale.getSelection()[0];
     selectedSourceFolder =
-        wPackages.table.getSelectionCount() == 0 ? null : wPackages.table.getSelection()[0].getText( 1 );
+      wPackages.table.getSelectionCount() == 0 ? null : wPackages.table.getSelection()[0].getText( 1 );
     selectedMessagesPackage =
-        wPackages.table.getSelectionCount() == 0 ? null : wPackages.table.getSelection()[0].getText( 2 );
+      wPackages.table.getSelectionCount() == 0 ? null : wPackages.table.getSelection()[0].getText( 2 );
     refreshPackages();
 
     // Only continue with a locale & a messages package, otherwise we won't
@@ -1000,7 +1006,7 @@ public class Translator2 {
       // Get the list of keys that need a translation...
       //
       java.util.List<KeyOccurrence> todo =
-          getTodoList( selectedLocale, selectedMessagesPackage, selectedSourceFolder, false );
+        getTodoList( selectedLocale, selectedMessagesPackage, selectedSourceFolder, false );
       String[] todoItems = new String[todo.size()];
       for ( int i = 0; i < todoItems.length; i++ ) {
         todoItems[i] = todo.get( i ).getKey();
@@ -1010,7 +1016,7 @@ public class Translator2 {
   }
 
   private java.util.List<KeyOccurrence> getTodoList( String locale, String messagesPackage, String sourceFolder,
-      boolean strict ) {
+    boolean strict ) {
     // Get the list of keys that need a translation...
     //
     java.util.List<KeyOccurrence> keys = crawler.getOccurrencesForPackage( messagesPackage );
@@ -1035,8 +1041,8 @@ public class Translator2 {
     int todoIndex = wTodo.getSelectionIndex();
 
     if ( selectedKey != null
-        && selectedLocale != null && selectedMessagesPackage != null && lastValueChanged
-        && selectedSourceFolder != null ) {
+      && selectedLocale != null && selectedMessagesPackage != null && lastValueChanged
+      && selectedSourceFolder != null ) {
       // Store the last modified value
       //
       if ( !Const.isEmpty( lastValue ) ) {
@@ -1084,7 +1090,7 @@ public class Translator2 {
     wPackages.table.removeAll();
 
     Map<String, Map<String, java.util.List<KeyOccurrence>>> sourceMessagesPackages =
-        crawler.getSourcePackageOccurrences();
+      crawler.getSourcePackageOccurrences();
 
     for ( String sourceFolder : sourceMessagesPackages.keySet() ) {
       Map<String, java.util.List<KeyOccurrence>> messagesPackages = sourceMessagesPackages.get( sourceFolder );

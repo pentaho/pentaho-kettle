@@ -30,7 +30,7 @@ import org.pentaho.di.laf.BasePropertyHandler;
 
 /**
  * @author dhushon
- * 
+ *
  */
 public class LAFMessageHandler extends GlobalMessages {
 
@@ -66,7 +66,7 @@ public class LAFMessageHandler extends GlobalMessages {
   /**
    * replace the application packagename target with ours for proper resolution e.g. replace org.pentaho.di.* with
    * pointers to new package structure
-   * 
+   *
    * @param packageName
    * @return
    */
@@ -82,7 +82,7 @@ public class LAFMessageHandler extends GlobalMessages {
   }
 
   private String internalCalc( String packageName, String global, String key, Object[] parameters,
-      Class<?> resourceClass ) {
+    Class<?> resourceClass ) {
     String string = null;
 
     // Then try the original package
@@ -142,7 +142,7 @@ public class LAFMessageHandler extends GlobalMessages {
     string = "!" + key + "!";
     if ( log.isDetailed() ) {
       String message =
-          "Message not found in the preferred and failover locale: key=[" + key + "], package=" + packageName;
+        "Message not found in the preferred and failover locale: key=[" + key + "], package=" + packageName;
       log.logDetailed( Const.getStackTracker( new KettleException( message ) ) );
     }
 

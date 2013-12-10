@@ -50,7 +50,7 @@ public class FileInputList {
 
   public enum FileTypeFilter {
     FILES_AND_FOLDERS( "all_files", FileType.FILE, FileType.FOLDER ), ONLY_FILES( "only_files", FileType.FILE ),
-    ONLY_FOLDERS( "only_folders", FileType.FOLDER );
+      ONLY_FOLDERS( "only_folders", FileType.FOLDER );
 
     private String name;
     private final Collection<FileType> allowedFileTypes;
@@ -109,20 +109,21 @@ public class FileInputList {
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] excludeFileMask, String[] fileRequired ) {
+    String[] excludeFileMask, String[] fileRequired ) {
     boolean[] includeSubdirs = includeSubdirsFalse( fileName.length );
     return createFilePathList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs ) {
+    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs ) {
     return createFilePathList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs, FileTypeFilter[] filters ) {
+    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs, FileTypeFilter[] filters ) {
     List<FileObject> fileList =
-        createFileList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, filters ).getFiles();
+      createFileList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, filters )
+        .getFiles();
     String[] filePaths = new String[fileList.size()];
     for ( int i = 0; i < filePaths.length; i++ ) {
       filePaths[i] = fileList.get( i ).getName().getURI();
@@ -131,18 +132,18 @@ public class FileInputList {
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] excludeFileMask, String[] fileRequired ) {
+    String[] excludeFileMask, String[] fileRequired ) {
     boolean[] includeSubdirs = includeSubdirsFalse( fileName.length );
     return createFileList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs ) {
+    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs ) {
     return createFileList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs, FileTypeFilter[] fileTypeFilters ) {
+    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs, FileTypeFilter[] fileTypeFilters ) {
     FileInputList fileInputList = new FileInputList();
 
     // Replace possible environment variables...
@@ -157,7 +158,8 @@ public class FileInputList {
       final boolean onerequired = YES.equalsIgnoreCase( fileRequired[i] );
       final boolean subdirs = includeSubdirs[i];
       final FileTypeFilter filter =
-          ( ( fileTypeFilters == null || fileTypeFilters[i] == null ) ? FileTypeFilter.ONLY_FILES : fileTypeFilters[i] );
+        ( ( fileTypeFilters == null || fileTypeFilters[i] == null )
+          ? FileTypeFilter.ONLY_FILES : fileTypeFilters[i] );
 
       if ( Const.isEmpty( onefile ) ) {
         continue;
@@ -419,7 +421,7 @@ public class FileInputList {
 
   /*
    * private boolean containsComparable(List list) { if (list == null || list.size() == 0) return false;
-   * 
+   *
    * return (list.get(0) instanceof Comparable); }
    */
 
@@ -436,14 +438,15 @@ public class FileInputList {
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] fileRequired, boolean[] includeSubdirs ) {
-    return createFileList( space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null );
+    String[] fileRequired, boolean[] includeSubdirs ) {
+    return createFileList(
+      space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null );
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-      String[] fileRequired ) {
+    String[] fileRequired ) {
     boolean[] includeSubdirs = includeSubdirsFalse( fileName.length );
     return createFilePathList(
-        space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null );
+      space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null );
   }
 }

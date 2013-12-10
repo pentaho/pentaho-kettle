@@ -61,7 +61,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import com.healthmarketscience.jackcess.Database;
 
 public class AccessOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AccessOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AccessOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFilename;
   private Button wbbFilename; // Browse: add file or directory
@@ -184,7 +184,8 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
     // Open new File at Init
     wlDoNotOpenNewFileInit = new Label( shell, SWT.RIGHT );
-    wlDoNotOpenNewFileInit.setText( BaseMessages.getString( PKG, "AccessOutputDialog.DoNotOpenNewFileInit.Label" ) );
+    wlDoNotOpenNewFileInit
+      .setText( BaseMessages.getString( PKG, "AccessOutputDialog.DoNotOpenNewFileInit.Label" ) );
     props.setLook( wlDoNotOpenNewFileInit );
     fdlDoNotOpenNewFileInit = new FormData();
     fdlDoNotOpenNewFileInit.left = new FormAttachment( 0, 0 );
@@ -193,7 +194,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( shell, SWT.CHECK );
     wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
-        PKG, "AccessOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+      PKG, "AccessOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, margin );
@@ -366,8 +367,8 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         }
 
         dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "AccessOutputDialog.FileType.AccessFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          BaseMessages.getString( PKG, "AccessOutputDialog.FileType.AccessFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
           String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -462,24 +463,24 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 
       if ( !file.exists() || !file.isFile() ) {
         throw new KettleException( BaseMessages.getString(
-            PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename ) );
+          PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename ) );
       }
 
       database = Database.open( file );
       Set<String> set = database.getTableNames();
       String[] tablenames = set.toArray( new String[set.size()] );
       EnterSelectionDialog dialog =
-          new EnterSelectionDialog( shell, tablenames, BaseMessages.getString(
-              PKG, "AccessOutputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString(
-              PKG, "AccessOutputDialog.Dialog.SelectATable.Message" ) );
+        new EnterSelectionDialog( shell, tablenames, BaseMessages.getString(
+          PKG, "AccessOutputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString(
+          PKG, "AccessOutputDialog.Dialog.SelectATable.Message" ) );
       String tablename = dialog.open();
       if ( tablename != null ) {
         wTablename.setText( tablename );
       }
     } catch ( Throwable e ) {
       new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Title" ), BaseMessages
-              .getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Message" ), e );
+        shell, BaseMessages.getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Title" ), BaseMessages
+          .getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Message" ), e );
     } finally {
       // Don't forget to close the bugger.
       try {

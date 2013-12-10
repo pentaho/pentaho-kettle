@@ -40,8 +40,8 @@ public class RulesAccumulator extends BaseStep implements StepInterface {
 
   private RulesAccumulatorData data;
 
-  public RulesAccumulator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public RulesAccumulator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

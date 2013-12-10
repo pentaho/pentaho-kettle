@@ -51,7 +51,8 @@ public class AllocateServerSocketServletTest {
   }
 
   @Test
-  public void testAllocateServerSocketServletEncodesParametersForHmtlResponse() throws ServletException, IOException {
+  public void testAllocateServerSocketServletEncodesParametersForHmtlResponse() throws ServletException,
+    IOException {
     HttpServletRequest mockRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockResponse = mock( HttpServletResponse.class );
     SocketPortAllocation mockSocketPortAllocation = mock( SocketPortAllocation.class );
@@ -68,18 +69,18 @@ public class AllocateServerSocketServletTest {
     when( mockRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING );
     when( mockResponse.getOutputStream() ).thenReturn( servletOutputStream );
     when(
-        mockTransformationMap.allocateServerSocketPort(
-            anyInt(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
-            anyString(), anyString() ) ).thenReturn( mockSocketPortAllocation );
+      mockTransformationMap.allocateServerSocketPort(
+        anyInt(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(),
+        anyString(), anyString() ) ).thenReturn( mockSocketPortAllocation );
 
     allocateServerSocketServlet.doGet( mockRequest, mockResponse );
 
     String response = byteArrayOutputStream.toString();
     // Pull out dynamic part of body, remove hardcoded html
     String dynamicBody =
-        ServletTestUtils
-            .getInsideOfTag( "BODY", response ).replaceAll( "<p>", "" ).replaceAll( "<br>", "" ).replaceAll(
-                "<H1>.+</H1>", "" ).replaceAll( "--> port", "" );
+      ServletTestUtils
+        .getInsideOfTag( "BODY", response ).replaceAll( "<p>", "" ).replaceAll( "<br>", "" ).replaceAll(
+          "<H1>.+</H1>", "" ).replaceAll( "--> port", "" );
     assertFalse( ServletTestUtils.hasBadText( dynamicBody ) );
   }
 }

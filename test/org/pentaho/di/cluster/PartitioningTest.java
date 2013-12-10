@@ -47,18 +47,18 @@ public class PartitioningTest extends BaseCluster {
       clusterGenerator.launchSlaveServers();
 
       TransMeta transMeta =
-          loadAndModifyTestTransformation(
-              clusterGenerator, "test/org/pentaho/di/cluster/partitioning-swimming-lanes-on-cluster.ktr" );
+        loadAndModifyTestTransformation(
+          clusterGenerator, "test/org/pentaho/di/cluster/partitioning-swimming-lanes-on-cluster.ktr" );
       TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
       TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
       long nrErrors =
-          Trans.monitorClusteredTransformation(
-              new LogChannel( "cluster unit test <testParallelFileReadOnMaster>" ), transSplitter, null, 1 );
+        Trans.monitorClusteredTransformation(
+          new LogChannel( "cluster unit test <testParallelFileReadOnMaster>" ), transSplitter, null, 1 );
       assertEquals( 0L, nrErrors );
 
       String[] results = new String[] { "8", "9", "9", "9", "9", "8", "8", "8", "8", "8", "8", "8", };
       String[] files =
-          new String[] { "000", "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", };
+        new String[] { "000", "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", };
       for ( int i = 0; i < results.length; i++ ) {
         String filename = "${java.io.tmpdir}/partitioning-swimming-lanes-on-cluster-" + files[i] + ".txt";
         String result = loadFileContent( transMeta, filename );
@@ -98,18 +98,18 @@ public class PartitioningTest extends BaseCluster {
       clusterGenerator.launchSlaveServers();
 
       TransMeta transMeta =
-          loadAndModifyTestTransformation(
-              clusterGenerator, "test/org/pentaho/di/cluster/partitioning-repartitioning-on-cluster.ktr" );
+        loadAndModifyTestTransformation(
+          clusterGenerator, "test/org/pentaho/di/cluster/partitioning-repartitioning-on-cluster.ktr" );
       TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
       TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
       long nrErrors =
-          Trans.monitorClusteredTransformation(
-              new LogChannel( "cluster unit test <testParallelFileReadOnMaster>" ), transSplitter, null, 1 );
+        Trans.monitorClusteredTransformation(
+          new LogChannel( "cluster unit test <testParallelFileReadOnMaster>" ), transSplitter, null, 1 );
       assertEquals( 0L, nrErrors );
 
       String[] results = new String[] { "8", "9", "9", "9", "9", "8", "8", "8", "8", "8", "8", "8", };
       String[] files =
-          new String[] { "000", "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", };
+        new String[] { "000", "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", };
       for ( int i = 0; i < results.length; i++ ) {
         String filename = "${java.io.tmpdir}/partitioning-repartitioning-on-cluster-" + files[i] + ".txt";
         String result = loadFileContent( transMeta, filename );
@@ -136,7 +136,7 @@ public class PartitioningTest extends BaseCluster {
 
   /**
    * Same as testPartitioningRepartitioningOnCluster() but passing the data to a non-partitioned step on the master.
-   * 
+   *
    * File: "partitioning-repartitioning-on-cluster3.ktr"<br>
    */
   public void testPartitioningRepartitioningOnCluster3() throws Exception {
@@ -147,13 +147,13 @@ public class PartitioningTest extends BaseCluster {
       clusterGenerator.launchSlaveServers();
 
       TransMeta transMeta =
-          loadAndModifyTestTransformation(
-              clusterGenerator, "test/org/pentaho/di/cluster/partitioning-repartitioning-on-cluster3.ktr" );
+        loadAndModifyTestTransformation(
+          clusterGenerator, "test/org/pentaho/di/cluster/partitioning-repartitioning-on-cluster3.ktr" );
       TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
       TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
       long nrErrors =
-          Trans.monitorClusteredTransformation(
-              new LogChannel( "cluster unit test <testParallelFileReadOnMaster>" ), transSplitter, null, 1 );
+        Trans.monitorClusteredTransformation(
+          new LogChannel( "cluster unit test <testParallelFileReadOnMaster>" ), transSplitter, null, 1 );
       assertEquals( 0L, nrErrors );
 
       String goldenData = "0;16\n1;17\n2;17\n3;17\n4;17\n5;16";

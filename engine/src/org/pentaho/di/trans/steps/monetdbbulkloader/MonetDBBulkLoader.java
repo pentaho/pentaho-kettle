@@ -53,14 +53,14 @@ import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
 
 /**
  * Performs a bulk load to a MonetDB table.
- * 
+ *
  * Based on (copied from) Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author matt
  * @since 22-aug-2008
  */
 public class MonetDBBulkLoader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MonetDBBulkLoaderMeta meta;
   private MonetDBBulkLoaderData data;
@@ -74,8 +74,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
     return message;
   }
 
-  public MonetDBBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public MonetDBBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     localTransMeta = transMeta;
   }
@@ -468,9 +468,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       }
 
       cmdBuff
-          .append( "COPY " ).append( data.bufferIndex ).append( " RECORDS INTO " ).append( data.schemaTable ).append(
-              " FROM STDIN USING DELIMITERS '" ).append( new String( data.separator ) ).append(
-              "','" + Const.CR + "','" ).append( new String( data.quote ) ).append( "' NULL AS '" + nullRep + "';" );
+        .append( "COPY " ).append( data.bufferIndex ).append( " RECORDS INTO " ).append( data.schemaTable )
+        .append( " FROM STDIN USING DELIMITERS '" ).append( new String( data.separator ) ).append(
+          "','" + Const.CR + "','" ).append( new String( data.quote ) )
+        .append( "' NULL AS '" + nullRep + "';" );
       String cmd = cmdBuff.toString();
       if ( log.isDetailed() ) {
         logDetailed( cmd );
@@ -572,8 +573,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-          meta.getDatabaseMeta( this ).getQuotedSchemaTableCombination(
-              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta( this ).getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       return true;
     }
@@ -607,13 +608,13 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
   }
 
-  protected static MapiSocket getMonetDBConnection( String host, int port, String user, String password, String db )
-    throws Exception {
+  protected static MapiSocket
+    getMonetDBConnection( String host, int port, String user, String password, String db ) throws Exception {
     return getMonetDBConnection( host, port, user, password, db, null );
   }
 
-  protected static MapiSocket getMonetDBConnection( String host, int port, String user, String password, String db,
-      LogChannelInterface log ) throws Exception {
+  protected static MapiSocket getMonetDBConnection( String host, int port, String user, String password,
+    String db, LogChannelInterface log ) throws Exception {
     MapiSocket mserver = new MapiSocket();
     mserver.setDatabase( db );
     mserver.setLanguage( "sql" );
@@ -651,17 +652,17 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
   /*
    * executeSQL Uses the MonetDB API to create a new server connection and the associated buffered Reader and Writer to
    * execute a single query.
-   * 
+   *
    * @param Query string
-   * 
+   *
    * @param Host URI
-   * 
+   *
    * @param Numerical port
-   * 
+   *
    * @param Username for establishing the connection
-   * 
+   *
    * @param Password for establishing the connection
-   * 
+   *
    * @param database to connect to
    */
   protected static void executeSql( String query, String host, int port, String user, String password, String db )

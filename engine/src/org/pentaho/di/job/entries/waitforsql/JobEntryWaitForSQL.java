@@ -56,13 +56,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a Wait for SQL data job entry
- * 
+ *
  * @author Samatar
  * @since 22-07-2008
- * 
+ *
  */
 public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryWaitForSQL.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryWaitForSQL.class; // for i18n purposes, needed by Translator2!!
 
   public boolean isClearResultList;
 
@@ -87,17 +87,17 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   private static final String selectCount = "SELECT count(*) FROM ";
 
   public static final String[] successConditionsDesc = new String[] {
-      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountEqual.Label" ),
-      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountDifferent.Label" ),
-      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerThan.Label" ),
-      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerOrEqualThan.Label" ),
-      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterThan.Label" ),
-      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterOrEqual.Label" )
+    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountEqual.Label" ),
+    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountDifferent.Label" ),
+    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerThan.Label" ),
+    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerOrEqualThan.Label" ),
+    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterThan.Label" ),
+    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterOrEqual.Label" )
 
   };
   public static final String[] successConditionsCode = new String[] {
-      "rows_count_equal", "rows_count_different", "rows_count_smaller", "rows_count_smaller_equal",
-      "rows_count_greater", "rows_count_greater_equal" };
+    "rows_count_equal", "rows_count_different", "rows_count_smaller", "rows_count_smaller_equal",
+    "rows_count_greater", "rows_count_greater_equal" };
 
   public static final int SUCCESS_CONDITION_ROWS_COUNT_EQUAL = 0;
   public static final int SUCCESS_CONDITION_ROWS_COUNT_DIFFERENT = 1;
@@ -162,11 +162,11 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 
     retval.append( super.getXML() );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
+      XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "schemaname", schemaname ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "tablename", tablename ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "success_condition", getSuccessConditionCode( successCondition ) ) );
+      XMLHandler.addTagValue( "success_condition", getSuccessConditionCode( successCondition ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "rows_count_value", rowsCountValue ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "is_custom_sql", iscustomSQL ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "is_usevars", isUseVars ) );
@@ -230,8 +230,8 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     this.maximumTimeout = maximumTimeout;
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       String dbname = XMLHandler.getTagValue( entrynode, "connection" );
@@ -239,7 +239,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       schemaname = XMLHandler.getTagValue( entrynode, "schemaname" );
       tablename = XMLHandler.getTagValue( entrynode, "tablename" );
       successCondition =
-          getSucessConditionByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "success_condition" ), "" ) );
+        getSucessConditionByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "success_condition" ), "" ) );
       rowsCountValue = Const.NVL( XMLHandler.getTagValue( entrynode, "rows_count_value" ), "0" );
       iscustomSQL = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_custom_sql" ) );
       isUseVars = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_usevars" ) );
@@ -256,14 +256,15 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
 
       schemaname = rep.getJobEntryAttributeString( id_jobentry, "schemaname" );
       tablename = rep.getJobEntryAttributeString( id_jobentry, "tablename" );
       successCondition =
-          getSuccessConditionByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), "" ) );
+        getSuccessConditionByCode( Const.NVL(
+          rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), "" ) );
       rowsCountValue = rep.getJobEntryAttributeString( id_jobentry, "rows_count_value" );
       iscustomSQL = rep.getJobEntryAttributeBoolean( id_jobentry, "is_custom_sql" );
       isUseVars = rep.getJobEntryAttributeBoolean( id_jobentry, "is_usevars" );
@@ -274,8 +275,8 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       successOnTimeout = rep.getJobEntryAttributeBoolean( id_jobentry, "success_on_timeout" );
       isClearResultList = rep.getJobEntryAttributeBoolean( id_jobentry, "clear_result_rows" );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "JobEntryWaitForSQL.UnableLoadRep", "" + id_jobentry ), dbe );
+      throw new KettleException( BaseMessages
+        .getString( PKG, "JobEntryWaitForSQL.UnableLoadRep", "" + id_jobentry ), dbe );
     }
   }
 
@@ -298,9 +299,8 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "schemaname", schemaname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "tablename", tablename );
-      rep
-          .saveJobEntryAttribute(
-              id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
+      rep.saveJobEntryAttribute(
+        id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "rows_count_value", rowsCountValue );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "custom_sql", customSQL );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "is_custom_sql", iscustomSQL );
@@ -312,7 +312,8 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "clear_result_rows", isClearResultList );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryWaitForSQL.UnableSaveRep", "" + id_job ), dbe );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "JobEntryWaitForSQL.UnableSaveRep", "" + id_job ), dbe );
     }
   }
 
@@ -394,9 +395,9 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       }
 
       long iMaximumTimeout =
-          Const.toInt( environmentSubstitute( maximumTimeout ), Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 ) );
+        Const.toInt( environmentSubstitute( maximumTimeout ), Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 ) );
       long iCycleTime =
-          Const.toInt( environmentSubstitute( checkCycleTime ), Const.toInt( DEFAULT_CHECK_CYCLE_TIME, 0 ) );
+        Const.toInt( environmentSubstitute( checkCycleTime ), Const.toInt( DEFAULT_CHECK_CYCLE_TIME, 0 ) );
 
       //
       // Sanity check on some values, and complain on insanity
@@ -475,7 +476,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   }
 
   private boolean SQLDataOK( Result result, long nrRowsLimit, String realSchemaName, String realTableName,
-      String customSQL ) throws KettleException {
+    String customSQL ) throws KettleException {
     String countStatement = null;
     long rowsCount = 0;
     boolean successOK = false;
@@ -490,7 +491,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       } else {
         if ( !Const.isEmpty( realSchemaName ) ) {
           countStatement =
-              selectCount + db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaName, realTableName );
+            selectCount + db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaName, realTableName );
         } else {
           countStatement = selectCount + db.getDatabaseMeta().quoteField( realTableName );
         }
@@ -507,7 +508,8 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
             rowsCount = ar.size();
           } else {
             if ( log.isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "JobEntryWaitForSQL.Log.customSQLreturnedNothing", countStatement ) );
+              logDebug( BaseMessages.getString(
+                PKG, "JobEntryWaitForSQL.Log.customSQLreturnedNothing", countStatement ) );
             }
           }
 
@@ -587,8 +589,8 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "WaitForSQL", remarks, putValidators( notBlankValidator() ) );
   }
 

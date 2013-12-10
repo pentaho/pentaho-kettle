@@ -44,7 +44,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class EnterSearchDialog {
-  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
   private static final PropsUI props = PropsUI.getInstance();
   private Shell parentShell;

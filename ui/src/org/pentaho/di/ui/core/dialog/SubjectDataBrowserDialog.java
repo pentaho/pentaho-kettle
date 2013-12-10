@@ -59,13 +59,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Displays a TableView with the possibility to see different data sets per subject.
- * 
+ *
  * @author Matt
  * @since 26-02-2013
  */
 public class SubjectDataBrowserDialog {
   private static Class<?> PKG = SubjectDataBrowserDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   public static final int MAX_BINARY_STRING_PREVIEW_SIZE = 1000000;
 
@@ -93,7 +92,7 @@ public class SubjectDataBrowserDialog {
   private String[] subjects;
 
   public SubjectDataBrowserDialog( Shell parent, Map<String, RowMetaInterface> metaMap,
-      Map<String, List<Object[]>> dataMap, String dialogTitle, String subjectMessage ) {
+    Map<String, List<Object[]>> dataMap, String dialogTitle, String subjectMessage ) {
     this.parentShell = parent;
     this.metaMap = metaMap;
     this.dataMap = dataMap;
@@ -213,7 +212,7 @@ public class SubjectDataBrowserDialog {
     }
 
     wFields =
-        new TableView( new Variables(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, props );
+      new TableView( new Variables(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, props );
     wFields.setShowingBlueNullValues( true );
 
     FormData fdFields = new FormData();

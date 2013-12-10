@@ -85,7 +85,8 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
 
     try {
       setInputField( XMLHandler.getNodeValue( XMLHandler.getSubNode( stepnode, "inputfield" ) ) );
@@ -102,7 +103,8 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
       inputField = rep.getStepAttributeString( id_step, "inputfield" );
       outputField = rep.getStepAttributeString( id_step, "outputfield" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Edi2Xml.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages
+        .getString( PKG, "Edi2Xml.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -112,13 +114,14 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "inputfield", inputField );
       rep.saveStepAttribute( id_transformation, id_step, "outputfield", outputField );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Edi2Xml.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages
+        .getString( PKG, "Edi2Xml.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     ValueMetaInterface extra = null;
 
@@ -138,9 +141,9 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we have input streams leading to this step!
@@ -159,18 +162,20 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
 
       if ( prev.searchValueMeta( realInputField ).isString() ) {
-        cr = new CheckResult( CheckResult.TYPE_RESULT_OK, "Field " + realInputField + " is a string type", stepMeta );
+        cr =
+          new CheckResult( CheckResult.TYPE_RESULT_OK, "Field " + realInputField + " is a string type", stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, "Field " + realInputField + " is not a string type!", stepMeta );
+          new CheckResult(
+            CheckResult.TYPE_RESULT_OK, "Field " + realInputField + " is not a string type!", stepMeta );
         remarks.add( cr );
       }
 
     } else {
       cr =
-          new CheckResult(
-              CheckResult.TYPE_RESULT_ERROR, "Step is not seeing input field: " + realInputField + "!", stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, "Step is not seeing input field: "
+          + realInputField + "!", stepMeta );
       remarks.add( cr );
     }
 
@@ -186,8 +191,8 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
     inputField = "";
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans disp ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans disp ) {
     return new Edi2Xml( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 

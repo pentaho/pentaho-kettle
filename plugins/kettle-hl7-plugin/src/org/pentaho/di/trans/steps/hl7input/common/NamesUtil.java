@@ -23,22 +23,22 @@ import java.util.List;
 import java.util.Map;
 
 public class NamesUtil {
-  
+
   private Map<String, List<String>> map;
-  
+
   private static NamesUtil util;
-  
+
   public static NamesUtil getInstance() {
     if (util==null) {
       util = new NamesUtil();
     }
-    
+
     return util;
   }
-  
+
   private NamesUtil() {
     map = new HashMap<String, List<String>>();
-  
+
     populateHD();
     populateDT();
     populateID();
@@ -85,7 +85,7 @@ public class NamesUtil {
     list.add("telephone number");
     map.put("TN", list);
   }
-  
+
   private void populateCQ() {
     List<String> list = new ArrayList<String>();
     list.add("quantity");
@@ -140,7 +140,7 @@ public class NamesUtil {
     list.add("Effective Date");
     map.put("FC", list);
   }
-  
+
   private void populateCN() {
     List<String> list = new ArrayList<String>();
     list.add("ID number");
@@ -154,8 +154,8 @@ public class NamesUtil {
     list.add("assigning authority");
     map.put("CN", list);
   }
-  
-  
+
+
   private void populatePN() {
     List<String> list = new ArrayList<String>();
     list.add("family name");
@@ -166,7 +166,7 @@ public class NamesUtil {
     list.add("degree (e.g., MD)");
     map.put("PN", list);
   }
-  
+
 
   private void populateCM_PAT_ID() {
     List<String> list = new ArrayList<String>();
@@ -195,7 +195,7 @@ public class NamesUtil {
     list.add("assigning authority");
     map.put("CK", list);
   }
-  
+
   private void populateEI() {
     List<String> list = new ArrayList<String>();
     list.add("entity identifier");
@@ -204,8 +204,8 @@ public class NamesUtil {
     list.add("universal ID type");
     map.put("EI", list);
   }
-  
-  
+
+
   private void populatePTA() {
     List<String> list = new ArrayList<String>();
     list.add("policy type");
@@ -213,7 +213,7 @@ public class NamesUtil {
     list.add("amount");
     map.put("PTA", list);
   }
-  
+
   private void populateRMC() {
     List<String> list = new ArrayList<String>();
     list.add("room type");
@@ -259,7 +259,7 @@ public class NamesUtil {
     list.add("expiration date");
     map.put("CX", list);
   }
-  
+
   private void populatePT() {
     List<String> list = new ArrayList<String>();
     list.add("processing ID");
@@ -275,7 +275,7 @@ public class NamesUtil {
     map.put("VID", list);
   }
 
-  
+
   private void populateMSG() {
     List<String> list = new ArrayList<String>();
     list.add("message type");
@@ -283,7 +283,7 @@ public class NamesUtil {
     list.add("message structure");
     map.put("MSG", list);
   }
-  
+
   private void populateTS() {
     List<String> list = new ArrayList<String>();
     list.add("time of an event");
@@ -298,7 +298,7 @@ public class NamesUtil {
     list.add("universal ID type");
     map.put("HD", list);
   }
-  
+
   private void populateXAD() {
     List<String> list = new ArrayList<String>();
     list.add("street address");
@@ -326,7 +326,7 @@ public class NamesUtil {
     list.add("name of alternate coding system");
     map.put("CE", list);
   }
-  
+
   private void populateXPN() {
     List<String> list = new ArrayList<String>();
     list.add("family name");
@@ -342,7 +342,7 @@ public class NamesUtil {
     list.add("name assembly order");
     map.put("XPN", list);
   }
-  
+
   private void populateXCN() {
     List<String> list = new ArrayList<String>();
     list.add("family name");
@@ -367,7 +367,7 @@ public class NamesUtil {
     map.put("XCN", list);
   }
 
-  
+
   private void populatePL() {
     List<String> list = new ArrayList<String>();
     list.add("family name");
@@ -396,7 +396,7 @@ public class NamesUtil {
     list.add("any text");
     map.put("XTN", list);
   }
-  
+
   private void populateXON() {
     List<String> list = new ArrayList<String>();
     list.add("organization name");
@@ -410,9 +410,9 @@ public class NamesUtil {
     list.add("Name Representation code");
     map.put("XON", list);
   }
-  
+
   public Map<String, List<String>> getMap() {
     return map;
   }
-  
+
 }

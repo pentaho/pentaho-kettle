@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Send mail step. based on Mail job entry
- * 
+ *
  * @author Samatar
  * @since 28-07-2008
  */

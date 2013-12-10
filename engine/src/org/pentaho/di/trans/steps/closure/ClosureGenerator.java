@@ -37,18 +37,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Reads information from a database table by using freehand SQL
- * 
+ *
  * @author Matt
  * @since 8-apr-2003
  */
 public class ClosureGenerator extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ClosureGeneratorMeta meta;
   private ClosureGeneratorData data;
 
-  public ClosureGenerator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public ClosureGenerator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -71,11 +71,13 @@ public class ClosureGenerator extends BaseStep implements StepInterface {
           //
           data.parentIndex = getInputRowMeta().indexOfValue( meta.getParentIdFieldName() );
           if ( data.parentIndex < 0 ) {
-            throw new KettleException( BaseMessages.getString( PKG, "ClosureGenerator.Exception.ParentFieldNotFound" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "ClosureGenerator.Exception.ParentFieldNotFound" ) );
           }
           data.childIndex = getInputRowMeta().indexOfValue( meta.getChildIdFieldName() );
           if ( data.childIndex < 0 ) {
-            throw new KettleException( BaseMessages.getString( PKG, "ClosureGenerator.Exception.ChildFieldNotFound" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "ClosureGenerator.Exception.ChildFieldNotFound" ) );
           }
 
           data.parentValueMeta = getInputRowMeta().getValueMeta( data.parentIndex );

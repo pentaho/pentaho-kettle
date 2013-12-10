@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 /**
  * Processor of Filters. Kind of inversion principle, and to make unit testing easier.
- * 
+ *
  * @author Sven Boden
  */
 public class TextFileFilterProcessor {
@@ -110,7 +110,7 @@ public class TextFileFilterProcessor {
 
   /**
    * Was processing requested to be stopped. Can only be true when doFilters was false.
-   * 
+   *
    * @return == true: processing should stop, == false: processing should continue.
    */
   public boolean isStopProcessing() {

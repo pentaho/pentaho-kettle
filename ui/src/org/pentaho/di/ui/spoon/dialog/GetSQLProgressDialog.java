@@ -38,12 +38,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while getting the SQL for a transformation...
- * 
+ *
  * @author Matt
  * @since 15-mrt-2005
  */
 public class GetSQLProgressDialog {
-  private static Class<?> PKG = GetSQLProgressDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetSQLProgressDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Shell shell;
   private TransMeta transMeta;
@@ -68,11 +68,7 @@ public class GetSQLProgressDialog {
           stats = transMeta.getSQLStatements( new ProgressMonitorAdapter( monitor ) );
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
-              PKG, "GetSQLProgressDialog.RuntimeError.UnableToGenerateSQL.Exception", e.getMessage() ) ); // Error
-                                                                                                          // generating
-                                                                                                          // SQL for
-                                                                                                          // transformation:
-                                                                                                          // \n{0}
+            PKG, "GetSQLProgressDialog.RuntimeError.UnableToGenerateSQL.Exception", e.getMessage() ) );
         }
       }
     };
@@ -81,26 +77,14 @@ public class GetSQLProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( false, false, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ), BaseMessages
-              .getString( PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e ); // "Error generating SQL for transformation","An
-                                                                                                 // error
-                                                                                                 // occured
-                                                                                                 // generating
-                                                                                                 // the SQL for
-                                                                                                 // this
-                                                                                                 // transformation\!"
+      new ErrorDialog( shell, BaseMessages
+        .getString( PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ), BaseMessages.getString(
+        PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e );
       stats = null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ), BaseMessages
-              .getString( PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e ); // "Error generating SQL for transformation","An
-                                                                                                 // error
-                                                                                                 // occured
-                                                                                                 // generating
-                                                                                                 // the SQL for
-                                                                                                 // this
-                                                                                                 // transformation\!"
+      new ErrorDialog( shell, BaseMessages
+        .getString( PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ), BaseMessages.getString(
+        PKG, "GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e );
       stats = null;
     }
 

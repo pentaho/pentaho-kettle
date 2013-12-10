@@ -60,12 +60,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Configuration dialog for the NumberRange
- * 
+ *
  * @author ronny.roeller@fredhopper.com
- * 
+ *
  */
 public class NumberRangeDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = NumberRangeMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = NumberRangeMeta.class; // for i18n purposes, needed by Translator2!!
 
   private NumberRangeMeta input;
 
@@ -105,9 +105,10 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
 
     // Create controls
     wStepname = createLine( lsMod, BaseMessages.getString( PKG, "NumberRange.StepName" ), null );
-    inputFieldControl = createLineCombo( lsMod, BaseMessages.getString( PKG, "NumberRange.InputField" ), wStepname );
+    inputFieldControl =
+      createLineCombo( lsMod, BaseMessages.getString( PKG, "NumberRange.InputField" ), wStepname );
     outputFieldControl =
-        createLine( lsMod, BaseMessages.getString( PKG, "NumberRange.OutputField" ), inputFieldControl );
+      createLine( lsMod, BaseMessages.getString( PKG, "NumberRange.OutputField" ), inputFieldControl );
 
     inputFieldControl.addFocusListener( new FocusListener() {
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
@@ -122,7 +123,7 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
       }
     } );
     fallBackValueControl =
-        createLine( lsMod, BaseMessages.getString( PKG, "NumberRange.DefaultValue" ), outputFieldControl );
+      createLine( lsMod, BaseMessages.getString( PKG, "NumberRange.DefaultValue" ), outputFieldControl );
 
     createRulesTable( lsMod );
 
@@ -197,13 +198,17 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinf = new ColumnInfo[3];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "NumberRange.LowerBound" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "NumberRange.LowerBound" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "NumberRange.UpperBound" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
-    colinf[2] = new ColumnInfo( BaseMessages.getString( PKG, "NumberRange.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "NumberRange.UpperBound" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+    colinf[2] =
+      new ColumnInfo( BaseMessages.getString( PKG, "NumberRange.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     rulesControl =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -349,8 +354,9 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
     for ( int i = 0; i < count; i++ ) {
       TableItem item = rulesControl.getNonEmpty( i );
       String lowerBoundStr =
-          Const.isEmpty( item.getText( 1 ) ) ? String.valueOf( -Double.MAX_VALUE ) : item.getText( 1 );
-      String upperBoundStr = Const.isEmpty( item.getText( 2 ) ) ? String.valueOf( Double.MAX_VALUE ) : item.getText( 2 );
+        Const.isEmpty( item.getText( 1 ) ) ? String.valueOf( -Double.MAX_VALUE ) : item.getText( 1 );
+      String upperBoundStr =
+        Const.isEmpty( item.getText( 2 ) ) ? String.valueOf( Double.MAX_VALUE ) : item.getText( 2 );
       String value = item.getText( 3 );
 
       try {
@@ -360,7 +366,7 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
         input.addRule( lowerBound, upperBound, value );
       } catch ( NumberFormatException e ) {
         throw new IllegalArgumentException( "Bounds of this rule are not numeric: lowerBound="
-            + lowerBoundStr + ", upperBound=" + upperBoundStr + ", value=" + value, e );
+          + lowerBoundStr + ", upperBound=" + upperBoundStr + ", value=" + value, e );
       }
     }
 

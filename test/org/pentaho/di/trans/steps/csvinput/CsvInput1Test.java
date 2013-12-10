@@ -43,16 +43,16 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 /**
  * Regression test case for PDI JIRA-1317: a csv input step with less columns in certain rows than the number of columns
  * defined in the step.
- * 
+ *
  * In the original problem (in v3.1-M2) this caused the filename column to be in the wrong places.
- * 
+ *
  * @author Sven Boden
  */
 public class CsvInput1Test extends CsvInputBase {
 
   /**
    * Write the file to be used as input (as a temporary file).
-   * 
+   *
    * @return Absolute file name/path of the created file.
    * @throws IOException
    *           UPON
@@ -81,10 +81,10 @@ public class CsvInput1Test extends CsvInputBase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "d", ValueMeta.TYPE_STRING ),
-            new ValueMeta( "e", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "d", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "e", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -95,7 +95,7 @@ public class CsvInput1Test extends CsvInputBase {
 
   /**
    * Create result data for test case 1.
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -176,7 +176,7 @@ public class CsvInput1Test extends CsvInputBase {
 
   /**
    * Test case for Get XML Data step, very simple example.
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -197,6 +197,7 @@ public class CsvInput1Test extends CsvInputBase {
     StepMeta injectorStep = createInjectorStep( transMeta, registry );
     StepMeta csvInputStep = createCsvInputStep( transMeta, registry, "\"", true );
 
-    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+    createAndTestTrans(
+      registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }
 }

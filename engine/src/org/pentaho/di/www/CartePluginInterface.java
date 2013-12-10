@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface CartePluginInterface extends CarteServletInterface {
 
   public void setup( TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository,
-      List<SlaveServerDetection> detections );
+    List<SlaveServerDetection> detections );
 
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws Exception;
 

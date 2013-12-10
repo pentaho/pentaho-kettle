@@ -35,7 +35,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
 
   /**
    * The fileSystemPrefix would be appropriate for something like:
-   * 
+   *
    * zip://somefile.zip! or somefilesystem://export/folder/
    */
   private String fileSystemPrefix;
@@ -103,7 +103,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
     assert prefix != null;
     assert extension != null;
 
-    String lookup = ( originalFilePath != null ? originalFilePath : "" ) + "/" + prefix + "." + extension; //$NON-NLS-3$
+    String lookup = ( originalFilePath != null ? originalFilePath : "" ) + "/" + prefix + "." + extension;
     String rtn = namedResources.get( lookup );
     if ( rtn == null ) {
       // Never generated a name for this... Generate a new file name
@@ -113,9 +113,9 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
       }
 
       rtn =
-          ( fileSystemPrefix != null ? fileSystemPrefix : "" )
-              + ( fixedPath != null ? fixedPath + ( fixedPath.endsWith( "/" ) ? "" : "/" ) : "" ) + //$NON-NLS-3$ //$NON-NLS-4$
-              fixFileName( prefix, extension );
+        ( fileSystemPrefix != null ? fileSystemPrefix : "" )
+          + ( fixedPath != null ? fixedPath + ( fixedPath.endsWith( "/" ) ? "" : "/" ) : "" )
+          + fixFileName( prefix, extension );
 
       String ext = ( extension.charAt( 0 ) == '.' ? extension : "." + extension );
 
@@ -136,11 +136,11 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
   /**
    * We have a data file and we need to create a reference to this (relative/absolute) path name. The cleanest way to do
    * this is by calculating the absolute filename. Then we put the path to the file in a parameter that we remember.
-   * 
+   *
    * FILE_LOCATION_01, FILE_LOCATION_02, etc.
-   * 
+   *
    * We keep a unique list of parameters this way.
-   * 
+   *
    * @param prefix
    *          the name of the file (foo.csv)
    * @param originalFilePath
@@ -168,7 +168,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
 
   /**
    * Create a parameter name from an path TODO: actually use the original path
-   * 
+   *
    * @param originalFilePath
    * @return the new parameter name
    */
@@ -222,7 +222,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
   /**
    * This method turns a friendly name which could contain all manner of invalid characters for a file name into one
    * that's more conducive to being a file name.
-   * 
+   *
    * @param name
    *          The name to fix up.
    * @param extension
@@ -244,7 +244,8 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
       if ( ch == ' ' ) {
         buff.append( ch );
       } else {
-        if ( ( ch <= '/' ) || ( ch >= ':' && ch <= '?' ) || ( ch >= '[' && ch <= '`' ) || ( ch >= '{' && ch <= '~' ) ) {
+        if ( ( ch <= '/' )
+          || ( ch >= ':' && ch <= '?' ) || ( ch >= '[' && ch <= '`' ) || ( ch >= '{' && ch <= '~' ) ) {
           buff.append( '_' );
         } else {
           buff.append( ch );

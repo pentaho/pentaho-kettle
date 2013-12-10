@@ -59,18 +59,21 @@ public class JobHasDescriptionImportRuleTest extends TestCase {
     List<ImportValidationFeedback> feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has description rule'", !feedback.isEmpty() );
     assertTrue(
-        "An approval ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
+      "An approval ruling was expected",
+      feedback.get( 0 ).getResultType() == ImportValidationResultType.APPROVAL );
 
     rule.setMinLength( 2000 );
     rule.setEnabled( true );
 
     feedback = rule.verifyRule( jobMeta );
     assertTrue( "We didn't get any feedback from the 'job has description rule'", !feedback.isEmpty() );
-    assertTrue( "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
+    assertTrue(
+      "An error ruling was expected", feedback.get( 0 ).getResultType() == ImportValidationResultType.ERROR );
 
     rule.setEnabled( false );
 
     feedback = rule.verifyRule( jobMeta );
-    assertTrue( "We didn't expect any feedback from the 'job has description rule' while disabled", feedback.isEmpty() );
+    assertTrue( "We didn't expect any feedback from the 'job has description rule' while disabled", feedback
+      .isEmpty() );
   }
 }

@@ -26,15 +26,15 @@ import javax.sql.DataSource;
 
 /**
  * The purpose of this interface is to provide a way to get data sources from more places than just JNDI.
- * 
+ *
  * @author mbatchel Jan 8, 2009
- * 
+ *
  */
 public interface DataSourceProviderInterface {
 
   /**
    * Returns a named javax.sql.DataSource
-   * 
+   *
    * @param datasourceName
    * @return javax.sql.DataSource
    */

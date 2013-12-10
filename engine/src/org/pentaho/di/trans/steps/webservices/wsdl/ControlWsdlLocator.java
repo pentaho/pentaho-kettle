@@ -47,7 +47,7 @@ public final class ControlWsdlLocator implements WSDLLocator {
 
   /**
    * Create a new wsdl locator for the wsdl file with the specified name.
-   * 
+   *
    * @param wsdlName
    *          Name of the WSDL file to try to load. Name may include file path elements.
    * @param beanContext
@@ -84,7 +84,7 @@ public final class ControlWsdlLocator implements WSDLLocator {
    * <li>Attempt to locate _wsdlName using the bean context's getResourceAsStream()</li>
    * <li>Attempt to locate _wsdlName using the current class loader's getResourceAsStream()</li>
    * </ol>
-   * 
+   *
    * @return An InputSource for the WSDL file.
    */
   public InputSource getBaseInputSource() {
@@ -120,7 +120,7 @@ public final class ControlWsdlLocator implements WSDLLocator {
 
   /**
    * Get the base URI for the wsdl file.
-   * 
+   *
    * @return null if _wsdlName is not a valid URI.
    */
   public String getBaseURI() {
@@ -135,7 +135,7 @@ public final class ControlWsdlLocator implements WSDLLocator {
 
   /**
    * Not implemented.
-   * 
+   *
    * @param string
    * @param string1
    * @return null
@@ -146,7 +146,7 @@ public final class ControlWsdlLocator implements WSDLLocator {
 
   /**
    * Not implemented.
-   * 
+   *
    * @return null
    */
   public String getLatestImportURI() {

@@ -56,21 +56,21 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the DTD Validator job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-04-2007
  */
 
 public class JobEntryDTDValidatorDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryDTDValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDTDValidator.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES_XML = new String[] {
-      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Xml" ),
-      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
+    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Xml" ),
+    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
 
   private static final String[] FILETYPES_DTD = new String[] {
-      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Dtd" ),
-      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
+    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Dtd" ),
+    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;

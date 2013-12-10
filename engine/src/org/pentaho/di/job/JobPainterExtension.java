@@ -39,7 +39,7 @@ public class JobPainterExtension {
   public Point offset;
 
   public JobPainterExtension( GCInterface gc, boolean shadow, List<AreaOwner> areaOwners, JobMeta jobMeta,
-      JobHopMeta jobHop, int x1, int y1, int x2, int y2, int mx, int my, Point offset ) {
+    JobHopMeta jobHop, int x1, int y1, int x2, int y2, int mx, int my, Point offset ) {
     super();
     this.gc = gc;
     this.shadow = shadow;

@@ -33,9 +33,9 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 /**
  * A handler for registering sub-jobs and sub-transformations on the carte maps. The trick here is that listeners are
  * added recursively down as long as the listener methods are called.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class CarteDelegationHandler implements DelegationListener {
 
@@ -49,7 +49,8 @@ public class CarteDelegationHandler implements DelegationListener {
   }
 
   @Override
-  public synchronized void jobDelegationStarted( Job delegatedJob, JobExecutionConfiguration jobExecutionConfiguration ) {
+  public synchronized void jobDelegationStarted( Job delegatedJob,
+    JobExecutionConfiguration jobExecutionConfiguration ) {
     synchronized ( jobMap ) {
       JobConfiguration jc = new JobConfiguration( delegatedJob.getJobMeta(), jobExecutionConfiguration );
       jobMap.registerJob( delegatedJob, jc );
@@ -60,7 +61,7 @@ public class CarteDelegationHandler implements DelegationListener {
 
   @Override
   public synchronized void transformationDelegationStarted( Trans delegatedTrans,
-      TransExecutionConfiguration transExecutionConfiguration ) {
+    TransExecutionConfiguration transExecutionConfiguration ) {
     synchronized ( transformationMap ) {
       TransConfiguration tc = new TransConfiguration( delegatedTrans.getTransMeta(), transExecutionConfiguration );
       transformationMap.registerTransformation( delegatedTrans, tc );

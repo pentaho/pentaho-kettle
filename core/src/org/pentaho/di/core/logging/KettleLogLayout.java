@@ -29,12 +29,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.version.BuildVersion;
 
 public class KettleLogLayout {
-  private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
-    @Override
-    protected SimpleDateFormat initialValue() {
-      return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-    }
-  };
+  private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER =
+    new ThreadLocal<SimpleDateFormat>() {
+      @Override
+      protected SimpleDateFormat initialValue() {
+        return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
+      }
+    };
 
   public static final String ERROR_STRING = "ERROR";
 

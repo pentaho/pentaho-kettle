@@ -60,10 +60,10 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFilesDesc = new String[] {
-      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   private static final String NO = "N";
@@ -364,7 +364,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     return fileTypeFilter;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -419,7 +420,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // the filename
     ValueMetaInterface filename = new ValueMeta( "filename", ValueMeta.TYPE_STRING );
@@ -516,8 +517,10 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", rowNumberField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename_Field", dynamicFilenameField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "wildcard_Field", dynamicWildcardField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "exclude_wildcard_Field", dynamicExcludeWildcardField ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "dynamic_include_subfolders", dynamicIncludeSubFolders ) );
+    retval
+      .append( "    " ).append( XMLHandler.addTagValue( "exclude_wildcard_Field", dynamicExcludeWildcardField ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "dynamic_include_subfolders", dynamicIncludeSubFolders ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "limit", rowLimit ) );
 
     retval.append( "    <file>" ).append( Const.CR );
@@ -548,7 +551,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       dynamicWildcardField = XMLHandler.getTagValue( stepnode, "wildcard_Field" );
       dynamicExcludeWildcardField = XMLHandler.getTagValue( stepnode, "exclude_wildcard_Field" );
       dynamicIncludeSubFolders =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamic_include_subfolders" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamic_include_subfolders" ) );
 
       // Is there a limit on the number of rows we process?
       rowLimit = Const.toLong( XMLHandler.getTagValue( stepnode, "limit" ), 0L );
@@ -579,7 +582,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     throws KettleException {
     try {
       int nrfiles = rep.countNrStepAttributes( id_step, "file_name" );
-      fileTypeFilter = FileInputList.FileTypeFilter.getByName( rep.getStepAttributeString( id_step, "filterfiletype" ) );
+      fileTypeFilter =
+        FileInputList.FileTypeFilter.getByName( rep.getStepAttributeString( id_step, "filterfiletype" ) );
       doNotFailIfNoFile = rep.getStepAttributeBoolean( id_step, "doNotFailIfNoFile" );
       dynamicFilenameField = rep.getStepAttributeString( id_step, "filename_Field" );
       dynamicWildcardField = rep.getStepAttributeString( id_step, "wildcard_Field" );
@@ -663,48 +667,48 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
 
   public String[] getFilePaths( VariableSpace space ) {
     return FileInputList.createFilePathList(
-        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
-        buildFileTypeFiltersArray() );
+      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+      buildFileTypeFiltersArray() );
   }
 
   public FileInputList getFileList( VariableSpace space ) {
     return FileInputList.createFileList(
-        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
-        buildFileTypeFiltersArray() );
+      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+      buildFileTypeFiltersArray() );
   }
 
   public FileInputList getDynamicFileList( VariableSpace space, String[] filename, String[] filemask,
-      String[] excludefilemask, String[] filerequired, boolean[] includesubfolders ) {
+    String[] excludefilemask, String[] filerequired, boolean[] includesubfolders ) {
     return FileInputList.createFileList(
-        space, filename, filemask, excludefilemask, filerequired, includesubfolders, buildFileTypeFiltersArray() );
+      space, filename, filemask, excludefilemask, filerequired, includesubfolders, buildFileTypeFiltersArray() );
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( filefield ) {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.InputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.InputOk" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.InputErrorKo" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.InputErrorKo" ), stepMeta );
       }
       remarks.add( cr );
 
       if ( Const.isEmpty( dynamicFilenameField ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
       }
       remarks.add( cr );
 
@@ -712,12 +716,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
 
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.NoInputError" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.NoInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.NoInputOk" ), stepMeta );
       }
 
       remarks.add( cr );
@@ -726,12 +730,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       FileInputList fileList = getFileList( transMeta );
       if ( fileList.nrOfFiles() == 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesError" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -752,8 +756,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     return references;
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new GetFileNames( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -770,11 +774,11 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!

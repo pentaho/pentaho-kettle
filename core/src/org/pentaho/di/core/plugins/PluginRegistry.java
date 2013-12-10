@@ -54,13 +54,13 @@ import org.pentaho.di.i18n.BaseMessages;
 /**
  * This singleton provides access to all the plugins in the Kettle universe.<br>
  * It allows you to register types and plugins, query plugin lists per category, list plugins per type, etc.<br>
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class PluginRegistry {
 
-  private static Class<?> PKG = PluginRegistry.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PluginRegistry.class; // for i18n purposes, needed by Translator2!!
 
   private static final PluginRegistry pluginRegistry = new PluginRegistry();
 
@@ -74,7 +74,7 @@ public class PluginRegistry {
   private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
 
   private Map<Class<? extends PluginTypeInterface>, List<PluginTypeListener>> listeners =
-      new HashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
+    new HashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
   private static List<PluginRegistryExtension> extensions = new ArrayList<PluginRegistryExtension>();
 
   public static LogChannelInterface log = new LogChannel( "PluginRegistry", true );
@@ -125,8 +125,9 @@ public class PluginRegistry {
     }
   }
 
-  public synchronized void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
-    throws KettlePluginException {
+  public synchronized void
+    registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
+      throws KettlePluginException {
 
     boolean changed = false; // Is this an add or an update?
 
@@ -172,7 +173,8 @@ public class PluginRegistry {
         //
         String[] naturalOrder = null;
 
-        PluginTypeCategoriesOrder naturalOrderAnnotation = pluginType.getAnnotation( PluginTypeCategoriesOrder.class );
+        PluginTypeCategoriesOrder naturalOrderAnnotation =
+          pluginType.getAnnotation( PluginTypeCategoriesOrder.class );
         if ( naturalOrderAnnotation != null ) {
           String[] naturalOrderKeys = naturalOrderAnnotation.getNaturalCategoriesOrder();
           Class<?> i18nClass = naturalOrderAnnotation.i18nPackageClass();
@@ -212,7 +214,8 @@ public class PluginRegistry {
    * @return An unmodifiable list of plugin types
    */
   public List<Class<? extends PluginTypeInterface>> getPluginTypes() {
-    return Collections.unmodifiableList( new ArrayList<Class<? extends PluginTypeInterface>>( pluginMap.keySet() ) );
+    return Collections
+      .unmodifiableList( new ArrayList<Class<? extends PluginTypeInterface>>( pluginMap.keySet() ) );
   }
 
   /**
@@ -242,12 +245,12 @@ public class PluginRegistry {
 
   /**
    * Get a plugin from the registry
-   * 
+   *
    * @param stepplugintype
    *          The type of plugin to look for
    * @param id
    *          The ID to scan for
-   * 
+   *
    * @return the plugin or null if nothing was found.
    */
   public PluginInterface getPlugin( Class<? extends PluginTypeInterface> pluginType, String id ) {
@@ -270,16 +273,16 @@ public class PluginRegistry {
 
   /**
    * Retrieve a list of plugins per category.
-   * 
+   *
    * @param pluginType
    *          The type of plugins to search
    * @param pluginCategory
    *          The category to look in
-   * 
+   *
    * @return An unmodifiable list of plugins that belong to the specified type and category.
    */
   public <T extends PluginTypeInterface> List<PluginInterface> getPluginsByCategory( Class<T> pluginType,
-      String pluginCategory ) {
+    String pluginCategory ) {
     List<PluginInterface> plugins = new ArrayList<PluginInterface>();
 
     for ( PluginInterface verify : getPlugins( pluginType ) ) {
@@ -294,7 +297,7 @@ public class PluginRegistry {
 
   /**
    * Retrieve a list of all categories for a certain plugin type.
-   * 
+   *
    * @param pluginType
    *          The plugin type to search categories for.
    * @return The list of categories for this plugin type. The list can be modified (sorted etc) but will not impact the
@@ -307,7 +310,7 @@ public class PluginRegistry {
 
   /**
    * Load and instantiate the main class of the plugin specified.
-   * 
+   *
    * @param plugin
    *          The plugin to load the main class for.
    * @return The instantiated class
@@ -320,7 +323,7 @@ public class PluginRegistry {
 
   /**
    * Load the class of the type specified for the plugin that owns the class of the specified object.
-   * 
+   *
    * @param pluginType
    *          the type of plugin
    * @param object
@@ -341,7 +344,7 @@ public class PluginRegistry {
 
   /**
    * Load the class of the type specified for the plugin with the ID specified.
-   * 
+   *
    * @param pluginType
    *          the type of plugin
    * @param plugiId
@@ -362,13 +365,13 @@ public class PluginRegistry {
 
   /**
    * Load and instantiate the plugin class specified
-   * 
+   *
    * @param plugin
    *          the plugin to load
    * @param pluginClass
    *          the class to be loaded
    * @return The instantiated class
-   * 
+   *
    * @throws KettlePluginException
    *           In case there was a class loading problem somehow
    */
@@ -376,7 +379,7 @@ public class PluginRegistry {
   public <T> T loadClass( PluginInterface plugin, Class<T> pluginClass ) throws KettlePluginException {
     if ( plugin == null ) {
       throw new KettlePluginException( BaseMessages.getString(
-          PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
+        PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
     }
 
     if ( plugin instanceof ClassLoadingPluginInterface ) {
@@ -385,7 +388,7 @@ public class PluginRegistry {
       String className = plugin.getClassMap().get( pluginClass );
       if ( className == null ) {
         throw new KettlePluginException( BaseMessages.getString(
-            PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName() ) );
+          PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName() ) );
       }
 
       try {
@@ -455,27 +458,27 @@ public class PluginRegistry {
         return cl.newInstance();
       } catch ( ClassNotFoundException e ) {
         throw new KettlePluginException( BaseMessages.getString(
-            PKG, "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003" ), e );
+          PKG, "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003" ), e );
       } catch ( InstantiationException e ) {
         throw new KettlePluginException( BaseMessages.getString(
-            PKG, "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004" ), e );
+          PKG, "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004" ), e );
       } catch ( IllegalAccessException e ) {
         throw new KettlePluginException( BaseMessages.getString(
-            PKG, "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005" ), e );
+          PKG, "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005" ), e );
       } catch ( MalformedURLException e ) {
         throw new KettlePluginException( BaseMessages.getString(
-            PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
+          PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
       } catch ( Throwable e ) {
         e.printStackTrace();
         throw new KettlePluginException( BaseMessages.getString(
-            PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007" ), e );
+          PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007" ), e );
       }
     }
   }
 
   /**
    * Add a PluginType to be managed by the registry
-   * 
+   *
    * @param type
    */
   public static void addPluginType( PluginTypeInterface type ) {
@@ -488,7 +491,7 @@ public class PluginRegistry {
 
   /**
    * This method registers plugin types and loads their respective plugins
-   * 
+   *
    * @throws KettlePluginException
    */
   public static synchronized void init( boolean keepCache ) throws KettlePluginException {
@@ -580,36 +583,36 @@ public class PluginRegistry {
             //
             pluginType.handlePluginAnnotation( clazz, annotation, new ArrayList<String>(), true, null );
             LogChannel.GENERAL.logBasic( "Plugin class "
-                + className + " registered for plugin type '" + pluginType.getName() + "'" );
+              + className + " registered for plugin type '" + pluginType.getName() + "'" );
           } else {
             if ( KettleLogStore.isInitialized() ) {
               LogChannel.GENERAL.logDebug( "Plugin class "
-                  + className + " doesn't contain annotation for plugin type '" + pluginType.getName() + "'" );
+                + className + " doesn't contain annotation for plugin type '" + pluginType.getName() + "'" );
             }
           }
         } else {
           if ( KettleLogStore.isInitialized() ) {
             LogChannel.GENERAL.logDebug( "Plugin class "
-                + className + " doesn't contain valid class for plugin type '" + pluginType.getName() + "'" );
+              + className + " doesn't contain valid class for plugin type '" + pluginType.getName() + "'" );
           }
         }
       } catch ( Exception e ) {
         if ( KettleLogStore.isInitialized() ) {
           LogChannel.GENERAL.logError( "Error registring plugin class from KETTLE_PLUGIN_CLASSES: "
-              + className + Const.CR + Const.getStackTracker( e ) );
+            + className + Const.CR + Const.getStackTracker( e ) );
         }
       }
     }
 
     LogChannel.GENERAL.logDetailed( "Registered "
-        + getPlugins( pluginType.getClass() ).size() + " plugins of type '" + pluginType.getName() + "' in "
-        + ( System.currentTimeMillis() - startScan ) + "ms." );
+      + getPlugins( pluginType.getClass() ).size() + " plugins of type '" + pluginType.getName() + "' in "
+      + ( System.currentTimeMillis() - startScan ) + "ms." );
 
   }
 
   /**
    * Find the plugin ID based on the class
-   * 
+   *
    * @param pluginClass
    * @return The ID of the plugin to which this class belongs (checks the plugin class maps)
    */
@@ -625,7 +628,7 @@ public class PluginRegistry {
 
   /**
    * Find the plugin ID based on the class
-   * 
+   *
    * @param pluginType
    *          the type of plugin
    * @param pluginClass
@@ -654,7 +657,7 @@ public class PluginRegistry {
 
   /**
    * Retrieve the Plugin for a given class
-   * 
+   *
    * @param pluginType
    *          The type of plugin to search for
    * @param pluginClass
@@ -671,7 +674,7 @@ public class PluginRegistry {
 
   /**
    * Find the plugin ID based on the name of the plugin
-   * 
+   *
    * @param pluginType
    *          the type of plugin
    * @param pluginName
@@ -690,7 +693,7 @@ public class PluginRegistry {
 
   /**
    * Find the plugin ID based on the description of the plugin
-   * 
+   *
    * @param pluginType
    *          the type of plugin
    * @param pluginDescription
@@ -698,7 +701,7 @@ public class PluginRegistry {
    * @return The plugin with the specified description or null if nothing was found.
    */
   public PluginInterface findPluginWithDescription( Class<? extends PluginTypeInterface> pluginType,
-      String pluginDescription ) {
+    String pluginDescription ) {
     for ( PluginInterface plugin : getPlugins( pluginType ) ) {
 
       if ( plugin.getDescription().equals( pluginDescription ) ) {
@@ -710,7 +713,7 @@ public class PluginRegistry {
 
   /**
    * Find the plugin ID based on the name of the plugin
-   * 
+   *
    * @param pluginType
    *          the type of plugin
    * @param pluginName
@@ -750,23 +753,27 @@ public class PluginRegistry {
     RowMetaInterface row = new RowMeta();
 
     row.addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.Type.Label" ), ValueMetaInterface.TYPE_STRING ) );
+      BaseMessages.getString( PKG, "PluginRegistry.Information.Type.Label" ), ValueMetaInterface.TYPE_STRING ) );
     row.addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.ID.Label" ), ValueMetaInterface.TYPE_STRING ) );
+      BaseMessages.getString( PKG, "PluginRegistry.Information.ID.Label" ), ValueMetaInterface.TYPE_STRING ) );
     row.addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.Name.Label" ), ValueMetaInterface.TYPE_STRING ) );
+      BaseMessages.getString( PKG, "PluginRegistry.Information.Name.Label" ), ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+      BaseMessages.getString( PKG, "PluginRegistry.Information.Description.Label" ),
+      ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+      BaseMessages.getString( PKG, "PluginRegistry.Information.Libraries.Label" ),
+      ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+      BaseMessages.getString( PKG, "PluginRegistry.Information.ImageFile.Label" ),
+      ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+      BaseMessages.getString( PKG, "PluginRegistry.Information.ClassName.Label" ),
+      ValueMetaInterface.TYPE_STRING ) );
     row
-        .addValueMeta( new ValueMeta(
-            BaseMessages.getString( PKG, "PluginRegistry.Information.Description.Label" ),
-            ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.Libraries.Label" ), ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.ImageFile.Label" ), ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.ClassName.Label" ), ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.Category.Label" ), ValueMetaInterface.TYPE_STRING ) );
+      .addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.Category.Label" ),
+        ValueMetaInterface.TYPE_STRING ) );
 
     return row;
   }
@@ -777,7 +784,8 @@ public class PluginRegistry {
    * @return a row buffer containing plugin information for the given plugin type
    * @throws KettlePluginException
    */
-  public RowBuffer getPluginInformation( Class<? extends PluginTypeInterface> pluginType ) throws KettlePluginException {
+  public RowBuffer getPluginInformation( Class<? extends PluginTypeInterface> pluginType )
+    throws KettlePluginException {
     RowBuffer rowBuffer = new RowBuffer( getPluginInformationRowMeta() );
     for ( PluginInterface plugin : getPlugins( pluginType ) ) {
 
@@ -800,7 +808,7 @@ public class PluginRegistry {
 
   /**
    * Load the class with a certain name using the class loader of certain plugin.
-   * 
+   *
    * @param plugin
    *          The plugin for which we want to use the class loader
    * @param className
@@ -850,7 +858,7 @@ public class PluginRegistry {
 
   /**
    * Load the class with a certain name using the class loader of certain plugin.
-   * 
+   *
    * @param plugin
    *          The plugin for which we want to use the class loader
    * @param classType
@@ -867,21 +875,21 @@ public class PluginRegistry {
 
   /**
    * Create or retrieve the class loader for the specified plugin
-   * 
+   *
    * @param plugin
    *          the plugin to use
    * @return The class loader
-   * 
+   *
    * @throws KettlePluginException
    *           In case there was a problem
-   * 
+   *
    *           TODO: remove the similar code in the loadClass() method above with a call to getClassLoader();
    */
   public ClassLoader getClassLoader( PluginInterface plugin ) throws KettlePluginException {
 
     if ( plugin == null ) {
       throw new KettlePluginException( BaseMessages.getString(
-          PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
+        PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
     }
 
     try {
@@ -961,17 +969,17 @@ public class PluginRegistry {
       }
     } catch ( MalformedURLException e ) {
       throw new KettlePluginException( BaseMessages.getString(
-          PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
+        PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
     } catch ( Throwable e ) {
       e.printStackTrace();
       throw new KettlePluginException( BaseMessages.getString(
-          PKG, "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008" ), e );
+        PKG, "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008" ), e );
     }
   }
 
   /**
    * Allows the tracking of plugins as they come and go.
-   * 
+   *
    * @param typeToTrack
    *          extension of PluginTypeInterface to track.
    * @param listener
@@ -979,7 +987,8 @@ public class PluginRegistry {
    * @param <T>
    *          extension of PluginTypeInterface
    */
-  public <T extends PluginTypeInterface> void addPluginListener( Class<T> typeToTrack, PluginTypeListener listener ) {
+  public <T extends PluginTypeInterface> void
+    addPluginListener( Class<T> typeToTrack, PluginTypeListener listener ) {
     List<PluginTypeListener> list = listeners.get( typeToTrack );
     if ( list == null ) {
       list = new ArrayList<PluginTypeListener>();

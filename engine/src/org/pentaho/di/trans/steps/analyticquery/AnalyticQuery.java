@@ -39,18 +39,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs analytic queries (LEAD/LAG, etc) based on a group
- * 
+ *
  * @author ngoodman
  * @since 27-jan-2009
  */
 public class AnalyticQuery extends BaseStep implements StepInterface {
-  private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!
 
   private AnalyticQueryMeta meta;
   private AnalyticQueryData data;
 
   public AnalyticQuery( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (AnalyticQueryMeta) getStepMeta().getStepMetaInterface();
@@ -84,7 +84,8 @@ public class AnalyticQuery extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getGroupField().length; i++ ) {
         data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
         if ( data.groupnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "AnalyticQuery.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
+          logError( BaseMessages.getString(
+            PKG, "AnalyticQuery.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;

@@ -1,5 +1,5 @@
 /*! ******************************************************************************
- * 
+ *
  * Pentaho Data Integration
  *
  * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
@@ -52,8 +52,8 @@ public class HttpUtil {
   public static final int ZIP_BUFFER_SIZE = 8192;
 
   public static String execService( VariableSpace space, String hostname, String port, String webAppName,
-      String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort,
-      String nonProxyHosts ) throws Exception {
+    String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort,
+    String nonProxyHosts ) throws Exception {
     // Prepare HTTP get
     //
     HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
@@ -93,7 +93,7 @@ public class HttpUtil {
 
   /**
    * Returns http GET request string using specified parameters.
-   * 
+   *
    * @param space
    * @param hostname
    * @param port
@@ -103,7 +103,7 @@ public class HttpUtil {
    * @throws UnsupportedEncodingException
    */
   public static String constructUrl( VariableSpace space, String hostname, String port, String webAppName,
-      String serviceAndArguments ) throws UnsupportedEncodingException {
+    String serviceAndArguments ) throws UnsupportedEncodingException {
     String realHostname = space.environmentSubstitute( hostname );
     if ( !StringUtils.isEmpty( webAppName ) ) {
       serviceAndArguments = "/" + space.environmentSubstitute( webAppName ) + serviceAndArguments;
@@ -123,7 +123,7 @@ public class HttpUtil {
   }
 
   public static void addProxy( HttpClient client, VariableSpace space, String hostname, String proxyHostname,
-      String proxyPort, String nonProxyHosts ) {
+    String proxyPort, String nonProxyHosts ) {
     String host = space.environmentSubstitute( hostname );
     String phost = space.environmentSubstitute( proxyHostname );
     String pport = space.environmentSubstitute( proxyPort );
@@ -141,18 +141,17 @@ public class HttpUtil {
   }
 
   public static void addCredentials( HttpClient client, VariableSpace space, String hostname, String port,
-      String webAppName, String username, String password ) {
+    String webAppName, String username, String password ) {
     if ( StringUtils.isEmpty( webAppName ) ) {
-      client
-          .getState().setCredentials(
-              new AuthScope( space.environmentSubstitute( hostname ), Const.toInt(
-                  space.environmentSubstitute( port ), 80 ), "Kettle" ),
-              new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
-                  .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) ) );
+      client.getState().setCredentials(
+        new AuthScope( space.environmentSubstitute( hostname ), Const.toInt(
+          space.environmentSubstitute( port ), 80 ), "Kettle" ),
+        new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
+          .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) ) );
     } else {
       Credentials creds =
-          new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
-              .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) );
+        new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
+          .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) );
       client.getState().setCredentials( AuthScope.ANY, creds );
       client.getParams().setAuthenticationPreemptive( true );
     }
@@ -161,7 +160,7 @@ public class HttpUtil {
   /**
    * Base 64 decode, unzip and extract text using {@link Const#XML_ENCODING} predefined charset value for byte-wise
    * multi-byte character handling.
-   * 
+   *
    * @param loggingString64
    *          base64 zip archive string representation
    * @return text from zip archive

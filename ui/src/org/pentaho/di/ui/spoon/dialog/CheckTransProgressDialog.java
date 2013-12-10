@@ -41,13 +41,12 @@ import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while checking a transformation...
- * 
+ *
  * @author Matt
  * @since 16-mrt-2005
  */
 public class CheckTransProgressDialog {
   private static Class<?> PKG = CheckTransProgressDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private Shell shell;
   private TransMeta transMeta;
@@ -64,16 +63,16 @@ public class CheckTransProgressDialog {
    * Creates a new dialog that will handle the wait while checking a transformation...
    */
   public CheckTransProgressDialog( Shell shell, TransMeta transMeta, List<CheckResultInterface> remarks,
-      boolean onlySelected ) {
+    boolean onlySelected ) {
     this( shell, transMeta, remarks, onlySelected, transMeta, Spoon.getInstance().getRepository(), Spoon
-        .getInstance().getMetaStore() );
+      .getInstance().getMetaStore() );
   }
 
   /**
    * Creates a new dialog that will handle the wait while checking a transformation...
    */
   public CheckTransProgressDialog( Shell shell, TransMeta transMeta, List<CheckResultInterface> remarks,
-      boolean onlySelected, VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    boolean onlySelected, VariableSpace space, Repository repository, IMetaStore metaStore ) {
     this.shell = shell;
     this.transMeta = transMeta;
     this.onlySelected = onlySelected;
@@ -90,14 +89,10 @@ public class CheckTransProgressDialog {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
         try {
           transMeta.checkSteps(
-              remarks, onlySelected, new ProgressMonitorAdapter( monitor ), space, repository, metaStore );
+            remarks, onlySelected, new ProgressMonitorAdapter( monitor ), space, repository, metaStore );
         } catch ( Exception e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
-              PKG, "AnalyseImpactProgressDialog.RuntimeError.ErrorCheckingTransformation.Exception", e.toString() ) ); // Problem
-                                                                                                                       // encountered
-                                                                                                                       // checking
-                                                                                                                       // transformation:
-                                                                                                                       // {0}
+            PKG, "AnalyseImpactProgressDialog.RuntimeError.ErrorCheckingTransformation.Exception", e.toString() ) );
         }
       }
     };
@@ -131,18 +126,12 @@ public class CheckTransProgressDialog {
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ), BaseMessages.getString(
-          PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e ); // "Error checking transformation","An
-                                                                                             // error occured checking
-                                                                                             // this
-                                                                                             // transformation\!"
+        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ), BaseMessages.getString(
+        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e );
     } catch ( InterruptedException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ), BaseMessages.getString(
-          PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e ); // "Error checking transformation","An
-                                                                                             // error occured checking
-                                                                                             // this
-                                                                                             // transformation\!"
+        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ), BaseMessages.getString(
+        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e );
     }
   }
 }

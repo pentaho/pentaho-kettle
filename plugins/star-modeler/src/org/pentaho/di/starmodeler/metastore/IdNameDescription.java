@@ -24,7 +24,7 @@ package org.pentaho.di.starmodeler.metastore;
 
 public class IdNameDescription {
   protected String id;
-  
+
   protected String name;
 
   protected String description;

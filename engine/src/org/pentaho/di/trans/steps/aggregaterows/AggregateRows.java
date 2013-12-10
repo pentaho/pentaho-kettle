@@ -38,18 +38,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Aggregates rows
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class AggregateRows extends BaseStep implements StepInterface {
-  private static Class<?> PKG = AggregateRows.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AggregateRows.class; // for i18n purposes, needed by Translator2!!
 
   private AggregateRowsMeta meta;
   private AggregateRowsData data;
 
   public AggregateRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 

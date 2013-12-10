@@ -41,20 +41,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Write data to a TCP/IP socket read by SocketReader. The data being sent over the socket is one serialized Row object
  * including metadata and then a series of serialized rows, data only.
- * 
+ *
  * This part of the SocketWriter/SocketRead pair contains the ServerSocket.
- * 
+ *
  * @author Matt
  * @since 1-dec-2006
  */
 public class SocketWriter extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SocketWriterMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SocketWriterMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SocketWriterMeta meta;
   private SocketWriterData data;
 
   public SocketWriter( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -70,11 +70,11 @@ public class SocketWriter extends BaseStep implements StepInterface {
 
         if ( meta.isCompressed() ) {
           data.outputStream =
-              new DataOutputStream( new BufferedOutputStream(
-                  new GZIPOutputStream( data.clientSocket.getOutputStream() ), bufferSize ) );
+            new DataOutputStream( new BufferedOutputStream( new GZIPOutputStream( data.clientSocket
+              .getOutputStream() ), bufferSize ) );
         } else {
           data.outputStream =
-              new DataOutputStream( new BufferedOutputStream( data.clientSocket.getOutputStream(), bufferSize ) );
+            new DataOutputStream( new BufferedOutputStream( data.clientSocket.getOutputStream(), bufferSize ) );
         }
 
         data.flushInterval = Const.toInt( environmentSubstitute( meta.getFlushInterval() ), 4000 );
@@ -148,8 +148,8 @@ public class SocketWriter extends BaseStep implements StepInterface {
       try {
         int port = Integer.parseInt( environmentSubstitute( meta.getPort() ) );
         data.serverSocket =
-            getTrans()
-                .getSocketRepository().openServerSocket( port, getTransMeta().getName() + " - " + this.toString() );
+          getTrans().getSocketRepository().openServerSocket(
+            port, getTransMeta().getName() + " - " + this.toString() );
 
         return true;
       } catch ( Exception e ) {

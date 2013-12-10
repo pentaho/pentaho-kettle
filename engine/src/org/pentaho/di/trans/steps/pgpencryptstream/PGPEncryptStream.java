@@ -37,20 +37,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Encrypt a stream with GPG *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class PGPEncryptStream extends BaseStep implements StepInterface {
-  private static Class<?> PKG = PGPEncryptStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGPEncryptStreamMeta.class; // for i18n purposes, needed by Translator2!!
 
   private PGPEncryptStreamMeta meta;
   private PGPEncryptStreamData data;
 
-  public PGPEncryptStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public PGPEncryptStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -92,7 +92,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
           if ( data.indexOfKeyName < 0 ) {
             // The field is unreachable !
             throw new KettleException( BaseMessages.getString(
-                PKG, "PGPEncryptStream.Exception.CouldnotFindField", meta.getStreamField() ) );
+              PKG, "PGPEncryptStream.Exception.CouldnotFindField", meta.getStreamField() ) );
           }
         } else {
           // Check is keyname is provided
@@ -109,7 +109,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
           if ( data.indexOfField < 0 ) {
             // The field is unreachable !
             throw new KettleException( BaseMessages.getString(
-                PKG, "PGPEncryptStream.Exception.CouldnotFindField", meta.getStreamField() ) );
+              PKG, "PGPEncryptStream.Exception.CouldnotFindField", meta.getStreamField() ) );
           }
         }
       } // End If first
@@ -148,7 +148,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "PGPEncryptStream.LineNumber", getLinesRead()
-            + " : " + getInputRowMeta().getString( r ) ) );
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

@@ -95,8 +95,8 @@ public class RepositoryImporter implements IRepositoryImporter {
   }
 
   public synchronized void importAll( RepositoryImportFeedbackInterface feedback, String fileDirectory,
-      String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError,
-      String versionComment ) {
+    String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError,
+    String versionComment ) {
     this.baseDirectory = baseDirectory;
     this.overwrite = overwrite;
     this.continueOnError = continueOnError;
@@ -114,7 +114,8 @@ public class RepositoryImporter implements IRepositoryImporter {
       for ( int ii = 0; ii < filenames.length; ++ii ) {
 
         final String filename =
-            ( !Const.isEmpty( fileDirectory ) ) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
+          ( !Const.isEmpty( fileDirectory ) )
+            ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
         if ( log.isBasic() ) {
           log.logBasic( "Import objects from XML file [" + filename + "]" );
         }
@@ -130,16 +131,18 @@ public class RepositoryImporter implements IRepositoryImporter {
           parser.parse( this );
         } catch ( FileNotFoundException fnfe ) {
           addException( fnfe );
-          feedback.showError( BaseMessages.getString( PKG, "PurRepositoryImporter.ErrorGeneral.Title" ), BaseMessages
-              .getString( PKG, "PurRepositoryImporter.FileNotFound.Message", filename ), fnfe );
+          feedback.showError(
+            BaseMessages.getString( PKG, "PurRepositoryImporter.ErrorGeneral.Title" ), BaseMessages.getString(
+              PKG, "PurRepositoryImporter.FileNotFound.Message", filename ), fnfe );
 
         } catch ( SAXParseException spe ) {
           addException( spe );
-          feedback.showError( BaseMessages.getString( PKG, "PurRepositoryImporter.ErrorGeneral.Title" ), BaseMessages
-              .getString( PKG, "PurRepositoryImporter.ParseError.Message", filename ), spe );
+          feedback.showError(
+            BaseMessages.getString( PKG, "PurRepositoryImporter.ErrorGeneral.Title" ), BaseMessages.getString(
+              PKG, "PurRepositoryImporter.ParseError.Message", filename ), spe );
         } catch ( Exception e ) {
           feedback.showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorGeneral.Title" ), BaseMessages
-              .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
+            .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
         }
       }
 
@@ -153,7 +156,7 @@ public class RepositoryImporter implements IRepositoryImporter {
           } catch ( KettleException e ) {
             // log and continue; might fail from exports performed before PDI-5294
             feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.LookupRepoRefsError.Log", transMeta
-                .getName() ) );
+              .getName() ) );
           }
           rep.save( transMeta, "import object reference specification", null );
         }
@@ -164,7 +167,7 @@ public class RepositoryImporter implements IRepositoryImporter {
           } catch ( KettleException e ) {
             // log and continue; might fail from exports performed before PDI-5294
             feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.LookupRepoRefsError.Log", jobMeta
-                .getName() ) );
+              .getName() ) );
           }
           rep.save( jobMeta, "import object reference specification", null );
         }
@@ -173,7 +176,7 @@ public class RepositoryImporter implements IRepositoryImporter {
       feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ImportFinished.Log" ) );
     } catch ( KettleException e ) {
       feedback.showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorGeneral.Title" ), BaseMessages
-          .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
+        .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
     } finally {
       // set the repository import location to null when done!
       RepositoryImportLocation.setRepositoryImportLocation( null );
@@ -183,7 +186,7 @@ public class RepositoryImporter implements IRepositoryImporter {
   /**
    * Load the shared objects up front, replace them in the xforms/jobs loaded from XML. We do this for performance
    * reasons.
-   * 
+   *
    * @throws KettleException
    */
   private void loadSharedObjects() throws KettleException {
@@ -215,7 +218,7 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   /**
    * Validates the repository element that is about to get imported against the list of import rules.
-   * 
+   *
    * @param the
    *          import rules to validate against.
    * @param subject
@@ -226,8 +229,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors( feedback );
     if ( !errors.isEmpty() ) {
       StringBuffer message =
-          new StringBuffer( BaseMessages.getString( PKG, "RepositoryImporter.ValidationFailed.Message", subject
-              .toString() ) );
+        new StringBuffer( BaseMessages.getString( PKG, "RepositoryImporter.ValidationFailed.Message", subject
+          .toString() ) );
       message.append( Const.CR );
       for ( ImportValidationFeedback error : errors ) {
         message.append( " - " );
@@ -468,7 +471,7 @@ public class RepositoryImporter implements IRepositoryImporter {
   }
 
   /**
-   * 
+   *
    * @param transnode
    *          The XML DOM node to read the transformation from
    * @return false if the import should be canceled.
@@ -483,7 +486,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     TransMeta transMeta = new TransMeta( transnode, null ); // ignore shared objects
     replaceSharedObjects( transMeta );
     feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportTrans.Label", Integer
-        .toString( transformationNumber ), transMeta.getName() ) );
+      .toString( transformationNumber ), transMeta.getName() ) );
 
     validateImportedElement( importRules, transMeta );
 
@@ -504,7 +507,7 @@ public class RepositoryImporter implements IRepositoryImporter {
       // Not in the limiting set of source directories, skip the import of this transformation...
       //
       feedback.addLog( BaseMessages.getString(
-          PKG, "RepositoryImporter.SkippedTransformationNotPartOfLimitingDirectories.Log", transMeta.getName() ) );
+        PKG, "RepositoryImporter.SkippedTransformationNotPartOfLimitingDirectories.Log", transMeta.getName() ) );
       return true;
     }
 
@@ -537,26 +540,26 @@ public class RepositoryImporter implements IRepositoryImporter {
         }
         rep.save( transMeta, versionComment, this, overwrite );
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.TransSaved.Log", Integer
-            .toString( transformationNumber ), transMeta.getName() ) );
+          .toString( transformationNumber ), transMeta.getName() ) );
 
         if ( transMeta.hasRepositoryReferences() ) {
           referencingObjects.add( new RepositoryObject( transMeta.getObjectId(), transMeta.getName(), transMeta
-              .getRepositoryDirectory(), null, null, RepositoryObjectType.TRANSFORMATION, null, false ) );
+            .getRepositoryDirectory(), null, null, RepositoryObjectType.TRANSFORMATION, null, false ) );
         }
 
       } catch ( Exception e ) {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer
-            .toString( transformationNumber ), transMeta.getName(), Const.getStackTracker( e ) ) );
+          .toString( transformationNumber ), transMeta.getName(), Const.getStackTracker( e ) ) );
 
         if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-            PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-            PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
     } else {
-      feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.SkippedExistingTransformation.Log", transMeta
-          .getName() ) );
+      feedback.addLog( BaseMessages.getString(
+        PKG, "RepositoryImporter.SkippedExistingTransformation.Log", transMeta.getName() ) );
     }
     return true;
   }
@@ -566,8 +569,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     //
     JobMeta jobMeta = new JobMeta( jobnode, rep, false, SpoonFactory.getInstance() );
     replaceSharedObjects( jobMeta );
-    feedback.setLabel( BaseMessages.getString(
-        PKG, "RepositoryImporter.ImportJob.Label", Integer.toString( jobNumber ), jobMeta.getName() ) );
+    feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportJob.Label", Integer
+      .toString( jobNumber ), jobMeta.getName() ) );
     validateImportedElement( importRules, jobMeta );
 
     // What's the directory path?
@@ -588,7 +591,7 @@ public class RepositoryImporter implements IRepositoryImporter {
       // Not in the limiting set of source directories, skip the import of this transformation...
       //
       feedback.addLog( BaseMessages.getString(
-          PKG, "RepositoryImporter.SkippedJobNotPartOfLimitingDirectories.Log", jobMeta.getName() ) );
+        PKG, "RepositoryImporter.SkippedJobNotPartOfLimitingDirectories.Log", jobMeta.getName() ) );
       return true;
     }
 
@@ -623,23 +626,24 @@ public class RepositoryImporter implements IRepositoryImporter {
 
         if ( jobMeta.hasRepositoryReferences() ) {
           referencingObjects.add( new RepositoryObject( jobMeta.getObjectId(), jobMeta.getName(), jobMeta
-              .getRepositoryDirectory(), null, null, RepositoryObjectType.JOB, null, false ) );
+            .getRepositoryDirectory(), null, null, RepositoryObjectType.JOB, null, false ) );
         }
 
-        feedback.addLog( BaseMessages.getString(
-            PKG, "RepositoryImporter.JobSaved.Log", Integer.toString( jobNumber ), jobMeta.getName() ) );
+        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.JobSaved.Log", Integer
+          .toString( jobNumber ), jobMeta.getName() ) );
       } catch ( Exception e ) {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingJob.Log", Integer
-            .toString( jobNumber ), jobMeta.getName(), Const.getStackTracker( e ) ) );
+          .toString( jobNumber ), jobMeta.getName(), Const.getStackTracker( e ) ) );
 
         if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-            PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-            PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
     } else {
-      feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.SkippedExistingJob.Log", jobMeta.getName() ) );
+      feedback.addLog( BaseMessages
+        .getString( PKG, "RepositoryImporter.SkippedExistingJob.Log", jobMeta.getName() ) );
     }
     return true;
   }
@@ -660,12 +664,12 @@ public class RepositoryImporter implements IRepositoryImporter {
       // like that...
       //
       feedback.showError( BaseMessages.getString(
-          PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ), BaseMessages.getString(
-          PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
+        PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ), BaseMessages.getString(
+        PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
 
       if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+        PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }
@@ -687,12 +691,13 @@ public class RepositoryImporter implements IRepositoryImporter {
       // This is usually a problem with a missing plugin or something
       // like that...
       //
-      showError( BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Title" ), BaseMessages
+      showError(
+        BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Title" ), BaseMessages
           .getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Message" ), e );
 
       if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+        PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }
@@ -700,20 +705,20 @@ public class RepositoryImporter implements IRepositoryImporter {
   }
 
   private RepositoryDirectoryInterface getTargetDirectory( String directoryPath, String dirOverride,
-      RepositoryImportFeedbackInterface feedback ) throws KettleException {
+    RepositoryImportFeedbackInterface feedback ) throws KettleException {
     RepositoryDirectoryInterface targetDirectory = null;
     if ( dirOverride != null ) {
       targetDirectory = rep.findDirectory( directoryPath );
       if ( targetDirectory == null ) {
         feedback.addLog( BaseMessages.getString(
-            PKG, "RepositoryImporter.CreateDir.Log", directoryPath, getRepositoryRoot().toString() ) );
+          PKG, "RepositoryImporter.CreateDir.Log", directoryPath, getRepositoryRoot().toString() ) );
         targetDirectory = rep.createRepositoryDirectory( getRepositoryRoot(), directoryPath );
       }
     } else {
       targetDirectory = baseDirectory.findDirectory( directoryPath );
       if ( targetDirectory == null ) {
-        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.CreateDir.Log", directoryPath, baseDirectory
-            .toString() ) );
+        feedback.addLog( BaseMessages.getString(
+          PKG, "RepositoryImporter.CreateDir.Log", directoryPath, baseDirectory.toString() ) );
         targetDirectory = rep.createRepositoryDirectory( baseDirectory, directoryPath );
       }
     }
@@ -728,8 +733,8 @@ public class RepositoryImporter implements IRepositoryImporter {
   }
 
   public void fatalXmlErrorEncountered( SAXParseException e ) {
-    showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorInvalidXML.Message" ), BaseMessages.getString(
-        PKG, "RepositoryImporter.ErrorInvalidXML.Title" ), e );
+    showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorInvalidXML.Message" ), BaseMessages
+      .getString( PKG, "RepositoryImporter.ErrorInvalidXML.Title" ), e );
   }
 
   public boolean askContinueOnErrorQuestion( String title, String message ) {

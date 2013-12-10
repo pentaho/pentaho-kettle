@@ -47,7 +47,7 @@ public class RepositoryDirectoryUI {
   /**
    * Set the name of this directory on a TreeItem. Also, create children on this TreeItem to reflect the subdirectories.
    * In these sub-directories, fill in the available transformations from the repository.
-   * 
+   *
    * @param ti
    *          The TreeItem to set the name on and to create the subdirectories
    * @param rep
@@ -67,8 +67,8 @@ public class RepositoryDirectoryUI {
    * @throws KettleDatabaseException
    */
   public static void getTreeWithNames( TreeItem ti, Repository rep, Color dircolor, int sortPosition,
-      boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs,
-      RepositoryDirectoryInterface dir, String filterString, Pattern pattern ) throws KettleDatabaseException {
+    boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs,
+    RepositoryDirectoryInterface dir, String filterString, Pattern pattern ) throws KettleDatabaseException {
     ti.setText( dir.getName() );
     ti.setData( dir );
     ti.setForeground( dircolor );
@@ -79,8 +79,8 @@ public class RepositoryDirectoryUI {
       TreeItem subti = new TreeItem( ti, SWT.NONE );
       subti.setImage( GUIResource.getInstance().getImageArrow() );
       getTreeWithNames(
-          subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir,
-          filterString, pattern );
+        subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir,
+        filterString, pattern );
     }
 
     try {
@@ -120,7 +120,7 @@ public class RepositoryDirectoryUI {
           // need to strip out all non trans/job types
           for ( int i = repositoryObjects.size() - 1; i >= 0; i-- ) {
             if ( !repositoryObjects.get( i ).getObjectType().equals( RepositoryObjectType.JOB )
-                && !repositoryObjects.get( i ).getObjectType().equals( RepositoryObjectType.TRANSFORMATION ) ) {
+              && !repositoryObjects.get( i ).getObjectType().equals( RepositoryObjectType.TRANSFORMATION ) ) {
               repositoryObjects.remove( i );
             }
           }
@@ -171,8 +171,8 @@ public class RepositoryDirectoryUI {
           tiObject.setText( 0, Const.NVL( repositoryObject.getName(), "" ) );
           tiObject.setText( 1, Const.NVL( repositoryObject.getObjectType().getTypeDescription(), "" ) );
           tiObject.setText( 2, Const.NVL( repositoryObject.getModifiedUser(), "" ) );
-          tiObject.setText( 3, repositoryObject.getModifiedDate() != null ? simpleDateFormat.format( repositoryObject
-              .getModifiedDate() ) : "" );
+          tiObject.setText( 3, repositoryObject.getModifiedDate() != null ? simpleDateFormat
+            .format( repositoryObject.getModifiedDate() ) : "" );
           tiObject.setText( 4, Const.NVL( repositoryObject.getDescription(), "" ) );
 
           if ( repositoryObject.isDeleted() ) {
@@ -207,7 +207,7 @@ public class RepositoryDirectoryUI {
 
   /**
    * Gets a directory tree on a TreeItem to work with.
-   * 
+   *
    * @param ti
    *          The TreeItem to set the directory tree on
    * @param dircolor

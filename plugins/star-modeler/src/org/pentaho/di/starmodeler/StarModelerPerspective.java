@@ -121,12 +121,12 @@ import org.w3c.dom.Node;
 public class StarModelerPerspective extends AbstractXulEventHandler implements SpoonPerspective, FileListener, XulEventHandler, SpoonPerspectiveOpenSaveInterface {
 
   private static Class<?> PKG = StarModelerPerspective.class; // for i18n
-  
+
   private LogChannelInterface logger = LogChannel.GENERAL;
-  
+
   protected XulDomContainer container;
   protected XulRunner runner;
-  
+
   protected Document document;
   protected XulTabs tabs;
   protected XulTabpanels panels;
@@ -134,16 +134,16 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
   protected List<SpoonPerspectiveListener> listeners = new ArrayList<SpoonPerspectiveListener>();
   protected EngineMetaInterface selectedMeta;
   protected List<StarDomain> models = new ArrayList<StarDomain>();
-  
+
   protected Map<XulTab, EngineMetaInterface> metas = new WeakHashMap<XulTab, EngineMetaInterface>();
 
-  
+
   private String defaultLocale = LanguageChoice.getInstance().getDefaultLocale().toString();
-  
+
   private String defaultExtension="star";
 
   private static StarModelerPerspective instance;
-  
+
   public class XulTabAndPanel{
     public XulTab tab;
     public XulTabpanel panel;
@@ -152,7 +152,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       this.panel = panel;
     }
   }
-  
+
   public XulTabAndPanel createTab(){
 
     try {
@@ -160,36 +160,36 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       if(name != null){
         tab.setLabel(name);
       }
-      XulTabpanel panel = (XulTabpanel) document.createElement("tabpanel"); //$NON-NLS-1
+      XulTabpanel panel = (XulTabpanel) document.createElement("tabpanel");
       panel.setSpacing(0);
       panel.setPadding(0);
-      
+
       tabs.addChild(tab);
       panels.addChild(panel);
       tabbox.setSelectedIndex(panels.getChildNodes().indexOf(panel));
 
       return new XulTabAndPanel(tab, panel);
-      
+
     } catch (XulException e) {
       e.printStackTrace();
     }
     return null;
   }
-  
+
   public void setMetaForTab(XulTab tab, EngineMetaInterface meta){
     metas.put(tab, meta);
   }
-  
+
   private StarModelerPerspective() {
-    
+
     String perspectiveSrc = "org/pentaho/di/starmodeler/xul/perspective.xul";
     try {
       KettleXulLoader loader = new KettleXulLoader();
       loader.registerClassLoader(getClass().getClassLoader());
-      
+
       Spoon.getInstance().addFileListener(this);
-      
-      container = loader.loadXul(perspectiveSrc, new PDIMessages(this.getClass())); 
+
+      container = loader.loadXul(perspectiveSrc, new PDIMessages(this.getClass()));
 
       runner = new SwtXulRunner();
       runner.addContainer(container);
@@ -203,7 +203,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       BindingFactory bf = new DefaultBindingFactory();
       setDefaultExtension("star");
       bf.setDocument(document);
-      
+
       bf.createBinding(tabbox, "selectedIndex", this, "selectedMeta", new BindingConvertor<Integer, EngineMetaInterface>() {
         public EngineMetaInterface sourceToTarget(Integer value) {
           return metas.get(tabs.getTabByIndex(value));
@@ -223,7 +223,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
 
   }
-  
+
   public static StarModelerPerspective getInstance() {
     if (instance==null) {
       instance=new StarModelerPerspective();
@@ -241,31 +241,31 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     ClassLoader loader = getClass().getClassLoader();
     return loader.getResourceAsStream("org/pentaho/di/starmodeler/images/starmodeler.png");
   }
-  
+
   @Override
   public String getId() {
     return "020-StarModeler";
   }
-  
+
   public boolean acceptsXml(String nodeName) {
     return false;
   }
-  
+
   public String[] getFileTypeDisplayNames(Locale locale) {
     return new String[]{ "Star models" };
   }
-  
+
   public String[] getSupportedExtensions() {
     return new String[]{ "star" };
   }
-  
+
   public final Composite getUI() {
     return (Composite) container.getDocumentRoot().getRootElement().getFirstChild().getManagedObject();
   }
 
-  
-  
-  
+
+
+
   @Override
   public boolean open(Node transNode, String fname, boolean importfile) {
     try {
@@ -281,22 +281,22 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     } catch(Exception e) {
       new ErrorDialog(Spoon.getInstance().getShell(), "Error", "There was an error opening model from file '"+fname+"'", e);
     }
-    
+
     return false;
   }
-  
+
   public void importFile(String filename) {
     open(null, filename, true);
   }
-  
+
   public boolean exportFile(EngineMetaInterface meta, String filename) {
-    
+
     try {
       String xml = meta.getXML();
       OutputStream outputStream = KettleVFS.getOutputStream(filename, false);
       outputStream.write(xml.getBytes(Const.XML_ENCODING));
       outputStream.close();
-      
+
       meta.setFilename(filename);
       return true;
     } catch(Exception e) {
@@ -313,32 +313,32 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       //
       if (meta instanceof StarDomain) {
         StarDomain starDomain = (StarDomain) meta;
-        
+
         // Make sure we pick the active MetaStore to save to, otherwise it's hard to verify
         //
         IMetaStore metaStore = Spoon.getInstance().metaStore.getActiveMetaStore();
-        
+
         LogChannel.GENERAL.logBasic("Saving star domain to meta store: "+metaStore.getName());
-        
+
         // Save the name and description of the shared dimension in the metastore
         //
         StarDomainMetaStoreUtil.saveStarDomain(metaStore, starDomain);
-        
+
         // Save the shared dimensions in the Spoon IMetaStore (update or create)
         //
         for (LogicalTable sharedDimension : starDomain.getSharedDimensions()) {
           SharedDimensionMetaStoreUtil.saveSharedDimension(metaStore, sharedDimension, defaultLocale);
         }
-      
+
         meta.clearChanged();
         Spoon.getInstance().enableMenus();
-        
+
         return true;
       }
     } catch(Exception e) {
       new ErrorDialog(Spoon.getInstance().getShell(), "Error saving model", "There was an error while saving the model:", e);
     }
-    
+
     return false;
   }
 
@@ -389,40 +389,40 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
   }
 
-  
-  
-  
-  
-  
+
+
+
+
+
   @Override
   public Object getData() {
     return null;
   }
-  
+
   @Override
   public String getName() {
     return "starModelerPerspective";
   }
-  
+
   @Override
   public XulDomContainer getXulDomContainer() {
     return null;
   }
-  
+
   @Override
   public void setData(Object arg0) {
   }
-  
+
   @Override
   public void setName(String arg0) {
   }
-  
+
   @Override
   public void setXulDomContainer(XulDomContainer arg0) {
     // TODO Auto-generated method stub
-    
+
   }
-  
+
   public void setNameForTab(XulTab tab, String name){
     String tabName = name;
     List<String> usedNames = new ArrayList<String>();
@@ -441,29 +441,29 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
         num++;
       }
     }
-    
+
     tab.setLabel(tabName);
   }
-  
+
   public void createTabForDomain(final StarDomain starDomain) throws Exception {
     SpoonPerspectiveManager.getInstance().activatePerspective(getClass());
-    
+
     final XulTabAndPanel tabAndPanel = createTab();
     PropsUI props = PropsUI.getInstance();
 
     final Composite comp = (Composite) tabAndPanel.panel.getManagedObject();
     props.setLook(comp);
     comp.setLayout(new FillLayout());
-    
+
     final ScrolledComposite scrolledComposite = new ScrolledComposite(comp, SWT.V_SCROLL | SWT.H_SCROLL);
     props.setLook(scrolledComposite);
     scrolledComposite.setLayout(new FillLayout());
 
     final Composite parentComposite = new Composite(scrolledComposite, SWT.NONE);
     props.setLook(parentComposite);
-    
+
     int margin = Const.MARGIN;
-    
+
     FormLayout formLayout = new FormLayout();
     formLayout.marginLeft=10;
     formLayout.marginRight=10;
@@ -471,41 +471,41 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     formLayout.marginBottom=10;
     formLayout.spacing=margin;
     parentComposite.setLayout(formLayout);
-    
+
     Control lastControl = addModelsGroupToDomainTab(starDomain, tabAndPanel, parentComposite);
     lastControl = addSharedDimensionsGroupToDomainTab(starDomain, tabAndPanel, parentComposite, lastControl);
     lastControl = addPhysicalGroupToDomainTab(starDomain, tabAndPanel, parentComposite, lastControl);
-    
+
     parentComposite.layout(true);
     parentComposite.pack();
-    
-    // What's the size: 
+
+    // What's the size:
     Rectangle bounds = parentComposite.getBounds();
-    
+
     scrolledComposite.setContent(parentComposite);
     scrolledComposite.setExpandHorizontal(true);
     scrolledComposite.setExpandVertical(true);
     scrolledComposite.setMinWidth(bounds.width);
     scrolledComposite.setMinHeight(bounds.height);
-    
+
     models.add(starDomain);
-    
+
     setNameForTab(tabAndPanel.tab, starDomain.getDomain().getName(defaultLocale));
     setMetaForTab(tabAndPanel.tab, starDomain);
     setSelectedMeta(starDomain);
     setActive(true);
 
     comp.layout();
-    
+
     Spoon.getInstance().enableMenus();
   }
-  
+
   private Control addPhysicalGroupToDomainTab(final StarDomain starDomain, final XulTabAndPanel tabAndPanel,
-      final Composite parentComposite, Control lastControl) {    
+      final Composite parentComposite, Control lastControl) {
     PropsUI props = PropsUI.getInstance();
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
-    
+
     // And now for the physical hints
     //
     final Group physicalGroup = new Group(parentComposite, SWT.SHADOW_NONE);
@@ -518,7 +518,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     phGroupLayout.marginBottom=10;
     phGroupLayout.spacing=margin;
     physicalGroup.setLayout(phGroupLayout);
-    
+
     FormData fdPhysicalGroup = new FormData();
     fdPhysicalGroup.top = new FormAttachment(lastControl, 2*margin);
     fdPhysicalGroup.left = new FormAttachment(0, 0);
@@ -530,7 +530,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     //
     final List<DatabaseMeta> sharedDatabases= SharedDatabaseUtil.getDatabaseMetaList(Spoon.getInstance().metaStore);
     String[] databaseNames = SharedDatabaseUtil.getSortedDatabaseNames(sharedDatabases);
-    
+
     Label targetDatabaseLabel = new Label(physicalGroup, SWT.RIGHT);
     props.setLook(targetDatabaseLabel);
     targetDatabaseLabel.setText(BaseMessages.getString(PKG, "StarModelerPerspective.TargetDatabase.Label"));
@@ -539,7 +539,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdTargetDatabaseLabel.right=new FormAttachment(middle, 0);
     fdTargetDatabaseLabel.top =new FormAttachment(0, 0);
     targetDatabaseLabel.setLayoutData(fdTargetDatabaseLabel);
-    
+
     final Button newDatabaseButton = new Button(physicalGroup, SWT.PUSH);
     newDatabaseButton.setText(BaseMessages.getString("System.Button.New"));
     FormData fdNewDatabaseButton = new FormData();
@@ -557,17 +557,17 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdTargetDatabase.right=new FormAttachment(newDatabaseButton, -margin);
     fdTargetDatabase.top =new FormAttachment(lastControl, margin);
     targetDatabase.setLayoutData(fdTargetDatabase);
-    targetDatabase.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) { 
+    targetDatabase.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) {
       starDomain.getDomain().setProperty(DefaultIDs.DOMAIN_TARGET_DATABASE, targetDatabase.getText()); } });
     lastControl = targetDatabase;
-    
+
     newDatabaseButton.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
         createSharedDatabase(targetDatabase);
       }
     });
 
-    
+
     // put some utility buttons at the bottom too...
     //
     Button sqlJobButton = new Button(physicalGroup, SWT.PUSH);
@@ -582,9 +582,9 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     Button mondrianSchemaButton = new Button(physicalGroup, SWT.PUSH);
     mondrianSchemaButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.GenerateMondrianSchema"));
     mondrianSchemaButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { generateMondrialSchemaButton(starDomain); } });
-    BaseStepDialog.positionBottomButtons(physicalGroup, 
+    BaseStepDialog.positionBottomButtons(physicalGroup,
         new Button[] { sqlJobButton, domainJobButton, physicalModelButton, mondrianSchemaButton, }, margin, lastControl);
-    
+
     return physicalGroup;
   }
 
@@ -592,7 +592,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     PropsUI props = PropsUI.getInstance();
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
-    
+
     // Add a group for the logical stars
     //
     final Group logicalGroup = new Group(parentComposite, SWT.SHADOW_NONE);
@@ -605,13 +605,13 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     groupLayout.marginBottom=10;
     groupLayout.spacing=margin;
     logicalGroup.setLayout(groupLayout);
-    
+
     FormData fdLogicalGroup = new FormData();
     fdLogicalGroup.top = new FormAttachment(0, 0);
     fdLogicalGroup.left = new FormAttachment(0, 0);
     fdLogicalGroup.right = new FormAttachment(100, 0);
     logicalGroup.setLayoutData(fdLogicalGroup);
-    
+
     // Add a line to edit the name of the logical domain
     //
     Label nameLabel = new Label(logicalGroup, SWT.RIGHT);
@@ -622,7 +622,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdNameLabel.right=new FormAttachment(middle, 0);
     fdNameLabel.top =new FormAttachment(0, 0);
     nameLabel.setLayoutData(fdNameLabel);
-    
+
     final Text nameText = new Text(logicalGroup, SWT.BORDER | SWT.SINGLE);
     props.setLook(nameText);
     nameText.setText(Const.NVL(starDomain.getDomain().getName(defaultLocale), ""));
@@ -631,12 +631,12 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdNameText.right=new FormAttachment(100, 0);
     fdNameText.top =new FormAttachment(0, 0);
     nameText.setLayoutData(fdNameText);
-    nameText.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) { 
+    nameText.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) {
         starDomain.getDomain().setName(new LocalizedString(defaultLocale, nameText.getText()));
         setNameForTab(tabAndPanel.tab, starDomain.getDomain().getName(defaultLocale));
       } });
     Control lastControl = nameText;
-    
+
     // Add a line to edit the name of the logical domain
     //
     Label descriptionLabel = new Label(logicalGroup, SWT.RIGHT);
@@ -647,7 +647,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdDescriptionLabel.right=new FormAttachment(middle, 0);
     fdDescriptionLabel.top =new FormAttachment(lastControl, margin);
     descriptionLabel.setLayoutData(fdDescriptionLabel);
-    
+
     final Text descriptionText = new Text(logicalGroup, SWT.BORDER | SWT.SINGLE);
     props.setLook(descriptionText);
     descriptionText.setText(Const.NVL(starDomain.getDomain().getDescription(defaultLocale), ""));
@@ -656,11 +656,11 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdDescriptionText.right=new FormAttachment(100, 0);
     fdDescriptionText.top =new FormAttachment(lastControl, margin);
     descriptionText.setLayoutData(fdDescriptionText);
-    descriptionText.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) { 
+    descriptionText.addModifyListener(new ModifyListener() {  public void modifyText(ModifyEvent event) {
       starDomain.getDomain().setDescription(new LocalizedString(defaultLocale, descriptionText.getText())); } });
     lastControl = descriptionText;
-    
-    
+
+
     // Then we'll add a table view of all the models and their descriptions
     //
     Label modelsLabel = new Label(logicalGroup, SWT.RIGHT);
@@ -676,7 +676,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.ModelName.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
       new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.ModelDescription.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
     };
-    
+
     final TableView modelsList=new TableView(new Variables(), logicalGroup, SWT.BORDER, colinf, 1, null, props);
     modelsList.setReadonly(true);
     modelsList.table.addSelectionListener(new SelectionAdapter() {
@@ -690,9 +690,9 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
         }
       }
     });
-    
+
     refreshModelsList(starDomain, modelsList);
-    
+
     FormData fdModelsList = new FormData();
     fdModelsList.top = new FormAttachment(lastControl, margin);
     fdModelsList.bottom = new FormAttachment(lastControl, 250);
@@ -700,11 +700,11 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdModelsList.right = new FormAttachment(100, 0);
     modelsList.setLayoutData(fdModelsList);
     lastControl = modelsList;
-    
-    
-    
+
+
+
     // A few buttons to edit the list
-    // 
+    //
     Button newModelButton = new Button(logicalGroup, SWT.PUSH);
     newModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.NewModel"));
     FormData fdNewModelButton = new FormData();
@@ -712,13 +712,13 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdNewModelButton.left = new FormAttachment(middle, margin);
     newModelButton.setLayoutData(fdNewModelButton);
     newModelButton.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent event) { 
+      public void widgetSelected(SelectionEvent event) {
         if (newModel(logicalGroup.getShell(), starDomain)) {
           refreshModelsList(starDomain, modelsList);
         }
       }
     });
-    
+
     Button editModelButton = new Button(logicalGroup, SWT.PUSH);
     editModelButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.EditModel"));
     FormData fdEditModelButton = new FormData();
@@ -726,7 +726,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdEditModelButton.left = new FormAttachment(newModelButton, margin);
     editModelButton.setLayoutData(fdEditModelButton);
     editModelButton.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent event) { 
+      public void widgetSelected(SelectionEvent event) {
         if (modelsList.getSelectionIndex()<0) return;
         TableItem item = modelsList.table.getSelection()[0];
         String name = item.getText(1);
@@ -752,8 +752,8 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
         }
       }
     });
-    
-    
+
+
     return logicalGroup;
   }
 
@@ -761,7 +761,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     PropsUI props = PropsUI.getInstance();
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
-    
+
     // Add a group for the logical stars
     //
     final Group dimsGroup = new Group(parentComposite, SWT.SHADOW_NONE);
@@ -774,13 +774,13 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     groupLayout.marginBottom=10;
     groupLayout.spacing=margin;
     dimsGroup.setLayout(groupLayout);
-    
+
     FormData fdDimsGroup = new FormData();
     fdDimsGroup.top = new FormAttachment(lastControl, margin);
     fdDimsGroup.left = new FormAttachment(0, 0);
     fdDimsGroup.right = new FormAttachment(100, 0);
     dimsGroup.setLayoutData(fdDimsGroup);
-    
+
     // Then we'll add a table view for the shared dimensions
     //
     Label dimensionsLabel = new Label(dimsGroup, SWT.RIGHT);
@@ -796,7 +796,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.DimensionName.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
       new ColumnInfo(BaseMessages.getString(PKG, "StarModelerPerspective.DimensionDescription.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
     };
-    
+
     final TableView dimensionsList=new TableView(new Variables(), dimsGroup, SWT.BORDER, colinf, 1, null, props);
     dimensionsList.setReadonly(true);
     dimensionsList.table.addSelectionListener(new SelectionAdapter() {
@@ -810,9 +810,9 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
         }
       }
     });
-    
+
     refreshDimensionsList(starDomain, dimensionsList);
-    
+
     FormData fdDimensionsList = new FormData();
     fdDimensionsList.top = new FormAttachment(lastControl, margin);
     fdDimensionsList.bottom = new FormAttachment(lastControl, 250);
@@ -820,9 +820,9 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdDimensionsList.right = new FormAttachment(100, 0);
     dimensionsList.setLayoutData(fdDimensionsList);
     lastControl = dimensionsList;
-    
+
     // A few buttons to edit the list
-    // 
+    //
     Button newDimensionButton = new Button(dimsGroup, SWT.PUSH);
     newDimensionButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.NewSharedDimension"));
     FormData fdNewModelButton = new FormData();
@@ -830,13 +830,13 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdNewModelButton.left = new FormAttachment(middle, margin);
     newDimensionButton.setLayoutData(fdNewModelButton);
     newDimensionButton.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent event) { 
+      public void widgetSelected(SelectionEvent event) {
         if (newSharedDimension(dimsGroup.getShell(), starDomain)) {
           refreshDimensionsList(starDomain, dimensionsList);
         }
       }
     });
-    
+
     Button editDimensionButton = new Button(dimsGroup, SWT.PUSH);
     editDimensionButton.setText(BaseMessages.getString(PKG, "StarModelerPerspective.Button.EditDimension"));
     FormData fdEditModelButton = new FormData();
@@ -844,7 +844,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     fdEditModelButton.left = new FormAttachment(newDimensionButton, margin);
     editDimensionButton.setLayoutData(fdEditModelButton);
     editDimensionButton.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent event) { 
+      public void widgetSelected(SelectionEvent event) {
         if (dimensionsList.getSelectionIndex()<0) return;
         TableItem item = dimensionsList.table.getSelection()[0];
         String name = item.getText(1);
@@ -870,7 +870,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
         }
       }
     });
-    
+
 
     Button testDimensionButton = new Button(dimsGroup, SWT.PUSH);
     testDimensionButton.setText("TEST PUR");
@@ -883,32 +883,32 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
         testMetaStore();
       }
     });
-    
+
     return dimsGroup;
   }
 
-  
+
   protected void testMetaStore() {
     try {
       // Force repository meta store
-      IMetaStore metaStore = Spoon.getInstance().getRepository().getMetaStore(); 
-      
+      IMetaStore metaStore = Spoon.getInstance().getRepository().getMetaStore();
+
       LogChannel.GENERAL.logBasic("Active metastore: "+metaStore.getName());
-      
+
       StarDomainMetaStoreUtil.verifyNamespaceCreated(metaStore, "pentaho");
       IMetaStoreElementType elementType = StarDomainMetaStoreUtil.getStarDomainElementType(metaStore);
       if (elementType==null) {
         throw new KettleException("Unable to find star domain element type");
       }
       LogChannel.GENERAL.logBasic("Found star domain element type: "+elementType.getName()+" : "+elementType.getDescription());
-      
+
       elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, elementType.getName());
       if (elementType==null) {
         throw new KettleException("Unable to find star domain element type by name");
       }
-      
+
       LogChannel.GENERAL.logBasic("Found element type by name");
-      
+
       List<IdNameDescription> list = new ArrayList<IdNameDescription>();
       for (IMetaStoreElement element : metaStore.getElements(PentahoDefaults.NAMESPACE, elementType)) {
         IdNameDescription nameDescription = new IdNameDescription(element.getId(), element.getName(), null);
@@ -917,7 +917,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       LogChannel.GENERAL.logBasic("Found "+list.size()+" star domain elements.");
 
       StarDomainMetaStoreUtil.getStarDomainList(metaStore);
-      
+
     } catch(Exception e) {
       new ErrorDialog(Spoon.getInstance().getShell(), "ERROR", "Error testing meta store: ", e);
     }
@@ -934,25 +934,25 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
           // Add dbMeta to the shared databases...
           //
           IMetaStore metaStore = Spoon.getInstance().getMetaStore();
-          
+
           DatabaseMetaStoreUtil.createDatabaseElement(metaStore, dbMeta);
 
           // Refresh the list...
           //
           final List<DatabaseMeta> sharedDatabases= DatabaseMetaStoreUtil.getDatabaseElements(metaStore);
           String[] databaseNames = SharedDatabaseUtil.getSortedDatabaseNames(sharedDatabases);
-          
+
           targetDatabase.setItems(databaseNames);
           targetDatabase.setText(dbMeta.getName());
         }
         retry = false;
       } catch(MetaStoreElementExistException e) {
-        new ErrorDialog(shell, 
-            BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Title"), 
+        new ErrorDialog(shell,
+            BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Title"),
             BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Message"), e);
       } catch (MetaStoreException e) {
-        new ErrorDialog(shell, 
-            BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Title"), 
+        new ErrorDialog(shell,
+            BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Title"),
             BaseMessages.getString(PKG, "StarModelerPerspective.Exception.UnableToCreateSharedDB.Message"), e);
         retry=false;
       }
@@ -961,9 +961,9 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
 
   protected void generateSqlJobButton(StarDomain starDomain) {
     final Spoon spoon = Spoon.getInstance();
-    
-    List<DatabaseMeta> sharedDatabases = SharedDatabaseUtil.loadSharedDatabases(); 
-    
+
+    List<DatabaseMeta> sharedDatabases = SharedDatabaseUtil.loadSharedDatabases();
+
     // TODO: validate presence of repository, repository directory
     //
     JobGenerator jobGenerator = new JobGenerator(starDomain, spoon.rep, new RepositoryDirectory(), sharedDatabases, defaultLocale);
@@ -975,17 +975,17 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       new ErrorDialog(spoon.getShell(),
           BaseMessages.getString(PKG, "StarModelerPerspective.ErrorGeneratingSqlJob.Title"),
           BaseMessages.getString(PKG, "StarModelerPerspective.ErrorGeneratingSqlJob.Message"), e);
-      
+
     }
-      
-    
+
+
   }
 
   protected void generateDomainJobButton(StarDomain starDomain) {
     final Spoon spoon = Spoon.getInstance();
-    
-    List<DatabaseMeta> sharedDatabases = SharedDatabaseUtil.loadSharedDatabases(); 
-    
+
+    List<DatabaseMeta> sharedDatabases = SharedDatabaseUtil.loadSharedDatabases();
+
     JobGenerator jobGenerator = new JobGenerator(starDomain, spoon.rep, new RepositoryDirectory(), sharedDatabases, defaultLocale);
     try {
       List<TransMeta> transMetas = jobGenerator.generateDimensionTransformations();
@@ -997,25 +997,25 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       new ErrorDialog(spoon.getShell(),
           BaseMessages.getString(PKG, "StarModelerPerspective.ErrorGeneratingSqlJob.Title"),
           BaseMessages.getString(PKG, "StarModelerPerspective.ErrorGeneratingSqlJob.Message"), e);
-      
+
     }
-    
+
   }
 
   protected void generatePhysicalModelButton(StarDomain starDomain) {
-    
+
     try {
-      List<DatabaseMeta> sharedDatabases = SharedDatabaseUtil.loadSharedDatabases(); 
+      List<DatabaseMeta> sharedDatabases = SharedDatabaseUtil.loadSharedDatabases();
       MetadataGenerator generator = new MetadataGenerator(starDomain.getDomain(), sharedDatabases);
       Domain physicalMetadataModel = generator.generatePhysicalMetadataModel();
       System.out.println("Generated physical model: "+physicalMetadataModel.getName(defaultLocale));
     } catch(Exception e) {
-      new ErrorDialog(Spoon.getInstance().getShell(), 
+      new ErrorDialog(Spoon.getInstance().getShell(),
           BaseMessages.getString(PKG, "StarModelerPerspective.ErrorGeneratingPhysicalModel.Title"),
           BaseMessages.getString(PKG, "StarModelerPerspective.ErrorGeneratingPhysicalModel.Message"),
           e);
-    }   
-    
+    }
+
   }
 
   protected void generateMondrialSchemaButton(StarDomain starDomain) {
@@ -1035,7 +1035,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     modelsList.optWidth(true);
     Spoon.getInstance().enableMenus();
   }
-  
+
   protected void refreshDimensionsList(StarDomain starDomain, TableView dimensionsList) {
     dimensionsList.clearAll();
     for (LogicalTable table : starDomain.getSharedDimensions()) {
@@ -1050,7 +1050,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
 
   /**
    * Create a new shared dimension in the domain
-   * 
+   *
    * @param domain the domain to create the new model in
    */
   private boolean newSharedDimension(Shell shell, StarDomain starDomain) {
@@ -1068,10 +1068,10 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
 
   /**
    * Edit a shared dimension in the domain
-   * @param shell 
+   * @param shell
    * @param LogicstarDomain the domain to edit the model in
    * @param dimensionName the name of the model to edit
-   * @return 
+   * @return
    */
   private boolean editSharedDimension(Shell shell, StarDomain starDomain, String locale, String dimensionName) {
     LogicalTable logicalTable = findSharedDimension(starDomain, locale, dimensionName);
@@ -1084,10 +1084,10 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
     return false;
   }
-  
+
   /**
    * Delete a shared dimension in the domain
-   *  
+   *
    * @param domain the domain to delete the dimension from
    * @param modelName the name of the dimension to delete
    */
@@ -1107,7 +1107,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
 
   /**
    * Create a new model in the domain
-   * 
+   *
    * @param domain the domain to create the new model in
    */
   private boolean newModel(Shell shell, StarDomain starDomain) {
@@ -1125,10 +1125,10 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
 
   /**
    * Edit a model in the domain
-   * @param shell 
+   * @param shell
    * @param LogicstarDomain the domain to edit the model in
    * @param modelName the name of the model to edit
-   * @return 
+   * @return
    */
   private boolean editModel(Shell shell, StarDomain starDomain, String locale, String modelName) {
     LogicalModel logicalModel = findLogicalTable(starDomain.getDomain(), locale, modelName);
@@ -1141,10 +1141,10 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
     return false;
   }
-  
+
   /**
    * Delete a model in the domain
-   * 
+   *
    * @param domain the domain to delete the model from
    * @param modelName the name of the model to delete
    */
@@ -1160,8 +1160,8 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
     return false;
   }
-  
-  
+
+
   private LogicalTable findSharedDimension(StarDomain starDomain, String locale, String dimensionName) {
     for (LogicalTable logicalTable : starDomain.getSharedDimensions()) {
       String name = ConceptUtil.getName(logicalTable, locale);
@@ -1169,7 +1169,7 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
     return null;
   }
-  
+
   private LogicalModel findLogicalTable(Domain domain, String locale, String modelName) {
     for (LogicalModel logicalModel : domain.getLogicalModels()) {
       String name = ConceptUtil.getName(logicalModel, locale);
@@ -1177,8 +1177,8 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
     return null;
   }
-  
- 
+
+
   public EngineMetaInterface getActiveMeta() {
     int idx = tabbox.getSelectedIndex();
     if( idx == -1 || idx >= tabbox.getTabs().getChildNodes().size()) {
@@ -1186,26 +1186,26 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
     return metas.get(tabbox.getTabs().getChildNodes().get( idx ));
   }
-  
+
   public void setSelectedMeta(EngineMetaInterface meta){
     EngineMetaInterface prevVal = this.selectedMeta;
     this.selectedMeta = meta;
     Spoon.getInstance().enableMenus();
     firePropertyChange("selectedMeta", prevVal, meta);
   }
-  
+
   public EngineMetaInterface getSelectedMeta(){
     return selectedMeta;
   }
-  
+
   public String getDefaultExtension() {
     return defaultExtension;
   }
-  
+
   public void setDefaultExtension(String defaultExtension) {
     this.defaultExtension = defaultExtension;
   }
-  
+
   protected static class CloseConfirmXulDialogCallback implements XulDialogCallback<Object>{
     public boolean closeIt = false;
     public void onClose(XulComponent sender, Status returnCode, Object retVal) {
@@ -1217,12 +1217,12 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
   }
 
   public boolean onTabClose(final int pos) throws XulException {
-    
+
     if(models.get(pos).hasChanged()){
-      XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); 
-      confirm.setTitle(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesTitle")); 
-      confirm.setMessage(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesMessage")); 
-      
+      XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox");
+      confirm.setTitle(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesTitle"));
+      confirm.setMessage(BaseMessages.getString(this.getClass(), "StarModelerPerspective.unsavedChangesMessage"));
+
       CloseConfirmXulDialogCallback callback = new CloseConfirmXulDialogCallback();
       confirm.addDialogCallback(callback);
       confirm.open();
@@ -1233,14 +1233,14 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
       } else {
         return false;
       }
-      
+
     } else {
       models.remove(pos);
       metas.remove(pos);
     }
     return true;
   }
-  
+
 	public boolean onFileClose() {
 		
 		int idx = tabbox.getSelectedIndex();
@@ -1269,8 +1269,8 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
   public void open() {
     // List all star domains in the metastore
     //
-    Shell shell = Spoon.getInstance().getShell();    
-    
+    Shell shell = Spoon.getInstance().getShell();
+
     try {
       List<IdNameDescription> starDomainList = StarDomainMetaStoreUtil.getStarDomainList(Spoon.getInstance().getMetaStore());
       List<String> rows = new ArrayList<String>();

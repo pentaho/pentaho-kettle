@@ -46,8 +46,8 @@ public class RowDataUtilTest extends TestCase {
   public void testResizeArray() throws KettleValueException {
     Object[] arr1 = new Object[] { "test", Boolean.TRUE, new Long( 100 ), new Long( 101 ), new String( "test1" ) };
     Object[] nullArr =
-        new Object[] {
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
+      new Object[] {
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
 
     // ------- Normal cases
 
@@ -108,22 +108,26 @@ public class RowDataUtilTest extends TestCase {
     // Do all different combinations of adding rows to
     // each other
     Object[] newArr1 =
-        RowDataUtil.addRowData( new Object[] {}, 0, new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ) } );
+      RowDataUtil.addRowData(
+        new Object[] {}, 0, new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ) } );
     assertTrue( newArr1.length >= arr.length );
     assertTrue( arrayCompare( newArr1, 0, arr, 0, arr.length ) );
 
     Object[] newArr2 =
-        RowDataUtil.addRowData( new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ) }, 3, new Object[] {} );
+      RowDataUtil.addRowData(
+        new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ) }, 3, new Object[] {} );
     assertTrue( newArr2.length >= arr.length );
     assertTrue( arrayCompare( newArr2, 0, arr, 0, arr.length ) );
 
     Object[] newArr3 =
-        RowDataUtil.addRowData( new Object[] { new Long( 1L ) }, 1, new Object[] { new Long( 2L ), new Long( 3L ) } );
+      RowDataUtil.addRowData(
+        new Object[] { new Long( 1L ) }, 1, new Object[] { new Long( 2L ), new Long( 3L ) } );
     assertTrue( newArr3.length >= arr.length );
     assertTrue( arrayCompare( newArr3, 0, arr, 0, arr.length ) );
 
     Object[] newArr4 =
-        RowDataUtil.addRowData( new Object[] { new Long( 1L ), new Long( 2L ) }, 2, new Object[] { new Long( 3L ) } );
+      RowDataUtil.addRowData(
+        new Object[] { new Long( 1L ), new Long( 2L ) }, 2, new Object[] { new Long( 3L ) } );
     assertTrue( newArr4.length >= arr.length );
     assertTrue( arrayCompare( newArr4, 0, arr, 0, arr.length ) );
   }
@@ -142,7 +146,8 @@ public class RowDataUtilTest extends TestCase {
   }
 
   public void testRemoveItems() throws KettleValueException {
-    Object[] arr1 = new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ), new Long( 4L ), new Long( 5L ) };
+    Object[] arr1 =
+      new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ), new Long( 4L ), new Long( 5L ) };
     Object[] comp1 = new Object[] { new Long( 2L ), new Long( 4L ) };
 
     Object[] newArr1 = RowDataUtil.removeItems( arr1, new int[] {} );

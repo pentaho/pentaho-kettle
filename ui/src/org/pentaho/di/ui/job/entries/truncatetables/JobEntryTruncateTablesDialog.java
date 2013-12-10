@@ -64,12 +64,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
  * This dialog allows you to edit the Truncate Tables job entry settings. (select the connection and the table to be
  * truncated)
- * 
+ *
  * @author Samatar
  * @since 22-07-2008
  */
 public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryTruncateTables.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTruncateTables.class; // for i18n purposes, needed by Translator2!!
 
   private Button wbTable;
 
@@ -223,13 +223,13 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobTruncateTables.Fields.Table.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobTruncateTables.Fields.Schema.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobTruncateTables.Fields.Table.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobTruncateTables.Fields.Schema.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobTruncateTables.Fields.Table.Tooltip" ) );
@@ -237,7 +237,8 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobTruncateTables.Fields.Schema.Tooltip" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -409,9 +410,9 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
         database.connect();
         String[] Tablenames = database.getTablenames();
         EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, Tablenames, BaseMessages.getString(
-                PKG, "JobTruncateTables.SelectTables.Title" ), BaseMessages.getString(
-                PKG, "JobTruncateTables.SelectTables.Message" ) );
+          new EnterSelectionDialog( shell, Tablenames, BaseMessages.getString(
+            PKG, "JobTruncateTables.SelectTables.Title" ), BaseMessages.getString(
+            PKG, "JobTruncateTables.SelectTables.Message" ) );
         dialog.setMulti( true );
         dialog.setAvoidQuickSearch();
         if ( dialog.open() != null ) {
@@ -422,8 +423,8 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
           }
         }
       } catch ( KettleDatabaseException e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "JobEntryTruncateTables.ConnectionError.DialogMessage" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "JobEntryTruncateTables.ConnectionError.DialogMessage" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();

@@ -51,12 +51,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Shows a user 2 lists of strings and allows the linkage of values between values in the 2 lists
- * 
+ *
  * @author Matt
  * @since 23-03-2006
  */
 public class EnterMappingDialog extends Dialog {
-  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_ORIGIN_SEPARATOR = "            (";
 
@@ -126,7 +126,7 @@ public class EnterMappingDialog extends Dialog {
 
   /**
    * Create a new dialog allowing the user to enter a mapping
-   * 
+   *
    * @param parent
    *          the parent shell
    * @param source
@@ -140,7 +140,7 @@ public class EnterMappingDialog extends Dialog {
 
   /**
    * Create a new dialog allowing the user to enter a mapping
-   * 
+   *
    * @param parent
    *          the parent shell
    * @param source
@@ -151,7 +151,7 @@ public class EnterMappingDialog extends Dialog {
    *          the already selected mappings (ArrayList containing <code>SourceToTargetMapping</code>s)
    */
   public EnterMappingDialog( Shell parent, String[] source, String[] target,
-      java.util.List<SourceToTargetMapping> mappings ) {
+    java.util.List<SourceToTargetMapping> mappings ) {
     super( parent, SWT.NONE );
     props = PropsUI.getInstance();
     this.sourceList = source;
@@ -164,7 +164,8 @@ public class EnterMappingDialog extends Dialog {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX | SWT.APPLICATION_MODAL | SWT.SHEET );
+    shell =
+      new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX | SWT.APPLICATION_MODAL | SWT.SHEET );
     props.setLook( shell );
 
     shell.setImage( GUIResource.getInstance().getImageSpoon() );
@@ -522,7 +523,7 @@ public class EnterMappingDialog extends Dialog {
     for ( int i = 0; i < mappings.size(); i++ ) {
       SourceToTargetMapping mapping = mappings.get( i );
       String mappingString =
-          sourceList[mapping.getSourcePosition()] + " --> " + targetList[mapping.getTargetPosition()];
+        sourceList[mapping.getSourcePosition()] + " --> " + targetList[mapping.getTargetPosition()];
       wResult.add( mappingString );
     }
 

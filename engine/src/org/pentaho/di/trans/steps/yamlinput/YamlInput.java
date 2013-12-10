@@ -45,18 +45,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read YAML files, parse them and convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 20-06-2007
  */
 public class YamlInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = YamlInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = YamlInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private YamlInputMeta meta;
 
   private YamlInputData data;
 
-  public YamlInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public YamlInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -65,7 +66,7 @@ public class YamlInput extends BaseStep implements StepInterface {
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
       logError( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
-          PKG, "YamlInput.Log.RequiredFiles", message ) );
+        PKG, "YamlInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesMissing", message ) );
     }
@@ -74,10 +75,10 @@ public class YamlInput extends BaseStep implements StepInterface {
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
       logError( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
-          PKG, "YamlInput.Log.RequiredNotAccessibleFiles", message ) );
+        PKG, "YamlInput.Log.RequiredNotAccessibleFiles", message ) );
 
       throw new KettleException( BaseMessages.getString(
-          PKG, "YamlInput.Log.RequiredNotAccessibleFilesMissing", message ) );
+        PKG, "YamlInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
@@ -115,7 +116,7 @@ public class YamlInput extends BaseStep implements StepInterface {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "YamlInput.Log.ErrorFindingField", meta.getYamlField() ) );
           throw new KettleException( BaseMessages.getString( PKG, "YamlInput.Exception.CouldnotFindField", meta
-              .getYamlField() ) );
+            .getYamlField() ) );
         }
       }
 
@@ -156,7 +157,7 @@ public class YamlInput extends BaseStep implements StepInterface {
     if ( meta.addResultFile() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
       resultFile.setComment( BaseMessages.getString( PKG, "YamlInput.Log.FileAddedResult" ) );
       addResultFile( resultFile );
     }
@@ -201,8 +202,8 @@ public class YamlInput extends BaseStep implements StepInterface {
         }
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString(
-          PKG, "YamlInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e.toString() ) );
+      logError( BaseMessages.getString( PKG, "YamlInput.Log.UnableToOpenFile", "" + data.filenr, data.file
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       logError( Const.getStackTracker( e ) );

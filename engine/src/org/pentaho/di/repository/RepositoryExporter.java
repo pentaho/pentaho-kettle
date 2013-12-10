@@ -68,7 +68,7 @@ public class RepositoryExporter implements IRepositoryExporter {
   }
 
   public synchronized void exportAllObjects( ProgressMonitorListener monitor, String xmlFilename,
-      RepositoryDirectoryInterface root, String exportType ) throws KettleException {
+    RepositoryDirectoryInterface root, String exportType ) throws KettleException {
     OutputStream os = null;
     OutputStreamWriter writer = null;
     try {
@@ -133,11 +133,12 @@ public class RepositoryExporter implements IRepositoryExporter {
   }
 
   private void exportJobs( ProgressMonitorListener monitor, RepositoryDirectoryInterface dirTree,
-      OutputStreamWriter writer ) throws KettleException {
+    OutputStreamWriter writer ) throws KettleException {
     try {
       // Loop over all the directory id's
       ObjectId[] dirids = dirTree.getDirectoryIDs();
-      System.out.println( "Going through " + dirids.length + " directories in directory [" + dirTree.getPath() + "]" );
+      System.out.println( "Going through "
+        + dirids.length + " directories in directory [" + dirTree.getPath() + "]" );
 
       if ( monitor != null ) {
         monitor.subTask( "Exporting the jobs..." );
@@ -174,7 +175,8 @@ public class RepositoryExporter implements IRepositoryExporter {
             writer.write( jobMeta.getXML() + Const.CR );
           } catch ( KettleException ke ) {
             if ( continueOnError ) {
-              log.logError( "An error occurred reading job [" + jobs[i] + "] from directory [" + repdir + "] : ", ke );
+              log.logError(
+                "An error occurred reading job [" + jobs[i] + "] from directory [" + repdir + "] : ", ke );
             } else {
               throw ke;
             }
@@ -291,7 +293,7 @@ public class RepositoryExporter implements IRepositoryExporter {
   }
 
   private void exportTransformations( ProgressMonitorListener monitor, RepositoryDirectoryInterface dirTree,
-      OutputStreamWriter writer ) throws KettleException {
+    OutputStreamWriter writer ) throws KettleException {
     try {
       if ( monitor != null ) {
         monitor.subTask( "Exporting the transformations..." );
@@ -299,7 +301,8 @@ public class RepositoryExporter implements IRepositoryExporter {
 
       // Loop over all the directory id's
       ObjectId[] dirids = dirTree.getDirectoryIDs();
-      System.out.println( "Going through " + dirids.length + " directories in directory [" + dirTree.getPath() + "]" );
+      System.out.println( "Going through "
+        + dirids.length + " directories in directory [" + dirTree.getPath() + "]" );
       boolean continueOnError = true;
       for ( int d = 0; d < dirids.length && ( monitor == null || ( monitor != null && !monitor.isCanceled() ) ); d++ ) {
         RepositoryDirectoryInterface repdir = dirTree.findDirectory( dirids[d] );
@@ -307,13 +310,14 @@ public class RepositoryExporter implements IRepositoryExporter {
         System.out.println( "Directory ID #" + d + " : " + dirids[d] + " : " + repdir );
 
         String[] trans = repository.getTransformationNames( dirids[d], false );
-        for ( int i = 0; i < trans.length && ( monitor == null || ( monitor != null && !monitor.isCanceled() ) ); i++ ) {
+        for ( int i = 0; i < trans.length
+          && ( monitor == null || ( monitor != null && !monitor.isCanceled() ) ); i++ ) {
           try {
-            TransMeta transMeta = repository.loadTransformation( trans[i], repdir, null, true, null ); // reads last
-                                                                                                       // version
+            TransMeta transMeta = repository.loadTransformation( trans[i], repdir, null, true, null );
             transMeta.setRepository( repository );
             System.out.println( "Loading/Exporting transformation ["
-                + repdir.getPath() + " : " + trans[i] + "]  (" + transMeta.getRepositoryDirectory().getPath() + ")" );
+              + repdir.getPath() + " : " + trans[i] + "]  (" + transMeta.getRepositoryDirectory().getPath()
+              + ")" );
             if ( monitor != null ) {
               monitor.subTask( "Exporting transformation [" + trans[i] + "]" );
             }
@@ -334,7 +338,7 @@ public class RepositoryExporter implements IRepositoryExporter {
             //
             if ( continueOnError ) {
               log.logError( "An error occurred reading transformation ["
-                  + trans[i] + "] from directory [" + repdir + "] : ", ke );
+                + trans[i] + "] from directory [" + repdir + "] : ", ke );
             } else {
               throw ke;
             }

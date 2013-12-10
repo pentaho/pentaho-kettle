@@ -59,7 +59,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlSplitfield;
   private CCombo wSplitfield;
@@ -216,46 +216,49 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
     final int fieldsRows = input.getFieldName().length;
 
     final ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.NewField" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.ID" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.RemoveID" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } ), //$NON-NLS-3$
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                ValueMeta.getTypes() ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Format" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Group" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Nullif" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.IfNull" ), ColumnInfo.COLUMN_TYPE_TEXT,
-                false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.TrimType" ),
-                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.NewField" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.ID" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.RemoveID" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "Y", "N" } ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Type" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Length" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Precision" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Format" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Group" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Decimal" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Currency" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Nullif" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.IfNull" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.TrimType" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true ), };
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -322,8 +325,8 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "FieldSplitterDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "FieldSplitterDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "FieldSplitterDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "FieldSplitterDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

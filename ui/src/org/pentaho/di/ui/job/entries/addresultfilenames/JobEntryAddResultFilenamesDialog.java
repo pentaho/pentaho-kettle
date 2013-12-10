@@ -61,17 +61,16 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Delete Files job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 
 public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!
-                                                                  // $NON-NLS-1$
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString(
-      PKG, "JobEntryAddResultFilenames.Filetype.All" ) };
+    PKG, "JobEntryAddResultFilenames.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -120,7 +119,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
   private Button wbaFilename; // Add or change
   private FormData fdbeFilename, fdbaFilename, fdbdFilename;
 
-  public JobEntryAddResultFilenamesDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntryAddResultFilenamesDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryAddResultFilenames) jobEntryInt;
 
@@ -187,7 +187,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     wSettings.setLayout( groupLayout );
 
     wlIncludeSubfolders = new Label( wSettings, SWT.RIGHT );
-    wlIncludeSubfolders.setText( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.IncludeSubfolders.Label" ) );
+    wlIncludeSubfolders.setText( BaseMessages
+      .getString( PKG, "JobEntryAddResultFilenames.IncludeSubfolders.Label" ) );
     props.setLook( wlIncludeSubfolders );
     fdlIncludeSubfolders = new FormData();
     fdlIncludeSubfolders.left = new FormAttachment( 0, 0 );
@@ -197,7 +198,7 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     wIncludeSubfolders = new Button( wSettings, SWT.CHECK );
     props.setLook( wIncludeSubfolders );
     wIncludeSubfolders.setToolTipText( BaseMessages.getString(
-        PKG, "JobEntryAddResultFilenames.IncludeSubfolders.Tooltip" ) );
+      PKG, "JobEntryAddResultFilenames.IncludeSubfolders.Tooltip" ) );
     fdIncludeSubfolders = new FormData();
     fdIncludeSubfolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubfolders.top = new FormAttachment( wName, margin );
@@ -244,8 +245,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     wlDeleteAllBefore.setLayoutData( fdlDeleteAllBefore );
     wDeleteAllBefore = new Button( wSettings, SWT.CHECK );
     props.setLook( wDeleteAllBefore );
-    wDeleteAllBefore
-        .setToolTipText( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.DeleteAllBefore.Tooltip" ) );
+    wDeleteAllBefore.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryAddResultFilenames.DeleteAllBefore.Tooltip" ) );
     fdDeleteAllBefore = new FormData();
     fdDeleteAllBefore.left = new FormAttachment( middle, 0 );
     fdDeleteAllBefore.top = new FormAttachment( wPrevious, margin );
@@ -362,8 +363,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     fdlFilemask.right = new FormAttachment( middle, -margin );
     wlFilemask.setLayoutData( fdlFilemask );
     wFilemask =
-        new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobEntryAddResultFilenames.Wildcard.Tooltip" ) );
+      new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobEntryAddResultFilenames.Wildcard.Tooltip" ) );
     props.setLook( wFilemask );
     wFilemask.addModifyListener( lsMod );
     fdFilemask = new FormData();
@@ -376,7 +377,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     wbdFilename = new Button( shell, SWT.PUSH | SWT.CENTER );
     props.setLook( wbdFilename );
     wbdFilename.setText( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.FilenameDelete.Button" ) );
-    wbdFilename.setToolTipText( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.FilenameDelete.Tooltip" ) );
+    wbdFilename
+      .setToolTipText( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.FilenameDelete.Tooltip" ) );
     fdbdFilename = new FormData();
     fdbdFilename.right = new FormAttachment( 100, 0 );
     fdbdFilename.top = new FormAttachment( wFilemask, 40 );
@@ -405,13 +407,13 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Argument.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Wildcard.Label" ),
-                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Argument.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Wildcard.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Column" ) );
@@ -419,7 +421,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Wildcard.Column" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

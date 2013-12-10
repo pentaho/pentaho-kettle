@@ -30,7 +30,7 @@ import java.io.StringReader;
  * representing a SQL query. It respects the notion of a string literal, such that if a comment appears in a string
  * literal, it is treated as part of the string instead of a comment. Both single-quoted and double-quoted string
  * literals are supported, including nested quotes (whether the SQL dialect supports them or not).
- * 
+ *
  * @author Matt Burgess
  */
 public class SqlCommentScrubber {
@@ -52,10 +52,10 @@ public class SqlCommentScrubber {
 
   /**
    * Checks to see whether the character is a quote character
-   * 
+   *
    * @param ch
    *          the input character to check
-   * 
+   *
    * @return true if the input character is a quote character, false if not
    */
   private static boolean isQuoteChar( int ch ) {
@@ -74,10 +74,10 @@ public class SqlCommentScrubber {
    * character is starting, ending, or inside a comment construct. The state machine also checks to see if the current
    * character is starting, ending, or inside a single-quoted string literal, as this takes precedence over comment
    * constructs. In other words, comments inside strings are not actually comments, they are part of the string literal.
-   * 
+   *
    * @param text
    *          a string representing the SQL query to parse and from which to remove comments
-   * 
+   *
    * @return the input string with SQL comments removed, or null if the input string is null
    */
   public static String removeComments( String text ) {

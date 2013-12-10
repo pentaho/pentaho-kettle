@@ -46,9 +46,9 @@ import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 /**
  * Test class for the Add sequence step.
- * 
+ *
  * TODO: - Test steps using the same counter (harder to test because of concurrency issues).
- * 
+ *
  * @author Sven Boden
  */
 public class AddSequenceTest extends TestCase {
@@ -56,10 +56,11 @@ public class AddSequenceTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        {
-            new ValueMeta( "counter", ValueMeta.TYPE_INTEGER ), new ValueMeta( "valuename", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "valuename_1", ValueMeta.TYPE_INTEGER ),
-            new ValueMeta( "valuename_2", ValueMeta.TYPE_INTEGER ) };
+    {
+      new ValueMeta( "counter", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "valuename", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "valuename_1", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "valuename_2", ValueMeta.TYPE_INTEGER ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

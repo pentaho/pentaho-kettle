@@ -47,7 +47,7 @@ public class XulPreviewRowsDialog {
   private static final String XUL = "org/pentaho/di/ui/core/database/dialog/preview_rows.xul";
 
   public XulPreviewRowsDialog( Shell aShell, int aStyle, DatabaseMeta aDatabaseMeta, String aSchemaName,
-      String aTableName, int aLimit ) {
+    String aTableName, int aLimit ) {
     this.shell = aShell;
     this.limit = aLimit;
     this.schema = aSchemaName;
@@ -63,14 +63,15 @@ public class XulPreviewRowsDialog {
       this.container = theLoader.loadXul( XUL );
 
       this.controller =
-          new XulPreviewRowsController( this.shell, this.databaseMeta, this.schema, this.table, this.limit );
+        new XulPreviewRowsController( this.shell, this.databaseMeta, this.schema, this.table, this.limit );
       this.container.addEventHandler( this.controller );
 
       this.runner = new SwtXulRunner();
       this.runner.addContainer( this.container );
       this.runner.initialize();
 
-      XulDialog thePreviewDialog = (XulDialog) this.container.getDocumentRoot().getElementById( "previewRowsDialog" );
+      XulDialog thePreviewDialog =
+        (XulDialog) this.container.getDocumentRoot().getElementById( "previewRowsDialog" );
       thePreviewDialog.show();
 
     } catch ( Exception e ) {

@@ -53,7 +53,7 @@ public class LdapProtocolFactory {
 
   /**
    * Returns the connection types understood by the factory
-   * 
+   *
    * @return the connection types understood by the factory
    * @throws KettleException
    */
@@ -77,7 +77,7 @@ public class LdapProtocolFactory {
 
   /**
    * Creates the LdapProtocol appropriate for the LdapMeta
-   * 
+   *
    * @param variableSpace
    *          the variable space for environment substitutions
    * @param meta
@@ -88,7 +88,7 @@ public class LdapProtocolFactory {
    * @throws KettleException
    */
   public LdapProtocol createLdapProtocol( VariableSpace variableSpace, LdapMeta meta,
-      Collection<String> binaryAttributes ) throws KettleException {
+    Collection<String> binaryAttributes ) throws KettleException {
     String connectionType = meta.getProtocol();
 
     synchronized ( protocols ) {
@@ -96,8 +96,8 @@ public class LdapProtocolFactory {
         if ( getName( protocol ).equals( connectionType ) ) {
           try {
             return protocol.getConstructor(
-                LogChannelInterface.class, VariableSpace.class, LdapMeta.class, Collection.class ).newInstance(
-                log, variableSpace, meta, binaryAttributes );
+              LogChannelInterface.class, VariableSpace.class, LdapMeta.class, Collection.class ).newInstance(
+              log, variableSpace, meta, binaryAttributes );
           } catch ( Exception e ) {
             throw new KettleException( e );
           }

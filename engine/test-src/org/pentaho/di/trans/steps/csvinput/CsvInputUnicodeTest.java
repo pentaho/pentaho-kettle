@@ -45,7 +45,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 /**
  * Tests for unicode support in CsvInput step
- * 
+ *
  * @author Pavel Sakun
  * @see CsvInput
  */
@@ -62,9 +62,9 @@ public class CsvInputUnicodeTest {
   public static void setUp() throws KettleException {
     KettleEnvironment.init();
     stepMockHelper =
-        new StepMockHelper<CsvInputMeta, CsvInputData>( "CsvInputTest", CsvInputMeta.class, CsvInputData.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      new StepMockHelper<CsvInputMeta, CsvInputData>( "CsvInputTest", CsvInputMeta.class, CsvInputData.class );
+    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -88,16 +88,17 @@ public class CsvInputUnicodeTest {
     doTest( UTF8, UTF8, TEST_DATA );
   }
 
-  private void doTest( final String fileEncoding, final String stepEncoding, final String testData ) throws Exception {
+  private void doTest( final String fileEncoding, final String stepEncoding, final String testData )
+    throws Exception {
     String testFilePath = createTestFile( fileEncoding, testData );
 
     CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding );
     CsvInputData data = new CsvInputData();
 
     CsvInput csvInput =
-        new CsvInput(
-            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
+      new CsvInput(
+        stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans );
 
     csvInput.init( meta, data );
     csvInput.addRowListener( new RowAdapter() {

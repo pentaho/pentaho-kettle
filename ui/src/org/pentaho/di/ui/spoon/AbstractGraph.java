@@ -36,7 +36,7 @@ import org.pentaho.ui.xul.XulDomContainer;
 
 /**
  * The beginnings of a common graph object, used by JobGraph and TransGraph to share common behaviors.
- * 
+ *
  * @author Will Gorman (wgorman@pentaho.com)
  */
 public abstract class AbstractGraph extends Composite {
@@ -139,7 +139,8 @@ public abstract class AbstractGraph extends Composite {
     offset = getOffset();
     Point real;
     if ( offset != null ) {
-      real = new Point( Math.round( ( x / magnification - offset.x ) ), Math.round( ( y / magnification - offset.y ) ) );
+      real =
+        new Point( Math.round( ( x / magnification - offset.x ) ), Math.round( ( y / magnification - offset.y ) ) );
     } else {
       real = new Point( x, y );
     }
@@ -161,7 +162,7 @@ public abstract class AbstractGraph extends Composite {
   /**
    * Gets the ChangedWarning for the given TabItemInterface class. This should be overridden by a given TabItemInterface
    * class to support the changed warning dialog.
-   * 
+   *
    * @return ChangedWarningInterface The class that provides the dialog and return value
    */
   public ChangedWarningInterface getChangedWarning() {
@@ -170,7 +171,7 @@ public abstract class AbstractGraph extends Composite {
 
   /**
    * Show the ChangedWarning and return the users selection
-   * 
+   *
    * @return int Value of SWT.YES, SWT.NO, SWT.CANCEL
    */
   public int showChangedWarning( String fileName ) throws KettleException {

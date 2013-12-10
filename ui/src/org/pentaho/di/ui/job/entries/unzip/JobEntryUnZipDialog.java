@@ -63,17 +63,18 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Unzip job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 25-09-2007
  */
 
 public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryUnZip.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryUnZip.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] {
-      BaseMessages.getString( PKG, "JobUnZip.Filetype.Zip" ), BaseMessages.getString( PKG, "JobUnZip.Filetype.Jar" ),
-      BaseMessages.getString( PKG, "JobUnZip.Filetype.All" ) };
+    BaseMessages.getString( PKG, "JobUnZip.Filetype.Zip" ),
+    BaseMessages.getString( PKG, "JobUnZip.Filetype.Jar" ),
+    BaseMessages.getString( PKG, "JobUnZip.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -397,8 +398,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     fdlWildcardSource.right = new FormAttachment( middle, -margin );
     wlWildcardSource.setLayoutData( fdlWildcardSource );
     wWildcardSource =
-        new TextVar( jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobUnZip.WildcardSource.Tooltip" ) );
+      new TextVar( jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobUnZip.WildcardSource.Tooltip" ) );
     props.setLook( wWildcardSource );
     wWildcardSource.addModifyListener( lsMod );
     fdWildcardSource = new FormData();
@@ -472,8 +473,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     wbTargetDirectory.setLayoutData( fdbTargetDirectory );
 
     wTargetDirectory =
-        new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobUnZip.TargetDir.Tooltip" ) );
+      new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobUnZip.TargetDir.Tooltip" ) );
     props.setLook( wTargetDirectory );
     wTargetDirectory.addModifyListener( lsMod );
     fdTargetDirectory = new FormData();
@@ -515,8 +516,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     fdlWildcard.right = new FormAttachment( middle, -margin );
     wlWildcard.setLayoutData( fdlWildcard );
     wWildcard =
-        new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobUnZip.Wildcard.Tooltip" ) );
+      new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobUnZip.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();
@@ -535,8 +536,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     fdlWildcardExclude.right = new FormAttachment( middle, -margin );
     wlWildcardExclude.setLayoutData( fdlWildcardExclude );
     wWildcardExclude =
-        new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobUnZip.WildcardExclude.Tooltip" ) );
+      new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobUnZip.WildcardExclude.Tooltip" ) );
     props.setLook( wWildcardExclude );
     wWildcardExclude.addModifyListener( lsMod );
     fdWildcardExclude = new FormData();
@@ -666,7 +667,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     // Create multi-part file?
     wlSetModificationDateToOriginal = new Label( wUnzippedFiles, SWT.RIGHT );
     wlSetModificationDateToOriginal.setText( BaseMessages.getString(
-        PKG, "JobUnZip.SetModificationDateToOriginal.Label" ) );
+      PKG, "JobUnZip.SetModificationDateToOriginal.Label" ) );
     props.setLook( wlSetModificationDateToOriginal );
     fdlSetModificationDateToOriginal = new FormData();
     fdlSetModificationDateToOriginal.left = new FormAttachment( 0, 0 );
@@ -676,7 +677,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     wSetModificationDateToOriginal = new Button( wUnzippedFiles, SWT.CHECK );
     props.setLook( wSetModificationDateToOriginal );
     wSetModificationDateToOriginal.setToolTipText( BaseMessages.getString(
-        PKG, "JobUnZip.SetModificationDateToOriginal.Tooltip" ) );
+      PKG, "JobUnZip.SetModificationDateToOriginal.Tooltip" ) );
     fdSetModificationDateToOriginal = new FormData();
     fdSetModificationDateToOriginal.left = new FormAttachment( middle, 0 );
     fdSetModificationDateToOriginal.top = new FormAttachment( wAddOriginalTimestamp, margin );
@@ -753,8 +754,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     fdlMovetoDirectory.right = new FormAttachment( middle, -margin );
     wlMovetoDirectory.setLayoutData( fdlMovetoDirectory );
     wMovetoDirectory =
-        new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobUnZip.MovetoDirectory.Tooltip" ) );
+      new TextVar( jobMeta, wUnzippedFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobUnZip.MovetoDirectory.Tooltip" ) );
     props.setLook( wMovetoDirectory );
 
     // Browse folders button ...
@@ -933,8 +934,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wNrErrorsLessThan =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
-            PKG, "JobUnZip.NrBadFormedLessThan.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobUnZip.NrBadFormedLessThan.Tooltip" ) );
     props.setLook( wNrErrorsLessThan );
     wNrErrorsLessThan.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();

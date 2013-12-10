@@ -47,7 +47,7 @@ public interface MetricsSnapshotInterface {
 
   /**
    * Calculate the key for this snapshot, usually a combination of description and subject.
-   * 
+   *
    * @return the key for this snapshot
    */
   public String getKey();

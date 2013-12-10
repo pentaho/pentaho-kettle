@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of ValueDate.
- * 
+ *
  * @author Sven Boden
  */
 public class ValueDateTest extends TestCase {

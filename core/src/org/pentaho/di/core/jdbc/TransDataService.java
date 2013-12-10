@@ -38,9 +38,9 @@ import org.w3c.dom.Node;
  * This class describes a transformation data service containing a name, a description as well as a transformation to
  * give the data, the step from which to read. Later we will also add additional information about this service like the
  * database cache location for this service, retention period and so on.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class TransDataService implements XMLInterface {
 
@@ -74,9 +74,9 @@ public class TransDataService implements XMLInterface {
 
   public TransDataService( Node serviceNode ) {
     this(
-        XMLHandler.getTagValue( serviceNode, "name" ), XMLHandler.getTagValue( serviceNode, "filename" ), null,
-        XMLHandler.getTagValue( serviceNode, "service_step" ), extractFieldVariableMapping( serviceNode ),
-        ServiceCacheMethod.None );
+      XMLHandler.getTagValue( serviceNode, "name" ), XMLHandler.getTagValue( serviceNode, "filename" ), null,
+      XMLHandler.getTagValue( serviceNode, "service_step" ), extractFieldVariableMapping( serviceNode ),
+      ServiceCacheMethod.None );
   }
 
   /**
@@ -87,7 +87,8 @@ public class TransDataService implements XMLInterface {
    * @param serviceStepName
    */
   public TransDataService( String name, String fileName, ObjectId objectId, String serviceStepName ) {
-    this( name, fileName, objectId, serviceStepName, new ArrayList<FieldVariableMapping>(), ServiceCacheMethod.None );
+    this(
+      name, fileName, objectId, serviceStepName, new ArrayList<FieldVariableMapping>(), ServiceCacheMethod.None );
   }
 
   /**
@@ -98,7 +99,7 @@ public class TransDataService implements XMLInterface {
    * @param serviceStepName
    */
   public TransDataService( String name, String fileName, ObjectId objectId, String serviceStepName,
-      List<FieldVariableMapping> fieldVariableMappings, ServiceCacheMethod cacheMethod ) {
+    List<FieldVariableMapping> fieldVariableMappings, ServiceCacheMethod cacheMethod ) {
     this.name = name;
     this.fileName = fileName;
     this.objectId = objectId;
@@ -111,13 +112,13 @@ public class TransDataService implements XMLInterface {
     List<FieldVariableMapping> map = new ArrayList<FieldVariableMapping>();
 
     List<Node> nodes =
-        XMLHandler.getNodes( XMLHandler.getSubNode( serviceNode, XML_TAG_VARIABLE_MAPS ), XML_TAG_VARIABLE_MAP );
+      XMLHandler.getNodes( XMLHandler.getSubNode( serviceNode, XML_TAG_VARIABLE_MAPS ), XML_TAG_VARIABLE_MAP );
     for ( Node node : nodes ) {
       String field = XMLHandler.getTagValue( node, "field" );
       String target = XMLHandler.getTagValue( node, "target" );
       String variable = XMLHandler.getTagValue( node, "variable" );
       MappingType mappingType =
-          FieldVariableMapping.MappingType.getMappingType( XMLHandler.getTagValue( node, "type" ) );
+        FieldVariableMapping.MappingType.getMappingType( XMLHandler.getTagValue( node, "type" ) );
       map.add( new FieldVariableMapping( field, target, variable, mappingType ) );
     }
 

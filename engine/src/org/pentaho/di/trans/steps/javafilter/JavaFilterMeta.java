@@ -54,11 +54,11 @@ import org.w3c.dom.Node;
 
 /**
  * Contains the meta-data for the java filter step: calculates conditions using Janino
- * 
+ *
  * Created on 30-oct-2009
  */
 public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = JavaFilterMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JavaFilterMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The formula calculations to be performed */
   private String condition;
@@ -78,7 +78,8 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
   public void allocate( int nrCalcs ) {
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
     targetStreams.get( 0 ).setSubject( XMLHandler.getTagValue( stepnode, "send_true_to" ) );
@@ -144,9 +145,9 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
     rep.saveStepAttribute( id_transformation, id_step, "condition", condition );
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -154,18 +155,18 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( targetStreams.get( 0 ).getStepname() != null && targetStreams.get( 1 ).getStepname() != null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.BothTrueAndFalseStepSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.BothTrueAndFalseStepSpecified" ), stepMeta );
       remarks.add( cr );
     } else if ( targetStreams.get( 0 ).getStepname() == null && targetStreams.get( 1 ).getStepname() == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.NeitherTrueAndFalseStepSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.NeitherTrueAndFalseStepSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.PlsSpecifyBothTrueAndFalseStep" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.PlsSpecifyBothTrueAndFalseStep" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -173,10 +174,10 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
       int trueTargetIdx = Const.indexOfString( targetStreams.get( 0 ).getStepname(), output );
       if ( trueTargetIdx < 0 ) {
         cr =
-            new CheckResult(
-                CheckResultInterface.TYPE_RESULT_ERROR,
-                BaseMessages.getString( PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "true", targetStreams.get(
-                    0 ).getStepname() ), stepMeta );
+          new CheckResult(
+            CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "true", targetStreams
+                .get( 0 ).getStepname() ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -185,30 +186,29 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
       int falseTargetIdx = Const.indexOfString( targetStreams.get( 1 ).getStepname(), output );
       if ( falseTargetIdx < 0 ) {
         cr =
-            new CheckResult(
-                CheckResultInterface.TYPE_RESULT_ERROR,
-                BaseMessages.getString( PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "false", targetStreams
-                    .get( 1 ).getStepname() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
+            .getString( PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "false", targetStreams
+              .get( 1 ).getStepname() ), stepMeta );
         remarks.add( cr );
       }
     }
 
     if ( Const.isEmpty( condition ) ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.NoConditionSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.NoConditionSpecified" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.ConditionSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.ConditionSpecified" ), stepMeta );
     }
     remarks.add( cr );
 
     // Look up fields in the input stream <prev>
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       // What fields are used in the condition?
@@ -216,7 +216,8 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
       //
     } else {
       error_message =
-          BaseMessages.getString( PKG, "JavaFilterMeta.CheckResult.CouldNotReadFieldsFromPreviousStep" ) + Const.CR;
+        BaseMessages.getString( PKG, "JavaFilterMeta.CheckResult.CouldNotReadFieldsFromPreviousStep" )
+          + Const.CR;
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );
     }
@@ -224,19 +225,19 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "JavaFilterMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "JavaFilterMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new JavaFilter( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -253,9 +254,9 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
       ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
-          PKG, "JavaFilterMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
+        PKG, "JavaFilterMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
       ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
-          PKG, "JavaFilterMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
+        PKG, "JavaFilterMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
     }
 
     return ioMeta;

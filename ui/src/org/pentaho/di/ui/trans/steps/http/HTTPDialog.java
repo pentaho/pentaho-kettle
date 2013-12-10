@@ -73,7 +73,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlUrl;
   private TextVar wUrl;
@@ -381,7 +381,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
     wSocketTimeOut.setLayoutData( fdSocketTimeOut );
 
     wlCloseIdleConnectionsTime = new Label( gSettings, SWT.RIGHT );
-    wlCloseIdleConnectionsTime.setText( BaseMessages.getString( PKG, "HTTPDialog.CloseIdleConnectionsTime.Label" ) );
+    wlCloseIdleConnectionsTime
+      .setText( BaseMessages.getString( PKG, "HTTPDialog.CloseIdleConnectionsTime.Label" ) );
     props.setLook( wlCloseIdleConnectionsTime );
     FormData fdlCloseIdleConnectionsTime = new FormData();
     fdlCloseIdleConnectionsTime.top = new FormAttachment( wSocketTimeOut, margin );
@@ -391,7 +392,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
     wCloseIdleConnectionsTime = new TextVar( transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wCloseIdleConnectionsTime.addModifyListener( lsMod );
     wCloseIdleConnectionsTime.setToolTipText( BaseMessages.getString(
-        PKG, "HTTPDialog.CloseIdleConnectionsTime.Tooltip" ) );
+      PKG, "HTTPDialog.CloseIdleConnectionsTime.Tooltip" ) );
     props.setLook( wCloseIdleConnectionsTime );
     FormData fdCloseIdleConnectionsTime = new FormData();
     fdCloseIdleConnectionsTime.top = new FormAttachment( wSocketTimeOut, margin );
@@ -650,16 +651,18 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
     final int FieldsRows = input.getArgumentField().length;
 
     colinf =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
 
     wFields =
-        new TableView(
-            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
+        props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -679,17 +682,17 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
     final int HeadersRows = input.getHeaderParameter().length;
 
     colinfHeaders =
-        new ColumnInfo[] {
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-                new String[] { "" }, false ),
-            new ColumnInfo(
-                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Header" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Header" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinfHeaders[1].setUsingVariables( true );
     wHeaders =
-        new TableView(
-            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfHeaders, HeadersRows, lsMod,
-            props );
+      new TableView(
+        transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfHeaders, HeadersRows,
+        lsMod, props );
 
     wGetHeaders = new Button( wAdditionalComp, SWT.PUSH );
     wGetHeaders.setText( BaseMessages.getString( PKG, "HTTPDialog.GetHeaders.Button" ) );
@@ -997,7 +1000,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "HTTPDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "HTTPDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "HTTPDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
@@ -1009,7 +1013,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
         BaseStepDialog.getFieldsFromPrevious( r, wHeaders, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "HTTPDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "HTTPDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "HTTPDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 

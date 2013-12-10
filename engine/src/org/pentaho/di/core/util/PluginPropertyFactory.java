@@ -24,7 +24,7 @@ package org.pentaho.di.core.util;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class PluginPropertyFactory {
 
@@ -32,7 +32,7 @@ public class PluginPropertyFactory {
 
   /**
    * Constructor.
-   * 
+   *
    * @param properties
    *          properties to set.
    * @throws IllegalArgumentException

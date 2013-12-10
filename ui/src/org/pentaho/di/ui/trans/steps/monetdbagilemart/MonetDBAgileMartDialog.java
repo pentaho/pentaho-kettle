@@ -54,10 +54,10 @@ import org.pentaho.di.ui.trans.steps.monetdbbulkloader.MonetDBBulkLoaderDialog;
 
 /**
  * Dialog class for the MonetDB bulk loader step.
- * 
+ *
  */
 public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements StepDialogInterface {
-  private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   // private static final String DEFAULT_BUFFER_SIZE = "1000";
   private static final String DEFAULT_ENCODING = "UTF-8";

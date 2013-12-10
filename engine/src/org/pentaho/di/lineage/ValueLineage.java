@@ -32,9 +32,9 @@ import org.pentaho.di.trans.step.StepMeta;
 /**
  * This class contains value lineage information.<br>
  * That means that we will have information on where and how a certain value is originating, being manipulated etc.<br>
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class ValueLineage {
   private TransMeta transMeta;
@@ -44,7 +44,7 @@ public class ValueLineage {
 
   /**
    * Create a new ValueLineage object with an empty set of source steps.
-   * 
+   *
    * @param valueMeta
    */
   public ValueLineage( TransMeta transMeta, ValueMeta valueMeta ) {

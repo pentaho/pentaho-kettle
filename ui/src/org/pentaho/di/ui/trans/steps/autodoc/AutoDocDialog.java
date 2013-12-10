@@ -58,7 +58,7 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AutoDoc.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AutoDoc.class; // for i18n purposes, needed by Translator2!!
 
   private AutoDocMeta inputMeta;
 
@@ -130,18 +130,18 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     try {
       previousFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleStepException e ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages
-              .getString( PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages.getString(
+        PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
       previousFields = new RowMeta();
     }
 
     // The filename field ...
     //
     wFilenameField =
-        new LabelComboVar(
-            transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.FilenameField.Label" ), BaseMessages
-                .getString( PKG, "AutoDocDialog.FilenameField.Tooltip" ) );
+      new LabelComboVar(
+        transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.FilenameField.Label" ), BaseMessages
+          .getString( PKG, "AutoDocDialog.FilenameField.Tooltip" ) );
     wFilenameField.setItems( previousFields.getFieldNames() );
     props.setLook( wFilenameField );
     wFilenameField.addModifyListener( lsMod );
@@ -155,9 +155,9 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     // The FileType field ...
     //
     wFileTypeField =
-        new LabelComboVar(
-            transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.FileTypeField.Label" ), BaseMessages
-                .getString( PKG, "AutoDocDialog.FileTypeField.Tooltip" ) );
+      new LabelComboVar(
+        transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.FileTypeField.Label" ), BaseMessages
+          .getString( PKG, "AutoDocDialog.FileTypeField.Tooltip" ) );
     wFileTypeField.setItems( previousFields.getFieldNames() );
     props.setLook( wFileTypeField );
     wFileTypeField.addModifyListener( lsMod );
@@ -171,9 +171,9 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     // The target filename ...
     //
     wTargetFilename =
-        new LabelTextVar(
-            transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.TargetFilename.Label" ), BaseMessages
-                .getString( PKG, "AutoDocDialog.TargetFilename.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.TargetFilename.Label" ), BaseMessages
+          .getString( PKG, "AutoDocDialog.TargetFilename.Tooltip" ) );
     props.setLook( wTargetFilename );
     wTargetFilename.addModifyListener( lsMod );
     FormData fdTargetFilename = new FormData();
@@ -186,9 +186,9 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     // The output type ...
     //
     wOutputType =
-        new LabelComboVar(
-            transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.OutputType.Label" ), BaseMessages.getString(
-                PKG, "AutoDocDialog.OutputType.Tooltip" ) );
+      new LabelComboVar(
+        transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.OutputType.Label" ), BaseMessages
+          .getString( PKG, "AutoDocDialog.OutputType.Tooltip" ) );
     OutputType[] outputTypes = KettleReportBuilder.OutputType.values();
     String[] items = new String[outputTypes.length];
     for ( int i = 0; i < outputTypes.length; i++ ) {

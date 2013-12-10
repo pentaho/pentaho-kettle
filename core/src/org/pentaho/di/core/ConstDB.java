@@ -31,7 +31,7 @@ import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 public class ConstDB {
   /**
    * Select the SAP ERP databases in the List of databases.
-   * 
+   *
    * @param databases
    *          All the databases
    * @return SAP ERP databases in a List of databases.

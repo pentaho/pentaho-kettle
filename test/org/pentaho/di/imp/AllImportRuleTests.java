@@ -33,7 +33,7 @@ import org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest
 
 /**
  * Regression tests for the PDI framework.
- * 
+ *
  * @author sboden
  */
 public class AllImportRuleTests {

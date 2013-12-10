@@ -54,7 +54,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FileLockedDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = FileLockedMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FileLockedMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFileName;
   private CCombo wFileName;
@@ -293,8 +293,8 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
         }
       } catch ( KettleException ke ) {
         new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "FileLockedDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "FileLockedDialog.FailedToGetFields.DialogMessage" ), ke );
+          shell, BaseMessages.getString( PKG, "FileLockedDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "FileLockedDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

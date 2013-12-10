@@ -65,7 +65,7 @@ import com.sforce.soap.partner.fault.LoginFault;
 import com.sforce.soap.partner.sobject.SObject;
 
 public class SalesforceConnection {
-  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String url;
   private String username;
@@ -165,7 +165,8 @@ public class SalesforceConnection {
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.Error.WrongDates" ) );
     }
     // Calculate difference in days
-    long diffDays = ( this.startDate.getTime().getTime() - this.endDate.getTime().getTime() ) / ( 24 * 60 * 60 * 1000 );
+    long diffDays =
+      ( this.startDate.getTime().getTime() - this.endDate.getTime().getTime() ) / ( 24 * 60 * 60 * 1000 );
     if ( diffDays > 30 ) {
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.Error.StartDateTooOlder" ) );
     }
@@ -253,7 +254,7 @@ public class SalesforceConnection {
       this.binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginURL", binding
-            ._getProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY ) ) );
+          ._getProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY ) ) );
       }
 
       // Set timeout
@@ -278,7 +279,7 @@ public class SalesforceConnection {
         AllOrNoneHeader allOrNoneHeader = new AllOrNoneHeader();
         allOrNoneHeader.setAllOrNone( true );
         this.binding.setHeader(
-            new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader", allOrNoneHeader );
+          new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader", allOrNoneHeader );
       }
       // Attempt the login giving the user feedback
       if ( log.isDetailed() ) {
@@ -300,9 +301,9 @@ public class SalesforceConnection {
 
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SessionId" )
-            + " : " + this.loginResult.getSessionId() );
+          + " : " + this.loginResult.getSessionId() );
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.NewServerURL" )
-            + " : " + this.loginResult.getServerUrl() );
+          + " : " + this.loginResult.getServerUrl() );
       }
 
       // set the session header for subsequent call authentication
@@ -318,16 +319,16 @@ public class SalesforceConnection {
       this.userInfo = this.binding.getUserInfo();
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserInfos" )
-            + " : " + this.userInfo.getUserFullName() );
+          + " : " + this.userInfo.getUserFullName() );
         log.logDebug( "----------------------------------------->" );
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserName" )
-            + " : " + this.userInfo.getUserFullName() );
+          + " : " + this.userInfo.getUserFullName() );
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserEmail" )
-            + " : " + this.userInfo.getUserEmail() );
+          + " : " + this.userInfo.getUserEmail() );
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserLanguage" )
-            + " : " + this.userInfo.getUserLanguage() );
+          + " : " + this.userInfo.getUserLanguage() );
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserOrganization" )
-            + " : " + this.userInfo.getOrganizationName() );
+          + " : " + this.userInfo.getOrganizationName() );
         log.logDebug( "<-----------------------------------------" );
       }
 
@@ -344,11 +345,11 @@ public class SalesforceConnection {
       // The LoginFault derives from AxisFault
       ExceptionCode exCode = ex.getExceptionCode();
       if ( exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED
-          || exCode == ExceptionCode.INVALID_CLIENT || exCode == ExceptionCode.INVALID_LOGIN
-          || exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN
-          || exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME || exCode == ExceptionCode.ORG_LOCKED
-          || exCode == ExceptionCode.PASSWORD_LOCKOUT || exCode == ExceptionCode.SERVER_UNAVAILABLE
-          || exCode == ExceptionCode.TRIAL_EXPIRED || exCode == ExceptionCode.UNSUPPORTED_CLIENT ) {
+        || exCode == ExceptionCode.INVALID_CLIENT || exCode == ExceptionCode.INVALID_LOGIN
+        || exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN
+        || exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME || exCode == ExceptionCode.ORG_LOCKED
+        || exCode == ExceptionCode.PASSWORD_LOCKOUT || exCode == ExceptionCode.SERVER_UNAVAILABLE
+        || exCode == ExceptionCode.TRIAL_EXPIRED || exCode == ExceptionCode.UNSUPPORTED_CLIENT ) {
         throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.Error.InvalidUsernameOrPassword" ) );
       }
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.Error.Connection" ), ex );
@@ -371,14 +372,15 @@ public class SalesforceConnection {
           throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorGettingObject" ) );
         }
         if ( !describeSObjectResult.isQueryable() ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SalesforceInputDialog.ObjectNotQueryable", module ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "SalesforceInputDialog.ObjectNotQueryable", module ) );
         }
         if ( this.recordsFilter == SalesforceConnectionUtils.RECORDS_FILTER_UPDATED
-            || this.recordsFilter == SalesforceConnectionUtils.RECORDS_FILTER_DELETED ) {
+          || this.recordsFilter == SalesforceConnectionUtils.RECORDS_FILTER_DELETED ) {
           // The object must be replicateable
           if ( !describeSObjectResult.isReplicateable() ) {
             throw new KettleException( BaseMessages.getString(
-                PKG, "SalesforceInput.Error.ObjectNotReplicateable", getModule() ) );
+              PKG, "SalesforceInput.Error.ObjectNotReplicateable", getModule() ) );
           }
         }
       }
@@ -406,7 +408,8 @@ public class SalesforceConnection {
 
                   if ( i % SalesforceConnectionUtils.MAX_UPDATED_OBJECTS_IDS == 0 || i == nr - 1 ) {
                     SObject[] s =
-                        getBinding().retrieve( this.fieldsList, getModule(), list.toArray( new String[list.size()] ) );
+                      getBinding().retrieve(
+                        this.fieldsList, getModule(), list.toArray( new String[list.size()] ) );
                     System.arraycopy( s, 0, this.sObjects, desPos, s.length );
                     desPos += s.length;
                     s = null;
@@ -424,13 +427,15 @@ public class SalesforceConnection {
           break;
         case SalesforceConnectionUtils.RECORDS_FILTER_DELETED:
           // Deleted records ...
-          GetDeletedResult deletedRecordsResult = getBinding().getDeleted( getModule(), this.startDate, this.endDate );
+          GetDeletedResult deletedRecordsResult =
+            getBinding().getDeleted( getModule(), this.startDate, this.endDate );
 
           DeletedRecord[] deletedRecords = deletedRecordsResult.getDeletedRecords();
 
           if ( log.isDebug() ) {
-            log.logDebug( toString(), BaseMessages.getString( PKG, "SalesforceConnection.DeletedRecordsFound", String
-                .valueOf( deletedRecords == null ? 0 : deletedRecords.length ) ) );
+            log.logDebug( toString(), BaseMessages.getString(
+              PKG, "SalesforceConnection.DeletedRecordsFound", String.valueOf( deletedRecords == null
+                ? 0 : deletedRecords.length ) ) );
           }
 
           if ( deletedRecords != null && deletedRecords.length > 0 ) {
@@ -705,15 +710,15 @@ public class SalesforceConnection {
       }
 
       if ( !describeSObjectResult.isQueryable() ) {
-        throw new KettleException( BaseMessages
-            .getString( PKG, "SalesforceInputDialog.ObjectNotQueryable", this.module ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "SalesforceInputDialog.ObjectNotQueryable", this.module ) );
       } else {
         // we can query this object
         return describeSObjectResult.getFields();
       }
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "SalesforceInput.Error.GettingModuleFields", this.module ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SalesforceInput.Error.GettingModuleFields", this.module ), e );
     } finally {
       if ( describeSObjectResult != null ) {
         describeSObjectResult = null;
@@ -815,7 +820,7 @@ public class SalesforceConnection {
   }
 
   private static MessageElement createForeignKeyElement( String type, String lookupField, String extIdName,
-      Object extIdValue ) throws Exception {
+    Object extIdValue ) throws Exception {
 
     // Foreign key relationship to the object
     MessageElement me = fromTemplateElement( lookupField, null, false );
@@ -843,7 +848,8 @@ public class SalesforceConnection {
     TEMPLATE_XML_ELEMENT.removeAttribute( "xmlns:xsi" );
   }
 
-  public static MessageElement fromTemplateElement( String name, Object value, boolean setValue ) throws SOAPException {
+  public static MessageElement fromTemplateElement( String name, Object value, boolean setValue )
+    throws SOAPException {
     // Use the TEMPLATE org.w3c.dom.Element to create new Message Elements
     MessageElement me = new MessageElement( TEMPLATE_XML_ELEMENT );
     if ( setValue ) {

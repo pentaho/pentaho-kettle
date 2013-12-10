@@ -84,10 +84,10 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * This dialog represents an explorer type of interface on a given database connection. It shows the tables defined in
  * the visible schemas or catalogs on that connection. The interface also allows you to get all kinds of information on
  * those tables.
- * 
+ *
  * @author Matt
  * @since 18-05-2003
- * 
+ *
  *        This class has been deprecated as now it is being replaced by its XUL version.
  */
 
@@ -100,11 +100,14 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
   private static final Class<?> PKG = DatabaseExplorerDialogLegacy.class;
 
-  private static final String STRING_CATALOG = BaseMessages.getString( PKG, "DatabaseExplorerDialog.Catalogs.Label" );
-  private static final String STRING_SCHEMAS = BaseMessages.getString( PKG, "DatabaseExplorerDialog.Schemas.Label" );
+  private static final String STRING_CATALOG = BaseMessages.getString(
+    PKG, "DatabaseExplorerDialog.Catalogs.Label" );
+  private static final String STRING_SCHEMAS = BaseMessages
+    .getString( PKG, "DatabaseExplorerDialog.Schemas.Label" );
   private static final String STRING_TABLES = BaseMessages.getString( PKG, "DatabaseExplorerDialog.Tables.Label" );
   private static final String STRING_VIEWS = BaseMessages.getString( PKG, "DatabaseExplorerDialog.Views.Label" );
-  private static final String STRING_SYNONYMS = BaseMessages.getString( PKG, "DatabaseExplorerDialog.Synonyms.Label" );
+  private static final String STRING_SYNONYMS = BaseMessages.getString(
+    PKG, "DatabaseExplorerDialog.Synonyms.Label" );
 
   private Shell parent, shell;
   private Tree wTree;
@@ -141,12 +144,12 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
   }
 
   public DatabaseExplorerDialogLegacy( Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases,
-      boolean look ) {
+    boolean look ) {
     this( parent, style, conn, databases, look, false );
   }
 
   public DatabaseExplorerDialogLegacy( Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases,
-      boolean look, boolean splitSchemaAndTable ) {
+    boolean look, boolean splitSchemaAndTable ) {
     super( parent, style );
     this.parent = parent;
     this.dbMeta = conn;
@@ -313,7 +316,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
     bPrev = new Button( buttonsComposite, SWT.PUSH );
     bPrev.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.Preview100", Const.NVL(
-        activeSchemaTable, "?" ) ) );
+      activeSchemaTable, "?" ) ) );
     bPrev.setEnabled( activeSchemaTable != null );
     bPrev.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -328,7 +331,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
     bPrevN = new Button( buttonsComposite, SWT.PUSH );
     bPrevN.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.PreviewN", Const.NVL(
-        activeSchemaTable, "?" ) ) );
+      activeSchemaTable, "?" ) ) );
     bPrevN.setEnabled( activeSchemaTable != null );
     bPrevN.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -343,7 +346,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
     bCount = new Button( buttonsComposite, SWT.PUSH );
     bCount.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.ShowSize", Const.NVL(
-        activeSchemaTable, "?" ) ) );
+      activeSchemaTable, "?" ) ) );
     bCount.setEnabled( activeSchemaTable != null );
     bCount.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -358,7 +361,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
     bShow = new Button( buttonsComposite, SWT.PUSH );
     bShow.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.ShowLayout", Const.NVL(
-        activeSchemaTable, "?" ) ) );
+      activeSchemaTable, "?" ) ) );
     bShow.setEnabled( activeSchemaTable != null );
     bShow.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -401,8 +404,8 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
     bDDL2.setLayoutData( ddl2Data );
 
     bSQL = new Button( buttonsComposite, SWT.PUSH );
-    bSQL.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.OpenSQL", Const
-        .NVL( activeSchemaTable, "?" ) ) );
+    bSQL.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.OpenSQL", Const.NVL(
+      activeSchemaTable, "?" ) ) );
     bSQL.setEnabled( activeSchemaTable != null );
     bSQL.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -417,7 +420,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
     bTruncate = new Button( buttonsComposite, SWT.PUSH );
     bTruncate.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.Truncate", Const.NVL(
-        activeSchemaTable, "?" ) ) );
+      activeSchemaTable, "?" ) ) );
     bTruncate.setEnabled( activeSchemaTable != null );
     bTruncate.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -447,16 +450,20 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
   private void refreshButtons( String table ) {
     activeSchemaTable = table;
-    bPrev.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.Preview100", Const.NVL( table, "?" ) ) );
+    bPrev
+      .setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.Preview100", Const.NVL( table, "?" ) ) );
     bPrev.setEnabled( table != null );
 
-    bPrevN.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.PreviewN", Const.NVL( table, "?" ) ) );
+    bPrevN
+      .setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.PreviewN", Const.NVL( table, "?" ) ) );
     bPrevN.setEnabled( table != null );
 
-    bCount.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.ShowSize", Const.NVL( table, "?" ) ) );
+    bCount
+      .setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.ShowSize", Const.NVL( table, "?" ) ) );
     bCount.setEnabled( table != null );
 
-    bShow.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.ShowLayout", Const.NVL( table, "?" ) ) );
+    bShow
+      .setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.ShowLayout", Const.NVL( table, "?" ) ) );
     bShow.setEnabled( table != null );
 
     bDDL.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.GenDDL" ) );
@@ -468,7 +475,8 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
     bSQL.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.OpenSQL", Const.NVL( table, "?" ) ) );
     bSQL.setEnabled( table != null );
 
-    bTruncate.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.Menu.Truncate", Const.NVL( table, "?" ) ) );
+    bTruncate.setText( BaseMessages
+      .getString( PKG, "DatabaseExplorerDialog.Menu.Truncate", Const.NVL( table, "?" ) ) );
     bTruncate.setEnabled( table != null );
 
     shell.layout( true, true );
@@ -625,8 +633,8 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
         {
           String tab = null;
           if ( schemaName.equalsIgnoreCase( STRING_TABLES )
-              || schemaName.equalsIgnoreCase( STRING_VIEWS ) || schemaName.equalsIgnoreCase( STRING_SYNONYMS )
-              || ( schemaName != null && schemaName.length() == 0 ) ) {
+            || schemaName.equalsIgnoreCase( STRING_VIEWS ) || schemaName.equalsIgnoreCase( STRING_SYNONYMS )
+            || ( schemaName != null && schemaName.length() == 0 ) ) {
             tab = tableName;
           } else {
             tab = dbMeta.getQuotedSchemaTableCombination( schemaName, tableName );
@@ -760,7 +768,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
     if ( size != null ) {
       MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
       mb.setMessage( BaseMessages.getString( PKG, "DatabaseExplorerDialog.TableSize.Message", tableName, size
-          .toString() ) );
+        .toString() ) );
       mb.setText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.TableSize.Title" ) );
       mb.open();
     }
@@ -776,7 +784,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
       se.open();
     } catch ( KettleDatabaseException dbe ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error.Header" ), BaseMessages.getString(
-          PKG, "DatabaseExplorerDialog.Error.RetrieveLayout" ), dbe );
+        PKG, "DatabaseExplorerDialog.Error.RetrieveLayout" ), dbe );
     } finally {
       db.disconnect();
     }
@@ -806,9 +814,9 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
         }
 
         EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, conn, BaseMessages.getString(
-                PKG, "DatabaseExplorerDialog.TargetDatabase.Title" ), BaseMessages.getString(
-                PKG, "DatabaseExplorerDialog.TargetDatabase.Message" ) );
+          new EnterSelectionDialog( shell, conn, BaseMessages.getString(
+            PKG, "DatabaseExplorerDialog.TargetDatabase.Title" ), BaseMessages.getString(
+            PKG, "DatabaseExplorerDialog.TargetDatabase.Message" ) );
         String target = esd.open();
         if ( target != null ) {
           DatabaseMeta targetdbi = DatabaseMeta.findDatabase( dbs, target );
@@ -820,7 +828,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
         }
       } catch ( KettleDatabaseException dbe ) {
         new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error.Header" ), BaseMessages.getString(
-            PKG, "DatabaseExplorerDialog.Error.GenDDL" ), dbe );
+          PKG, "DatabaseExplorerDialog.Error.GenDDL" ), dbe );
       } finally {
         db.disconnect();
       }
@@ -839,8 +847,8 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
   /**
    * Fire off a transformation that data profiles the specified table...<br>
-   * 
-   * 
+   *
+   *
    * @param tableName
    */
   public void profileTable( String tableName ) {
@@ -848,8 +856,8 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
       TransProfileFactory profileFactory = new TransProfileFactory( dbMeta, tableName );
       TransMeta transMeta = profileFactory.generateTransformation( new LoggingObject( tableName ) );
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog(
-              shell, transMeta, new String[] { TransProfileFactory.RESULT_STEP_NAME, }, new int[] { 25000, } );
+        new TransPreviewProgressDialog(
+          shell, transMeta, new String[] { TransProfileFactory.RESULT_STEP_NAME, }, new int[] { 25000, } );
       progressDialog.open();
 
       if ( !progressDialog.isCancelled() ) {
@@ -858,31 +866,33 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
 
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog(
-                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
-                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+            new EnterTextDialog(
+              shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
 
         PreviewRowsDialog prd =
-            new PreviewRowsDialog( shell, transMeta, SWT.NONE, TransProfileFactory.RESULT_STEP_NAME, progressDialog
-                .getPreviewRowsMeta( TransProfileFactory.RESULT_STEP_NAME ), progressDialog
-                .getPreviewRows( TransProfileFactory.RESULT_STEP_NAME ), loggingText );
+          new PreviewRowsDialog(
+            shell, transMeta, SWT.NONE, TransProfileFactory.RESULT_STEP_NAME, progressDialog
+              .getPreviewRowsMeta( TransProfileFactory.RESULT_STEP_NAME ), progressDialog
+              .getPreviewRows( TransProfileFactory.RESULT_STEP_NAME ), loggingText );
         prd.open();
 
       }
 
     } catch ( Exception e ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Title" ), BaseMessages
-              .getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Message" ), e );
+      new ErrorDialog( shell, BaseMessages
+        .getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Title" ), BaseMessages.getString(
+        PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Message" ), e );
     }
 
   }
 
   public void getTruncate( String activeSchemaTable ) {
-    SQLEditor sql = new SQLEditor( dbMeta, shell, SWT.NONE, dbMeta, dbcache, "-- TRUNCATE TABLE " + activeSchemaTable );
+    SQLEditor sql =
+      new SQLEditor( dbMeta, shell, SWT.NONE, dbMeta, dbcache, "-- TRUNCATE TABLE " + activeSchemaTable );
     sql.open();
   }
 
@@ -903,7 +913,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
       String[] path = ConstUI.getTreeStrings( ti[0] );
       if ( path.length == 3 ) {
         if ( STRING_TABLES.equalsIgnoreCase( path[1] )
-            || STRING_VIEWS.equalsIgnoreCase( path[1] ) || STRING_SYNONYMS.equalsIgnoreCase( path[1] ) ) {
+          || STRING_VIEWS.equalsIgnoreCase( path[1] ) || STRING_SYNONYMS.equalsIgnoreCase( path[1] ) ) {
           schemaName = null;
           tableName = table;
           if ( dbMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta ) {

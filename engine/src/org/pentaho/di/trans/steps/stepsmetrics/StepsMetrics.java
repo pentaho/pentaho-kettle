@@ -43,13 +43,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Ouptu step metrics
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class StepsMetrics extends BaseStep implements StepInterface {
-  private static Class<?> PKG = StepsMetrics.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepsMetrics.class; // for i18n purposes, needed by Translator2!!
 
   private StepsMetricsMeta meta;
   private StepsMetricsData data;
@@ -57,7 +57,7 @@ public class StepsMetrics extends BaseStep implements StepInterface {
   public HashSet<StepInterface> stepInterfaces;
 
   public StepsMetrics( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -194,7 +194,7 @@ public class StepsMetrics extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 

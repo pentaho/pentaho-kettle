@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  * This interface provides a way to look at a Number, String, Integer, Date... the same way. The methods mentioned in
  * this interface are common to all Value types.
- * 
+ *
  * @author Matt
  * @since 15-10-2004
  */

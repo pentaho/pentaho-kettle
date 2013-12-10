@@ -139,7 +139,8 @@ public class SwingGC implements GCInterface {
 
   private boolean drawingPixelatedImages;
 
-  public SwingGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
+  public SwingGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset )
+    throws KettleException {
     this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB );
     this.gc = image.createGraphics();
     this.observer = observer;
@@ -298,7 +299,7 @@ public class SwingGC implements GCInterface {
           gc.setColor( new Color( rgb ) );
           gc.setStroke( new BasicStroke( 1.0f ) );
           gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY
-              + yOffset + y );
+            + yOffset + y );
           // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y,
           // locationX+xOffset+x+1, locationY+yOffset+y);
           // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y+1,
@@ -618,7 +619,7 @@ public class SwingGC implements GCInterface {
     if ( antiAlias ) {
 
       RenderingHints hints =
-          new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
+        new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
       hints.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY ) );
       hints.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ) );
       // hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,

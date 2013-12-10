@@ -42,19 +42,19 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 /**
  * Do nothing. Pass all input data to the next steps.
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class MappingInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MappingInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MappingInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MappingInputMeta meta;
 
   private MappingInputData data;
 
   public MappingInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -81,7 +81,7 @@ public class MappingInput extends BaseStep implements StepInterface {
         }
         if ( totalsleep > 60000 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "MappingInput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
+            PKG, "MappingInput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
         }
       }
 
@@ -126,14 +126,14 @@ public class MappingInput extends BaseStep implements StepInterface {
         ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta( valueRename.getSourceValueName() );
         if ( valueMeta == null ) {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
+            PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
         }
         valueMeta.setName( valueRename.getTargetValueName() );
 
         valueMeta = getInputRowMeta().searchValueMeta( valueRename.getSourceValueName() );
         if ( valueMeta == null ) {
           throw new KettleStepException( BaseMessages.getString(
-              PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
+            PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
         }
         valueMeta.setName( valueRename.getTargetValueName() );
       }
@@ -177,7 +177,7 @@ public class MappingInput extends BaseStep implements StepInterface {
   }
 
   public void setConnectorSteps( StepInterface[] sourceSteps, List<MappingValueRename> valueRenames,
-      String mappingStepname ) {
+    String mappingStepname ) {
 
     for ( int i = 0; i < sourceSteps.length; i++ ) {
 

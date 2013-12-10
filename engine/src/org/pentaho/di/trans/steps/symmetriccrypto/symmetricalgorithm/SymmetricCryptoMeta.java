@@ -27,13 +27,13 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Symmetric algorithm
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */
 public class SymmetricCryptoMeta {
 
-  private static Class<?> PKG = SymmetricCryptoMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SymmetricCryptoMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SymmetricCryptoInterface cryptographyInterface;
   private static SymmetricCryptoInterface[] allSymmetricCryptoInterface;
@@ -54,7 +54,7 @@ public class SymmetricCryptoMeta {
 
   /**
    * Construct a new Database Connection
-   * 
+   *
    * @param inf
    *          The Database Connection Info to construct the connection with.
    */
@@ -64,26 +64,27 @@ public class SymmetricCryptoMeta {
 
   /**
    * Search for the right type of DatabaseInterface object and clone it.
-   * 
+   *
    * @param databaseType
    *          the type of DatabaseInterface to look for (description)
    * @return The requested DatabaseInterface
-   * 
+   *
    * @throws CryptoException
    *           when the type could not be found or referenced.
    */
-  public static final SymmetricCryptoInterface getSymmetricCryptoInterface( String cryptoname ) throws CryptoException {
+  public static final SymmetricCryptoInterface getSymmetricCryptoInterface( String cryptoname )
+    throws CryptoException {
     return findSymmetricCryptoInterface( cryptoname );
 
   }
 
   /**
    * Search for the right type of DatabaseInterface object and return it.
-   * 
+   *
    * @param databaseType
    *          the type of DatabaseInterface to look for (description)
    * @return The requested DatabaseInterface
-   * 
+   *
    * @throws CryptoException
    *           when the type could not be found or referenced.
    */
@@ -97,7 +98,7 @@ public class SymmetricCryptoMeta {
     }
 
     throw new CryptoException( BaseMessages.getString(
-        PKG, "SymmetricCryptoMeta.CouldNotFoundAlgorithm", cryptograhname ) );
+      PKG, "SymmetricCryptoMeta.CouldNotFoundAlgorithm", cryptograhname ) );
   }
 
   public static final synchronized SymmetricCryptoInterface[] getSymmetricCryptoInterfaces() {

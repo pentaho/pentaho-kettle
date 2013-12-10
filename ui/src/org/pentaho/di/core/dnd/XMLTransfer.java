@@ -52,7 +52,8 @@ public class XMLTransfer extends ByteArrayTransfer {
     }
 
     try {
-      byte[] buffer = Base64.encodeBase64( ( (DragAndDropContainer) object ).getXML().getBytes( Const.XML_ENCODING ) );
+      byte[] buffer =
+        Base64.encodeBase64( ( (DragAndDropContainer) object ).getXML().getBytes( Const.XML_ENCODING ) );
 
       super.javaToNative( buffer, transferData );
     } catch ( Exception e ) {
@@ -80,7 +81,7 @@ public class XMLTransfer extends ByteArrayTransfer {
         return new DragAndDropContainer( xml );
       } catch ( Exception e ) {
         log.logError( "Unexpected error trying to read a drag and drop container from the XML Transfer type: "
-            + e.toString() );
+          + e.toString() );
         log.logError( Const.getStackTracker( e ) );
         return null;
       }

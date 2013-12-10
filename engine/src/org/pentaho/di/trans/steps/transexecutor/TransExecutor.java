@@ -48,19 +48,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Execute a transformation for every input row, set parameters
- * 
+ *
  * @author Matt
  * @since 18-mar-2013
  */
 public class TransExecutor extends BaseStep implements StepInterface {
-  private static Class<?> PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TransExecutorMeta meta;
 
   private TransExecutorData data;
 
   public TransExecutor( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -98,13 +98,13 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
         if ( meta.getExecutionResultTargetStepMeta() != null ) {
           meta.getFields( data.executionResultsOutputRowMeta, getStepname(), null, meta
-              .getExecutionResultTargetStepMeta(), this, repository, metaStore );
+            .getExecutionResultTargetStepMeta(), this, repository, metaStore );
           data.executionResultRowSet = findOutputRowSet( meta.getExecutionResultTargetStepMeta().getName() );
         }
         if ( meta.getResultFilesTargetStepMeta() != null ) {
           meta.getFields(
-              data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(), this,
-              repository, metaStore );
+            data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(), this,
+            repository, metaStore );
           data.resultFilesRowSet = findOutputRowSet( meta.getResultFilesTargetStepMeta().getName() );
         }
 
@@ -115,7 +115,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
           data.groupFieldIndex = getInputRowMeta().indexOfValue( data.groupField );
           if ( data.groupFieldIndex < 0 ) {
             throw new KettleException( BaseMessages.getString(
-                PKG, "TransExecutor.Exception.GroupFieldNotFound", data.groupField ) );
+              PKG, "TransExecutor.Exception.GroupFieldNotFound", data.groupField ) );
           }
           data.groupFieldMeta = getInputRowMeta().getValueMeta( data.groupFieldIndex );
         }
@@ -213,7 +213,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
       //
       if ( meta.getOutputRowsSourceStepMeta() != null ) {
 
-        StepInterface stepInterface = data.executorTrans.findRunThread( meta.getOutputRowsSourceStepMeta().getName() );
+        StepInterface stepInterface =
+          data.executorTrans.findRunThread( meta.getOutputRowsSourceStepMeta().getName() );
         stepInterface.addRowListener( new RowAdapter() {
           @Override
           public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -329,7 +330,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
         int idx = getInputRowMeta().indexOfValue( fieldName );
         if ( idx < 0 ) {
           throw new KettleException( BaseMessages.getString(
-              PKG, "TransExecutor.Exception.UnableToFindField", fieldName ) );
+            PKG, "TransExecutor.Exception.UnableToFindField", fieldName ) );
         }
 
         value = data.groupBuffer.get( 0 ).getString( idx, "" );
@@ -360,7 +361,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
         meta.setRepository( getTransMeta().getRepository() );
 
         data.executorTransMeta =
-            TransExecutorMeta.loadTransMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
+          TransExecutorMeta.loadTransMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
 
         // Do we have a transformation at all?
         //

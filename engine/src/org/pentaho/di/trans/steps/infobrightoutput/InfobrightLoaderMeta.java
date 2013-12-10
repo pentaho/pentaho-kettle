@@ -47,7 +47,7 @@ import com.infobright.io.InfobrightNamedPipeLoader;
 
 /**
  * Metadata for the Infobright loader.
- * 
+ *
  * @author geoffrey.falk@infobright.com
  */
 public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInterface {
@@ -74,19 +74,19 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStep(org.pentaho.di.trans.step.StepMeta,
    *      org.pentaho.di.trans.step.StepDataInterface, int, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.Trans)
    */
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     InfobrightLoader loader = new InfobrightLoader( stepMeta, stepDataInterface, cnr, tr, trans );
     return loader;
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStepData()
    */
   public StepDataInterface getStepData() {
@@ -95,7 +95,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStepMeta#clone()
    */
   public Object clone() {
@@ -150,15 +150,17 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
 
   // @SuppressWarnings("unchecked")
   @Override
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
     try {
       dataFormat = Enum.valueOf( DataFormat.class, XMLHandler.getTagValue( stepnode, TAG_DATA_FORMAT ) );
       agentPort =
-          Integer.parseInt( Const.NVL( XMLHandler.getTagValue( stepnode, TAG_AGENT_PORT ), Integer
-              .toString( InfobrightNamedPipeLoader.AGENT_DEFAULT_PORT ) ) );
+        Integer.parseInt( Const.NVL( XMLHandler.getTagValue( stepnode, TAG_AGENT_PORT ), Integer
+          .toString( InfobrightNamedPipeLoader.AGENT_DEFAULT_PORT ) ) );
       String charsetName = XMLHandler.getTagValue( stepnode, TAG_CHARSET );
-      charset = ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
+      charset =
+        ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
       debugFile = XMLHandler.getTagValue( stepnode, TAG_DEBUG_FILE );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -178,7 +180,8 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
         agentPort = Integer.parseInt( agentPortStr );
       }
       String charsetName = rep.getStepAttributeString( id_step, TAG_CHARSET );
-      charset = ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
+      charset =
+        ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
       debugFile = rep.getStepAttributeString( id_step, TAG_DEBUG_FILE );
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );

@@ -49,14 +49,14 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
  * {@code XulEventHandler} for the Security panel of the repository explorer.
- * 
+ *
  * <p>
  * This class handles only user-related functionality. If supported, other controllers handle roles, etc.
  * </p>
  */
 public class SecurityController extends LazilyInitializedController implements IUISupportController {
 
-  private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!!
 
   public static final int USER_DECK = 0;
 
@@ -226,7 +226,7 @@ public class SecurityController extends LazilyInitializedController implements I
 
   /**
    * addRole method is called when user has click ok on a add role dialog. The method add the role
-   * 
+   *
    * @throws Exception
    */
   protected void addUser() {
@@ -256,7 +256,7 @@ public class SecurityController extends LazilyInitializedController implements I
 
   /**
    * updateUser method is called when user has click ok on a edit user dialog. The method updates the user
-   * 
+   *
    * @throws Exception
    */
 
@@ -272,8 +272,8 @@ public class SecurityController extends LazilyInitializedController implements I
       } catch ( Throwable th ) {
         messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
         messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        messageBox
-            .setMessage( BaseMessages.getString( PKG, "UpdateUser.UnableToUpdateUser", th.getLocalizedMessage() ) );
+        messageBox.setMessage( BaseMessages.getString( PKG, "UpdateUser.UnableToUpdateUser", th
+          .getLocalizedMessage() ) );
         messageBox.open();
       }
     }
@@ -282,7 +282,7 @@ public class SecurityController extends LazilyInitializedController implements I
   /**
    * removeUser method is called when user has click on a remove button in a user deck. It first displays a confirmation
    * message to the user and once the user selects ok, it remove the user
-   * 
+   *
    * @throws Exception
    */
   public void removeUser() throws Exception {
@@ -304,7 +304,7 @@ public class SecurityController extends LazilyInitializedController implements I
                 messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
                 messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
                 messageBox.setMessage( BaseMessages.getString( PKG, "RemoveUser.UnableToRemoveUser", th
-                    .getLocalizedMessage() ) );
+                  .getLocalizedMessage() ) );
                 messageBox.open();
               }
             } else {
@@ -320,7 +320,8 @@ public class SecurityController extends LazilyInitializedController implements I
       public void onError( XulComponent sender, Throwable t ) {
         messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
         messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        messageBox.setMessage( BaseMessages.getString( PKG, "RemoveUser.UnableToRemoveUser", t.getLocalizedMessage() ) );
+        messageBox.setMessage( BaseMessages.getString( PKG, "RemoveUser.UnableToRemoveUser", t
+          .getLocalizedMessage() ) );
         messageBox.open();
       }
     } );
@@ -334,7 +335,7 @@ public class SecurityController extends LazilyInitializedController implements I
   /**
    * saveUser method is called when the user click on the ok button of a Add or Edit User dialog Depending on the mode
    * it calls add of update user method
-   * 
+   *
    * @throws Exception
    */
 

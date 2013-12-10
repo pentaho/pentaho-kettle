@@ -43,28 +43,28 @@ public class MetaInjectTest extends TestCase {
 
   /**
    * Try to inject a few fields
-   * 
+   *
    * @throws Exception
    */
   public void testMetaInjectCsvInput() throws Exception {
     KettleEnvironment.init();
     TransMeta transMeta = new TransMeta( "test/org/pentaho/di/trans/steps/metainject/read_csv_file.ktr" );
     String[][] fields =
-        new String[][] {
-            new String[] { "id", "Integer", null, "3", "0", null, ",", ".", "left", },
-            new String[] { "name", "String", null, "10", null, null, null, null, "none", },
-            new String[] { "firstname", "String", null, "13", null, null, null, null, "none", },
-            new String[] { "zip", "String", null, "5", null, null, null, null, "left", },
-            new String[] { "city", "String", null, "8", null, null, null, null, "none", },
-            new String[] { "birthdate", "Date", "yyyy/MM/dd", "10", null, null, null, null, "none", },
-            new String[] { "street", "String", null, "11", null, null, null, null, "none", },
-            new String[] { "housenr", "Integer", null, "3", "0", null, ",", ".", "left", },
-            new String[] { "stateCode", "String", null, "9", null, null, null, null, "none", },
-            new String[] { "state", "String", null, "30", null, null, null, null, "none", }, };
+      new String[][] {
+        new String[] { "id", "Integer", null, "3", "0", null, ",", ".", "left", },
+        new String[] { "name", "String", null, "10", null, null, null, null, "none", },
+        new String[] { "firstname", "String", null, "13", null, null, null, null, "none", },
+        new String[] { "zip", "String", null, "5", null, null, null, null, "left", },
+        new String[] { "city", "String", null, "8", null, null, null, null, "none", },
+        new String[] { "birthdate", "Date", "yyyy/MM/dd", "10", null, null, null, null, "none", },
+        new String[] { "street", "String", null, "11", null, null, null, null, "none", },
+        new String[] { "housenr", "Integer", null, "3", "0", null, ",", ".", "left", },
+        new String[] { "stateCode", "String", null, "9", null, null, null, null, "none", },
+        new String[] { "state", "String", null, "30", null, null, null, null, "none", }, };
     String[] fieldKeys =
-        new String[] {
-            "FIELD_NAME", "FIELD_TYPE", "FIELD_FORMAT", "FIELD_LENGTH", "FIELD_PRECISION", "FIELD_CURRENCY",
-            "FIELD_DECIMAL", "FIELD_GROUP", "FIELD_TRIM_TYPE", };
+      new String[] {
+        "FIELD_NAME", "FIELD_TYPE", "FIELD_FORMAT", "FIELD_LENGTH", "FIELD_PRECISION", "FIELD_CURRENCY",
+        "FIELD_DECIMAL", "FIELD_GROUP", "FIELD_TRIM_TYPE", };
     String filename = "test/org/pentaho/di/trans/steps/metainject/customers-100.txt";
 
     String stepname = "CSV file input";
@@ -97,7 +97,7 @@ public class MetaInjectTest extends TestCase {
 
       for ( int i = 0; i < fieldKeys.length; i++ ) {
         StepInjectionMetaEntry entry =
-            new StepInjectionMetaEntry( fieldKeys[i], field[i], ValueMetaInterface.TYPE_STRING, "description" );
+          new StepInjectionMetaEntry( fieldKeys[i], field[i], ValueMetaInterface.TYPE_STRING, "description" );
         fieldCopy.getDetails().add( entry );
       }
 
@@ -134,7 +134,8 @@ public class MetaInjectTest extends TestCase {
       // length
       assertEquals( fields[i][3], valueMeta.getLength() == -1 ? null : Integer.toString( valueMeta.getLength() ) );
       // precision
-      assertEquals( fields[i][4], valueMeta.getPrecision() == -1 ? null : Integer.toString( valueMeta.getPrecision() ) );
+      assertEquals( fields[i][4], valueMeta.getPrecision() == -1 ? null : Integer.toString( valueMeta
+        .getPrecision() ) );
       // Currency symbol
       assertEquals( fields[i][5], valueMeta.getCurrencySymbol() );
       // Decimal symbol

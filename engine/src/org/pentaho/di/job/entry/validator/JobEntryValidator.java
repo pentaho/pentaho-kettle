@@ -29,7 +29,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
 
 /**
  * The interface of a job entry validator.
- * 
+ *
  * <p>
  * Job entry validators can provide convenience methods for adding information to the validator context. Those methods
  * should following a naming convention: putX where X is the name of the object being adding to the context. An example:
@@ -38,7 +38,7 @@ import org.pentaho.di.core.CheckResultSourceInterface;
  * <li>void putSomeObject(ValidatorContext context, Object someObject)</li>
  * </ul>
  * </p>
- * 
+ *
  * @author mlowery
  */
 public interface JobEntryValidator {
@@ -49,7 +49,7 @@ public interface JobEntryValidator {
    * Using reflection, the validator fetches the field named <code>propertyName</code> from the bean <code>source</code>
    * and runs the validation putting any messages into <code>remarks</code>. The return value is <code>true</code> if
    * the validation passes.
-   * 
+   *
    * @param source
    *          bean to validate
    * @param propertyName
@@ -61,11 +61,11 @@ public interface JobEntryValidator {
    * @return validation result
    */
   boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context );
+    ValidatorContext context );
 
   /**
    * Returns the name of this validator, unique among all validators.
-   * 
+   *
    * @return name
    */
   String getName();

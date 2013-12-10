@@ -76,7 +76,7 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandler {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-history-toolbar.xul";
 
@@ -276,9 +276,10 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       columns.add( colinf ); // keep for later
 
       TableView tableView =
-          new TableView( transGraph.getManagedObject(), sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, colinf,
-              FieldsRows, true, // readonly!
-              null, spoon.props );
+        new TableView(
+          transGraph.getManagedObject(), sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, colinf,
+          FieldsRows, true, // readonly!
+          null, spoon.props );
       wFields.add( tableView );
 
       tableView.table.addSelectionListener( new SelectionAdapter() {
@@ -330,16 +331,16 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
       refreshButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "refresh-history" );
       fetchNextBatchButton =
-          (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-next-batch-history" );
+        (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-next-batch-history" );
       fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-all-history" );
 
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( transHistoryComposite.getShell(), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( transHistoryComposite.getShell(), BaseMessages.getString(
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -363,18 +364,18 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
 
       MessageBox mb = new MessageBox( transGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-      mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message",
-          schemaTable ) ); // Nothing found that matches your criteria
-      mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) ); // Sorry!
+      mb.setMessage( BaseMessages.getString(
+        PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) );
+      mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) );
       if ( mb.open() == SWT.YES ) {
         Database database = new Database( loggingObject, databaseMeta );
         try {
           database.connect();
           database.truncateTable( schemaTable );
         } catch ( Exception e ) {
-          new ErrorDialog( transGraph.getShell(), BaseMessages.getString( PKG,
-              "TransGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString( PKG,
-              "TransGraph.Dialog.ErrorClearningLoggingTable.Message" ), e );
+          new ErrorDialog( transGraph.getShell(), BaseMessages.getString(
+            PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString(
+            PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Message" ), e );
         } finally {
           if ( database != null ) {
             database.disconnect();
@@ -399,8 +400,9 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       String[] fields = wFields.get( tabIndex ).getItem( idx );
       String dateString = fields[13];
       Date replayDate = XMLHandler.stringToDate( dateString );
-      spoon.executeTransformation( transGraph.getManagedObject(), true, false, false, false, false, replayDate, false,
-          spoon.getTransExecutionConfiguration().getLogLevel() );
+      spoon.executeTransformation(
+        transGraph.getManagedObject(), true, false, false, false, false, replayDate, false, spoon
+          .getTransExecutionConfiguration().getLogLevel() );
     }
   }
 
@@ -453,7 +455,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   /**
    * Don't allow more queries until this one finishes.
-   * 
+   *
    * @param inProgress
    */
   private void setQueryInProgress( final boolean inProgress ) {
@@ -525,14 +527,17 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         if ( nameField != null ) {
           if ( transMeta.isUsingAClusterSchema() ) {
             sql += " WHERE " + logConnection.quoteField( nameField.getFieldName() ) + " LIKE ?";
-            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
+            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta
+              .getName() );
 
             sql += " OR    " + logConnection.quoteField( nameField.getFieldName() ) + " LIKE ?";
-            params.addValue( new ValueMeta( "transname_cluster", ValueMetaInterface.TYPE_STRING ), transMeta.getName()
-                + " (%" );
+            params.addValue( new ValueMeta( "transname_cluster", ValueMetaInterface.TYPE_STRING ), transMeta
+              .getName()
+              + " (%" );
           } else {
             sql += " WHERE " + logConnection.quoteField( nameField.getFieldName() ) + " = ?";
-            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
+            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta
+              .getName() );
 
           }
         }
@@ -719,7 +724,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -728,7 +733,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -737,7 +742,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -746,7 +751,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -754,7 +759,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -762,7 +767,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {

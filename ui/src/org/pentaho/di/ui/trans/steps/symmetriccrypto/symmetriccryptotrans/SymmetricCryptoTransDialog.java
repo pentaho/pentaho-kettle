@@ -60,7 +60,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = SymmetricCryptoTransMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private Group wCryptoSettings;
   private FormData fdCryptoSettings;
@@ -187,7 +186,8 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 
     wCryptoSettings = new Group( wGeneralComp, SWT.SHADOW_NONE );
     props.setLook( wCryptoSettings );
-    wCryptoSettings.setText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.CryptoSettings.Group.Label" ) );
+    wCryptoSettings
+      .setText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.CryptoSettings.Group.Label" ) );
 
     FormLayout CryptoSettingsgroupLayout = new FormLayout();
     CryptoSettingsgroupLayout.marginWidth = 10;
@@ -288,7 +288,8 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 
     // Is secret key extracted from a field?
     wlSecretKeyInField = new Label( wCryptoSettings, SWT.RIGHT );
-    wlSecretKeyInField.setText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.SecretKeyFileField.Label" ) );
+    wlSecretKeyInField.setText( BaseMessages
+      .getString( PKG, "SymmetricCryptoTransDialog.SecretKeyFileField.Label" ) );
     props.setLook( wlSecretKeyInField );
     fdlSecretKeyInField = new FormData();
     fdlSecretKeyInField.left = new FormAttachment( 0, 0 );
@@ -298,7 +299,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wSecretKeyInField = new Button( wCryptoSettings, SWT.CHECK );
     props.setLook( wSecretKeyInField );
     wSecretKeyInField.setToolTipText( BaseMessages.getString(
-        PKG, "SymmetricCryptoTransDialog.SecretKeyFileField.Tooltip" ) );
+      PKG, "SymmetricCryptoTransDialog.SecretKeyFileField.Tooltip" ) );
     fdSecretKeyInField = new FormData();
     fdSecretKeyInField.left = new FormAttachment( middle, margin );
     fdSecretKeyInField.top = new FormAttachment( wSecretKey, margin );
@@ -348,8 +349,8 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     fdlReadKeyAsBinary.right = new FormAttachment( middle, -margin );
     wlReadKeyAsBinary.setLayoutData( fdlReadKeyAsBinary );
     wReadKeyAsBinary = new Button( wCryptoSettings, SWT.CHECK );
-    wReadKeyAsBinary
-        .setToolTipText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.ReadKeyAsBinary.Tooltip" ) );
+    wReadKeyAsBinary.setToolTipText( BaseMessages.getString(
+      PKG, "SymmetricCryptoTransDialog.ReadKeyAsBinary.Tooltip" ) );
     props.setLook( wReadKeyAsBinary );
     fdReadKeyAsBinary = new FormData();
     fdReadKeyAsBinary.left = new FormAttachment( middle, margin );
@@ -438,9 +439,9 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 
     // Output Fieldame
     wResultField =
-        new LabelTextVar( transMeta, wOutputField, BaseMessages.getString(
-            PKG, "SymmetricCryptoTransDialog.ResultField.Label" ), BaseMessages.getString(
-            PKG, "SymmetricCryptoTransDialog.ResultField.Tooltip" ) );
+      new LabelTextVar( transMeta, wOutputField, BaseMessages.getString(
+        PKG, "SymmetricCryptoTransDialog.ResultField.Label" ), BaseMessages.getString(
+        PKG, "SymmetricCryptoTransDialog.ResultField.Tooltip" ) );
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
     fdResultField = new FormData();
@@ -458,7 +459,8 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     fdlOutputAsBinary.right = new FormAttachment( middle, -margin );
     wlOutputAsBinary.setLayoutData( fdlOutputAsBinary );
     wOutputAsBinary = new Button( wOutputField, SWT.CHECK );
-    wOutputAsBinary.setToolTipText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.OutputAsBinary.Tooltip" ) );
+    wOutputAsBinary.setToolTipText( BaseMessages.getString(
+      PKG, "SymmetricCryptoTransDialog.OutputAsBinary.Tooltip" ) );
     props.setLook( wOutputAsBinary );
     fdOutputAsBinary = new FormData();
     fdOutputAsBinary.left = new FormAttachment( middle, margin );
@@ -588,9 +590,9 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+        PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -606,9 +608,9 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-          shell, BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+        PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 

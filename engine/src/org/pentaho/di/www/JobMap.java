@@ -33,11 +33,11 @@ import org.pentaho.di.job.JobConfiguration;
 
 /**
  * This is a map between the job name and the (running/waiting/finished) job.
- * 
+ *
  * @author Matt
  * @since 26-SEP-2007
  * @since 3.0.0
- * 
+ *
  */
 public class JobMap {
   private Map<CarteObjectEntry, Job> jobMap;
@@ -50,7 +50,8 @@ public class JobMap {
     configurationMap = new Hashtable<CarteObjectEntry, JobConfiguration>();
   }
 
-  public synchronized void addJob( String jobName, String carteObjectId, Job job, JobConfiguration jobConfiguration ) {
+  public synchronized void
+    addJob( String jobName, String carteObjectId, Job job, JobConfiguration jobConfiguration ) {
     CarteObjectEntry entry = new CarteObjectEntry( jobName, carteObjectId );
     jobMap.put( entry, job );
     configurationMap.put( entry, jobConfiguration );
@@ -70,7 +71,7 @@ public class JobMap {
 
   /**
    * Find the first job in the list that comes to mind!
-   * 
+   *
    * @param jobName
    * @return the first transformation with the specified name
    */
@@ -160,7 +161,7 @@ public class JobMap {
 
   /**
    * Find a job using the container/carte object ID.
-   * 
+   *
    * @param id
    *          the container/carte object ID
    * @return The job if it's found, null if the ID couldn't be found in the job map.

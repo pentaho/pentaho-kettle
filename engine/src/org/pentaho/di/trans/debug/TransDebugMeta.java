@@ -38,9 +38,9 @@ import org.pentaho.di.trans.step.StepMeta;
  * For a certain transformation, we want to be able to insert break-points into a transformation. These breakpoints can
  * be applied to steps. When a certain condition is met, the transformation will be paused and the caller will be
  * informed of this fact through a listener system.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class TransDebugMeta {
 
@@ -179,7 +179,7 @@ public class TransDebugMeta {
 
   /**
    * Add a break point listener to all defined step debug meta data
-   * 
+   *
    * @param breakPointListener
    *          the break point listener to add
    */
@@ -210,7 +210,7 @@ public class TransDebugMeta {
       if ( stepDebugMeta.isReadingFirstRows() && stepDebugMeta.getRowCount() > 0 ) {
         nr++;
       } else if ( stepDebugMeta.isPausingOnBreakPoint()
-          && stepDebugMeta.getCondition() != null && !stepDebugMeta.getCondition().isEmpty() ) {
+        && stepDebugMeta.getCondition() != null && !stepDebugMeta.getCondition().isEmpty() ) {
         nr++;
       }
     }

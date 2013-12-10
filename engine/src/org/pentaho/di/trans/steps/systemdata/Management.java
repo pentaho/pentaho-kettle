@@ -37,7 +37,7 @@ public class Management {
 
   /**
    * Return infos like current PID, JVM memory, ...
-   * 
+   *
    * @author Samatar
    * @since 2008-apr-29
    */

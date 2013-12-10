@@ -64,7 +64,8 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     super();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -73,7 +74,8 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
+    throws KettleXMLException {
     try {
       parentIdFieldName = XMLHandler.getTagValue( stepnode, "parent_id_field" );
       childIdFieldName = XMLHandler.getTagValue( stepnode, "child_id_field" );
@@ -88,7 +90,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // The output for the closure table is:
     //
     // - parentId
@@ -151,40 +153,42 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     ValueMetaInterface parentValueMeta = prev.searchValueMeta( parentIdFieldName );
     if ( parentValueMeta != null ) {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the parent id could not be found.", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the parent id could not be found.",
+          stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the parent id could be found", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the parent id could be found", stepMeta );
       remarks.add( cr );
     }
 
     ValueMetaInterface childValueMeta = prev.searchValueMeta( childIdFieldName );
     if ( childValueMeta != null ) {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the child id could not be found.", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the child id could not be found.",
+          stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult(
-              CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the child id could be found", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the child id could be found", stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ClosureGenerator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

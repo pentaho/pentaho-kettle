@@ -44,12 +44,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Displays an HTML page.
- * 
+ *
  * @author Matt
  * @since 22-12-2005
  */
 public class ShowBrowserDialog extends Dialog {
-  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
   private String dialogTitle;
   private String content;
@@ -131,7 +131,7 @@ public class ShowBrowserDialog extends Dialog {
     } );
 
     /*
-     * 
+     *
      * //shell.pack(); if (prefWidth>0 && prefHeight>0) { shell.setSize(prefWidth, prefHeight); Rectangle r =
      * shell.getClientArea(); int diffx = prefWidth - r.width; int diffy = prefHeight - r.height;
      * shell.setSize(prefWidth+diffx, prefHeight+diffy); } else { shell.setSize(400, 400); }

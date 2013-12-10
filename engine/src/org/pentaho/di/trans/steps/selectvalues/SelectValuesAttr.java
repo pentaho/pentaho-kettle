@@ -27,9 +27,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * TODO: move this to XML somewhere...
- * 
+ *
  * @author matt
- * 
+ *
  */
 public enum SelectValuesAttr implements KettleAttributeInterface {
 
@@ -43,14 +43,14 @@ public enum SelectValuesAttr implements KettleAttributeInterface {
    * FIELD_LENGTH("length", "field_length", "SelectValuesDialog.ColumnInfo.Length", null,
    * ValueMetaInterface.TYPE_STRING, FIELD), FIELD_PRECISION("precision", "field_precision",
    * "SelectValuesDialog.ColumnInfo.Precision", null, ValueMetaInterface.TYPE_STRING, FIELD),
-   * 
+   *
    * SELECT_UNSPECIFIED("select_unspecified", "SelectValuesDialog.Unspecified.Label", null,
    * ValueMetaInterface.TYPE_BOOLEAN, null),
-   * 
+   *
    * REMOVES("removes", "CsvInputDialog.Removes.Label", null, ValueMetaInterface.TYPE_NONE, null), REMOVE("remove",
    * "CsvInputDialog.Remove.Label", null, ValueMetaInterface.TYPE_NONE, REMOVES), REMOVE_NAME("name", "remove_name",
    * "SelectValuesDialog.ColumnInfo.Fieldname", null, ValueMetaInterface.TYPE_STRING, REMOVE),
-   * 
+   *
    * METAS("metas", "CsvInputDialog.Metas.Label", null, ValueMetaInterface.TYPE_NONE, null), META("meta",
    * "CsvInputDialog.Meta.Label", null, ValueMetaInterface.TYPE_NONE, METAS), META_NAME("name", "meta_name",
    * "SelectValuesDialog.ColumnInfo.Fieldname", null, ValueMetaInterface.TYPE_STRING, META), META_RENAME("rename",
@@ -86,7 +86,7 @@ public enum SelectValuesAttr implements KettleAttributeInterface {
    * @param type
    */
   private SelectValuesAttr( String xmlCode, String repCode, String description, String tooltip, int type,
-      SelectValuesAttr parent ) {
+    SelectValuesAttr parent ) {
     this.xmlCode = xmlCode;
     this.repCode = repCode;
     this.description = description;

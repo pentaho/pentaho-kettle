@@ -57,13 +57,13 @@ import org.w3c.dom.Node;
 /**
  * This defines a 'write to file' job entry. Its main use would be to create empty trigger files that can be used to
  * control the flow in ETL cycles.
- * 
+ *
  * @author Samatar Hassan
  * @since 28-01-2007
- * 
+ *
  */
 public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryWriteToFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryWriteToFile.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
   private boolean createParentFolder;
@@ -102,8 +102,8 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
@@ -117,7 +117,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       createParentFolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createParentFolder" );
@@ -125,8 +125,8 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
       content = rep.getJobEntryAttributeString( id_jobentry, "content" );
       encoding = rep.getJobEntryAttributeString( id_jobentry, "encoding" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'create file' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'create file' from the repository for id_jobentry=" + id_jobentry, dbe );
     }
   }
 
@@ -139,7 +139,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
       rep.saveJobEntryAttribute( id_job, getObjectId(), "encoding", encoding );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'create file' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -199,7 +199,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
         } else {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString(
-                PKG, "JobWriteToFile.Log.WritingToFileWithEncoding", realFilename, encoding ) );
+              PKG, "JobWriteToFile.Log.WritingToFileWithEncoding", realFilename, encoding ) );
           }
           osw = new OutputStreamWriter( os, encoding );
         }
@@ -241,21 +241,21 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
         if ( isCreateParentFolder() ) {
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFoldetNotExist", parent
-                .getName().toString() ) );
+              .getName().toString() ) );
           }
           parent.createFolder();
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFolderCreated", parent
-                .getName().toString() ) );
+              .getName().toString() ) );
           }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFoldetNotExist", parent
-              .getName().toString() ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "JobWriteToFile.Log.ParentFoldetNotExist", parent.getName().toString() ) );
         }
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages
-          .getString( PKG, "JobWriteToFile.Error.CheckingParentFolder", realFilename ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobWriteToFile.Error.CheckingParentFolder", realFilename ), e );
     } finally {
       if ( parent != null ) {
         try {
@@ -298,8 +298,8 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
   }
 }
