@@ -2,21 +2,25 @@ package org.pentaho.di.trans.steps.mock;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.*;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.logging.LogMessageInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -88,5 +92,40 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
 
   public void cleanUp() {
     KettleLogStore.setLogChannelInterfaceFactory( originalLogChannelInterfaceFactory );
+  }
+
+  /**
+   *  In case you need to use log methods during the tests
+   *  use redirectLog method after creating new StepMockHelper object.
+   *  Examples:
+   *    stepMockHelper.redirectLog( System.out, LogLevel.ROWLEVEL );
+   *    stepMockHelper.redirectLog( new FileOutputStream("log.txt"), LogLevel.BASIC );
+   */
+  public void redirectLog( final OutputStream out, LogLevel channelLogLevel ) {
+    final LogChannel log = spy( new LogChannel( this.getClass().getName(), true ) );
+    log.setLogLevel( channelLogLevel );
+    when( logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn( log );
+    doAnswer( new Answer() {
+      @Override
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        Object[] args = invocation.getArguments();
+
+        LogLevel logLevel = (LogLevel) args[1];
+        LogLevel channelLogLevel = log.getLogLevel();
+
+        if ( !logLevel.isVisible( channelLogLevel ) ) {
+          return null; // not for our eyes.
+        }
+        if ( channelLogLevel.getLevel() >= logLevel.getLevel() ) {
+          LogMessageInterface logMessage = (LogMessageInterface) args[0];
+          out.write( logMessage.getMessage().getBytes() );
+          out.write( '\n' );
+          out.write( '\r' );
+          out.flush();
+          return true;
+        }
+        return false;
+      }
+    } ).when( log ).println( (LogMessageInterface) anyObject(), (LogLevel) anyObject() );
   }
 }
