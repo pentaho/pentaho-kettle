@@ -841,7 +841,7 @@ public class RepositoryExplorerDialog extends Dialog {
       int cat = getItemCategory( ti );
 
       switch ( cat ) {
-        case ITEM_CATEGORY_ROOT: {
+        case ITEM_CATEGORY_ROOT:
           // Export all
           MenuItem miExp = new MenuItem( mTree, SWT.PUSH );
           miExp.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportAll" ) );
@@ -882,10 +882,9 @@ public class RepositoryExplorerDialog extends Dialog {
             }
           };
           miJobs.addSelectionListener( lsJobs );
-        }
           break;
 
-        case ITEM_CATEGORY_DATABASES_ROOT: {
+        case ITEM_CATEGORY_DATABASES_ROOT:
           // New database
           MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.ConnectionsRoot.New" ) );
@@ -896,14 +895,13 @@ public class RepositoryExplorerDialog extends Dialog {
           };
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_DATABASE: {
+        case ITEM_CATEGORY_DATABASE:
           // New database
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Connections.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newDatabase();
             }
@@ -930,28 +928,26 @@ public class RepositoryExplorerDialog extends Dialog {
           };
           miDel.addSelectionListener( lsDel );
           miDel.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_SLAVES_ROOT: {
+        case ITEM_CATEGORY_SLAVES_ROOT:
           // New slave
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Slave.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newSlaveServer();
             }
           };
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_SLAVE: {
+        case ITEM_CATEGORY_SLAVE:
           // New slave
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Slave.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newSlaveServer();
             }
@@ -959,9 +955,9 @@ public class RepositoryExplorerDialog extends Dialog {
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
           // Edit slave
-          MenuItem miEdit = new MenuItem( mTree, SWT.PUSH );
+          miEdit = new MenuItem( mTree, SWT.PUSH );
           miEdit.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Slave.Edit" ) );
-          SelectionAdapter lsEdit = new SelectionAdapter() {
+          lsEdit = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               editSlaveServer( item );
             }
@@ -969,37 +965,35 @@ public class RepositoryExplorerDialog extends Dialog {
           miEdit.addSelectionListener( lsEdit );
           miEdit.setEnabled( !readonly );
           // Delete slave
-          MenuItem miDel = new MenuItem( mTree, SWT.PUSH );
+          miDel = new MenuItem( mTree, SWT.PUSH );
           miDel.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Slave.Delete" ) );
-          SelectionAdapter lsDel = new SelectionAdapter() {
+          lsDel = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               delSlaveServer( item );
             }
           };
           miDel.addSelectionListener( lsDel );
           miDel.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_PARTITIONS_ROOT: {
+        case ITEM_CATEGORY_PARTITIONS_ROOT:
           // New partition schema
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newPartitionSchema();
             }
           };
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_PARTITION: {
+        case ITEM_CATEGORY_PARTITION:
           // New partition schema
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newPartitionSchema();
             }
@@ -1007,9 +1001,9 @@ public class RepositoryExplorerDialog extends Dialog {
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
           // Edit partition schema
-          MenuItem miEdit = new MenuItem( mTree, SWT.PUSH );
+          miEdit = new MenuItem( mTree, SWT.PUSH );
           miEdit.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Edit" ) );
-          SelectionAdapter lsEdit = new SelectionAdapter() {
+          lsEdit = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               editPartitionSchema( item );
             }
@@ -1017,37 +1011,35 @@ public class RepositoryExplorerDialog extends Dialog {
           miEdit.addSelectionListener( lsEdit );
           miEdit.setEnabled( !readonly );
           // Delete partition schema
-          MenuItem miDel = new MenuItem( mTree, SWT.PUSH );
+          miDel = new MenuItem( mTree, SWT.PUSH );
           miDel.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.PartitionSchema.Delete" ) );
-          SelectionAdapter lsDel = new SelectionAdapter() {
+          lsDel = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               delPartitionSchema( item );
             }
           };
           miDel.addSelectionListener( lsDel );
           miDel.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_CLUSTERS_ROOT: {
+        case ITEM_CATEGORY_CLUSTERS_ROOT:
           // New cluster
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newCluster();
             }
           };
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_CLUSTER: {
+        case ITEM_CATEGORY_CLUSTER:
           // New cluster
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newCluster();
             }
@@ -1055,9 +1047,9 @@ public class RepositoryExplorerDialog extends Dialog {
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
           // Edit cluster
-          MenuItem miEdit = new MenuItem( mTree, SWT.PUSH );
+          miEdit = new MenuItem( mTree, SWT.PUSH );
           miEdit.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.Edit" ) );
-          SelectionAdapter lsEdit = new SelectionAdapter() {
+          lsEdit = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               editCluster( item );
             }
@@ -1065,19 +1057,20 @@ public class RepositoryExplorerDialog extends Dialog {
           miEdit.addSelectionListener( lsEdit );
           miEdit.setEnabled( !readonly );
           // Delete cluster
-          MenuItem miDel = new MenuItem( mTree, SWT.PUSH );
+          miDel = new MenuItem( mTree, SWT.PUSH );
           miDel.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Cluster.Delete" ) );
-          SelectionAdapter lsDel = new SelectionAdapter() {
+          lsDel = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               delCluster( item );
             }
           };
           miDel.addSelectionListener( lsDel );
           miDel.setEnabled( !readonly );
-        }
           break;
+
         case ITEM_CATEGORY_TRANSFORMATIONS_ROOT:
           break;
+
         case ITEM_CATEGORY_TRANSFORMATION:
           if ( level >= 2 && repositoryObject != null ) {
             final RepositoryDirectoryInterface repdir = repositoryObject.getRepositoryDirectory();
@@ -1120,7 +1113,7 @@ public class RepositoryExplorerDialog extends Dialog {
               }
             } else {
               // Delete transformation
-              MenuItem miDel = new MenuItem( mTree, SWT.PUSH );
+              miDel = new MenuItem( mTree, SWT.PUSH );
               miDel
                   .setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.Delete" ) );
               miDel.addSelectionListener( new SelectionAdapter() {
@@ -1146,9 +1139,9 @@ public class RepositoryExplorerDialog extends Dialog {
             final RepositoryDirectoryInterface repdir = directoryTree.findDirectory( realpath );
 
             // Export xforms and jobs from directory
-            MenuItem miExp = new MenuItem( mTree, SWT.PUSH );
+            miExp = new MenuItem( mTree, SWT.PUSH );
             miExp.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportAll" ) );
-            SelectionAdapter lsExp = new SelectionAdapter() {
+            lsExp = new SelectionAdapter() {
               public void widgetSelected( SelectionEvent e ) {
                 exportAll( repdir );
               }
@@ -1158,9 +1151,9 @@ public class RepositoryExplorerDialog extends Dialog {
 
             if ( cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY ) {
               // Export transMeta
-              MenuItem miTrans = new MenuItem( mTree, SWT.PUSH );
+              miTrans = new MenuItem( mTree, SWT.PUSH );
               miTrans.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans" ) );
-              SelectionAdapter lsTrans = new SelectionAdapter() {
+              lsTrans = new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
                   exportTransformations( repdir );
                 }
@@ -1170,9 +1163,9 @@ public class RepositoryExplorerDialog extends Dialog {
 
             if ( cat == ITEM_CATEGORY_JOB_DIRECTORY ) {
               // Export jobs
-              MenuItem miJobs = new MenuItem( mTree, SWT.PUSH );
+              miJobs = new MenuItem( mTree, SWT.PUSH );
               miJobs.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Objects.ExportJob" ) );
-              SelectionAdapter lsJobs = new SelectionAdapter() {
+              lsJobs = new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
                   exportJobs( repdir );
                 }
@@ -1254,7 +1247,7 @@ public class RepositoryExplorerDialog extends Dialog {
               }
             } else {
               // Delete job
-              MenuItem miDel = new MenuItem( mTree, SWT.PUSH );
+              miDel = new MenuItem( mTree, SWT.PUSH );
               miDel.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.Delete" ) );
               miDel.addSelectionListener( new SelectionAdapter() {
                 public void widgetSelected( SelectionEvent e ) {
@@ -1266,26 +1259,25 @@ public class RepositoryExplorerDialog extends Dialog {
           }
           break;
 
-        case ITEM_CATEGORY_USERS_ROOT: {
+        case ITEM_CATEGORY_USERS_ROOT:
           mTree = new Menu( shell, SWT.POP_UP );
           // New user
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.UsersRoot.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newUser();
             }
           };
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
-        }
           break;
 
-        case ITEM_CATEGORY_USER: {
+        case ITEM_CATEGORY_USER:
           // New user
-          MenuItem miNew = new MenuItem( mTree, SWT.PUSH );
+          miNew = new MenuItem( mTree, SWT.PUSH );
           miNew.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Users.New" ) );
-          SelectionAdapter lsNew = new SelectionAdapter() {
+          lsNew = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               newUser();
             }
@@ -1293,9 +1285,9 @@ public class RepositoryExplorerDialog extends Dialog {
           miNew.addSelectionListener( lsNew );
           miNew.setEnabled( !readonly );
           // Edit user info
-          MenuItem miEdit = new MenuItem( mTree, SWT.PUSH );
+          miEdit = new MenuItem( mTree, SWT.PUSH );
           miEdit.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Users.Edit" ) );
-          SelectionAdapter lsEdit = new SelectionAdapter() {
+          lsEdit = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               editUser( item );
             }
@@ -1313,16 +1305,15 @@ public class RepositoryExplorerDialog extends Dialog {
           miRen.addSelectionListener( lsRen );
           miRen.setEnabled( !readonly );
           // Delete user info
-          MenuItem miDel = new MenuItem( mTree, SWT.PUSH );
+          miDel = new MenuItem( mTree, SWT.PUSH );
           miDel.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Users.Delete" ) );
-          SelectionAdapter lsDel = new SelectionAdapter() {
+          lsDel = new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
               delUser( item );
             }
           };
           miDel.addSelectionListener( lsDel );
           miDel.setEnabled( !readonly );
-        }
           break;
 
         default:
@@ -1348,8 +1339,8 @@ public class RepositoryExplorerDialog extends Dialog {
         case ITEM_CATEGORY_DATABASE:
           renameDatabase();
           break;
-        case ITEM_CATEGORY_TRANSFORMATION: {
-          final String name = item.getText();
+        case ITEM_CATEGORY_TRANSFORMATION:
+          String name = item.getText();
 
           // The first 3 levels of text[] don't belong to the path to this transformation!
           String[] path = new String[level - 2];
@@ -1363,25 +1354,25 @@ public class RepositoryExplorerDialog extends Dialog {
           if ( repdir != null ) {
             renameTransformation( name, repdir );
           }
-        }
           break;
-        case ITEM_CATEGORY_JOB: {
-          final String name = item.getText();
+
+        case ITEM_CATEGORY_JOB:
+          name = item.getText();
 
           // The first 3 levels of text[] don't belong to the path to this transformation!
-          String[] path = new String[level - 2];
+          path = new String[level - 2];
           for ( int i = 0; i < path.length; i++ ) {
             path[i] = text[i + 2];
           }
 
           // Find the directory in the directory tree...
-          RepositoryDirectoryInterface repdir = directoryTree.findDirectory( path );
+          repdir = directoryTree.findDirectory( path );
 
           if ( repdir != null ) {
             renameJob( name, repdir );
           }
-        }
           break;
+
         case ITEM_CATEGORY_USER:
           renameUser();
           break;

@@ -94,6 +94,7 @@ public class GPG {
           }
         }
       } catch ( IOException io ) {
+        // Ignore read errors
       }
     }
 
@@ -144,6 +145,7 @@ public class GPG {
           file.close();
         }
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
   }

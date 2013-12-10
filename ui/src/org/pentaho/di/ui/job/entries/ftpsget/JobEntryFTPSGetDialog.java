@@ -1545,6 +1545,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
       try {
         connection.disconnect();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

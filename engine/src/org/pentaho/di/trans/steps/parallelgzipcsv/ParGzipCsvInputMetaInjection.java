@@ -153,7 +153,7 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
 
       String lookValue = (String) lookFields.getValue();
       switch ( fieldsEntry ) {
-        case FIELDS: {
+        case FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FIELD ) {
@@ -216,7 +216,6 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
               fields.add( field );
             }
           }
-        }
           break;
 
         case FILENAME:

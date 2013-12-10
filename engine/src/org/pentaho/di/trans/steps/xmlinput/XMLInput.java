@@ -135,7 +135,7 @@ public class XMLInput extends BaseStep implements StepInterface {
         XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
 
         switch ( pos.getType() ) {
-          case XMLInputFieldPosition.XML_ELEMENT: {
+          case XMLInputFieldPosition.XML_ELEMENT:
             if ( pos.getElementNr() <= 1 ) {
               Node subNode = XMLHandler.getSubNode( node, pos.getName() );
               if ( subNode != null ) {
@@ -167,16 +167,13 @@ public class XMLInput extends BaseStep implements StepInterface {
               }
               node = subNode;
             }
-          }
             break;
 
-          case XMLInputFieldPosition.XML_ATTRIBUTE: {
+          case XMLInputFieldPosition.XML_ATTRIBUTE:
             value = XMLHandler.getTagAttribute( node, pos.getName() );
-          }
             break;
-          case XMLInputFieldPosition.XML_ROOT: {
+          case XMLInputFieldPosition.XML_ROOT:
             value = XMLHandler.getNodeValue( node );
-          }
             break;
           default:
             break;

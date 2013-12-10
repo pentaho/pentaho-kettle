@@ -143,6 +143,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
               file.close();
             }
           } catch ( Exception e ) {
+            // Ignore errors
           }
         }
       } else {
@@ -499,6 +500,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     super.dispose( smi, sdi );

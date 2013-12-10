@@ -88,18 +88,21 @@ public class StreamLookup extends BaseStep implements StepInterface {
           try {
             data.nullIf[i] = DateFormat.getInstance().parse( meta.getValueDefault()[i] );
           } catch ( Exception e ) {
+            // Ignore errors
           }
           break;
         case ValueMetaInterface.TYPE_NUMBER:
           try {
             data.nullIf[i] = new Double( Double.parseDouble( meta.getValueDefault()[i] ) );
           } catch ( Exception e ) {
+            // Ignore errors
           }
           break;
         case ValueMetaInterface.TYPE_INTEGER:
           try {
             data.nullIf[i] = new Long( Long.parseLong( meta.getValueDefault()[i] ) );
           } catch ( Exception e ) {
+            // Ignore errors
           }
           break;
         case ValueMetaInterface.TYPE_BOOLEAN:
@@ -113,6 +116,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
           try {
             data.nullIf[i] = new BigDecimal( meta.getValueDefault()[i] );
           } catch ( Exception e ) {
+            // Ignore errors
           }
           break;
         default:

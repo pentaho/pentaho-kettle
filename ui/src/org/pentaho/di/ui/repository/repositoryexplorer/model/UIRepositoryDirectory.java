@@ -234,6 +234,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       getRepositoryObjects(); // prime cache before firing event
       kidElementCache.fireCollectionChanged();
     } catch ( KettleException ignored ) {
+      // Ignore errors
     }
   }
 

@@ -861,7 +861,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     try {
       loadTransformation();
     } catch ( Throwable t ) {
-
+      // Ignore errors
     }
 
     wStepname.selectAll();

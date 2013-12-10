@@ -421,6 +421,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
         try {
           data.sqlRunner.join( this.threadWaitTime );
         } catch ( InterruptedException ex ) {
+          // Ignore errors
         }
         data.sqlRunner.checkExcn();
       } catch ( Exception loadEx ) {

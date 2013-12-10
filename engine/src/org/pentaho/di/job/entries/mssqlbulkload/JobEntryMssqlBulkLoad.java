@@ -617,6 +617,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
             fileObject.close();
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
     } else {

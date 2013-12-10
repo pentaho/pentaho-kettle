@@ -318,6 +318,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
           try {
             fileObject.close();
           } catch ( Exception e ) {
+            // Ignore errors
           }
         }
       }

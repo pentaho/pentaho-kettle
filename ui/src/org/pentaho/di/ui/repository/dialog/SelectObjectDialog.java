@@ -383,6 +383,7 @@ public class SelectObjectDialog extends Dialog {
         try {
           Thread.sleep( 0, 1 );
         } catch ( InterruptedException e ) {
+          // Ignore errors
         }
       }
       expandAllItems( wTree.getItems(), true );

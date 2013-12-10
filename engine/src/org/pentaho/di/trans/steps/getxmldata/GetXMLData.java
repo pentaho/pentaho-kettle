@@ -399,6 +399,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
                 file.close();
               }
             } catch ( Exception e ) {
+              // Ignore close errors
             }
           }
         } else {
@@ -968,6 +969,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
     if ( data.an != null ) {

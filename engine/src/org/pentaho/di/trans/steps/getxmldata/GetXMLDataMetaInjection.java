@@ -194,7 +194,7 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
       Entry fieldsEntry = Entry.findEntry( lookFields.getKey() );
       if ( fieldsEntry != null ) {
         switch ( fieldsEntry ) {
-          case FILENAMES: {
+          case FILENAMES:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -240,9 +240,9 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
                 }
               }
             }
-          }
             break;
-          case INPUTFIELDS: {
+
+          case INPUTFIELDS:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -303,8 +303,8 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
                 }
               }
             }
-          }
             break;
+
           case INCLUDE_ROWNUMBER:
             meta.setIncludeRowNumber( "Y".equalsIgnoreCase( lookFieldsValue ) );
             break;

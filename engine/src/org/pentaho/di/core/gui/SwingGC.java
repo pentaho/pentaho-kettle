@@ -230,9 +230,10 @@ public class SwingGC implements GCInterface {
       if ( image == null ) {
         image = ImageIO.read( new File( "/" + fileName ) );
       }
-    } // we fail silently as the images may be available in a jar
-    catch ( IIOException iioe ) {
+    } catch ( IIOException iioe ) {
+      // we fail silently as the images may be available in a jar
     } catch ( IOException ioe ) {
+      // we fail silently as the images may be available in a jar
     }
 
     if ( image == null ) {
@@ -306,8 +307,10 @@ public class SwingGC implements GCInterface {
         }
       }
     } else {
-      while ( !gc.drawImage( img, locationX, locationY, observer ) ) {
-        // Wait
+      boolean changed = false;
+      // Wait
+      while ( changed ) {
+        changed = !gc.drawImage( img, locationX, locationY, observer );
       }
     }
 

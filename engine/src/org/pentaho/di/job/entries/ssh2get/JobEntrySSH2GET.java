@@ -946,6 +946,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     try {
       return sftpClient.stat( filename ).isDirectory();
     } catch ( Exception e ) {
+      // Ignore errors
     }
     return false;
   }
@@ -1138,6 +1139,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     try {
       return sftpClient.stat( filename ).isRegularFile();
     } catch ( Exception e ) {
+      // Ignore errors
     }
     return false;
   }
@@ -1227,9 +1229,11 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
             fos.close();
             fos = null;
           } catch ( Exception ex ) {
+            // Ignore errors
           }
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
 
     }

@@ -170,9 +170,8 @@ public class DimensionCache implements Comparator<Object[]> {
               //
               if ( fromDate.compareTo( lookupDate ) <= 0 && toDate.compareTo( lookupDate ) > 0 ) {
                 return insertionPoint;
-              } else {
-                // This is a cache miss.
               }
+              // Else this is a cache miss.
             }
           }
         }

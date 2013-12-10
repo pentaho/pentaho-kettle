@@ -1006,12 +1006,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
           // Not in the Base Folder..Only if include sub folders
           if ( include_subfolders ) {
             // Folders..only if include subfolders
-            if ( Currentfile.getType() == FileType.FOLDER ) {
-              /*
-               * if (include_subfolders && move_empty_folders && Const.isEmpty(wildcard)) {
-               * entrystatus=EncryptFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result); }
-               */
-            } else {
+            if ( Currentfile.getType() != FileType.FOLDER ) {
 
               if ( GetFileWildcard( sourceshortfilename, realWildcard ) ) {
                 entrystatus =
@@ -1024,13 +1019,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
         } else {
           // In the Base Folder...
           // Folders..only if include subfolders
-          if ( Currentfile.getType() == FileType.FOLDER ) {
-            /*
-             * if (include_subfolders && move_empty_folders && Const.isEmpty(wildcard)) {
-             * entrystatus=EncryptFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result); }
-             */
-          } else {
-
+          if ( Currentfile.getType() != FileType.FOLDER ) {
             // file...Check if exists
             if ( GetFileWildcard( sourceshortfilename, realWildcard ) ) {
               entrystatus =

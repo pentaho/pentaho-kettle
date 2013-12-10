@@ -535,7 +535,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
-      } // ignore this
+        // Ignore errors
+      }
     }
 
     super.dispose( smi, sdi );

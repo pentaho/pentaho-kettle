@@ -267,6 +267,7 @@ public class MVSFileParser extends FTPFileParser {
       try {
         l = Long.parseLong( aLine[4] );
       } catch ( Exception ignored ) {
+        // Ignore errors
       }
       rtn.setSize( l );
     } else {

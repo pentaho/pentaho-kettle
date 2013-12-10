@@ -106,6 +106,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             writer.write( data.document );
             writer.close();
           } catch ( Exception e ) {
+            // Ignore errors
           } finally {
             data.document = null;
           }

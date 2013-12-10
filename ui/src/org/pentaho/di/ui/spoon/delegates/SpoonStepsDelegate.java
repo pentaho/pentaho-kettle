@@ -240,6 +240,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
               spoon.getShell(), stepMeta, transMeta, stepName } );
         }
       } catch ( Throwable t ) {
+        // Ignore errors
       }
 
       throw new KettleException( e );
@@ -270,6 +271,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
           return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta } );
         }
       } catch ( Throwable t ) {
+        // Ignore errors
       }
 
       throw new KettleException( e );

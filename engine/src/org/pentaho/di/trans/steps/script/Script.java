@@ -453,10 +453,7 @@ public class Script extends BaseStep implements StepInterface {
                   String string = (String) result;
                   return new Long( Long.parseLong( Const.trim( string ) ) );
                 }
-              } /*
-                 * else if(classType.equalsIgnoreCase( "org.mozilla.javascript.UniqueTag")) { //TODO AKRETION NOT
-                 * implemented return Long.valueOf(Long.parseLong(((UniqueTag) result).toString())); }
-                 */else {
+              } else {
                 return Long.valueOf( Long.parseLong( result.toString() ) );
               }
 

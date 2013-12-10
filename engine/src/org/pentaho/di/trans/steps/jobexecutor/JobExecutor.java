@@ -132,9 +132,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
       if ( data.groupSize >= 0 ) {
         // Pass the input rows in blocks to the job result rows...
         //
-        if ( data.groupSize == 0 ) {
+        if ( data.groupSize != 0 ) {
           // Pass all input rows...
-        } else {
           if ( data.groupBuffer.size() >= data.groupSize ) {
             newGroup = true;
           }

@@ -1120,6 +1120,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
         sftpclient.disconnect();
         sftpclient = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

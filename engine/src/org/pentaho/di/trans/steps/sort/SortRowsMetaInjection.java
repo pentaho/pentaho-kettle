@@ -133,7 +133,7 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
 
         String lookValue = (String) lookFields.getValue();
         switch ( fieldsEntry ) {
-          case FIELDS: {
+          case FIELDS:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -174,7 +174,6 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
                 }
               }
             }
-          }
             break;
 
           case COMPRESS_TEMP_FILES:

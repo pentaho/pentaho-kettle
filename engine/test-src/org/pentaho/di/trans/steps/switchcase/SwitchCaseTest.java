@@ -30,8 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -187,7 +187,8 @@ public class SwitchCaseTest {
     SwitchCaseCustom krasavez = new SwitchCaseCustom( mockHelper );
 
     // load step info value-case mapping from xml.
-    krasavez.meta.loadXML( loadStepXmlMetadata(), Collections.<DatabaseMeta> emptyList(), mock( IMetaStore.class ) );
+    List<DatabaseMeta> emptyList = new ArrayList<DatabaseMeta>();
+    krasavez.meta.loadXML( loadStepXmlMetadata(), emptyList, mock( IMetaStore.class ) );
 
     KeyToRowSetMap expectedNN = new KeyToRowSetMap();
     Set<RowSet> nulls = new HashSet<RowSet>();

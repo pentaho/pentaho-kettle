@@ -924,6 +924,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         Thread.sleep( 1 );
         time += 1;
       } catch ( InterruptedException e ) {
+        // Ignore sleep errors
       }
     }
   }

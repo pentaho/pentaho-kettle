@@ -863,6 +863,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       try {
         inputStream.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

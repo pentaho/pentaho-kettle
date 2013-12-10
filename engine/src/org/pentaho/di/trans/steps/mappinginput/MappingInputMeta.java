@@ -331,9 +331,9 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
             row.addValueMeta( v );
           }
         }
-      } else {
-        // row is OK, keep it as it is.
       }
+
+      // else: row is OK, keep it as it is.
     }
   }
 

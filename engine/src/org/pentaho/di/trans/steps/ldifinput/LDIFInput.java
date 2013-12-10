@@ -481,6 +481,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     if ( data.InputLDIF != null ) {

@@ -4144,6 +4144,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             id = mb.open();
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
         if ( id == SWT.NO ) {
           export = false;
@@ -4164,6 +4165,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               try {
                 out.close();
               } catch ( Exception e ) {
+                // Ignore errors
               }
             }
           }

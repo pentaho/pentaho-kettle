@@ -309,44 +309,44 @@ public class ExcelInput extends BaseStep implements StepInterface {
       return;
     }
     switch ( cell.getType() ) {
-      case BOOLEAN: {
+      case BOOLEAN:
         if ( !( v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v
             .getType() == ValueMetaInterface.TYPE_BOOLEAN ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.InvalidTypeBoolean", v
               .getTypeDesc() ) );
         }
-      }
         break;
-      case DATE: {
+
+      case DATE:
         if ( !( v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v
             .getType() == ValueMetaInterface.TYPE_DATE ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.InvalidTypeDate", cell
               .getContents(), v.getTypeDesc() ) );
         }
-      }
         break;
-      case LABEL: {
+
+      case LABEL:
         if ( v.getType() == ValueMetaInterface.TYPE_BOOLEAN
             || v.getType() == ValueMetaInterface.TYPE_DATE || v.getType() == ValueMetaInterface.TYPE_INTEGER
             || v.getType() == ValueMetaInterface.TYPE_NUMBER ) {
           throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.InvalidTypeLabel", cell
               .getContents(), v.getTypeDesc() ) );
         }
-      }
         break;
-      case EMPTY: {
-        // ok
-      }
+
+      case EMPTY:
+        // OK
         break;
-      case NUMBER: {
+
+      case NUMBER:
         if ( !( v.getType() == ValueMetaInterface.TYPE_STRING
             || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_INTEGER
             || v.getType() == ValueMetaInterface.TYPE_BIGNUMBER || v.getType() == ValueMetaInterface.TYPE_NUMBER ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.InvalidTypeNumber", cell
               .getContents(), v.getTypeDesc() ) );
         }
-      }
         break;
+
       default:
         throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.UnsupportedType", cell
             .getType().getDescription(), cell.getContents() ) );
@@ -805,6 +805,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
     try {

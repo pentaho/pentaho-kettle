@@ -130,7 +130,7 @@ public class UniqueRows extends BaseStep implements StepInterface {
     } else {
       data.counter++;
       if ( data.sendDuplicateRows && !first ) {
-        putError( getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == ""
+        putError( getInputRowMeta(), r, 1, data.realErrorDescription, Const.isEmpty( data.compareFields )
             ? null : data.compareFields, "UNR001" );
       }
     }

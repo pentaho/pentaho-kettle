@@ -185,77 +185,73 @@ public class CombinationLookupTest extends TestCase {
   public void testCombinationLookup() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta lookupDBInfo = transMeta.findDatabase( "lookup" );
-
-      // Execute our setup SQLs in the database.
-      Database lookupDatabase = new Database( transMeta, lookupDBInfo );
-      lookupDatabase.connect();
-      createTables( lookupDatabase );
-      createData( lookupDatabase );
-
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create the source step...
-      //
-      String fromstepname = "read from [" + source_table + "]";
-      TableInputMeta tii = new TableInputMeta();
-      tii.setDatabaseMeta( transMeta.findDatabase( "lookup" ) );
-      String selectSQL = "SELECT " + Const.CR;
-      selectSQL += "DLR_CD, DLR_NM, DLR_DESC ";
-      selectSQL += "FROM " + source_table + " ORDER BY ORDNO;";
-      tii.setSQL( selectSQL );
-
-      String fromstepid = registry.getPluginId( StepPluginType.class, tii );
-      StepMeta fromstep = new StepMeta( fromstepid, fromstepname, tii );
-      fromstep.setLocation( 150, 100 );
-      fromstep.setDraw( true );
-      fromstep
-          .setDescription( "Reads information from table [" + source_table + "] on database [" + lookupDBInfo + "]" );
-      transMeta.addStep( fromstep );
-
-      //
-      // create the combination lookup/update step...
-      //
-      String lookupstepname = "lookup from [lookup]";
-      CombinationLookupMeta clm = new CombinationLookupMeta();
-      String[] lookupKey = { "DLR_CD" };
-      clm.setTablename( target_table );
-      clm.setKeyField( lookupKey );
-      clm.setKeyLookup( lookupKey );
-      clm.setTechnicalKeyField( "ID" );
-      clm.setTechKeyCreation( CombinationLookupMeta.CREATION_METHOD_TABLEMAX );
-      clm.setDatabaseMeta( lookupDBInfo );
-
-      String lookupstepid = registry.getPluginId( StepPluginType.class, clm );
-      StepMeta lookupstep = new StepMeta( lookupstepid, lookupstepname, clm );
-      lookupstep.setDescription( "Looks up information from table [lookup] on database [" + lookupDBInfo + "]" );
-      transMeta.addStep( lookupstep );
-
-      TransHopMeta hi = new TransHopMeta( fromstep, lookupstep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-      trans.execute( null );
-
-      trans.waitUntilFinished();
-
-      checkResults( lookupDatabase );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta lookupDBInfo = transMeta.findDatabase( "lookup" );
+
+    // Execute our setup SQLs in the database.
+    Database lookupDatabase = new Database( transMeta, lookupDBInfo );
+    lookupDatabase.connect();
+    createTables( lookupDatabase );
+    createData( lookupDatabase );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create the source step...
+    //
+    String fromstepname = "read from [" + source_table + "]";
+    TableInputMeta tii = new TableInputMeta();
+    tii.setDatabaseMeta( transMeta.findDatabase( "lookup" ) );
+    String selectSQL = "SELECT " + Const.CR;
+    selectSQL += "DLR_CD, DLR_NM, DLR_DESC ";
+    selectSQL += "FROM " + source_table + " ORDER BY ORDNO;";
+    tii.setSQL( selectSQL );
+
+    String fromstepid = registry.getPluginId( StepPluginType.class, tii );
+    StepMeta fromstep = new StepMeta( fromstepid, fromstepname, tii );
+    fromstep.setLocation( 150, 100 );
+    fromstep.setDraw( true );
+    fromstep.setDescription( "Reads information from table [" + source_table + "] on database [" + lookupDBInfo + "]" );
+    transMeta.addStep( fromstep );
+
+    //
+    // create the combination lookup/update step...
+    //
+    String lookupstepname = "lookup from [lookup]";
+    CombinationLookupMeta clm = new CombinationLookupMeta();
+    String[] lookupKey = { "DLR_CD" };
+    clm.setTablename( target_table );
+    clm.setKeyField( lookupKey );
+    clm.setKeyLookup( lookupKey );
+    clm.setTechnicalKeyField( "ID" );
+    clm.setTechKeyCreation( CombinationLookupMeta.CREATION_METHOD_TABLEMAX );
+    clm.setDatabaseMeta( lookupDBInfo );
+
+    String lookupstepid = registry.getPluginId( StepPluginType.class, clm );
+    StepMeta lookupstep = new StepMeta( lookupstepid, lookupstepname, clm );
+    lookupstep.setDescription( "Looks up information from table [lookup] on database [" + lookupDBInfo + "]" );
+    transMeta.addStep( lookupstep );
+
+    TransHopMeta hi = new TransHopMeta( fromstep, lookupstep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+    trans.execute( null );
+
+    trans.waitUntilFinished();
+
+    checkResults( lookupDatabase );
   }
 }

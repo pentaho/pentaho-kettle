@@ -125,9 +125,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
       if ( data.groupSize >= 0 ) {
         // Pass the input rows in blocks to the transformation result rows...
         //
-        if ( data.groupSize == 0 ) {
-          // Pass all input rows...
-        } else {
+        if ( data.groupSize != 0 ) {
           if ( data.groupBuffer.size() >= data.groupSize ) {
             newGroup = true;
           }
@@ -242,12 +240,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
       log.logError( "An error occurred executing the transformation: ", e );
       result.setResult( false );
       result.setNrErrors( 1 );
-    } finally {
-      /*
-       * try { // data.executorTrans.fireTransListeners(); } catch (KettleException e) { result.setNrErrors(1);
-       * result.setResult(false); log.logError(BaseMessages.getString(PKG, "JobExecutor.Log.ErrorExecJob",
-       * e.getMessage()), e); }
-       */
     }
 
     // First the natural output...

@@ -966,6 +966,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         sftpclient.disconnect();
         sftpclient = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

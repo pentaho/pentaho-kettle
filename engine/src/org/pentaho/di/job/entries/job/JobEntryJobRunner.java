@@ -161,6 +161,7 @@ public class JobEntryJobRunner implements Runnable {
       try {
         Thread.sleep( 0, 1 );
       } catch ( InterruptedException e ) {
+        // Ignore errors
       }
     }
   }

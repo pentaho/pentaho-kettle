@@ -102,7 +102,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
  * Widget to display or modify data, displayed in a Table format.
- *
+ * 
  * @author Matt
  * @since 27-05-2003
  */
@@ -558,7 +558,7 @@ public class TableView extends Composite {
 
         /*
          * left = e.keyCode == SWT.ARROW_LEFT && last_carret_position==0;
-         *
+         * 
          * if (text!=null && !text.isDisposed()) right = e.keyCode == SWT.ARROW_RIGHT &&
          * last_carret_position==text.getText().length();
          */
@@ -1335,7 +1335,7 @@ public class TableView extends Composite {
 
   /**
    * Inform the content listener that content changed.
-   *
+   * 
    * @param rownr
    * @param colnr
    * @param textData
@@ -1660,7 +1660,7 @@ public class TableView extends Composite {
    * Example: ----------------------------------------------------------------- Field in stream;Dimension field
    * TIME;TIME DATA_TYPE;DATA_TYPE MAP_TYPE;MAP_TYPE RESOLUTION;RESOLUTION START_TIME;START_TIME
    * -----------------------------------------------------------------
-   *
+   * 
    * !! Paste at the end of the table! --> Create new table item for every line
    */
 
@@ -2390,6 +2390,7 @@ public class TableView extends Composite {
           tc.setWidth( max + extra );
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     unEdit();
@@ -2443,7 +2444,7 @@ public class TableView extends Composite {
   /**
    * Count non-empty rows in the table... IMPORTANT: always call this method before calling getNonEmpty(int selnr): for
    * performance reasons we cache the row indexes.
-   *
+   * 
    * @return the number of rows/table-items that are not empty
    */
   public int nrNonEmpty() {
@@ -2462,7 +2463,7 @@ public class TableView extends Composite {
   /**
    * Return the row/table-item on the specified index. IMPORTANT: the indexes of the non-empty rows are populated with a
    * call to nrNonEmpty(). Make sure to call that first.
-   *
+   * 
    * @param index
    *          the index of the non-empty row/table-item
    * @return the requested non-empty row/table-item
@@ -2525,23 +2526,18 @@ public class TableView extends Composite {
 
     // We created a table item: undo this...
       case TransAction.TYPE_ACTION_NEW_TABLEITEM:
-      // Delete the step at correct location:
-      {
         int[] idx = ta.getCurrentIndex();
         table.remove( idx );
-
         for ( int i = 0; i < idx.length; i++ ) {
           if ( idx[i] < rownr ) {
             rownr--; // shift with the rest.
           }
         }
-
         // See if the table is empty, if so : undo again!!
         if ( table.getItemCount() == 0 ) {
           undoAction();
         }
         setRowNums();
-      }
         break;
 
       //
@@ -2549,8 +2545,8 @@ public class TableView extends Composite {
       //
 
       // un-Delete the rows at correct location: re-insert
-      case TransAction.TYPE_ACTION_DELETE_TABLEITEM: {
-        int[] idx = ta.getCurrentIndex();
+      case TransAction.TYPE_ACTION_DELETE_TABLEITEM:
+        idx = ta.getCurrentIndex();
         String[][] str = (String[][]) ta.getCurrent();
         for ( int i = 0; i < idx.length; i++ ) {
           addItem( idx[i], str[i] );
@@ -2560,7 +2556,6 @@ public class TableView extends Composite {
           }
         }
         setRowNums();
-      }
         break;
 
       //
@@ -2568,8 +2563,8 @@ public class TableView extends Composite {
       //
 
       // Change the item back to the original row-value.
-      case TransAction.TYPE_ACTION_CHANGE_TABLEITEM: {
-        int[] idx = ta.getCurrentIndex();
+      case TransAction.TYPE_ACTION_CHANGE_TABLEITEM:
+        idx = ta.getCurrentIndex();
         String[][] prev = (String[][]) ta.getPrevious();
         for ( int x = 0; x < idx.length; x++ ) {
           TableItem item = table.getItem( idx[x] );
@@ -2577,21 +2572,19 @@ public class TableView extends Composite {
             item.setText( i + 1, prev[x][i] );
           }
         }
-      }
         break;
 
       //
       // POSITION
       //
       // The position of a row has changed...
-      case TransAction.TYPE_ACTION_POSITION_TABLEITEM: {
+      case TransAction.TYPE_ACTION_POSITION_TABLEITEM:
         int[] curr = ta.getCurrentIndex();
-        int[] prev = ta.getPreviousIndex();
+        int[] prevIdx = ta.getPreviousIndex();
         for ( int i = 0; i < curr.length; i++ ) {
-          moveRow( prev[i], curr[i] );
+          moveRow( prevIdx[i], curr[i] );
         }
         setRowNums();
-      }
         break;
       default:
         break;
@@ -2623,8 +2616,6 @@ public class TableView extends Composite {
     // NEW
     //
       case TransAction.TYPE_ACTION_NEW_TABLEITEM:
-      // re-insert the step at correct location:
-      {
         int[] idx = ta.getCurrentIndex();
         String[][] str = (String[][]) ta.getCurrent();
         for ( int i = 0; i < idx.length; i++ ) {
@@ -2633,32 +2624,25 @@ public class TableView extends Composite {
             rownr++; // Shift cursor position with the new items...
           }
         }
-
         setRowNums();
-      }
         break;
 
       //
       // DELETE
       //
       case TransAction.TYPE_ACTION_DELETE_TABLEITEM:
-      // re-remove the items at the correct locations:
-      {
-        int[] idx = ta.getCurrentIndex();
+        idx = ta.getCurrentIndex();
         table.remove( idx );
-
         for ( int i = 0; i < idx.length; i++ ) {
           if ( idx[i] < rownr ) {
             rownr--; // shift with the rest.
           }
         }
-
         // See if the table is empty, if so : undo again!!
         if ( table.getItemCount() == 0 ) {
           undoAction();
         }
         setRowNums();
-      }
         break;
 
       //
@@ -2666,9 +2650,7 @@ public class TableView extends Composite {
       //
 
       case TransAction.TYPE_ACTION_CHANGE_TABLEITEM:
-      // Re-apply changes to the item
-      {
-        int[] idx = ta.getCurrentIndex();
+        idx = ta.getCurrentIndex();
         String[][] curr = (String[][]) ta.getCurrent();
         for ( int x = 0; x < idx.length; x++ ) {
           TableItem item = table.getItem( idx[x] );
@@ -2676,20 +2658,18 @@ public class TableView extends Composite {
             item.setText( i + 1, curr[x][i] );
           }
         }
-      }
         break;
 
       //
       // CHANGE POSITION
       //
-      case TransAction.TYPE_ACTION_POSITION_TABLEITEM: {
-        int[] curr = ta.getCurrentIndex();
+      case TransAction.TYPE_ACTION_POSITION_TABLEITEM:
+        int[] currIdx = ta.getCurrentIndex();
         int[] prev = ta.getPreviousIndex();
-        for ( int i = 0; i < curr.length; i++ ) {
-          moveRow( curr[i], prev[i] );
+        for ( int i = 0; i < currIdx.length; i++ ) {
+          moveRow( currIdx[i], prev[i] );
         }
         setRowNums();
-      }
         break;
 
       default:
@@ -2919,7 +2899,7 @@ public class TableView extends Composite {
 
   /**
    * Get all the strings from a certain column as an array
-   *
+   * 
    * @param colnr
    *          The column to return
    * @return the column values as a string array.
@@ -3103,7 +3083,7 @@ public class TableView extends Composite {
 
   /**
    * Returns copy of columns array in order to prevent unintented modifications.
-   *
+   * 
    * @return columns array
    */
   public ColumnInfo[] getColumns() {

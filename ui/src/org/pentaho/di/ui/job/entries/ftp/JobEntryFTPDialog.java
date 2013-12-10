@@ -1705,6 +1705,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         ftpclient.quit();
         ftpclient = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

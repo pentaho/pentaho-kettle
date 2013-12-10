@@ -294,6 +294,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
           fw.close();
         }
       } catch ( Exception ex ) {
+        // Ignore close errors
       }
     }
   }

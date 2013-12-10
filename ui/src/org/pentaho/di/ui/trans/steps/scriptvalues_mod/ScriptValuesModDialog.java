@@ -1833,6 +1833,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
             }
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
     }
@@ -1846,16 +1847,17 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
     for ( int x = 0; x < clsParamType.length; x++ ) {
       strParam = clsParamType[x].getName();
-      if ( strParam.toLowerCase().indexOf( "javascript" ) > 0 ) {
-      } else if ( strParam.toLowerCase().indexOf( "object" ) > 0 ) {
-        sbRC.append( "var" );
-        sbRC.append( ", " );
-      } else if ( strParam.equals( "java.lang.String" ) ) {
-        sbRC.append( "String" );
-        sbRC.append( ", " );
-      } else {
-        sbRC.append( strParam );
-        sbRC.append( ", " );
+      if ( strParam.toLowerCase().indexOf( "javascript" ) <= 0 ) {
+        if ( strParam.toLowerCase().indexOf( "object" ) > 0 ) {
+          sbRC.append( "var" );
+          sbRC.append( ", " );
+        } else if ( strParam.equals( "java.lang.String" ) ) {
+          sbRC.append( "String" );
+          sbRC.append( ", " );
+        } else {
+          sbRC.append( strParam );
+          sbRC.append( ", " );
+        }
       }
 
     }

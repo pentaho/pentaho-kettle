@@ -1058,7 +1058,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         tblMeta = stepMetaInterface.getRequiredFields( transMeta );
         fieldsNamesOfTbl = tblMeta.getFieldNames();
       } catch ( KettleException ke ) {
-
+        // Ignore errors
       }
       int count = 0;
       if ( fieldsNamesOfTbl == null ) {
@@ -1076,16 +1076,12 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         myTb.table.setItemCount( count );
         for ( int i = 0; i < count; i++ ) {
           TableItem item = myTb.table.getItem( i );
-          if ( i >= ( fieldsNamesOfTbl.length ) ) {
-            // item.setText(1, "");
-          } else {
+          if ( i < ( fieldsNamesOfTbl.length ) ) {
             if ( fieldsNamesOfTbl[i] != null ) {
               item.setText( 1, fieldsNamesOfTbl[i] );
             }
           }
-          if ( i >= fieldNamesOfStream.length ) {
-            // item.setText(2, "");
-          } else {
+          if ( i < fieldNamesOfStream.length ) {
             if ( fieldNamesOfStream[i] != null ) {
               item.setText( 2, fieldNamesOfStream[i] );
             }
@@ -1099,6 +1095,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         System.out.println( myTb.table.getColumn( 3 ).getWidth() );
       }
     } catch ( KettleStepException e ) {
+      // Ignore errors
     }
 
   }

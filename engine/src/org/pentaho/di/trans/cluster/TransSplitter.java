@@ -815,16 +815,15 @@ public class TransSplitter {
                     sourceStep.setStepPartitioningMeta( stepPartitioningMeta );
                     targetStep.setStepPartitioningMeta( stepPartitioningMeta );
                     slaveTransMeta.addOrReplacePartitionSchema( partitionSchema );
-                  }
-
-                  // Case 2: both source and target are partitioned on a different partition schema.
-                  // Case 3: source is not partitioned, target is partitioned.
-                  //
-                  // --> This means that we're re-partitioning!!
-                  //
-                  else if ( ( !previousStep.isPartitioned() && referenceStep.isPartitioned() )
+                  } else if ( ( !previousStep.isPartitioned() && referenceStep.isPartitioned() )
                       || ( previousStep.isPartitioned() && referenceStep.isPartitioned() && !sourceStepPartitioningMeta
                           .equals( targetStep.getStepPartitioningMeta() ) ) ) {
+
+                    // Case 2: both source and target are partitioned on a different partition schema.
+                    // Case 3: source is not partitioned, target is partitioned.
+                    //
+                    // --> This means that we're re-partitioning!!
+                    //
 
                     PartitionSchema targetPartitionSchema = targetStepPartitioningMeta.getPartitionSchema();
                     PartitionSchema sourcePartitionSchema = sourceStepPartitioningMeta.getPartitionSchema();

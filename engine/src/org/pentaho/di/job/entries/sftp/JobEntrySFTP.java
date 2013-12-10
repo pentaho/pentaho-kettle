@@ -732,6 +732,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
           list_previous_filenames = null;
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
 
     }

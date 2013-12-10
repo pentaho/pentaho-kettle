@@ -333,6 +333,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
 
         retval = true;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     return retval;

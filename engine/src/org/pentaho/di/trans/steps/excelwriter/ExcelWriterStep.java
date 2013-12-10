@@ -494,41 +494,33 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       } else {
         // static content case
         switch ( vMeta.getType() ) {
-          case ValueMetaInterface.TYPE_DATE: {
+          case ValueMetaInterface.TYPE_DATE:
             if ( v != null && vMeta.getDate( v ) != null ) {
               cell.setCellValue( vMeta.getDate( v ) );
             }
-          }
             break;
 
-          case ValueMetaInterface.TYPE_BOOLEAN: {
+          case ValueMetaInterface.TYPE_BOOLEAN:
             if ( v != null ) {
               cell.setCellValue( vMeta.getBoolean( v ) );
             }
-
-          }
             break;
 
           case ValueMetaInterface.TYPE_STRING:
           case ValueMetaInterface.TYPE_BINARY:
-
-          {
             if ( v != null ) {
               cell.setCellValue( vMeta.getString( v ) );
             }
-          }
             break;
 
           case ValueMetaInterface.TYPE_BIGNUMBER:
           case ValueMetaInterface.TYPE_NUMBER:
-          case ValueMetaInterface.TYPE_INTEGER: {
-
+          case ValueMetaInterface.TYPE_INTEGER:
             if ( v != null ) {
               cell.setCellValue( vMeta.getNumber( v ) );
             }
-
-          }
             break;
+
           default:
             break;
         }

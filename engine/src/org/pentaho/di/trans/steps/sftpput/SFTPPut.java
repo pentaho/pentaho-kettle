@@ -363,25 +363,6 @@ public class SFTPPut extends BaseStep implements StepInterface {
     if ( isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "SFTPPut.Log.ChangedDirectory", spoolDirectory ) );
     }
-
-  }
-
-  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (SFTPPutMeta) smi;
-    data = (SFTPPutData) sdi;
-
-    if ( super.init( smi, sdi ) ) {
-      try {
-
-      } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "SFTPPut.ErrorInit" ), e );
-        logError( Const.getStackTracker( e ) );
-        return false;
-      }
-
-      return true;
-    }
-    return false;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -394,7 +375,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
         data.sftpclient.disconnect();
       }
     } catch ( Exception e ) {
-    } // ignore this
+      // Ignore errors
+    }
     super.dispose( smi, sdi );
   }
 }

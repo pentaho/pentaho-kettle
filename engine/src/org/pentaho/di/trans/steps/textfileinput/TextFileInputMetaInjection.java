@@ -249,7 +249,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
       String lookValue = (String) lookFields.getValue();
       switch ( fieldsEntry ) {
-        case FILENAME_LINES: {
+        case FILENAME_LINES:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FILENAME_LINE ) {
@@ -284,10 +284,9 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
               fileLines.add( fileLine );
             }
           }
-        }
           break;
 
-        case FIELDS: {
+        case FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FIELD ) {
@@ -350,10 +349,9 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
               fields.add( field );
             }
           }
-        }
           break;
 
-        case FILTERS: {
+        case FILTERS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FILTER ) {
@@ -385,7 +383,6 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
               filters.add( filterLine );
             }
           }
-        }
           break;
 
         case FILE_TYPE:

@@ -267,6 +267,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
           file2 = null;
         }
       } catch ( IOException e ) {
+        // Ignore errors
       }
     }
 

@@ -278,6 +278,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         try {
           Thread.sleep( 50 );
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
       copyResult( injectTrans );

@@ -360,9 +360,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
         data.db.closeInsert();
       }
       closeFile();
-    }
-
-    catch ( Exception dbe ) {
+    } catch ( Exception dbe ) {
       logError( "Unexpected error committing the database connection: " + dbe.toString() );
       logError( Const.getStackTracker( dbe ) );
       setErrors( 1 );

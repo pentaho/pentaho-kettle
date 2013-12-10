@@ -334,8 +334,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
             TimedRow timedRow = data.look.get( key );
             if ( timedRow != null ) {
               return timedRow.getRow();
-            } else {
-              // This should never occur
             }
           }
         }

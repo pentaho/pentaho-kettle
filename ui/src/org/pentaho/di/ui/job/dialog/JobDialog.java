@@ -553,9 +553,8 @@ public class JobDialog extends Dialog {
             // We do this when the user pressed OK
             newDirectory = rd;
             wDirectory.setText( rd.getPath() );
-          } else {
-            // Same directory!
           }
+          // Else same directory!
         }
       }
     } );
@@ -1641,6 +1640,7 @@ public class JobDialog extends Dialog {
         shell.setImage( GUIResource.getInstance().getImagesJobentries().get( id ) );
       }
     } catch ( Throwable e ) {
+      // Ignore unexpected errors, not worth it
     }
   }
 

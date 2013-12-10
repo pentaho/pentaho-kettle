@@ -282,6 +282,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
         data.sourceFile.close();
         data.sourceFile = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
 
     }
@@ -290,6 +291,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
         data.targetFile.close();
         data.targetFile = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
 
     }

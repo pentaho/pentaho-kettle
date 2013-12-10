@@ -55,6 +55,7 @@ public class SocketReaderData extends BaseStepData implements StepDataInterface 
         socket.close();
       }
     } catch ( java.io.IOException e ) {
+      // Ignore errors
     } finally {
       super.finalize();
     }

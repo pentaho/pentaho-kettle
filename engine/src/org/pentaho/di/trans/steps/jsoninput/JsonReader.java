@@ -131,6 +131,7 @@ public class JsonReader {
           isr.close();
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }
@@ -165,6 +166,7 @@ public class JsonReader {
           is.close();
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

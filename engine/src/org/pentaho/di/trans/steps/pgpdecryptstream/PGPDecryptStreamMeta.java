@@ -264,10 +264,8 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       error_message = BaseMessages.getString( PKG, "PGPDecryptStreamMeta.CheckResult.GPGLocationOK" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
     }
-    if ( isPassphraseFromField() ) {
-      // check dynamic passphrase
-    } else {
-      // Check static passphrase
+    if ( !isPassphraseFromField() ) {
+      // Check static pass-phrase
       if ( Const.isEmpty( passhrase ) ) {
         error_message = BaseMessages.getString( PKG, "PGPDecryptStreamMeta.CheckResult.PassphraseMissing" );
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );

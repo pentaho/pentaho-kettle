@@ -1231,225 +1231,247 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // If there are multiple steps, we need to look at the first (they should be all the same)
     //
     switch ( repartitioning ) {
-      case StepPartitioningMeta.PARTITIONING_METHOD_NONE: {
-        if ( distributed ) {
-          if ( rowDistribution != null ) {
-            // Plugin defined row distribution!
-            //
-            rowDistribution.distributeRow( rowMeta, row, this );
-            incrementLinesWritten();
-          } else {
-            // ROUND ROBIN DISTRIBUTION:
-            // --------------------------
-            // Copy the row to the "next" output rowset.
-            // We keep the next one in out_handling
-            //
-            RowSet rs = outputRowSets.get( currentOutputRowSetNr );
-
-            // To reduce stress on the locking system we are NOT going to allow
-            // the buffer to grow to its full capacity.
-            //
-            if ( isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped() ) {
-              try {
-                Thread.sleep( 0, 1 );
-              } catch ( InterruptedException e ) {
-                // Ignore sleep interruption exception
-              }
-            }
-
-            // Loop until we find room in the target rowset
-            //
-            while ( !rs.putRow( rowMeta, row ) && !isStopped() ) {
-              // Wait
-            }
-            incrementLinesWritten();
-
-            // Now determine the next output rowset!
-            // Only if we have more then one output...
-            //
-            if ( outputRowSets.size() > 1 ) {
-              currentOutputRowSetNr++;
-              if ( currentOutputRowSetNr >= outputRowSets.size() ) {
-                currentOutputRowSetNr = 0;
-              }
-            }
-          }
-        } else {
-
-          // Copy the row to all output rowsets
-          //
-
-          // Copy to the row in the other output rowsets...
-          for ( int i = 1; i < outputRowSets.size(); i++ ) { // start at 1
-
-            RowSet rs = outputRowSets.get( i );
-
-            // To reduce stress on the locking system we are NOT going to allow
-            // the buffer to grow to its full capacity.
-            //
-            if ( isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped() ) {
-              try {
-                Thread.sleep( 0, 1 );
-              } catch ( InterruptedException e ) {
-                // Ignore sleep interruption exception
-              }
-            }
-
-            try {
-              // Loop until we find room in the target rowset
-              //
-              while ( !rs.putRow( rowMeta, rowMeta.cloneRow( row ) ) && !isStopped() ) {
-                // Wait
-              }
-              incrementLinesWritten();
-            } catch ( KettleValueException e ) {
-              throw new KettleStepException( "Unable to clone row while copying rows to multiple target steps", e );
-            }
-          }
-
-          // set row in first output rowset
-          //
-          RowSet rs = outputRowSets.get( 0 );
-          while ( !rs.putRow( rowMeta, row ) && !isStopped() ) {
-            // Wait
-          }
-          incrementLinesWritten();
-        }
-      }
+      case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
+        noPartitioning( rowMeta, row );
         break;
 
-      case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL: {
-        if ( nextStepPartitioningMeta == null ) {
-          // Look up the partitioning of the next step.
-          // This is the case for non-clustered partitioning...
-          //
-          List<StepMeta> nextSteps = transMeta.findNextSteps( stepMeta );
-          if ( nextSteps.size() > 0 ) {
-            nextStepPartitioningMeta = nextSteps.get( 0 ).getStepPartitioningMeta();
-          }
-
-          // TODO: throw exception if we're not partitioning yet.
-          // For now it throws a NP Exception.
-        }
-
-        int partitionNr;
-        try {
-          partitionNr = nextStepPartitioningMeta.getPartition( rowMeta, row );
-        } catch ( KettleException e ) {
-          throw new KettleStepException(
-              "Unable to convert a value to integer while calculating the partition number", e );
-        }
-
-        RowSet selectedRowSet = null;
-
-        if ( clusteredPartitioningFirst ) {
-          clusteredPartitioningFirst = false;
-
-          // We are only running remotely if both the distribution is there AND if the distribution is actually contains
-          // something.
-          //
-          clusteredPartitioning =
-              transMeta.getSlaveStepCopyPartitionDistribution() != null
-                  && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
-        }
-
-        // OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
-        // We want to pre-calculate what rowset we're sending data to for which partition...
-        // It is only valid in clustering / partitioning situations.
-        // When doing a local partitioning, it is much simpler.
-        //
-        if ( clusteredPartitioning ) {
-
-          // This next block is only performed once for speed...
-          //
-          if ( partitionNrRowSetList == null ) {
-            partitionNrRowSetList = new RowSet[outputRowSets.size()];
-
-            // The distribution is calculated during transformation split
-            // The slave-step-copy distribution is passed onto the slave transformation
-            //
-            SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
-
-            String nextPartitionSchemaName =
-                TransSplitter.createPartitionSchemaNameFromTarget( nextStepPartitioningMeta
-                    .getPartitionSchema().getName() );
-
-            for ( RowSet outputRowSet : outputRowSets ) {
-              try {
-                // Look at the pre-determined distribution, decided at "transformation split" time.
-                //
-                int partNr =
-                    distribution.getPartition(
-                        outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet
-                            .getDestinationStepCopy() );
-
-                if ( partNr < 0 ) {
-                  throw new KettleStepException( "Unable to find partition using rowset data, slave="
-                      + outputRowSet.getRemoteSlaveServerName() + ", partition schema="
-                      + nextStepPartitioningMeta.getPartitionSchema().getName() + ", copy="
-                      + outputRowSet.getDestinationStepCopy() );
-                }
-                partitionNrRowSetList[partNr] = outputRowSet;
-              } catch ( NullPointerException e ) {
-                throw ( e );
-              }
-            }
-          }
-
-          // OK, now get the target partition based on the partition nr...
-          // This should be very fast
-          //
-          if ( partitionNr < partitionNrRowSetList.length ) {
-            selectedRowSet = partitionNrRowSetList[partitionNr];
-          } else {
-            String rowsets = "";
-            for ( RowSet rowSet : partitionNrRowSetList ) {
-              rowsets += "[" + rowSet.toString() + "] ";
-            }
-            throw new KettleStepException( "Internal error: the referenced partition nr '"
-                + partitionNr + "' is higher than the maximum of '" + ( partitionNrRowSetList.length - 1 )
-                + ".  The available row sets are: {" + rowsets + "}" );
-          }
-        } else {
-          // Local partitioning...
-          // Put the row forward to the next step according to the partition rule.
-          //
-          selectedRowSet = outputRowSets.get( partitionNr );
-        }
-
-        if ( selectedRowSet == null ) {
-          logBasic( "Target rowset is not available for target partition, partitionNr=" + partitionNr );
-        }
-
-        // logBasic("Putting row to partition #"+partitionNr);
-
-        while ( !selectedRowSet.putRow( rowMeta, row ) && !isStopped() ) {
-          // Wait
-        }
-        incrementLinesWritten();
-
-        if ( log.isRowLevel() ) {
-          try {
-            logRowlevel( "Partitioned #" + partitionNr + " to " + selectedRowSet + ", row=" + rowMeta.getString( row ) );
-          } catch ( KettleValueException e ) {
-            throw new KettleStepException( e );
-          }
-        }
-      }
+      case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
+        specialPartitioning( rowMeta, row );
         break;
-      case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR: {
-        // Copy always to all target steps/copies.
-        //
-        for ( int r = 0; r < outputRowSets.size(); r++ ) {
-          RowSet rowSet = outputRowSets.get( r );
-          while ( !rowSet.putRow( rowMeta, row ) && !isStopped() ) {
-            // Wait
-          }
-        }
-      }
+      case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
+        mirrorPartitioning( rowMeta, row );
         break;
       default:
         throw new KettleStepException( "Internal error: invalid repartitioning type: " + repartitioning );
+    }
+  }
+
+  /**
+   * Copy always to all target steps/copies
+   * 
+   * @param rowMeta
+   * @param row
+   */
+  private void mirrorPartitioning( RowMetaInterface rowMeta, Object[] row ) {
+    for ( int r = 0; r < outputRowSets.size(); r++ ) {
+      RowSet rowSet = outputRowSets.get( r );
+      while ( !rowSet.putRow( rowMeta, row ) ) {
+        if ( isStopped() ) {
+          break;
+        }
+      }
+    }
+  }
+
+  private void specialPartitioning( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+    if ( nextStepPartitioningMeta == null ) {
+      // Look up the partitioning of the next step.
+      // This is the case for non-clustered partitioning...
+      //
+      List<StepMeta> nextSteps = transMeta.findNextSteps( stepMeta );
+      if ( nextSteps.size() > 0 ) {
+        nextStepPartitioningMeta = nextSteps.get( 0 ).getStepPartitioningMeta();
+      }
+
+      // TODO: throw exception if we're not partitioning yet.
+      // For now it throws a NP Exception.
+    }
+
+    int partitionNr;
+    try {
+      partitionNr = nextStepPartitioningMeta.getPartition( rowMeta, row );
+    } catch ( KettleException e ) {
+      throw new KettleStepException( "Unable to convert a value to integer while calculating the partition number", e );
+    }
+
+    RowSet selectedRowSet = null;
+
+    if ( clusteredPartitioningFirst ) {
+      clusteredPartitioningFirst = false;
+
+      // We are only running remotely if both the distribution is there AND if the distribution is actually contains
+      // something.
+      //
+      clusteredPartitioning =
+          transMeta.getSlaveStepCopyPartitionDistribution() != null
+              && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
+    }
+
+    // OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
+    // We want to pre-calculate what rowset we're sending data to for which partition...
+    // It is only valid in clustering / partitioning situations.
+    // When doing a local partitioning, it is much simpler.
+    //
+    if ( clusteredPartitioning ) {
+
+      // This next block is only performed once for speed...
+      //
+      if ( partitionNrRowSetList == null ) {
+        partitionNrRowSetList = new RowSet[outputRowSets.size()];
+
+        // The distribution is calculated during transformation split
+        // The slave-step-copy distribution is passed onto the slave transformation
+        //
+        SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
+
+        String nextPartitionSchemaName =
+            TransSplitter.createPartitionSchemaNameFromTarget( nextStepPartitioningMeta.getPartitionSchema().getName() );
+
+        for ( RowSet outputRowSet : outputRowSets ) {
+          try {
+            // Look at the pre-determined distribution, decided at "transformation split" time.
+            //
+            int partNr =
+                distribution.getPartition(
+                    outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet
+                        .getDestinationStepCopy() );
+
+            if ( partNr < 0 ) {
+              throw new KettleStepException( "Unable to find partition using rowset data, slave="
+                  + outputRowSet.getRemoteSlaveServerName() + ", partition schema="
+                  + nextStepPartitioningMeta.getPartitionSchema().getName() + ", copy="
+                  + outputRowSet.getDestinationStepCopy() );
+            }
+            partitionNrRowSetList[partNr] = outputRowSet;
+          } catch ( NullPointerException e ) {
+            throw ( e );
+          }
+        }
+      }
+
+      // OK, now get the target partition based on the partition nr...
+      // This should be very fast
+      //
+      if ( partitionNr < partitionNrRowSetList.length ) {
+        selectedRowSet = partitionNrRowSetList[partitionNr];
+      } else {
+        String rowsets = "";
+        for ( RowSet rowSet : partitionNrRowSetList ) {
+          rowsets += "[" + rowSet.toString() + "] ";
+        }
+        throw new KettleStepException( "Internal error: the referenced partition nr '"
+            + partitionNr + "' is higher than the maximum of '" + ( partitionNrRowSetList.length - 1 )
+            + ".  The available row sets are: {" + rowsets + "}" );
+      }
+    } else {
+      // Local partitioning...
+      // Put the row forward to the next step according to the partition rule.
+      //
+      selectedRowSet = outputRowSets.get( partitionNr );
+    }
+
+    if ( selectedRowSet == null ) {
+      logBasic( "Target rowset is not available for target partition, partitionNr=" + partitionNr );
+    }
+
+    // logBasic("Putting row to partition #"+partitionNr);
+
+    // Wait
+    while ( !selectedRowSet.putRow( rowMeta, row ) ) {
+      if ( isStopped() ) {
+        break;
+      }
+    }
+    incrementLinesWritten();
+
+    if ( log.isRowLevel() ) {
+      try {
+        logRowlevel( "Partitioned #" + partitionNr + " to " + selectedRowSet + ", row=" + rowMeta.getString( row ) );
+      } catch ( KettleValueException e ) {
+        throw new KettleStepException( e );
+      }
+    }
+  }
+
+  private void noPartitioning( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+    if ( distributed ) {
+      if ( rowDistribution != null ) {
+        // Plugin defined row distribution!
+        //
+        rowDistribution.distributeRow( rowMeta, row, this );
+        incrementLinesWritten();
+      } else {
+        // ROUND ROBIN DISTRIBUTION:
+        // --------------------------
+        // Copy the row to the "next" output rowset.
+        // We keep the next one in out_handling
+        //
+        RowSet rs = outputRowSets.get( currentOutputRowSetNr );
+
+        // To reduce stress on the locking system we are NOT going to allow
+        // the buffer to grow to its full capacity.
+        //
+        if ( isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped() ) {
+          try {
+            Thread.sleep( 0, 1 );
+          } catch ( InterruptedException e ) {
+            // Ignore sleep interruption exception
+          }
+        }
+
+        // Loop until we find room in the target rowset
+        //
+        while ( !rs.putRow( rowMeta, row ) ) {
+          if ( isStopped() ) {
+            break;
+          }
+        }
+        incrementLinesWritten();
+
+        // Now determine the next output rowset!
+        // Only if we have more then one output...
+        //
+        if ( outputRowSets.size() > 1 ) {
+          currentOutputRowSetNr++;
+          if ( currentOutputRowSetNr >= outputRowSets.size() ) {
+            currentOutputRowSetNr = 0;
+          }
+        }
+      }
+    } else {
+
+      // Copy the row to all output rowsets
+      //
+
+      // Copy to the row in the other output rowsets...
+      for ( int i = 1; i < outputRowSets.size(); i++ ) { // start at 1
+
+        RowSet rs = outputRowSets.get( i );
+
+        // To reduce stress on the locking system we are NOT going to allow
+        // the buffer to grow to its full capacity.
+        //
+        if ( isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped() ) {
+          try {
+            Thread.sleep( 0, 1 );
+          } catch ( InterruptedException e ) {
+            // Ignore sleep interruption exception
+          }
+        }
+
+        try {
+          // Loop until we find room in the target rowset
+          //
+          while ( !rs.putRow( rowMeta, rowMeta.cloneRow( row ) ) ) {
+            if ( isStopped() ) {
+              break;
+            }
+          }
+          incrementLinesWritten();
+        } catch ( KettleValueException e ) {
+          throw new KettleStepException( "Unable to clone row while copying rows to multiple target steps", e );
+        }
+      }
+
+      // set row in first output rowset
+      //
+      RowSet rs = outputRowSets.get( 0 );
+      while ( !rs.putRow( rowMeta, row ) ) {
+        if ( isStopped() ) {
+          break;
+        }
+      }
+      incrementLinesWritten();
     }
   }
 
@@ -1505,8 +1527,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // Don't distribute or anything, only go to this rowset!
     //
-    while ( !rowSet.putRow( rowMeta, row ) && !isStopped() ) {
-      // Wait
+    while ( !rowSet.putRow( rowMeta, row ) ) {
+      if ( isStopped() ) {
+        break;
+      }
     }
     incrementLinesWritten();
   }
@@ -1565,8 +1589,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     if ( errorRowSet != null ) {
-      while ( !errorRowSet.putRow( errorRowMeta, errorRowData ) && !isStopped() ) {
-        // Wait
+      while ( !errorRowSet.putRow( errorRowMeta, errorRowData ) ) {
+        if ( isStopped() ) {
+          break;
+        }
       }
       incrementLinesRejected();
     }

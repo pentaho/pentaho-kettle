@@ -302,6 +302,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
                 try {
                   Thread.sleep( 100 );
                 } catch ( Exception e ) {
+                  // Ignore sleep errors
                 }
               }
             }

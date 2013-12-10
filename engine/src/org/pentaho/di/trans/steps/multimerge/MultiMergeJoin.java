@@ -299,9 +299,11 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
 
         for ( int i = 0; i < drainSize; i++ ) {
           int index = data.drainIndices[i];
-          while ( !isStopped()
-              && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare(
-                  data.rows[index], row, data.keyNrs[index] ) == 0 ) ) {
+          while ( ( row = getRowFrom( data.rowSets[index] ) ) != null
+              && data.metas[index].compare( data.rows[index], row, data.keyNrs[index] ) == 0 ) {
+            if ( isStopped() ) {
+              break;
+            }
           }
           if ( isStopped() || row == null ) {
             break;

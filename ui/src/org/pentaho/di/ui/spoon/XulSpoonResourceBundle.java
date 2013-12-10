@@ -58,6 +58,7 @@ public class XulSpoonResourceBundle extends ResourceBundle {
     try {
       url = new File( "." ).toURI().toURL();
     } catch ( MalformedURLException ex ) {
+      // Ignore errors
     }
     URLClassLoader classLoader = URLClassLoader.newInstance( new URL[] { url } );
 

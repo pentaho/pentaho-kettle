@@ -56,7 +56,7 @@ public class CsvInputUnicodeTest {
   private static final String UTF16BE = "UTF-16LE";
   private static final String TEST_DATA = "Header1\tHeader2\nValue\tValue\nValue\tValue\n";
 
-  private static StepMockHelper stepMockHelper;
+  private static StepMockHelper<?, ?> stepMockHelper;
 
   @BeforeClass
   public static void setUp() throws KettleException {

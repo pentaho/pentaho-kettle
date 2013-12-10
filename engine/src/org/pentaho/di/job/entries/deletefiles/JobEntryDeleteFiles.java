@@ -309,17 +309,18 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   private class TextFileSelector implements FileSelector {
-    String file_wildcard = null, source_folder = null;
+    String fileWildcard = null;
+    String sourceFolder = null;
     Job parentjob;
 
     public TextFileSelector( String sourcefolderin, String filewildcard, Job parentJob ) {
 
       if ( !Const.isEmpty( sourcefolderin ) ) {
-        source_folder = sourcefolderin;
+        sourceFolder = sourcefolderin;
       }
 
       if ( !Const.isEmpty( filewildcard ) ) {
-        file_wildcard = filewildcard;
+        fileWildcard = filewildcard;
       }
       parentjob = parentJob;
     }
@@ -329,7 +330,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       FileObject file_name = null;
       try {
 
-        if ( !info.getFile().toString().equals( source_folder ) && !parentjob.isStopped() ) {
+        if ( !info.getFile().toString().equals( sourceFolder ) && !parentjob.isStopped() ) {
           // Pass over the Base folder itself
 
           String short_filename = info.getFile().getName().getBaseName();
@@ -338,7 +339,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
             // Not in the Base Folder..Only if include sub folders
             if ( includeSubfolders
-                && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
+                && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages
                     .getString( PKG, "JobEntryDeleteFiles.DeletingFile", info.getFile().toString() ) );
@@ -350,7 +351,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           } else {
             // In the Base Folder...
 
-            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages
                     .getString( PKG, "JobEntryDeleteFiles.DeletingFile", info.getFile().toString() ) );

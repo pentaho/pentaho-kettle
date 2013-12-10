@@ -24,14 +24,12 @@ package org.pentaho.di.trans.steps.excelinput;
 
 import java.util.Date;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
-import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
-import org.pentaho.di.trans.steps.excelinput.WorkbookFactory;
-
-import junit.framework.TestCase;
 
 public class OdsWorkBookTest extends TestCase {
   public void testRead() throws Exception {

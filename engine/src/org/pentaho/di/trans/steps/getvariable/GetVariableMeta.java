@@ -292,8 +292,6 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
-      for ( int i = 0; i < fieldName.length; i++ ) {
-      }
 
       for ( int i = 0; i < fieldName.length; i++ ) {
         if ( fieldName[i] != null && fieldName[i].length() != 0 ) {

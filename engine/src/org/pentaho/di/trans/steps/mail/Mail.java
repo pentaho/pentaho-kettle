@@ -851,12 +851,14 @@ public class Mail extends BaseStep implements StepInterface {
         try {
           sourcefile.close();
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
       if ( file != null ) {
         try {
           file.close();
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
 
@@ -917,30 +919,31 @@ public class Mail extends BaseStep implements StepInterface {
   }
 
   private class TextFileSelector implements FileSelector {
-    String file_wildcard = null, source_folder = null;
+    String fileWildcard = null;
+    String sourceFolder = null;
 
     public TextFileSelector( String sourcefolderin, String filewildcard ) {
       if ( !Const.isEmpty( sourcefolderin ) ) {
-        source_folder = sourcefolderin;
+        sourceFolder = sourcefolderin;
       }
 
       if ( !Const.isEmpty( filewildcard ) ) {
-        file_wildcard = filewildcard;
+        fileWildcard = filewildcard;
       }
     }
 
     public boolean includeFile( FileSelectInfo info ) {
       boolean returncode = false;
       try {
-        if ( !info.getFile().toString().equals( source_folder ) ) {
+        if ( !info.getFile().toString().equals( sourceFolder ) ) {
           // Pass over the Base folder itself
           String short_filename = info.getFile().getName().getBaseName();
 
           if ( info.getFile().getParent().equals( info.getBaseFolder() )
               || ( ( !info.getFile().getParent().equals( info.getBaseFolder() ) && meta.isIncludeSubFolders() ) ) ) {
-            if ( ( info.getFile().getType() == FileType.FILE && file_wildcard == null )
-                || ( info.getFile().getType() == FileType.FILE && file_wildcard != null && GetFileWildcard(
-                    short_filename, file_wildcard ) ) ) {
+            if ( ( info.getFile().getType() == FileType.FILE && fileWildcard == null )
+                || ( info.getFile().getType() == FileType.FILE && fileWildcard != null && GetFileWildcard(
+                    short_filename, fileWildcard ) ) ) {
               returncode = true;
             }
           }

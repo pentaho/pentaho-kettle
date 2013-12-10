@@ -516,6 +516,7 @@ public class TextFileOutputTests extends TestCase {
             inputLine = input.readLine();
           }
         } catch ( IOException ioe ) {
+          // Ignore errors
         }
 
       }
@@ -612,6 +613,7 @@ public class TextFileOutputTests extends TestCase {
           inputLine = input.readLine();
         }
       } catch ( IOException ioe ) {
+        // Ignore errors
       }
 
       fin.close();
@@ -704,6 +706,7 @@ public class TextFileOutputTests extends TestCase {
           inputLine = input.readLine();
         }
       } catch ( IOException ioe ) {
+        // Ignore errors
       }
 
       fin.close();

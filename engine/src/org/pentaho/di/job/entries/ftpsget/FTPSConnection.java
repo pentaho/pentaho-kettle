@@ -451,6 +451,7 @@ public class FTPSConnection implements FTPListener {
         try {
           file.close();
         } catch ( Exception e ) {
+          // Ignore close errors
         }
       }
     }
@@ -549,12 +550,14 @@ public class FTPSConnection implements FTPListener {
       this.connection.changeDirectory( directory );
       retval = true;
     } catch ( Exception e ) {
+      // Ignore directory change errors
     } finally {
       // switch back to the current directory
       if ( currectDirectory != null ) {
         try {
           this.connection.changeDirectory( currectDirectory );
         } catch ( Exception e ) {
+          // Ignore directory change errors
         }
       }
     }
@@ -578,6 +581,7 @@ public class FTPSConnection implements FTPListener {
       connection.getModificationTime( file );
       retval = true;
     } catch ( Exception e ) {
+      // Ignore errors
     }
     return retval;
   }

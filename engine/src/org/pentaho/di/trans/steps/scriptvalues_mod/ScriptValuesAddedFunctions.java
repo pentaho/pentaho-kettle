@@ -299,6 +299,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             scm.logDebug( strMessage );
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
         break;
       case 2:
@@ -324,6 +325,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             }
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
         break;
       default:
@@ -1586,9 +1588,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             StepInterface scm = (StepInterface) Context.jsToJava( scmO, StepInterface.class );
             sArg1 = Context.toString( ArgList[0] );
             sRC = scm.getVariable( sArg1, "" );
-          }
-          // running in test mode, return ""
-          else {
+          } else {
+            // running in test mode, return ""
             sRC = "";
           }
 
@@ -1838,9 +1839,9 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             throw Context
                 .reportRuntimeError( "The argument type of function call setVariable should either be \"s\", \"r\", \"p\", or \"g\"." );
           }
-        } else {
-          // Ignore for now... if we're executing via the Test Button
         }
+        // Ignore else block for now... if we're executing via the Test Button
+
       } catch ( Exception e ) {
         throw Context.reportRuntimeError( e.toString() );
       }
@@ -2000,6 +2001,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               fileObject.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2033,6 +2035,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               fileObject.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2083,12 +2086,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               fileSource.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
           if ( fileDestination != null ) {
             try {
               fileDestination.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2131,6 +2136,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore close errors
             }
           }
         }
@@ -2173,6 +2179,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2215,6 +2222,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2255,6 +2263,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2295,6 +2304,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2335,6 +2345,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2381,6 +2392,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2511,12 +2523,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             try {
               fileSource.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
           if ( fileDestination != null ) {
             try {
               fileDestination.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }

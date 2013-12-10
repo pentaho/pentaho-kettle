@@ -947,6 +947,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
           in.close();
           in = null;
         } catch ( Exception ex ) {
+          // Ignore errors
         }
       }
 
@@ -955,6 +956,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
           inBuf.close();
           inBuf = null;
         } catch ( Exception ex ) {
+          // Ignore errors
         }
       }
       if ( sftpFileHandle != null ) {
@@ -962,6 +964,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
           sftpClient.closeFile( sftpFileHandle );
           sftpFileHandle = null;
         } catch ( Exception ex ) {
+          // Ignore errors
         }
       }
     }

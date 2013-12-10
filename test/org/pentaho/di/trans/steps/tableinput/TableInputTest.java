@@ -244,87 +244,85 @@ public class TableInputTest extends TestCase {
   public void testTableInputWithParam() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
-      // Execute our setup SQLs in the database.
-      Database database = new Database( transMeta, dbInfo );
-      database.connect();
-      createTables( database );
-      createData( database );
-
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the source step...
-      //
-      String fromstepname = "read from [" + source_table + "]";
-      TableInputMeta tii = new TableInputMeta();
-      tii.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      tii.setLookupFromStep( injectorStep );
-      tii.setExecuteEachInputRow( true );
-      String selectSQL = "SELECT " + Const.CR;
-      selectSQL += "ID, CODE ";
-      selectSQL += "FROM " + source_table + " WHERE CODE = ? ORDER BY ID, CODE;";
-      tii.setSQL( selectSQL );
-
-      String fromstepid = registry.getPluginId( StepPluginType.class, tii );
-      StepMeta fromstep = new StepMeta( fromstepid, fromstepname, tii );
-      fromstep.setDescription( "Reads information from table [" + source_table + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( fromstep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( fromstepname, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+
+    // Execute our setup SQLs in the database.
+    Database database = new Database( transMeta, dbInfo );
+    database.connect();
+    createTables( database );
+    createData( database );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the source step...
+    //
+    String fromstepname = "read from [" + source_table + "]";
+    TableInputMeta tii = new TableInputMeta();
+    tii.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    tii.setLookupFromStep( injectorStep );
+    tii.setExecuteEachInputRow( true );
+    String selectSQL = "SELECT " + Const.CR;
+    selectSQL += "ID, CODE ";
+    selectSQL += "FROM " + source_table + " WHERE CODE = ? ORDER BY ID, CODE;";
+    tii.setSQL( selectSQL );
+
+    String fromstepid = registry.getPluginId( StepPluginType.class, tii );
+    StepMeta fromstep = new StepMeta( fromstepid, fromstepname, tii );
+    fromstep.setDescription( "Reads information from table [" + source_table + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( fromstep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( fromstepname, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
+
   }
 }

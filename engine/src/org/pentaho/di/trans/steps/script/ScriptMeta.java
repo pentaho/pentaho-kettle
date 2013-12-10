@@ -320,7 +320,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
             row.addValueMeta( v );
           }
         } catch ( KettlePluginException e ) {
-
+          // Ignore errors
         }
       }
     }
@@ -833,6 +833,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
       Thread t = Thread.currentThread();
       ClassLoader cl = t.getContextClassLoader();
       URL u = new URL( "jar:file:" + strJar + "!/" );
+      // We never know what else the script wants to load with the class loader, so lets not close it just like that.
+      @SuppressWarnings( "resource" )
       KettleURLClassLoader kl = new KettleURLClassLoader( new URL[] { u }, cl );
       Class<?> toRun = kl.loadClass( strClassName );
       return toRun;

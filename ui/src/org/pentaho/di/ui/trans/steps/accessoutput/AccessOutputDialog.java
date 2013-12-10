@@ -487,7 +487,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
           database.close();
         }
       } catch ( Exception e ) {
-
+        // Ignore close errors
       }
     }
   }

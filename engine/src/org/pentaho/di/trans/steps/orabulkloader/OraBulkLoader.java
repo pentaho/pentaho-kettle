@@ -321,6 +321,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
           fw.close();
         }
       } catch ( Exception ex ) {
+        // Ignore errors
       }
     }
   }

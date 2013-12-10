@@ -1830,7 +1830,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
           input.setText( foldername );
         }
       } catch ( Exception e ) {
-
+        // Ignore errors
       }
     }
   }

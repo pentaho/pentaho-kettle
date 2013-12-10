@@ -333,54 +333,234 @@ public class TableOutputTest extends TestCase {
   public void testTableOutputNormal() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "table output normal test" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "table output normal test" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
+    }
 
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
 
-      // Execute our setup SQLs in the database.
-      Database database = new Database( transMeta, dbInfo );
-      database.connect();
-      createTable( database, target_table, createSourceRowMetaInterface1() );
+    // Execute our setup SQLs in the database.
+    Database database = new Database( transMeta, dbInfo );
+    database.connect();
+    createTable( database, target_table, createSourceRowMetaInterface1() );
 
-      PluginRegistry registry = PluginRegistry.getInstance();
+    PluginRegistry registry = PluginRegistry.getInstance();
 
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
 
-      // Set the information of the injector.
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
+    // Set the information of the injector.
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
 
-      //
-      // create the source step...
-      //
-      String outputname = "output to [" + target_table + "]";
-      TableOutputMeta tom = new TableOutputMeta();
-      tom.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      tom.setTablename( target_table );
+    //
+    // create the source step...
+    //
+    String outputname = "output to [" + target_table + "]";
+    TableOutputMeta tom = new TableOutputMeta();
+    tom.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    tom.setTablename( target_table );
 
-      String fromid = registry.getPluginId( StepPluginType.class, tom );
-      StepMeta fromstep = new StepMeta( fromid, outputname, tom );
-      fromstep.setDescription( "write data to table [" + target_table + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( fromstep );
+    String fromid = registry.getPluginId( StepPluginType.class, tom );
+    StepMeta fromstep = new StepMeta( fromid, outputname, tom );
+    fromstep.setDescription( "write data to table [" + target_table + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( fromstep );
 
-      TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
-      transMeta.addTransHop( hi );
+    TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( outputname, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createNormalDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createNormalDataRows();
+    checkRows( goldRows, resultRows );
+    checkResultsNormal( database );
+  }
+
+  /**
+   * Test case for normal table output where the table is included in the instream, but the tablename is not stored in
+   * the table.
+   */
+  public void testTableOutputJIRA897() throws Exception {
+    KettleEnvironment.init();
+
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "table output JIRA897 test" );
+
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
+    }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+
+    // Execute our setup SQLs in the database.
+    Database database = new Database( transMeta, dbInfo );
+    database.connect();
+    createTable( database, target_table1, createSourceRowMetaInterface1() );
+    createTable( database, target_table2, createSourceRowMetaInterface1() );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the source step...
+    //
+    String outputname = "output to [" + target_table1 + "] and [" + target_table2 + "]";
+    TableOutputMeta tom = new TableOutputMeta();
+    tom.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    tom.setTableNameInField( true );
+    tom.setTableNameField( "TABLE" );
+    tom.setTableNameInTable( false );
+
+    String fromid = registry.getPluginId( StepPluginType.class, tom );
+    StepMeta fromstep = new StepMeta( fromid, outputname, tom );
+    fromstep.setDescription( "write data to tables on database [" + dbInfo + "]" );
+    transMeta.addStep( fromstep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( outputname, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createJIRA897DataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+
+    // The name of the table should still be in here.
+    List<RowMetaAndData> goldRows = createJIRA897DataRows();
+    checkRows( goldRows, resultRows );
+    checkResultsJIRA897( database );
+  }
+
+  /**
+   * Test case for commitSize see PDI2733 in JIRA.
+   */
+  @SuppressWarnings( "deprecation" )
+  public void testTableOutputJIRA2733() throws Exception {
+    KettleEnvironment.init();
+
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "table output JIRA2733 test" );
+
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
+    }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+
+    // Execute our setup SQLs in the database.
+    Database database = new Database( transMeta, dbInfo );
+    database.connect();
+    createTable( database, target_table3, createSourceRowMetaInterface1() );
+    // Add "ts" timestamp field to target_table with a default value of NOW()
+    database.execStatement( "ALTER TABLE " + target_table3 + " ADD COLUMN ts TIMESTAMP DEFAULT NOW() " );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the source step...
+    //
+    String outputname = "output to [" + target_table3 + "]";
+    TableOutputMeta tom = new TableOutputMeta();
+    tom.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    tom.setTablename( target_table3 );
+    tom.setTruncateTable( true );
+    tom.setUseBatchUpdate( true );
+
+    String fromid = registry.getPluginId( StepPluginType.class, tom );
+    StepMeta fromstep = new StepMeta( fromid, outputname, tom );
+    fromstep.setDescription( "write data to table [" + target_table3 + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( fromstep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
+    transMeta.addTransHop( hi );
+
+    // With seven rows these are the number of commits that need to made
+    // for "commitSize"s ranging between 0 and 8. (0=auto-commit=no commits)
+    int[] goldRowCounts = { 1, 8, 4, 3, 2, 2, 2, 2, 1 };
+
+    for ( int commitSize = 0; commitSize <= 8; commitSize++ ) {
+
+      tom.setCommitSize( commitSize );
 
       // Now execute the transformation...
       Trans trans = new Trans( transMeta );
@@ -403,209 +583,20 @@ public class TableOutputTest extends TestCase {
 
       trans.waitUntilFinished();
 
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createNormalDataRows();
-      checkRows( goldRows, resultRows );
-      checkResultsNormal( database );
-    } finally {
+      // Get the number of commits from the DB connection
+      // in the table output step...
+      //
+      TableOutputData data = (TableOutputData) trans.findDataInterface( outputname );
+
+      int exp = goldRowCounts[commitSize];
+
+      // remove 1 commit too many in the dispose method.
+      //
+      int act = data.db.getNrExecutedCommits() - 1;
+      assertEquals( "Incorrect number of commits with commitSize=" + commitSize + Const.CR, exp, act );
     }
-  }
 
-  /**
-   * Test case for normal table output where the table is included in the instream, but the tablename is not stored in
-   * the table.
-   */
-  public void testTableOutputJIRA897() throws Exception {
-    KettleEnvironment.init();
-
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "table output JIRA897 test" );
-
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
-      // Execute our setup SQLs in the database.
-      Database database = new Database( transMeta, dbInfo );
-      database.connect();
-      createTable( database, target_table1, createSourceRowMetaInterface1() );
-      createTable( database, target_table2, createSourceRowMetaInterface1() );
-
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the source step...
-      //
-      String outputname = "output to [" + target_table1 + "] and [" + target_table2 + "]";
-      TableOutputMeta tom = new TableOutputMeta();
-      tom.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      tom.setTableNameInField( true );
-      tom.setTableNameField( "TABLE" );
-      tom.setTableNameInTable( false );
-
-      String fromid = registry.getPluginId( StepPluginType.class, tom );
-      StepMeta fromstep = new StepMeta( fromid, outputname, tom );
-      fromstep.setDescription( "write data to tables on database [" + dbInfo + "]" );
-      transMeta.addStep( fromstep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( outputname, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createJIRA897DataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-
-      // The name of the table should still be in here.
-      List<RowMetaAndData> goldRows = createJIRA897DataRows();
-      checkRows( goldRows, resultRows );
-      checkResultsJIRA897( database );
-    } finally {
-    }
-  }
-
-  /**
-   * Test case for commitSize see PDI2733 in JIRA.
-   */
-  @SuppressWarnings( "deprecation" )
-  public void testTableOutputJIRA2733() throws Exception {
-    KettleEnvironment.init();
-
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "table output JIRA2733 test" );
-
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
-      // Execute our setup SQLs in the database.
-      Database database = new Database( transMeta, dbInfo );
-      database.connect();
-      createTable( database, target_table3, createSourceRowMetaInterface1() );
-      // Add "ts" timestamp field to target_table with a default value of NOW()
-      database.execStatement( "ALTER TABLE " + target_table3 + " ADD COLUMN ts TIMESTAMP DEFAULT NOW() " );
-
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the source step...
-      //
-      String outputname = "output to [" + target_table3 + "]";
-      TableOutputMeta tom = new TableOutputMeta();
-      tom.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      tom.setTablename( target_table3 );
-      tom.setTruncateTable( true );
-      tom.setUseBatchUpdate( true );
-
-      String fromid = registry.getPluginId( StepPluginType.class, tom );
-      StepMeta fromstep = new StepMeta( fromid, outputname, tom );
-      fromstep.setDescription( "write data to table [" + target_table3 + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( fromstep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, fromstep );
-      transMeta.addTransHop( hi );
-
-      // With seven rows these are the number of commits that need to made
-      // for "commitSize"s ranging between 0 and 8. (0=auto-commit=no commits)
-      int[] goldRowCounts = { 1, 8, 4, 3, 2, 2, 2, 2, 1 };
-
-      for ( int commitSize = 0; commitSize <= 8; commitSize++ ) {
-
-        tom.setCommitSize( commitSize );
-
-        // Now execute the transformation...
-        Trans trans = new Trans( transMeta );
-
-        trans.prepareExecution( null );
-
-        StepInterface si = trans.getStepInterface( outputname, 0 );
-        RowStepCollector rc = new RowStepCollector();
-        si.addRowListener( rc );
-
-        RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-        trans.startThreads();
-
-        // add rows
-        List<RowMetaAndData> inputList = createNormalDataRows();
-        for ( RowMetaAndData rm : inputList ) {
-          rp.putRow( rm.getRowMeta(), rm.getData() );
-        }
-        rp.finished();
-
-        trans.waitUntilFinished();
-
-        // Get the number of commits from the DB connection
-        // in the table output step...
-        //
-        TableOutputData data = (TableOutputData) trans.findDataInterface( outputname );
-
-        int exp = goldRowCounts[commitSize];
-
-        // remove 1 commit too many in the dispose method.
-        //
-        int act = data.db.getNrExecutedCommits() - 1;
-        assertEquals( "Incorrect number of commits with commitSize=" + commitSize + Const.CR, exp, act );
-      }
-
-      dropTable( database, target_table3 );
-    } finally {
-    }
+    dropTable( database, target_table3 );
   }
 
   public static void main( String[] args ) throws Exception {

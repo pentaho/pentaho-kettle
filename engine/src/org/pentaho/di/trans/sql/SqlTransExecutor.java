@@ -188,16 +188,16 @@ public class SqlTransExecutor {
     for ( FieldVariableMapping mapping : service.getFieldVariableMappings() ) {
 
       switch ( mapping.getMappingType() ) {
-        case SQL_WHERE: {
+        case SQL_WHERE:
           String sql = "WHERE " + convertConditionToSql( condition );
           serviceTransMeta.setParameterValue( mapping.getVariableName(), sql );
-        }
           break;
-        case JSON_QUERY: {
+
+        case JSON_QUERY:
           String json = "{ " + convertConditionToJson( condition ) + " }";
           serviceTransMeta.setParameterValue( mapping.getVariableName(), json );
-        }
           break;
+
         default:
           break;
       }
@@ -520,6 +520,7 @@ public class SqlTransExecutor {
               log.logRowlevel( "Passing along row: " + rowMeta.getString( row ) );
             }
           } catch ( KettleValueException e ) {
+            // Ignore errors
           }
 
           rowProducer.putRow( rowMeta, row );

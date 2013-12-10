@@ -24,25 +24,25 @@
 
 package org.pentaho.di.trans.steps.validator;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
-import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.trans.steps.fuzzymatch.FuzzyMatchData;
-import org.pentaho.di.trans.steps.fuzzymatch.FuzzyMatchMeta;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class ValidatorTest {
 

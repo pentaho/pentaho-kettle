@@ -930,6 +930,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     try {
       return sftpClient.stat( filename ).isDirectory();
     } catch ( Exception e ) {
+      // Ignore FTP errors
     }
     return false;
   }

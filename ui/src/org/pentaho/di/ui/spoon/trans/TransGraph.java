@@ -581,7 +581,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
           switch ( container.getType() ) {
           // Put an existing one on the canvas.
-            case DragAndDropContainer.TYPE_STEP: {
+            case DragAndDropContainer.TYPE_STEP:
               // Drop hidden step onto canvas....
               stepMeta = transMeta.findStep( container.getData() );
               if ( stepMeta != null ) {
@@ -597,11 +597,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                 // Unknown step dropped: ignore this to be safe!
                 return;
               }
-            }
               break;
 
             // Create a new step
-            case DragAndDropContainer.TYPE_BASE_STEP_TYPE: {
+            case DragAndDropContainer.TYPE_BASE_STEP_TYPE:
               // Not an existing step: data refers to the type of step to create
               String steptype = container.getData();
               stepMeta = spoon.newStep( transMeta, steptype, steptype, false, true );
@@ -610,16 +609,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               } else {
                 return; // Cancelled pressed in dialog or unable to create step.
               }
-            }
               break;
 
             // Create a new TableInput step using the selected connection...
-            case DragAndDropContainer.TYPE_DATABASE_CONNECTION: {
+            case DragAndDropContainer.TYPE_DATABASE_CONNECTION:
               newstep = true;
               String connectionName = container.getData();
               TableInputMeta tii = new TableInputMeta();
               tii.setDatabaseMeta( transMeta.findDatabase( connectionName ) );
-
               PluginRegistry registry = PluginRegistry.getInstance();
               String stepID = registry.getPluginId( StepPluginType.class, tii );
               PluginInterface stepPlugin = registry.findPluginWithId( StepPluginType.class, stepID );
@@ -632,23 +629,20 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               } else {
                 return;
               }
-            }
               break;
 
             // Drag hop on the canvas: create a new Hop...
-            case DragAndDropContainer.TYPE_TRANS_HOP: {
+            case DragAndDropContainer.TYPE_TRANS_HOP:
               newHop();
               return;
-            }
 
-            default: {
+            default:
               // Nothing we can use: give an error!
               MessageBox mb = new MessageBox( shell, SWT.OK );
               mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.ItemCanNotBePlacedOnCanvas.Message" ) );
               mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.ItemCanNotBePlacedOnCanvas.Title" ) );
               mb.open();
               return;
-            }
           }
 
           transMeta.unselectAll();
@@ -789,64 +783,56 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if ( areaOwner != null ) {
         switch ( areaOwner.getAreaType() ) {
           case STEP_OUTPUT_HOP_ICON:
-          // Click on the output icon means: start of drag
-          // Action: We show the input icons on the other steps...
-          //
-          {
+            // Click on the output icon means: start of drag
+            // Action: We show the input icons on the other steps...
+            //
             selectedStep = null;
             startHopStep = (StepMeta) areaOwner.getParent();
             candidateHopType = null;
             startErrorHopStep = false;
             // stopStepMouseOverDelayTimer(startHopStep);
-          }
             break;
 
           case STEP_INPUT_HOP_ICON:
-          // Click on the input icon means: start to a new hop
-          // In this case, we set the end hop step...
-          //
-          {
+            // Click on the input icon means: start to a new hop
+            // In this case, we set the end hop step...
+            //
             selectedStep = null;
             startHopStep = null;
             endHopStep = (StepMeta) areaOwner.getParent();
             candidateHopType = null;
             startErrorHopStep = false;
             // stopStepMouseOverDelayTimer(endHopStep);
-          }
             break;
 
           case HOP_ERROR_ICON:
-          // Click on the error icon means: Edit error handling
-          //
-          {
+            // Click on the error icon means: Edit error handling
+            //
             StepMeta stepMeta = (StepMeta) areaOwner.getParent();
             spoon.editStepErrorHandling( transMeta, stepMeta );
-          }
             break;
 
           case STEP_TARGET_HOP_ICON_OPTION:
             // Below, see showStepTargetOptions()
             break;
 
-          case STEP_EDIT_ICON: {
+          case STEP_EDIT_ICON:
             clearSettings();
             currentStep = (StepMeta) areaOwner.getParent();
             stopStepMouseOverDelayTimer( currentStep );
             editStep();
-          }
             break;
 
-          case STEP_INJECT_ICON: {
+          case STEP_INJECT_ICON:
             MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
             mb.setMessage( BaseMessages.getString( PKG, "TransGraph.StepInjectionSupported.Tooltip" ) );
             mb.setText( BaseMessages.getString( PKG, "TransGraph.StepInjectionSupported.Title" ) );
             mb.open();
-          }
             break;
 
           case STEP_MENU_ICON:
             clearSettings();
-            StepMeta stepMeta = (StepMeta) areaOwner.getParent();
+            stepMeta = (StepMeta) areaOwner.getParent();
             setMenu( stepMeta.getLocation().x, stepMeta.getLocation().y );
             break;
 
@@ -867,11 +853,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             if ( e.button == 1 && alt && stepMeta.supportsErrorHandling() ) {
               spoon.editStepErrorHandling( transMeta, stepMeta );
               return;
-            }
-
-            // SHIFT CLICK is start of drag to create a new hop
-            //
-            else if ( e.button == 2 || ( e.button == 1 && shift ) ) {
+            } else if ( e.button == 2 || ( e.button == 1 && shift ) ) {
+              // SHIFT CLICK is start of drag to create a new hop
+              //
               startHopStep = stepMeta;
             } else {
               selectedSteps = transMeta.getSelectedSteps();
@@ -963,11 +947,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
       addCandidateAsHop( e.x, e.y );
       redraw();
-    }
-    // Did we select a region on the screen? Mark steps in region as
-    // selected
-    //
-    else {
+    } else {
+      // Did we select a region on the screen? Mark steps in region as
+      // selected
+      //
       if ( selectionRegion != null ) {
         selectionRegion.width = real.x - selectionRegion.x;
         selectionRegion.height = real.y - selectionRegion.y;
@@ -977,10 +960,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         selectionRegion = null;
         stopStepMouseOverDelayTimers();
         redraw();
-      }
-      // Clicked on an icon?
-      //
-      else {
+      } else {
+        // Clicked on an icon?
+        //
         if ( selectedStep != null && startHopStep == null ) {
           if ( e.button == 1 ) {
             Point realclick = screen2real( e.x, e.y );
@@ -1035,10 +1017,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           endHopLocation = null;
           redraw();
           spoon.setShellText();
-        }
+        } else {
+          // Notes?
+          //
 
-        // Notes?
-        else {
           if ( selectedNote != null ) {
             if ( e.button == 1 ) {
               if ( lastclick.x == e.x && lastclick.y == e.y ) {
@@ -1171,9 +1153,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         transMeta.removeTransHop( idx );
         spoon.refreshTree();
 
-      } else {
-        // Silently discard this hop-split attempt.
       }
+
+      // else: Silently discard this hop-split attempt.
     }
   }
 
@@ -1205,17 +1187,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
     if ( areaOwner != null ) {
       switch ( areaOwner.getAreaType() ) {
-        case STEP_ICON: {
+        case STEP_ICON:
           StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
           resetDelayTimer( stepMeta );
-        }
           break;
 
         case MINI_ICONS_BALLOON: // Give the timer a bit more time
-        {
-          StepMeta stepMeta = (StepMeta) areaOwner.getParent();
+          stepMeta = (StepMeta) areaOwner.getParent();
           resetDelayTimer( stepMeta );
-        }
           break;
         default:
           break;
@@ -1241,23 +1220,19 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       selectedNotes.add( selectedNote );
       previous_note_locations = new Point[] { selectedNote.getLocation() };
       redraw();
-    }
+    } else if ( selectionRegion != null && startHopStep == null ) {
+      // Did we select a region...?
+      //
 
-    // Did we select a region...?
-    //
-    else if ( selectionRegion != null && startHopStep == null ) {
       selectionRegion.width = real.x - selectionRegion.x;
       selectionRegion.height = real.y - selectionRegion.y;
       redraw();
-    }
-    // Move around steps & notes
-    //
-    else if ( selectedStep != null && lastButton == 1 && !shift && startHopStep == null ) {
-      /*
-       * One or more icons are selected and moved around...
-       * 
-       * new : new position of the ICON (not the mouse pointer) dx : difference with previous position
-       */
+    } else if ( selectedStep != null && lastButton == 1 && !shift && startHopStep == null ) {
+      //
+      // One or more icons are selected and moved around...
+      //
+      // new : new position of the ICON (not the mouse pointer) dx : difference with previous position
+      //
       int dx = icon.x - selectedStep.getLocation().x;
       int dy = icon.y - selectedStep.getLocation().y;
 
@@ -1300,11 +1275,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
 
       redraw();
-    }
+    } else if ( ( startHopStep != null && endHopStep == null ) || ( endHopStep != null && startHopStep == null ) ) {
+      // Are we creating a new hop with the middle button or pressing SHIFT?
+      //
 
-    // Are we creating a new hop with the middle button or pressing SHIFT?
-    //
-    else if ( ( startHopStep != null && endHopStep == null ) || ( endHopStep != null && startHopStep == null ) ) {
       StepMeta stepMeta = transMeta.getStep( real.x, real.y, iconsize );
       endHopLocation = new Point( real.x, real.y );
       if ( stepMeta != null
@@ -2413,30 +2387,28 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
           // Add the default round robin plugin...
           //
-          {
-            Action action = new Action( "RoundRobinRowDistribution", Action.AS_CHECK_BOX ) {
-              public void run() {
-                stepMeta.setRowDistribution( null ); // default
-                stepMeta.setDistributes( true );
-              }
-            };
-            boolean selected = stepMeta.isDistributes() && stepMeta.getRowDistribution() == null;
-            action.setChecked( selected );
-            JfaceMenuitem child =
-                new JfaceMenuitem( null, customRowDistMenu, xulDomContainer, "Round Robin row distribution", 0, action );
-            child.setLabel( BaseMessages.getString( PKG, "TransGraph.PopupMenu.RoundRobin" ) );
-            child.setDisabled( false );
-            child.setSelected( selected );
-          }
+          Action action = new Action( "RoundRobinRowDistribution", Action.AS_CHECK_BOX ) {
+            public void run() {
+              stepMeta.setRowDistribution( null ); // default
+              stepMeta.setDistributes( true );
+            }
+          };
+          boolean selected = stepMeta.isDistributes() && stepMeta.getRowDistribution() == null;
+          action.setChecked( selected );
+          JfaceMenuitem child =
+              new JfaceMenuitem( null, customRowDistMenu, xulDomContainer, "Round Robin row distribution", 0, action );
+          child.setLabel( BaseMessages.getString( PKG, "TransGraph.PopupMenu.RoundRobin" ) );
+          child.setDisabled( false );
+          child.setSelected( selected );
 
           for ( int p = 0; p < rowDistributionPlugins.size(); p++ ) {
             final PluginInterface rowDistributionPlugin = rowDistributionPlugins.get( p );
-            boolean selected =
+            selected =
                 stepMeta.isDistributes()
                     && stepMeta.getRowDistribution() != null
                     && stepMeta.getRowDistribution().getCode().equals( rowDistributionPlugin.getIds()[0] );
 
-            Action action = new Action( rowDistributionPlugin.getIds()[0], Action.AS_CHECK_BOX ) {
+            action = new Action( rowDistributionPlugin.getIds()[0], Action.AS_CHECK_BOX ) {
               public void run() {
                 try {
                   stepMeta.setRowDistribution( (RowDistributionInterface) PluginRegistry.getInstance().loadClass(
@@ -2447,7 +2419,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               }
             };
             action.setChecked( selected );
-            JfaceMenuitem child =
+            child =
                 new JfaceMenuitem(
                     null, customRowDistMenu, xulDomContainer, rowDistributionPlugin.getName(), p + 1, action );
             child.setLabel( rowDistributionPlugin.getName() );
@@ -2457,21 +2429,18 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
           // Add the default copy rows plugin...
           //
-          {
-            Action action = new Action( "CopyRowsDistribution", Action.AS_CHECK_BOX ) {
-              public void run() {
-                stepMeta.setDistributes( false );
-              }
-            };
-            boolean selected = !stepMeta.isDistributes();
-            action.setChecked( selected );
-            JfaceMenuitem child =
-                new JfaceMenuitem( null, customRowDistMenu, xulDomContainer, "Copy rows distribution", 0, action );
-            child.setLabel( BaseMessages.getString( PKG, "TransGraph.PopupMenu.CopyData" ) );
-            child.setDisabled( false );
-            child.setSelected( selected );
-          }
 
+          action = new Action( "CopyRowsDistribution", Action.AS_CHECK_BOX ) {
+            public void run() {
+              stepMeta.setDistributes( false );
+            }
+          };
+          selected = !stepMeta.isDistributes();
+          action.setChecked( selected );
+          child = new JfaceMenuitem( null, customRowDistMenu, xulDomContainer, "Copy rows distribution", 0, action );
+          child.setLabel( BaseMessages.getString( PKG, "TransGraph.PopupMenu.CopyData" ) );
+          child.setDisabled( false );
+          child.setSelected( selected );
           JfaceMenupopup launchMenu = (JfaceMenupopup) doc.getElementById( "trans-graph-entry-launch-popup" );
           String[] referencedObjects = stepMeta.getStepMetaInterface().getReferencedObjectDescriptions();
           boolean[] enabledObjects = stepMeta.getStepMetaInterface().isReferencedObjectEnabled();
@@ -2483,12 +2452,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             for ( int i = 0; i < referencedObjects.length; i++ ) {
               final int index = i;
               String referencedObject = referencedObjects[i];
-              Action action = new Action( referencedObject, Action.AS_DROP_DOWN_MENU ) {
+              action = new Action( referencedObject, Action.AS_DROP_DOWN_MENU ) {
                 public void run() {
                   openMapping( stepMeta, index );
                 }
               };
-              JfaceMenuitem child = new JfaceMenuitem( null, launchMenu, xulDomContainer, referencedObject, i, action );
+              child = new JfaceMenuitem( null, launchMenu, xulDomContainer, referencedObject, i, action );
               child.setLabel( referencedObject );
               child.setDisabled( !enabledObjects[i] );
             }

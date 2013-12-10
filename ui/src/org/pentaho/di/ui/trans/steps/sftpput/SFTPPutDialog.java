@@ -1211,6 +1211,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
         sftpclient.disconnect();
         sftpclient = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

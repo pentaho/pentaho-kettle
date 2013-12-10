@@ -281,90 +281,88 @@ public class DatabaseLookupTest {
   public void basicDatabaseLookup() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the lookup step...
-      //
-      String lookupName = "look up from [" + lookup_table + "]";
-      DatabaseLookupMeta dbl = new DatabaseLookupMeta();
-      dbl.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      dbl.setTablename( lookup_table );
-      dbl.setCached( false );
-      dbl.setEatingRowOnLookupFailure( false );
-      dbl.setFailingOnMultipleResults( false );
-      dbl.setOrderByClause( "" );
-
-      dbl.setTableKeyField( new String[] { "ID" } );
-      dbl.setKeyCondition( new String[] { "=" } );
-      dbl.setStreamKeyField1( new String[] { "int_field" } );
-      dbl.setStreamKeyField2( new String[] { "" } );
-
-      dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
-      dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
-      dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
-      dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
-
-      String lookupId = registry.getPluginId( StepPluginType.class, dbl );
-      StepMeta lookupStep = new StepMeta( lookupId, lookupName, dbl );
-      lookupStep.setDescription( "Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( lookupStep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, lookupStep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( lookupName, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the lookup step...
+    //
+    String lookupName = "look up from [" + lookup_table + "]";
+    DatabaseLookupMeta dbl = new DatabaseLookupMeta();
+    dbl.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    dbl.setTablename( lookup_table );
+    dbl.setCached( false );
+    dbl.setEatingRowOnLookupFailure( false );
+    dbl.setFailingOnMultipleResults( false );
+    dbl.setOrderByClause( "" );
+
+    dbl.setTableKeyField( new String[] { "ID" } );
+    dbl.setKeyCondition( new String[] { "=" } );
+    dbl.setStreamKeyField1( new String[] { "int_field" } );
+    dbl.setStreamKeyField2( new String[] { "" } );
+
+    dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
+    dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
+
+    String lookupId = registry.getPluginId( StepPluginType.class, dbl );
+    StepMeta lookupStep = new StepMeta( lookupId, lookupName, dbl );
+    lookupStep.setDescription( "Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( lookupStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, lookupStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( lookupName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
+
   }
 
   /**
@@ -374,92 +372,90 @@ public class DatabaseLookupTest {
   public void CacheAndLoadAllRowsDatabaseLookup() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the lookup step...
-      //
-      String lookupName = "look up from [" + lookup_table + "]";
-      DatabaseLookupMeta dbl = new DatabaseLookupMeta();
-      dbl.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      dbl.setTablename( lookup_table );
-      dbl.setCached( true );
-      dbl.setLoadingAllDataInCache( true );
-      dbl.setEatingRowOnLookupFailure( false );
-      dbl.setFailingOnMultipleResults( false );
-      dbl.setOrderByClause( "" );
-
-      dbl.setTableKeyField( new String[] { "ID" } );
-      dbl.setKeyCondition( new String[] { "=" } );
-      dbl.setStreamKeyField1( new String[] { "int_field" } );
-      dbl.setStreamKeyField2( new String[] { "" } );
-
-      dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
-      dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
-      dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
-      dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
-
-      String lookupId = registry.getPluginId( StepPluginType.class, dbl );
-      StepMeta lookupStep = new StepMeta( lookupId, lookupName, dbl );
-      lookupStep.setDescription( "Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( lookupStep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, lookupStep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( lookupName, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the lookup step...
+    //
+    String lookupName = "look up from [" + lookup_table + "]";
+    DatabaseLookupMeta dbl = new DatabaseLookupMeta();
+    dbl.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    dbl.setTablename( lookup_table );
+    dbl.setCached( true );
+    dbl.setLoadingAllDataInCache( true );
+    dbl.setEatingRowOnLookupFailure( false );
+    dbl.setFailingOnMultipleResults( false );
+    dbl.setOrderByClause( "" );
+
+    dbl.setTableKeyField( new String[] { "ID" } );
+    dbl.setKeyCondition( new String[] { "=" } );
+    dbl.setStreamKeyField1( new String[] { "int_field" } );
+    dbl.setStreamKeyField2( new String[] { "" } );
+
+    dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
+    dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
+
+    String lookupId = registry.getPluginId( StepPluginType.class, dbl );
+    StepMeta lookupStep = new StepMeta( lookupId, lookupName, dbl );
+    lookupStep.setDescription( "Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( lookupStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, lookupStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( lookupName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
+
   }
 
   /**
@@ -469,92 +465,89 @@ public class DatabaseLookupTest {
   public void NOTCachedAndLoadAllRowsDatabaseLookup() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the lookup step...
-      //
-      String lookupName = "look up from [" + lookup_table + "]";
-      DatabaseLookupMeta dbl = new DatabaseLookupMeta();
-      dbl.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      dbl.setTablename( lookup_table );
-      dbl.setCached( false );
-      dbl.setLoadingAllDataInCache( true );
-      dbl.setEatingRowOnLookupFailure( false );
-      dbl.setFailingOnMultipleResults( false );
-      dbl.setOrderByClause( "" );
-
-      dbl.setTableKeyField( new String[] { "ID" } );
-      dbl.setKeyCondition( new String[] { "=" } );
-      dbl.setStreamKeyField1( new String[] { "int_field" } );
-      dbl.setStreamKeyField2( new String[] { "" } );
-
-      dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
-      dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
-      dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
-      dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
-
-      String lookupId = registry.getPluginId( StepPluginType.class, dbl );
-      StepMeta lookupStep = new StepMeta( lookupId, lookupName, dbl );
-      lookupStep.setDescription( "Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( lookupStep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, lookupStep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( lookupName, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
-  }
 
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the lookup step...
+    //
+    String lookupName = "look up from [" + lookup_table + "]";
+    DatabaseLookupMeta dbl = new DatabaseLookupMeta();
+    dbl.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    dbl.setTablename( lookup_table );
+    dbl.setCached( false );
+    dbl.setLoadingAllDataInCache( true );
+    dbl.setEatingRowOnLookupFailure( false );
+    dbl.setFailingOnMultipleResults( false );
+    dbl.setOrderByClause( "" );
+
+    dbl.setTableKeyField( new String[] { "ID" } );
+    dbl.setKeyCondition( new String[] { "=" } );
+    dbl.setStreamKeyField1( new String[] { "int_field" } );
+    dbl.setStreamKeyField2( new String[] { "" } );
+
+    dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
+    dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
+
+    String lookupId = registry.getPluginId( StepPluginType.class, dbl );
+    StepMeta lookupStep = new StepMeta( lookupId, lookupName, dbl );
+    lookupStep.setDescription( "Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( lookupStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, lookupStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( lookupName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
+
+  }
 }

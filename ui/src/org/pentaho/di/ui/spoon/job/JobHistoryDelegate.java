@@ -85,12 +85,6 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   private CTabItem jobHistoryTab;
 
-  private List<ColumnInfo[]> columns;
-
-  private List<Text> wText;
-
-  private List<TableView> wFields;
-
   private XulToolbar toolbar;
 
   private Composite jobHistoryComposite;
@@ -185,134 +179,10 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
   }
 
   private void addLogTableTabs() {
-
-    models = new TransHistoryModel[jobMeta.getLogTables().size()];
-    for ( int i = 0; i < models.length; i++ ) {
-      models[i] = new TransHistoryModel();
-      models[i].logTable = jobMeta.getLogTables().get( i );
-    }
-
-    columns = new ArrayList<ColumnInfo[]>( models.length );
-    wFields = new ArrayList<TableView>( models.length );
-    wText = new ArrayList<Text>( models.length );
-
     // Create a nested tab folder in the tab item, on the history composite...
     //
     tabFolder = new CTabFolder( jobHistoryComposite, SWT.MULTI );
     spoon.props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
-
-    for ( TransHistoryModel model : models ) {
-      LogTableInterface logTable = model.logTable;
-      CTabItem tabItem = new CTabItem( tabFolder, SWT.NONE );
-      // tabItem.setImage(GUIResource.getInstance().getImageShowHistory());
-      tabItem.setText( logTable.getLogTableType() );
-
-      Composite logTableComposite = new Composite( tabFolder, SWT.NONE );
-      logTableComposite.setLayout( new FormLayout() );
-      spoon.props.setLook( logTableComposite );
-
-      tabItem.setControl( logTableComposite );
-
-      SashForm sash = new SashForm( logTableComposite, SWT.VERTICAL );
-      sash.setLayout( new FillLayout() );
-      FormData fdSash = new FormData();
-      fdSash.left = new FormAttachment( 0, 0 ); // First one in the left top corner
-      fdSash.top = new FormAttachment( 0, 0 );
-      fdSash.right = new FormAttachment( 100, 0 );
-      fdSash.bottom = new FormAttachment( 100, 0 );
-      sash.setLayoutData( fdSash );
-
-      List<ColumnInfo> columnList = new ArrayList<ColumnInfo>();
-      List<LogTableField> fields = new ArrayList<LogTableField>();
-
-      for ( LogTableField field : logTable.getFields() ) {
-        if ( field.isEnabled() && field.isVisible() ) {
-          fields.add( field );
-          if ( !field.isLogField() ) {
-            ColumnInfo column = new ColumnInfo( field.getName(), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-
-            int valueType = field.getDataType();
-            String conversionMask = null;
-
-            switch ( field.getDataType() ) {
-              case ValueMetaInterface.TYPE_INTEGER:
-                conversionMask = "###,###,##0";
-                column.setAllignement( SWT.RIGHT );
-                break;
-              case ValueMetaInterface.TYPE_DATE:
-                conversionMask = "yyyy/MM/dd HH:mm:ss";
-                column.setAllignement( SWT.CENTER );
-                break;
-              case ValueMetaInterface.TYPE_NUMBER:
-                conversionMask = " ###,###,##0.00;-###,###,##0.00";
-                column.setAllignement( SWT.RIGHT );
-                break;
-              case ValueMetaInterface.TYPE_STRING:
-                column.setAllignement( SWT.LEFT );
-                break;
-              case ValueMetaInterface.TYPE_BOOLEAN:
-                DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
-                if ( databaseMeta != null ) {
-                  if ( !databaseMeta.supportsBooleanDataType() ) {
-                    // Boolean gets converted to String!
-                    //
-                    valueType = ValueMetaInterface.TYPE_STRING;
-                  }
-                }
-                break;
-              default:
-                break;
-            }
-            ValueMetaInterface valueMeta = new ValueMeta( field.getFieldName(), valueType, field.getLength(), -1 );
-            if ( conversionMask != null ) {
-              valueMeta.setConversionMask( conversionMask );
-            }
-
-            column.setValueMeta( valueMeta );
-            columnList.add( column );
-          }
-        }
-      }
-      model.logTableFields = fields;
-
-      final int FieldsRows = 1;
-      ColumnInfo[] colinf = columnList.toArray( new ColumnInfo[columnList.size()] );
-      columns.add( colinf ); // keep for later
-
-      TableView tableView =
-          new TableView(
-              jobGraph.getManagedObject(), sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, colinf, FieldsRows,
-              true, // readonly!
-              null, spoon.props );
-      wFields.add( tableView );
-
-      tableView.table.addSelectionListener( new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent arg0 ) {
-          showLogEntry();
-        }
-      } );
-
-      if ( logTable.getLogField() != null ) {
-
-        Text text = new Text( sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
-        spoon.props.setLook( text );
-        text.setVisible( true );
-        wText.add( text );
-
-        FormData fdText = new FormData();
-        fdText.left = new FormAttachment( 0, 0 );
-        fdText.top = new FormAttachment( 0, 0 );
-        fdText.right = new FormAttachment( 100, 0 );
-        fdText.bottom = new FormAttachment( 100, 0 );
-        text.setLayoutData( fdText );
-
-        sash.setWeights( new int[] { 70, 30, } );
-      } else {
-        wText.add( null );
-        sash.setWeights( new int[] { 100, } );
-      }
-
-    }
 
     FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 ); // First one in the left top corner
@@ -328,7 +198,6 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
   }
 
   private void addToolBar() {
-
     try {
       XulLoader loader = new KettleXulLoader();
       loader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
@@ -375,8 +244,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       mb.setMessage( BaseMessages.getString(
           PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) ); // Nothing found that
                                                                                                   // matches your
-                                                                                                  // criteria
-      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) ); // Sorry!
+                                                                                                  // criteria, sorry
+      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) );
       if ( mb.open() == SWT.YES ) {
         Database database = new Database( loggingObject, databaseMeta );
         try {
@@ -387,9 +256,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
               PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString(
               PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
         } finally {
-          if ( database != null ) {
-            database.disconnect();
-          }
+          database.disconnect();
 
           refreshHistory();
           if ( model.logDisplayText != null ) {
@@ -505,6 +372,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           //
           JobEntryCopyResult result = JobEntryCopyResult.findResult( results, copy );
           if ( result != null ) {
+            System.out.println( "TODO: replay" );
             // Do nothing???
           }
         }
@@ -570,7 +438,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /**
    * Don't allow more queries until this one finishes.
-   *
+   * 
    * @param inProgress
    *          is query in progress
    */
@@ -824,7 +692,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -833,7 +701,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -842,7 +710,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -851,7 +719,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -859,7 +727,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -867,7 +735,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {
@@ -1015,7 +883,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       TableView tableView =
           new TableView( jobMeta, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, columnList
               .toArray( new ColumnInfo[columnList.size()] ), 1, true, // readonly!
-              null, spoon.props );
+          null, spoon.props );
 
       tableView.table.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent arg0 ) {

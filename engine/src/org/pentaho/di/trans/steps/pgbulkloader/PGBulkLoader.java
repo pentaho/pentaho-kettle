@@ -355,7 +355,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               switch ( data.dateFormatChoices[i] ) {
               // Pass the data along in the format chosen by the user OR in binary format...
               //
-                case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH: {
+                case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
                     data.pgOutputStream.write( (byte[]) valueData );
                   } else {
@@ -364,26 +364,26 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
                       data.pgOutputStream.write( dateString.getBytes() );
                     }
                   }
-                }
                   break;
+
                 // Convert to a "YYYY/MM/DD" format
                 //
-                case PGBulkLoaderMeta.NR_DATE_MASK_DATE: {
+                case PGBulkLoaderMeta.NR_DATE_MASK_DATE:
                   String dateString = data.dateMeta.getString( valueMeta.getDate( valueData ) );
                   if ( dateString != null ) {
                     data.pgOutputStream.write( dateString.getBytes() );
                   }
-                }
                   break;
+
                 // Convert to a "YYYY/MM/DD HH:MM:SS" (ISO) format
                 //
-                case PGBulkLoaderMeta.NR_DATE_MASK_DATETIME: {
+                case PGBulkLoaderMeta.NR_DATE_MASK_DATETIME:
                   String dateTimeString = data.dateTimeMeta.getString( valueMeta.getDate( valueData ) );
                   if ( dateTimeString != null ) {
                     data.pgOutputStream.write( dateTimeString.getBytes() );
                   }
-                }
                   break;
+
                 default:
                   break;
               }

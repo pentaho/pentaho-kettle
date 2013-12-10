@@ -495,9 +495,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
         response = snmp.send( pdu, usertarget );
       }
 
-      if ( response == null ) {
-
-      } else {
+      if ( response != null ) {
         if ( log.isDebug() ) {
           logDebug( "Received response from: " + response.getPeerAddress() + response.toString() );
         }

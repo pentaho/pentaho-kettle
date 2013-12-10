@@ -456,15 +456,17 @@ public class DimensionLookup extends BaseStep implements StepInterface {
           returnRow[returnRow.length - 2] = data.min_date;
           returnRow[returnRow.length - 1] = data.max_date;
         }
-      } else {
-        // We found the return values in row "add".
-        // Throw away the version nr...
-        // add.removeValue(1);
-
-        // Rename the key field if needed. Do it directly in the row...
-        // if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0)
-        // add.getValue(0).setName(meta.getKeyRename());
       }
+      // else {
+      // We found the return values in row "add".
+      // Throw away the version nr...
+      // add.removeValue(1);
+
+      // Rename the key field if needed. Do it directly in the row...
+      // if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0)
+      // add.getValue(0).setName(meta.getKeyRename());
+      // }
+
     } else {
       // This is the "update=true" case where we update the dimension table...
       // It is an "Insert - update" algorithm for slowly changing dimensions

@@ -1210,6 +1210,7 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
         conn.close();
         conn = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

@@ -119,8 +119,6 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
         if ( dbTypeDesc != null ) {
           databaseMeta.setDatabaseInterface( DatabaseMeta.getDatabaseInterface( dbTypeDesc ) );
           databaseMeta.setAttributes( new Properties() ); // new attributes
-        } else {
-          // throw new KettleException("No database type was specified [id_database_type="+id_database_type+"]");
         }
 
         databaseMeta.setObjectId( id_database );

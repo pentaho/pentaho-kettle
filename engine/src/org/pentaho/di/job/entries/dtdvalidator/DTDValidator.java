@@ -200,8 +200,7 @@ public class DTDValidator {
             }
           }
 
-          if ( ( isInternDTD() && xmlStartDTD == -1 || ( !isInternDTD() && !DTDfile.exists() ) ) ) {
-          } else {
+          if ( !( isInternDTD() && xmlStartDTD == -1 || ( !isInternDTD() && !DTDfile.exists() ) ) ) {
 
             // Let's parse now ...
             MyErrorHandler error = new MyErrorHandler();
@@ -250,6 +249,7 @@ public class DTDValidator {
           ba.close();
         }
       } catch ( IOException e ) {
+        // Ignore close errors
       }
     }
     return retval;

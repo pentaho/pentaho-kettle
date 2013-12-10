@@ -1686,7 +1686,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
           input.setText( foldername );
         }
       } catch ( Exception e ) {
-
+        // Ignore errors
       }
     }
   }

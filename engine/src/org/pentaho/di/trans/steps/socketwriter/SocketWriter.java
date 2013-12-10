@@ -168,6 +168,7 @@ public class SocketWriter extends BaseStep implements StepInterface {
     try {
       data.outputStream.close();
     } catch ( Exception e ) {
+      // Ignore errors
     }
     if ( data.clientSocket != null ) {
       try {
@@ -182,6 +183,7 @@ public class SocketWriter extends BaseStep implements StepInterface {
     try {
       data.serverSocket.close();
     } catch ( Exception e ) {
+      // Ignore errors
     }
 
     super.dispose( smi, sdi );

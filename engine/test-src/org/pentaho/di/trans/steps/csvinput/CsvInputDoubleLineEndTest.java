@@ -56,7 +56,7 @@ public class CsvInputDoubleLineEndTest {
   private static final String UTF16BE = "UTF-16LE";
   private static final String TEST_DATA = "Header1\tHeader2\r\nValue\tValue\r\nValue\tValue\r\n";
 
-  private static StepMockHelper stepMockHelper;
+  private static StepMockHelper<?, ?> stepMockHelper;
 
   @BeforeClass
   public static void setUp() throws KettleException {

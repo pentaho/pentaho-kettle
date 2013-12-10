@@ -804,7 +804,8 @@ public class MailConnection {
         try {
           MimeText = MimeUtility.decodeText( part.getFileName() );
         } catch ( Exception e ) {
-        } // ignore this ..
+          // Ignore errors
+        }
         if ( MimeText != null ) {
           String filename = MimeUtility.decodeText( part.getFileName() );
           if ( isWildcardMatch( filename, pattern ) ) {
@@ -1110,6 +1111,7 @@ public class MailConnection {
         retval = true;
       }
     } catch ( Exception e ) {
+      // Ignore errors
     } finally {
       try {
         if ( dfolder != null ) {
@@ -1182,6 +1184,7 @@ public class MailConnection {
       }
       retval = returnAllFolders( dfolder );
     } catch ( Exception e ) {
+      // Ignore errors
     } finally {
       try {
         if ( dfolder != null ) {
@@ -1362,7 +1365,8 @@ public class MailConnection {
             try {
               MimeText = MimeUtility.decodeText( part.getFileName() );
             } catch ( Exception e ) {
-            } // ignore this ..
+              // Ignore errors
+            }
             if ( MimeText != null ) {
               String filename = MimeUtility.decodeText( part.getFileName() );
               if ( isWildcardMatch( filename, pattern ) ) {

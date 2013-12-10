@@ -573,12 +573,10 @@ public class TransDialog extends Dialog {
               // We do this when the user pressed OK
               newDirectory = rd;
               wDirectory.setText( rd.getPath() );
-            } else {
-              // Same directory!
             }
-          }
-        } else {
+            // else: Same directory!
 
+          }
         }
       }
     } );

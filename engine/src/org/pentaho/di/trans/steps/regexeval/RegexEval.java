@@ -183,6 +183,7 @@ public class RegexEval extends BaseStep implements StepInterface {
             try {
               value = data.outputRowMeta.getString( outputRow, index );
             } catch ( ArrayIndexOutOfBoundsException err ) {
+              // Ignore errors
             }
           }
 

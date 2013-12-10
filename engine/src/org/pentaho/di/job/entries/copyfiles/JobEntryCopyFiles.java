@@ -637,7 +637,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   }
 
   private class TextFileSelector implements FileSelector {
-    String file_wildcard = null, source_folder = null, destination_folder = null;
+    String fileWildcard = null;
+    String sourceFolder = null;
+    String destinationFolder = null;
     Job parentjob;
     Pattern pattern;
     private int traverseCount;
@@ -665,15 +667,15 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         Job parentJob ) {
 
       if ( sourcefolderin != null ) {
-        source_folder = sourcefolderin.toString();
+        sourceFolder = sourcefolderin.toString();
       }
       if ( destinationfolderin != null ) {
         destinationFolderObject = destinationfolderin;
-        destination_folder = destinationFolderObject.toString();
+        destinationFolder = destinationFolderObject.toString();
       }
       if ( !Const.isEmpty( filewildcard ) ) {
-        file_wildcard = filewildcard;
-        pattern = Pattern.compile( file_wildcard );
+        fileWildcard = filewildcard;
+        pattern = Pattern.compile( fileWildcard );
       }
       parentjob = parentJob;
     }
@@ -684,14 +686,14 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       String addFileNameString = null;
       try {
 
-        if ( !info.getFile().toString().equals( source_folder ) && !parentjob.isStopped() ) {
+        if ( !info.getFile().toString().equals( sourceFolder ) && !parentjob.isStopped() ) {
           // Pass over the Base folder itself
 
           String short_filename = info.getFile().getName().getBaseName();
           // Built destination filename
           if ( destinationFolderObject == null ) {
             // Resolve the destination folder
-            destinationFolderObject = KettleVFS.getFileObject( destination_folder, JobEntryCopyFiles.this );
+            destinationFolderObject = KettleVFS.getFileObject( destinationFolder, JobEntryCopyFiles.this );
           }
 
           file_name = destinationFolderObject.getChild( short_filename );
@@ -702,7 +704,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             if ( include_subfolders ) {
               // Folders..only if include subfolders
               if ( info.getFile().getType() == FileType.FOLDER ) {
-                if ( include_subfolders && copy_empty_folders && Const.isEmpty( file_wildcard ) ) {
+                if ( include_subfolders && copy_empty_folders && Const.isEmpty( fileWildcard ) ) {
                   if ( ( file_name == null ) || ( !file_name.exists() ) ) {
                     if ( isDetailed() ) {
                       logDetailed( " ------ " );
@@ -764,7 +766,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             // In the Base Folder...
             // Folders..only if include subfolders
             if ( info.getFile().getType() == FileType.FOLDER ) {
-              if ( include_subfolders && copy_empty_folders && Const.isEmpty( file_wildcard ) ) {
+              if ( include_subfolders && copy_empty_folders && Const.isEmpty( fileWildcard ) ) {
                 if ( ( file_name == null ) || ( !file_name.exists() ) ) {
                   if ( isDetailed() ) {
                     logDetailed( "", " ------ " );
@@ -795,7 +797,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
               }
             } else {
               // file...Check if exists
-              file_name = KettleVFS.getFileObject( destination_folder + Const.FILE_SEPARATOR + short_filename );
+              file_name = KettleVFS.getFileObject( destinationFolder + Const.FILE_SEPARATOR + short_filename );
 
               if ( GetFileWildcard( short_filename ) ) {
                 if ( ( file_name == null ) || ( !file_name.exists() ) ) {
@@ -885,7 +887,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   }
 
   private class TextOneFileSelector implements FileSelector {
-    String filename = null, foldername = null, destfolder = null;
+    String filename = null;
+    String foldername = null;
+    String destfolder = null;
     private int traverseCount;
 
     public TextOneFileSelector( String sourcefolderin, String sourcefilenamein, String destfolderin ) {

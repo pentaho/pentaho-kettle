@@ -294,7 +294,7 @@ public class ConditionEditor extends Composite {
               setModified();
               widget.redraw();
               break;
-            case AREA_OPERATOR: {
+            case AREA_OPERATOR:
               int operator = getNrOperator( screen );
               EnterSelectionDialog esd =
                   new EnterSelectionDialog( shell, Condition.getRealOperators(), BaseMessages.getString(
@@ -311,7 +311,6 @@ public class ConditionEditor extends Composite {
                 setModified();
               }
               widget.redraw();
-            }
               break;
             case AREA_SUBCONDITION:
               int nr = getNrSubcondition( screen );
@@ -325,14 +324,14 @@ public class ConditionEditor extends Composite {
               break;
             case AREA_FUNCTION:
               if ( active_condition.isAtomic() ) {
-                EnterSelectionDialog esd =
+                esd =
                     new EnterSelectionDialog( shell, Condition.functions, BaseMessages.getString(
                         PKG, "ConditionEditor.Functions.Label" ), BaseMessages.getString(
                         PKG, "ConditionEditor.SelectFunction.Label" ) );
                 esd.setAvoidQuickSearch();
-                String def = active_condition.getFunctionDesc();
-                int defnr = esd.getSelectionNr( def );
-                String selection = esd.open( defnr );
+                def = active_condition.getFunctionDesc();
+                defnr = esd.getSelectionNr( def );
+                selection = esd.open( defnr );
                 if ( selection != null ) {
                   int fnnr = Condition.getFunction( selection );
                   active_condition.setFunction( fnnr );
@@ -343,14 +342,14 @@ public class ConditionEditor extends Composite {
               break;
             case AREA_LEFT:
               if ( active_condition.isAtomic() && fields != null ) {
-                EnterSelectionDialog esd =
+                esd =
                     new EnterSelectionDialog( shell, fields.getFieldNamesAndTypes( max_field_length ), BaseMessages
                         .getString( PKG, "ConditionEditor.Fields" ), BaseMessages.getString(
                         PKG, "ConditionEditor.SelectAField" ) );
                 esd.setAvoidQuickSearch();
-                String def = active_condition.getLeftValuename();
-                int defnr = esd.getSelectionNr( def );
-                String selection = esd.open( defnr );
+                def = active_condition.getLeftValuename();
+                defnr = esd.getSelectionNr( def );
+                selection = esd.open( defnr );
                 if ( selection != null ) {
                   ValueMetaInterface v = fields.getValueMeta( esd.getSelectionNr() );
                   active_condition.setLeftValuename( v.getName() );
@@ -361,14 +360,14 @@ public class ConditionEditor extends Composite {
               break;
             case AREA_RIGHT_VALUE:
               if ( active_condition.isAtomic() && fields != null ) {
-                EnterSelectionDialog esd =
+                esd =
                     new EnterSelectionDialog( shell, fields.getFieldNamesAndTypes( max_field_length ), BaseMessages
                         .getString( PKG, "ConditionEditor.Fields" ), BaseMessages.getString(
                         PKG, "ConditionEditor.SelectAField" ) );
                 esd.setAvoidQuickSearch();
-                String def = active_condition.getLeftValuename();
-                int defnr = esd.getSelectionNr( def );
-                String selection = esd.open( defnr );
+                def = active_condition.getLeftValuename();
+                defnr = esd.getSelectionNr( def );
+                selection = esd.open( defnr );
                 if ( selection != null ) {
                   ValueMetaInterface v = fields.getValueMeta( esd.getSelectionNr() );
                   active_condition.setRightValuename( v.getName() );
@@ -503,7 +502,7 @@ public class ConditionEditor extends Composite {
     }
 
     switch ( area ) {
-      case AREA_NOT: {
+      case AREA_NOT:
         mPop = new Menu( widget );
         MenuItem miNegate = new MenuItem( mPop, SWT.CASCADE );
         miNegate.setText( BaseMessages.getString( PKG, "ConditionEditor.NegateCondition" ) );
@@ -515,10 +514,9 @@ public class ConditionEditor extends Composite {
           }
         } );
         setMenu( mPop );
-      }
         break;
       case AREA_BACKGROUND:
-      case AREA_ICON_ADD: {
+      case AREA_ICON_ADD:
         mPop = new Menu( widget );
         MenuItem miAdd = new MenuItem( mPop, SWT.CASCADE );
         miAdd.setText( BaseMessages.getString( PKG, "ConditionEditor.AddCondition.Label" ) );
@@ -528,9 +526,8 @@ public class ConditionEditor extends Composite {
           }
         } );
         setMenu( mPop );
-      }
         break;
-      case AREA_SUBCONDITION: {
+      case AREA_SUBCONDITION:
         mPop = new Menu( widget );
         MenuItem miEdit = new MenuItem( mPop, SWT.CASCADE );
         miEdit.setText( "Edit condition" );
@@ -553,7 +550,7 @@ public class ConditionEditor extends Composite {
         // Add a sub-condition in the subcondition... (move down)
         final Condition sub = active_condition.getCondition( cond_nr );
         if ( sub.getLeftValuename() != null ) {
-          MenuItem miAdd = new MenuItem( mPop, SWT.CASCADE );
+          miAdd = new MenuItem( mPop, SWT.CASCADE );
           miAdd.setText( BaseMessages.getString( PKG, "ConditionEditor.AddSubCondition.Label" ) );
           miAdd.addSelectionListener( new SelectionAdapter() {
             public void widgetSelected( SelectionEvent e ) {
@@ -703,9 +700,9 @@ public class ConditionEditor extends Composite {
         } );
 
         setMenu( mPop );
-      }
+
         break;
-      case AREA_OPERATOR: {
+      case AREA_OPERATOR:
         Menu mPop = new Menu( widget );
         MenuItem miDown = new MenuItem( mPop, SWT.CASCADE );
         miDown.setText( BaseMessages.getString( PKG, "ConditionEditor.MoveDown" ) );
@@ -718,7 +715,6 @@ public class ConditionEditor extends Composite {
           }
         } );
         setMenu( mPop );
-      }
         break;
 
       default:

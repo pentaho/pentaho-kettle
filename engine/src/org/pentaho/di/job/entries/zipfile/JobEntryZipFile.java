@@ -313,6 +313,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       localSourceFilename = KettleVFS.getFilename( originFile );
       orginExist = originFile.exists();
     } catch ( Exception e ) {
+      // Ignore errors
     } finally {
       if ( originFile != null ) {
         try {

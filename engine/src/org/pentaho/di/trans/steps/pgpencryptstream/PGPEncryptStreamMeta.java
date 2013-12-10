@@ -263,9 +263,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       error_message = BaseMessages.getString( PKG, "PGPEncryptStreamMeta.CheckResult.GPGLocationOK" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
     }
-    if ( isKeynameInField() ) {
-
-    } else {
+    if ( !isKeynameInField() ) {
       if ( Const.isEmpty( keyname ) ) {
         error_message = BaseMessages.getString( PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameMissing" );
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );

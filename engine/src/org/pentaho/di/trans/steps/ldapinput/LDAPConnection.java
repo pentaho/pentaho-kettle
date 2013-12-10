@@ -503,6 +503,7 @@ public class LDAPConnection {
           getInitialContext().addToEnvironment( "java.naming.ldap.deleteRDN", "true" );
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
 

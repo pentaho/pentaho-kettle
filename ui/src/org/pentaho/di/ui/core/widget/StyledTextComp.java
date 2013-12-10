@@ -355,6 +355,7 @@ public class StyledTextComp extends Composite {
           try {
             event.wait( 2 );
           } catch ( Exception e ) {
+            // Ignore errors
           }
         }
       }

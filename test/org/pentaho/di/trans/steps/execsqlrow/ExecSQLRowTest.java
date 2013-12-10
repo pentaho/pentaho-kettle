@@ -250,78 +250,75 @@ public class ExecSQLRowTest {
   public void testExecSQLRow1() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the Exec SQL Row step...
-      //
-      String stepName = "delete from [" + execsqlrow_testtable + "]";
-      ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
-      execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      execsqlmeta.setCommitSize( 0 ); // use Autocommit
-      execsqlmeta.setSqlFieldName( "SQL" );
-
-      String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
-      StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
-      execSqlRowStep.setDescription( "Deletes information from table ["
-          + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( execSqlRowStep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( stepName, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the Exec SQL Row step...
+    //
+    String stepName = "delete from [" + execsqlrow_testtable + "]";
+    ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
+    execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    execsqlmeta.setCommitSize( 0 ); // use Autocommit
+    execsqlmeta.setSqlFieldName( "SQL" );
+
+    String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
+    StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
+    execSqlRowStep.setDescription( "Deletes information from table ["
+        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( execSqlRowStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( stepName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
   }
 
   /**
@@ -331,78 +328,75 @@ public class ExecSQLRowTest {
   public void testExecSQLRow2() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the Exec SQL Row step...
-      //
-      String stepName = "delete from [" + execsqlrow_testtable + "]";
-      ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
-      execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      execsqlmeta.setCommitSize( 1 );
-      execsqlmeta.setSqlFieldName( "SQL" );
-
-      String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
-      StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
-      execSqlRowStep.setDescription( "Deletes information from table ["
-          + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( execSqlRowStep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( stepName, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the Exec SQL Row step...
+    //
+    String stepName = "delete from [" + execsqlrow_testtable + "]";
+    ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
+    execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    execsqlmeta.setCommitSize( 1 );
+    execsqlmeta.setSqlFieldName( "SQL" );
+
+    String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
+    StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
+    execSqlRowStep.setDescription( "Deletes information from table ["
+        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( execSqlRowStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( stepName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
   }
 
   /**
@@ -412,78 +406,75 @@ public class ExecSQLRowTest {
   public void testExecSQLRow3() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the Exec SQL Row step...
-      //
-      String stepName = "delete from [" + execsqlrow_testtable + "]";
-      ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
-      execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      execsqlmeta.setCommitSize( 2 );
-      execsqlmeta.setSqlFieldName( "SQL" );
-
-      String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
-      StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
-      execSqlRowStep.setDescription( "Deletes information from table ["
-          + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( execSqlRowStep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( stepName, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the Exec SQL Row step...
+    //
+    String stepName = "delete from [" + execsqlrow_testtable + "]";
+    ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
+    execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    execsqlmeta.setCommitSize( 2 );
+    execsqlmeta.setSqlFieldName( "SQL" );
+
+    String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
+    StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
+    execSqlRowStep.setDescription( "Deletes information from table ["
+        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( execSqlRowStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( stepName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
   }
 
   /**
@@ -494,78 +485,75 @@ public class ExecSQLRowTest {
   public void testExecSQLRow4() throws Exception {
     KettleEnvironment.init();
 
-    try {
-      //
-      // Create a new transformation...
-      //
-      TransMeta transMeta = new TransMeta();
-      transMeta.setName( "transname" );
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
 
-      // Add the database connections
-      for ( int i = 0; i < databasesXML.length; i++ ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-        transMeta.addDatabase( databaseMeta );
-      }
-
-      DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-      PluginRegistry registry = PluginRegistry.getInstance();
-
-      //
-      // create an injector step...
-      //
-      String injectorStepname = "injector step";
-      InjectorMeta im = new InjectorMeta();
-
-      // Set the information of the injector.
-
-      String injectorPid = registry.getPluginId( StepPluginType.class, im );
-      StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-      transMeta.addStep( injectorStep );
-
-      //
-      // create the Exec SQL Row step...
-      //
-      String stepName = "delete from [" + execsqlrow_testtable + "]";
-      ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
-      execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
-      execsqlmeta.setCommitSize( 3 );
-      execsqlmeta.setSqlFieldName( "SQL" );
-
-      String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
-      StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
-      execSqlRowStep.setDescription( "Deletes information from table ["
-          + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
-      transMeta.addStep( execSqlRowStep );
-
-      TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
-      transMeta.addTransHop( hi );
-
-      // Now execute the transformation...
-      Trans trans = new Trans( transMeta );
-
-      trans.prepareExecution( null );
-
-      StepInterface si = trans.getStepInterface( stepName, 0 );
-      RowStepCollector rc = new RowStepCollector();
-      si.addRowListener( rc );
-
-      RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
-      trans.startThreads();
-
-      // add rows
-      List<RowMetaAndData> inputList = createDataRows();
-      for ( RowMetaAndData rm : inputList ) {
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
-
-      trans.waitUntilFinished();
-
-      List<RowMetaAndData> resultRows = rc.getRowsWritten();
-      List<RowMetaAndData> goldRows = createResultDataRows();
-      checkRows( goldRows, resultRows );
-    } finally {
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
     }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the Exec SQL Row step...
+    //
+    String stepName = "delete from [" + execsqlrow_testtable + "]";
+    ExecSQLRowMeta execsqlmeta = new ExecSQLRowMeta();
+    execsqlmeta.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    execsqlmeta.setCommitSize( 3 );
+    execsqlmeta.setSqlFieldName( "SQL" );
+
+    String execSqlRowId = registry.getPluginId( StepPluginType.class, execsqlmeta );
+    StepMeta execSqlRowStep = new StepMeta( execSqlRowId, stepName, execsqlmeta );
+    execSqlRowStep.setDescription( "Deletes information from table ["
+        + execsqlrow_testtable + "] on database [" + dbInfo + "]" );
+    transMeta.addStep( execSqlRowStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, execSqlRowStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( stepName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
   }
 
 }

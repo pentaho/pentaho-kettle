@@ -274,25 +274,4 @@ public class UnivariateStats extends BaseStep implements StepInterface {
     }
     return false;
   }
-
-  /**
-   * Run is where the action happens!
-   */
-  public void run() {
-    logBasic( "Starting to run..." );
-    try {
-      while ( processRow( m_meta, m_data ) && !isStopped() ) {
-        // Repeat
-      }
-    } catch ( Exception e ) {
-      logError( "Unexpected error : " + e.toString() );
-      logError( Const.getStackTracker( e ) );
-      setErrors( 1 );
-      stopAll();
-    } finally {
-      dispose( m_meta, m_data );
-      logBasic( "Finished, processing " + getLinesRead() + " rows" );
-      markStop();
-    }
-  }
 }

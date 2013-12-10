@@ -441,9 +441,7 @@ public class TableCompare extends BaseStep implements StepInterface {
               if ( compare == 0 ) // The Key matches, we CAN compare the two rows...
               {
                 int compareValues = oneMeta.compare( one, two, valueNrs );
-                if ( compareValues == 0 ) {
-                  // All is OK!
-                } else {
+                if ( compareValues != 0 ) {
                   // Return the compare (most recent) row
                   //
                   if ( getStepMeta().isDoingErrorHandling() ) {

@@ -630,11 +630,10 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
             shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ),
             BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       }
-    } else {
-      // Local file open dialog, ask for .ktr & xml files...
-      //
-
     }
+
+    // else: Local file open dialog, ask for .ktr & xml files...
+
   }
 
   private void loadFileTrans( String fname ) throws KettleException {
@@ -971,6 +970,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
 
     } catch ( Throwable t ) {
+      // Ignore errors
     }
 
     for ( TreeItem item : wTree.getItems() ) {

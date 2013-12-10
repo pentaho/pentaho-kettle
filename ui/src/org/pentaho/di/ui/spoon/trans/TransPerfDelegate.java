@@ -205,6 +205,7 @@ public class TransPerfDelegate extends SpoonDelegate {
       try {
         Thread.sleep( 100L );
       } catch ( InterruptedException e ) {
+        // Ignore errors
       }
     }
 

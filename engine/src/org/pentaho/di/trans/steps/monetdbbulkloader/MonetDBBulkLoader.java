@@ -323,7 +323,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
                 }
               }
               break;
-            case ValueMetaInterface.TYPE_BOOLEAN: {
+            case ValueMetaInterface.TYPE_BOOLEAN:
               Boolean value = valueMeta.getBoolean( valueData );
               if ( value == null ) {
                 line.append( data.nullrepresentation );
@@ -334,29 +334,30 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
                   line.append( "N" );
                 }
               }
-            }
               break;
+
             case ValueMetaInterface.TYPE_NUMBER:
               if ( valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i] ) {
                 line.append( valueMeta.getString( valueData ) );
               } else {
-                Double value = valueMeta.getNumber( valueData );
-                if ( value == null ) {
+                Double dbl = valueMeta.getNumber( valueData );
+                if ( dbl == null ) {
                   line.append( data.nullrepresentation );
                 } else {
-                  line.append( Double.toString( value ) );
+                  line.append( Double.toString( dbl ) );
                 }
               }
               break;
+
             case ValueMetaInterface.TYPE_BIGNUMBER:
               if ( valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i] ) {
                 line.append( valueMeta.getString( valueData ) );
               } else {
-                String value = valueMeta.getString( valueData );
-                if ( value == null ) {
+                String string = valueMeta.getString( valueData );
+                if ( string == null ) {
                   line.append( data.nullrepresentation );
                 } else {
-                  line.append( value );
+                  line.append( string );
                 }
               }
               break;

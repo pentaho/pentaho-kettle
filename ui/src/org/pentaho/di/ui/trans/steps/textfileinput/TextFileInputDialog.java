@@ -1338,6 +1338,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wCompression.add( "Hadoop-snappy" );
       }
     } catch ( Exception ex ) {
+      // Ignore errors
     }
     wCompression.select( 0 );
     wCompression.addModifyListener( lsMod );
@@ -2825,6 +2826,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           }
           inputStream.close();
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
     } else {
@@ -3067,6 +3069,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           }
           f.close();
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
     }

@@ -1570,6 +1570,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
           accessDatabase.close();
         }
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
   }

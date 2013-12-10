@@ -240,6 +240,7 @@ public class SQLEditor {
         try {
           exec();
         } catch ( Exception ge ) {
+          // Ignore errors
         }
       }
     };

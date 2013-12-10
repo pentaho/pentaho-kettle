@@ -329,30 +329,31 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
   }
 
   private class TextFileSelector implements FileSelector {
-    String file_wildcard = null, source_folder = null;
+    String fileWildcard = null;
+    String sourceFolder = null;
 
     public TextFileSelector( String sourcefolderin, String filewildcard ) {
       if ( !Const.isEmpty( sourcefolderin ) ) {
-        source_folder = sourcefolderin;
+        sourceFolder = sourcefolderin;
       }
 
       if ( !Const.isEmpty( filewildcard ) ) {
-        file_wildcard = filewildcard;
+        fileWildcard = filewildcard;
       }
     }
 
     public boolean includeFile( FileSelectInfo info ) {
       boolean returncode = false;
       try {
-        if ( !info.getFile().toString().equals( source_folder ) ) {
+        if ( !info.getFile().toString().equals( sourceFolder ) ) {
           // Pass over the Base folder itself
           String short_filename = info.getFile().getName().getBaseName();
 
           if ( info.getFile().getParent().equals( info.getBaseFolder() )
               || ( !info.getFile().getParent().equals( info.getBaseFolder() ) && includeSubfolders ) ) {
-            if ( ( info.getFile().getType() == FileType.FILE && file_wildcard == null )
-                || ( info.getFile().getType() == FileType.FILE && file_wildcard != null && GetFileWildcard(
-                    short_filename, file_wildcard ) ) ) {
+            if ( ( info.getFile().getType() == FileType.FILE && fileWildcard == null )
+                || ( info.getFile().getType() == FileType.FILE && fileWildcard != null && GetFileWildcard(
+                    short_filename, fileWildcard ) ) ) {
               returncode = true;
             }
           }

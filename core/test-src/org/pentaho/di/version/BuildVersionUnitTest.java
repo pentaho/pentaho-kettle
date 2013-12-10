@@ -34,9 +34,6 @@ import java.util.jar.Manifest;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.version.BuildVersion;
-import org.pentaho.di.version.EnvironmentVariableGetter;
-import org.pentaho.di.version.ManifestGetter;
 
 public class BuildVersionUnitTest {
   private EnvironmentVariableGetter mockEnvironmentVariableGetter;

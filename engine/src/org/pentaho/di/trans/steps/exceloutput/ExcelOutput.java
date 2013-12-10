@@ -341,7 +341,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         }
       } else {
         switch ( vMeta.getType() ) {
-          case ValueMetaInterface.TYPE_DATE: {
+          case ValueMetaInterface.TYPE_DATE:
             if ( v != null && vMeta.getDate( v ) != null ) {
               if ( cellFormat == null ) {
                 if ( excelField != null && excelField.getFormat() != null ) {
@@ -372,11 +372,11 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             } else if ( !meta.isNullBlank() ) {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
-          }
             break;
+
           case ValueMetaInterface.TYPE_STRING:
           case ValueMetaInterface.TYPE_BOOLEAN:
-          case ValueMetaInterface.TYPE_BINARY: {
+          case ValueMetaInterface.TYPE_BINARY:
             if ( cellFormat == null ) {
               cellFormat = new WritableCellFormat( data.writableFont );
               if ( data.rowFontBackgoundColour != null ) {
@@ -390,11 +390,11 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             } else if ( !meta.isNullBlank() ) {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
-          }
             break;
+
           case ValueMetaInterface.TYPE_NUMBER:
           case ValueMetaInterface.TYPE_BIGNUMBER:
-          case ValueMetaInterface.TYPE_INTEGER: {
+          case ValueMetaInterface.TYPE_INTEGER:
             if ( v != null ) {
               if ( cellFormat == null ) {
                 String format;
@@ -422,8 +422,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             } else if ( !meta.isNullBlank() ) {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
-          }
             break;
+
           default:
             break;
         }
@@ -727,6 +727,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
     data.fieldsWidth = null;

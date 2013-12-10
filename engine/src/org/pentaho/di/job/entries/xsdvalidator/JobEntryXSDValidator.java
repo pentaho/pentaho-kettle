@@ -224,6 +224,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         }
 
       } catch ( IOException e ) {
+        // Ignore errors
       }
     }
 

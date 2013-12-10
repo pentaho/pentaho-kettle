@@ -51,26 +51,24 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
 
     // Add the fields...
     //
-    {
-      StepInjectionMetaEntry fieldsEntry =
-          new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
-      all.add( fieldsEntry );
+    StepInjectionMetaEntry fieldsEntry =
+        new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
+    all.add( fieldsEntry );
 
-      StepInjectionMetaEntry fieldEntry =
-          new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
-      fieldsEntry.getDetails().add( fieldEntry );
+    StepInjectionMetaEntry fieldEntry =
+        new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
+    fieldsEntry.getDetails().add( fieldEntry );
 
-      for ( Entry entry : Entry.values() ) {
-        if ( entry.getParent() == Entry.FIELD ) {
+    for ( Entry entry : Entry.values() ) {
+      if ( entry.getParent() == Entry.FIELD ) {
+        StepInjectionMetaEntry metaEntry =
+            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        fieldEntry.getDetails().add( metaEntry );
+      } else {
+        if ( entry.getParent() == null && entry != Entry.FIELDS && entry != Entry.FIELD ) {
           StepInjectionMetaEntry metaEntry =
               new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-          fieldEntry.getDetails().add( metaEntry );
-        } else {
-          if ( entry.getParent() == null && entry != Entry.FIELDS && entry != Entry.FIELD ) {
-            StepInjectionMetaEntry metaEntry =
-                new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-            all.add( metaEntry );
-          }
+          all.add( metaEntry );
         }
       }
     }

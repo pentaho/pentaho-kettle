@@ -1017,6 +1017,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
           targetFile.close();
           targetFile = null;
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
     }

@@ -240,11 +240,13 @@ public class SpoonPerspectiveManager {
             try {
               res = ResourceBundle.getBundle( overlay.getResourceBundleUri() );
             } catch ( MissingResourceException ignored ) {
+              // Ignore errors
             }
           } else {
             try {
               res = ResourceBundle.getBundle( overlay.getOverlayUri().replace( ".xul", ".properties" ) );
             } catch ( MissingResourceException ignored ) {
+              // Ignore errors
             }
           }
           if ( res == null ) {
@@ -355,6 +357,7 @@ public class SpoonPerspectiveManager {
         try {
           in.close();
         } catch ( IOException e1 ) {
+          // Ignore errors
         }
       }
 

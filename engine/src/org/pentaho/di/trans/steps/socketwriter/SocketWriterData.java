@@ -56,6 +56,7 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface 
         serverSocket.close();
       }
     } catch ( java.io.IOException e ) {
+      // Ignore errors
     } finally {
       super.finalize();
     }

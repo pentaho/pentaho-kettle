@@ -811,7 +811,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     try {
       loadJob();
     } catch ( Throwable t ) {
-
+      // Ignore errors
     }
 
     setFlags();

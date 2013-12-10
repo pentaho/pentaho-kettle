@@ -5245,7 +5245,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
               remarks.add( cr );
             }
           } catch ( KettleDatabaseException dbe ) {
-
+            // Ignore errors
           } finally {
             logdb.disconnect();
           }
@@ -6392,9 +6392,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           if ( referenceRow == null ) {
             referenceRow = row;
           } else if ( !stepMeta.getStepMetaInterface().excludeFromRowLayoutVerification() ) {
-            {
-              BaseStep.safeModeChecking( referenceRow, row );
-            }
+            BaseStep.safeModeChecking( referenceRow, row );
           }
         } catch ( KettleStepException e ) {
           // We ignore this one because we are in the process of designing the transformation, anything intermediate can

@@ -1561,6 +1561,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         ftpclient.quit();
         ftpclient = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
 
@@ -1570,6 +1571,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         sftpclient.disconnect();
         sftpclient = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
     // Close SSH connection if necessary
@@ -1579,6 +1581,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         conn = null;
 
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
   }

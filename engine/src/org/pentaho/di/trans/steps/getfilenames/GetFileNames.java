@@ -341,6 +341,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
 
     }

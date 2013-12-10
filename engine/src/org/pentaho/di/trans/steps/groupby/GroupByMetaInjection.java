@@ -159,7 +159,7 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
 
       String lookValue = (String) lookFields.getValue();
       switch ( fieldsEntry ) {
-        case GROUP_FIELDS: {
+        case GROUP_FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.GROUP_FIELD ) {
@@ -182,10 +182,9 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
               groupFields.add( groupFieldname );
             }
           }
-        }
           break;
 
-        case AGG_FIELDS: {
+        case AGG_FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.AGG_FIELD ) {
@@ -224,7 +223,6 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
               aggValues.add( aggValue );
             }
           }
-        }
           break;
 
         case PASS_ALL_ROWS:

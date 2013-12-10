@@ -296,8 +296,10 @@ public class SwingDirectGC implements GCInterface {
         }
       }
     } else {
-      while ( !gc.drawImage( img, locationX, locationY, observer ) ) {
-        // Wait
+      // Wait
+      boolean changed = true;
+      while ( changed ) {
+        changed = !gc.drawImage( img, locationX, locationY, observer );
       }
     }
 

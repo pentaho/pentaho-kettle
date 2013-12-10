@@ -312,16 +312,17 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
   }
 
   private class TextFileSelector implements FileSelector {
-    String file_wildcard = null, source_folder = null;
+    String fileWildcard = null;
+    String sourceFolder = null;
 
     public TextFileSelector( String sourcefolderin, String filewildcard ) {
 
       if ( !Const.isEmpty( sourcefolderin ) ) {
-        source_folder = sourcefolderin;
+        sourceFolder = sourcefolderin;
       }
 
       if ( !Const.isEmpty( filewildcard ) ) {
-        file_wildcard = filewildcard;
+        fileWildcard = filewildcard;
       }
     }
 
@@ -330,7 +331,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
       FileObject file_name = null;
       try {
 
-        if ( !info.getFile().toString().equals( source_folder ) ) {
+        if ( !info.getFile().toString().equals( sourceFolder ) ) {
           // Pass over the Base folder itself
 
           String short_filename = info.getFile().getName().getBaseName();
@@ -339,7 +340,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
             // Not in the Base Folder..Only if include sub folders
             if ( includeSubfolders
-                && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
+                && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( isDetailed() ) {
                 logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info
                     .getFile().toString() ) );
@@ -351,7 +352,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
           } else {
             // In the Base Folder...
 
-            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( isDetailed() ) {
                 logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info
                     .getFile().toString() ) );

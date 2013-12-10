@@ -87,6 +87,7 @@ public class SocketRepository {
           } catch ( IOException ioe ) {
             ioException = ioe;
           } catch ( Exception ex ) {
+            serverSocket.close();
             throw new IOException( ex.getMessage() );
           }
 
@@ -171,6 +172,7 @@ public class SocketRepository {
     try {
       closeAll();
     } catch ( Exception e ) {
+      // Ignore errors
     } finally {
       super.finalize();
     }

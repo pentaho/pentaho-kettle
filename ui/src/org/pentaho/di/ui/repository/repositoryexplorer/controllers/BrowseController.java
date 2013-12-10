@@ -317,9 +317,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
           folderTree.setSelectedItems( selectedFolder );
         } else if ( ( mainController != null && mainController.getCallback() != null )
             && ( o instanceof UIRepositoryContent ) ) {
-          if ( mainController.getCallback().open( (UIRepositoryContent) o, null ) ) {
-            // TODO: fire request to close dialog
-          }
+
+          mainController.getCallback().open( (UIRepositoryContent) o, null );
+          // TODO: fire request to close dialog
+
         }
       }
     }

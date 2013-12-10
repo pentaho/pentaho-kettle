@@ -550,6 +550,7 @@ public class JsonInput extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     data.resultList = null;

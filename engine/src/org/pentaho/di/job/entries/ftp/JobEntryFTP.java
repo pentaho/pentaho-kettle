@@ -1255,6 +1255,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           targetFile.close();
           targetFile = null;
         } catch ( Exception e ) {
+          // Ignore close errors
         }
       }
     }

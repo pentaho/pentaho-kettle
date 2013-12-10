@@ -828,6 +828,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         serverSocket.close();
       }
     } catch ( IOException e ) {
+      // Ignore errors
     } finally {
       super.finalize();
     }

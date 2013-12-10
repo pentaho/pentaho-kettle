@@ -91,12 +91,12 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
     int resultIndex = 0;
     for ( int i = 0; i < field.length; i++ ) {
       if ( field[i] == enclosure[0] ) {
-        if ( i + 1 < field.length && field[i + 1] == enclosure[0] ) {
+        if ( !( i + 1 < field.length && field[i + 1] == enclosure[0] ) ) {
+          // Not an escaped enclosure...
           // field[i]+field[i+1] is an escaped enclosure...
           // so we ignore this one
           // field[i+1] will be picked up on the next iteration.
-        } else {
-          // Not an escaped enclosure...
+
           result[resultIndex++] = field[i];
         }
       } else {

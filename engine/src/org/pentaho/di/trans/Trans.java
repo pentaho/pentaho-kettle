@@ -743,8 +743,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         } else if ( thisCopies == nextCopies && !repartitioning ) {
           dispatchType = TYPE_DISP_N_N;
           nrCopies = nextCopies;
-        } // > 1!
-        else {
+        } else {
+          // > 1!
           dispatchType = TYPE_DISP_N_M;
           nrCopies = nextCopies;
         } // Allocate a rowset for each destination step
@@ -1529,8 +1529,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public void waitUntilFinished() {
     try {
-      while ( transFinishedBlockingQueue.poll( 1, TimeUnit.DAYS ) == null ) {
-        // Wait
+      boolean wait = true;
+      while ( wait ) {
+        wait = transFinishedBlockingQueue.poll( 1, TimeUnit.DAYS ) == null;
       }
     } catch ( InterruptedException e ) {
       throw new RuntimeException( "Waiting for transformation to be finished interrupted!", e );
@@ -2173,10 +2174,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     } catch ( KettleException e ) {
       throw new KettleTransException( BaseMessages.getString(
           PKG, "Trans.Exception.ErrorCalculatingDateRange", logTable ), e );
-    } finally {
-      // Be careful, We DO NOT close the trans log table database connection!!!
-      // It's closed later in beginProcessing() to prevent excessive connect/disconnect repetitions.
     }
+
+    // Be careful, We DO NOT close the trans log table database connection!!!
+    // It's closed later in beginProcessing() to prevent excessive connect/disconnect repetitions.
 
   }
 
@@ -3869,6 +3870,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         try {
           Thread.sleep( sleepTimeSeconds * 2000 );
         } catch ( Exception e ) {
+          // Ignore errors
         } // Check all slaves every x seconds.
       }
     }
@@ -4634,6 +4636,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         try {
           Thread.sleep( sleepTimeSeconds * 1000 );
         } catch ( Exception e ) {
+          // Ignore errors
         } // Check all slaves every x seconds.
       }
     }

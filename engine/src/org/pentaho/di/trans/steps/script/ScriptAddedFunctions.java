@@ -291,6 +291,7 @@ public class ScriptAddedFunctions {
             scm.logDebug( strMessage );
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
         break;
       case 2:
@@ -316,6 +317,7 @@ public class ScriptAddedFunctions {
             }
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
         break;
       default:
@@ -1721,7 +1723,8 @@ public class ScriptAddedFunctions {
     try {
       inStream = new InputStreamReader( KettleVFS.getInputStream( fileName ) );
       actualContext.eval( inStream, eval_scope );
-    } /*
+    } catch ( KettleFileException Signal ) {
+      /*
        * //TODO AKRETION: see if we can find better catches compatibles with JSR223 catch (FileNotFoundException Signal)
        * { new RuntimeException("Unable to open file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")"); }
        * catch (WrappedException Signal) { new RuntimeException("WrappedException while evaluating file \"" + fileName +
@@ -1732,7 +1735,6 @@ public class ScriptAddedFunctions {
        * Signal.getMessage() + "\")"); } catch (IOException Signal) { new RuntimeException("Error while reading file \""
        * + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" ); }
        */
-    catch ( KettleFileException Signal ) {
       new RuntimeException( "Error while reading file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } catch ( ScriptException Signal ) {
       new RuntimeException( "Error while reading file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
@@ -1810,9 +1812,10 @@ public class ScriptAddedFunctions {
             throw new RuntimeException(
                 "The argument type of function call setVariable should either be \"s\", \"r\", \"p\", or \"g\"." );
           }
-        } else {
-          // Ignore for now... if we're executing via the Test Button
         }
+
+        // Else: Ignore for now... if we're executing via the Test Button
+
       } catch ( Exception e ) {
         throw new RuntimeException( e.toString() );
       }
@@ -1971,6 +1974,7 @@ public class ScriptAddedFunctions {
             try {
               fileObject.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2004,6 +2008,7 @@ public class ScriptAddedFunctions {
             try {
               fileObject.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2054,12 +2059,14 @@ public class ScriptAddedFunctions {
             try {
               fileSource.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
           if ( fileDestination != null ) {
             try {
               fileDestination.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2102,6 +2109,7 @@ public class ScriptAddedFunctions {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2144,6 +2152,7 @@ public class ScriptAddedFunctions {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2186,6 +2195,7 @@ public class ScriptAddedFunctions {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2226,6 +2236,7 @@ public class ScriptAddedFunctions {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2266,6 +2277,7 @@ public class ScriptAddedFunctions {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2306,6 +2318,7 @@ public class ScriptAddedFunctions {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2352,6 +2365,7 @@ public class ScriptAddedFunctions {
             try {
               file.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }
@@ -2482,12 +2496,14 @@ public class ScriptAddedFunctions {
             try {
               fileSource.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
           if ( fileDestination != null ) {
             try {
               fileDestination.close();
             } catch ( Exception e ) {
+              // Ignore errors
             }
           }
         }

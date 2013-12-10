@@ -127,55 +127,54 @@ public class RowGenerator extends BaseStep implements StepInterface {
               rowData[index] = valueMeta.convertData( stringMeta, stringValue );
             } catch ( KettleValueException e ) {
               switch ( valueMeta.getType() ) {
-                case ValueMetaInterface.TYPE_NUMBER: {
+                case ValueMetaInterface.TYPE_NUMBER:
                   String message =
                       BaseMessages.getString(
                           PKG, "RowGenerator.BuildRow.Error.Parsing.Number", valueMeta.getName(), stringValue, e
                               .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
-                }
                   break;
-                case ValueMetaInterface.TYPE_DATE: {
-                  String message =
+
+                case ValueMetaInterface.TYPE_DATE:
+                  message =
                       BaseMessages.getString(
                           PKG, "RowGenerator.BuildRow.Error.Parsing.Date", valueMeta.getName(), stringValue, e
                               .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
-                }
                   break;
-                case ValueMetaInterface.TYPE_INTEGER: {
-                  String message =
+
+                case ValueMetaInterface.TYPE_INTEGER:
+                  message =
                       BaseMessages.getString(
                           PKG, "RowGenerator.BuildRow.Error.Parsing.Integer", valueMeta.getName(), stringValue, e
                               .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
-                }
                   break;
-                case ValueMetaInterface.TYPE_BIGNUMBER: {
-                  String message =
+
+                case ValueMetaInterface.TYPE_BIGNUMBER:
+                  message =
                       BaseMessages.getString(
                           PKG, "RowGenerator.BuildRow.Error.Parsing.BigNumber", valueMeta.getName(), stringValue, e
                               .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
-                }
                   break;
-                case ValueMetaInterface.TYPE_TIMESTAMP: {
-                  String message =
+
+                case ValueMetaInterface.TYPE_TIMESTAMP:
+                  message =
                       BaseMessages.getString(
                           PKG, "RowGenerator.BuildRow.Error.Parsing.Timestamp", valueMeta.getName(), stringValue, e
                               .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
-                }
                   break;
+
                 default:
-                // Boolean and binary don't throw errors normally, so it's probably an unspecified error problem...
-                {
-                  String message =
+                  // Boolean and binary don't throw errors normally, so it's probably an unspecified error problem...
+                  message =
                       BaseMessages.getString(
                           PKG, "RowGenerator.CheckResult.SpecifyTypeError", valueMeta.getName(), stringValue );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
-                }
                   break;
+
               }
             }
           }

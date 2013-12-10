@@ -307,6 +307,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
           try {
             SQLfile.close();
           } catch ( Exception e ) {
+            // Ignore errors
           }
         }
       }

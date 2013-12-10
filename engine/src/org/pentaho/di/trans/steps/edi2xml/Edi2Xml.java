@@ -158,6 +158,7 @@ public class Edi2Xml extends BaseStep implements StepInterface {
         try {
           errorline = inputValue.split( "\\r?\\n" )[e.line - 1];
         } catch ( Exception ee ) {
+          // Ignore pattern syntax errors
         }
 
         logError( "Problem line: " + errorline );
@@ -181,6 +182,7 @@ public class Edi2Xml extends BaseStep implements StepInterface {
         try {
           errorline = inputValue.split( "\\r?\\n" )[e.line - 1];
         } catch ( Exception ee ) {
+          // Ignore pattern syntax errors
         }
 
         logError( "Problem line: " + errorline );

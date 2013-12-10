@@ -51,41 +51,37 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
 
     // Add the fields...
     //
-    {
-      StepInjectionMetaEntry fieldsEntry =
-          new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
-      all.add( fieldsEntry );
+    StepInjectionMetaEntry fieldsEntry =
+        new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
+    all.add( fieldsEntry );
 
-      StepInjectionMetaEntry fieldEntry =
-          new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
-      fieldsEntry.getDetails().add( fieldEntry );
+    StepInjectionMetaEntry fieldEntry =
+        new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
+    fieldsEntry.getDetails().add( fieldEntry );
 
-      for ( Entry entry : Entry.values() ) {
-        if ( entry.getParent() == Entry.FIELD ) {
-          StepInjectionMetaEntry metaEntry =
-              new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-          fieldEntry.getDetails().add( metaEntry );
-        }
+    for ( Entry entry : Entry.values() ) {
+      if ( entry.getParent() == Entry.FIELD ) {
+        StepInjectionMetaEntry metaEntry =
+            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        fieldEntry.getDetails().add( metaEntry );
       }
     }
 
     // And the sheets
     //
-    {
-      StepInjectionMetaEntry sheetsEntry =
-          new StepInjectionMetaEntry( Entry.SHEETS.name(), Entry.SHEETS.getValueType(), Entry.SHEETS.getDescription() );
-      all.add( sheetsEntry );
+    StepInjectionMetaEntry sheetsEntry =
+        new StepInjectionMetaEntry( Entry.SHEETS.name(), Entry.SHEETS.getValueType(), Entry.SHEETS.getDescription() );
+    all.add( sheetsEntry );
 
-      StepInjectionMetaEntry sheetEntry =
-          new StepInjectionMetaEntry( Entry.SHEET.name(), Entry.SHEET.getValueType(), Entry.SHEET.getDescription() );
-      sheetsEntry.getDetails().add( sheetEntry );
+    StepInjectionMetaEntry sheetEntry =
+        new StepInjectionMetaEntry( Entry.SHEET.name(), Entry.SHEET.getValueType(), Entry.SHEET.getDescription() );
+    sheetsEntry.getDetails().add( sheetEntry );
 
-      for ( Entry entry : Entry.values() ) {
-        if ( entry.getParent() == Entry.SHEET ) {
-          StepInjectionMetaEntry metaEntry =
-              new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-          sheetEntry.getDetails().add( metaEntry );
-        }
+    for ( Entry entry : Entry.values() ) {
+      if ( entry.getParent() == Entry.SHEET ) {
+        StepInjectionMetaEntry metaEntry =
+            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        sheetEntry.getDetails().add( metaEntry );
       }
     }
 
@@ -93,24 +89,22 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
     //
     // The file name lines
     //
-    {
-      StepInjectionMetaEntry filesEntry =
-          new StepInjectionMetaEntry(
-              Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINES.description );
-      all.add( filesEntry );
-      StepInjectionMetaEntry fileEntry =
-          new StepInjectionMetaEntry(
-              Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINE.description );
-      filesEntry.getDetails().add( fileEntry );
+    StepInjectionMetaEntry filesEntry =
+        new StepInjectionMetaEntry(
+            Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINES.description );
+    all.add( filesEntry );
+    StepInjectionMetaEntry fileEntry =
+        new StepInjectionMetaEntry(
+            Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINE.description );
+    filesEntry.getDetails().add( fileEntry );
 
-      Entry[] fieldsEntries =
-          new Entry[] {
-              Entry.FILENAME, Entry.FILEMASK, Entry.EXCLUDE_FILEMASK, Entry.FILE_REQUIRED, Entry.INCLUDE_SUBFOLDERS, };
-      for ( Entry entry : fieldsEntries ) {
-        StepInjectionMetaEntry metaEntry =
-            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-        fileEntry.getDetails().add( metaEntry );
-      }
+    Entry[] fieldsEntries =
+        new Entry[] {
+            Entry.FILENAME, Entry.FILEMASK, Entry.EXCLUDE_FILEMASK, Entry.FILE_REQUIRED, Entry.INCLUDE_SUBFOLDERS, };
+    for ( Entry entry : fieldsEntries ) {
+      StepInjectionMetaEntry metaEntry =
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+      fileEntry.getDetails().add( metaEntry );
     }
 
     return all;

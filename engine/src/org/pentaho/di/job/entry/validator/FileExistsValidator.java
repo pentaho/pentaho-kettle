@@ -68,6 +68,7 @@ public class FileExistsValidator extends AbstractFileValidator {
       try {
         fileObject.close(); // Just being paranoid
       } catch ( IOException ignored ) {
+        // Ignore close errors
       }
     } catch ( Exception e ) {
       JobEntryValidatorUtils.addExceptionRemark( source, propertyName, VALIDATOR_NAME, remarks, e );

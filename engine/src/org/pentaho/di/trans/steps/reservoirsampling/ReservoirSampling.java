@@ -193,8 +193,11 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
   public void run() {
     logBasic( "Starting to run..." );
     try {
-      while ( processRow( m_meta, m_data ) && !isStopped() ) {
-        // Wait
+      // Wait
+      while ( processRow( m_meta, m_data ) ) {
+        if ( isStopped() ) {
+          break;
+        }
       }
     } catch ( Exception e ) {
       logError( "Unexpected error : " + e.toString() );

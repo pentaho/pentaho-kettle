@@ -811,7 +811,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     try {
       loadTrans();
     } catch ( Throwable t ) {
-
+      // Ignore errors
     }
 
     setFlags();

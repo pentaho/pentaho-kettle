@@ -389,6 +389,7 @@ public class UnivariateStatsDialog extends BaseStepDialog implements StepDialogI
             percentile /= 100;
           }
         } catch ( Exception ex ) {
+          // Ignore errors
         }
       }
       boolean interpolate = item.getText( 9 ).equalsIgnoreCase( "True" );

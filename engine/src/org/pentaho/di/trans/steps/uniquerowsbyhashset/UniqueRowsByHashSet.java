@@ -101,7 +101,7 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
       incrementLinesRejected();
       if ( data.sendDuplicateRows ) {
         // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == ""
+        putError( getInputRowMeta(), r, 1, data.realErrorDescription, Const.isEmpty( data.compareFields )
             ? null : data.compareFields, "UNRH001" );
       }
     }

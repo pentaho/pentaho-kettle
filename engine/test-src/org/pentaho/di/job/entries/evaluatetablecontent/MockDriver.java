@@ -1,6 +1,9 @@
 package org.pentaho.di.job.entries.evaluatetablecontent;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -43,7 +46,7 @@ public class MockDriver implements Driver {
 
       public Boolean answer( org.mockito.invocation.InvocationOnMock invocation ) throws Throwable {
         return count++ == 0;
-      };
+      }
     } );
 
     when( md.getColumnCount() ).thenReturn( 1 );

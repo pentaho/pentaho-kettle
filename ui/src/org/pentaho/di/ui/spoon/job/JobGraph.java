@@ -478,7 +478,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
           switch ( container.getType() ) {
             case DragAndDropContainer.TYPE_BASE_JOB_ENTRY: // Create a new Job Entry on the canvas
-            {
               JobEntryCopy jge = spoon.newJobEntry( jobMeta, entry, false );
               if ( jge != null ) {
                 PropsUI.setLocation( jge, p.x, p.y );
@@ -493,11 +492,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                           .getString( PKG, "JobGraph.HelpToolTip.CreatingHops.Message" ) );
                 }
               }
-            }
               break;
+
             case DragAndDropContainer.TYPE_JOB_ENTRY: // Drag existing one onto the canvas
-            {
-              JobEntryCopy jge = jobMeta.findJobEntry( entry, 0, true );
+              jge = jobMeta.findJobEntry( entry, 0, true );
               if ( jge != null ) {
                 // Create duplicate of existing entry
 
@@ -551,8 +549,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               } else {
                 log.logError( "Unknown job entry dropped onto the canvas." );
               }
-            }
               break;
+
             default:
               break;
           }
@@ -618,9 +616,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     } else {
       // Check if point lies on one of the many hop-lines...
       JobHopMeta online = findJobHop( real.x, real.y );
-      if ( online != null ) {
-        // editJobHop(online);
-      } else {
+      if ( online == null ) {
         NotePadMeta ni = jobMeta.getNote( real.x, real.y );
         if ( ni != null ) {
           editNote( ni );
@@ -902,9 +898,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                   jobMeta.removeJobHop( idx );
                   spoon.refreshTree();
 
-                } else {
-                  // Silently discard this hop-split attempt.
                 }
+                // else: Silently discard this hop-split attempt.
               }
             }
             split_hop = false;

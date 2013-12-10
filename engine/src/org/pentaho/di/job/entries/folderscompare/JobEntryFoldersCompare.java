@@ -457,9 +457,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
                 }
               }
 
-            } else {
-              // File type unknown !!
             }
+            // else: File type unknown !!
           }
 
         } else {
@@ -499,6 +498,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
           filefolder2 = null;
         }
       } catch ( IOException e ) {
+        // Ignore errors
       }
     }
 

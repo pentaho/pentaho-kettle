@@ -217,8 +217,6 @@ public class FormulaEvaluator {
             new FormulaMessage( FormulaMessage.TYPE_ERROR, contextLookup.getParsePosition(), name, "Unknown field name" );
         messages.put( formulaMessage.toString(), formulaMessage );
       }
-    } else {
-      // report.append("lvalue instance : ").append(lvalue.getClass().getName()).append('\n');
     }
   }
 

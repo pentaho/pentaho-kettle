@@ -151,7 +151,7 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
 
         String lookValue = (String) lookFields.getValue();
         switch ( fieldsEntry ) {
-          case FIELDS: {
+          case FIELDS:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -213,7 +213,6 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
                 }
               }
             }
-          }
             break;
 
           case FIELD_TO_SPLIT:

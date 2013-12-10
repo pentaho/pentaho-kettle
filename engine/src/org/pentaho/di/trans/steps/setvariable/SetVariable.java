@@ -170,7 +170,7 @@ public class SetVariable extends BaseStep implements StepInterface {
         }
 
         break;
-      case SetVariableMeta.VARIABLE_TYPE_ROOT_JOB: {
+      case SetVariableMeta.VARIABLE_TYPE_ROOT_JOB:
         // Comments by SB
         // VariableSpace rootJob = null;
         parentJob = trans.getParentJob();
@@ -186,9 +186,9 @@ public class SetVariable extends BaseStep implements StepInterface {
         // KettleStepException("Can't set variable ["+varname+"] on root job: the root job is not available (meaning: not even the parent job)");
         // }
         // Comment: why throw an exception on this?
-      }
         break;
-      case SetVariableMeta.VARIABLE_TYPE_GRAND_PARENT_JOB: {
+
+      case SetVariableMeta.VARIABLE_TYPE_GRAND_PARENT_JOB:
         // Set the variable in the parent job
         //
         parentJob = trans.getParentJob();
@@ -208,10 +208,9 @@ public class SetVariable extends BaseStep implements StepInterface {
           throw new KettleStepException( "Can't set variable ["
               + varname + "] on grand parent job: the grand parent job is not available" );
         }
-
-      }
         break;
-      case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB: {
+
+      case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB:
         // Set the variable in the parent job
         //
         parentJob = trans.getParentJob();
@@ -221,8 +220,8 @@ public class SetVariable extends BaseStep implements StepInterface {
           throw new KettleStepException( "Can't set variable ["
               + varname + "] on parent job: the parent job is not available" );
         }
-      }
         break;
+
       default:
         break;
     }

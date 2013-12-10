@@ -135,6 +135,7 @@ public class XsdValidator extends BaseStep implements StepInterface {
                   xsdfile.close();
                 }
               } catch ( IOException e ) {
+                // Ignore errors
               }
             }
           }
@@ -245,8 +246,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
           if ( xsdfile != null ) {
             xsdfile.close();
           }
-
         } catch ( IOException e ) {
+          // Ignore errors
         }
       }
 

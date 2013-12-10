@@ -99,7 +99,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
     line.setLength( 0 );
     try {
       switch ( formatNr ) {
-        case TextFileInputMeta.FILE_FORMAT_DOS: {
+        case TextFileInputMeta.FILE_FORMAT_DOS:
           while ( c >= 0 ) {
             c = reader.read();
 
@@ -117,9 +117,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
               line.append( (char) c );
             }
           }
-        }
           break;
-        case TextFileInputMeta.FILE_FORMAT_UNIX: {
+        case TextFileInputMeta.FILE_FORMAT_UNIX:
           while ( c >= 0 ) {
             c = reader.read();
 
@@ -130,12 +129,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
               line.append( (char) c );
             }
           }
-        }
           break;
         case TextFileInputMeta.FILE_FORMAT_MIXED:
-        // in mixed mode we suppose the LF is the last char and CR is ignored
-        // not for MAC OS 9 but works for Mac OS X. Mac OS 9 can use UNIX-Format
-        {
+          // in mixed mode we suppose the LF is the last char and CR is ignored
+          // not for MAC OS 9 but works for Mac OS X. Mac OS 9 can use UNIX-Format
           while ( c >= 0 ) {
             c = reader.read();
 
@@ -147,7 +144,6 @@ public class TextFileInput extends BaseStep implements StepInterface {
               }
             }
           }
-        }
           break;
         default:
           break;

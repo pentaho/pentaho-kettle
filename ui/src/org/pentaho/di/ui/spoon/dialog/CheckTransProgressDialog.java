@@ -120,6 +120,7 @@ public class CheckTransProgressDialog {
             try {
               transMeta.cancelQueries();
             } catch ( Exception e ) {
+              // Ignore cancel errors
             }
           }
         }

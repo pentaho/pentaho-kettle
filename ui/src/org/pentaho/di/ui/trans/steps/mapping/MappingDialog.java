@@ -991,7 +991,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     try {
       loadTransformation();
     } catch ( Throwable t ) {
-
+      // Ignore errors
     }
 
     setFlags();

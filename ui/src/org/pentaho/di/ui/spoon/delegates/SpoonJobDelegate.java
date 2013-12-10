@@ -992,8 +992,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     // NEW
     //
       case TransAction.TYPE_ACTION_NEW_JOB_ENTRY:
-      // re-delete the entry at correct location:
-      {
+        // re-delete the entry at correct location:
         JobEntryCopy[] si = (JobEntryCopy[]) transAction.getCurrent();
         int[] idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
@@ -1001,72 +1000,61 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_NEW_NOTE:
-      // re-insert the note at correct location:
-      {
+        // re-insert the note at correct location:
         NotePadMeta[] ni = (NotePadMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.addNote( idx[i], ni[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_NEW_JOB_HOP:
-      // re-insert the hop at correct location:
-      {
+        // re-insert the hop at correct location:
         JobHopMeta[] hi = (JobHopMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.addJobHop( idx[i], hi[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
       // DELETE
       //
       case TransAction.TYPE_ACTION_DELETE_JOB_ENTRY:
-      // re-remove the entry at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // re-remove the entry at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobEntry( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_DELETE_NOTE:
-      // re-remove the note at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // re-remove the note at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeNote( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_DELETE_JOB_HOP:
-      // re-remove the hop at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // re-remove the hop at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobHop( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1075,23 +1063,20 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // We changed a step : undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
-      // replace with "current" version.
-      {
+        // replace with "current" version.
         for ( int i = 0; i < transAction.getCurrent().length; i++ ) {
           JobEntryCopy copy = (JobEntryCopy) ( (JobEntryCopy) ( transAction.getCurrent()[i] ) ).clone_deep();
           jobMeta.getJobEntry( transAction.getCurrentIndex()[i] ).replaceMeta( copy );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a note : undo this...
       case TransAction.TYPE_ACTION_CHANGE_NOTE:
-      // Delete & re-insert
-      {
-        NotePadMeta[] ni = (NotePadMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        // Delete & re-insert
+        ni = (NotePadMeta[]) transAction.getCurrent();
+        idx = transAction.getCurrentIndex();
 
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeNote( idx[i] );
@@ -1099,15 +1084,13 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a hop : undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_HOP:
-      // Delete & re-insert
-      {
-        JobHopMeta[] hi = (JobHopMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        // Delete & re-insert
+        hi = (JobHopMeta[]) transAction.getCurrent();
+        idx = transAction.getCurrentIndex();
 
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeJobHop( idx[i] );
@@ -1115,33 +1098,32 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
       // CHANGE POSITION
       //
-      case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY: {
+      case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY:
         // Find the location of the step:
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         Point[] p = transAction.getCurrentLocation();
         for ( int i = 0; i < p.length; i++ ) {
           JobEntryCopy entry = jobMeta.getJobEntry( idx[i] );
           entry.setLocation( p[i] );
         }
         spoon.refreshGraph();
-      }
         break;
-      case TransAction.TYPE_ACTION_POSITION_NOTE: {
-        int[] idx = transAction.getCurrentIndex();
+
+      case TransAction.TYPE_ACTION_POSITION_NOTE:
+        idx = transAction.getCurrentIndex();
         Point[] curr = transAction.getCurrentLocation();
         for ( int i = 0; i < idx.length; i++ ) {
           NotePadMeta npi = jobMeta.getNote( idx[i] );
           npi.setLocation( curr[i] );
         }
         spoon.refreshGraph();
-      }
         break;
+
       default:
         break;
     }
@@ -1151,41 +1133,35 @@ public class SpoonJobDelegate extends SpoonDelegate {
     switch ( transAction.getType() ) {
     // We created a new entry : undo this...
       case TransAction.TYPE_ACTION_NEW_JOB_ENTRY:
-      // Delete the entry at correct location:
-      {
+        // Delete the entry at correct location:
         int[] idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobEntry( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We created a new note : undo this...
       case TransAction.TYPE_ACTION_NEW_NOTE:
-      // Delete the note at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // Delete the note at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeNote( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We created a new hop : undo this...
       case TransAction.TYPE_ACTION_NEW_JOB_HOP:
-      // Delete the hop at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // Delete the hop at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobHop( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1194,44 +1170,38 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // We delete an entry : undo this...
       case TransAction.TYPE_ACTION_DELETE_STEP:
-      // un-Delete the entry at correct location: re-insert
-      {
+        // un-Delete the entry at correct location: re-insert
         JobEntryCopy[] ce = (JobEntryCopy[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < ce.length; i++ ) {
           jobMeta.addJobEntry( idx[i], ce[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We delete new note : undo this...
       case TransAction.TYPE_ACTION_DELETE_NOTE:
-      // re-insert the note at correct location:
-      {
+        // re-insert the note at correct location:
         NotePadMeta[] ni = (NotePadMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.addNote( idx[i], ni[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We deleted a new hop : undo this...
       case TransAction.TYPE_ACTION_DELETE_JOB_HOP:
-      // re-insert the hop at correct location:
-      {
+        // re-insert the hop at correct location:
         JobHopMeta[] hi = (JobHopMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < hi.length; i++ ) {
           jobMeta.addJobHop( idx[i], hi[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1240,8 +1210,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // We changed a job entry: undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
-      // Delete the current job entry, insert previous version.
-      {
+        // Delete the current job entry, insert previous version.
         for ( int i = 0; i < transAction.getPrevious().length; i++ ) {
           JobEntryCopy copy = (JobEntryCopy) ( (JobEntryCopy) transAction.getPrevious()[i] ).clone();
           jobMeta.getJobEntry( transAction.getCurrentIndex()[i] ).replaceMeta( copy );
@@ -1249,37 +1218,32 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a note : undo this...
       case TransAction.TYPE_ACTION_CHANGE_NOTE:
-      // Delete & re-insert
-      {
+        // Delete & re-insert
         NotePadMeta[] prev = (NotePadMeta[]) transAction.getPrevious();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeNote( idx[i] );
           jobMeta.addNote( idx[i], prev[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a hop : undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_HOP:
-      // Delete & re-insert
-      {
-        JobHopMeta[] prev = (JobHopMeta[]) transAction.getPrevious();
-        int[] idx = transAction.getCurrentIndex();
+        // Delete & re-insert
+        JobHopMeta[] prevHops = (JobHopMeta[]) transAction.getPrevious();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeJobHop( idx[i] );
-          jobMeta.addJobHop( idx[i], prev[i] );
+          jobMeta.addJobHop( idx[i], prevHops[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1288,28 +1252,27 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // The position of a step has changed: undo this...
       case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY:
-      // Find the location of the step:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // Find the location of the step:
+        idx = transAction.getCurrentIndex();
         Point[] p = transAction.getPreviousLocation();
         for ( int i = 0; i < p.length; i++ ) {
           JobEntryCopy entry = jobMeta.getJobEntry( idx[i] );
           entry.setLocation( p[i] );
         }
         spoon.refreshGraph();
-      }
         break;
 
       // The position of a note has changed: undo this...
       case TransAction.TYPE_ACTION_POSITION_NOTE:
-        int[] idx = transAction.getCurrentIndex();
-        Point[] prev = transAction.getPreviousLocation();
+        idx = transAction.getCurrentIndex();
+        Point[] prevLoc = transAction.getPreviousLocation();
         for ( int i = 0; i < idx.length; i++ ) {
           NotePadMeta npi = jobMeta.getNote( idx[i] );
-          npi.setLocation( prev[i] );
+          npi.setLocation( prevLoc[i] );
         }
         spoon.refreshGraph();
         break;
+
       default:
         break;
     }
@@ -1372,11 +1335,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
       //
       if ( executionConfiguration.isExecutingLocally() ) {
         jobGraph.startJob( executionConfiguration );
-      }
-
-      // Are we executing remotely?
-      //
-      else if ( executionConfiguration.isExecutingRemotely() ) {
+      } else if ( executionConfiguration.isExecutingRemotely() ) {
+        // Executing remotely
+        //
 
         // Activate the parameters, turn them into variables...
         // jobMeta.hasChanged()

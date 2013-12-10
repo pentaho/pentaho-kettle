@@ -132,7 +132,7 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
       Entry fieldsEntry = Entry.findEntry( lookFields.getKey() );
       if ( fieldsEntry != null ) {
         switch ( fieldsEntry ) {
-          case PARAMETERS: {
+          case PARAMETERS:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -173,8 +173,8 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
                 }
               }
             }
-          }
             break;
+
           case INPUT_FILE_FIELD:
             meta.setInputFileField( (String) lookFields.getValue() );
             break;

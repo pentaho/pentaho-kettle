@@ -328,6 +328,7 @@ public class ZipFile extends BaseStep implements StepInterface {
       URI uri = new URI( filename );
       return new File( uri );
     } catch ( URISyntaxException ex ) {
+      // Ignore errors
     }
     return new File( filename );
   }
@@ -477,6 +478,7 @@ public class ZipFile extends BaseStep implements StepInterface {
       try {
         data.sourceFile.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
 
     }
@@ -485,6 +487,7 @@ public class ZipFile extends BaseStep implements StepInterface {
       try {
         data.zipFile.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
 
     }

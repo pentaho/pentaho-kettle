@@ -218,6 +218,7 @@ public class TransPreviewProgressDialog {
       try {
         Thread.sleep( 500 );
       } catch ( InterruptedException e ) {
+        // Ignore errors
       }
 
       if ( progressMonitor.isCanceled() ) {

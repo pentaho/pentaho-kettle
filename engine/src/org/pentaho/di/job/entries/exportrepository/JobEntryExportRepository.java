@@ -647,6 +647,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
           this.file.close();
           this.file = null;
         } catch ( Exception e ) {
+          // Ignore close errors
         }
       }
     }

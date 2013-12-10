@@ -212,43 +212,44 @@ public class SerializationHelper {
           }
           // System.out.println("Setting " + field.getName() + "(" + field.getType().getSimpleName() + ") = " + value +
           // " on: " + object.getClass().getName());
-          if ( field.getType().isPrimitive() && "".equals( value ) ) {
+          if ( !( field.getType().isPrimitive() && "".equals( value ) ) ) {
             // skip setting of primitives if we see null
-          } else if ( "".equals( value ) ) {
-            field.set( object, value );
-          } else if ( field.getType().isPrimitive() ) {
-            // special primitive handling
-            if ( double.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Double.parseDouble( value.toString() ) );
-            } else if ( float.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Float.parseFloat( value.toString() ) );
-            } else if ( long.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Long.parseLong( value.toString() ) );
-            } else if ( int.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Integer.parseInt( value.toString() ) );
-            } else if ( byte.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, value.toString().getBytes() );
-            } else if ( boolean.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, "true".equalsIgnoreCase( value.toString() ) );
+            if ( "".equals( value ) ) {
+              field.set( object, value );
+            } else if ( field.getType().isPrimitive() ) {
+              // special primitive handling
+              if ( double.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Double.parseDouble( value.toString() ) );
+              } else if ( float.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Float.parseFloat( value.toString() ) );
+              } else if ( long.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Long.parseLong( value.toString() ) );
+              } else if ( int.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Integer.parseInt( value.toString() ) );
+              } else if ( byte.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, value.toString().getBytes() );
+              } else if ( boolean.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, "true".equalsIgnoreCase( value.toString() ) );
+              }
+            } else if ( String.class.isAssignableFrom( field.getType() )
+                || Number.class.isAssignableFrom( field.getType() ) ) {
+              Constructor<?> constructor = field.getType().getConstructor( String.class );
+              Object instance = constructor.newInstance( value );
+              field.set( object, instance );
+            } else {
+              // we don't know what we're handling, but we'll give it a shot
+              Node fieldNode = XMLHandler.getSubNode( node, field.getName() );
+              if ( fieldNode == null ) {
+                // doesn't exist (this is possible if fields were empty/null when persisted)
+                continue;
+              }
+              // get the Java classname for the array elements
+              String fieldClassName = XMLHandler.getTagAttribute( fieldNode, "class" );
+              Class<?> clazz = Class.forName( fieldClassName );
+              Object instance = clazz.newInstance();
+              field.set( object, instance );
+              read( instance, fieldNode );
             }
-          } else if ( String.class.isAssignableFrom( field.getType() )
-              || Number.class.isAssignableFrom( field.getType() ) ) {
-            Constructor<?> constructor = field.getType().getConstructor( String.class );
-            Object instance = constructor.newInstance( value );
-            field.set( object, instance );
-          } else {
-            // we don't know what we're handling, but we'll give it a shot
-            Node fieldNode = XMLHandler.getSubNode( node, field.getName() );
-            if ( fieldNode == null ) {
-              // doesn't exist (this is possible if fields were empty/null when persisted)
-              continue;
-            }
-            // get the Java classname for the array elements
-            String fieldClassName = XMLHandler.getTagAttribute( fieldNode, "class" );
-            Class<?> clazz = Class.forName( fieldClassName );
-            Object instance = clazz.newInstance();
-            field.set( object, instance );
-            read( instance, fieldNode );
           }
         } catch ( Throwable t ) {
           // TODO: log this

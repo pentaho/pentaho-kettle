@@ -110,9 +110,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           } else if ( entry.getObject() instanceof SpoonBrowser ) {
             spoon.closeSpoonBrowser();
             spoon.refreshTree();
-          }
-
-          else if ( entry.getObject() instanceof Composite ) {
+          } else if ( entry.getObject() instanceof Composite ) {
             Composite comp = (Composite) entry.getObject();
             if ( comp != null && !comp.isDisposed() ) {
               comp.dispose();

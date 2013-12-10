@@ -254,7 +254,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
         // OK, where do we set this value...
         switch ( type ) {
-          case VARIABLE_TYPE_JVM: {
+          case VARIABLE_TYPE_JVM:
             System.setProperty( varname, value );
             setVariable( varname, value );
             Job parentJobTraverse = parentJob;
@@ -262,9 +262,9 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
               parentJobTraverse.setVariable( varname, value );
               parentJobTraverse = parentJobTraverse.getParentJob();
             }
-          }
             break;
-          case VARIABLE_TYPE_ROOT_JOB: {
+
+          case VARIABLE_TYPE_ROOT_JOB:
             // set variable in this job entry
             setVariable( varname, value );
             Job rootJob = parentJob;
@@ -272,9 +272,9 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
               rootJob.setVariable( varname, value );
               rootJob = rootJob.getParentJob();
             }
-          }
             break;
-          case VARIABLE_TYPE_CURRENT_JOB: {
+
+          case VARIABLE_TYPE_CURRENT_JOB:
             setVariable( varname, value );
             if ( parentJob != null ) {
               parentJob.setVariable( varname, value );
@@ -282,9 +282,9 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
               throw new KettleJobException( BaseMessages.getString(
                   PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
             }
-          }
             break;
-          case VARIABLE_TYPE_PARENT_JOB: {
+
+          case VARIABLE_TYPE_PARENT_JOB:
             setVariable( varname, value );
 
             if ( parentJob != null ) {
@@ -300,8 +300,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
               throw new KettleJobException( BaseMessages.getString(
                   PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
             }
-          }
             break;
+
           default:
             break;
         }

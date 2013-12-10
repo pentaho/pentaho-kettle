@@ -22,19 +22,21 @@
 
 package org.pentaho.di.trans.steps.rules;
 
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
-
-import static org.junit.Assert.*;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class RulesExecutorDataTest {
 
@@ -52,8 +54,8 @@ public class RulesExecutorDataTest {
 
     Rules.Column fc1 = new Rules.Column();
     fc1.setName( "c1" );
-    List fetchedColumns = new ArrayList( Arrays.asList( fc1 ) );
-    List fetchedColumnsSpy = spy( fetchedColumns );
+    List<Rules.Column> fetchedColumns = new ArrayList<Rules.Column>( Arrays.asList( fc1 ) );
+    List<Rules.Column> fetchedColumnsSpy = spy( fetchedColumns );
 
     StatefulKnowledgeSession session = mock( StatefulKnowledgeSession.class );
     doReturn( session ).when( data ).initNewKnowledgeSession();

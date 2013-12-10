@@ -968,6 +968,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       try {
         inputStream.close();
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
   }
