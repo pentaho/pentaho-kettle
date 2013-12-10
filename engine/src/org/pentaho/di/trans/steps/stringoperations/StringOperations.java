@@ -195,7 +195,8 @@ public class StringOperations extends BaseStep implements StepInterface {
         String value = getInputRowMeta().getString( row, data.inStreamNrs[i] );
         // Apply String operations and return result value
         value =
-            processString( value, data.trimOperators[i], data.lowerUpperOperators[i], data.padType[i], data.padChar[i],
+            processString(
+                value, data.trimOperators[i], data.lowerUpperOperators[i], data.padType[i], data.padChar[i],
                 data.padLen[i], data.initCap[i], data.maskHTML[i], data.digits[i], data.removeSpecialCharacters[i] );
         if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
           // Update field
@@ -232,15 +233,15 @@ public class StringOperations extends BaseStep implements StepInterface {
       data.inStreamNrs = new int[data.nrFieldsInStream];
       for ( int i = 0; i < meta.getFieldInStream().length; i++ ) {
         data.inStreamNrs[i] = getInputRowMeta().indexOfValue( meta.getFieldInStream()[i] );
-        if ( data.inStreamNrs[i] < 0 ) // couldn't find field!
-        {
+        if ( data.inStreamNrs[i] < 0 ) { // couldn't find field!
+
           throw new KettleStepException( BaseMessages.getString( PKG, "StringOperations.Exception.FieldRequired", meta
               .getFieldInStream()[i] ) );
         }
         // check field type
         if ( !getInputRowMeta().getValueMeta( data.inStreamNrs[i] ).isString() ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "StringOperations.Exception.FieldTypeNotString",
-              meta.getFieldInStream()[i] ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "StringOperations.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
         }
       }
 

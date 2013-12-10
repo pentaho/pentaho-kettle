@@ -127,11 +127,13 @@ public class MergeRows extends BaseStep implements StepInterface {
     if ( data.outputRowMeta == null ) {
       data.outputRowMeta = new RowMeta();
       if ( data.one != null ) {
-        meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.oneRowSet.getRowMeta() },
-            null, this, repository, metaStore );
+        meta.getFields(
+            data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.oneRowSet.getRowMeta() }, null, this,
+            repository, metaStore );
       } else {
-        meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.twoRowSet.getRowMeta() },
-            null, this, repository, metaStore );
+        meta.getFields(
+            data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.twoRowSet.getRowMeta() }, null, this,
+            repository, metaStore );
       }
     }
 
@@ -139,8 +141,8 @@ public class MergeRows extends BaseStep implements StepInterface {
     int outputIndex;
     String flagField = null;
 
-    if ( data.one == null && data.two != null ) // Record 2 is flagged as new!
-    {
+    if ( data.one == null && data.two != null ) { // Record 2 is flagged as new!
+
       outputRow = data.two;
       outputIndex = data.twoRowSet.getRowMeta().size();
       flagField = VALUE_NEW;
@@ -155,11 +157,11 @@ public class MergeRows extends BaseStep implements StepInterface {
 
       // Also get a next row from reference rowset...
       data.one = getRowFrom( data.oneRowSet );
-    } else // OK, Here is the real start of the compare code!
-    {
+    } else { // OK, Here is the real start of the compare code!
+
       int compare = data.oneRowSet.getRowMeta().compare( data.one, data.two, data.keyNrs );
-      if ( compare == 0 ) // The Key matches, we CAN compare the two rows...
-      {
+      if ( compare == 0 ) { // The Key matches, we CAN compare the two rows...
+
         int compareValues = data.oneRowSet.getRowMeta().compare( data.one, data.two, data.valueNrs );
         if ( compareValues == 0 ) {
           outputRow = data.one;
@@ -177,8 +179,8 @@ public class MergeRows extends BaseStep implements StepInterface {
         data.one = getRowFrom( data.oneRowSet );
         data.two = getRowFrom( data.twoRowSet );
       } else {
-        if ( compare < 0 ) // one < two
-        {
+        if ( compare < 0 ) { // one < two
+
           outputRow = data.one;
           outputIndex = data.oneRowSet.getRowMeta().size();
           flagField = VALUE_DELETED;

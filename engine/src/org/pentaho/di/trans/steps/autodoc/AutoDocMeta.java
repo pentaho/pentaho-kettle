@@ -55,7 +55,8 @@ import org.w3c.dom.Node;
  * @author matt
  * @version 4
  */
-@Step( id = "AutoDoc", name = "AutoDoc.Step.Name", description = "AutoDoc.Step.Description",
+@Step(
+    id = "AutoDoc", name = "AutoDoc.Step.Name", description = "AutoDoc.Step.Description",
     i18nPackageName = "org.pentaho.di.autodoc", image = "org/pentaho/di/autodoc/autodoc.png",
     categoryDescription = "Autodoc.Category.PDI-EE" )
 public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, AutoDocOptionsInterface {
@@ -284,26 +285,26 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.NotReceivingFields" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "AutoDocMeta.CheckResult.NotReceivingFields" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "AutoDocMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepinfo );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.StepRecevingData2" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "AutoDocMeta.CheckResult.StepRecevingData2" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "AutoDocMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepinfo );
       remarks.add( cr );
     }
   }

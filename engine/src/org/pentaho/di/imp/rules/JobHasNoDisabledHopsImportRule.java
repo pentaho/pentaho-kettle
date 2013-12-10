@@ -57,14 +57,14 @@ public class JobHasNoDisabledHopsImportRule extends BaseImportRule implements Im
     for ( int i = 0; i < jobMeta.nrJobHops(); i++ ) {
       JobHopMeta hop = jobMeta.getJobHop( i );
       if ( !hop.isEnabled() ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-            "There is a disabled hop in the job." ) );
+        feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "There is a disabled hop in the job." ) );
       }
     }
 
     if ( feedback.isEmpty() ) {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-          "All hops are enabled in this job." ) );
+      feedback.add( new ImportValidationFeedback(
+          this, ImportValidationResultType.APPROVAL, "All hops are enabled in this job." ) );
     }
 
     return feedback;

@@ -147,8 +147,8 @@ public class TextFileOutputTest {
     contents.add( TEST_PREVIOUS_DATA + END_LINE );
     contents.add( TEST_PREVIOUS_DATA );
     contents.add( TEST_PREVIOUS_DATA );
-    contents.add( END_LINE  );
-    contents.add( TEST_PREVIOUS_DATA + END_LINE  );
+    contents.add( END_LINE );
+    contents.add( TEST_PREVIOUS_DATA + END_LINE );
     contents.add( RESULT_ROWS );
     contents.add( TEST_PREVIOUS_DATA + RESULT_ROWS );
     contents.add( RESULT_ROWS + END_LINE );
@@ -163,8 +163,8 @@ public class TextFileOutputTest {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-        new StepMockHelper<TextFileOutputMeta, TextFileOutputData>( "TEXT FILE OUTPUT TEST", TextFileOutputMeta.class,
-            TextFileOutputData.class );
+        new StepMockHelper<TextFileOutputMeta, TextFileOutputData>(
+            "TEXT FILE OUTPUT TEST", TextFileOutputMeta.class, TextFileOutputData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString() );
@@ -226,7 +226,8 @@ public class TextFileOutputTest {
                 contentFile = createTemplateFile( content );
                 assertTrue( FileUtils.contentEquals( resultFile, contentFile ) );
               } catch ( Exception e ) {
-                Assert.fail( e.getMessage() + "\n FileExists = " + fileExists + "\n DataReceived = " + dataReceived
+                Assert.fail( e.getMessage()
+                    + "\n FileExists = " + fileExists + "\n DataReceived = " + dataReceived
                     + "\n isDoNotOpenNewFileInit = " + isDoNotOpenNewFileInit + "\n EndLineExists = " + endLineExists
                     + "\n Append = " + append + "\n Content = " + content + "\n resultFile = " + resultFile );
               }
@@ -280,8 +281,8 @@ public class TextFileOutputTest {
     throws KettleException {
     TextFileOutputData textFileOutputData = new TextFileOutputData();
     TextFileOutput textFileOutput =
-        new TextFileOutputTestHandler( stepMockHelper.stepMeta, textFileOutputData, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
+        new TextFileOutputTestHandler(
+            stepMockHelper.stepMeta, textFileOutputData, 0, stepMockHelper.transMeta, stepMockHelper.trans );
 
     // init step meta and process step meta should be the same in this case
     when( stepMockHelper.processRowsStepMetaInterface.isDoNotOpenNewFileInit() ).thenReturn( isDoNotOpenNewFileInit );
@@ -290,8 +291,8 @@ public class TextFileOutputTest {
     when( stepMockHelper.processRowsStepMetaInterface.isHeaderEnabled() ).thenReturn( isHeaderEnabled );
     when( stepMockHelper.processRowsStepMetaInterface.getFileName() ).thenReturn( pathToFile );
     when(
-        stepMockHelper.processRowsStepMetaInterface.buildFilename( anyString(), anyString(),
-            ( (VariableSpace) anyObject() ), anyInt(), anyString(), anyInt(), anyBoolean(),
+        stepMockHelper.processRowsStepMetaInterface.buildFilename(
+            anyString(), anyString(), ( (VariableSpace) anyObject() ), anyInt(), anyString(), anyInt(), anyBoolean(),
             (TextFileOutputMeta) anyObject() ) ).thenReturn( pathToFile );
 
     when( stepMockHelper.processRowsStepMetaInterface.getOutputFields() ).thenReturn( textFileField );

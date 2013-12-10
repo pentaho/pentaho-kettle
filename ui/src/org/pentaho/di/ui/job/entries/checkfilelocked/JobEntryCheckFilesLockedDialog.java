@@ -70,8 +70,8 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
   private static Class<?> PKG = JobEntryCheckFilesLocked.class; // for i18n purposes, needed by Translator2!!
                                                                 // $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "JobCheckFilesLocked.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+      PKG, "JobCheckFilesLocked.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -332,8 +332,8 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
     fdlFilemask.right = new FormAttachment( middle, -margin );
     wlFilemask.setLayoutData( fdlFilemask );
     wFilemask =
-        new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobCheckFilesLocked.Wildcard.Tooltip" ) );
+        new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobCheckFilesLocked.Wildcard.Tooltip" ) );
     props.setLook( wFilemask );
     wFilemask.addModifyListener( lsMod );
     fdFilemask = new FormData();
@@ -376,10 +376,12 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Argument.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Argument.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Wildcard.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobCheckFilesLocked.Fields.Column" ) );

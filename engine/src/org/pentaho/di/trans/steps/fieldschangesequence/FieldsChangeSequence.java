@@ -60,8 +60,8 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
     data = (FieldsChangeSequenceData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -124,8 +124,8 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
       }
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.ReadRow" ) + getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) );
+        logRowlevel( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.ReadRow" )
+            + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
       }
 
       // reserve room and add value!
@@ -136,8 +136,8 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
       data.seq += data.incrementBy;
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.WriteRow" ) + getLinesWritten() + " : "
-            + getInputRowMeta().getString( r ) );
+        logRowlevel( BaseMessages.getString( PKG, "FieldsChangeSequence.Log.WriteRow" )
+            + getLinesWritten() + " : " + getInputRowMeta().getString( r ) );
       }
 
       if ( checkFeedback( getLinesRead() ) ) {

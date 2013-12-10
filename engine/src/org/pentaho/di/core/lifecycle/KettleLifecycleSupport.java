@@ -104,8 +104,8 @@ public class KettleLifecycleSupport {
         // Not a severe error so let's simply log it and continue invoking the others
         LogChannel.GENERAL.logError( message, ex );
       } catch ( Throwable t ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "LifecycleSupport.ErrorInvokingKettleLifecycleListener", listener ), t );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "LifecycleSupport.ErrorInvokingKettleLifecycleListener", listener ), t );
       }
     }
   }
@@ -116,8 +116,8 @@ public class KettleLifecycleSupport {
         listener.onEnvironmentShutdown();
       } catch ( Throwable t ) {
         // Log the error and continue invoking other listeners
-        LogChannel.GENERAL.logError( BaseMessages.getString( PKG,
-            "LifecycleSupport.ErrorInvokingKettleLifecycleListener", listener ), t );
+        LogChannel.GENERAL.logError( BaseMessages.getString(
+            PKG, "LifecycleSupport.ErrorInvokingKettleLifecycleListener", listener ), t );
       }
     }
   }

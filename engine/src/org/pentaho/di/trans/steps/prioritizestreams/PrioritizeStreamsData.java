@@ -34,9 +34,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class PrioritizeStreamsData extends BaseStepData implements StepDataInterface {
 
-  /**
-	 * 
-	 */
   public RowSet[] rowSets;
   public int stepnrs;
   public int stepnr;

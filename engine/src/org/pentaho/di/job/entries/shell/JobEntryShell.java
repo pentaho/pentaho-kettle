@@ -232,8 +232,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "add_time", addTime );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logfile", logfile );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logext", logext );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel == null ? LogLevel.NOTHING.getCode()
-          : logFileLevel.getCode() );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel == null
+          ? LogLevel.NOTHING.getCode() : logFileLevel.getCode() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "insertScript", insertScript );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "script", script );
 
@@ -377,11 +377,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
       List<RowMetaAndData> cmdRows = null;
 
-      if ( execPerRow ) // Execute for each input row
-      {
-        if ( argFromPrevious ) // Copy the input row to the (command
-        // line) arguments
-        {
+      if ( execPerRow ) {
+        // Execute for each input row
+
+        if ( argFromPrevious ) {
+          // Copy the input row to the (command line) arguments
+
           if ( resultRow != null ) {
             args = new String[resultRow.size()];
             for ( int i = 0; i < resultRow.size(); i++ ) {
@@ -489,15 +490,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           cmdline.append( '"' );
           cmdline.append( Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) ) );
           // Add the arguments from previous results...
-          for ( int i = 0; i < cmdRows.size(); i++ ) // Normally just
-          // one row, but
-          // once in a
-          // while to
-          // remain
-          // compatible we
-          // have
-          // multiple.
-          {
+          for ( int i = 0; i < cmdRows.size(); i++ ) {
+            // Normally just one row, but once in a while to remain compatible we have multiple.
+
             RowMetaAndData r = cmdRows.get( i );
             for ( int j = 0; j < r.size(); j++ ) {
               cmdline.append( ' ' );
@@ -508,15 +503,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           cmds.add( cmdline.toString() );
         } else {
           // Add the arguments from previous results...
-          for ( int i = 0; i < cmdRows.size(); i++ ) // Normally just
-          // one row, but
-          // once in a
-          // while to
-          // remain
-          // compatible we
-          // have
-          // multiple.
-          {
+          for ( int i = 0; i < cmdRows.size(); i++ ) {
+            // Normally just one row, but once in a while to remain compatible we have multiple.
+
             RowMetaAndData r = cmdRows.get( i );
             for ( int j = 0; j < r.size(); j++ ) {
               cmds.add( Const.optionallyQuoteStringByOS( r.getString( j, null ) ) );
@@ -611,7 +600,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         result.setNrErrors( 1 );
       }
 
-      //wait until loggers read all data from stdout and stderr
+      // wait until loggers read all data from stdout and stderr
       errorLoggerThread.join();
       outputLoggerThread.join();
 

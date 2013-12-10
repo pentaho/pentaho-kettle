@@ -69,8 +69,8 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
     }
 
     if ( databaseMeta == null ) {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-          "This rule contains no database to validate against." ) );
+      feedback.add( new ImportValidationFeedback(
+          this, ImportValidationResultType.ERROR, "This rule contains no database to validate against." ) );
       return feedback;
     }
 
@@ -95,8 +95,9 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
     //
     if ( !Const.isEmpty( databaseMeta.getDatabaseName() ) ) {
       if ( !databaseMeta.getDatabaseName().equals( verify.getDatabaseName() ) ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-            "The name of the database is not set to the expected value '" + databaseMeta.getDatabaseName() + "'." ) );
+        feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "The name of the database is not set to the expected value '"
+                + databaseMeta.getDatabaseName() + "'." ) );
       }
     }
 
@@ -104,8 +105,9 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
     //
     if ( !Const.isEmpty( databaseMeta.getHostname() ) ) {
       if ( !databaseMeta.getHostname().equals( verify.getHostname() ) ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-            "The host name of the database is not set to the expected value '" + databaseMeta.getHostname() + "'." ) );
+        feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "The host name of the database is not set to the expected value '"
+                + databaseMeta.getHostname() + "'." ) );
       }
     }
 
@@ -113,7 +115,8 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
     //
     if ( !Const.isEmpty( databaseMeta.getDatabasePortNumberString() ) ) {
       if ( !databaseMeta.getDatabasePortNumberString().equals( verify.getDatabasePortNumberString() ) ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
+        feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR,
             "The database port of the database is not set to the expected value '"
                 + databaseMeta.getDatabasePortNumberString() + "'." ) );
       }
@@ -123,8 +126,9 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
     //
     if ( !Const.isEmpty( databaseMeta.getUsername() ) ) {
       if ( !databaseMeta.getUsername().equals( verify.getUsername() ) ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-            "The username of the database is not set to the expected value '" + databaseMeta.getUsername() + "'." ) );
+        feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "The username of the database is not set to the expected value '"
+                + databaseMeta.getUsername() + "'." ) );
       }
     }
 
@@ -132,14 +136,14 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
     //
     if ( !Const.isEmpty( databaseMeta.getPassword() ) ) {
       if ( !databaseMeta.getPassword().equals( verify.getPassword() ) ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-            "The password of the database is not set to the expected value." ) );
+        feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "The password of the database is not set to the expected value." ) );
       }
     }
 
     if ( feedback.isEmpty() ) {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-          "The database connection was found and verified." ) );
+      feedback.add( new ImportValidationFeedback(
+          this, ImportValidationResultType.APPROVAL, "The database connection was found and verified." ) );
     }
 
     return feedback;

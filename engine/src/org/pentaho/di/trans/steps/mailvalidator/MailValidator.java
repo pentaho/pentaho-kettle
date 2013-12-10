@@ -58,8 +58,8 @@ public class MailValidator extends BaseStep implements StepInterface {
     data = (MailValidatorData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -135,7 +135,7 @@ public class MailValidator extends BaseStep implements StepInterface {
         data.realdefaultSMTPServer = environmentSubstitute( meta.getDefaultSMTP() );
       }
 
-    }// End If first
+    } // End If first
 
     boolean sendToErrorRow = false;
     String errorMessage = null;
@@ -158,8 +158,8 @@ public class MailValidator extends BaseStep implements StepInterface {
 
         // Check if address is valid
         MailValidationResult result =
-            MailValidation.isAddressValid( log, emailaddress, data.realemailSender, data.realdefaultSMTPServer,
-                data.timeout, meta.isSMTPCheck() );
+            MailValidation.isAddressValid(
+                log, emailaddress, data.realemailSender, data.realdefaultSMTPServer, data.timeout, meta.isSMTPCheck() );
         // return result
         mailvalid = result.isValide();
         mailerror = result.getErrorMessage();
@@ -187,8 +187,8 @@ public class MailValidator extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "MailValidator.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "MailValidator.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

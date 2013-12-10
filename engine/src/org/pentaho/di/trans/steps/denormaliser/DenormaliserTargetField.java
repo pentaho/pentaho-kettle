@@ -61,7 +61,7 @@ public class DenormaliserTargetField {
 
   public static final String[] typeAggrLongDesc =
       {
-        "-", BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Sum" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Average" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Min" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Max" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.CountAll" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.ConcatComma" ) //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+          "-", BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Sum" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Average" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Min" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Max" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.CountAll" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.ConcatComma" ) //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
       };
 
   /**

@@ -49,8 +49,8 @@ public class FileInputList {
   private static LogChannelInterface log = new LogChannel( "FileInputList" );
 
   public enum FileTypeFilter {
-    FILES_AND_FOLDERS( "all_files", FileType.FILE, FileType.FOLDER ), ONLY_FILES( "only_files", FileType.FILE ), ONLY_FOLDERS(
-        "only_folders", FileType.FOLDER );
+    FILES_AND_FOLDERS( "all_files", FileType.FILE, FileType.FOLDER ), ONLY_FILES( "only_files", FileType.FILE ),
+    ONLY_FOLDERS( "only_folders", FileType.FOLDER );
 
     private String name;
     private final Collection<FileType> allowedFileTypes;
@@ -443,7 +443,7 @@ public class FileInputList {
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
       String[] fileRequired ) {
     boolean[] includeSubdirs = includeSubdirsFalse( fileName.length );
-    return createFilePathList( space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs,
-        null );
+    return createFilePathList(
+        space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null );
   }
 }

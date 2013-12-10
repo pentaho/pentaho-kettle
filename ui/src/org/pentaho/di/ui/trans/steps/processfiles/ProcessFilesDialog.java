@@ -471,8 +471,9 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
           }
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "ProcessFilesDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

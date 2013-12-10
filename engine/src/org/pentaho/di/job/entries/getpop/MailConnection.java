@@ -196,8 +196,8 @@ public class MailConnection {
         this.prop.setProperty( "mail.pop3s.rsetbeforequit", "true" );
         this.prop.setProperty( "mail.pop3.rsetbeforequit", "true" );
       } else if ( protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
-        this.prop.setProperty( "mstor.mbox.metadataStrategy", "none" );// mstor.mbox.metadataStrategy={none|xml|yaml}
-        this.prop.setProperty( "mstor.cache.disabled", "true" );// prevent diskstore fail
+        this.prop.setProperty( "mstor.mbox.metadataStrategy", "none" ); // mstor.mbox.metadataStrategy={none|xml|yaml}
+        this.prop.setProperty( "mstor.cache.disabled", "true" ); // prevent diskstore fail
       }
 
       String protocolString =
@@ -215,13 +215,13 @@ public class MailConnection {
         this.session.setDebug( log.isDebug() );
         if ( this.port == -1 ) {
           this.port =
-              ( ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? MailConnectionMeta.DEFAULT_SSL_POP3_PORT
-                  : MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
+              ( ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
+                  ? MailConnectionMeta.DEFAULT_SSL_POP3_PORT : MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
         }
         URLName url = new URLName( protocolString, server, port, "", username, password );
         this.store =
-            ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? new POP3SSLStore( this.session, url )
-                : new IMAPSSLStore( this.session, url );
+            ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
+                ? new POP3SSLStore( this.session, url ) : new IMAPSSLStore( this.session, url );
         url = null;
       } else {
         this.session = Session.getInstance( this.prop, null );
@@ -314,8 +314,8 @@ public class MailConnection {
             + this.port ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.Connecting", this.server,
-          this.username, Const.NVL( "" + this.port, "" ) ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobGetMailsFromPOP.Error.Connecting", this.server, this.username, Const.NVL( "" + this.port, "" ) ), e );
     }
   }
 
@@ -392,7 +392,8 @@ public class MailConnection {
       }
       if ( this.write ) {
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName() ) );
+          log
+              .logDebug( BaseMessages.getString( PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName() ) );
         }
         this.folder.open( Folder.READ_WRITE );
       } else {
@@ -410,16 +411,16 @@ public class MailConnection {
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName() ) );
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder
             .getFullName() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName()
-            .toString() ) );
+        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder
+            .getURLName().toString() ) );
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", ""
             + this.folder.isSubscribed() ) );
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( defaultFolder ? BaseMessages.getString( PKG,
-          "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages.getString( PKG,
-          "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
+      throw new KettleException( defaultFolder ? BaseMessages.getString(
+          PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages.getString(
+          PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
     }
   }
 
@@ -1087,8 +1088,8 @@ public class MailConnection {
       deleteMessages( false );
       setMovedMessagesCounter();
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.MovingMessages",
-          this.destinationIMAPFolder.getName() ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "MailConnection.Error.MovingMessages", this.destinationIMAPFolder.getName() ), e );
     }
   }
 

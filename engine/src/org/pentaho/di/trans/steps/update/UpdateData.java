@@ -56,9 +56,6 @@ public class UpdateData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface lookupReturnRowMeta;
   public RowMetaInterface updateParameterRowMeta;
 
-  /**
-	 * 
-	 */
   public UpdateData() {
     super();
 

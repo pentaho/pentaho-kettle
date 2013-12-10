@@ -96,8 +96,8 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
     // Handle the first row
     if ( first ) {
       first = false;
-      if ( r == null ) // no input to be expected...
-      {
+      if ( r == null ) { // no input to be expected...
+
         setOutputDone();
         return false;
       }
@@ -125,7 +125,8 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
         List<Object[]> samples = m_data.getSample();
 
         int numRows = ( samples != null ) ? samples.size() : 0;
-        logBasic( this.getStepname() + " Actual/Sample: " + numRows + "/" + m_data.m_k + " Seed:"
+        logBasic( this.getStepname()
+            + " Actual/Sample: " + numRows + "/" + m_data.m_k + " Seed:"
             + getTransMeta().environmentSubstitute( m_meta.m_randomSeed ) );
         if ( samples != null ) {
           for ( int i = 0; i < samples.size(); i++ ) {

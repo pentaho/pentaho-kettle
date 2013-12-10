@@ -66,8 +66,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class SQLStatementsDialog extends Dialog {
   private static Class<?> PKG = SQLStatementsDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "SQL Statements Dialog",
-      LoggingObjectType.SPOON, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "SQL Statements Dialog", LoggingObjectType.SPOON, null );
 
   private List<SQLStatement> stats;
 
@@ -120,20 +120,23 @@ public class SQLStatementsDialog extends Dialog {
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.Stepname" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
+            true );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.Connection" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-    colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.SQL" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.Connection" ), ColumnInfo.COLUMN_TYPE_TEXT,
             false, true );
+    colinf[2] =
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.SQL" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.Error" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SQLStatementDialog.TableCol.Error" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
+            true );
 
     wFields = new TableView( variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, true, // read-only
-        null, props );
+    null, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -275,12 +278,13 @@ public class SQLStatementsDialog extends Dialog {
       SQLStatement stat = stats.get( idx[i] );
       DatabaseMeta di = stat.getDatabase();
       if ( i > 0 ) {
-        sql.append( "-------------------------------------------------------------------------------------------" )
+        sql
+            .append( "-------------------------------------------------------------------------------------------" )
             .append( Const.CR );
       }
       sql.append( BaseMessages.getString( PKG, "SQLStatementDialog.Log.Step", stat.getStepname() ) );
-      sql.append( BaseMessages.getString( PKG, "SQLStatementDialog.Log.Connection", ( di != null ? di.getName()
-          : BaseMessages.getString( PKG, "SQLStatementDialog.Log.Undefined" ) ) ) );
+      sql.append( BaseMessages.getString( PKG, "SQLStatementDialog.Log.Connection", ( di != null
+          ? di.getName() : BaseMessages.getString( PKG, "SQLStatementDialog.Log.Undefined" ) ) ) );
       if ( stat.hasSQL() ) {
         sql.append( "-- SQL                  : " );
         sql.append( stat.getSQL() ).append( Const.CR );

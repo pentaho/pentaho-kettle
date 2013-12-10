@@ -90,8 +90,8 @@ public class ImportRulePluginType extends BasePluginType implements PluginTypeIn
       }
 
     } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle steps XML config file: " + kettleImportRulesXmlFile,
-          e );
+      throw new KettlePluginException(
+          "Unable to read the kettle steps XML config file: " + kettleImportRulesXmlFile, e );
     }
   }
 

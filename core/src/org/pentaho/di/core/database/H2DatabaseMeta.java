@@ -267,10 +267,11 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 
   @Override
   public String[] getReservedWords() {
-    return new String[] { "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS", "DISTINCT", "EXCEPT", "EXISTS",
-      "FROM", "FOR", "FALSE", "FULL", "GROUP", "HAVING", "INNER", "INTERSECT", "IS", "JOIN", "LIKE", "MINUS",
-      "NATURAL", "NOT", "NULL", "ON", "ORDER", "PRIMARY", "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP",
-      "TODAY", "TRUE", "UNION", "WHERE", };
+    return new String[] {
+        "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS", "DISTINCT", "EXCEPT", "EXISTS", "FROM", "FOR",
+        "FALSE", "FULL", "GROUP", "HAVING", "INNER", "INTERSECT", "IS", "JOIN", "LIKE", "MINUS", "NATURAL", "NOT",
+        "NULL", "ON", "ORDER", "PRIMARY", "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY", "TRUE",
+        "UNION", "WHERE", };
   }
 
   @Override

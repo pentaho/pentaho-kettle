@@ -82,8 +82,8 @@ public class RepositoryExportProgressDialog {
 
           exporter.exportAllObjects( new ProgressMonitorAdapter( monitor ), filename, dir, "all" );
         } catch ( KettleException e ) {
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "RepositoryExportDialog.Error.CreateUpdate", Const.getStackTracker( e ) ) );
+          throw new InvocationTargetException( e, BaseMessages.getString(
+              PKG, "RepositoryExportDialog.Error.CreateUpdate", Const.getStackTracker( e ) ) );
         }
       }
     };

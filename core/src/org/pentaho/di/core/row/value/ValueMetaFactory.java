@@ -69,7 +69,7 @@ public class ValueMetaFactory {
     ValueMetaInterface target = null;
 
     // If we're Cloneable and not changing types, call clone()
-    if ( source instanceof Cloneable && source.getType() == targetType ) {
+    if ( source.getType() == targetType ) {
       target = source.clone();
     } else {
       target = createValueMeta( source.getName(), targetType, source.getLength(), source.getPrecision() );

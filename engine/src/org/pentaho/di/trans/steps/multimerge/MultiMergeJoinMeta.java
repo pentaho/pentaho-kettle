@@ -169,7 +169,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
       for ( int i = 0; i < nInputStreams; i++ ) {
         getStepIOMeta().addStream(
-            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
+            new Stream(
+                StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
                 StreamIcon.INFO, null ) );
       }
 
@@ -182,8 +183,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
       joinType = XMLHandler.getTagValue( stepnode, "join_type" );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "MultiMergeJoinMeta.Exception.UnableToLoadStepInfo" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "MultiMergeJoinMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -206,7 +207,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
       long nInputStreams = rep.getStepAttributeInteger( id_step, "number_imput" );
       for ( int i = 0; i < nInputStreams; i++ ) {
         getStepIOMeta().addStream(
-            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
+            new Stream(
+                StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
                 StreamIcon.INFO, null ) );
       }
       List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
@@ -217,8 +219,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
       joinType = rep.getStepAttributeString( id_step, "join_type" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MultiMergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "MultiMergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -257,8 +259,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
      * 2) Number of input streams must be two (for now at least) 3) The field names of input streams must be unique
      */
     CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-            "MultiMergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+            PKG, "MultiMergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
     remarks.add( cr );
   }
 

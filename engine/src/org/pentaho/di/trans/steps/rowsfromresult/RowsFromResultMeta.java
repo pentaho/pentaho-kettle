@@ -190,8 +190,8 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         precision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "RowsFromResultMeta.Exception.ErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "RowsFromResultMeta.Exception.ErrorReadingStepInfoFromRepository" ), e );
     }
 
   }
@@ -206,8 +206,8 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", precision[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "RowsFromResultMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "RowsFromResultMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -227,13 +227,13 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RowsFromResultMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "RowsFromResultMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RowsFromResultMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "RowsFromResultMeta.CheckResult.NoInputReceivedError" ), stepMeta );
       remarks.add( cr );
     }
   }

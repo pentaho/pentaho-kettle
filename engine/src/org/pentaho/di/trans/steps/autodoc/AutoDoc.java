@@ -144,8 +144,8 @@ public class AutoDoc extends BaseStep implements StepInterface {
       String filenameField = environmentSubstitute( meta.getFilenameField() );
       data.fileNameFieldIndex = getInputRowMeta().indexOfValue( filenameField );
       if ( data.fileNameFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AutoDoc.Exception.FilenameFieldNotFound",
-            filenameField ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "AutoDoc.Exception.FilenameFieldNotFound", filenameField ) );
       }
 
       // Get the file type field index...
@@ -153,8 +153,8 @@ public class AutoDoc extends BaseStep implements StepInterface {
       String fileTypeField = environmentSubstitute( meta.getFileTypeField() );
       data.fileTypeFieldIndex = getInputRowMeta().indexOfValue( fileTypeField );
       if ( data.fileTypeFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AutoDoc.Exception.FileTypeFieldNotFound",
-            fileTypeField ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "AutoDoc.Exception.FileTypeFieldNotFound", fileTypeField ) );
       }
 
       data.repository = getTrans().getRepository();
@@ -206,16 +206,16 @@ public class AutoDoc extends BaseStep implements StepInterface {
 
       RepositoryDirectoryInterface directory = data.tree.findDirectory( directoryName );
       if ( directory == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AutoDoc.Exception.RepositoryDirectoryNotFound",
-            directoryName ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "AutoDoc.Exception.RepositoryDirectoryNotFound", directoryName ) );
       }
 
       location = new ReportSubjectLocation( null, directory, objectName, objectType );
     }
 
     if ( location == null ) {
-      throw new KettleException( BaseMessages.getString( PKG, "AutoDoc.Exception.UnableToDetermineLocation", fileName,
-          fileType ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "AutoDoc.Exception.UnableToDetermineLocation", fileName, fileType ) );
     }
 
     if ( meta.getOutputType() != OutputType.METADATA ) {

@@ -61,8 +61,8 @@ public class FileLocked extends BaseStep implements StepInterface {
     data = (FileLockedData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -88,13 +88,13 @@ public class FileLocked extends BaseStep implements StepInterface {
         data.indexOfFileename = data.previousRowMeta.indexOfValue( meta.getDynamicFilenameField() );
         if ( data.indexOfFileename < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "FileLocked.Exception.CouldnotFindField" ) + "["
-              + meta.getDynamicFilenameField() + "]" );
+          logError( BaseMessages.getString( PKG, "FileLocked.Exception.CouldnotFindField" )
+              + "[" + meta.getDynamicFilenameField() + "]" );
           throw new KettleException( BaseMessages.getString( PKG, "FileLocked.Exception.CouldnotFindField", meta
               .getDynamicFilenameField() ) );
         }
       }
-    }// End If first
+    } // End If first
 
     try {
       // get filename
@@ -124,8 +124,8 @@ public class FileLocked extends BaseStep implements StepInterface {
                                                                                                   // rowset(s);
 
       if ( isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "FileLocked.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "FileLocked.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       boolean sendToErrorRow = false;

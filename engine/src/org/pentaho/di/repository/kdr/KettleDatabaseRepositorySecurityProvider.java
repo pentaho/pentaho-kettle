@@ -108,14 +108,16 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   }
 
   public ObjectId[] getUserIDs() throws KettleException {
-    return connectionDelegate.getIDs( "SELECT " + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER )
-        + " FROM " + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) );
+    return connectionDelegate.getIDs( "SELECT "
+        + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " FROM "
+        + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) );
   }
 
   public synchronized String[] getUserLogins() throws KettleException {
     String loginField = repository.quote( KettleDatabaseRepository.FIELD_USER_LOGIN );
-    return connectionDelegate.getStrings( "SELECT " + loginField + " FROM "
-        + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " ORDER BY " + loginField );
+    return connectionDelegate.getStrings( "SELECT "
+        + loginField + " FROM " + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " ORDER BY "
+        + loginField );
   }
 
   public synchronized void renameUser( ObjectId id_user, String newname ) throws KettleException {

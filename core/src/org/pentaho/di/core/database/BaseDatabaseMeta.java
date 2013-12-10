@@ -182,76 +182,87 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   public static final String SELECT_COUNT_STATEMENT = "select count(*) FROM";
 
   public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
-    new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true",
-        "The default auto-commit state of connections created by this pool." ),
-    new DatabaseConnectionPoolParameter( "defaultReadOnly", null,
-        "The default read-only state of connections created by this pool.\n"
-            + "If not set then the setReadOnly method will not be called.\n "
-            + "(Some drivers don't support read only mode, ex: Informix)" ),
-    new DatabaseConnectionPoolParameter( "defaultTransactionIsolation", null,
-        "the default TransactionIsolation state of connections created by this pool. "
-            + "One of the following: (see javadoc)\n\n  * NONE\n  * "
-            + "READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ),
-    new DatabaseConnectionPoolParameter( "defaultCatalog", null,
-        "The default catalog of connections created by this pool." ),
+      new DatabaseConnectionPoolParameter(
+          "defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool." ),
+      new DatabaseConnectionPoolParameter(
+          "defaultReadOnly", null, "The default read-only state of connections created by this pool.\n"
+              + "If not set then the setReadOnly method will not be called.\n "
+              + "(Some drivers don't support read only mode, ex: Informix)" ),
+      new DatabaseConnectionPoolParameter(
+          "defaultTransactionIsolation", null,
+          "the default TransactionIsolation state of connections created by this pool. "
+              + "One of the following: (see javadoc)\n\n  * NONE\n  * "
+              + "READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ),
+      new DatabaseConnectionPoolParameter(
+          "defaultCatalog", null, "The default catalog of connections created by this pool." ),
 
-    new DatabaseConnectionPoolParameter( "initialSize", "0",
-        "The initial number of connections that are created when the pool is started." ),
-    new DatabaseConnectionPoolParameter( "maxActive", "8",
-        "The maximum number of active connections that can be allocated from this pool at the same time, "
-            + "or non-positive for no limit." ),
-    new DatabaseConnectionPoolParameter( "maxIdle", "8",
-        "The maximum number of connections that can remain idle in the pool, "
-            + "without extra ones being released, or negative for no limit." ),
-    new DatabaseConnectionPoolParameter( "minIdle", "0",
-        "The minimum number of connections that can remain idle in the pool, "
-            + "without extra ones being created, or zero to create none." ),
-    new DatabaseConnectionPoolParameter( "maxWait", "-1", "The maximum number of milliseconds that the pool will wait "
-        + "(when there are no available connections) for a connection to be returned "
-        + "before throwing an exception, or -1 to wait indefinitely." ),
+      new DatabaseConnectionPoolParameter(
+          "initialSize", "0", "The initial number of connections that are created when the pool is started." ),
+      new DatabaseConnectionPoolParameter(
+          "maxActive", "8",
+          "The maximum number of active connections that can be allocated from this pool at the same time, "
+              + "or non-positive for no limit." ),
+      new DatabaseConnectionPoolParameter(
+          "maxIdle", "8", "The maximum number of connections that can remain idle in the pool, "
+              + "without extra ones being released, or negative for no limit." ),
+      new DatabaseConnectionPoolParameter(
+          "minIdle", "0", "The minimum number of connections that can remain idle in the pool, "
+              + "without extra ones being created, or zero to create none." ),
+      new DatabaseConnectionPoolParameter(
+          "maxWait", "-1", "The maximum number of milliseconds that the pool will wait "
+              + "(when there are no available connections) for a connection to be returned "
+              + "before throwing an exception, or -1 to wait indefinitely." ),
 
-    new DatabaseConnectionPoolParameter( "validationQuery", null,
-        "The SQL query that will be used to validate connections from this pool "
-            + "before returning them to the caller.\n"
-            + "If specified, this query MUST be an SQL SELECT statement that returns at least one row." ),
-    new DatabaseConnectionPoolParameter( "testOnBorrow", "true",
-        "The indication of whether objects will be validated before being borrowed from the pool.\n"
-            + "If the object fails to validate, it will be dropped from the pool, "
-            + "and we will attempt to borrow another.\n"
-            + "NOTE - for a true value to have any effect, the validationQuery parameter "
-            + "must be set to a non-null string." ),
-    new DatabaseConnectionPoolParameter( "testOnReturn", "false",
-        "The indication of whether objects will be validated before being returned to the pool.\n"
-            + "NOTE - for a true value to have any effect, the validationQuery parameter must be set "
-            + "to a non-null string." ),
-    new DatabaseConnectionPoolParameter( "testWhileIdle", "false",
-        "The indication of whether objects will be validated by the idle object evictor (if any). "
-            + "If an object fails to validate, it will be dropped from the pool.\n"
-            + "NOTE - for a true value to have any effect, the validationQuery parameter must be set to a "
-            + "non-null string." ),
-    new DatabaseConnectionPoolParameter( "timeBetweenEvictionRunsMillis", null,
-        "The number of milliseconds to sleep between runs of the idle object evictor thread. "
-            + "When non-positive, no idle object evictor thread will be run." ),
+      new DatabaseConnectionPoolParameter(
+          "validationQuery", null, "The SQL query that will be used to validate connections from this pool "
+              + "before returning them to the caller.\n"
+              + "If specified, this query MUST be an SQL SELECT statement that returns at least one row." ),
+      new DatabaseConnectionPoolParameter(
+          "testOnBorrow", "true",
+          "The indication of whether objects will be validated before being borrowed from the pool.\n"
+              + "If the object fails to validate, it will be dropped from the pool, "
+              + "and we will attempt to borrow another.\n"
+              + "NOTE - for a true value to have any effect, the validationQuery parameter "
+              + "must be set to a non-null string." ),
+      new DatabaseConnectionPoolParameter(
+          "testOnReturn", "false",
+          "The indication of whether objects will be validated before being returned to the pool.\n"
+              + "NOTE - for a true value to have any effect, the validationQuery parameter must be set "
+              + "to a non-null string." ),
+      new DatabaseConnectionPoolParameter(
+          "testWhileIdle", "false",
+          "The indication of whether objects will be validated by the idle object evictor (if any). "
+              + "If an object fails to validate, it will be dropped from the pool.\n"
+              + "NOTE - for a true value to have any effect, the validationQuery parameter must be set to a "
+              + "non-null string." ),
+      new DatabaseConnectionPoolParameter(
+          "timeBetweenEvictionRunsMillis", null,
+          "The number of milliseconds to sleep between runs of the idle object evictor thread. "
+              + "When non-positive, no idle object evictor thread will be run." ),
 
-    new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false",
-        "Enable prepared statement pooling for this pool." ),
-    new DatabaseConnectionPoolParameter( "maxOpenPreparedStatements", "-1",
-        "The maximum number of open statements that can be allocated from the statement pool at the same time, "
-            + "or zero for no limit." ),
-    new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false",
-        "Controls if the PoolGuard allows access to the underlying connection." ),
-    new DatabaseConnectionPoolParameter( "removeAbandoned", "false",
-        "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\n"
-            + "If set to true a connection is considered abandoned and eligible for removal "
-            + "if it has been idle longer than the removeAbandonedTimeout. "
-            + "Setting this to true can recover db connections from poorly written applications which "
-            + "fail to close a connection." ),
-    new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300",
-        "Timeout in seconds before an abandoned connection can be removed." ),
-    new DatabaseConnectionPoolParameter( "logAbandoned", "false",
-        "Flag to log stack traces for application code which abandoned a Statement or Connection.\n"
-            + "Logging of abandoned Statements and Connections adds overhead for every Connection open or "
-            + "new Statement because a stack trace has to be generated." ), };
+      new DatabaseConnectionPoolParameter(
+          "poolPreparedStatements", "false", "Enable prepared statement pooling for this pool." ),
+      new DatabaseConnectionPoolParameter(
+          "maxOpenPreparedStatements", "-1",
+          "The maximum number of open statements that can be allocated from the statement pool at the same time, "
+              + "or zero for no limit." ),
+      new DatabaseConnectionPoolParameter(
+          "accessToUnderlyingConnectionAllowed", "false",
+          "Controls if the PoolGuard allows access to the underlying connection." ),
+      new DatabaseConnectionPoolParameter(
+          "removeAbandoned", "false",
+          "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\n"
+              + "If set to true a connection is considered abandoned and eligible for removal "
+              + "if it has been idle longer than the removeAbandonedTimeout. "
+              + "Setting this to true can recover db connections from poorly written applications which "
+              + "fail to close a connection." ),
+      new DatabaseConnectionPoolParameter(
+          "removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed." ),
+      new DatabaseConnectionPoolParameter(
+          "logAbandoned", "false",
+          "Flag to log stack traces for application code which abandoned a Statement or Connection.\n"
+              + "Logging of abandoned Statements and Connections adds overhead for every Connection open or "
+              + "new Statement because a stack trace has to be generated." ), };
 
   private static final String FIELDNAME_PROTECTOR = "_";
 
@@ -1244,8 +1255,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public int getMaximumPoolSize() {
-    return Const.toInt( attributes.getProperty( ATTRIBUTE_MAXIMUM_POOL_SIZE ),
-        ConnectionPoolUtil.defaultMaximumNrOfConnections );
+    return Const.toInt(
+        attributes.getProperty( ATTRIBUTE_MAXIMUM_POOL_SIZE ), ConnectionPoolUtil.defaultMaximumNrOfConnections );
   }
 
   /**
@@ -1262,8 +1273,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public int getInitialPoolSize() {
-    return Const.toInt( attributes.getProperty( ATTRIBUTE_INITIAL_POOL_SIZE ),
-        ConnectionPoolUtil.defaultInitialNrOfConnections );
+    return Const.toInt(
+        attributes.getProperty( ATTRIBUTE_INITIAL_POOL_SIZE ), ConnectionPoolUtil.defaultInitialNrOfConnections );
   }
 
   /**

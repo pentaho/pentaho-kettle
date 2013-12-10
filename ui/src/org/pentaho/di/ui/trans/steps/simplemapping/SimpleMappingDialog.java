@@ -396,8 +396,8 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( radioByReference );
     radioByReference.setSelection( false );
     radioByReference.setText( BaseMessages.getString( PKG, "SimpleMappingDialog.RadioRepByReference.Label" ) );
-    radioByReference.setToolTipText( BaseMessages.getString( PKG, "SimpleMappingDialog.RadioRepByReference.Tooltip",
-        Const.CR ) );
+    radioByReference.setToolTipText( BaseMessages.getString(
+        PKG, "SimpleMappingDialog.RadioRepByReference.Tooltip", Const.CR ) );
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment( 0, 0 );
     fdRadioByReference.right = new FormAttachment( 100, 0 );
@@ -576,8 +576,9 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
         setRadioButtons();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorSelectingObject.DialogTitle" ),
-          BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorSelectingObject.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorSelectingObject.DialogTitle" ), BaseMessages
+              .getString( PKG, "SimpleMappingDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
   }
 
@@ -600,7 +601,8 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
 
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       FileObject file =
-          vfsFileChooser.open( shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
+          vfsFileChooser.open(
+              shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
               VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
       if ( file == null ) {
         return;
@@ -620,12 +622,12 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
       }
     } catch ( IOException e ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString( PKG,
-          "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+          .getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+          PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString( PKG,
-          "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+          .getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+          PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     }
   }
 
@@ -649,8 +651,9 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
         spoon.addTransGraph( mappingTransMeta );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorShowingTransformation.Title" ),
-          BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorShowingTransformation.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorShowingTransformation.Title" ), BaseMessages
+              .getString( PKG, "SimpleMappingDialog.ErrorShowingTransformation.Message" ), e );
     }
   }
 
@@ -664,13 +667,13 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
         if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "SimpleMappingDialog.Exception.NoValidMappingDetailsFound" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SimpleMappingDialog.Exception.NoValidMappingDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "SimpleMappingDialog.Exception.UnableToFindRepositoryDirectory)" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SimpleMappingDialog.Exception.UnableToFindRepositoryDirectory)" ) );
         }
         loadRepositoryTrans( realTransname, repdir );
         break;
@@ -804,17 +807,17 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
       if ( repository == null ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "SimpleMappingDialog.Exception.NotConnectedToRepository.Message" ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "SimpleMappingDialog.Exception.NotConnectedToRepository.Message" ) );
       }
       RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.JOB );
       if ( transInf != null ) {
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SimpleMappingDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,
-          "SimpleMappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SimpleMappingDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
+          PKG, "SimpleMappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 
@@ -866,19 +869,19 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void addOutputMappingDefinitionTab( MappingIODefinition definition, int index ) {
-    addMappingDefinitionTab( definition, index + 1,
-        BaseMessages.getString( PKG, "SimpleMappingDialog.OutputTab.Title" ), BaseMessages.getString( PKG,
-            "SimpleMappingDialog.OutputTab.Tooltip" ), BaseMessages.getString( PKG,
-            "SimpleMappingDialog.OutputTab.column.SourceField" ), BaseMessages.getString( PKG,
-            "SimpleMappingDialog.OutputTab.column.TargetField" ), false );
+    addMappingDefinitionTab(
+        definition, index + 1, BaseMessages.getString( PKG, "SimpleMappingDialog.OutputTab.Title" ), BaseMessages
+            .getString( PKG, "SimpleMappingDialog.OutputTab.Tooltip" ), BaseMessages.getString(
+            PKG, "SimpleMappingDialog.OutputTab.column.SourceField" ), BaseMessages.getString(
+            PKG, "SimpleMappingDialog.OutputTab.column.TargetField" ), false );
   }
 
   private void addInputMappingDefinitionTab( MappingIODefinition definition, int index ) {
-    addMappingDefinitionTab( definition, index + 1,
-        BaseMessages.getString( PKG, "SimpleMappingDialog.InputTab.Title" ), BaseMessages.getString( PKG,
-            "SimpleMappingDialog.InputTab.Tooltip" ), BaseMessages.getString( PKG,
-            "SimpleMappingDialog.InputTab.column.SourceField" ), BaseMessages.getString( PKG,
-            "SimpleMappingDialog.InputTab.column.TargetField" ), true );
+    addMappingDefinitionTab(
+        definition, index + 1, BaseMessages.getString( PKG, "SimpleMappingDialog.InputTab.Title" ), BaseMessages
+            .getString( PKG, "SimpleMappingDialog.InputTab.Tooltip" ), BaseMessages.getString(
+            PKG, "SimpleMappingDialog.InputTab.column.SourceField" ), BaseMessages.getString(
+            PKG, "SimpleMappingDialog.InputTab.column.TargetField" ), true );
   }
 
   private void addParametersTab( final MappingParameters parameters ) {
@@ -912,15 +915,18 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     //
     ColumnInfo[] colinfo =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SimpleMappingDialog.Parameters.column.Variable" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SimpleMappingDialog.Parameters.column.ValueOrField" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SimpleMappingDialog.Parameters.column.Variable" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SimpleMappingDialog.Parameters.column.ValueOrField" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
     colinfo[1].setUsingVariables( true );
 
     final TableView wMappingParameters =
-        new TableView( transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
-            parameters.getVariable().length, lsMod, props );
+        new TableView(
+            transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, parameters
+                .getVariable().length, lsMod, props );
     props.setLook( wMappingParameters );
     FormData fdMappings = new FormData();
     fdMappings.left = new FormAttachment( 0, 0 );
@@ -1049,11 +1055,12 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     wbEnterMapping.setLayoutData( fdbEnterMapping );
 
     ColumnInfo[] colinfo =
-        new ColumnInfo[] { new ColumnInfo( sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
+        new ColumnInfo[] {
+            new ColumnInfo( sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+            new ColumnInfo( targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
     final TableView wFieldMappings =
-        new TableView( transMeta, wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod,
-            props );
+        new TableView(
+            transMeta, wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props );
     props.setLook( wFieldMappings );
     FormData fdMappings = new FormData();
     fdMappings.left = new FormAttachment( 0, 0 );
@@ -1113,8 +1120,8 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
             // OUTPUT
             //
             RowMetaInterface sourceRowMeta = getFieldsFromStep( true, input );
-            BaseStepDialog.getFieldsFromPrevious( sourceRowMeta, wFieldMappings, 1, new int[] { 1, }, new int[] {}, -1,
-                -1, null );
+            BaseStepDialog.getFieldsFromPrevious(
+                sourceRowMeta, wFieldMappings, 1, new int[] { 1, }, new int[] {}, -1, -1, null );
           }
         } catch ( KettleException e ) {
           new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
@@ -1205,9 +1212,9 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     try {
       loadTransformation();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SimpleMappingDialog.ErrorLoadingSpecifiedTransformation.Title" ), BaseMessages.getString( PKG,
-          "SimpleMappingDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SimpleMappingDialog.ErrorLoadingSpecifiedTransformation.Title" ), BaseMessages.getString(
+          PKG, "SimpleMappingDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
     }
 
     mappingMeta.setSpecificationMethod( specificationMethod );

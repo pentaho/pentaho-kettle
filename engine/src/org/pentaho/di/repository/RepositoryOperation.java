@@ -24,12 +24,12 @@ package org.pentaho.di.repository;
 
 public enum RepositoryOperation {
 
-  READ_TRANSFORMATION( "Read transformation" ), MODIFY_TRANSFORMATION( "Modify transformation" ), DELETE_TRANSFORMATION(
-      "Delete transformation" ), EXECUTE_TRANSFORMATION( "Execute transformation" ), LOCK_TRANSFORMATION(
-      "Lock transformation" ),
+  READ_TRANSFORMATION( "Read transformation" ), MODIFY_TRANSFORMATION( "Modify transformation" ),
+  DELETE_TRANSFORMATION( "Delete transformation" ), EXECUTE_TRANSFORMATION( "Execute transformation" ),
+  LOCK_TRANSFORMATION( "Lock transformation" ),
 
-  READ_JOB( "Read job" ), MODIFY_JOB( "Modify job" ), DELETE_JOB( "Delete job" ), EXECUTE_JOB( "Execute job" ), LOCK_JOB(
-      "Lock job" ),
+  READ_JOB( "Read job" ), MODIFY_JOB( "Modify job" ), DELETE_JOB( "Delete job" ), EXECUTE_JOB( "Execute job" ),
+  LOCK_JOB( "Lock job" ),
 
   MODIFY_DATABASE( "Modify database connection" ), DELETE_DATABASE( "Delete database connection" ), EXPLORE_DATABASE(
       "Explore database connection" ),
@@ -40,7 +40,8 @@ public enum RepositoryOperation {
 
   MODIFY_PARTITION_SCHEMA( "Modify partition schema" ), DELETE_PARTITION_SCHEMA( "Delete partition schema" ),
 
-  CREATE_DIRECTORY( "Create directory" ), RENAME_DIRECTORY( "Rename directory" ), DELETE_DIRECTORY( "Delete directory" ),
+  CREATE_DIRECTORY( "Create directory" ), RENAME_DIRECTORY( "Rename directory" ),
+  DELETE_DIRECTORY( "Delete directory" ),
 
   ;
 

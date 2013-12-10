@@ -113,7 +113,8 @@ public class StopJobServlet extends BaseHttpServlet implements CartePluginInterf
           out.println( new WebResult( WebResult.STRING_OK, message ).getXML() );
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+          out.println( "<a href=\""
+              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
               + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p>" );
         }
@@ -123,7 +124,8 @@ public class StopJobServlet extends BaseHttpServlet implements CartePluginInterf
           out.println( new WebResult( WebResult.STRING_ERROR, message ).getXML() );
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + ">"
+          out.println( "<a href=\""
+              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + ">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }

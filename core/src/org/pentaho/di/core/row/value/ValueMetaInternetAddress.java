@@ -139,8 +139,8 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     byte[] addr = address.getAddress();
 
     if ( addr.length > 8 ) {
-      throw new KettleValueException( "Unable to convert Internet Address v6 to an Integer: " + getString( object )
-          + " (The precision is too high to be contained in a long integer value)" );
+      throw new KettleValueException( "Unable to convert Internet Address v6 to an Integer: "
+          + getString( object ) + " (The precision is too high to be contained in a long integer value)" );
     }
 
     for ( int i = 0; i < addr.length; i++ ) {
@@ -436,8 +436,8 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
       return convertStringToInternetAddress( resultSet.getString( index + 1 ) );
 
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( toStringMeta() + " : Unable to get Internet Address from resultset at index "
-          + index, e );
+      throw new KettleDatabaseException( toStringMeta()
+          + " : Unable to get Internet Address from resultset at index " + index, e );
     }
 
   }

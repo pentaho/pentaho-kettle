@@ -214,8 +214,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      <filetypes>" );
     if ( fileType != null ) {
       for ( int i = 0; i < fileType.length; i++ ) {
-        retval.append( "        " )
-            .append( XMLHandler.addTagValue( "filetype", ResultFile.getTypeCode( fileType[i] ) ) );
+        retval
+            .append( "        " ).append( XMLHandler.addTagValue( "filetype", ResultFile.getTypeCode( fileType[i] ) ) );
       }
     }
     retval.append( "      </filetypes>" );
@@ -259,8 +259,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setUsingAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_auth" ) ) );
       setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_secure_auth" ) ) );
       setAuthenticationUser( XMLHandler.getTagValue( entrynode, "auth_user" ) );
-      setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode,
-          "auth_password" ) ) );
+      setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(
+          entrynode, "auth_password" ) ) );
 
       setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "only_comment" ) ) );
       setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "use_HTML" ) ) );
@@ -889,14 +889,16 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             parentJob.getJobMeta().getName() ).append( endRow );
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobDirectory" ) + "  : " ).append(
             parentJob.getJobMeta().getRepositoryDirectory() ).append( endRow );
-        messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntry" ) + "   : " )
-            .append( getName() ).append( endRow );
+        messageText
+            .append( BaseMessages.getString( PKG, "JobMail.Log.Comment.JobEntry" ) + "   : " ).append( getName() )
+            .append( endRow );
         messageText.append( Const.CR );
       }
 
       if ( includeDate ) {
-        messageText.append( endRow ).append( BaseMessages.getString( PKG, "JobMail.Log.Comment.MsgDate" ) + ": " )
-            .append( XMLHandler.date2string( new Date() ) ).append( endRow ).append( endRow );
+        messageText
+            .append( endRow ).append( BaseMessages.getString( PKG, "JobMail.Log.Comment.MsgDate" ) + ": " ).append(
+                XMLHandler.date2string( new Date() ) ).append( endRow ).append( endRow );
       }
       if ( !onlySendComment && result != null ) {
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.PreviousResult" ) + ":" ).append( endRow );
@@ -1008,8 +1010,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
           } else {
             // create a single ZIP archive of all files
             masterZipfile =
-                new File( System.getProperty( "java.io.tmpdir" ) + Const.FILE_SEPARATOR
-                    + environmentSubstitute( zipFilename ) );
+                new File( System.getProperty( "java.io.tmpdir" )
+                    + Const.FILE_SEPARATOR + environmentSubstitute( zipFilename ) );
             ZipOutputStream zipOutputStream = null;
             try {
               zipOutputStream = new ZipOutputStream( new FileOutputStream( masterZipfile ) );

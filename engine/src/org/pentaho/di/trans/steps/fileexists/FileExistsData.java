@@ -39,9 +39,6 @@ public class FileExistsData extends BaseStepData implements StepDataInterface {
   public FileObject file;
   public int NrPrevFields;
 
-  /**
-	 * 
-	 */
   public FileExistsData() {
     super();
     indexOfFileename = -1;

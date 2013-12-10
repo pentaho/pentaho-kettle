@@ -95,14 +95,14 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] row = getRow();
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
 
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
@@ -208,8 +208,8 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
           }
         }
       } catch ( KettleDatabaseException e ) {
-        logError( BaseMessages.getString( PKG, "Update.Log.UnableToCommitUpdateConnection" ) + data.db + "] :"
-            + e.toString() );
+        logError( BaseMessages.getString( PKG, "Update.Log.UnableToCommitUpdateConnection" )
+            + data.db + "] :" + e.toString() );
         setErrors( 1 );
       } finally {
         data.db.disconnect();

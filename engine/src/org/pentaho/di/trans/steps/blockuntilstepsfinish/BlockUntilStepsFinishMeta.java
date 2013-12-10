@@ -205,17 +205,17 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "BlockUntilStepsFinishMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "BlockUntilStepsFinishMeta.CheckResult.NotReceivingFields" ), stepMeta );
     } else {
       if ( stepName.length > 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "BlockUntilStepsFinishMeta.CheckResult.AllStepsFound" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "BlockUntilStepsFinishMeta.CheckResult.AllStepsFound" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                "BlockUntilStepsFinishMeta.CheckResult.NoStepsEntered" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+                PKG, "BlockUntilStepsFinishMeta.CheckResult.NoStepsEntered" ), stepMeta );
       }
 
     }
@@ -224,12 +224,12 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "BlockUntilStepsFinishMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "BlockUntilStepsFinishMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "BlockUntilStepsFinishMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "BlockUntilStepsFinishMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
 

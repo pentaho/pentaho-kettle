@@ -136,8 +136,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
   private PGBulkLoaderMeta input;
 
-  private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "PGBulkLoaderDialog.Filetype.All" ) };
+  private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString(
+      PKG, "PGBulkLoaderDialog.Filetype.All" ) };
 
   private ColumnInfo[] ciReturn;
 
@@ -413,21 +413,25 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.StreamField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.DateMask" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "",
-              BaseMessages.getString( PKG, "PGBulkLoaderDialog.PassThrough.Label" ),
-              BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateMask.Label" ),
-              BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateTimeMask.Label" ) }, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.DateMask" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {
+                "", BaseMessages.getString( PKG, "PGBulkLoaderDialog.PassThrough.Label" ),
+                BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateMask.Label" ),
+                BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateTimeMask.Label" ) }, true );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+            UpInsRows, lsMod, props );
 
     wGetLU = new Button( shell, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "PGBulkLoaderDialog.GetFields.Label" ) );
@@ -673,9 +677,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+          PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -685,9 +689,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+          PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -746,8 +750,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       message += BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "PGBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "PGBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
@@ -889,8 +893,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -924,8 +929,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
+              .getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }

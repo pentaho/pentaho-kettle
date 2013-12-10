@@ -1065,8 +1065,8 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         outputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         outputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
         outputFields[i].setGroupingSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
-        outputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
-            "field_trim_type" ) ) );
+        outputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString(
+            id_step, i, "field_trim_type" ) ) );
         outputFields[i].setNullString( rep.getStepAttributeString( id_step, i, "field_nullif" ) );
         outputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         outputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
@@ -1139,8 +1139,8 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "TextFileOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "TextFileOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -1160,8 +1160,8 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "TextFileOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "TextFileOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -1169,19 +1169,19 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "TextFileOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "TextFileOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "TextFileOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "TextFileOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "TextFileOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
+            PKG, "TextFileOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 

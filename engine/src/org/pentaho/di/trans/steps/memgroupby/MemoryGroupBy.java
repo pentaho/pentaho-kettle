@@ -458,8 +458,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
             break;
           case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
             ag =
-                ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta( "c",
-                    ValueMetaInterface.TYPE_INTEGER ), new Long( aggregate.counts[i] ) );
+                ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
+                    "c", ValueMetaInterface.TYPE_INTEGER ), new Long( aggregate.counts[i] ) );
             break;
           case MemoryGroupByMeta.TYPE_GROUP_MEDIAN:
           case MemoryGroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -519,7 +519,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
   @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     super.dispose( smi, sdi );
-    ((MemoryGroupByData) sdi).clear();
+    ( (MemoryGroupByData) sdi ).clear();
   }
 
   public void batchComplete() throws KettleException {

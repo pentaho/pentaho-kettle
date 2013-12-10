@@ -583,8 +583,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       IMetaStore metaStore ) {
     if ( databaseMeta != null ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.ConnectionExists" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SQLFileOutputMeta.CheckResult.ConnectionExists" ), stepMeta );
       remarks.add( cr );
 
       Database db = new Database( loggingObject, databaseMeta );
@@ -592,8 +592,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
         db.connect();
 
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "SQLFileOutputMeta.CheckResult.ConnectionOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "SQLFileOutputMeta.CheckResult.ConnectionOk" ), stepMeta );
         remarks.add( cr );
 
         if ( !Const.isEmpty( tablename ) ) {
@@ -601,15 +601,15 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
           // Check if this table exists...
           if ( db.checkTableExists( schemaTable ) ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable ), stepMeta );
             remarks.add( cr );
 
             RowMetaInterface r = db.getTableFields( schemaTable );
             if ( r != null ) {
               cr =
-                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "SQLFileOutputMeta.CheckResult.TableOk", schemaTable ), stepMeta );
+                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "SQLFileOutputMeta.CheckResult.TableOk", schemaTable ), stepMeta );
               remarks.add( cr );
 
               String error_message = "";
@@ -618,8 +618,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
               // Now see what we can find as previous step...
               if ( prev != null && prev.size() > 0 ) {
                 cr =
-                    new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                        "SQLFileOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+                    new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                        PKG, "SQLFileOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
                 remarks.add( cr );
 
                 // Starting from prev...
@@ -633,15 +633,15 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
                 }
                 if ( error_found ) {
                   error_message =
-                      BaseMessages.getString( PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFoundInOutput",
-                          error_message );
+                      BaseMessages.getString(
+                          PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message );
 
                   cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
                   remarks.add( cr );
                 } else {
                   cr =
-                      new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                          "SQLFileOutputMeta.CheckResult.AllFieldsFoundInOutput" ), stepMeta );
+                      new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                          PKG, "SQLFileOutputMeta.CheckResult.AllFieldsFoundInOutput" ), stepMeta );
                   remarks.add( cr );
                 }
 
@@ -662,59 +662,59 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
                   remarks.add( cr );
                 } else {
                   cr =
-                      new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                          "SQLFileOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
+                      new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                          PKG, "SQLFileOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
                   remarks.add( cr );
                 }
               } else {
                 cr =
-                    new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                        "SQLFileOutputMeta.CheckResult.NoFields" ), stepMeta );
+                    new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                        PKG, "SQLFileOutputMeta.CheckResult.NoFields" ), stepMeta );
                 remarks.add( cr );
               }
             } else {
               cr =
-                  new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                      "SQLFileOutputMeta.CheckResult.TableNotAccessible" ), stepMeta );
+                  new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                      PKG, "SQLFileOutputMeta.CheckResult.TableNotAccessible" ), stepMeta );
               remarks.add( cr );
             }
           } else {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "SQLFileOutputMeta.CheckResult.TableError", schemaTable ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                    PKG, "SQLFileOutputMeta.CheckResult.TableError", schemaTable ), stepMeta );
             remarks.add( cr );
           }
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SQLFileOutputMeta.CheckResult.NoTableName" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "SQLFileOutputMeta.CheckResult.NoTableName" ), stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleException e ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage() ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage() ), stepMeta );
         remarks.add( cr );
       } finally {
         db.disconnect();
       }
     } else {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.NoConnection" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SQLFileOutputMeta.CheckResult.NoConnection" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SQLFileOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SQLFileOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -733,8 +733,9 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       IMetaStore metaStore ) {
     if ( truncateTable ) {
       DatabaseImpact ii =
-          new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_TRUNCATE, transMeta.getName(), stepMeta.getName(),
-              databaseMeta.getDatabaseName(), tablename, "", "", "", "", "Truncate of table" );
+          new DatabaseImpact(
+              DatabaseImpact.TYPE_IMPACT_TRUNCATE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                  .getDatabaseName(), tablename, "", "", "", "", "Truncate of table" );
       impact.add( ii );
 
     }

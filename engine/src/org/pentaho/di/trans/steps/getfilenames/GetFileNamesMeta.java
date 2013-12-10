@@ -62,8 +62,8 @@ import org.w3c.dom.Node;
 public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   private static final String NO = "N";
@@ -662,19 +662,21 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String[] getFilePaths( VariableSpace space ) {
-    return FileInputList.createFilePathList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean(), buildFileTypeFiltersArray() );
+    return FileInputList.createFilePathList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+        buildFileTypeFiltersArray() );
   }
 
   public FileInputList getFileList( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean(), buildFileTypeFiltersArray() );
+    return FileInputList.createFileList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
+        buildFileTypeFiltersArray() );
   }
 
   public FileInputList getDynamicFileList( VariableSpace space, String[] filename, String[] filemask,
       String[] excludefilemask, String[] filerequired, boolean[] includesubfolders ) {
-    return FileInputList.createFileList( space, filename, filemask, excludefilemask, filerequired, includesubfolders,
-        buildFileTypeFiltersArray() );
+    return FileInputList.createFileList(
+        space, filename, filemask, excludefilemask, filerequired, includesubfolders, buildFileTypeFiltersArray() );
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
@@ -686,23 +688,23 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     if ( filefield ) {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.InputOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.InputOk" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.InputErrorKo" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.InputErrorKo" ), stepMeta );
       }
       remarks.add( cr );
 
       if ( Const.isEmpty( dynamicFilenameField ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
       }
       remarks.add( cr );
 
@@ -710,12 +712,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
 
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.NoInputError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.NoInputError" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.NoInputOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.NoInputOk" ), stepMeta );
       }
 
       remarks.add( cr );
@@ -724,12 +726,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       FileInputList fileList = getFileList( transMeta );
       if ( fileList.nrOfFiles() == 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.ExpectedFilesError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesError" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetFileNamesMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetFileNamesMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
       }
       remarks.add( cr );
     }

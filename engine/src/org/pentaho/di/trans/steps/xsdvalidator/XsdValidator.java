@@ -80,8 +80,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
     Object[] row = getRow();
 
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -98,8 +98,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
         // Let's check the Field
         if ( data.xmlindex < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "XsdValidator.Log.ErrorFindingField" ) + "[" + meta.getXMLStream()
-              + "]" );
+          logError( BaseMessages.getString( PKG, "XsdValidator.Log.ErrorFindingField" )
+              + "[" + meta.getXMLStream() + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.CouldnotFindField", meta
               .getXMLStream() ) );
         }
@@ -154,8 +154,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
               // The field is unreachable !
               logError( BaseMessages
                   .getString( PKG, "XsdValidator.Log.ErrorFindingXSDField", meta.getXSDDefinedField() ) );
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "XsdValidator.Exception.ErrorFindingXSDField", meta.getXSDDefinedField() ) );
+              throw new KettleStepException( BaseMessages.getString(
+                  PKG, "XsdValidator.Exception.ErrorFindingXSDField", meta.getXSDDefinedField() ) );
             }
           }
         }
@@ -203,8 +203,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
           File xmlfileValidator = new File( XMLFieldvalue );
           if ( !xmlfileValidator.exists() ) {
             logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XMLfileMissing", XMLFieldvalue ) );
-            throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.XMLfileMissing",
-                XMLFieldvalue ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "XsdValidator.Exception.XMLfileMissing", XMLFieldvalue ) );
           }
           sourceXML = new StreamSource( xmlfileValidator );
         }
@@ -218,8 +218,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
         } else {
           // we should not get here as anything entered in that does not look like
           // a url should be made a FileObject.
-          throw new KettleStepException( BaseMessages.getString( PKG, "XsdValidator.Exception.CannotCreateSchema",
-              xsdfile.getClass().getName() ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "XsdValidator.Exception.CannotCreateSchema", xsdfile.getClass().getName() ) );
         }
 
         if ( meta.getXSDSource().equals( meta.NO_NEED ) ) {
@@ -273,8 +273,8 @@ public class XsdValidator extends BaseStep implements StepInterface {
       }
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "XsdValidator.Log.ReadRow" ) + " "
-            + getInputRowMeta().getString( row ) );
+        logRowlevel( BaseMessages.getString( PKG, "XsdValidator.Log.ReadRow" )
+            + " " + getInputRowMeta().getString( row ) );
       }
 
       // add new values to the row.

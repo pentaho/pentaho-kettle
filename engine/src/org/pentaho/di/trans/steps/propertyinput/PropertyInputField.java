@@ -42,18 +42,20 @@ public class PropertyInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "PropertyInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "PropertyInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "PropertyInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "PropertyInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "PropertyInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "PropertyInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "PropertyInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "PropertyInputField.TrimType.Both" ) };
 
   public static final int COLUMN_KEY = 0;
   public static final int COLUMN_VALUE = 1;
 
   public static final String[] ColumnCode = { "key", "value" };
 
-  public static final String[] ColumnDesc = { BaseMessages.getString( PKG, "PropertyInputField.Column.Key" ),
-    BaseMessages.getString( PKG, "PropertyInputField.Column.Value" ) };
+  public static final String[] ColumnDesc = {
+      BaseMessages.getString( PKG, "PropertyInputField.Column.Key" ),
+      BaseMessages.getString( PKG, "PropertyInputField.Column.Value" ) };
 
   private String name;
   private int column;

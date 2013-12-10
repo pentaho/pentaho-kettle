@@ -74,8 +74,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
   private static Class<?> PKG = JobEntryMSAccessBulkLoad.class; // for i18n purposes, needed by Translator2!!
                                                                 // $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "JobEntryMSAccessBulkLoad.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+      PKG, "JobEntryMSAccessBulkLoad.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -358,8 +358,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
     wlincludeSubFolders.setLayoutData( fdlincludeSubFolders );
     wincludeSubFolders = new Button( wSourceGroup, SWT.CHECK );
     props.setLook( wincludeSubFolders );
-    wincludeSubFolders.setToolTipText( BaseMessages.getString( PKG,
-        "JobEntryMSAccessBulkLoad.includeSubFolders.Tooltip" ) );
+    wincludeSubFolders.setToolTipText( BaseMessages.getString(
+        PKG, "JobEntryMSAccessBulkLoad.includeSubFolders.Tooltip" ) );
     fdincludeSubFolders = new FormData();
     fdincludeSubFolders.left = new FormAttachment( middle, 0 );
     fdincludeSubFolders.top = new FormAttachment( wSourceFileFoldername, margin );
@@ -564,22 +564,27 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0 ? 0
-            : jobEntry.source_filefolder.length );
+        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+            ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.SourceFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.FieldsDelimiter.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.TargetDb.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.TargetTable.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.SourceFileFolder.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.Wildcard.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.FieldsDelimiter.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.TargetDb.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.TargetTable.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Fields.SourceFileFolder.Tooltip" ) );
@@ -592,8 +597,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
     colinf[4].setUsingVariables( true );
     colinf[4].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.TargetTable.Tooltip" ) );
     wFields =
-        new TableView( jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -686,8 +691,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wNrErrorsLessThan =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobEntryMSAccessBulkLoad.NrErrorsLessThan.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobEntryMSAccessBulkLoad.NrErrorsLessThan.Tooltip" ) );
     props.setLook( wNrErrorsLessThan );
     wNrErrorsLessThan.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();
@@ -774,8 +779,9 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFields.add( new String[] { wSourceFileFoldername.getText(), wWildcard.getText(), wDelimiter.getText(),
-          wTargetDbname.getText(), wTablename.getText() } );
+        wFields.add( new String[] {
+            wSourceFileFoldername.getText(), wWildcard.getText(), wDelimiter.getText(), wTargetDbname.getText(),
+            wTablename.getText() } );
         wSourceFileFoldername.setText( "" );
         wWildcard.setText( "" );
         wDelimiter.setText( "" );

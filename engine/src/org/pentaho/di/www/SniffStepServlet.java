@@ -164,8 +164,8 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
 
         // Wait until we have enough rows...
         //
-        while ( metaData.bufferRowData.size() < nrLines && step.isRunning() && !trans.isFinished()
-            && !trans.isStopped() ) {
+        while ( metaData.bufferRowData.size() < nrLines
+            && step.isRunning() && !trans.isFinished() && !trans.isStopped() ) {
 
           try {
             Thread.sleep( 100 );
@@ -218,8 +218,9 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
           out.println( "<HTML>" );
           out.println( "<HEAD>" );
           out.println( "<TITLE>" + BaseMessages.getString( PKG, "SniffStepServlet.SniffResults" ) + "</TITLE>" );
-          out.println( "<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath( CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">" );
+          out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
+              + convertContextPath( CONTEXT_PATH ) + "?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
+              + URLEncoder.encode( id, "UTF-8" ) + "\">" );
           out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
           out.println( "</HEAD>" );
           out.println( "<BODY>" );
@@ -271,26 +272,28 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
         }
       } else {
         if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-              "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ).getXML() );
+          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+              PKG, "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ).getXML() );
         } else {
           out.println( "<H1>"
-              + encoder.encodeForHTML( BaseMessages.getString( PKG, "SniffStepServlet.Log.CoundNotFindSpecStep",
-                  stepName ) ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+              + encoder.encodeForHTML( BaseMessages.getString(
+                  PKG, "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ) + "</H1>" );
+          out.println( "<a href=\""
+              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
     } else {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-            "SniffStepServlet.Log.CoundNotFindSpecTrans", transName ) ).getXML() );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+            PKG, "SniffStepServlet.Log.CoundNotFindSpecTrans", transName ) ).getXML() );
       } else {
         out.println( "<H1>"
             + encoder
                 .encodeForHTML( BaseMessages.getString( PKG, "SniffStepServlet.Log.CoundNotFindTrans", transName ) )
             + "</H1>" );
-        out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+        out.println( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }

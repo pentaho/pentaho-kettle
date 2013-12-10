@@ -60,17 +60,18 @@ public class FTPSConnection implements FTPListener {
   public static final int CONNECTION_TYPE_FTP_IMPLICIT_TLS_WITH_CRYPTED = 6;
 
   public static final String[] connection_type_Desc = new String[] {
-    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.FTP" ),
-    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSL" ),
-    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthSSL" ),
-    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSLCrypted" ),
-    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthTLS" ),
-    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLS" ),
-    BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLSCrypted" ) };
+      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.FTP" ),
+      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSL" ),
+      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthSSL" ),
+      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitSSLCrypted" ),
+      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.AuthTLS" ),
+      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLS" ),
+      BaseMessages.getString( PKG, "JobFTPS.ConnectionType.ImplicitTLSCrypted" ) };
 
-  public static final String[] connection_type_Code = new String[] { "FTP_CONNECTION", "IMPLICIT_SSL_FTP_CONNECTION",
-    "AUTH_SSL_FTP_CONNECTION", "IMPLICIT_SSL_WITH_CRYPTED_DATA_FTP_CONNECTION", "AUTH_TLS_FTP_CONNECTION",
-    "IMPLICIT_TLS_FTP_CONNECTION", "IMPLICIT_TLS_WITH_CRYPTED_DATA_FTP_CONNECTION" };
+  public static final String[] connection_type_Code = new String[] {
+      "FTP_CONNECTION", "IMPLICIT_SSL_FTP_CONNECTION", "AUTH_SSL_FTP_CONNECTION",
+      "IMPLICIT_SSL_WITH_CRYPTED_DATA_FTP_CONNECTION", "AUTH_TLS_FTP_CONNECTION", "IMPLICIT_TLS_FTP_CONNECTION",
+      "IMPLICIT_TLS_WITH_CRYPTED_DATA_FTP_CONNECTION" };
 
   private FTPConnection connection = null;
   private ArrayList<String> replies = new ArrayList<String>();
@@ -150,8 +151,8 @@ public class FTPSConnection implements FTPListener {
   public void connect() throws KettleException {
     try {
       connection =
-          FTPConnectionFactory.getInstance( getProperties( hostName, portNumber, userName, passWord, connectionType,
-              timeOut, passiveMode ) );
+          FTPConnectionFactory.getInstance( getProperties(
+              hostName, portNumber, userName, passWord, connectionType, timeOut, passiveMode ) );
       connection.addFTPStatusListener( this );
       connection.connect();
     } catch ( Exception e ) {
@@ -526,8 +527,8 @@ public class FTPSConnection implements FTPListener {
     try {
       this.connection.renameFile( fromFile, new FTPFile( targetFoldername, fromFile.getName() ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.MovingFileToFolder", fromFile.getName(),
-          targetFoldername ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobFTPS.Error.MovingFileToFolder", fromFile.getName(), targetFoldername ), e );
     }
   }
 

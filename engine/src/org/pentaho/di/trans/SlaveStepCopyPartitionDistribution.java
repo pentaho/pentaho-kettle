@@ -67,8 +67,8 @@ public class SlaveStepCopyPartitionDistribution {
 
     public boolean equals( Object obj ) {
       SlaveStepCopy copy = (SlaveStepCopy) obj;
-      return slaveServerName.equals( copy.slaveServerName ) && partitionSchemaName.equals( copy.partitionSchemaName )
-          && stepCopyNr == copy.stepCopyNr;
+      return slaveServerName.equals( copy.slaveServerName )
+          && partitionSchemaName.equals( copy.partitionSchemaName ) && stepCopyNr == copy.stepCopyNr;
     }
 
     public int hashCode() {

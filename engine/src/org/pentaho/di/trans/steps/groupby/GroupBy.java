@@ -270,8 +270,9 @@ public class GroupBy extends BaseStep implements StepInterface {
   }
 
   private void handleLastOfGroup() throws KettleException {
-    if ( meta.passAllRows() ) // ALL ROWS
-    {
+    if ( meta.passAllRows() ) {
+      // ALL ROWS
+
       if ( data.previous != null ) {
         calcAggregate( data.previous );
         addToBuffer( data.previous );
@@ -303,8 +304,9 @@ public class GroupBy extends BaseStep implements StepInterface {
         row = getRowFromBuffer();
       }
       closeInput();
-    } else // JUST THE GROUP + AGGREGATE
-    {
+    } else {
+      // JUST THE GROUP + AGGREGATE
+
       // Don't forget the last set of rows...
       if ( data.previous != null ) {
         calcAggregate( data.previous );
@@ -567,8 +569,8 @@ public class GroupBy extends BaseStep implements StepInterface {
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM:
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE:
           vMeta =
-              new ValueMeta( meta.getAggregateField()[i], subjMeta.isNumeric() ? subjMeta.getType()
-                  : ValueMetaInterface.TYPE_NUMBER );
+              new ValueMeta( meta.getAggregateField()[i], subjMeta.isNumeric()
+                  ? subjMeta.getType() : ValueMetaInterface.TYPE_NUMBER );
           switch ( subjMeta.getType() ) {
             case ValueMetaInterface.TYPE_BIGNUMBER:
               v = new BigDecimal( "0" );
@@ -678,8 +680,8 @@ public class GroupBy extends BaseStep implements StepInterface {
             break;
           case GroupByMeta.TYPE_GROUP_AVERAGE:
             ag =
-                ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta( "c",
-                    ValueMetaInterface.TYPE_INTEGER ), new Long( data.counts[i] ) );
+                ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
+                    "c", ValueMetaInterface.TYPE_INTEGER ), new Long( data.counts[i] ) );
             break;
           case GroupByMeta.TYPE_GROUP_MEDIAN:
           case GroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -756,8 +758,8 @@ public class GroupBy extends BaseStep implements StepInterface {
           data.dis = new DataInputStream( data.fis );
           data.firstRead = false;
         } catch ( IOException e ) {
-          throw new KettleFileException( BaseMessages.getString( PKG,
-              "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile" ), e );
+          throw new KettleFileException( BaseMessages.getString(
+              PKG, "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile" ), e );
         }
       }
 

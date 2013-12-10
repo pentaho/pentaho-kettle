@@ -150,8 +150,8 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "addTimestamp", addTimestamp );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "addHostname", addHostname );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'Syslog' to the repository for id_job=" + id_job,
-          dbe );
+      throw new KettleException(
+          "Unable to save job entry of type 'Syslog' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -308,8 +308,8 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
       syslog.getConfig().setFacility( getFacility() );
       syslog.getConfig().setSendLocalName( false );
       syslog.getConfig().setSendLocalTimestamp( false );
-      SyslogDefs.sendMessage( syslog, SyslogDefs.getPriority( getPriority() ), messageString, isAddTimestamp(),
-          pattern, isAddHostName() );
+      SyslogDefs.sendMessage(
+          syslog, SyslogDefs.getPriority( getPriority() ), messageString, isAddTimestamp(), pattern, isAddHostName() );
 
       // message was sent
       result.setNrErrors( 0 );

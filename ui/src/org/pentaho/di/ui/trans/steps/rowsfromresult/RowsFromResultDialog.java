@@ -123,14 +123,18 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Fieldname" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Type" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Length" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Precision" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Fieldname" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getAllTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Precision" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );

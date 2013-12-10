@@ -68,14 +68,14 @@ public class StringSearchResult {
 
   public static final RowMetaInterface getResultRowMeta() {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "SearchResult.TransOrJob" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "SearchResult.StepDatabaseNotice" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "SearchResult.String" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "SearchResult.FieldName" ),
-        ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "SearchResult.TransOrJob" ), ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "SearchResult.StepDatabaseNotice" ), ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "SearchResult.String" ), ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "SearchResult.FieldName" ), ValueMetaInterface.TYPE_STRING ) );
     return rowMeta;
   }
 

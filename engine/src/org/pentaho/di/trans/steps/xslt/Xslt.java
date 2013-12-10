@@ -124,8 +124,8 @@ public class Xslt extends BaseStep implements StepInterface {
         // Let's check the Field
         if ( data.fielxslfiledposition < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileFieldFinding" ) + "[" + meta.getXSLFileField()
-              + "]" );
+          logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileFieldFinding" )
+              + "[" + meta.getXSLFileField() + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLFileFieldFinding", meta
               .getXSLFileField() ) );
         }
@@ -143,13 +143,13 @@ public class Xslt extends BaseStep implements StepInterface {
           file = KettleVFS.getFileObject( data.xslfilename );
           if ( !file.exists() ) {
             logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileNotExists", data.xslfilename ) );
-            throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLFileNotExists",
-                data.xslfilename ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "Xslt.Exception.ErrorXSLFileNotExists", data.xslfilename ) );
           }
           if ( file.getType() != FileType.FILE ) {
             logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLNotAFile", data.xslfilename ) );
-            throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLNotAFile",
-                data.xslfilename ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "Xslt.Exception.ErrorXSLNotAFile", data.xslfilename ) );
           }
         } catch ( Exception e ) {
           throw new KettleStepException( e );
@@ -188,8 +188,7 @@ public class Xslt extends BaseStep implements StepInterface {
           }
           data.indexOfParams[i] = getInputRowMeta().indexOfValue( field );
           if ( data.indexOfParams[i] < 0 ) {
-            throw new KettleStepException(
-                BaseMessages.getString( PKG, "Xslt.Exception.ParameterFieldNotFound", name ) );
+            throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ParameterFieldNotFound", name ) );
           }
           data.nameOfParams[i] = name;
         }

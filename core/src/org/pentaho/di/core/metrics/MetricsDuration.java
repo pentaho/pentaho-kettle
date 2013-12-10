@@ -67,10 +67,12 @@ public class MetricsDuration {
   @Override
   public String toString() {
     if ( Const.isEmpty( subject ) ) {
-      return description + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
+      return description
+          + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
           + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
     } else {
-      return description + " / " + subject + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
+      return description
+          + " / " + subject + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
           + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );
     }
   }

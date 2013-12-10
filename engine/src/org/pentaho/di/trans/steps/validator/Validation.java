@@ -266,7 +266,9 @@ public class Validation implements Cloneable {
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_only_null_allowed", onlyNullAllowed );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_only_numeric_allowed", onlyNumericAllowed );
 
-    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type", ValueMeta.getTypeDesc( dataType ) );
+    rep
+        .saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type", ValueMeta
+            .getTypeDesc( dataType ) );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type_verified", dataTypeVerified );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_conversion_mask", conversionMask );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_decimal_symbol", decimalSymbol );
@@ -277,13 +279,15 @@ public class Validation implements Cloneable {
 
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_start_string", startString );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_end_string", endString );
-    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_start_string_not_allowed",
-        startStringNotAllowed );
-    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_end_string_not_allowed", endStringNotAllowed );
+    rep.saveStepAttribute(
+        id_transformation, id_step, i, "validator_field_start_string_not_allowed", startStringNotAllowed );
+    rep
+        .saveStepAttribute(
+            id_transformation, id_step, i, "validator_field_end_string_not_allowed", endStringNotAllowed );
 
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_regular_expression", regularExpression );
-    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_regular_expression_not_allowed",
-        regularExpressionNotAllowed );
+    rep.saveStepAttribute(
+        id_transformation, id_step, i, "validator_field_regular_expression_not_allowed", regularExpressionNotAllowed );
 
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_error_code", errorCode );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_error_description", errorDescription );

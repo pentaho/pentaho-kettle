@@ -143,11 +143,11 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * The trim description
    */
-  public static final String[] trimTypeDesc =
-      { BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ),
-        BaseMessages.getString( PKG, "ValueMeta.TrimType.Left" ),
-        BaseMessages.getString( PKG, "ValueMeta.TrimType.Right" ),
-        BaseMessages.getString( PKG, "ValueMeta.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ),
+      BaseMessages.getString( PKG, "ValueMeta.TrimType.Left" ),
+      BaseMessages.getString( PKG, "ValueMeta.TrimType.Right" ),
+      BaseMessages.getString( PKG, "ValueMeta.TrimType.Both" ) };
 
   public ValueMetaBase() {
     this( null, ValueMetaInterface.TYPE_NONE, -1, -1 );
@@ -182,21 +182,22 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.identicalFormat = true;
     this.bigNumberFormatting = true;
     this.lenientStringToNumber =
-        convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ),
-            "N" ) );
+        convertStringToBoolean( Const.NVL(
+            System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ), "N" ) );
 
     determineSingleByteEncoding();
     setDefaultConversionMask();
   }
 
-  public static final String[] SINGLE_BYTE_ENCODINGS = new String[] { "ISO8859_1", "Cp1252", "ASCII", "Cp037", "Cp273",
-    "Cp277", "Cp278", "Cp280", "Cp284", "Cp285", "Cp297", "Cp420", "Cp424", "Cp437", "Cp500", "Cp737", "Cp775",
-    "Cp850", "Cp852", "Cp855", "Cp856", "Cp857", "Cp858", "Cp860", "Cp861", "Cp862", "Cp863", "Cp865", "Cp866",
-    "Cp869", "Cp870", "Cp871", "Cp875", "Cp918", "Cp921", "Cp922", "Cp1140", "Cp1141", "Cp1142", "Cp1143", "Cp1144",
-    "Cp1145", "Cp1146", "Cp1147", "Cp1148", "Cp1149", "Cp1250", "Cp1251", "Cp1253", "Cp1254", "Cp1255", "Cp1257",
-    "ISO8859_2", "ISO8859_3", "ISO8859_5", "ISO8859_5", "ISO8859_6", "ISO8859_7", "ISO8859_8", "ISO8859_9",
-    "ISO8859_13", "ISO8859_15", "ISO8859_15_FDIS", "MacCentralEurope", "MacCroatian", "MacCyrillic", "MacDingbat",
-    "MacGreek", "MacHebrew", "MacIceland", "MacRoman", "MacRomania", "MacSymbol", "MacTurkish", "MacUkraine", };
+  public static final String[] SINGLE_BYTE_ENCODINGS = new String[] {
+      "ISO8859_1", "Cp1252", "ASCII", "Cp037", "Cp273", "Cp277", "Cp278", "Cp280", "Cp284", "Cp285", "Cp297", "Cp420",
+      "Cp424", "Cp437", "Cp500", "Cp737", "Cp775", "Cp850", "Cp852", "Cp855", "Cp856", "Cp857", "Cp858", "Cp860",
+      "Cp861", "Cp862", "Cp863", "Cp865", "Cp866", "Cp869", "Cp870", "Cp871", "Cp875", "Cp918", "Cp921", "Cp922",
+      "Cp1140", "Cp1141", "Cp1142", "Cp1143", "Cp1144", "Cp1145", "Cp1146", "Cp1147", "Cp1148", "Cp1149", "Cp1250",
+      "Cp1251", "Cp1253", "Cp1254", "Cp1255", "Cp1257", "ISO8859_2", "ISO8859_3", "ISO8859_5", "ISO8859_5",
+      "ISO8859_6", "ISO8859_7", "ISO8859_8", "ISO8859_9", "ISO8859_13", "ISO8859_15", "ISO8859_15_FDIS",
+      "MacCentralEurope", "MacCroatian", "MacCyrillic", "MacDingbat", "MacGreek", "MacHebrew", "MacIceland",
+      "MacRoman", "MacRomania", "MacSymbol", "MacTurkish", "MacUkraine", };
 
   protected void setDefaultConversionMask() {
     // Set some sensible default mask on the numbers
@@ -683,8 +684,9 @@ public class ValueMetaBase implements ValueMetaInterface {
       return getDateFormat().parse( string );
     } catch ( ParseException e ) {
       String dateFormat = ( getDateFormat() != null ) ? getDateFormat().toPattern() : "null";
-      throw new KettleValueException( toString() + " : couldn't convert string [" + string
-          + "] to a date using format [" + dateFormat + "] on offset location " + e.getErrorOffset(), e );
+      throw new KettleValueException( toString()
+          + " : couldn't convert string [" + string + "] to a date using format [" + dateFormat
+          + "] on offset location " + e.getErrorOffset(), e );
     }
   }
 
@@ -1028,8 +1030,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       try {
         return new BigDecimal( string );
       } catch ( NumberFormatException ex ) {
-        throw new KettleValueException( toString() + " : couldn't convert string value '" + string
-            + "' to a big number.", ex );
+        throw new KettleValueException( toString()
+            + " : couldn't convert string value '" + string + "' to a big number.", ex );
       }
     }
   }
@@ -1051,8 +1053,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     if ( Const.isEmpty( string ) ) {
       return null;
     }
-    return Boolean.valueOf( "Y".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string )
-        || "YES".equalsIgnoreCase( string ) || "1".equals( string ) );
+    return Boolean.valueOf( "Y".equalsIgnoreCase( string )
+        || "TRUE".equalsIgnoreCase( string ) || "YES".equalsIgnoreCase( string ) || "1".equals( string ) );
   }
 
   // BOOLEAN + NUMBER
@@ -1167,8 +1169,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       case STORAGE_TYPE_INDEXED:
         return index[(Integer) object];
       default:
-        throw new KettleValueException( toStringMeta() + " : Unknown storage type [" + storageType
-            + "] while converting to normal storage type" );
+        throw new KettleValueException( toStringMeta()
+            + " : Unknown storage type [" + storageType + "] while converting to normal storage type" );
     }
   }
 
@@ -1195,8 +1197,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       case STORAGE_TYPE_INDEXED:
         return convertNormalStorageTypeToBinaryString( index[(Integer) object] );
       default:
-        throw new KettleValueException( toStringMeta() + " : Unknown storage type [" + storageType
-            + "] while converting to normal storage type" );
+        throw new KettleValueException( toStringMeta()
+            + " : Unknown storage type [" + storageType + "] while converting to normal storage type" );
     }
   }
 
@@ -1375,9 +1377,9 @@ public class ValueMetaBase implements ValueMetaInterface {
 
       return string;
     } catch ( ClassCastException e ) {
-      throw new KettleValueException( toString() + " : There was a data type error: the data type of "
-          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-          + toStringMeta() + "]" );
+      throw new KettleValueException( toString()
+          + " : There was a data type error: the data type of " + object.getClass().getName() + " object [" + object
+          + "] does not correspond to value meta [" + toStringMeta() + "]" );
     }
   }
 
@@ -1464,8 +1466,8 @@ public class ValueMetaBase implements ValueMetaInterface {
               break;
             case STORAGE_TYPE_INDEXED:
               string =
-                  object == null ? null
-                      : convertBigNumberToString( (BigDecimal) index[( (Integer) object ).intValue()] );
+                  object == null
+                      ? null : convertBigNumberToString( (BigDecimal) index[( (Integer) object ).intValue()] );
               break;
             default:
               throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
@@ -1532,9 +1534,9 @@ public class ValueMetaBase implements ValueMetaInterface {
 
       return string;
     } catch ( ClassCastException e ) {
-      throw new KettleValueException( toString() + " : There was a data type error: the data type of "
-          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-          + toStringMeta() + "]" );
+      throw new KettleValueException( toString()
+          + " : There was a data type error: the data type of " + object.getClass().getName() + " object [" + object
+          + "] does not correspond to value meta [" + toStringMeta() + "]" );
     }
   }
 
@@ -1638,8 +1640,8 @@ public class ValueMetaBase implements ValueMetaInterface {
           throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
       }
     } catch ( Exception e ) {
-      throw new KettleValueException( "Unexpected conversion error while converting value [" + toString()
-          + "] to a Number", e );
+      throw new KettleValueException( "Unexpected conversion error while converting value ["
+          + toString() + "] to a Number", e );
     }
   }
 
@@ -1726,8 +1728,8 @@ public class ValueMetaBase implements ValueMetaInterface {
           throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
       }
     } catch ( Exception e ) {
-      throw new KettleValueException( "Unexpected conversion error while converting value [" + toString()
-          + "] to an Integer", e );
+      throw new KettleValueException( "Unexpected conversion error while converting value ["
+          + toString() + "] to an Integer", e );
     }
   }
 
@@ -2122,9 +2124,9 @@ public class ValueMetaBase implements ValueMetaInterface {
           throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
       }
     } catch ( ClassCastException e ) {
-      throw new KettleValueException( toString() + " : There was a data type error: the data type of "
-          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-          + toStringMeta() + "]" );
+      throw new KettleValueException( toString()
+          + " : There was a data type error: the data type of " + object.getClass().getName() + " object [" + object
+          + "] does not correspond to value meta [" + toStringMeta() + "]" );
     }
   }
 
@@ -2360,9 +2362,9 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
       }
     } catch ( ClassCastException e ) {
-      throw new RuntimeException( toString() + " : There was a data type error: the data type of "
-          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-          + toStringMeta() + "]" );
+      throw new RuntimeException( toString()
+          + " : There was a data type error: the data type of " + object.getClass().getName() + " object [" + object
+          + "] does not correspond to value meta [" + toStringMeta() + "]" );
     } catch ( IOException e ) {
       throw new KettleFileException( toString() + " : Unable to write value data to output stream", e );
     }
@@ -2591,9 +2593,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                         + " : Unable to serialize indexe storage type for data type " + getType() );
                 }
               } catch ( ClassCastException e ) {
-                throw new RuntimeException( toString() + " : There was a data type error: the data type of "
-                    + index[i].getClass().getName() + " object [" + index[i] + "] does not correspond to value meta ["
-                    + toStringMeta() + "]" );
+                throw new RuntimeException( toString()
+                    + " : There was a data type error: the data type of " + index[i].getClass().getName() + " object ["
+                    + index[i] + "] does not correspond to value meta [" + toStringMeta() + "]" );
               }
             }
           }
@@ -2859,9 +2861,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                       + " : Unable to serialize indexe storage type to XML for data type " + getType() );
               }
             } catch ( ClassCastException e ) {
-              throw new RuntimeException( toString() + " : There was a data type error: the data type of "
-                  + index[i].getClass().getName() + " object [" + index[i] + "] does not correspond to value meta ["
-                  + toStringMeta() + "]" );
+              throw new RuntimeException( toString()
+                  + " : There was a data type error: the data type of " + index[i].getClass().getName() + " object ["
+                  + index[i] + "] does not correspond to value meta [" + toStringMeta() + "]" );
             }
           }
         }
@@ -2897,8 +2899,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.addTagValue( "output_padding", outputPaddingEnabled ) );
     xml.append( XMLHandler.addTagValue( "date_format_lenient", dateFormatLenient ) );
     xml.append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale.toString() ) );
-    xml.append( XMLHandler.addTagValue( "date_format_timezone", dateFormatTimeZone != null ? dateFormatTimeZone.getID()
-        : null ) );
+    xml.append( XMLHandler.addTagValue( "date_format_timezone", dateFormatTimeZone != null
+        ? dateFormatTimeZone.getID() : null ) );
     xml.append( XMLHandler.addTagValue( "lenient_string_to_number", lenientStringToNumber ) );
 
     xml.append( XMLHandler.closeTag( XML_META_TAG ) );
@@ -3054,9 +3056,9 @@ public class ValueMetaBase implements ValueMetaInterface {
             throw new IOException( toString() + " : Unknown storage type " + getStorageType() );
         }
       } catch ( ClassCastException e ) {
-        throw new RuntimeException( toString() + " : There was a data type error: the data type of "
-            + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-            + toStringMeta() + "]", e );
+        throw new RuntimeException( toString()
+            + " : There was a data type error: the data type of " + object.getClass().getName() + " object [" + object
+            + "] does not correspond to value meta [" + toStringMeta() + "]", e );
       } catch ( Exception e ) {
         throw new RuntimeException( toString() + " : there was a value XML encoding error", e );
       }
@@ -3108,8 +3110,8 @@ public class ValueMetaBase implements ValueMetaInterface {
           case TYPE_BINARY:
             return XMLHandler.stringToBinary( XMLHandler.getTagValue( node, "binary-value" ) );
           default:
-            throw new KettleException( toString() + " : Unable to de-serialize '" + valueString
-                + "' from XML for data type " + getType() );
+            throw new KettleException( toString()
+                + " : Unable to de-serialize '" + valueString + "' from XML for data type " + getType() );
         }
 
       case STORAGE_TYPE_BINARY_STRING:
@@ -3271,8 +3273,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       //
       return false;
     } catch ( ClassCastException e ) {
-      throw new RuntimeException( "Unable to verify if [" + toString() + "] is null or not because of an error:"
-          + e.toString(), e );
+      throw new RuntimeException( "Unable to verify if ["
+          + toString() + "] is null or not because of an error:" + e.toString(), e );
     }
   }
 
@@ -3394,8 +3396,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         break;
       default:
-        throw new KettleValueException( toString() + " : Comparing values can not be done with data type : "
-            + getType() );
+        throw new KettleValueException( toString()
+            + " : Comparing values can not be done with data type : " + getType() );
     }
 
     if ( isSortedDescending() ) {
@@ -3452,8 +3454,8 @@ public class ValueMetaBase implements ValueMetaInterface {
               case STORAGE_TYPE_BINARY_STRING:
                 return -meta2.compare( data2, convertToBinaryStringStorageType( data1 ) );
               default:
-                throw new KettleValueException( meta2.toStringMeta() + " : Unknown storage type : "
-                    + meta2.getStorageType() );
+                throw new KettleValueException( meta2.toStringMeta()
+                    + " : Unknown storage type : " + meta2.getStorageType() );
 
             }
           default:
@@ -3500,8 +3502,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       case TYPE_BINARY:
         return meta2.getBinary( data2 );
       default:
-        throw new KettleValueException( toString() + " : I can't convert the specified value to data type : "
-            + getType() );
+        throw new KettleValueException( toString()
+            + " : I can't convert the specified value to data type : " + getType() );
     }
   }
 
@@ -3535,8 +3537,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       case TYPE_BINARY:
         return meta2.getBinary( data2 );
       default:
-        throw new KettleValueException( toString() + " : I can't convert the specified value to data type : "
-            + getType() );
+        throw new KettleValueException( toString()
+            + " : I can't convert the specified value to data type : " + getType() );
     }
   }
 
@@ -3580,8 +3582,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       case TYPE_BINARY:
         return getBinary( data2 );
       default:
-        throw new KettleValueException( toString() + " : I can't convert the specified value to data type : "
-            + storageMetadata.getType() );
+        throw new KettleValueException( toString()
+            + " : I can't convert the specified value to data type : " + storageMetadata.getType() );
     }
   }
 
@@ -3824,8 +3826,8 @@ public class ValueMetaBase implements ValueMetaInterface {
           value.setValue( getBinary( data ) );
           break;
         default:
-          throw new KettleValueException( toString() + " : We can't convert data type " + getTypeDesc()
-              + " to an original (V2) Value" );
+          throw new KettleValueException( toString()
+              + " : We can't convert data type " + getTypeDesc() + " to an original (V2) Value" );
       }
     }
     return value;
@@ -3869,8 +3871,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       case ValueMetaInterface.TYPE_BINARY:
         return value.getBytes();
       default:
-        throw new KettleValueException( toString() + " : We can't convert original data type " + value.getTypeDesc()
-            + " to a primitive data type" );
+        throw new KettleValueException( toString()
+            + " : We can't convert original data type " + value.getTypeDesc() + " to a primitive data type" );
     }
   }
 
@@ -3910,8 +3912,9 @@ public class ValueMetaBase implements ValueMetaInterface {
         // If there are no encodings set, then we're certain we don't have to
         // convert as well.
         //
-        if ( getStringEncoding() != null && getStringEncoding().equals( storageMetadata.getStringEncoding() )
-            || getStringEncoding() == null && storageMetadata.getStringEncoding() == null ) {
+        if ( getStringEncoding() != null
+            && getStringEncoding().equals( storageMetadata.getStringEncoding() ) || getStringEncoding() == null
+            && storageMetadata.getStringEncoding() == null ) {
 
           // However, perhaps the conversion mask changed since we read the
           // binary string?
@@ -4364,8 +4367,8 @@ public class ValueMetaBase implements ValueMetaInterface {
             }
 
             // If we're dealing with PostgreSQL and double precision types
-            if ( databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta && type == java.sql.Types.DOUBLE
-                && precision >= 16 && length >= 16 ) {
+            if ( databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta
+                && type == java.sql.Types.DOUBLE && precision >= 16 && length >= 16 ) {
               precision = -1;
               length = -1;
             }
@@ -4440,8 +4443,8 @@ public class ValueMetaBase implements ValueMetaInterface {
           //
           if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
             String property = databaseMeta.getConnectionProperties().getProperty( "yearIsDateType" );
-            if ( property != null && property.equalsIgnoreCase( "false" )
-                && rm.getColumnTypeName( index ).equalsIgnoreCase( "YEAR" ) ) {
+            if ( property != null
+                && property.equalsIgnoreCase( "false" ) && rm.getColumnTypeName( index ).equalsIgnoreCase( "YEAR" ) ) {
               valtype = ValueMetaInterface.TYPE_INTEGER;
               precision = 0;
               length = 4;
@@ -4627,8 +4630,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       }
       return data;
     } catch ( SQLException e ) {
-      throw new KettleDatabaseException( "Unable to get value '" + toStringMeta() + "' from database resultset, index "
-          + index, e );
+      throw new KettleDatabaseException( "Unable to get value '"
+          + toStringMeta() + "' from database resultset, index " + index, e );
     }
 
   }
@@ -4761,8 +4764,8 @@ public class ValueMetaBase implements ValueMetaInterface {
           break;
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Error setting value #" + index + " [" + toStringMeta()
-          + "] on prepared statement", e );
+      throw new KettleDatabaseException( "Error setting value #"
+          + index + " [" + toStringMeta() + "] on prepared statement", e );
     }
   }
 

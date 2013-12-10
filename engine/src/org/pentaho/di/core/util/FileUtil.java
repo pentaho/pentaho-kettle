@@ -18,23 +18,23 @@ public class FileUtil {
       if ( !parentfolder.exists() ) {
         if ( createParentFolder ) {
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder.getName()
-              .toString() ) );
+            log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder
+                .getName().toString() ) );
           }
           parentfolder.createFolder();
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderCreated", parentfolder.getName()
-              .toString() ) );
+            log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderCreated", parentfolder
+                .getName().toString() ) );
           }
         } else {
-          log.logError( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder.getName()
-              .toString() ) );
+          log.logError( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderNotExist", parentfolder
+              .getName().toString() ) );
           resultat = false;
         }
       } else {
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderExists", parentfolder.getName()
-            .toString() ) );
+          log.logDebug( BaseMessages.getString( PKG, "JobTrans.Log.ParentLogFolderExists", parentfolder
+              .getName().toString() ) );
         }
       }
     } catch ( Exception e ) {

@@ -135,10 +135,10 @@ public class SingleThreadedTransExecutor {
     StepMetaDataCombi one = null;
     StepMetaDataCombi two = null;
 
-    StringBuilder tLogString = new StringBuilder();// this helps group our
-                                                   // output so other threads
-                                                   // don't get logs in our
-                                                   // output.
+    StringBuilder tLogString = new StringBuilder(); // this helps group our
+                                                    // output so other threads
+                                                    // don't get logs in our
+                                                    // output.
     tLogString.append( "-------------------------------------------------------" ).append( "\n" );
     tLogString.append( "--SingleThreadedTransExecutor.sortSteps(cocktail)" ).append( "\n" );
     tLogString.append( "--Trans: " ).append( trans.getName() ).append( "\n" );
@@ -209,8 +209,8 @@ public class SingleThreadedTransExecutor {
         stepsMinSize++;
         if ( stepsMinSize >= stepsSize ) {
           if ( testing ) {
-            tLogString.append( String.format( "stepsMinSize:%s  stepsSize:%s", stepsMinSize, stepsSize ) )
-                .append( "\n" );
+            tLogString
+                .append( String.format( "stepsMinSize:%s  stepsSize:%s", stepsMinSize, stepsSize ) ).append( "\n" );
             tLogString.append( "stepsMinSize is >= stepsSize.. exiting outer sort loop. index:" + x ).append( "\n" );
           }
           break;
@@ -245,7 +245,7 @@ public class SingleThreadedTransExecutor {
       forwardChange = false;
       backwardChange = false;
 
-    }// finished sorting
+    } // finished sorting
 
     long endTime = System.currentTimeMillis();
     long totalTime = ( endTime - startTime );
@@ -278,7 +278,8 @@ public class SingleThreadedTransExecutor {
         }
       }
       if ( !ok ) {
-        throw new KettleException( "Step '" + combi.stepname + "' of type '" + combi.stepMeta.getStepID()
+        throw new KettleException( "Step '"
+            + combi.stepname + "' of type '" + combi.stepMeta.getStepID()
             + "' is not yet supported in a Single Threaded transformation engine." );
       }
     }
@@ -381,8 +382,9 @@ public class SingleThreadedTransExecutor {
 
   protected int getTotalRows( List<RowSet> rowSets ) {
     int total = 0;
-    for ( RowSet rowSet : rowSets )
+    for ( RowSet rowSet : rowSets ) {
       total += rowSet.size();
+    }
     return total;
   }
 

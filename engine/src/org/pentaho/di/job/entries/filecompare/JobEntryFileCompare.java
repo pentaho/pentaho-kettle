@@ -111,8 +111,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
       filename2 = XMLHandler.getTagValue( entrynode, "filename2" );
       addFilenameToResult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "add_filename_result" ) );
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryFileCompare.ERROR_0001_Unable_To_Load_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryFileCompare.ERROR_0001_Unable_To_Load_From_Xml_Node" ), xe );
     }
   }
 
@@ -123,8 +123,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
       filename2 = rep.getJobEntryAttributeString( id_jobentry, "filename2" );
       addFilenameToResult = rep.getJobEntryAttributeBoolean( id_jobentry, "add_filename_result" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryFileCompare.ERROR_0002_Unable_To_Load_Job_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -134,8 +134,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
       rep.saveJobEntryAttribute( id_job, getObjectId(), "filename2", filename2 );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "add_filename_result", addFilenameToResult );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job",
-          id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryFileCompare.ERROR_0003_Unable_To_Save_Job", id_job ), dbe );
     }
   }
 
@@ -253,8 +253,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
     } catch ( Exception e ) {
       result.setResult( false );
       result.setNrErrors( 1 );
-      logError( BaseMessages.getString( PKG, "JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2,
-          realFilename2, e.getMessage() ) );
+      logError( BaseMessages.getString(
+          PKG, "JobEntryFileCompare.ERROR_0007_Comparing_Files", realFilename2, realFilename2, e.getMessage() ) );
     } finally {
       try {
         if ( file1 != null ) {

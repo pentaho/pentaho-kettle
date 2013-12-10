@@ -207,8 +207,8 @@ public class PartitionSchemaDialog extends Dialog {
     wlNumber.setLayoutData( fdlNumber );
 
     wNumber =
-        new TextVar( variableSpace, shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE, BaseMessages.getString( PKG,
-            "PartitionSchemaDialog.Number.Tooltip" ) );
+        new TextVar( variableSpace, shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE, BaseMessages.getString(
+            PKG, "PartitionSchemaDialog.Number.Tooltip" ) );
     props.setLook( wNumber );
     FormData fdNumber = new FormData();
     fdNumber.top = new FormAttachment( wDynamic, margin );
@@ -227,8 +227,9 @@ public class PartitionSchemaDialog extends Dialog {
     wlPartitions.setLayoutData( fdlPartitions );
 
     ColumnInfo[] partitionColumns =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionID.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionID.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false, false ), };
     wPartitions = new TableView( Variables.getADefaultVariableSpace(), // probably better push this up. TODO
         shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, partitionColumns, 1, lsMod, props );
     props.setLook( wPartitions );
@@ -357,8 +358,9 @@ public class PartitionSchemaDialog extends Dialog {
 
     if ( dbNames.length > 0 ) {
       EnterSelectionDialog dialog =
-          new EnterSelectionDialog( shell, dbNames, BaseMessages.getString( PKG, "PartitionSchema.SelectDatabase" ),
-              BaseMessages.getString( PKG, "PartitionSchema.SelectPartitionnedDatabase" ) );
+          new EnterSelectionDialog(
+              shell, dbNames, BaseMessages.getString( PKG, "PartitionSchema.SelectDatabase" ), BaseMessages.getString(
+                  PKG, "PartitionSchema.SelectPartitionnedDatabase" ) );
       String dbName = dialog.open();
       if ( dbName != null ) {
         DatabaseMeta databaseMeta = DatabaseMeta.findDatabase( databases, dbName );

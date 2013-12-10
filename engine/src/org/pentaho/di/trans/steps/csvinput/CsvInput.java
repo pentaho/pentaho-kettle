@@ -54,7 +54,7 @@ import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
- *
+ * 
  * @author Matt
  * @since 2007-07-05
  */
@@ -240,9 +240,10 @@ public class CsvInput extends BaseStep implements StepInterface {
       }
 
       if ( data.filenames.length > 0 ) {
-        logBasic( BaseMessages.getString( PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback",
-            data.filenames[data.filenr], Long.toString( data.fileSizes.get( data.filenr ) ), Long
-                .toString( data.bytesToSkipInFirstFile ), Long.toString( data.blockToRead ) ) );
+        logBasic( BaseMessages.getString(
+            PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long
+                .toString( data.fileSizes.get( data.filenr ) ), Long.toString( data.bytesToSkipInFirstFile ), Long
+                .toString( data.blockToRead ) ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "CsvInput.Exception.ErrorPreparingParallelRun" ), e );
@@ -264,8 +265,8 @@ public class CsvInput extends BaseStep implements StepInterface {
         String filenameField = environmentSubstitute( meta.getFilenameField() );
         index = getInputRowMeta().indexOfValue( filenameField );
         if ( index < 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "CsvInput.Exception.FilenameFieldNotFound",
-              filenameField ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "CsvInput.Exception.FilenameFieldNotFound", filenameField ) );
         }
       }
 
@@ -386,7 +387,7 @@ public class CsvInput extends BaseStep implements StepInterface {
 
   /**
    * Read a single row of data from the file...
-   *
+   * 
    * @param skipRow
    *          if row should be skipped: header row or part of row in case of parallel read
    * @param ignoreEnclosures
@@ -628,8 +629,9 @@ public class CsvInput extends BaseStep implements StepInterface {
       if ( conversionExceptions != null && conversionExceptions.size() > 0 ) {
         // Forward the first exception
         //
-        throw new KettleConversionException( "There were " + conversionExceptions.size()
-            + " conversion errors on line " + getLinesInput(), conversionExceptions, exceptionFields, outputRowData );
+        throw new KettleConversionException(
+            "There were " + conversionExceptions.size() + " conversion errors on line " + getLinesInput(),
+            conversionExceptions, exceptionFields, outputRowData );
       }
 
       return outputRowData;
@@ -745,7 +747,7 @@ public class CsvInput extends BaseStep implements StepInterface {
 
   /**
    * This method is borrowed from TextFileInput
-   *
+   * 
    * @param log
    *          logger
    * @param line
@@ -800,8 +802,8 @@ public class CsvInput extends BaseStep implements StepInterface {
           boolean is_enclosure =
               len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equalsIgnoreCase( enclosure );
           boolean is_escape =
-              len_esc > 0 && p + len_esc < length
-                  && line.substring( p, p + len_esc ).equalsIgnoreCase( escapeCharacter );
+              len_esc > 0
+                  && p + len_esc < length && line.substring( p, p + len_esc ).equalsIgnoreCase( escapeCharacter );
 
           boolean enclosure_after = false;
 
@@ -885,14 +887,16 @@ public class CsvInput extends BaseStep implements StepInterface {
         if ( encl_found ) {
           pol = line.substring( from + len_encl, next - len_encl );
           if ( log.isRowLevel() ) {
-            log.logRowlevel(
-                BaseMessages.getString( PKG, "CsvInput.Log.ConvertLineToRowTitle" ), BaseMessages.getString( PKG, "CsvInput.Log.EnclosureFieldFound", "" + pol ) ); //$NON-NLS-3$
+            log
+                .logRowlevel(
+                    BaseMessages.getString( PKG, "CsvInput.Log.ConvertLineToRowTitle" ), BaseMessages.getString( PKG, "CsvInput.Log.EnclosureFieldFound", "" + pol ) ); //$NON-NLS-3$
           }
         } else {
           pol = line.substring( from, next );
           if ( log.isRowLevel() ) {
-            log.logRowlevel(
-                BaseMessages.getString( PKG, "CsvInput.Log.ConvertLineToRowTitle" ), BaseMessages.getString( PKG, "CsvInput.Log.NormalFieldFound", "" + pol ) ); //$NON-NLS-3$
+            log
+                .logRowlevel(
+                    BaseMessages.getString( PKG, "CsvInput.Log.ConvertLineToRowTitle" ), BaseMessages.getString( PKG, "CsvInput.Log.NormalFieldFound", "" + pol ) ); //$NON-NLS-3$
           }
         }
 
@@ -931,8 +935,8 @@ public class CsvInput extends BaseStep implements StepInterface {
         strings.add( "" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "CsvInput.Log.Error.ErrorConvertingLine", e.toString() ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "CsvInput.Log.Error.ErrorConvertingLine", e.toString() ), e );
     }
 
     return strings.toArray( new String[strings.size()] );

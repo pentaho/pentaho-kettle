@@ -77,8 +77,8 @@ public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
 
       // Return card numbers
       String[] cardNumber =
-          RandomCreditCardNumberGenerator.GenerateCreditCardNumbers( data.cardTypes[i], data.cardLen[i],
-              data.cardSize[i] );
+          RandomCreditCardNumberGenerator.GenerateCreditCardNumbers(
+              data.cardTypes[i], data.cardLen[i], data.cardSize[i] );
 
       for ( int j = 0; j < cardNumber.length && !isStopped(); j++ ) {
         // Create a new row

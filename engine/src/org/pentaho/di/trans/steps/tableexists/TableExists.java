@@ -63,8 +63,8 @@ public class TableExists extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -87,13 +87,13 @@ public class TableExists extends BaseStep implements StepInterface {
           data.indexOfTablename = getInputRowMeta().indexOfValue( meta.getDynamicTablenameField() );
           if ( data.indexOfTablename < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "TableExists.Exception.CouldnotFindField" ) + "["
-                + meta.getDynamicTablenameField() + "]" );
+            logError( BaseMessages.getString( PKG, "TableExists.Exception.CouldnotFindField" )
+                + "[" + meta.getDynamicTablenameField() + "]" );
             throw new KettleException( BaseMessages.getString( PKG, "TableExists.Exception.CouldnotFindField", meta
                 .getDynamicTablenameField() ) );
           }
         }
-      }// End If first
+      } // End If first
 
       // get tablename
       String tablename = getInputRowMeta().getString( r, data.indexOfTablename );
@@ -113,8 +113,8 @@ public class TableExists extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "TableExists.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "TableExists.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( KettleException e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

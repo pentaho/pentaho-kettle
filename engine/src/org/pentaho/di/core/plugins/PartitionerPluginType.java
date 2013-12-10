@@ -92,8 +92,8 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
       }
 
     } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle steps XML config file: " + kettlePartitionerXmlFile,
-          e );
+      throw new KettlePluginException(
+          "Unable to read the kettle steps XML config file: " + kettlePartitionerXmlFile, e );
     }
   }
 
@@ -116,8 +116,9 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "partitioner-plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(),
-                  false, file.getParent().getURL() );
+              registerPluginFromXmlResource(
+                  pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
+                      .getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...

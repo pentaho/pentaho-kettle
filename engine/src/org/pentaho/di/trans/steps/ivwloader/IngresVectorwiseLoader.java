@@ -117,8 +117,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       try {
         // masquerading the password for log
         if ( meta.isUseDynamicVNode() ) {
-          logDetailed( "Executing command: " + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]"
-              + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
+          logDetailed( "Executing command: "
+              + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]" + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
         } else {
           logDetailed( "Executing command: " + cmd );
         }
@@ -322,8 +322,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     if ( dm != null ) {
       String databaseName = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
       String password =
-          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm.getDatabaseInterface()
-              .getPassword(), "" ) ) );
+          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm
+              .getDatabaseInterface().getPassword(), "" ) ) );
       String port = environmentSubstitute( Const.NVL( dm.getDatabasePortNumberString(), "" ) ).replace( "7", "" );
       String username = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getUsername(), "" ) );
       String hostname = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getHostname(), "" ) );
@@ -356,8 +356,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       } else if ( meta.isUseDynamicVNode() ) {
         // logical portname in JDBC use a 7
 
-        sb.append( " @" ).append( hostname ).append( "," ).append( port ).append( "[" ).append( username ).append( "," )
-            .append( password ).append( "]::" ).append( databaseName );
+        sb
+            .append( " @" ).append( hostname ).append( "," ).append( port ).append( "[" ).append( username ).append(
+                "," ).append( password ).append( "]::" ).append( databaseName );
       } else {
         // Database Name
         //
@@ -379,8 +380,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
+
         setOutputDone();
         // only close output after the first row was processed
         // to prevent error (NPE) on empty rows set
@@ -503,10 +505,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         ValueMetaInterface valueMeta = rowMeta.getValueMeta( index );
         Object valueData = r[index];
 
-        if ( valueData == null ) {
-          // Don't output anything for null
-          //
-        } else {
+        // Don't output anything for null
+        //
+        if ( valueData != null ) {
           if ( valueMeta.isStorageBinaryString() ) {
             byte[] value = valueMeta.getBinaryString( valueData );
             write( value );
@@ -648,10 +649,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       int exitValue = data.sqlProcess.exitValue();
       logError( "SQL process exit code: " + exitValue );
       return false;
-    }
-    // ignore this exception since it is thrown when exitValue() is called on a
-    // running process
-    catch ( IllegalThreadStateException e ) {
+    } catch ( IllegalThreadStateException e ) {
+      // ignore this exception since it is thrown when exitValue() is called on a
+      // running process
+
       // Do nothing SQL Process still running
       return true;
     }

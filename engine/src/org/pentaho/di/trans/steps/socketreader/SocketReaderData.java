@@ -42,9 +42,6 @@ public class SocketReaderData extends BaseStepData implements StepDataInterface 
   public DataInputStream inputStream;
   public RowMetaInterface rowMeta;
 
-  /**
-	 * 
-	 */
   public SocketReaderData() {
     super();
   }

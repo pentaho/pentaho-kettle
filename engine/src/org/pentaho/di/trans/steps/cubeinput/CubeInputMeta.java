@@ -161,8 +161,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     } catch ( KettleFileException kfe ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToReadMetaData" ), kfe );
     } catch ( IOException e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile" ), e );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile" ), e );
     } finally {
       try {
         if ( fis != null ) {
@@ -172,8 +172,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
           dis.close();
         }
       } catch ( IOException ioe ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToCloseCubeFile" ),
-            ioe );
+        throw new KettleStepException(
+            BaseMessages.getString( PKG, "CubeInputMeta.Exception.UnableToCloseCubeFile" ), ioe );
       }
     }
   }
@@ -198,8 +198,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
       addfilenameresult = rep.getStepAttributeBoolean( id_step, "addfilenameresult" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
     }
   }
 
@@ -222,8 +222,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "CubeInputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+            PKG, "CubeInputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 

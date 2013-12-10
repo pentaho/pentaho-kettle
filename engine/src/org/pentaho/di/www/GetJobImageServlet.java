@@ -119,7 +119,8 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
 
     SwingGC gc = new SwingGC( null, maximum, 32, 0, 0 );
     JobPainter jobPainter =
-        new JobPainter( gc, jobMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
+        new JobPainter(
+            gc, jobMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
             new ArrayList<JobEntryCopy>(), 32, 1, 0, 0, true, "Arial", 10 );
     jobPainter.setMagnification( magnification );
     jobPainter.drawJob();

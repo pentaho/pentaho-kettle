@@ -66,25 +66,25 @@ public class StringUtil {
 
   public static final String EMPTY_STRING = "";
 
-  public static final String[] SYSTEM_PROPERTIES = new String[] { "java.version", "java.vendor", "java.vendor.url",
-    "java.home", "java.vm.specification.version", "java.vm.specification.vendor", "java.vm.specification.name",
-    "java.vm.version", "java.vm.vendor", "java.vm.name", "java.specification.version", "java.specification.vendor",
-    "java.specification.name", "java.class.version", "java.class.path", "java.library.path", "java.io.tmpdir",
-    "java.compiler", "java.ext.dirs",
+  public static final String[] SYSTEM_PROPERTIES = new String[] {
+      "java.version", "java.vendor", "java.vendor.url", "java.home", "java.vm.specification.version",
+      "java.vm.specification.vendor", "java.vm.specification.name", "java.vm.version", "java.vm.vendor",
+      "java.vm.name", "java.specification.version", "java.specification.vendor", "java.specification.name",
+      "java.class.version", "java.class.path", "java.library.path", "java.io.tmpdir", "java.compiler", "java.ext.dirs",
 
-    "os.name", "os.arch", "os.version",
+      "os.name", "os.arch", "os.version",
 
-    "file.separator", "path.separator", "line.separator",
+      "file.separator", "path.separator", "line.separator",
 
-    "user.name", "user.home", "user.dir", "user.country", "user.language", "user.timezone",
+      "user.name", "user.home", "user.dir", "user.country", "user.language", "user.timezone",
 
-    "org.apache.commons.logging.Log", "org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
-    "org.apache.commons.logging.simplelog.showdatetime", "org.eclipse.swt.browser.XULRunnerInitialized",
-    "org.eclipse.swt.browser.XULRunnerPath",
+      "org.apache.commons.logging.Log", "org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
+      "org.apache.commons.logging.simplelog.showdatetime", "org.eclipse.swt.browser.XULRunnerInitialized",
+      "org.eclipse.swt.browser.XULRunnerPath",
 
-    "sun.arch.data.model", "sun.boot.class.path", "sun.boot.library.path", "sun.cpu.endian", "sun.cpu.isalist",
-    "sun.io.unicode.encoding", "sun.java.launcher", "sun.jnu.encoding", "sun.management.compiler",
-    "sun.os.patch.level", };
+      "sun.arch.data.model", "sun.boot.class.path", "sun.boot.library.path", "sun.cpu.endian", "sun.cpu.isalist",
+      "sun.io.unicode.encoding", "sun.java.launcher", "sun.jnu.encoding", "sun.management.compiler",
+      "sun.os.patch.level", };
 
   /**
    * Substitutes variables in <code>aString</code>. Variable names are delimited by open and close strings. The values

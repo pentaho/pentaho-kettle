@@ -71,8 +71,8 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      return "jdbc:informix-sqli://" + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER="
-          + getServername();
+      return "jdbc:informix-sqli://"
+          + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER=" + getServername();
     }
   }
 

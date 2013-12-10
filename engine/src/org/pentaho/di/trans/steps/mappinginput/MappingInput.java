@@ -80,8 +80,8 @@ public class MappingInput extends BaseStep implements StepInterface {
           stopAll();
         }
         if ( totalsleep > 60000 ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "MappingInput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MappingInput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
         }
       }
 
@@ -125,15 +125,15 @@ public class MappingInput extends BaseStep implements StepInterface {
       for ( MappingValueRename valueRename : data.valueRenames ) {
         ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta( valueRename.getSourceValueName() );
         if ( valueMeta == null ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "MappingInput.Exception.UnableToFindMappedValue",
-              valueRename.getSourceValueName() ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
         }
         valueMeta.setName( valueRename.getTargetValueName() );
 
         valueMeta = getInputRowMeta().searchValueMeta( valueRename.getSourceValueName() );
         if ( valueMeta == null ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "MappingInput.Exception.UnableToFindMappedValue",
-              valueRename.getSourceValueName() ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
         }
         valueMeta.setName( valueRename.getTargetValueName() );
       }

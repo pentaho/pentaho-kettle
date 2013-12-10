@@ -83,14 +83,14 @@ public class StepPerformanceSnapShotDialog extends Dialog {
   private static final int DATA_CHOICE_OUTPUT_BUFFER_SIZE = 7;
 
   private static String[] dataChoices = new String[] {
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Written" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Read" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Input" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Output" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Updated" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Rejected" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.InputBufferSize" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.OutputBufferSize" ), };
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Written" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Read" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Input" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Output" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Updated" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Rejected" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.InputBufferSize" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.OutputBufferSize" ), };
 
   private Shell parent, shell;
   private Map<String, List<StepPerformanceSnapShot>> stepPerformanceSnapShots;

@@ -42,9 +42,6 @@ public class RandomCCNumberGeneratorData extends BaseStepData implements StepDat
   public boolean addCardTypeOutput;
   public boolean addCardLengthOutput;
 
-  /**
-	 * 
-	 */
   public RandomCCNumberGeneratorData() {
     super();
     addCardTypeOutput = false;

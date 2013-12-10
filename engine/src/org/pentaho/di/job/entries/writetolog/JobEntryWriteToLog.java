@@ -120,8 +120,8 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logmessage", logmessage );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", ( entryLogLevel != null ? entryLogLevel.getCode()
-          : "" ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", ( entryLogLevel != null
+          ? entryLogLevel.getCode() : "" ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logsubject", logsubject );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "WriteToLog.Error.UnableToSaveToRepository.Label" )
@@ -264,8 +264,8 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
       return true;
     } catch ( Exception e ) {
       result.setNrErrors( 1 );
-      log.logError( BaseMessages.getString( PKG, "WriteToLog.Error.Label" ), BaseMessages.getString( PKG,
-          "WriteToLog.Error.Description" )
+      log.logError( BaseMessages.getString( PKG, "WriteToLog.Error.Label" ), BaseMessages.getString(
+          PKG, "WriteToLog.Error.Description" )
           + " : " + e.toString() );
       return false;
     }

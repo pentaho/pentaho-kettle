@@ -30,25 +30,26 @@ import java.util.Set;
 import org.pentaho.di.core.RowSet;
 
 public class KeyToRowSetMap {
-  
+
   protected Map<Object, Set<RowSet>> map;
 
-  protected KeyToRowSetMap(){
+  protected KeyToRowSetMap() {
     map = new HashMap<Object, Set<RowSet>>();
   }
-  
+
   /**
    * Support custom runtime implementation.
+   * 
    * @param map
    */
-  protected KeyToRowSetMap( Map<Object, Set<RowSet>> map ){
+  protected KeyToRowSetMap( Map<Object, Set<RowSet>> map ) {
     this.map = map;
-  }  
-  
+  }
+
   protected Set<RowSet> get( Object key ) {
     return map.get( key );
   }
-  
+
   protected void put( Object key, RowSet rowSet ) {
     Set<RowSet> existing = map.get( key );
     if ( existing == null ) {
@@ -57,8 +58,8 @@ public class KeyToRowSetMap {
     }
     existing.add( rowSet );
   }
-  
-  public boolean containsKey(Object key) {
+
+  public boolean containsKey( Object key ) {
     return map.containsKey( key );
   }
 

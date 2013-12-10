@@ -40,9 +40,9 @@ public class SalesforceConnectionUtils {
    * The records filter description
    */
   public static final String[] recordsFilterDesc = {
-    BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.All" ),
-    BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Updated" ),
-    BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Deleted" ) };
+      BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.All" ),
+      BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Updated" ),
+      BaseMessages.getString( PKG, "SalesforceInputMeta.recordsFilter.Deleted" ) };
 
   /**
    * The records filter type codes

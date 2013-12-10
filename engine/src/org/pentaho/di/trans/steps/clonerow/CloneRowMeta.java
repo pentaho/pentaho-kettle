@@ -213,8 +213,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "clonenumfield", clonenumfield );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "CloneRowMeta.Exception.UnexpectedErrorSavingStepInfo" ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "CloneRowMeta.Exception.UnexpectedErrorSavingStepInfo" ), e );
     }
   }
 
@@ -288,24 +288,24 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "CloneRowMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "CloneRowMeta.CheckResult.NotReceivingFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CloneRowMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CloneRowMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CloneRowMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CloneRowMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CloneRowMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
   }

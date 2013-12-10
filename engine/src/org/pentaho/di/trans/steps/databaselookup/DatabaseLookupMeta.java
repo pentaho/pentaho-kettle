@@ -58,7 +58,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
   private static Class<?> PKG = DatabaseLookupMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   public static final String[] conditionStrings = new String[] {
-    "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL", }; //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+      "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL", }; //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 
   public static final int CONDITION_EQ = 0;
   public static final int CONDITION_NE = 1;
@@ -568,8 +568,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         returnValueDefaultType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "return_value_type" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "DatabaseLookupMeta.ERROR0002.UnexpectedErrorReadingFromTheRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "DatabaseLookupMeta.ERROR0002.UnexpectedErrorReadingFromTheRepository" ), e );
     }
   }
 
@@ -606,8 +606,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "DatabaseLookupMeta.ERROR0003.UnableToSaveStepToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "DatabaseLookupMeta.ERROR0003.UnableToSaveStepToRepository" )
           + id_step, e );
     }
 
@@ -658,8 +658,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "DatabaseLookupMeta.Check.AllLookupFieldsFoundInTable" ), stepMeta );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "DatabaseLookupMeta.Check.AllLookupFieldsFoundInTable" ), stepMeta );
             }
             remarks.add( cr );
 
@@ -684,8 +684,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable" ), stepMeta );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable" ), stepMeta );
             }
             remarks.add( cr );
 
@@ -718,8 +718,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "DatabaseLookupMeta.Check.AllFieldsFoundInInput" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "DatabaseLookupMeta.Check.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
         } else {
@@ -745,13 +745,13 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -793,9 +793,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     for ( int i = 0; i < streamKeyField1.length; i++ ) {
       ValueMetaInterface v = prev.searchValueMeta( streamKeyField1[i] );
       DatabaseImpact ii =
-          new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepinfo.getName(), databaseMeta
-              .getDatabaseName(), tablename, tableKeyField[i], streamKeyField1[i], v != null ? v.getOrigin() : "?", "",
-              BaseMessages.getString( PKG, "DatabaseLookupMeta.Impact.Key" ) );
+          new DatabaseImpact(
+              DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepinfo.getName(), databaseMeta.getDatabaseName(),
+              tablename, tableKeyField[i], streamKeyField1[i], v != null ? v.getOrigin() : "?", "", BaseMessages
+                  .getString( PKG, "DatabaseLookupMeta.Impact.Key" ) );
       impact.add( ii );
     }
 
@@ -803,8 +804,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     for ( int i = 0; i < returnValueField.length; i++ ) {
       DatabaseImpact ii =
           new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepinfo.getName(), databaseMeta
-              .getDatabaseName(), tablename, returnValueField[i], "", "", "", BaseMessages.getString( PKG,
-              "DatabaseLookupMeta.Impact.ReturnValue" ) );
+              .getDatabaseName(), tablename, returnValueField[i], "", "", "", BaseMessages.getString(
+              PKG, "DatabaseLookupMeta.Impact.ReturnValue" ) );
       impact.add( ii );
     }
   }

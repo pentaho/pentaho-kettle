@@ -246,8 +246,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     // Output Fieldame
     wResultField =
         new LabelTextVar( transMeta, wOutputFields, BaseMessages
-            .getString( PKG, "XsdValidatorDialog.ResultField.Label" ), BaseMessages.getString( PKG,
-            "XsdValidatorDialog.ResultField.Tooltip" ) );
+            .getString( PKG, "XsdValidatorDialog.ResultField.Label" ), BaseMessages.getString(
+            PKG, "XsdValidatorDialog.ResultField.Tooltip" ) );
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
     fdResultField = new FormData();
@@ -280,9 +280,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
     // Output if XML is valid field
     wIfXMLValid =
-        new LabelTextVar( transMeta, wOutputFields,
-            BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLValid.Label" ), BaseMessages.getString( PKG,
-                "XsdValidatorDialog.IfXMLValid.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wOutputFields, BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLValid.Label" ),
+            BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLValid.Tooltip" ) );
     props.setLook( wIfXMLValid );
     wIfXMLValid.addModifyListener( lsMod );
     fdIfXMLValid = new FormData();
@@ -293,9 +293,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
     // Output if XML is not valid field
     wIfXMLUnValid =
-        new LabelTextVar( transMeta, wOutputFields, BaseMessages.getString( PKG,
-            "XsdValidatorDialog.IfXMLUnValid.Label" ), BaseMessages.getString( PKG,
-            "XsdValidatorDialog.IfXMLUnValid.Tooltip" ) );
+        new LabelTextVar( transMeta, wOutputFields, BaseMessages.getString(
+            PKG, "XsdValidatorDialog.IfXMLUnValid.Label" ), BaseMessages.getString(
+            PKG, "XsdValidatorDialog.IfXMLUnValid.Tooltip" ) );
     props.setLook( wIfXMLUnValid );
     wIfXMLUnValid.addModifyListener( lsMod );
     fdIfXMLUnValid = new FormData();
@@ -328,9 +328,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
     // Validation Msg Fieldame
     wValidationMsg =
-        new LabelTextVar( transMeta, wOutputFields, BaseMessages.getString( PKG,
-            "XsdValidatorDialog.ValidationMsg.Label" ), BaseMessages.getString( PKG,
-            "XsdValidatorDialog.ValidationMsg.Tooltip" ) );
+        new LabelTextVar( transMeta, wOutputFields, BaseMessages.getString(
+            PKG, "XsdValidatorDialog.ValidationMsg.Label" ), BaseMessages.getString(
+            PKG, "XsdValidatorDialog.ValidationMsg.Tooltip" ) );
     props.setLook( wValidationMsg );
     wValidationMsg.addModifyListener( lsMod );
     fdValidationMsg = new FormData();
@@ -536,8 +536,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
           dialog.setFileName( fname );
         }
 
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "XsdValidatorDialog.FileType" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "XsdValidatorDialog.FileType" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
           String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -612,8 +613,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
           wXSDDefinedColumn.setItems( r.getFieldNames() );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "XsdValidatorDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "XsdValidatorDialogMod.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "XsdValidatorDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "XsdValidatorDialogMod.FailedToGetFields.DialogMessage" ), ke );
       }
       if ( fieldXML != null ) {
         wXMLStream.setText( fieldXML );

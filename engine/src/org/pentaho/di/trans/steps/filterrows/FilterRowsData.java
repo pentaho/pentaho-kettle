@@ -41,9 +41,6 @@ public class FilterRowsData extends BaseStepData implements StepDataInterface {
   public String trueStepname;
   public String falseStepname;
 
-  /**
-	 * 
-	 */
   public FilterRowsData() {
     super();
   }

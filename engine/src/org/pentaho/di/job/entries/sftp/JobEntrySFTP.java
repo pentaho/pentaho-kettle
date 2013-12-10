@@ -248,7 +248,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sftpdirectory", sftpDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "targetdirectory", targetDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -597,11 +598,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // Create sftp client to host ...
       sftpclient =
-          new SFTPClient( InetAddress.getByName( realServerName ), Const.toInt( realServerPort, DEFAULT_PORT ),
-              realUsername, realKeyFilename, realPassPhrase );
+          new SFTPClient(
+              InetAddress.getByName( realServerName ), Const.toInt( realServerPort, DEFAULT_PORT ), realUsername,
+              realKeyFilename, realPassPhrase );
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobSFTP.Log.OpenedConnection", realServerName, realServerPort,
-            realUsername ) );
+        logDetailed( BaseMessages.getString(
+            PKG, "JobSFTP.Log.OpenedConnection", realServerName, realServerPort, realUsername ) );
       }
 
       // Set compression
@@ -611,8 +613,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       String realProxyHost = environmentSubstitute( getProxyHost() );
       if ( !Const.isEmpty( realProxyHost ) ) {
         // Set proxy
-        sftpclient.setProxy( realProxyHost, environmentSubstitute( getProxyPort() ),
-            environmentSubstitute( getProxyUsername() ), environmentSubstitute( getProxyPassword() ), getProxyType() );
+        sftpclient.setProxy(
+            realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
+            environmentSubstitute( getProxyPassword() ), getProxyType() );
       }
 
       // login to ftp host ...
@@ -682,8 +685,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
           if ( isaddresult ) {
             // Add to the result files...
             ResultFile resultFile =
-                new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, this ),
-                    parentJob.getJobname(), toString() );
+                new ResultFile(
+                    ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, this ), parentJob
+                        .getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobSFTP.Log.FilenameAddedToResultFilenames", filelist[i] ) );

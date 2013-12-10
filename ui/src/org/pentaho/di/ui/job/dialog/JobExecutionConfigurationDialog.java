@@ -398,16 +398,18 @@ public class JobExecutionConfigurationDialog extends Dialog {
 
     ColumnInfo[] cVariables =
         {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.VariablesColumn.Argument" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.VariablesColumn.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.VariablesColumn.Argument" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Stepname
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.VariablesColumn.Value" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
         };
 
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
     wVariables =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false,
-            null, props );
+        new TableView(
+            jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null, props );
     FormData fdVariables = new FormData();
     fdVariables.left = new FormAttachment( 50, margin );
     fdVariables.right = new FormAttachment( 100, 0 );
@@ -428,19 +430,22 @@ public class JobExecutionConfigurationDialog extends Dialog {
 
     ColumnInfo[] cParams =
         {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ParamsColumn.Argument" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Argument
-          new ColumnInfo( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ParamsColumn.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Actual value
-          new ColumnInfo( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ParamsColumn.Default" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Default value
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ParamsColumn.Argument" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Argument
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ParamsColumn.Value" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Actual value
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ParamsColumn.Default" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Default value
         };
 
     String[] namedParams = jobMeta.listParameters();
     int nrParams = namedParams.length;
     wParams =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null,
-            props );
+        new TableView(
+            jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props );
     FormData fdParams = new FormData();
     fdParams.left = new FormAttachment( 0, 0 );
     fdParams.right = new FormAttachment( 50, -margin );
@@ -461,16 +466,18 @@ public class JobExecutionConfigurationDialog extends Dialog {
 
     ColumnInfo[] cArguments =
         {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Argument" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Argument" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Value" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
         };
 
     int nrArguments = configuration.getArguments() != null ? configuration.getArguments().size() : 10;
     wArguments =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, false,
-            null, props );
+        new TableView(
+            jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, false, null, props );
     FormData fdArguments = new FormData();
     fdArguments.left = new FormAttachment( 0, 0 );
     fdArguments.right = new FormAttachment( 50, -margin );

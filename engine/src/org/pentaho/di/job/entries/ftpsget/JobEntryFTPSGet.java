@@ -331,8 +331,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       success_condition =
           Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), SUCCESS_IF_NO_ERRORS );
       connectionType =
-          FTPSConnection.getConnectionTypeByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry,
-              "connection_type" ), "" ) );
+          FTPSConnection.getConnectionTypeByCode( Const.NVL( rep.getJobEntryAttributeString(
+              id_jobentry, "connection_type" ), "" ) );
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'FTPS' from the repository for id_jobentry="
           + id_jobentry, dbe );
@@ -344,7 +344,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "port", port );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "FTPSdirectory", FTPSDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "targetdirectory", targetDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -960,8 +961,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
                     connection.moveToFolder( file, realMoveToFolder );
 
                     if ( isDetailed() ) {
-                      logDetailed( BaseMessages.getString( PKG, "JobEntryFTPS.MovedFile", file.getName(),
-                          realMoveToFolder ) );
+                      logDetailed( BaseMessages.getString(
+                          PKG, "JobEntryFTPS.MovedFile", file.getName(), realMoveToFolder ) );
                     }
                   }
                 }
@@ -1157,8 +1158,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         }
 
         filename =
-            filename.substring( 0, lastindexOfDot ) + StringUtil.getFormattedDateTimeNow( true )
-                + filename.substring( lastindexOfDot, lenstring );
+            filename.substring( 0, lastindexOfDot )
+                + StringUtil.getFormattedDateTimeNow( true ) + filename.substring( lastindexOfDot, lenstring );
 
         return true;
       } else if ( ifFileExists == ifFileExistsFail ) {
@@ -1219,8 +1220,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+        this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );

@@ -60,20 +60,15 @@ public class Constant extends BaseStep implements StepInterface {
   private ConstantMeta meta;
   private ConstantData data;
 
-  public Constant( StepMeta stepMeta, StepDataInterface stepDataInterface,
-    int copyNr, TransMeta transMeta, Trans trans
-  ) {
+  public Constant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (ConstantMeta) getStepMeta().getStepMetaInterface();
     data = (ConstantData) stepDataInterface;
   }
 
-  public static final RowMetaAndData buildRow(
-    ConstantMeta meta,
-    ConstantData data,
-    List<CheckResultInterface> remarks
-  ) {
+  public static final RowMetaAndData
+    buildRow( ConstantMeta meta, ConstantData data, List<CheckResultInterface> remarks ) {
     RowMetaInterface rowMeta = new RowMeta();
     Object[] rowData = new Object[meta.getFieldName().length];
 
@@ -110,8 +105,8 @@ public class Constant extends BaseStep implements StepInterface {
             switch ( value.getType() ) {
               case ValueMetaInterface.TYPE_NUMBER:
                 try {
-                  if ( meta.getFieldFormat()[i] != null || meta.getDecimal()[i] != null || meta.getGroup()[i] != null
-                      || meta.getCurrency()[i] != null ) {
+                  if ( meta.getFieldFormat()[i] != null
+                      || meta.getDecimal()[i] != null || meta.getGroup()[i] != null || meta.getCurrency()[i] != null ) {
                     if ( meta.getFieldFormat()[i] != null && meta.getFieldFormat()[i].length() >= 1 ) {
                       data.df.applyPattern( meta.getFieldFormat()[i] );
                     }
@@ -131,8 +126,8 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = new Double( data.nf.parse( stringValue ).doubleValue() );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.Number", value.getName(),
-                          stringValue, e.toString() );
+                      BaseMessages.getString(
+                          PKG, "Constant.BuildRow.Error.Parsing.Number", value.getName(), stringValue, e.toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
@@ -151,8 +146,8 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = data.daf.parse( stringValue );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.Date", value.getName(),
-                          stringValue, e.toString() );
+                      BaseMessages.getString(
+                          PKG, "Constant.BuildRow.Error.Parsing.Date", value.getName(), stringValue, e.toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
@@ -162,8 +157,8 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = new Long( Long.parseLong( stringValue ) );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.Integer", value.getName(),
-                          stringValue, e.toString() );
+                      BaseMessages.getString(
+                          PKG, "Constant.BuildRow.Error.Parsing.Integer", value.getName(), stringValue, e.toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
@@ -173,8 +168,8 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = new BigDecimal( stringValue );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.BigNumber", value.getName(),
-                          stringValue, e.toString() );
+                      BaseMessages.getString(
+                          PKG, "Constant.BuildRow.Error.Parsing.BigNumber", value.getName(), stringValue, e.toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
@@ -193,19 +188,15 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = Timestamp.valueOf( stringValue );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.Timestamp", value.getName(),
-                          stringValue, e.toString() );
+                      BaseMessages.getString(
+                          PKG, "Constant.BuildRow.Error.Parsing.Timestamp", value.getName(), stringValue, e.toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
 
               default:
-                String message = BaseMessages.getString(
-                  PKG,
-                  "Constant.CheckResult.SpecifyTypeError",
-                  value.getName(),
-                  stringValue
-                );
+                String message =
+                    BaseMessages.getString( PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue );
                 remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
             }
           }
@@ -246,8 +237,8 @@ public class Constant extends BaseStep implements StepInterface {
     putRow( data.outputMeta, r );
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "Constant.Log.Wrote.Row", Long.toString( getLinesWritten() ),
-          getInputRowMeta().getString( r ) ) );
+      logRowlevel( BaseMessages.getString(
+          PKG, "Constant.Log.Wrote.Row", Long.toString( getLinesWritten() ), getInputRowMeta().getString( r ) ) );
     }
 
     if ( checkFeedback( getLinesWritten() ) ) {

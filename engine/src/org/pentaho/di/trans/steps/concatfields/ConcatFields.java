@@ -78,8 +78,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
       data.posTargetField = data.outputRowMeta.indexOfValue( meta.getTargetFieldName() );
       if ( data.posTargetField < 0 ) {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "ConcatFields.Error.TargetFieldNotFoundOutputStream", "" + meta.getTargetFieldName() ) );
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "ConcatFields.Error.TargetFieldNotFoundOutputStream", "" + meta.getTargetFieldName() ) );
       }
 
       if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) // See if we have to write a
@@ -120,8 +120,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
         for ( int i = 0; i < fieldNames.length - 1; i++ ) { // -1: don't search the new target field
           data.remainingFieldsInputOutputMapping[i] = data.inputRowMetaModified.indexOfValue( fieldNames[i] );
           if ( data.remainingFieldsInputOutputMapping[i] < 0 ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[i] ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[i] ) );
           }
         }
       }
@@ -148,8 +148,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
     }
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       if ( false == bEndedLineWrote ) {
         // add tag to last line if needed
         writeEndedLine();
@@ -172,8 +172,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     }
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "ConcatFields.Log.WriteRow" ) + getLinesWritten() + " : "
-          + data.outputRowMeta.getString( r ) );
+      logRowlevel( BaseMessages.getString( PKG, "ConcatFields.Log.WriteRow" )
+          + getLinesWritten() + " : " + data.outputRowMeta.getString( r ) );
     }
     if ( checkFeedback( getLinesRead() ) ) {
       if ( log.isBasic() ) {

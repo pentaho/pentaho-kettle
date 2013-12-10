@@ -201,8 +201,8 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
       onlydigits = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "onlydigits" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "CreditCardValidatorMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "CreditCardValidatorMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -216,8 +216,8 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
       onlydigits = rep.getStepAttributeBoolean( id_step, "onlydigits" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "CreditCardValidatorMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "CreditCardValidatorMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -264,13 +264,13 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CreditCardValidatorMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CreditCardValidatorMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CreditCardValidatorMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "CreditCardValidatorMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

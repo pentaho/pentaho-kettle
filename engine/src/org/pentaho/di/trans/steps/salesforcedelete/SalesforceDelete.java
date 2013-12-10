@@ -86,8 +86,8 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
       data.indexOfKeyField = getInputRowMeta().indexOfValue( realFieldName );
       if ( data.indexOfKeyField < 0 ) {
         // the field is unreachable!
-        throw new KettleException( BaseMessages.getString( PKG, "SalesforceDelete.Error.CanNotFindFDeleteKeyField",
-            realFieldName ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "SalesforceDelete.Error.CanNotFindFDeleteKeyField", realFieldName ) );
       }
     }
 

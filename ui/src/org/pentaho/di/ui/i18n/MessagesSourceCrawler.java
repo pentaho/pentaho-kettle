@@ -162,8 +162,8 @@ public class MessagesSourceCrawler {
 
     String sourceFolder = occ.getSourceFolder();
     if ( sourceFolder == null ) {
-      throw new RuntimeException( "No source folder found for key: " + occ.getKey() + " in package "
-          + occ.getMessagesPackage() );
+      throw new RuntimeException( "No source folder found for key: "
+          + occ.getKey() + " in package " + occ.getMessagesPackage() );
     }
     String messagesPackage = occ.getMessagesPackage();
 
@@ -249,9 +249,11 @@ public class MessagesSourceCrawler {
           //
           for ( SourceCrawlerXMLElement xmlElement : xmlFolder.getElements() ) {
 
-            addLabelOccurrences( xmlFolder.getDefaultSourceFolder(), fileObject, doc.getElementsByTagName( xmlElement
-                .getSearchElement() ), xmlFolder.getKeyPrefix(), xmlElement.getKeyTag(), xmlElement.getKeyAttribute(),
-                xmlFolder.getDefaultPackage(), xmlFolder.getPackageExceptions() );
+            addLabelOccurrences(
+                xmlFolder.getDefaultSourceFolder(), fileObject, doc
+                    .getElementsByTagName( xmlElement.getSearchElement() ), xmlFolder.getKeyPrefix(), xmlElement
+                    .getKeyTag(), xmlElement.getKeyAttribute(), xmlFolder.getDefaultPackage(), xmlFolder
+                    .getPackageExceptions() );
           }
         } catch ( KettleXMLException e ) {
           log.logError( "Unable to open XUL / XML document: " + fileObject );

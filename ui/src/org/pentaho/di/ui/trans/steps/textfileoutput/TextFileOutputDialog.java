@@ -403,8 +403,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( wFileComp, SWT.CHECK );
-    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString( PKG,
-        "TextFileOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+        PKG, "TextFileOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
@@ -642,9 +642,9 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "TextFileOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "TextFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                  PKG, "TextFileOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+                  PKG, "TextFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -1073,39 +1073,48 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.NameColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.TypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            ValueMeta.getTypes() );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.FormatColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, formats );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.FormatColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            formats );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.LengthColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.LengthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.PrecisionColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.PrecisionColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[5] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.CurrencyColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.CurrencyColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[6] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.DecimalColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.DecimalColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[7] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.GroupColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.GroupColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[8] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.TrimTypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.TrimTypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            ValueMeta.trimTypeDesc, true );
     colinf[9] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.NullColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TextFileOutputDialog.NullColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1213,16 +1222,18 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
           if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
+            wFilename.setText( dialog.getFilterPath()
+                + System.getProperty( "file.separator" )
                 + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
             wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
@@ -1407,8 +1418,9 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
           wFileNameField.setText( field );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

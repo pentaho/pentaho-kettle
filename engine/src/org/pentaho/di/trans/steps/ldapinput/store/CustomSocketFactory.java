@@ -98,8 +98,8 @@ public class CustomSocketFactory extends SSLSocketFactory {
         keyStore = KeyStore.getInstance( "JKS" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "KettleTrustManager.Exception.CouldNotCreateCertStore" ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "KettleTrustManager.Exception.CouldNotCreateCertStore" ), e );
     }
 
     trustManagers = new KettleTrustManager[] { new KettleTrustManager( keyStore, path, password ) };

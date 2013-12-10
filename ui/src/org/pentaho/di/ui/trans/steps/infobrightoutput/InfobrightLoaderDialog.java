@@ -183,8 +183,9 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
       }
     }
     serverConnection =
-        addStandardSelect( BaseMessages.getString( PKG, "InfobrightLoaderDialog.Connection.Label" ), wStepname,
-            ibConnections.toArray( new String[ibConnections.size()] ) );
+        addStandardSelect(
+            BaseMessages.getString( PKG, "InfobrightLoaderDialog.Connection.Label" ), wStepname, ibConnections
+                .toArray( new String[ibConnections.size()] ) );
 
     return serverConnection;
   }
@@ -209,16 +210,16 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
       availableCharsets[j++] = charsetName;
     }
     dataFormatSelect =
-        addStandardSelect( BaseMessages.getString( PKG, "InfobrightLoaderDialog.Dataformat.Label" ), prevControl,
-            dataformats );
+        addStandardSelect(
+            BaseMessages.getString( PKG, "InfobrightLoaderDialog.Dataformat.Label" ), prevControl, dataformats );
     targetSchemaText =
-        addStandardTextVar( BaseMessages.getString( PKG, "InfobrightLoaderDialog.TargetSchema.Label" ),
-            dataFormatSelect );
+        addStandardTextVar(
+            BaseMessages.getString( PKG, "InfobrightLoaderDialog.TargetSchema.Label" ), dataFormatSelect );
     targetTableText =
         addStandardTextVar( BaseMessages.getString( PKG, "InfobrightLoaderDialog.TargetTable.Label" ), targetSchemaText );
     charsetSelect =
-        addStandardSelect( BaseMessages.getString( PKG, "InfobrightLoaderDialog.Charset.Label" ), targetTableText,
-            availableCharsets );
+        addStandardSelect(
+            BaseMessages.getString( PKG, "InfobrightLoaderDialog.Charset.Label" ), targetTableText, availableCharsets );
     agentPortText =
         addStandardTextVar( BaseMessages.getString( PKG, "InfobrightLoaderDialog.AgentPort.Label" ), charsetSelect );
     debugFileText =
@@ -392,8 +393,9 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
       meta.setDebugFile( debugFileText.getText() );
       dispose();
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "InfobrightLoaderDialog.Illegal.Dialog.Settings.Title" ),
-          BaseMessages.getString( PKG, "InfobrightLoaderDialog.Illegal.Dialog.Settings.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "InfobrightLoaderDialog.Illegal.Dialog.Settings.Title" ), BaseMessages
+              .getString( PKG, "InfobrightLoaderDialog.Illegal.Dialog.Settings.Message" ), e );
     }
   }
 

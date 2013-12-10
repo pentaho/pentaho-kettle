@@ -285,8 +285,9 @@ public class TransMetricsDelegate extends SpoonDelegate {
     transGraph.getDisplay().asyncExec( new Runnable() {
       public void run() {
 
-        if ( metricsComposite != null && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed()
-            && transMetricsTab != null && !transMetricsTab.isDisposed() ) {
+        if ( metricsComposite != null
+            && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed() && transMetricsTab != null
+            && !transMetricsTab.isDisposed() ) {
           if ( transMetricsTab.isShowing() ) {
             canvas.redraw();
           }

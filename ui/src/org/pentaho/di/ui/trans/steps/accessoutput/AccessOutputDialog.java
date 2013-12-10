@@ -192,8 +192,8 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( shell, SWT.CHECK );
-    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString( PKG,
-        "AccessOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+        PKG, "AccessOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, margin );
@@ -365,8 +365,9 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
           dialog.setFileName( fname );
         }
 
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "AccessOutputDialog.FileType.AccessFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "AccessOutputDialog.FileType.AccessFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
           String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -460,24 +461,25 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
       File file = FileUtils.toFile( fileObject.getURL() );
 
       if ( !file.exists() || !file.isFile() ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AccessOutputMeta.Exception.FileDoesNotExist",
-            realFilename ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename ) );
       }
 
       database = Database.open( file );
       Set<String> set = database.getTableNames();
       String[] tablenames = set.toArray( new String[set.size()] );
       EnterSelectionDialog dialog =
-          new EnterSelectionDialog( shell, tablenames, BaseMessages.getString( PKG,
-              "AccessOutputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString( PKG,
-              "AccessOutputDialog.Dialog.SelectATable.Message" ) );
+          new EnterSelectionDialog( shell, tablenames, BaseMessages.getString(
+              PKG, "AccessOutputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString(
+              PKG, "AccessOutputDialog.Dialog.SelectATable.Message" ) );
       String tablename = dialog.open();
       if ( tablename != null ) {
         wTablename.setText( tablename );
       }
     } catch ( Throwable e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Title" ),
-          BaseMessages.getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Title" ), BaseMessages
+              .getString( PKG, "AccessOutputDialog.UnableToGetListOfTables.Message" ), e );
     } finally {
       // Don't forget to close the bugger.
       try {

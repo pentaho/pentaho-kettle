@@ -61,8 +61,8 @@ public class Janino extends BaseStep implements StepInterface {
     data = (JaninoData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -184,14 +184,15 @@ public class Janino extends BaseStep implements StepInterface {
             // Create the expression evaluator: is relatively slow so we do it only for the first row...
             //
             data.expressionEvaluators[m] = new ExpressionEvaluator();
-            data.expressionEvaluators[m].setParameters( parameterNames.toArray( new String[parameterNames.size()] ),
-                parameterTypes.toArray( new Class<?>[parameterTypes.size()] ) );
+            data.expressionEvaluators[m].setParameters(
+                parameterNames.toArray( new String[parameterNames.size()] ), parameterTypes
+                    .toArray( new Class<?>[parameterTypes.size()] ) );
             data.expressionEvaluators[m].setReturnType( Object.class );
             data.expressionEvaluators[m].setThrownExceptions( new Class<?>[] { Exception.class } );
             data.expressionEvaluators[m].cook( fn.getFormula() );
           } else {
-            throw new KettleException( "Unable to find field name for formula [" + Const.NVL( fn.getFormula(), "" )
-                + "]" );
+            throw new KettleException( "Unable to find field name for formula ["
+                + Const.NVL( fn.getFormula(), "" ) + "]" );
           }
         }
       }

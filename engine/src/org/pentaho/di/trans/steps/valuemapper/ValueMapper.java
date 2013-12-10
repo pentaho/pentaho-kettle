@@ -61,8 +61,8 @@ public class ValueMapper extends BaseStep implements StepInterface {
     // Get one row from one of the rowsets...
     //
     Object[] r = getRow();
-    if ( r == null ) // means: no more input to be expected...
-    {
+    if ( r == null ) { // means: no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -93,8 +93,8 @@ public class ValueMapper extends BaseStep implements StepInterface {
           if ( data.emptyFieldIndex < 0 ) {
             data.emptyFieldIndex = i;
           } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "ValueMapper.RuntimeError.OnlyOneEmptyMappingAllowed.VALUEMAPPER0004" ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "ValueMapper.RuntimeError.OnlyOneEmptyMappingAllowed.VALUEMAPPER0004" ) );
           }
         }
       }

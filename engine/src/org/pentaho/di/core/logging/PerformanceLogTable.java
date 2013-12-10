@@ -54,10 +54,11 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 
   public enum ID {
 
-    ID_BATCH( "ID_BATCH" ), SEQ_NR( "SEQ_NR" ), LOGDATE( "LOGDATE" ), TRANSNAME( "TRANSNAME" ), STEPNAME( "STEPNAME" ), STEP_COPY(
-        "STEP_COPY" ), LINES_READ( "LINES_READ" ), LINES_WRITTEN( "LINES_WRITTEN" ), LINES_UPDATED( "LINES_UPDATED" ), LINES_INPUT(
-        "LINES_INPUT" ), LINES_OUTPUT( "LINES_OUTPUT" ), LINES_REJECTED( "LINES_REJECTED" ), ERRORS( "ERRORS" ), INPUT_BUFFER_ROWS(
-        "INPUT_BUFFER_ROWS" ), OUTPUT_BUFFER_ROWS( "OUTPUT_BUFFER_ROWS" ), ;
+    ID_BATCH( "ID_BATCH" ), SEQ_NR( "SEQ_NR" ), LOGDATE( "LOGDATE" ), TRANSNAME( "TRANSNAME" ), STEPNAME( "STEPNAME" ),
+    STEP_COPY( "STEP_COPY" ), LINES_READ( "LINES_READ" ), LINES_WRITTEN( "LINES_WRITTEN" ), LINES_UPDATED(
+        "LINES_UPDATED" ), LINES_INPUT( "LINES_INPUT" ), LINES_OUTPUT( "LINES_OUTPUT" ), LINES_REJECTED(
+        "LINES_REJECTED" ), ERRORS( "ERRORS" ), INPUT_BUFFER_ROWS( "INPUT_BUFFER_ROWS" ), OUTPUT_BUFFER_ROWS(
+        "OUTPUT_BUFFER_ROWS" ), ;
 
     private String id;
 
@@ -142,51 +143,51 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
   public static PerformanceLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     PerformanceLogTable table = new PerformanceLogTable( space, databasesInterface );
 
-    table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.BatchID" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.BatchID" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
-    table.fields.add( new LogTableField( ID.SEQ_NR.id, true, false, "SEQ_NR", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.SeqNr" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.SeqNr" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
-    table.fields.add( new LogTableField( ID.LOGDATE.id, true, false, "LOGDATE", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.LogDate" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
-    table.fields.add( new LogTableField( ID.TRANSNAME.id, true, false, "TRANSNAME", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.TransName" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.TransName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.STEPNAME.id, true, false, "STEPNAME", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.StepName" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.StepName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.STEP_COPY.id, true, false, "STEP_COPY", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.StepCopy" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.StepCopy" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
-    table.fields.add( new LogTableField( ID.LINES_READ.id, true, false, "LINES_READ", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.LinesRead" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.LinesRead" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+    table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.BatchID" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.BatchID" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
+    table.fields.add( new LogTableField( ID.SEQ_NR.id, true, false, "SEQ_NR", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.SeqNr" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.SeqNr" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
+    table.fields.add( new LogTableField( ID.LOGDATE.id, true, false, "LOGDATE", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.LogDate" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+    table.fields.add( new LogTableField( ID.TRANSNAME.id, true, false, "TRANSNAME", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.TransName" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.TransName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.STEPNAME.id, true, false, "STEPNAME", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.StepName" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.StepName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.STEP_COPY.id, true, false, "STEP_COPY", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.StepCopy" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.StepCopy" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
+    table.fields.add( new LogTableField( ID.LINES_READ.id, true, false, "LINES_READ", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.LinesRead" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.LinesRead" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_WRITTEN.id, true, false, "LINES_WRITTEN", BaseMessages.getString(
-        PKG, "PerformanceLogTable.FieldName.LinesWritten" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.LinesWritten" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+        PKG, "PerformanceLogTable.FieldName.LinesWritten" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.LinesWritten" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_UPDATED.id, true, false, "LINES_UPDATED", BaseMessages.getString(
-        PKG, "PerformanceLogTable.FieldName.LinesUpdated" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.LinesUpdated" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
-    table.fields.add( new LogTableField( ID.LINES_INPUT.id, true, false, "LINES_INPUT", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.LinesInput" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.LinesInput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
-    table.fields.add( new LogTableField( ID.LINES_OUTPUT.id, true, false, "LINES_OUTPUT", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.LinesOutput" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.LinesOutput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+        PKG, "PerformanceLogTable.FieldName.LinesUpdated" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.LinesUpdated" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+    table.fields.add( new LogTableField( ID.LINES_INPUT.id, true, false, "LINES_INPUT", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.LinesInput" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.LinesInput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+    table.fields.add( new LogTableField( ID.LINES_OUTPUT.id, true, false, "LINES_OUTPUT", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.LinesOutput" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.LinesOutput" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.LINES_REJECTED.id, true, false, "LINES_REJECTED", BaseMessages.getString(
-        PKG, "PerformanceLogTable.FieldName.LinesRejected" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.LinesRejected" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
-    table.fields.add( new LogTableField( ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldName.Errors" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.Errors" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+        PKG, "PerformanceLogTable.FieldName.LinesRejected" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.LinesRejected" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+    table.fields.add( new LogTableField( ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldName.Errors" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.Errors" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.INPUT_BUFFER_ROWS.id, true, false, "INPUT_BUFFER_ROWS", BaseMessages
-        .getString( PKG, "PerformanceLogTable.FieldName.InputBufferRows" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.InputBufferRows" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+        .getString( PKG, "PerformanceLogTable.FieldName.InputBufferRows" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.InputBufferRows" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
     table.fields.add( new LogTableField( ID.OUTPUT_BUFFER_ROWS.id, true, false, "OUTPUT_BUFFER_ROWS", BaseMessages
-        .getString( PKG, "PerformanceLogTable.FieldName.OutputBufferRows" ), BaseMessages.getString( PKG,
-        "PerformanceLogTable.FieldDescription.OutputBufferRows" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
+        .getString( PKG, "PerformanceLogTable.FieldName.OutputBufferRows" ), BaseMessages.getString(
+        PKG, "PerformanceLogTable.FieldDescription.OutputBufferRows" ), ValueMetaInterface.TYPE_INTEGER, 18 ) );
 
     table.findField( ID.ID_BATCH.id ).setKey( true );
     table.findField( ID.LOGDATE.id ).setLogDateField( true );

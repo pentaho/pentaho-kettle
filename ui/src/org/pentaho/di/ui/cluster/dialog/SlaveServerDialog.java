@@ -540,8 +540,8 @@ public class SlaveServerDialog extends Dialog {
           new EnterTextDialog( shell, "XML", BaseMessages.getString( PKG, "SlaveServer.RetournedXMLInfo" ), message );
       dialog.open();
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SlaveServer.ExceptionError" ), BaseMessages.getString( PKG,
-          "SlaveServer.ExceptionUnableGetReplay.Error1" )
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "SlaveServer.ExceptionError" ), BaseMessages.getString(
+          PKG, "SlaveServer.ExceptionUnableGetReplay.Error1" )
           + slaveServer.getHostname() + BaseMessages.getString( PKG, "SlaveServer.ExceptionUnableGetReplay.Error2" ), e );
     }
   }

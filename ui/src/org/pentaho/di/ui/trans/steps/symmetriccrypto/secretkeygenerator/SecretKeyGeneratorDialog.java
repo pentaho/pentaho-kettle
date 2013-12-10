@@ -216,8 +216,8 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
     fdlSecretKeyLengthField.top = new FormAttachment( wAlgorithmField, margin );
     wlSecretKeyLengthField.setLayoutData( fdlSecretKeyLengthField );
     wSecretKeyLengthField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wSecretKeyLengthField.setToolTipText( BaseMessages.getString( PKG,
-        "SecretKeyGeneratorDialog.SecretKeyLength.Tooltip" ) );
+    wSecretKeyLengthField.setToolTipText( BaseMessages.getString(
+        PKG, "SecretKeyGeneratorDialog.SecretKeyLength.Tooltip" ) );
     props.setLook( wSecretKeyLengthField );
     wSecretKeyLengthField.addModifyListener( lsMod );
     fdSecretKeyLengthField = new FormData();
@@ -235,8 +235,8 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
     fdlOutputKeyAsByinary.right = new FormAttachment( middle, -margin );
     wlOutputKeyAsByinary.setLayoutData( fdlOutputKeyAsByinary );
     wOutputKeyAsByinary = new Button( wOutputFields, SWT.CHECK );
-    wOutputKeyAsByinary.setToolTipText( BaseMessages.getString( PKG,
-        "SecretKeyGeneratorDialog.OutputKeyAsByinary.Tooltip" ) );
+    wOutputKeyAsByinary.setToolTipText( BaseMessages.getString(
+        PKG, "SecretKeyGeneratorDialog.OutputKeyAsByinary.Tooltip" ) );
     props.setLook( wOutputKeyAsByinary );
     fdOutputKeyAsByinary = new FormData();
     fdOutputKeyAsByinary.left = new FormAttachment( middle, 0 );
@@ -271,20 +271,24 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.AlgorithmColumn.Column" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.AlgorithmColumn.Column" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, SymmetricCryptoMeta.TYPE_ALGORYTHM_CODE );
     colinf[0].setReadOnly( true );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.SchemeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.SchemeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[1].setUsingVariables( true );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.SecretKeyLengthColumn.Column" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.SecretKeyLengthColumn.Column" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[2].setUsingVariables( true );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.HowMany.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.HowMany.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[3].setUsingVariables( true );
 
     wFields =
@@ -452,15 +456,15 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
       TransMeta previewMeta =
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "SecretKeyGeneratorDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "SecretKeyGeneratorDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "SecretKeyGeneratorDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "SecretKeyGeneratorDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -469,24 +473,25 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogTitle" ),
+          BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

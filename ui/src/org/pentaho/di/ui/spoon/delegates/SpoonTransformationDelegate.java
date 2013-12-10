@@ -178,8 +178,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         TransGraph transGraph = new TransGraph( spoon.tabfolder.getSwtTabset(), spoon, transMeta );
         TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName );
         String toolTipText =
-            BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName( transMeta,
-                showLocation ) );
+            BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(
+                transMeta, showLocation ) );
         if ( !Const.isEmpty( transMeta.getFilename() ) ) {
           toolTipText += Const.CR + Const.CR + transMeta.getFilename();
         }
@@ -189,8 +189,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         TransLogTable logTable = transMeta.getTransLogTable();
 
         // OK, also see if we need to open a new history window.
-        if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() )
-            && !transMeta.isSlaveTransformation() ) {
+        if ( logTable.getDatabaseMeta() != null
+            && !Const.isEmpty( logTable.getTableName() ) && !transMeta.isSlaveTransformation() ) {
           transGraph.addAllTabs();
           transGraph.extraViewTabFolder.setSelection( transGraph.transHistoryDelegate.getTransHistoryTab() );
         }
@@ -198,7 +198,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         String versionLabel = transMeta.getObjectRevision() == null ? null : transMeta.getObjectRevision().getName();
 
         tabEntry =
-            new TabMapEntry( tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(),
+            new TabMapEntry(
+                tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(),
                 versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH );
         tabEntry.setShowingLocation( showLocation );
 
@@ -843,8 +844,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
     if ( execConfigAnswer ) {
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
-      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
-          executionConfiguration );
+      ExtensionPointHandler.callExtensionPoint(
+          log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id, executionConfiguration );
 
       // Verify if there is at least one step specified to debug or preview...
       //
@@ -911,8 +912,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       }
     } );
 
-    thread.setName( "Monitor remote transformation '" + transMeta.getName() + "', carte object id=" + carteObjectId
-        + ", slave server: " + remoteSlaveServer.getName() );
+    thread.setName( "Monitor remote transformation '"
+        + transMeta.getName() + "', carte object id=" + carteObjectId + ", slave server: "
+        + remoteSlaveServer.getName() );
     thread.start();
 
   }
@@ -932,9 +934,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       SlaveServer[] slaves = transSplitter.getSlaveTargets();
 
       if ( executionConfiguration.isClusterShowingTransformation() ) {
-        if ( masterSteps.size() > 0 ) // If there is something that needs to
-        // be done on the master...
-        {
+        if ( masterSteps.size() > 0 ) {
+          // If there is something that needs to be done on the master...
           masterServer = transSplitter.getMasterServer();
           addTransGraph( master );
         }
@@ -949,10 +950,12 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
       // Inject certain internal variables to make it more intuitive.
       //
-      for ( String var : Const.INTERNAL_TRANS_VARIABLES )
+      for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
         executionConfiguration.getVariables().put( var, transMeta.getVariable( var ) );
-      for ( String var : Const.INTERNAL_JOB_VARIABLES )
+      }
+      for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
         executionConfiguration.getVariables().put( var, transMeta.getVariable( var ) );
+      }
 
       // Parameters override the variables.
       // For the time being we're passing the parameters over the wire as variables...

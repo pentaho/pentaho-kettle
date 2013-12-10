@@ -99,8 +99,8 @@ public class LoggingBuffer {
               LoggingObjectInterface loggingObject =
                   LoggingRegistry.getInstance().getLoggingObject( message.getLogChannelId() );
 
-              if ( loggingObject != null && includeGeneral
-                  && LoggingObjectType.GENERAL.equals( loggingObject.getObjectType() ) ) {
+              if ( loggingObject != null
+                  && includeGeneral && LoggingObjectType.GENERAL.equals( loggingObject.getObjectType() ) ) {
                 include = true;
               }
 

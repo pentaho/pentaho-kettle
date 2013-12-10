@@ -460,7 +460,9 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "port", port );
       rep.saveStepAttribute( id_transformation, id_step, "servername", serverName );
       rep.saveStepAttribute( id_transformation, id_step, "userName", userName );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveStepAttribute( id_transformation, id_step, "password", Encr
+              .encryptPasswordIfNotUsingVariables( password ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "usePrivateKey", usePrivateKey );
       rep.saveStepAttribute( id_transformation, id_step, "keyFileName", keyFileName );
@@ -526,13 +528,13 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SSHMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SSHMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SSHMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SSHMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

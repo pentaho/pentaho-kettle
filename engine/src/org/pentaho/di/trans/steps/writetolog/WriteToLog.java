@@ -60,8 +60,8 @@ public class WriteToLog extends BaseStep implements StepInterface {
     data = (WriteToLogData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -102,8 +102,8 @@ public class WriteToLog extends BaseStep implements StepInterface {
     } // end if first
 
     StringBuffer out = new StringBuffer();
-    out.append( Const.CR + "------------> "
-        + BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" + getLinesRead() )
+    out.append( Const.CR
+        + "------------> " + BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" + getLinesRead() )
         + "------------------------------" + Const.CR );
 
     out.append( getRealLogMessage() );

@@ -116,8 +116,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         // set the file name for this row
         //
         if ( data.fileNameFieldIndex < 0 ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "TextFileOutput.Exception.FileNameFieldNotFound",
-              meta.getFileNameField() ) ); // $NON-NLS-1$
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "TextFileOutput.Exception.FileNameFieldNotFound", meta.getFileNameField() ) ); // $NON-NLS-1$
         }
 
         data.fileNameMeta = getInputRowMeta().getValueMeta( data.fileNameFieldIndex );
@@ -143,8 +143,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.fieldnrs[i] = data.outputRowMeta.indexOfValue( meta.getOutputFields()[i].getName() );
         if ( data.fieldnrs[i] < 0 ) {
-          throw new KettleStepException( "Field [" + meta.getOutputFields()[i].getName()
-              + "] couldn't be found in the input stream!" );
+          throw new KettleStepException( "Field ["
+              + meta.getOutputFields()[i].getName() + "] couldn't be found in the input stream!" );
         }
       }
     }
@@ -286,7 +286,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   private byte[] formatField( ValueMetaInterface v, Object valueData ) throws KettleValueException {
     if ( v.isString() ) {
-      if ( v.isStorageBinaryString() && v.getTrimType() == ValueMetaInterface.TRIM_TYPE_NONE && v.getLength() < 0
+      if ( v.isStorageBinaryString()
+          && v.getTrimType() == ValueMetaInterface.TRIM_TYPE_NONE && v.getLength() < 0
           && Const.isEmpty( v.getStringEncoding() ) ) {
         return (byte[]) valueData;
       } else {
@@ -505,14 +506,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             data.writer.write( data.binarySeparator );
           }
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
+                  fieldName.getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
           data.writer.write( getBinaryString( fieldName ) );
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
+                  fieldName.getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
         }
@@ -526,14 +527,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           ValueMetaInterface v = r.getValueMeta( i );
 
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
+                  v.getName().getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
           data.writer.write( getBinaryString( v.getName() ) );
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
+                  v.getName().getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
         }
@@ -551,8 +552,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   public String buildFilename( String filename, boolean ziparchive ) {
-    return meta.buildFilename( filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr,
-        ziparchive, meta );
+    return meta.buildFilename(
+        filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta );
   }
 
   public void openNewFile( String baseFilename ) throws KettleException {
@@ -680,8 +681,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( meta.isAddToResultFiles() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ),
-              getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ), getTransMeta()
+              .getName(), getStepname() );
       if ( resultFile != null ) {
         resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
         addResultFile( resultFile );
@@ -984,18 +985,16 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
       } else {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG,
-                  "TextFileOutput.Log.ParentFolderNotExist", parentfolder.getName() ) );
+          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist", parentfolder.getName() ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG,
-                    "TextFileOutput.Log.ParentFolderCreated", parentfolder.getName() ) );
+            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated", parentfolder.getName() ) );
           }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",
-              parentfolder.getName(), filename ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt", parentfolder.getName(), filename ) );
         }
       }
     } finally {
@@ -1009,7 +1008,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
-  protected FileObject getFileObject( String vfsFilename) throws KettleFileException {
+  protected FileObject getFileObject( String vfsFilename ) throws KettleFileException {
     return KettleVFS.getFileObject( vfsFilename );
   }
 
@@ -1021,6 +1020,5 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     throws KettleFileException {
     return KettleVFS.getOutputStream( vfsFilename, space, append );
   }
-
 
 }

@@ -282,8 +282,8 @@ public class SqlTransExecutor {
       case ValueMetaInterface.TYPE_BOOLEAN:
         return right.getValueMeta().getBoolean( right.getValueData() ) ? "TRUE" : "FALSE";
       default:
-        throw new KettleValueException( "Unsupported conversion of value from " + right.getValueMeta().toStringMeta()
-            + " to SQL" );
+        throw new KettleValueException( "Unsupported conversion of value from "
+            + right.getValueMeta().toStringMeta() + " to SQL" );
     }
   }
 
@@ -329,7 +329,8 @@ public class SqlTransExecutor {
 
     switch ( atomicCondition.getFunction() ) {
       case Condition.FUNC_EQUAL:
-        sql.append( "'" ).append( fieldName ).append( "' : " )
+        sql
+            .append( "'" ).append( fieldName ).append( "' : " )
             .append( getJsonString( atomicCondition.getRightExact() ) );
         break;
       case Condition.FUNC_NOT_EQUAL:
@@ -393,8 +394,8 @@ public class SqlTransExecutor {
       case ValueMetaInterface.TYPE_DATE:
         return "{ $date : \"" + jsonDateFormat.format( meta.getBigNumber( data ) ) + "\" }";
       default:
-        throw new KettleValueException( "Converting data type " + meta.toStringMeta()
-            + " to a JSON value is not yet supported" );
+        throw new KettleValueException( "Converting data type "
+            + meta.toStringMeta() + " to a JSON value is not yet supported" );
     }
   }
 
@@ -595,8 +596,8 @@ public class SqlTransExecutor {
         transMeta.getLogChannel().logDetailed(
             "Service transformation was loaded from repository for service [" + service.getName() + "]" );
       } catch ( Exception e ) {
-        throw new KettleException( "Unable to load service transformation for service '" + serviceName
-            + "' from the repository", e );
+        throw new KettleException( "Unable to load service transformation for service '"
+            + serviceName + "' from the repository", e );
       }
     }
     return transMeta;

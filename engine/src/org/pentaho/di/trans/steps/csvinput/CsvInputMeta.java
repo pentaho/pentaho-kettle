@@ -176,8 +176,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         inputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, getXmlCode( "FIELD_LENGTH" ) ), -1 ) );
         inputFields[i]
             .setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, getXmlCode( "FIELD_PRECISION" ) ), -1 ) );
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode,
-            getXmlCode( "FIELD_TRIM_TYPE" ) ) ) );
+        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue(
+            fnode, getXmlCode( "FIELD_TRIM_TYPE" ) ) ) );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -202,8 +202,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     retval.append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "LAZY_CONVERSION" ), lazyConversionActive ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "ADD_FILENAME_RESULT" ), isaddresult ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "PARALLEL" ), runningInParallel ) );
-    retval.append( "    " )
-        .append( XMLHandler.addTagValue( getXmlCode( "NEWLINE_POSSIBLE" ), newlinePossibleInFields ) );
+    retval
+        .append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "NEWLINE_POSSIBLE" ), newlinePossibleInFields ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( getXmlCode( "ENCODING" ), encoding ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( getXmlCode( "FIELDS" ) ) ).append( Const.CR );
@@ -219,8 +219,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
           XMLHandler.addTagValue( getXmlCode( "FIELD_CURRENCY" ), field.getCurrencySymbol() ) );
       retval.append( "        " ).append(
           XMLHandler.addTagValue( getXmlCode( "FIELD_DECIMAL" ), field.getDecimalSymbol() ) );
-      retval.append( "        " )
-          .append( XMLHandler.addTagValue( getXmlCode( "FIELD_GROUP" ), field.getGroupSymbol() ) );
+      retval
+          .append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_GROUP" ), field.getGroupSymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_LENGTH" ), field.getLength() ) );
       retval.append( "        " ).append(
           XMLHandler.addTagValue( getXmlCode( "FIELD_PRECISION" ), field.getPrecision() ) );
@@ -267,8 +267,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         inputFields[i].setGroupSymbol( rep.getStepAttributeString( id_step, i, getRepCode( "FIELD_GROUP" ) ) );
         inputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, getRepCode( "FIELD_LENGTH" ) ) );
         inputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, getRepCode( "FIELD_PRECISION" ) ) );
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
-            getRepCode( "FIELD_TRIM_TYPE" ) ) ) );
+        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString(
+            id_step, i, getRepCode( "FIELD_TRIM_TYPE" ) ) ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -299,7 +299,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "FIELD_TYPE" ), ValueMeta.getTypeDesc( field
             .getType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "FIELD_FORMAT" ), field.getFormat() );
-        rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "FIELD_CURRENCY" ), field.getCurrencySymbol() );
+        rep
+            .saveStepAttribute( id_transformation, id_step, i, getRepCode( "FIELD_CURRENCY" ), field
+                .getCurrencySymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "FIELD_DECIMAL" ), field.getDecimalSymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "FIELD_GROUP" ), field.getGroupSymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "FIELD_LENGTH" ), field.getLength() );
@@ -378,26 +380,26 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CsvInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CsvInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CsvInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "CsvInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CsvInputMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "CsvInputMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -762,8 +764,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         } else if ( attr.getKey().equals( "ENCODING" ) ) {
           encoding = (String) entry.getValue();
         } else {
-          throw new RuntimeException( "Unhandled metadata injection of attribute: " + attr.toString() + " - "
-              + attr.getDescription() );
+          throw new RuntimeException( "Unhandled metadata injection of attribute: "
+              + attr.toString() + " - " + attr.getDescription() );
         }
       } else {
         if ( attr.getKey().equals( "FIELDS" ) ) {
@@ -801,8 +803,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
               } else if ( fieldAttr.getKey().equals( "FIELD_TRIM_TYPE" ) ) {
                 inputField.setTrimType( ValueMeta.getTrimTypeByCode( attributeValue ) );
               } else {
-                throw new RuntimeException( "Unhandled metadata injection of attribute: " + fieldAttr.toString()
-                    + " - " + fieldAttr.getDescription() );
+                throw new RuntimeException( "Unhandled metadata injection of attribute: "
+                    + fieldAttr.toString() + " - " + fieldAttr.getDescription() );
               }
             }
 

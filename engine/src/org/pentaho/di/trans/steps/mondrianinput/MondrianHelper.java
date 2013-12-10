@@ -100,8 +100,8 @@ public class MondrianHelper {
 
     if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
       DataSource dataSource =
-          DataSourceProviderFactory.getDataSourceProviderInterface()
-              .getNamedDataSource( databaseMeta.getDatabaseName() );
+          DataSourceProviderFactory
+              .getDataSourceProviderInterface().getNamedDataSource( databaseMeta.getDatabaseName() );
       mondrian.olap.Util.PropertyList propList = new mondrian.olap.Util.PropertyList();
       propList.put( "Provider", "mondrian" );
       propList.put( "Catalog", space.environmentSubstitute( catalog ) );
@@ -114,7 +114,8 @@ public class MondrianHelper {
     } else {
 
       String connectString =
-          "Provider=mondrian;" + "Jdbc='" + space.environmentSubstitute( databaseMeta.getURL() ) + "';" + "Catalog='"
+          "Provider=mondrian;"
+              + "Jdbc='" + space.environmentSubstitute( databaseMeta.getURL() ) + "';" + "Catalog='"
               + space.environmentSubstitute( catalog ) + "';" + "JdbcDrivers="
               + space.environmentSubstitute( databaseMeta.getDriverClass() ) + ";";
 

@@ -65,8 +65,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static final String YES = "Y";
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   public static final String AT = "@";
@@ -1004,8 +1004,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setXPath( rep.getStepAttributeString( id_step, i, "field_xpath" ) );
-        field.setElementType( GetXMLDataField.getElementTypeByCode( rep.getStepAttributeString( id_step, i,
-            "element_type" ) ) );
+        field.setElementType( GetXMLDataField.getElementTypeByCode( rep.getStepAttributeString(
+            id_step, i, "element_type" ) ) );
         field.setResultType( GetXMLDataField.getResultTypeByCode( rep
             .getStepAttributeString( id_step, i, "result_type" ) ) );
         field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
@@ -1094,7 +1094,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+      rep
+          .saveStepAttribute(
+              id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
@@ -1105,8 +1107,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFileList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -1126,40 +1128,40 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we get input...
     if ( input.length <= 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetXMLDataMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetXMLDataMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetXMLDataMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetXMLDataMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
     // control Xpath
     if ( getLoopXPath() == null || Const.isEmpty( getLoopXPath() ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetXMLDataMeta.CheckResult.NoLoopXpath" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetXMLDataMeta.CheckResult.NoLoopXpath" ), stepMeta );
       remarks.add( cr );
     }
     if ( getInputFields().length <= 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetXMLDataMeta.CheckResult.NoInputField" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetXMLDataMeta.CheckResult.NoInputField" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( isInFields() ) {
       if ( Const.isEmpty( getXMLField() ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetXMLDataMeta.CheckResult.NoField" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetXMLDataMeta.CheckResult.NoField" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetXMLDataMeta.CheckResult.FieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetXMLDataMeta.CheckResult.FieldOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
@@ -1167,13 +1169,13 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       // String files[] = getFiles();
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetXMLDataMeta.CheckResult.NoFiles" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetXMLDataMeta.CheckResult.NoFiles" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetXMLDataMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetXMLDataMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
         remarks.add( cr );
       }
     }

@@ -59,8 +59,8 @@ import org.w3c.dom.Node;
 public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   private static final String NO = "N";
@@ -790,8 +790,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
         LoadFileInputField field = new LoadFileInputField();
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        field.setElementType( LoadFileInputField.getElementTypeByCode( rep.getStepAttributeString( id_step, i,
-            "element_type" ) ) );
+        field.setElementType( LoadFileInputField.getElementTypeByCode( rep.getStepAttributeString(
+            id_step, i, "element_type" ) ) );
         field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
@@ -799,8 +799,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( LoadFileInputField.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
-            "field_trim_type" ) ) );
+        field.setTrimType( LoadFileInputField.getTrimTypeByCode( rep.getStepAttributeString(
+            id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         inputFields[i] = field;
@@ -863,7 +863,9 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+      rep
+          .saveStepAttribute(
+              id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
@@ -875,8 +877,8 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFileList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -896,26 +898,26 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     // See if we get input...
     if ( input.length <= 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LoadFileInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "LoadFileInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "LoadFileInputMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "LoadFileInputMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( getIsInFields() ) {
       if ( Const.isEmpty( getDynamicFilenameField() ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "LoadFileInputMeta.CheckResult.NoField" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "LoadFileInputMeta.CheckResult.NoField" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "LoadFileInputMeta.CheckResult.FieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "LoadFileInputMeta.CheckResult.FieldOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
@@ -923,13 +925,13 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "LoadFileInputMeta.CheckResult.NoFiles" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "LoadFileInputMeta.CheckResult.NoFiles" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "LoadFileInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "LoadFileInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
         remarks.add( cr );
       }
     }

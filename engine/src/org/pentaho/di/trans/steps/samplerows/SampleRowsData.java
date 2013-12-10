@@ -45,9 +45,6 @@ public class SampleRowsData extends BaseStepData implements StepDataInterface {
   public int NrPrevFields;
   public boolean considerRow;
 
-  /**
-	 * 
-	 */
   public SampleRowsData() {
     super();
     range = new HashSet<Integer>();

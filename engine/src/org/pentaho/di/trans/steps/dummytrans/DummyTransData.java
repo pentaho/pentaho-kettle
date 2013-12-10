@@ -32,9 +32,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class DummyTransData extends BaseStepData implements StepDataInterface {
 
-  /**
-	 * 
-	 */
   public DummyTransData() {
     super();
   }

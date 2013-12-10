@@ -182,8 +182,9 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
 
     // Server port line
     wServerName =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SyslogMessageDialog.Server.Label" ),
-            BaseMessages.getString( PKG, "SyslogMessageDialog.Server.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SyslogMessageDialog.Server.Label" ), BaseMessages
+                .getString( PKG, "SyslogMessageDialog.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -194,8 +195,9 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
 
     // Server port line
     wPort =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SyslogMessageDialog.Port.Label" ),
-            BaseMessages.getString( PKG, "SyslogMessageDialog.Port.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SyslogMessageDialog.Port.Label" ), BaseMessages
+                .getString( PKG, "SyslogMessageDialog.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -527,8 +529,9 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
           }
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

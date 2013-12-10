@@ -69,8 +69,8 @@ public class Denormaliser extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // get row!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       handleLastRow();
       setOutputDone();
       return false;
@@ -285,8 +285,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
       // Get all the indexes for the given key value...
       //
       List<Integer> indexes = data.keyValue.get( key );
-      if ( indexes != null ) // otherwise we're not interested.
-      {
+      if ( indexes != null ) { // otherwise we're not interested.
         for ( int i = 0; i < indexes.size(); i++ ) {
           Integer keyNr = indexes.get( i );
           if ( keyNr != null ) {

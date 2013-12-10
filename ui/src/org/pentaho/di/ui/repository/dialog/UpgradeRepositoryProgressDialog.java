@@ -102,8 +102,8 @@ public class UpgradeRepositoryProgressDialog {
 
         } catch ( KettleException e ) {
           log.logError( toString(), Const.getStackTracker( e ) );
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage() ) );
+          throw new InvocationTargetException( e, BaseMessages.getString(
+              PKG, "UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage() ) );
         }
       }
     };

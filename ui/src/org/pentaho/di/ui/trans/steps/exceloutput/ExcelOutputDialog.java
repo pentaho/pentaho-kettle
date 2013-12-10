@@ -571,9 +571,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "ExcelOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "ExcelOutputDialog.SelectOutputFiles.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                  PKG, "ExcelOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+                  PKG, "ExcelOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -1255,8 +1255,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         if ( wImage.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wImage.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "ExcelOutputDialog.FileType.PNGFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "ExcelOutputDialog.FileType.PNGFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wImage.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
@@ -1430,31 +1431,34 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     // Prepare a list of possible formats...
     String[] formats =
         new String[] {
-          // Numbers
-          "#", "0", "0.00", "#,##0", "#,##0.00", "$#,##0;($#,##0)", "$#,##0;($#,##0)", "$#,##0;($#,##0)",
-          "$#,##0;($#,##0)", "0%", "0.00%", "0.00E00", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)",
-          "#,##0.00;(#,##0.00)", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)", "#,##0.00;(#,##0.00)",
-          "#,##0.00;(#,##0.00)", "##0.0E0",
+            // Numbers
+            "#", "0", "0.00", "#,##0", "#,##0.00", "$#,##0;($#,##0)", "$#,##0;($#,##0)", "$#,##0;($#,##0)",
+            "$#,##0;($#,##0)", "0%", "0.00%", "0.00E00", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)",
+            "#,##0.00;(#,##0.00)", "#,##0;(#,##0)", "#,##0;(#,##0)", "#,##0.00;(#,##0.00)", "#,##0.00;(#,##0.00)",
+            "#,##0.00;(#,##0.00)", "##0.0E0",
 
-          // Forces text
-          "@",
+            // Forces text
+            "@",
 
-          // Dates
-          "M/d/yy", "d-MMM-yy", "d-MMM", "MMM-yy", "h:mm a", "h:mm:ss a", "H:mm", "H:mm:ss", "M/d/yy H:mm", "mm:ss",
-          "H:mm:ss", "H:mm:ss", };
+            // Dates
+            "M/d/yy", "d-MMM-yy", "d-MMM", "MMM-yy", "h:mm a", "h:mm:ss a", "H:mm", "H:mm:ss", "M/d/yy H:mm", "mm:ss",
+            "H:mm:ss", "H:mm:ss", };
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelOutputDialog.NameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelOutputDialog.TypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelOutputDialog.FormatColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, formats ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelOutputDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelOutputDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelOutputDialog.FormatColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                formats ), };
 
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1567,8 +1571,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
@@ -1582,11 +1587,12 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         if ( wTemplateFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wTemplateFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.ExcelFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
-          wTemplateFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
-              + dialog.getFileName() );
+          wTemplateFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );

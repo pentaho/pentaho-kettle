@@ -34,9 +34,6 @@ public class SystemDataData extends BaseStepData implements StepDataInterface {
   public boolean readsRows;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public SystemDataData() {
     super();
   }

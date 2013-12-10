@@ -157,8 +157,8 @@ public class TextVar extends Composite {
   private ModifyListener getModifyListenerTooltipText( final Text textField ) {
     return new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        if ( textField.getEchoChar() == '\0' ) // Can't show passwords ;-)
-        {
+        if ( textField.getEchoChar() == '\0' ) { // Can't show passwords ;-)
+
           String tip = textField.getText();
           if ( !Const.isEmpty( tip ) && !Const.isEmpty( toolTipText ) ) {
             tip += Const.CR + Const.CR + toolTipText;

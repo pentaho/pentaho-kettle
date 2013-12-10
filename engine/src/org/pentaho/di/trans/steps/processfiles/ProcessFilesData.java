@@ -37,9 +37,6 @@ public class ProcessFilesData extends BaseStepData implements StepDataInterface 
   public FileObject sourceFile;
   public FileObject targetFile;
 
-  /**
-	 * 
-	 */
   public ProcessFilesData() {
     super();
     indexOfSourceFilename = -1;

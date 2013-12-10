@@ -65,12 +65,12 @@ public class JobEntryDTDValidatorDialog extends JobEntryDialog implements JobEnt
   private static Class<?> PKG = JobEntryDTDValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final String[] FILETYPES_XML = new String[] {
-    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Xml" ),
-    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Xml" ),
+      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
 
   private static final String[] FILETYPES_DTD = new String[] {
-    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Dtd" ),
-    BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.Dtd" ),
+      BaseMessages.getString( PKG, "JobEntryDTDValidator.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;

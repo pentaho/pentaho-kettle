@@ -57,9 +57,6 @@ public class MailInputData extends BaseStepData implements StepDataInterface {
   public Integer start;
   public Integer end;
 
-  /**
-	 * 
-	 */
   public MailInputData() {
     super();
     mailConn = null;

@@ -429,11 +429,11 @@ public class EnterListDialog extends Dialog {
     for ( int i = 0; i < input.length; i++ ) {
       Integer idx = Integer.valueOf( i );
       String str = selection.get( idx );
-      if ( str == null ) // Not selected: show in source!
-      {
+      if ( str == null ) {
+        // Not selected: show in source!
         wListSource.add( input[i] );
-      } else // Selected, show in destination!
-      {
+      } else {
+        // Selected, show in destination!
         wListDest.add( input[i] );
       }
     }

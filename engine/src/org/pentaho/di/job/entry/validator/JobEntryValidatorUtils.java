@@ -151,8 +151,8 @@ public class JobEntryValidatorUtils {
 
     try {
       if ( null == mask ) {
-        addGeneralRemark( source, propertyName, VALIDATOR_NAME, remarks, "errors.missingVar",
-            CheckResultInterface.TYPE_RESULT_ERROR );
+        addGeneralRemark(
+            source, propertyName, VALIDATOR_NAME, remarks, "errors.missingVar", CheckResultInterface.TYPE_RESULT_ERROR );
         return false;
       }
 
@@ -177,8 +177,8 @@ public class JobEntryValidatorUtils {
   public static void addExceptionRemark( CheckResultSourceInterface source, String propertyName, String validatorName,
       List<CheckResultInterface> remarks, Exception e ) {
     String key = "messages.failed.unableToValidate";
-    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString( key,
-        propertyName, e.getClass().getSimpleName() + ": " + e.getLocalizedMessage() ), source ) );
+    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString(
+        key, propertyName, e.getClass().getSimpleName() + ": " + e.getLocalizedMessage() ), source ) );
   }
 
   public static void addGeneralRemark( CheckResultSourceInterface source, String propertyName, String validatorName,
@@ -197,8 +197,8 @@ public class JobEntryValidatorUtils {
         substr += "...";
       }
     }
-    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_OK, ValidatorMessages.getString( "messages.passed",
-        propertyName, substr ), source ) );
+    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_OK, ValidatorMessages.getString(
+        "messages.passed", propertyName, substr ), source ) );
   }
 
 }

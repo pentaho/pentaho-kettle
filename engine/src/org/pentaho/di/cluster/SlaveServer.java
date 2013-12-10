@@ -476,8 +476,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       // Release current connection to the connection pool once you are done
       post.releaseConnection();
       if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG, "SlaveServer.DETAILED_SentXmlToService", service,
-            environmentSubstitute( hostname ) ) );
+        log.logDetailed( BaseMessages.getString(
+            PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute( hostname ) ) );
       }
     }
   }
@@ -500,7 +500,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     if ( type != null && load != null ) {
       serviceUrl =
           serviceUrl +=
-              "/?" + AddExportServlet.PARAMETER_TYPE + "=" + type + "&" + AddExportServlet.PARAMETER_LOAD + "="
+              "/?"
+                  + AddExportServlet.PARAMETER_TYPE + "=" + type + "&" + AddExportServlet.PARAMETER_LOAD + "="
                   + URLEncoder.encode( load, "UTF-8" );
     }
 
@@ -583,8 +584,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         // Release current connection to the connection pool once you are done
         putMethod.releaseConnection();
         if ( log.isDetailed() ) {
-          log.logDetailed( BaseMessages.getString( PKG, "SlaveServer.DETAILED_SentExportToService",
-              AddExportServlet.CONTEXT_PATH, environmentSubstitute( hostname ) ) );
+          log.logDetailed( BaseMessages.getString(
+              PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH,
+              environmentSubstitute( hostname ) ) );
         }
       }
     } finally {
@@ -615,10 +617,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public void addCredentials( HttpClient client ) {
     if ( StringUtils.isEmpty( webAppName ) ) {
-      client.getState()
-          .setCredentials(
-              new AuthScope( environmentSubstitute( hostname ), Const.toInt( environmentSubstitute( port ), 80 ),
-                  "Kettle" ),
+      client
+          .getState().setCredentials(
+              new AuthScope(
+                  environmentSubstitute( hostname ), Const.toInt( environmentSubstitute( port ), 80 ), "Kettle" ),
               new UsernamePasswordCredentials( environmentSubstitute( username ), Encr
                   .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) ) );
     } else {
@@ -726,78 +728,81 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public SlaveServerTransStatus getTransStatus( String transName, String carteObjectId, int startLogLineNr )
     throws Exception {
     String xml =
-        execService( GetTransStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr );
+        execService( GetTransStatusServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" )
+            + "&xml=Y&from=" + startLogLineNr );
     return SlaveServerTransStatus.fromXML( xml );
   }
 
   public SlaveServerJobStatus getJobStatus( String jobName, String carteObjectId, int startLogLineNr ) throws Exception {
     String xml =
-        execService( GetJobStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr );
+        execService( GetJobStatusServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" )
+            + "&xml=Y&from=" + startLogLineNr );
     return SlaveServerJobStatus.fromXML( xml );
   }
 
   public WebResult stopTransformation( String transName, String carteObjectId ) throws Exception {
     String xml =
-        execService( StopTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
+        execService( StopTransServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
     return WebResult.fromXMLString( xml );
   }
 
   public WebResult pauseResumeTransformation( String transName, String carteObjectId ) throws Exception {
     String xml =
-        execService( PauseTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
+        execService( PauseTransServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
     return WebResult.fromXMLString( xml );
   }
 
   public WebResult removeTransformation( String transName, String carteObjectId ) throws Exception {
     String xml =
-        execService( RemoveTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
+        execService( RemoveTransServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
     return WebResult.fromXMLString( xml );
   }
 
   public WebResult removeJob( String jobName, String carteObjectId ) throws Exception {
     String xml =
-        execService( RemoveJobServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
+        execService( RemoveJobServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
     return WebResult.fromXMLString( xml );
   }
 
   public WebResult stopJob( String transName, String carteObjectId ) throws Exception {
     String xml =
-        execService( StopJobServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&xml=Y&id="
-            + Const.NVL( carteObjectId, "" ) );
+        execService( StopJobServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&xml=Y&id=" + Const.NVL( carteObjectId, "" ) );
     return WebResult.fromXMLString( xml );
   }
 
   public WebResult startTransformation( String transName, String carteObjectId ) throws Exception {
     String xml =
-        execService( StartTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
+        execService( StartTransServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
     return WebResult.fromXMLString( xml );
   }
 
   public WebResult startJob( String jobName, String carteObjectId ) throws Exception {
     String xml =
-        execService( StartJobServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&xml=Y&id="
-            + Const.NVL( carteObjectId, "" ) );
+        execService( StartJobServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&xml=Y&id=" + Const.NVL( carteObjectId, "" ) );
     return WebResult.fromXMLString( xml );
   }
 
   public WebResult cleanupTransformation( String transName, String carteObjectId ) throws Exception {
     String xml =
-        execService( CleanupTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
+        execService( CleanupTransServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" ) + "&xml=Y" );
     return WebResult.fromXMLString( xml );
   }
 
   public synchronized WebResult deAllocateServerSockets( String transName, String clusteredRunId ) throws Exception {
     String xml =
-        execService( CleanupTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + Const.NVL( clusteredRunId, "" ) + "&xml=Y&sockets=Y" );
+        execService( CleanupTransServlet.CONTEXT_PATH
+            + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( clusteredRunId, "" )
+            + "&xml=Y&sockets=Y" );
     return WebResult.fromXMLString( xml );
   }
 
@@ -843,7 +848,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     service += "&" + AllocateServerSocketServlet.PARAM_ID + "=" + URLEncoder.encode( runId, "UTF-8" );
     service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME + "=" + address;
     service +=
-        "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME + "="
+        "&"
+            + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME + "="
             + URLEncoder.encode( transformationName, "UTF-8" );
     service +=
         "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE + "=" + URLEncoder.encode( sourceSlaveName, "UTF-8" );
@@ -1001,18 +1007,18 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
    */
   public String sniffStep( String transName, String stepName, String copyNr, int lines, String type ) throws Exception {
     String xml =
-        execService( SniffStepServlet.CONTEXT_PATH + "/?trans=" + URLEncoder.encode( transName, "UTF-8" ) + "&step="
-            + URLEncoder.encode( stepName, "UTF-8" ) + "&copynr=" + copyNr + "&type=" + type + "&lines=" + lines
-            + "&xml=Y" );
+        execService( SniffStepServlet.CONTEXT_PATH
+            + "/?trans=" + URLEncoder.encode( transName, "UTF-8" ) + "&step=" + URLEncoder.encode( stepName, "UTF-8" )
+            + "&copynr=" + copyNr + "&type=" + type + "&lines=" + lines + "&xml=Y" );
     return xml;
   }
 
   public long getNextSlaveSequenceValue( String slaveSequenceName, long incrementValue ) throws KettleException {
     try {
       String xml =
-          execService( NextSequenceValueServlet.CONTEXT_PATH + "/" + "?" + NextSequenceValueServlet.PARAM_NAME + "="
-              + URLEncoder.encode( slaveSequenceName, "UTF-8" ) + "&" + NextSequenceValueServlet.PARAM_INCREMENT + "="
-              + Long.toString( incrementValue ) );
+          execService( NextSequenceValueServlet.CONTEXT_PATH
+              + "/" + "?" + NextSequenceValueServlet.PARAM_NAME + "=" + URLEncoder.encode( slaveSequenceName, "UTF-8" )
+              + "&" + NextSequenceValueServlet.PARAM_INCREMENT + "=" + Long.toString( incrementValue ) );
 
       Document doc = XMLHandler.loadXMLString( xml );
       Node seqNode = XMLHandler.getSubNode( doc, NextSequenceValueServlet.XML_TAG );
@@ -1023,13 +1029,13 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         throw new KettleException( errorString );
       }
       if ( Const.isEmpty( nextValueString ) ) {
-        throw new KettleException( "No value retrieved from slave sequence '" + slaveSequenceName + "' on slave "
-            + toString() );
+        throw new KettleException( "No value retrieved from slave sequence '"
+            + slaveSequenceName + "' on slave " + toString() );
       }
       long nextValue = Const.toLong( nextValueString, Long.MIN_VALUE );
       if ( nextValue == Long.MIN_VALUE ) {
-        throw new KettleException( "Incorrect value '" + nextValueString + "' retrieved from slave sequence '"
-            + slaveSequenceName + "' on slave " + toString() );
+        throw new KettleException( "Incorrect value '"
+            + nextValueString + "' retrieved from slave sequence '" + slaveSequenceName + "' on slave " + toString() );
       }
 
       return nextValue;

@@ -145,17 +145,17 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SystemDataDialog.NameColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SystemDataDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SystemDataDialog.TypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SystemDataDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1].setSelectionAdapter( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, functionDesc, BaseMessages.getString( PKG,
-                "SystemDataDialog.SelectInfoType.DialogTitle" ), BaseMessages.getString( PKG,
-                "SystemDataDialog.SelectInfoType.DialogMessage" ) );
+            new EnterSelectionDialog( shell, functionDesc, BaseMessages.getString(
+                PKG, "SystemDataDialog.SelectInfoType.DialogTitle" ), BaseMessages.getString(
+                PKG, "SystemDataDialog.SelectInfoType.DialogMessage" ) );
         String string = esd.open();
         if ( string != null ) {
           TableView tv = (TableView) e.widget;
@@ -276,8 +276,9 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SystemDataDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "SystemDataDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -305,15 +306,15 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "SystemDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "SystemDataDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "SystemDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "SystemDataDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -322,23 +323,25 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

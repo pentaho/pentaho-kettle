@@ -81,8 +81,8 @@ public class XulDatabaseExplorerDialog {
       SpoonPluginManager.getInstance().applyPluginsForContainer( "database_dialog", container );
 
       this.controller =
-          new XulDatabaseExplorerController( (Shell) theExplorerDialog.getRootObject(), this.databaseMeta,
-              this.databases, look );
+          new XulDatabaseExplorerController(
+              (Shell) theExplorerDialog.getRootObject(), this.databaseMeta, this.databases, look );
 
       this.container.addEventHandler( this.controller );
 

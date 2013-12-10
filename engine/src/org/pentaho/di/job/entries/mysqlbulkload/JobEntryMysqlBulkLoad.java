@@ -278,8 +278,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
         if ( !( fileObject instanceof LocalFile ) ) {
           // MySQL LOAD DATA can only use local files, so that's what we limit ourselves to.
           //
-          throw new KettleException( "Only local files are supported at this time, file [" + vfsFilename
-              + "] is not a local file." );
+          throw new KettleException( "Only local files are supported at this time, file ["
+              + vfsFilename + "] is not a local file." );
         }
 
         // Convert it to a regular platform specific file name
@@ -383,14 +383,15 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   // Line terminating By
                   if ( getRealLineterminated() != null ) {
                     LineTerminatedby =
-                        LineTerminatedby + " TERMINATED BY '" + Const.replace( getRealLineterminated(), "'", "''" )
-                            + "'";
+                        LineTerminatedby
+                            + " TERMINATED BY '" + Const.replace( getRealLineterminated(), "'", "''" ) + "'";
                   }
                 }
 
                 String SQLBULKLOAD =
-                    "LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename.replace( '\\', '/' )
-                        + "' " + ReplaceIgnore + " INTO TABLE " + realTablename + " " + FieldTerminatedby + " "
+                    "LOAD DATA "
+                        + PriorityText + " " + LocalExec + " INFILE '" + realFilename.replace( '\\', '/' ) + "' "
+                        + ReplaceIgnore + " INTO TABLE " + realTablename + " " + FieldTerminatedby + " "
                         + LineTerminatedby + " " + IgnoreNbrLignes + " " + ListOfColumn + ";";
 
                 try {
@@ -403,8 +404,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   if ( isAddFileToResult() ) {
                     // Add zip filename to output files
                     ResultFile resultFile =
-                        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ),
-                            parentJob.getJobname(), toString() );
+                        new ResultFile(
+                            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
+                                .getJobname(), toString() );
                     result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   }
 

@@ -343,8 +343,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     props.setLook( radioByReference );
     radioByReference.setSelection( false );
     radioByReference.setText( BaseMessages.getString( PKG, "MetaInjectDialog.RadioRepByReference.Label" ) );
-    radioByReference.setToolTipText( BaseMessages.getString( PKG, "MetaInjectDialog.RadioRepByReference.Tooltip",
-        Const.CR ) );
+    radioByReference.setToolTipText( BaseMessages.getString(
+        PKG, "MetaInjectDialog.RadioRepByReference.Tooltip", Const.CR ) );
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment( 0, 0 );
     fdRadioByReference.right = new FormAttachment( 100, 0 );
@@ -575,8 +575,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         validateTrans();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorSelectingObject.DialogTitle" ),
-          BaseMessages.getString( PKG, "MetaInjectDialog.ErrorSelectingObject.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorSelectingObject.DialogTitle" ), BaseMessages
+              .getString( PKG, "MetaInjectDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
   }
 
@@ -601,7 +602,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
         VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
         FileObject file =
-            vfsFileChooser.open( shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
+            vfsFileChooser.open(
+                shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
                 VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
         if ( file == null ) {
           return;
@@ -620,13 +622,13 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
           setRadioButtons();
         }
       } catch ( IOException e ) {
-        new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages
-                .getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ),
+            BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       } catch ( KettleException e ) {
-        new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages
-                .getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ),
+            BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       }
     } else {
       // Local file open dialog, ask for .ktr & xml files...
@@ -655,8 +657,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         spoon.addTransGraph( injectTransMeta );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorShowingTransformation.Title" ),
-          BaseMessages.getString( PKG, "MetaInjectDialog.ErrorShowingTransformation.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorShowingTransformation.Title" ), BaseMessages
+              .getString( PKG, "MetaInjectDialog.ErrorShowingTransformation.Message" ), e );
     }
   }
 
@@ -668,8 +671,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       loadTransformation();
       refreshTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorValidatingTransformation.Title" ),
-          BaseMessages.getString( PKG, "MetaInjectDialog.ErrorValidatingTransformation.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorValidatingTransformation.Title" ), BaseMessages
+              .getString( PKG, "MetaInjectDialog.ErrorValidatingTransformation.Message" ), e );
     }
   }
 
@@ -683,13 +687,13 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
         if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "MetaInjectDialog.Exception.NoValidMappingDetailsFound" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MetaInjectDialog.Exception.NoValidMappingDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "MetaInjectDialog.Exception.UnableToFindRepositoryDirectory)" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MetaInjectDialog.Exception.UnableToFindRepositoryDirectory)" ) );
         }
         loadRepositoryTrans( realTransname, repdir );
         break;
@@ -758,9 +762,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
             getByReferenceData( transInf );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG,
-              "MetaInjectDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,
-              "MetaInjectDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+          new ErrorDialog( shell, BaseMessages.getString(
+              PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
+              PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Message" ), e );
         }
         break;
       default:
@@ -791,14 +795,18 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetStep" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetDescription" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceStep" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceField" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetStep" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetDescription" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceStep" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                false, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                false, true ), };
 
     wTree.setHeaderVisible( true );
     for ( int i = 0; i < colinf.length; i++ ) {
@@ -833,8 +841,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
               Arrays.sort( sourceFields );
 
               EnterSelectionDialog selectSourceField =
-                  new EnterSelectionDialog( shell, sourceFields, "Select source field",
-                      "Select the source field (cancel=clear)" );
+                  new EnterSelectionDialog(
+                      shell, sourceFields, "Select source field", "Select the source field (cancel=clear)" );
               if ( source != null && !Const.isEmpty( source.getStepname() ) ) {
                 String key = buildStepFieldKey( source.getStepname(), source.getField() );
                 int index = Const.indexOfString( key, sourceFields );
@@ -1003,8 +1011,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       loadTransformation();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Title" ), BaseMessages.getString( PKG,
-          "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
+          .getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Title" ), BaseMessages.getString(
+          PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
     }
 
     metaInjectMeta.setSpecificationMethod( specificationMethod );
@@ -1100,16 +1108,17 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
       if ( repository == null ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "MappingDialog.Exception.NotConnectedToRepository.Message" ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "MappingDialog.Exception.NotConnectedToRepository.Message" ) );
       }
       RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.JOB );
       if ( transInf != null ) {
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title" ),
-          BaseMessages.getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages
+              .getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 }

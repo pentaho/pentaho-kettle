@@ -161,8 +161,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
   private XMLInputSaxMeta input;
 
-  private static final String STRING_PREVIEW_ROWS = BaseMessages.getString( PKG,
-      "XMLInputSaxDialog.Button.PreviewRows.Label" );
+  private static final String STRING_PREVIEW_ROWS = BaseMessages.getString(
+      PKG, "XMLInputSaxDialog.Button.PreviewRows.Label" );
 
   public static final int[] dateLengths = new int[] { 23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6 };
 
@@ -325,11 +325,13 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinfo = new ColumnInfo[2];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.FileDirectory.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.FileDirectory.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Wildcard.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setToolTip( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.FileDirectory.ToolTip" ) );
@@ -466,15 +468,16 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
     wlPosition.setLayoutData( fdlPosition );
 
     ColumnInfo[] locationColumns =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Elements.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ) };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Elements.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false ) };
     locationColumns[0].setToolTip( positionHelp );
 
     int nrElements = input.getInputPosition() != null ? input.getInputPosition().length : 0;
 
     wPosition =
-        new TableView( transMeta, wContentComp, SWT.FULL_SELECTION | SWT.MULTI, locationColumns, nrElements, lsMod,
-            props );
+        new TableView(
+            transMeta, wContentComp, SWT.FULL_SELECTION | SWT.MULTI, locationColumns, nrElements, lsMod, props );
     wPosition.addModifyListener( lsMod );
     fdPosition = new FormData();
     fdPosition.left = new FormAttachment( middle, 0 );
@@ -534,28 +537,38 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Name.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Type.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Format.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Length.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Precision.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Currency.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Decimal.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Group.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.TrimType.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, XMLInputSaxField.trimTypeDesc, true ),
-          new ColumnInfo(
-              BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Repeat.Label" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }, true ), //$NON-NLS-3$
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Position.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Name.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Type.Label" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                Value.getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Format.Label" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                formats ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Length.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Precision.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Currency.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Decimal.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Group.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.TrimType.Label" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, XMLInputSaxField.trimTypeDesc, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Repeat.Label" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }, true ), //$NON-NLS-3$
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Position.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ), };
 
     wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
@@ -563,10 +576,12 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinfatt =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Element.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.DefiningAttribute.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.Element.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputSaxDialog.Column.DefiningAttribute.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wAttributes =
         new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinfatt, AttributesRows, lsMod, props );
@@ -699,9 +714,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
           String[] files = tfii.getFilePaths( transMeta );
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "XMLInputSaxDialog.Dialog.FilesRead.Title" ), BaseMessages.getString( PKG,
-                    "XMLInputSaxDialog.Dialog.FilesRead.Message" ) );
+                new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                    PKG, "XMLInputSaxDialog.Dialog.FilesRead.Title" ), BaseMessages.getString(
+                    PKG, "XMLInputSaxDialog.Dialog.FilesRead.Message" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -711,9 +726,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog( shell,
-              BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ), BaseMessages
-                  .getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), ex );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ),
+              BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), ex );
         }
       }
     } );
@@ -744,11 +759,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        if ( wFilemask.getText() != null && wFilemask.getText().length() > 0 ) // A
-        // mask:
-        // a
-        // directory!
-        {
+        if ( wFilemask.getText() != null && wFilemask.getText().length() > 0 ) { // A mask: a directory!
+
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
             String fpath = transMeta.environmentSubstitute( wFilename.getText() );
@@ -767,8 +779,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
             dialog.setFileName( fname );
           }
 
-          dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "XMLInputSaxDialog.60" ),
-            BaseMessages.getString( PKG, "XMLInputSaxDialog.68" ) } );
+          dialog.setFilterNames( new String[] {
+              BaseMessages.getString( PKG, "XMLInputSaxDialog.60" ),
+              BaseMessages.getString( PKG, "XMLInputSaxDialog.68" ) } );
 
           if ( dialog.open() != null ) {
             String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -941,8 +954,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ),
-          BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ), BaseMessages
+              .getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), e );
     }
     dispose();
   }
@@ -1044,8 +1058,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
         wFields.optWidth( true );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ),
-          BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ), BaseMessages
+              .getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), e );
       System.out.println( e.getMessage() );
     }
   }
@@ -1061,14 +1076,14 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "XMLInputSaxDialog.Dialog.EnterPreviewSize.Title" ), BaseMessages.getString( PKG,
-              "XMLInputSaxDialog.Dialog.EnterPreviewSize.Message" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Title" ), BaseMessages.getString(
+              PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Message" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1079,9 +1094,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Title" ), BaseMessages
-              .getString( PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Title" ),
+          BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Message" ), e );
     }
   }
 }

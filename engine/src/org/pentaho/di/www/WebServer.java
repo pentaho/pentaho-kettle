@@ -176,8 +176,8 @@ public class WebServer {
 
     // setup jersey (REST)
     ServletHolder jerseyServletHolder = new ServletHolder( ServletContainer.class );
-    jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass",
-        "com.sun.jersey.api.core.PackagesResourceConfig" );
+    jerseyServletHolder.setInitParameter(
+        "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
     jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "org.pentaho.di.www.jaxrs" );
     root.addServlet( jerseyServletHolder, "/api/*" );
 
@@ -222,8 +222,8 @@ public class WebServer {
         server.stop();
       }
     } catch ( Exception e ) {
-      log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString( PKG,
-          "WebServer.Error.FailedToStop.Msg", "" + e ) );
+      log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString(
+          PKG, "WebServer.Error.FailedToStop.Msg", "" + e ) );
     }
   }
 

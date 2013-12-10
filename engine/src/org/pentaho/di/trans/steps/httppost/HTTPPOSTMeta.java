@@ -572,13 +572,13 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "HTTPPOSTMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "HTTPPOSTMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "HTTPPOSTMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "HTTPPOSTMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -586,23 +586,23 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     if ( urlInField ) {
       if ( Const.isEmpty( urlField ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "HTTPPOSTMeta.CheckResult.UrlfieldMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "HTTPPOSTMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "HTTPPOSTMeta.CheckResult.UrlfieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "HTTPPOSTMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( url ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "HTTPPOSTMeta.CheckResult.UrlMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "HTTPPOSTMeta.CheckResult.UrlMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK,
-                BaseMessages.getString( PKG, "HTTPPOSTMeta.CheckResult.UrlOk" ), stepMeta );
+            new CheckResult(
+                CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "HTTPPOSTMeta.CheckResult.UrlOk" ), stepMeta );
       }
     }
     remarks.add( cr );

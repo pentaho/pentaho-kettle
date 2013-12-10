@@ -213,12 +213,13 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
     int nrKeyRows = ( input.getKeyFields() != null ? input.getKeyFields().length : 1 );
 
     ColumnInfo[] ciKeys =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MergeRowsDialog.ColumnInfo.KeyField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "MergeRowsDialog.ColumnInfo.KeyField" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wKeys =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys,
+            nrKeyRows, lsMod, props );
 
     fdKeys = new FormData();
     fdKeys.top = new FormAttachment( wlKeys, margin );
@@ -253,12 +254,13 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
     int nrValueRows = ( input.getValueFields() != null ? input.getValueFields().length : 1 );
 
     ColumnInfo[] ciValues =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MergeRowsDialog.ColumnInfo.ValueField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "MergeRowsDialog.ColumnInfo.ValueField" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wValues =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciValues, nrValueRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciValues,
+            nrValueRows, lsMod, props );
 
     fdValues = new FormData();
     fdValues.top = new FormAttachment( wlValues, margin );
@@ -409,8 +411,9 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage" ), e );
     }
   }
 
@@ -424,8 +427,9 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "MergeRowsDialog.ErrorGettingFields.DialogMessage" ), e );
     }
   }
 }

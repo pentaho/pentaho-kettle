@@ -117,7 +117,8 @@ public class ResourceReference {
 
   public void addXmlElementWithAttribute( StringBuffer buff, int indentLevel, String elementName, String attrName,
       String attrValue ) {
-    buff.append( StringUtil.getIndent( indentLevel ) )
+    buff
+        .append( StringUtil.getIndent( indentLevel ) )
         .append( "<" ).append( elementName ).append( " " ).append( attrName ).append( "='" ); //$NON-NLS-3$
     buff.append( attrValue ).append( "'>" ).append( StringUtil.CRLF );
   }
@@ -133,7 +134,8 @@ public class ResourceReference {
   }
 
   public void addXmlElement( StringBuffer buff, int indentLevel, String elementName, String elementValue ) {
-    buff.append( StringUtil.getIndent( indentLevel ) )
+    buff
+        .append( StringUtil.getIndent( indentLevel ) )
         .append( "<" ).append( elementName ).append( "><![CDATA[" ).append( elementValue ).append( "]]></" ).append( elementName ).append( ">" ).append( StringUtil.CRLF ); //$NON-NLS-3$ //$NON-NLS-4$
   }
 

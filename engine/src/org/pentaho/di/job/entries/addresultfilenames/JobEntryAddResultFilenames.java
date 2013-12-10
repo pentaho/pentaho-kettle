@@ -230,8 +230,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
         // ok we can process this file/folder
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.ProcessingRow", filefolder_previous,
-              fmasks_previous ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous ) );
         }
 
         if ( !processFile( filefolder_previous, fmasks_previous, parentJob, result ) ) {
@@ -245,8 +245,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
         // ok we can process this file/folder
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.ProcessingArg", arguments[i],
-              filemasks[i] ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i] ) );
         }
         if ( !processFile( arguments[i], filemasks[i], parentJob, result ) ) {
           nrErrFiles++;
@@ -282,8 +282,9 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
                 .toString() ) );
           }
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filefolder.toString(), this ),
-                  parentJob.getJobname(), toString() );
+              new ResultFile(
+                  ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filefolder.toString(), this ), parentJob
+                      .getJobname(), toString() );
           result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
         } else {
           FileObject[] list = filefolder.findFiles( new TextFileSelector( filefolder.toString(), realwildcard ) );
@@ -295,8 +296,9 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
                   .toString() ) );
             }
             ResultFile resultFile =
-                new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( list[i].toString(), this ),
-                    parentJob.getJobname(), toString() );
+                new ResultFile(
+                    ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( list[i].toString(), this ), parentJob
+                        .getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
           }
         }

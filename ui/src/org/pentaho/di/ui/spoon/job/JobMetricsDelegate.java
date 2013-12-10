@@ -287,8 +287,9 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
     jobGraph.getDisplay().asyncExec( new Runnable() {
       public void run() {
-        if ( metricsComposite != null && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed()
-            && jobMetricsTab != null && !jobMetricsTab.isDisposed() ) {
+        if ( metricsComposite != null
+            && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed() && jobMetricsTab != null
+            && !jobMetricsTab.isDisposed() ) {
           if ( jobMetricsTab.isShowing() ) {
             canvas.redraw();
           }

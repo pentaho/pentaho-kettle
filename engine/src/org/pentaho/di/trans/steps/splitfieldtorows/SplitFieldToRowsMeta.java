@@ -129,8 +129,8 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
       rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
       isDelimiterRegex = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "delimiter_is_regex" ) );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SplitFieldToRowsMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SplitFieldToRowsMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -185,8 +185,8 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
       resetRowNumber = rep.getStepAttributeBoolean( id_step, "reset_rownumber" );
       isDelimiterRegex = rep.getStepAttributeBoolean( id_step, 0, "delimiter_is_regex", false );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SplitFieldToRowsMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SplitFieldToRowsMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -201,8 +201,8 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
       rep.saveStepAttribute( id_transformation, id_step, "rownum_field", rowNumberField );
       rep.saveStepAttribute( id_transformation, id_step, "delimiter_is_regex", isDelimiterRegex );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SplitFieldToRowsMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SplitFieldToRowsMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -216,8 +216,8 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
     // Look up fields in the input stream <prev>
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SplitFieldToRowsMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SplitFieldToRowsMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       error_message = "";
@@ -225,14 +225,14 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
       ValueMetaInterface v = prev.searchValueMeta( splitField );
       if ( v == null ) {
         error_message =
-            BaseMessages.getString( PKG, "SplitFieldToRowsMeta.CheckResult.FieldToSplitNotPresentInInputStream",
-                splitField );
+            BaseMessages.getString(
+                PKG, "SplitFieldToRowsMeta.CheckResult.FieldToSplitNotPresentInInputStream", splitField );
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "SplitFieldToRowsMeta.CheckResult.FieldToSplitFoundInInputStream", splitField ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "SplitFieldToRowsMeta.CheckResult.FieldToSplitFoundInInputStream", splitField ), stepMeta );
         remarks.add( cr );
       }
     } else {
@@ -246,31 +246,31 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SplitFieldToRowsMeta.CheckResult.StepReceivingInfoFromOtherStep" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SplitFieldToRowsMeta.CheckResult.StepReceivingInfoFromOtherStep" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SplitFieldToRowsMeta.CheckResult.NoInputReceivedFromOtherStep" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SplitFieldToRowsMeta.CheckResult.NoInputReceivedFromOtherStep" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( Const.isEmpty( newFieldname ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SplitFieldToRowsMeta.CheckResult.NewFieldNameIsNull" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SplitFieldToRowsMeta.CheckResult.NewFieldNameIsNull" ), stepMeta );
       remarks.add( cr );
     }
     if ( includeRowNumber ) {
       if ( Const.isEmpty( transMeta.environmentSubstitute( rowNumberField ) ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SplitFieldToRowsMeta.CheckResult.RowNumberFieldMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "SplitFieldToRowsMeta.CheckResult.RowNumberFieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "SplitFieldToRowsMeta.CheckResult.RowNumberFieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "SplitFieldToRowsMeta.CheckResult.RowNumberFieldOk" ), stepMeta );
       }
       remarks.add( cr );
     }

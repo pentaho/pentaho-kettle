@@ -61,8 +61,8 @@ public class SetVariable extends BaseStep implements StepInterface {
     // Get one row from one of the rowsets...
     //
     Object[] rowData = getRow();
-    if ( rowData == null ) // means: no more input to be expected...
-    {
+    if ( rowData == null ) { // means: no more input to be expected...
+
       if ( first ) {
         // We do not received any row !!
         logBasic( BaseMessages.getString( PKG, "SetVariable.Log.NoInputRowSetDefault" ) );
@@ -93,8 +93,8 @@ public class SetVariable extends BaseStep implements StepInterface {
       return true;
     }
 
-    throw new KettleStepException( BaseMessages.getString( PKG,
-        "SetVariable.RuntimeError.MoreThanOneRowReceived.SETVARIABLE0007" ) );
+    throw new KettleStepException( BaseMessages.getString(
+        PKG, "SetVariable.RuntimeError.MoreThanOneRowReceived.SETVARIABLE0007" ) );
   }
 
   private void setValue( Object[] rowData, int i, boolean usedefault ) throws KettleException {
@@ -195,8 +195,8 @@ public class SetVariable extends BaseStep implements StepInterface {
         if ( parentJob != null ) {
           parentJob.setVariable( varname, value );
         } else {
-          throw new KettleStepException( "Can't set variable [" + varname
-              + "] on parent job: the parent job is not available" );
+          throw new KettleStepException( "Can't set variable ["
+              + varname + "] on parent job: the parent job is not available" );
         }
 
         // Set the variable on the grand-parent job
@@ -205,8 +205,8 @@ public class SetVariable extends BaseStep implements StepInterface {
         if ( gpJob != null ) {
           gpJob.setVariable( varname, value );
         } else {
-          throw new KettleStepException( "Can't set variable [" + varname
-              + "] on grand parent job: the grand parent job is not available" );
+          throw new KettleStepException( "Can't set variable ["
+              + varname + "] on grand parent job: the grand parent job is not available" );
         }
 
       }
@@ -218,8 +218,8 @@ public class SetVariable extends BaseStep implements StepInterface {
         if ( parentJob != null ) {
           parentJob.setVariable( varname, value );
         } else {
-          throw new KettleStepException( "Can't set variable [" + varname
-              + "] on parent job: the parent job is not available" );
+          throw new KettleStepException( "Can't set variable ["
+              + varname + "] on parent job: the parent job is not available" );
         }
       }
         break;

@@ -58,9 +58,6 @@ public class TransExecutorData extends BaseStepData implements StepDataInterface
   public RowSet resultFilesRowSet;
   public RowSet executionResultRowSet;
 
-  /**
-	 * 
-	 */
   public TransExecutorData() {
     super();
   }

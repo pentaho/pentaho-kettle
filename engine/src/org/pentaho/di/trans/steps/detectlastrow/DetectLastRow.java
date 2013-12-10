@@ -74,8 +74,8 @@ public class DetectLastRow extends BaseStep implements StepInterface {
     }
     Object[] outputRow = null;
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       if ( previousRow != null ) {
         //
         // Output the last row with last row indicator set to true.

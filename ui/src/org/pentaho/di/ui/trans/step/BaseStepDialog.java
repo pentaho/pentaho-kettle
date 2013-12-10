@@ -93,8 +93,8 @@ public class BaseStepDialog extends Dialog {
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   /** The logging object interface for this dialog. */
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Step dialog",
-      LoggingObjectType.STEPDIALOG, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Step dialog", LoggingObjectType.STEPDIALOG, null );
 
   /** The variable bindings for this dialog. */
   protected static VariableSpace variables = new Variables();
@@ -641,8 +641,8 @@ public class BaseStepDialog extends Dialog {
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
       Class<? extends DatabaseInterface> databaseType ) {
-    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button( parent,
-        SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), databaseType );
+    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button(
+        parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), databaseType );
   }
 
   /**
@@ -666,8 +666,8 @@ public class BaseStepDialog extends Dialog {
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
       final Label wlConnection, final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
-    return addConnectionLine( parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection,
-        wbeConnection, null );
+    return addConnectionLine(
+        parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection, wbeConnection, null );
   }
 
   /**
@@ -965,8 +965,8 @@ public class BaseStepDialog extends Dialog {
             controls[thisOne].setFocus();
           }
         } );
-      } else // Link last item to first.
-      {
+      } else { // Link last item to first.
+
         controls[i].addTraverseListener( new TraverseListener() {
           public void keyTraversed( TraverseEvent te ) {
             te.doit = false;
@@ -1015,12 +1015,13 @@ public class BaseStepDialog extends Dialog {
     try {
       RowMetaInterface row = transMeta.getPrevStepFields( stepMeta );
       if ( row != null ) {
-        getFieldsFromPrevious( row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn,
-            listener );
+        getFieldsFromPrevious(
+            row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( tableView.getShell(), BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Title" ),
-          BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName() ), ke );
+      new ErrorDialog(
+          tableView.getShell(), BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Title" ), BaseMessages
+              .getString( PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName() ), ke );
     }
   }
 
@@ -1070,20 +1071,21 @@ public class BaseStepDialog extends Dialog {
       // Ask what we should do with the existing data in the step.
       //
       MessageDialog md =
-          new MessageDialog( tableView.getShell(),
-              BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-              null, BaseMessages.getString( PKG,
-                  "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
-              MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+          new MessageDialog(
+              tableView.getShell(), BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+              null, BaseMessages.getString(
+                  PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
+              MessageDialog.WARNING, new String[] {
+                  BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       int idx = md.open();
       choice = idx & 0xFF;
     }
 
-    if ( choice == 3 || choice == 255 /* 255 = escape pressed */) {
+    if ( choice == 3 || choice == 255 ) {
       return; // Cancel clicked
     }
 
@@ -1096,8 +1098,8 @@ public class BaseStepDialog extends Dialog {
 
       boolean add = true;
 
-      if ( choice == 0 ) // hang on, see if it's not yet in the table view
-      {
+      if ( choice == 0 ) { // hang on, see if it's not yet in the table view
+
         if ( keys.indexOf( v.getName() ) >= 0 ) {
           add = false;
         }
@@ -1169,9 +1171,9 @@ public class BaseStepDialog extends Dialog {
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( comboVar.getShell(), BaseMessages.getString( PKG,
-          "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString( PKG,
-          "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
+      new ErrorDialog( comboVar.getShell(), BaseMessages.getString(
+          PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString(
+          PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
     }
   }
 
@@ -1431,7 +1433,8 @@ public class BaseStepDialog extends Dialog {
           html.append( "<b>Icon</b>: " ).append( plugin.getImageFile() ).append( "<br>" );
         }
         if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
-          html.append( "<b>Documenation</b>: <a href=\"" ).append( plugin.getDocumentationUrl() ).append( "\">" )
+          html
+              .append( "<b>Documenation</b>: <a href=\"" ).append( plugin.getDocumentationUrl() ).append( "\">" )
               .append( "Click here to view the documentation" ).append( "</a><br>" );
         }
         if ( !Const.isEmpty( plugin.getCasesUrl() ) ) {

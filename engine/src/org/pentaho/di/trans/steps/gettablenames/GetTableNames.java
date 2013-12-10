@@ -101,8 +101,8 @@ public class GetTableNames extends BaseStep implements StepInterface {
           data.indexOfSchemaField = data.inputRowMeta.indexOfValue( meta.getSchemaFieldName() );
           if ( data.indexOfSchemaField < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "GetTableNames.Log.ErrorFindingField" ) + "["
-                + meta.getSchemaFieldName() + "]" );
+            logError( BaseMessages.getString( PKG, "GetTableNames.Log.ErrorFindingField" )
+                + "[" + meta.getSchemaFieldName() + "]" );
             throw new KettleException( BaseMessages.getString( PKG, "GetTableNames.Exception.CouldnotFindField", meta
                 .getSchemaFieldName() ) );
           }
@@ -415,8 +415,9 @@ public class GetTableNames extends BaseStep implements StepInterface {
       data.realObjectTypeFieldName = environmentSubstitute( meta.getObjectTypeFieldName() );
       data.realIsSystemObjectFieldName = environmentSubstitute( meta.isSystemObjectFieldName() );
       data.realSQLCreationFieldName = environmentSubstitute( meta.getSQLCreationFieldName() );
-      if ( !meta.isIncludeCatalog() && !meta.isIncludeSchema() && !meta.isIncludeTable() && !meta.isIncludeView()
-          && !meta.isIncludeProcedure() && !meta.isIncludeSynonym() ) {
+      if ( !meta.isIncludeCatalog()
+          && !meta.isIncludeSchema() && !meta.isIncludeTable() && !meta.isIncludeView() && !meta.isIncludeProcedure()
+          && !meta.isIncludeSynonym() ) {
         logError( BaseMessages.getString( PKG, "GetTableNames.Error.includeAtLeastOneType" ) );
         return false;
       }

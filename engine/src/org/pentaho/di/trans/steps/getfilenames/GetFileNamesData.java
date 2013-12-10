@@ -113,9 +113,6 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface 
 
   public int nrStepFields;
 
-  /**
-	 * 
-	 */
   public GetFileNamesData() {
     super();
 

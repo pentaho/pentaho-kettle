@@ -91,8 +91,8 @@ public class LDAPOutput extends BaseStep implements StepInterface {
 
           data.fieldStream[i] = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getUpdateStream()[i] ) );
           if ( data.fieldStream[i] < 0 ) {
-            throw new KettleException( "Field [" + meta.getUpdateStream()[i]
-                + "] couldn't be found in the input stream!" );
+            throw new KettleException( "Field ["
+                + meta.getUpdateStream()[i] + "] couldn't be found in the input stream!" );
           }
           data.fieldsAttribute[i] = environmentSubstitute( meta.getUpdateLookup()[i] );
 
@@ -193,8 +193,9 @@ public class LDAPOutput extends BaseStep implements StepInterface {
             data.attributesToUpdate[i] = getInputRowMeta().getString( outputRowData, data.fieldStreamToUpdate[i] );
           }
           int status =
-              data.connection.upsert( dn, data.fieldsAttribute, data.attributes, data.fieldsAttributeToUpdate,
-                  data.attributesToUpdate, data.separator );
+              data.connection.upsert(
+                  dn, data.fieldsAttribute, data.attributes, data.fieldsAttributeToUpdate, data.attributesToUpdate,
+                  data.separator );
           switch ( status ) {
             case LDAPConnection.STATUS_INSERTED:
               incrementLinesOutput();

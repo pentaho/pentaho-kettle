@@ -288,8 +288,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
     List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
-      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "GetXMLData.Log.RequiredFiles", message ) );
+      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "GetXMLData.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesMissing", message ) );
     }
@@ -297,21 +297,23 @@ public class GetXMLData extends BaseStep implements StepInterface {
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
-      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "GetXMLData.Log.RequiredNotAccessibleFiles", message ) );
+      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "GetXMLData.Log.RequiredNotAccessibleFiles", message ) );
 
-      throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "GetXMLData.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
   private boolean ReadNextString() {
 
     try {
-      data.readrow = getRow(); // Grab another row ...
+      // Grab another row ...
+      data.readrow = getRow();
 
-      if ( data.readrow == null ) // finished processing!
-      {
+      if ( data.readrow == null ) {
+        // finished processing!
+
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.FinishedProcessing" ) );
         }
@@ -459,8 +461,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
       int length = 0;
       for ( int i = 0; i < data.NSPath.size(); i++ ) {
         if ( data.NSPath.get( i ).length() > length && fullPath.startsWith( data.NSPath.get( i ) ) ) {
-          java.util.Arrays.fill( indexs, data.NSPath.get( i ).split( GetXMLDataMeta.N0DE_SEPARATOR ).length - 2,
-              indexs.length, i );
+          java.util.Arrays.fill(
+              indexs, data.NSPath.get( i ).split( GetXMLDataMeta.N0DE_SEPARATOR ).length - 2, indexs.length, i );
           length = data.NSPath.get( i ).length();
         }
       }
@@ -472,8 +474,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
         if ( newPath.length() > 0 ) {
           newPath.append( GetXMLDataMeta.N0DE_SEPARATOR );
         }
-        if ( tmp.length() > 0 && tmp.indexOf( ":" ) == -1 && tmp.indexOf( "." ) == -1
-            && tmp.indexOf( GetXMLDataMeta.AT ) == -1 ) {
+        if ( tmp.length() > 0
+            && tmp.indexOf( ":" ) == -1 && tmp.indexOf( "." ) == -1 && tmp.indexOf( GetXMLDataMeta.AT ) == -1 ) {
           int index = indexs[i + indexs.length - pathStrs.length];
           if ( index >= 0 ) {
             newPath.append( "pre" ).append( index ).append( ":" ).append( tmp );
@@ -510,8 +512,9 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
   private boolean openNextFile() {
     try {
-      if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-      {
+      if ( data.filenr >= data.files.nrOfFiles() ) {
+        // finished processing!
+
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.FinishedProcessing" ) );
         }
@@ -590,8 +593,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
         }
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GetXMLData.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(),
-          e.toString() ) );
+      logError( BaseMessages.getString(
+          PKG, "GetXMLData.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -778,7 +781,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
             outputRowData[data.totalpreviousfields + i] = data.previousRow[data.totalpreviousfields + i];
           }
         }
-      }// End of loop over fields...
+      } // End of loop over fields...
 
       int rowIndex = data.totalpreviousfields + data.nrInputFields;
 

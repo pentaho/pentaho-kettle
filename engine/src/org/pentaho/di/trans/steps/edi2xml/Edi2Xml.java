@@ -60,8 +60,8 @@ public class Edi2Xml extends BaseStep implements StepInterface {
     data = (Edi2XmlData) sdi;
 
     Object[] r = getRow(); // get row, blocks when needed!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -142,12 +142,13 @@ public class Edi2Xml extends BaseStep implements StepInterface {
 
       StringBuilder errorMessage = new StringBuilder( 180 );
       errorMessage.append( "error parsing edi on line " + e.line + " position " + e.charPositionInLine );
-      errorMessage.append( ": expecting " + ( ( e.expecting > -1 ) ? parser.getTokenNames()[e.expecting] : "<UNKNOWN>" )
-          + " but found " );
+      errorMessage.append( ": expecting "
+          + ( ( e.expecting > -1 ) ? parser.getTokenNames()[e.expecting] : "<UNKNOWN>" ) + " but found " );
       errorMessage.append( ( e.token.getType() >= 0 ) ? parser.getTokenNames()[e.token.getType()] : "<EOF>" );
 
       if ( getStepMeta().isDoingErrorHandling() ) {
-        putError( getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
+        putError(
+            getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
             "MALFORMED_EDI" );
       } else {
         logError( errorMessage.toString() );
@@ -169,7 +170,8 @@ public class Edi2Xml extends BaseStep implements StepInterface {
           e.charPositionInLine ).append( ". " ).append( e.toString() );
 
       if ( getStepMeta().isDoingErrorHandling() ) {
-        putError( getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
+        putError(
+            getInputRowMeta(), r, 1L, errorMessage.toString(), environmentSubstitute( meta.getInputField() ),
             "MALFORMED_EDI" );
       } else {
         logError( errorMessage.toString() );

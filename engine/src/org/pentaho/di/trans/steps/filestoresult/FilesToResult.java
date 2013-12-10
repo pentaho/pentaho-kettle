@@ -57,8 +57,8 @@ public class FilesToResult extends BaseStep implements StepInterface {
     data = (FilesToResultData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       for ( ResultFile resultFile : data.filenames ) {
         addResultFile( resultFile );
       }
@@ -86,8 +86,9 @@ public class FilesToResult extends BaseStep implements StepInterface {
 
     try {
       ResultFile resultFile =
-          new ResultFile( meta.getFileType(), KettleVFS.getFileObject( filename, getTransMeta() ),
-              getTrans().getName(), getStepname() );
+          new ResultFile(
+              meta.getFileType(), KettleVFS.getFileObject( filename, getTransMeta() ), getTrans().getName(),
+              getStepname() );
 
       // Add all rows to rows buffer...
       data.filenames.add( resultFile );

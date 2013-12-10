@@ -419,13 +419,13 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ConstantMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ConstantMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ConstantMeta.CheckResult.NoFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ConstantMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 

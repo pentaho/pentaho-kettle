@@ -562,8 +562,9 @@ public class LDAPConnection {
           // pass the cookie back for the next page
           if ( isSortingAttributes() ) {
             getInitialContext().setRequestControls(
-                new Control[] { new SortControl( getSortingAttributesKeys(), Control.NONCRITICAL ),
-                  new PagedResultsControl( GetPagingSize(), cookie, Control.CRITICAL ) } );
+                new Control[] {
+                    new SortControl( getSortingAttributesKeys(), Control.NONCRITICAL ),
+                    new PagedResultsControl( GetPagingSize(), cookie, Control.CRITICAL ) } );
           } else {
             getInitialContext().setRequestControls(
                 new Control[] { new PagedResultsControl( GetPagingSize(), cookie, Control.CRITICAL ) } );

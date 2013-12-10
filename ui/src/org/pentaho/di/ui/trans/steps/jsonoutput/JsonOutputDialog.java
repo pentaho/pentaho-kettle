@@ -404,16 +404,18 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
           if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
+            wFilename.setText( dialog.getFilterPath()
+                + System.getProperty( "file.separator" )
                 + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
             wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
@@ -631,9 +633,9 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
         String[] files = tfoi.getFiles( transMeta.environmentSubstitute( wFilename.getText() ) );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "JsonOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "JsonOutputDialog.SelectOutputFiles.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                  PKG, "JsonOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+                  PKG, "JsonOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -716,14 +718,16 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonOutputDialog.Fieldname.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonOutputDialog.ElementName.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JsonOutputDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JsonOutputDialog.ElementName.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ), };
     colinf[1].setUsingVariables( true );
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1006,8 +1010,8 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6,
-            new TableItemInsertListener() {
+        BaseStepDialog.getFieldsFromPrevious(
+            r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6, new TableItemInsertListener() {
               public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
                 if ( v.isNumber() ) {
                   if ( v.getLength() > 0 ) {

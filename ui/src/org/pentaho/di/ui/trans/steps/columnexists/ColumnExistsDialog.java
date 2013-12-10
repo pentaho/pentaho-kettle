@@ -471,8 +471,9 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
       wColumnName.setText( columnName );
       wTableName.setText( tableName );
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -513,9 +514,9 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Message" ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+                  PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+                  PKG, "System.Dialog.AvailableSchemas.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchemaname.setText( Const.NVL( d.toString(), "" ) );

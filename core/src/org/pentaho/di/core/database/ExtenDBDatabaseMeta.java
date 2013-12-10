@@ -33,10 +33,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 
 public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
-  private static final String[] RESERVED_WORDS = { "AFTER", "BINARY", "BOOLEAN", "DATABASES", "DBA", "ESTIMATE",
-    "MODIFY", "NODE", "NODES", "OWNER", "PARENT", "PARTITION", "PARTITIONING", "PASSWORD", "PERCENT", "PUBLIC",
-    "RENAME", "REPLICATED", "RESOURCE", "SAMPLE", "SERIAL", "SHOW", "STANDARD", "STAT", "STATISTICS", "TABLES", "TEMP",
-    "TRAN", "UNSIGNED", "ZEROFILL" };
+  private static final String[] RESERVED_WORDS = {
+      "AFTER", "BINARY", "BOOLEAN", "DATABASES", "DBA", "ESTIMATE", "MODIFY", "NODE", "NODES", "OWNER", "PARENT",
+      "PARTITION", "PARTITIONING", "PASSWORD", "PERCENT", "PUBLIC", "RENAME", "REPLICATED", "RESOURCE", "SAMPLE",
+      "SERIAL", "SHOW", "STANDARD", "STAT", "STATISTICS", "TABLES", "TEMP", "TRAN", "UNSIGNED", "ZEROFILL" };
 
   /**
    * @see DatabaseInterface#getAccessTypeList()

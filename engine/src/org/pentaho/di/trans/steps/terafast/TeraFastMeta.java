@@ -170,8 +170,8 @@ public class TeraFastMeta extends AbstractStepMeta {
       remarks.add( checkResult );
 
       checkResult =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
-              MESSAGES.getString( "TeraFastMeta.Message.TableExists" ), stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_OK, MESSAGES.getString( "TeraFastMeta.Message.TableExists" ), stepMeta );
       remarks.add( checkResult );
 
       boolean error = false;

@@ -111,8 +111,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       className = XMLHandler.getTagValue( entrynode, "class_name" );
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryTalendJobExec.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryTalendJobExec.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
     }
   }
 
@@ -122,8 +122,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       className = rep.getJobEntryAttributeString( id_jobentry, "class_name" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryTalendJobExec.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryTalendJobExec.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -132,8 +132,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       rep.saveJobEntryAttribute( id_job, getObjectId(), "filename", filename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "class_name", className );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryTalendJobExec.ERROR_0003_Cannot_Save_Job_Entry",
-          id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryTalendJobExec.ERROR_0003_Cannot_Save_Job_Entry", id_job ), dbe );
     }
   }
 
@@ -219,8 +219,8 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       result.setNrErrors( 0 );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryTalendJobExec.ERROR_0006_ExceptionExecutingTalenJob" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryTalendJobExec.ERROR_0006_ExceptionExecutingTalenJob" ), e );
     }
 
     return result;

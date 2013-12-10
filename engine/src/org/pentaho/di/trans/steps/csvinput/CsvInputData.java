@@ -83,7 +83,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
 
   /**
    * Data class for CsvInput step
-   *
+   * 
    * @see CsvInput
    */
   public CsvInputData() {
@@ -161,7 +161,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
   /**
    * Check to see if the buffer size is large enough given the data.endBuffer pointer.<br>
    * Resize the buffer if there is not enough room.
-   *
+   * 
    * @return false if everything is OK, true if there is a problem and we should stop.
    * @throws IOException
    *           in case there is a I/O problem (read error)
@@ -190,7 +190,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
    * If there is not enough room in the buffer to go there, resize the byte buffer and read more data.<br>
    * if there is no more data to read and if the endBuffer pointer has reached the end of the byte buffer, we return
    * true.<br>
-   *
+   * 
    * @return true if we reached the end of the byte buffer.
    * @throws IOException
    *           In case we get an error reading from the input file.
@@ -208,7 +208,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
    *       [""""] --> [""]
    *       [""] --> ["]
    * </pre>
-   *
+   * 
    * @return the byte array with escaped enclosures escaped.
    */
   byte[] removeEscapedEnclosures( byte[] field, int nrEnclosuresFound ) {

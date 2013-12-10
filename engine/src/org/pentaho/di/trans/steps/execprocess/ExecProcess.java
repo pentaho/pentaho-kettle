@@ -62,8 +62,8 @@ public class ExecProcess extends BaseStep implements StepInterface {
     data = (ExecProcessData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -87,13 +87,13 @@ public class ExecProcess extends BaseStep implements StepInterface {
         data.indexOfProcess = data.previousRowMeta.indexOfValue( meta.getProcessField() );
         if ( data.indexOfProcess < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField" ) + "["
-              + meta.getProcessField() + "]" );
+          logError( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField" )
+              + "[" + meta.getProcessField() + "]" );
           throw new KettleException( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField", meta
               .getProcessField() ) );
         }
       }
-    }// End If first
+    } // End If first
 
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
     for ( int i = 0; i < data.NrPrevFields; i++ ) {
@@ -136,8 +136,8 @@ public class ExecProcess extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "ExecProcess.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "ExecProcess.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( KettleException e ) {
 

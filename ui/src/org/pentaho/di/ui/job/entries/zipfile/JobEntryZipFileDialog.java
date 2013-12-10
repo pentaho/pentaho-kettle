@@ -72,8 +72,9 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobZipFiles.Filetype.Zip" ),
-    BaseMessages.getString( PKG, "JobZipFiles.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] {
+      BaseMessages.getString( PKG, "JobZipFiles.Filetype.Zip" ),
+      BaseMessages.getString( PKG, "JobZipFiles.Filetype.All" ) };
 
   private Label wlName;
 
@@ -368,8 +369,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     wbSourceFile.setLayoutData( fdbSourceFile );
 
     wSourceDirectory =
-        new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobZipFiles.SourceDir.Tooltip" ) );
+        new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobZipFiles.SourceDir.Tooltip" ) );
     props.setLook( wSourceDirectory );
     wSourceDirectory.addModifyListener( lsMod );
     fdSourceDirectory = new FormData();
@@ -388,8 +389,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     fdlWildcard.right = new FormAttachment( middle, -margin );
     wlWildcard.setLayoutData( fdlWildcard );
     wWildcard =
-        new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobZipFiles.Wildcard.Tooltip" ) );
+        new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobZipFiles.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();
@@ -408,8 +409,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     fdlWildcardExclude.right = new FormAttachment( middle, -margin );
     wlWildcardExclude.setLayoutData( fdlWildcardExclude );
     wWildcardExclude =
-        new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobZipFiles.WildcardExclude.Tooltip" ) );
+        new TextVar( jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobZipFiles.WildcardExclude.Tooltip" ) );
     props.setLook( wWildcardExclude );
     wWildcardExclude.addModifyListener( lsMod );
     fdWildcardExclude = new FormData();
@@ -642,13 +643,14 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
           JobEntryZipFile jobEntry = new JobEntryZipFile();
           String[] filename = new String[1];
           filename[0] =
-              jobEntry.getFullFilename( wZipFilename.getText(), wAddDate.getSelection(), wAddTime.getSelection(),
-                  wSpecifyFormat.getSelection(), wDateTimeFormat.getText() );
+              jobEntry.getFullFilename(
+                  wZipFilename.getText(), wAddDate.getSelection(), wAddTime.getSelection(), wSpecifyFormat
+                      .getSelection(), wDateTimeFormat.getText() );
           if ( filename != null && filename.length > 0 ) {
             EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, filename, BaseMessages.getString( PKG,
-                    "JobZipFiles.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                    "JobZipFiles.SelectOutputFiles.DialogMessage" ) );
+                new EnterSelectionDialog( shell, filename, BaseMessages.getString(
+                    PKG, "JobZipFiles.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+                    PKG, "JobZipFiles.SelectOutputFiles.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -809,8 +811,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     wbMovetoDirectory.setLayoutData( fdbMovetoDirectory );
 
     wMovetoDirectory =
-        new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobZipFiles.MovetoDirectory.Tooltip" ) );
+        new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobZipFiles.MovetoDirectory.Tooltip" ) );
     props.setLook( wMovetoDirectory );
     wMovetoDirectory.addModifyListener( lsMod );
     fdMovetoDirectory = new FormData();
@@ -858,10 +860,11 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     fdStoredSourcePathDepth.top = new FormAttachment( wCreateMoveToDirectory, margin );
     fdStoredSourcePathDepth.right = new FormAttachment( 100, 0 );
     wStoredSourcePathDepth.setLayoutData( fdStoredSourcePathDepth );
-    wStoredSourcePathDepth.setItems( new String[] { "0 : /pentaho/work/transfer/input/project/file.txt",
-      "1 : file.txt", "2 : project/file.txt", "3 : input/project/file.txt", "4 : transfer/input/project/file.txt",
-      "5 : work/transfer/input/project/file.txt", "6 : pentaho/work/transfer/input/project/file.txt",
-      "7 : pentaho/work/transfer/input/project/file.txt", "8 : pentaho/work/transfer/input/project/file.txt", } );
+    wStoredSourcePathDepth.setItems( new String[] {
+        "0 : /pentaho/work/transfer/input/project/file.txt", "1 : file.txt", "2 : project/file.txt",
+        "3 : input/project/file.txt", "4 : transfer/input/project/file.txt",
+        "5 : work/transfer/input/project/file.txt", "6 : pentaho/work/transfer/input/project/file.txt",
+        "7 : pentaho/work/transfer/input/project/file.txt", "8 : pentaho/work/transfer/input/project/file.txt", } );
 
     fdSettings = new FormData();
     fdSettings.left = new FormAttachment( 0, margin );

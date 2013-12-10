@@ -49,8 +49,9 @@ public class StringEvaluationResult {
   public String toString() {
     return conversionMeta.toStringMeta()
         + " "
-        + ( conversionMeta.isNumeric() ? conversionMeta.getConversionMask() + " : " + conversionMeta.getDecimalSymbol()
-            + conversionMeta.getGroupingSymbol() : conversionMeta.isDate() ? conversionMeta.getConversionMask() : "" );
+        + ( conversionMeta.isNumeric() ? conversionMeta.getConversionMask()
+            + " : " + conversionMeta.getDecimalSymbol() + conversionMeta.getGroupingSymbol() : conversionMeta.isDate()
+            ? conversionMeta.getConversionMask() : "" );
   }
 
   /**

@@ -78,8 +78,8 @@ public class JsonInput extends BaseStep implements StepInterface {
     List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
-      log.logError( BaseMessages.getString( PKG, "JsonInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "JsonInput.Log.RequiredFiles", message ) );
+      log.logError( BaseMessages.getString( PKG, "JsonInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "JsonInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "JsonInput.Log.RequiredFilesMissing", message ) );
     }
@@ -87,11 +87,11 @@ public class JsonInput extends BaseStep implements StepInterface {
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
-      log.logError( BaseMessages.getString( PKG, "JsonInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "JsonInput.Log.RequiredNotAccessibleFiles", message ) );
+      log.logError( BaseMessages.getString( PKG, "JsonInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "JsonInput.Log.RequiredNotAccessibleFiles", message ) );
 
-      throw new KettleException( BaseMessages.getString( PKG, "JsonInput.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JsonInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
@@ -204,8 +204,8 @@ public class JsonInput extends BaseStep implements StepInterface {
       }
       readFileOrString();
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JsonInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(),
-          e.toString() ) );
+      logError( BaseMessages.getString(
+          PKG, "JsonInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -279,8 +279,8 @@ public class JsonInput extends BaseStep implements StepInterface {
       String path = meta.getInputFields()[i].getPath();
       NJSONArray ja = data.jsonReader.getPath( path );
       if ( data.nrrecords != -1 && data.nrrecords != ja.size() && !ja.isNull() ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JsonInput.Error.BadStructure", ja.size(), path,
-            prevPath, data.nrrecords ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "JsonInput.Error.BadStructure", ja.size(), path, prevPath, data.nrrecords ) );
       }
       resultList.add( ja );
       if ( data.nrrecords == -1 && !ja.isNull() ) {
@@ -460,7 +460,7 @@ public class JsonInput extends BaseStep implements StepInterface {
           outputRowData[data.totalpreviousfields + i] = data.previousRow[data.totalpreviousfields + i];
         }
       }
-    }// End of loop over fields...
+    } // End of loop over fields...
 
     // When we have an input stream
     // the row index take care of previous fields

@@ -75,13 +75,13 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
   private static Class<?> PKG = JobEntryXSLT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final String[] FILETYPES_XML = new String[] {
-    BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.Xml" ),
-    BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.Xml" ),
+      BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.All" ) };
 
   private static final String[] FILETYPES_XSL = new String[] {
-    BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.Xsl" ),
-    BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.Xslt" ),
-    BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.Xsl" ),
+      BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.Xslt" ),
+      BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -584,16 +584,19 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Name" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Name" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Value" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[0].setComboValues( XsltMeta.outputProperties );
     colinf[1].setUsingVariables( true );
 
     wOutputProperties =
-        new TableView( jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
-            OutputPropertiesRows, lsMod, props );
+        new TableView(
+            jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, OutputPropertiesRows, lsMod,
+            props );
     fdOutputProperties = new FormData();
     fdOutputProperties.left = new FormAttachment( 0, 0 );
     fdOutputProperties.top = new FormAttachment( wlOutputProperties, margin );
@@ -615,16 +618,16 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Parameter" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[1].setUsingVariables( true );
     colinf[0].setUsingVariables( true );
 
     wFields =
-        new TableView( jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );

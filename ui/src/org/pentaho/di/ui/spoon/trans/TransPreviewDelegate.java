@@ -214,9 +214,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
-      new ErrorDialog( transPreviewComposite.getShell(), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( transPreviewComposite.getShell(), BaseMessages.getString(
+          PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -237,7 +237,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     // Which step do we preview...
     //
     StepMeta stepMeta = selectedStep; // copy to prevent race conditions and so on.
-    if ( stepMeta == null /* || selectedStep == lastSelectedStep */) {
+    if ( stepMeta == null ) {
       return;
     } else {
       lastSelectedStep = selectedStep;

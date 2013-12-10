@@ -146,15 +146,18 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 
     ciKey = new ColumnInfo[nrFieldCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetPreviousRowFieldDialog.ColumnInfo.InStreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GetPreviousRowFieldDialog.ColumnInfo.InStreamField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetPreviousRowFieldDialog.ColumnInfo.OutStreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GetPreviousRowFieldDialog.ColumnInfo.OutStreamField" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciKey[1].setUsingVariables( true );
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrFieldRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrFieldRows, lsMod, props );
 
     fdKey = new FormData();
     fdKey.left = new FormAttachment( 0, 0 );
@@ -346,8 +349,9 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

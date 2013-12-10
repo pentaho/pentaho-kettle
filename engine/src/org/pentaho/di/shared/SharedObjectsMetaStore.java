@@ -179,8 +179,8 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
         sharedObjects.saveToFile();
         return;
       }
-      throw new MetaStoreException( "Storing elements with element type name '" + elementType.getName()
-          + "' is not supported in the shared objects meta store" );
+      throw new MetaStoreException( "Storing elements with element type name '"
+          + elementType.getName() + "' is not supported in the shared objects meta store" );
     } catch ( Exception e ) {
       throw new MetaStoreException( "Unexpected error creating an element in the shared objects meta store", e );
     }

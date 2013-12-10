@@ -220,7 +220,8 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.Fieldname.Column" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.Fieldname.Column" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -414,13 +415,13 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
 
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-              STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y" ) ) );
+          new MessageDialogWithToggle( shell, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogMessage", Const.CR )
+              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+              PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props
+              .getCustomParameter( STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

@@ -263,8 +263,8 @@ public class AccessInput extends BaseStep implements StepInterface {
           data.convertRowMeta = data.outputRowMeta.clone();
           for ( int i = 0; i < data.convertRowMeta.size(); i++ ) {
             ValueMetaInterface valueMeta = data.convertRowMeta.getValueMeta( i );
-            data.convertRowMeta.setValueMeta( i, ValueMetaFactory.cloneValueMeta( valueMeta,
-                ValueMetaInterface.TYPE_STRING ) );
+            data.convertRowMeta.setValueMeta( i, ValueMetaFactory.cloneValueMeta(
+                valueMeta, ValueMetaInterface.TYPE_STRING ) );
           }
 
           // Check is filename field is provided
@@ -278,8 +278,8 @@ public class AccessInput extends BaseStep implements StepInterface {
             data.indexOfFilenameField = getInputRowMeta().indexOfValue( meta.getDynamicFilenameField() );
             if ( data.indexOfFilenameField < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "AccessInput.Log.ErrorFindingField" ) + "["
-                  + meta.getDynamicFilenameField() + "]" );
+              logError( BaseMessages.getString( PKG, "AccessInput.Log.ErrorFindingField" )
+                  + "[" + meta.getDynamicFilenameField() + "]" );
               throw new KettleException( BaseMessages.getString( PKG, "AccessInput.Exception.CouldnotFindField", meta
                   .getDynamicFilenameField() ) );
             }
@@ -289,8 +289,8 @@ public class AccessInput extends BaseStep implements StepInterface {
 
         String filename = getInputRowMeta().getString( data.readrow, data.indexOfFilenameField );
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(),
-              filename ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(), filename ) );
         }
 
         data.file = KettleVFS.getFileObject( filename, getTransMeta() );
@@ -354,8 +354,8 @@ public class AccessInput extends BaseStep implements StepInterface {
         logDetailed( BaseMessages.getString( PKG, "AccessInput.Log.FileOpened", data.file.toString() ) );
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "AccessInput.Log.UnableToOpenFile", "" + data.filenr,
-          data.file.toString(), e.toString() ) );
+      logError( BaseMessages.getString(
+          PKG, "AccessInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -367,8 +367,8 @@ public class AccessInput extends BaseStep implements StepInterface {
     List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
-      logError( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "AccessInput.Log.RequiredFiles", message ) );
+      logError( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "AccessInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesMissing", message ) );
     }
@@ -376,11 +376,11 @@ public class AccessInput extends BaseStep implements StepInterface {
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
-      logError( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "AccessInput.Log.RequiredNotAccessibleFiles", message ) );
+      logError( BaseMessages.getString( PKG, "AccessInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "AccessInput.Log.RequiredNotAccessibleFiles", message ) );
 
-      throw new KettleException( BaseMessages.getString( PKG, "AccessInput.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "AccessInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
@@ -426,8 +426,8 @@ public class AccessInput extends BaseStep implements StepInterface {
           data.convertRowMeta = data.outputRowMeta.clone();
           for ( int i = 0; i < data.convertRowMeta.size(); i++ ) {
             ValueMetaInterface valueMeta = data.convertRowMeta.getValueMeta( i );
-            data.convertRowMeta.setValueMeta( i, ValueMetaFactory.cloneValueMeta( valueMeta,
-                ValueMetaInterface.TYPE_STRING ) );
+            data.convertRowMeta.setValueMeta( i, ValueMetaFactory.cloneValueMeta(
+                valueMeta, ValueMetaInterface.TYPE_STRING ) );
           }
         } catch ( Exception e ) {
           logError( BaseMessages.getString( PKG, "AccessInput.ErrorInit", e.toString() ) );

@@ -131,8 +131,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
             // We need to keep track of this field
             fieldsToNull.add( meta.getUpdateLookup()[i] );
           } else {
-            updatefields.add( SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i],
-                rowData[data.fieldnrs[i]], meta.getUseExternalId()[i] ) );
+            updatefields.add( SalesforceConnection.createMessageElement(
+                meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i] ) );
           }
         }
 

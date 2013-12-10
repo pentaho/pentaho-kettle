@@ -343,8 +343,9 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TableExistsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "TableExistsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "TableExistsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "TableExistsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -364,9 +365,9 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Message" ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+                  PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+                  PKG, "System.Dialog.AvailableSchemas.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchemaname.setText( Const.NVL( d.toString(), "" ) );

@@ -125,32 +125,34 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
     colinf[0] =
         new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            ValueMeta.getTypes() );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                .getTypes() );
     colinf[2] =
         new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_FORMAT, 2 );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[5] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[6] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[7] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[8] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[9] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ConstantDialog.Value.SetEmptyString" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-              BaseMessages.getString( PKG, "System.Combo.No" ) } );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ConstantDialog.Value.SetEmptyString" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {
+                BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -257,8 +259,8 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
         item.setText( col++, Const.NVL( decim, "" ) );
         item.setText( col++, Const.NVL( group, "" ) );
         item.setText( col++, Const.NVL( def, "" ) );
-        item.setText( col++, input.isSetEmptyString()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" )
-            : BaseMessages.getString( PKG, "System.Combo.No" ) );
+        item.setText( col++, input.isSetEmptyString()[i]
+            ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
 
       }
     }

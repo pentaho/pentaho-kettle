@@ -288,8 +288,9 @@ public class PreviewRowsDialog {
       // Mmm, if we don't get any rows in the buffer: show a dialog box.
       if ( buffer == null || buffer.size() == 0 ) {
         ShowMessageDialog dialog =
-            new ShowMessageDialog( shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString( PKG,
-                "PreviewRowsDialog.NoRows.Text" ), BaseMessages.getString( PKG, "PreviewRowsDialog.NoRows.Message" ) );
+            new ShowMessageDialog( shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString(
+                PKG, "PreviewRowsDialog.NoRows.Text" ), BaseMessages
+                .getString( PKG, "PreviewRowsDialog.NoRows.Message" ) );
         dialog.open();
         shell.dispose();
         return true;
@@ -419,8 +420,9 @@ public class PreviewRowsDialog {
   private void log() {
     if ( loggingText != null ) {
       EnterTextDialog etd =
-          new EnterTextDialog( shell, BaseMessages.getString( PKG, "PreviewRowsDialog.ShowLogging.Title" ),
-              BaseMessages.getString( PKG, "PreviewRowsDialog.ShowLogging.Message" ), loggingText );
+          new EnterTextDialog(
+              shell, BaseMessages.getString( PKG, "PreviewRowsDialog.ShowLogging.Title" ), BaseMessages.getString(
+                  PKG, "PreviewRowsDialog.ShowLogging.Message" ), loggingText );
       etd.open();
     }
   }

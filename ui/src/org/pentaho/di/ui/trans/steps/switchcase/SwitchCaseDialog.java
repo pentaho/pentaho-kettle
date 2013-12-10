@@ -160,9 +160,9 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
       inputFields = transMeta.getPrevStepFields( stepMeta );
       wFieldName.setItems( inputFields.getFieldNames() );
     } catch ( KettleStepException ex ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString( PKG,
-          "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString(
+          PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
     }
 
     wlContains = new Label( shell, SWT.RIGHT );
@@ -270,14 +270,15 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.TargetStep" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, nextStepNames, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SwitchCaseDialog.ColumnInfo.TargetStep" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                nextStepNames, false ), };
 
     wValues =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, input.getStepIOMeta()
-            .getTargetStreams().size(), lsMod, props );
+        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, input
+            .getStepIOMeta().getTargetStreams().size(), lsMod, props );
 
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );

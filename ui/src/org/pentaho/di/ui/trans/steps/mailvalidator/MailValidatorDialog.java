@@ -448,8 +448,8 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     wlResultStringFalse.setLayoutData( fdlResultStringFalse );
 
     wResultStringFalse = new TextVar( transMeta, wResultGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wResultStringFalse.setToolTipText( BaseMessages.getString( PKG,
-        "MailValidatorDialog.ResultStringFalseField.Tooltip" ) );
+    wResultStringFalse.setToolTipText( BaseMessages.getString(
+        PKG, "MailValidatorDialog.ResultStringFalseField.Tooltip" ) );
     props.setLook( wResultStringFalse );
     wResultStringFalse.addModifyListener( lsMod );
     fdResultStringFalse = new FormData();
@@ -669,8 +669,9 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

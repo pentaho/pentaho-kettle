@@ -96,8 +96,8 @@ public class GroupByData extends BaseStepData implements StepDataInterface {
   public boolean newBatch;
 
   /**
-	 * 
-	 */
+   * 
+   */
   public GroupByData() {
     super();
 

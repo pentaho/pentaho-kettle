@@ -126,8 +126,8 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "hostname", hostname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "port", port );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'Telnet' to the repository for id_job=" + id_job,
-          dbe );
+      throw new KettleException(
+          "Unable to save job entry of type 'Telnet' to the repository for id_job=" + id_job, dbe );
     }
   }
 

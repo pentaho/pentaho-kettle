@@ -56,8 +56,8 @@ public class PropertySetter {
     Object val;
 
     if ( expression.length == 0 ) {
-      throw new KettleConfigException( "No value found for property [" + property + "] and obbject class ["
-          + obj.getClass().getName() + "]" );
+      throw new KettleConfigException( "No value found for property ["
+          + property + "] and obbject class [" + obj.getClass().getName() + "]" );
     }
 
     String directive = expression[0];
@@ -71,8 +71,8 @@ public class PropertySetter {
         val = BaseMessages.getString( packageName, key );
       } else {
         throw new KettleConfigException(
-            "the i18, directive need 3 parameters: i18n, the package name and the key, but " + expression.length
-                + " parameters were found in [" + value + "]" );
+            "the i18, directive need 3 parameters: i18n, the package name and the key, but "
+                + expression.length + " parameters were found in [" + value + "]" );
       }
     } else if ( OGNL.equalsIgnoreCase( directive ) ) {
 

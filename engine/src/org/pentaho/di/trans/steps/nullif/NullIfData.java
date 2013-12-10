@@ -37,9 +37,6 @@ public class NullIfData extends BaseStepData implements StepDataInterface {
   public Object[] nullValue;
   public ValueMetaInterface[] nullValueMeta;
 
-  /**
-	 * 
-	 */
   public NullIfData() {
     super();
 

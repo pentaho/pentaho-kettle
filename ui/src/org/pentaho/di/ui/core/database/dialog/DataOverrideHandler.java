@@ -120,8 +120,9 @@ public class DataOverrideHandler extends DataHandler {
       if ( buffer.size() > 0 ) {
         RowMetaInterface rowMeta = buffer.get( 0 ).getRowMeta();
         java.util.List<Object[]> rowData = new ArrayList<Object[]>();
-        for ( RowMetaAndData row : buffer )
+        for ( RowMetaAndData row : buffer ) {
           rowData.add( row.getData() );
+        }
 
         PreviewRowsDialog prd = new PreviewRowsDialog( parent, dbinfo, SWT.NONE, null, rowMeta, rowData );
         prd.setTitleMessage( BaseMessages.getString( PKG, "DatabaseDialog.FeatureList.title" ), BaseMessages.getString(
@@ -140,9 +141,9 @@ public class DataOverrideHandler extends DataHandler {
     super.getControls();
 
     XulTextbox[] boxes =
-        new XulTextbox[] { hostNameBox, databaseNameBox, portNumberBox, userNameBox, passwordBox, customDriverClassBox,
-          customUrlBox, dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox, languageBox,
-          systemNumberBox, clientBox };
+        new XulTextbox[] {
+            hostNameBox, databaseNameBox, portNumberBox, userNameBox, passwordBox, customDriverClassBox, customUrlBox,
+            dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox, languageBox, systemNumberBox, clientBox };
 
     for ( int i = 0; i < boxes.length; i++ ) {
       XulTextbox xulTextbox = boxes[i];
@@ -175,8 +176,8 @@ public class DataOverrideHandler extends DataHandler {
     Shell parent = getShell();
 
     ShowMessageDialog msgDialog =
-        new ShowMessageDialog( parent, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString( PKG,
-            "DatabaseDialog.DatabaseConnectionTest.title" ), message, scroll );
+        new ShowMessageDialog( parent, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(
+            PKG, "DatabaseDialog.DatabaseConnectionTest.title" ), message, scroll );
     msgDialog.open();
   }
 

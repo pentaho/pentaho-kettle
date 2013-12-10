@@ -80,8 +80,8 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length == 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "AbortMeta.CheckResult.NoInputReceivedError" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "AbortMeta.CheckResult.NoInputReceivedError" ), stepinfo );
       remarks.add( cr );
     }
   }
@@ -121,8 +121,8 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       message = XMLHandler.getTagValue( stepnode, "message" );
       alwaysLogRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "always_log_rows" ) );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -133,8 +133,8 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       message = rep.getStepAttributeString( id_step, "message" );
       alwaysLogRows = rep.getStepAttributeBoolean( id_step, "always_log_rows" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 

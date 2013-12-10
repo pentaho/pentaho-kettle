@@ -36,7 +36,8 @@ public class RegexEvalUnitTest {
   @Test
   public void testOutputIsMuchBiggerThanInputDoesntThrowArrayIndexOutOfBounds() throws KettleException {
     RegexEval regexEval =
-        new RegexEval( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        new RegexEval(
+            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
     when( stepMockHelper.processRowsStepMetaInterface.isAllowCaptureGroupsFlagSet() ).thenReturn( true );
     String[] outFields = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k" };

@@ -448,8 +448,8 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
       rep.saveStepAttribute( id_transformation, id_step, "timeout", timeout );
       rep.saveStepAttribute( id_transformation, id_step, "rollbackAllChangesOnError", rollbackAllChangesOnError );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInsertMeta.Exception.ErrorSavingToRepository",
-          "" + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
@@ -461,60 +461,60 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.NoInputExpected" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.NoInput" ), stepMeta );
     }
     remarks.add( cr );
 
     // check URL
     if ( Const.isEmpty( targeturl ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoURL" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.NoURL" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.URLOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.URLOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check username
     if ( Const.isEmpty( username ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoUsername" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.NoUsername" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.UsernameOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.UsernameOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check module
     if ( Const.isEmpty( module ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoModule" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.NoModule" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.ModuleOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.ModuleOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check return fields
     if ( updateLookup.length == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.NoFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.FieldsOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceInsertMeta.CheckResult.FieldsOk" ), stepMeta );
     }
     remarks.add( cr );
 

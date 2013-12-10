@@ -455,8 +455,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdConnect.top = new FormAttachment( wStepname, margin );
     gConnect.setLayoutData( fdConnect );
 
-    gConnect.setTabList( new Control[] { wGaAppName, wGaEmail, wGaPassword, wGaApiKey, wCustomProfileEnabled,
-      wGaCustomProfile, wGaProfile, wGetProfiles } );
+    gConnect
+        .setTabList( new Control[] {
+            wGaAppName, wGaEmail, wGaPassword, wGaApiKey, wCustomProfileEnabled, wGaCustomProfile, wGaProfile,
+            wGetProfiles } );
 
     /*************************************************
      * // GOOGLE ANALYTICS QUERY GROUP
@@ -811,8 +813,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdQueryGroup.top = new FormAttachment( gConnect, margin );
     gQuery.setLayoutData( fdQueryGroup );
 
-    gQuery.setTabList( new Control[] { wQuStartDate, wQuEndDate, wQuDimensions, wQuMetrics, wQuFilters, wQuSort,
-      wUseSegmentEnabled, wCustomSegmentEnabled, wQuCustomSegment, wQuSegment, wGetSegments } );
+    gQuery.setTabList( new Control[] {
+        wQuStartDate, wQuEndDate, wQuDimensions, wQuMetrics, wQuFilters, wQuSort, wUseSegmentEnabled,
+        wCustomSegmentEnabled, wQuCustomSegment, wQuSegment, wGetSegments } );
 
     // Limit input ...
     wlLimit = new Label( shell, SWT.RIGHT );
@@ -858,27 +861,33 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] ciKeys = new ColumnInfo[fieldWidgetCols];
     ciKeys[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.FeedFieldType" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { GaInputStepMeta.FIELD_TYPE_DIMENSION,
-              GaInputStepMeta.FIELD_TYPE_METRIC, GaInputStepMeta.FIELD_TYPE_CONFIDENCE_INTERVAL,
-              GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD }, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.FeedFieldType" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+                GaInputStepMeta.FIELD_TYPE_DIMENSION, GaInputStepMeta.FIELD_TYPE_METRIC,
+                GaInputStepMeta.FIELD_TYPE_CONFIDENCE_INTERVAL, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY,
+                GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD }, true );
     ciKeys[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.FeedField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.FeedField" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false, false );
     ciKeys[1].setUsingVariables( true );
     ciKeys[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.RenameTo" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.RenameTo" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false, false );
     ciKeys[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Type" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            ValueMeta.getTypes() );
     ciKeys[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Format" ),
-            ColumnInfo.COLUMN_TYPE_FORMAT, 4 );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 4 );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys, fieldWidgetRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys,
+            fieldWidgetRows, lsMod, props );
 
     FormData fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
@@ -978,8 +987,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             item.setText( 3, m.getName() );
 
             // depending on type
-            if ( m.getType().compareToIgnoreCase( "currency" ) == 0 || m.getType().compareToIgnoreCase( "float" ) == 0
-                || m.getType().compareToIgnoreCase( "percent" ) == 0
+            if ( m.getType().compareToIgnoreCase( "currency" ) == 0
+                || m.getType().compareToIgnoreCase( "float" ) == 0 || m.getType().compareToIgnoreCase( "percent" ) == 0
                 || m.getType().compareToIgnoreCase( "us_currency" ) == 0 ) {
               item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_NUMBER ) );
               item.setText( 5, "#.#;-#.#" );
@@ -1044,8 +1053,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         } catch ( AuthenticationException e1 ) {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setText( "Authentication Error" );
-          mb.setMessage( "Could not authenticate. Please check the credentials and ensure that there's no network connectivity problem.\n\n"
-              + e1.getMessage() );
+          mb
+              .setMessage( "Could not authenticate. Please check the credentials and ensure that there's no network connectivity problem.\n\n"
+                  + e1.getMessage() );
           mb.open();
 
           e1.printStackTrace();
@@ -1054,7 +1064,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         } catch ( IOException e2 ) {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setText( "IO Error" );
-          mb.setMessage( "Could not contact Google Analytics service. Please make sure that there's no network connectivity problem." );
+          mb
+              .setMessage( "Could not contact Google Analytics service. Please make sure that there's no network connectivity problem." );
           mb.open();
           e2.printStackTrace();
           return;
@@ -1223,14 +1234,14 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "GoogleAnalyticsDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "GoogleAnalyticsDialog.PreviewSize.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "GoogleAnalyticsDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+            PKG, "GoogleAnalyticsDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -1239,17 +1250,19 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-              loggingText );
+          new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(),
+              progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname
+                  .getText() ), loggingText );
       prd.open();
     }
   }
@@ -1263,8 +1276,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       ex.printStackTrace();
       return null;
     }
-    query.setIds( wCustomProfileEnabled.getSelection() ? transMeta.environmentSubstitute( wGaCustomProfile.getText() )
-        : profileTableIds.get( wGaProfile.getText() ) );
+    query.setIds( wCustomProfileEnabled.getSelection()
+        ? transMeta.environmentSubstitute( wGaCustomProfile.getText() ) : profileTableIds.get( wGaProfile.getText() ) );
     query.setStartDate( transMeta.environmentSubstitute( wQuStartDate.getText() ) );
     query.setEndDate( transMeta.environmentSubstitute( wQuEndDate.getText() ) );
     query.setDimensions( transMeta.environmentSubstitute( wQuDimensions.getText() ) );
@@ -1358,7 +1371,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       e.printStackTrace();
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( "Authentication Failure" );
-      mb.setMessage( "Authentication failure occured when contacting Google Analytics.\nPlease verify the credentials in the email and password fields as well as your network connectivity." );
+      mb
+          .setMessage( "Authentication failure occured when contacting Google Analytics.\nPlease verify the credentials in the email and password fields as well as your network connectivity." );
       mb.open();
 
     } catch ( MalformedURLException e ) {
@@ -1367,8 +1381,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       e.printStackTrace();
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( "IO Exception" );
-      mb.setMessage( "IO exception occured when contacting Google Analytics. Is your network connection working and allowing HTTPS connections?\n\n"
-          + e.getMessage() );
+      mb
+          .setMessage( "IO exception occured when contacting Google Analytics. Is your network connection working and allowing HTTPS connections?\n\n"
+              + e.getMessage() );
       mb.open();
     } catch ( ServiceException e ) {
       e.printStackTrace();
@@ -1413,7 +1428,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       e.printStackTrace();
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( "Authentication Failure" );
-      mb.setMessage( "Authentication failure occured when contacting Google Analytics.\nPlease verify the credentials in the email and password fields as well as your network connectivity." );
+      mb
+          .setMessage( "Authentication failure occured when contacting Google Analytics.\nPlease verify the credentials in the email and password fields as well as your network connectivity." );
       mb.open();
 
     } catch ( MalformedURLException e ) {
@@ -1422,8 +1438,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       e.printStackTrace();
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( "IO Exception" );
-      mb.setMessage( "IO exception occured when contacting Google Analytics. Is your network connection working and allowing HTTPS connections?\n\n"
-          + e.getMessage() );
+      mb
+          .setMessage( "IO exception occured when contacting Google Analytics. Is your network connection working and allowing HTTPS connections?\n\n"
+              + e.getMessage() );
       mb.open();
     } catch ( ServiceException e ) {
       e.printStackTrace();

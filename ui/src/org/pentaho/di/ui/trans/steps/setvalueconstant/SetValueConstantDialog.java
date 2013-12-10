@@ -168,22 +168,25 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
     final int FieldsRows = input.getFieldName().length;
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Fieldname.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetValueConstantDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {}, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Value.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetValueConstantDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Value.ConversionMask" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetValueConstantDialog.Value.ConversionMask" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats() );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Value.SetEmptyString" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-              BaseMessages.getString( PKG, "System.Combo.No" ) } );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetValueConstantDialog.Value.SetEmptyString" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+                BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod,
-            props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

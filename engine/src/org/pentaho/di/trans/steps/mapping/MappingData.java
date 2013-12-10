@@ -57,9 +57,6 @@ public class MappingData extends BaseStepData implements StepDataInterface {
   protected int linesRejectedStepNr = -1;
   public SingleThreadedTransExecutor singleThreadedTransExcecutor;
 
-  /**
-	 * 
-	 */
   public MappingData() {
     super();
     mappingTrans = null;

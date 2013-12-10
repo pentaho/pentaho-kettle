@@ -44,9 +44,6 @@ public class MappingInputData extends BaseStepData implements StepDataInterface 
   public List<MappingValueRename> valueRenames;
   public int[] fieldNrs;
 
-  /**
-	 * 
-	 */
   public MappingInputData() {
     super();
     linked = false;

@@ -44,8 +44,8 @@ import org.pentaho.di.i18n.BaseMessages;
 public class CopyTableWizard implements IWizard {
   private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Copy tables wizard",
-      LoggingObjectType.SPOON, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Copy tables wizard", LoggingObjectType.SPOON, null );
 
   public CopyTableWizard() {
     super();

@@ -249,7 +249,8 @@ public class Translator2 {
           double donePct = 100 * (double) keyCounts[i] / nrKeys;
           int missingKeys = nrKeys - keyCounts[i];
           String statusKeys =
-              "# " + nrFormat.format( i + 1 ) + " : " + locales[i] + " : " + pctFormat.format( donePct ) + "% "
+              "# "
+                  + nrFormat.format( i + 1 ) + " : " + locales[i] + " : " + pctFormat.format( donePct ) + "% "
                   + BaseMessages.getString( PKG, "i18n.Log.CompleteKeys", keyCounts[i] )
                   + ( missingKeys != 0 ? BaseMessages.getString( PKG, "i18n.Log.MissingKeys", missingKeys ) : "" );
           System.out.println( statusKeys );
@@ -451,7 +452,9 @@ public class Translator2 {
     java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
     if ( changedMessagesStores.size() > 0 ) {
       MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_WARNING );
-      mb.setMessage( BaseMessages.getString( PKG, "i18nDialog.ChangedFilesWhenExit", changedMessagesStores.size() + "" ) );
+      mb
+          .setMessage( BaseMessages.getString( PKG, "i18nDialog.ChangedFilesWhenExit", changedMessagesStores.size()
+              + "" ) );
       mb.setText( BaseMessages.getString( PKG, "i18nDialog.Warning" ) );
 
       int answer = mb.open();
@@ -487,14 +490,14 @@ public class Translator2 {
 
     ColumnInfo[] colinfo =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "i18nDialog.SourceFolder" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-              true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "i18nDialog.Packagename" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-              true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "i18nDialog.SourceFolder" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "i18nDialog.Packagename" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     wPackages =
-        new TableView( new Variables(), composite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, true,
-            null, props );
+        new TableView(
+            new Variables(), composite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, true, null, props );
     FormData fdPackages = new FormData();
     fdPackages.left = new FormAttachment( 0, 0 );
     fdPackages.right = new FormAttachment( 100, 0 );
@@ -544,8 +547,8 @@ public class Translator2 {
     wClose = new Button( composite, SWT.NONE );
     wClose.setText( BaseMessages.getString( PKG, "i18nDialog.Close" ) );
 
-    BaseStepDialog.positionBottomButtons( composite, new Button[] { wReload, wSave, wZip, wClose, }, Const.MARGIN * 3,
-        null );
+    BaseStepDialog.positionBottomButtons(
+        composite, new Button[] { wReload, wSave, wZip, wClose, }, Const.MARGIN * 3, null );
 
     /*
      * wSearchG = new Button(composite, SWT.PUSH); wSearchG.setText("   Search &key  "); FormData fdSearchG = new
@@ -815,7 +818,8 @@ public class Translator2 {
             log.logBasic( BaseMessages.getString( PKG, "i18n.Log.SavedMessagesFile", messagesStore.getFilename() ) );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
               "There was an error saving the changed messages files:", e );
           return false;
         }
@@ -853,8 +857,9 @@ public class Translator2 {
 
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
         dialog.setFilterExtensions( new String[] { "*.zip", "*" } );
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.ZIPFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.ZIPFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String zipFilename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
 
@@ -873,7 +878,8 @@ public class Translator2 {
             }
             out.close();
           } catch ( Exception e ) {
-            new ErrorDialog( shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
+            new ErrorDialog(
+                shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
                 "There was an error saving the changed messages files:", e );
           }
 
@@ -887,9 +893,9 @@ public class Translator2 {
     // Ask for the search string...
     //
     EnterStringDialog dialog =
-        new EnterStringDialog( shell, Const.NVL( searchString, "" ), BaseMessages.getString( PKG,
-            "i18nDialog.SearchKey" ), BaseMessages.getString( PKG, "i18nDialog.SearchLocale1" ) + " '"
-            + Const.NVL( searchLocale, "" ) + "' " + BaseMessages.getString( PKG, "i18nDialog.SearchLocale2" ) );
+        new EnterStringDialog( shell, Const.NVL( searchString, "" ), BaseMessages.getString(
+            PKG, "i18nDialog.SearchKey" ), BaseMessages.getString( PKG, "i18nDialog.SearchLocale1" )
+            + " '" + Const.NVL( searchLocale, "" ) + "' " + BaseMessages.getString( PKG, "i18nDialog.SearchLocale2" ) );
     searchString = dialog.open();
 
     lastFoundKey = null;
@@ -1028,7 +1034,8 @@ public class Translator2 {
     //
     int todoIndex = wTodo.getSelectionIndex();
 
-    if ( selectedKey != null && selectedLocale != null && selectedMessagesPackage != null && lastValueChanged
+    if ( selectedKey != null
+        && selectedLocale != null && selectedMessagesPackage != null && lastValueChanged
         && selectedSourceFolder != null ) {
       // Store the last modified value
       //

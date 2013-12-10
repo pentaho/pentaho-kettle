@@ -148,13 +148,13 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilesToResultMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FilesToResultMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FilesToResultMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FilesToResultMeta.CheckResult.NoInputReceivedError" ), stepMeta );
       remarks.add( cr );
     }
   }

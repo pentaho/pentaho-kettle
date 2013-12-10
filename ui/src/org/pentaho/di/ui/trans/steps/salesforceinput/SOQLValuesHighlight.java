@@ -106,10 +106,10 @@ public class SOQLValuesHighlight implements LineStyleListener {
 
   void initializeColors() {
     colors = new Color[] { GUIResource.getInstance().getColor( 0, 0, 0 ), // black
-      GUIResource.getInstance().getColor( 255, 0, 0 ), // red
-      GUIResource.getInstance().getColor( 63, 127, 95 ), // green
-      GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
-      GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
+        GUIResource.getInstance().getColor( 255, 0, 0 ), // red
+        GUIResource.getInstance().getColor( 63, 127, 95 ), // green
+        GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
+        GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
 
         };
     tokenColors = new int[MAXIMUM_TOKEN];
@@ -260,8 +260,9 @@ public class SOQLValuesHighlight implements LineStyleListener {
 
     };
 
-    private String[] fgKeywords = { "select", "from", "where", "and", "or", "with", "group", "having", "order", "by",
-      "asc", "desc", "nulls", "first", "last", "limit", "rollup", "cube", "true", "false" };
+    private String[] fgKeywords = {
+        "select", "from", "where", "and", "or", "with", "group", "having", "order", "by", "asc", "desc", "nulls",
+        "first", "last", "limit", "rollup", "cube", "true", "false" };
 
     public JavaScanner() {
       initialize();

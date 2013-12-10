@@ -121,8 +121,9 @@ public class ReplaceString extends BaseStep implements StepInterface {
     for ( int i = 0; i < data.numFields; i++ ) {
 
       String value =
-          replaceString( getInputRowMeta().getString( row, data.inStreamNrs[i] ), data.patterns[i],
-              getResolvedReplaceByString( i, row ) );
+          replaceString(
+              getInputRowMeta().getString( row, data.inStreamNrs[i] ), data.patterns[i], getResolvedReplaceByString(
+                  i, row ) );
 
       if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
         // update field value
@@ -140,8 +141,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
     data = (ReplaceStringData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -171,14 +172,15 @@ public class ReplaceString extends BaseStep implements StepInterface {
 
         // check field type
         if ( getInputRowMeta().getValueMeta( data.inStreamNrs[i] ).getType() != ValueMeta.TYPE_STRING ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "ReplaceString.Exception.FieldTypeNotString",
-              meta.getFieldInStream()[i] ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "ReplaceString.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
         }
 
         data.outStreamNrs[i] = environmentSubstitute( meta.getFieldOutStream()[i] );
 
         data.patterns[i] =
-            buildPattern( meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
+            buildPattern(
+                meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
                 meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
                 meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES, environmentSubstitute( meta
                     .getReplaceString()[i] ) );

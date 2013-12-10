@@ -172,14 +172,18 @@ public class SapFunctionBrowser extends Dialog {
     //
     ColumnInfo[] columns =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Groupname.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Application.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Description.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Name.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Groupname.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Application.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Description.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     wResult = new TableView( space, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columns, 0, null, props );
     wResult.setSortable( true );
@@ -243,8 +247,8 @@ public class SapFunctionBrowser extends Dialog {
       functionList = new ArrayList<SAPFunction>( sc.getFunctions( searchString ) );
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Title" ), BaseMessages.getString( PKG,
-          "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Message" ), e );
+          .getString( PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Title" ), BaseMessages.getString(
+          PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Message" ), e );
     } finally {
       if ( sc != null ) {
         sc.close();

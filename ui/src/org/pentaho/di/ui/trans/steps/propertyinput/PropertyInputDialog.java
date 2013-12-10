@@ -85,8 +85,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class PropertyInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-  private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final String[] YES_NO_COMBO = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -491,20 +491,25 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
     ColumnInfo[] colinfo = new ColumnInfo[5];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.Files.Filename.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PropertyInputDialog.Files.Filename.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.Files.Wildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PropertyInputDialog.Files.Wildcard.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinfo[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.Files.ExcludeWildcard.Column" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PropertyInputDialog.Files.ExcludeWildcard.Column" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PropertyInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            YES_NO_COMBO );
     colinfo[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.IncludeSubDirs.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PropertyInputDialog.IncludeSubDirs.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            YES_NO_COMBO );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -675,8 +680,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     wlresolveValueVariable.setLayoutData( fdlresolveValueVariable );
     wresolveValueVariable = new Button( wSettingsGroup, SWT.CHECK );
     props.setLook( wresolveValueVariable );
-    wresolveValueVariable.setToolTipText( BaseMessages.getString( PKG,
-        "PropertyInputDialog.resolveValueVariable.Tooltip" ) );
+    wresolveValueVariable.setToolTipText( BaseMessages.getString(
+        PKG, "PropertyInputDialog.resolveValueVariable.Tooltip" ) );
     fdresolveValueVariable = new FormData();
     fdresolveValueVariable.left = new FormAttachment( middle, 0 );
     fdresolveValueVariable.top = new FormAttachment( wLimit, margin );
@@ -903,33 +908,46 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          // new ColumnInfo( BaseMessages.getString(PKG,
-          // "PropertyInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Name.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            // new ColumnInfo( BaseMessages.getString(PKG,
+            // "PropertyInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
 
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Attribut.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, PropertyInputField.ColumnDesc, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Attribut.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, PropertyInputField.ColumnDesc, false ),
 
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, PropertyInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Repeat.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Type.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Format.Column" ),
+                ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Length.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Precision.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Currency.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Decimal.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Group.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.TrimType.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, PropertyInputField.trimTypeDesc, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PropertyInputDialog.FieldsTable.Repeat.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
 
         };
 
@@ -1015,8 +1033,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
-          PropertyInputMeta.RequiredFilesCode[0], PropertyInputMeta.RequiredFilesCode[0] } );
+        wFilenameList.add( new String[] {
+            wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+            PropertyInputMeta.RequiredFilesCode[0], PropertyInputMeta.RequiredFilesCode[0] } );
         wFilename.setText( "" );
         wFilemask.setText( "" );
         wExcludeFilemask.setText( "" );
@@ -1065,22 +1084,21 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
           if ( files.length > 0 ) {
             EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "PropertyInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                    "PropertyInputDialog.FilesReadSelection.DialogMessage" ) );
+                new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                    PKG, "PropertyInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
+                    PKG, "PropertyInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
-          }
-
-          else {
+          } else {
             MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
             mb.setMessage( BaseMessages.getString( PKG, "PropertyInputDialog.NoFileFound.DialogMessage" ) );
             mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
             mb.open();
           }
         } catch ( Exception ex ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle" ),
-              BaseMessages.getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+                  .getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1134,13 +1152,13 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
           if ( PropertyInputMeta.getFileTypeByDesc( wFileType.getText() ) == PropertyInputMeta.FILE_TYPE_PROPERTY ) {
             dialog.setFilterExtensions( new String[] { "*.properties;*.PROPERTIES", "*" } );
             dialog.setFilterNames( new String[] {
-              BaseMessages.getString( PKG, "PropertyInputDialog.FileType.PropertiesFiles" ),
-              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+                BaseMessages.getString( PKG, "PropertyInputDialog.FileType.PropertiesFiles" ),
+                BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
           } else {
             dialog.setFilterExtensions( new String[] { "*.ini;*.INI", "*" } );
             dialog.setFilterNames( new String[] {
-              BaseMessages.getString( PKG, "PropertyInputDialog.FileType.INIFiles" ),
-              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+                BaseMessages.getString( PKG, "PropertyInputDialog.FileType.INIFiles" ),
+                BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
           }
 
           if ( wFilename.getText() != null ) {
@@ -1236,8 +1254,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PropertyInputDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "PropertyInputDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PropertyInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "PropertyInputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1274,8 +1293,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
         for ( int j = 0; j < fields.size(); j++ ) {
           ValueMetaInterface field = fields.getValueMeta( j );
-          wFields.add( new String[] { field.getName(), field.getName(), field.getTypeDesc(), "", "-1", "", "", "", "",
-            "none", "N" } );
+          wFields.add( new String[] {
+              field.getName(), field.getName(), field.getTypeDesc(), "", "-1", "", "", "", "", "none", "N" } );
         }
         wFields.removeEmptyRows();
         wFields.setRowNums();
@@ -1348,9 +1367,10 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
       for ( int i = 0; i < in.getFileName().length; i++ ) {
         wFilenameList
-            .add( new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
-              in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-              in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+            .add( new String[] {
+                in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+                in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+                in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
@@ -1403,8 +1423,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+                PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1492,8 +1512,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "PropertyInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1565,15 +1586,15 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "PropertyInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "PropertyInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "PropertyInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "PropertyInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1582,23 +1603,25 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PropertyInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "PropertyInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PropertyInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "PropertyInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 
@@ -1625,17 +1648,18 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
           }
           Const.sortStrings( sectionsList );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, sectionsList, BaseMessages.getString( PKG,
-                  "PropertyInputDialog.Dialog.SelectASection.Title" ), BaseMessages.getString( PKG,
-                  "PropertyInputDialog.Dialog.SelectASection.Message" ) );
+              new EnterSelectionDialog( shell, sectionsList, BaseMessages.getString(
+                  PKG, "PropertyInputDialog.Dialog.SelectASection.Title" ), BaseMessages.getString(
+                  PKG, "PropertyInputDialog.Dialog.SelectASection.Message" ) );
           String sectionname = dialog.open();
           if ( sectionname != null ) {
             wSection.setText( sectionname );
           }
         } else {
           // The file not exists !
-          throw new KettleException( BaseMessages.getString( PKG, "PropertyInputDialog.Exception.FileDoesNotExist",
-              KettleVFS.getFilename( fileInputList.getFile( 0 ) ) ) );
+          throw new KettleException( BaseMessages
+              .getString( PKG, "PropertyInputDialog.Exception.FileDoesNotExist", KettleVFS.getFilename( fileInputList
+                  .getFile( 0 ) ) ) );
         }
       } else {
         // No file specified
@@ -1645,8 +1669,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         mb.open();
       }
     } catch ( Throwable e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PropertyInputDialog.UnableToGetListOfSections.Title" ),
-          BaseMessages.getString( PKG, "PropertyInputDialog.UnableToGetListOfSections.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PropertyInputDialog.UnableToGetListOfSections.Title" ), BaseMessages
+              .getString( PKG, "PropertyInputDialog.UnableToGetListOfSections.Message" ), e );
     } finally {
       if ( wini != null ) {
         wini.clear();
@@ -1768,8 +1793,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 
     // LastModificationTimeName line
     wlLastModificationTimeName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
-    wlLastModificationTimeName.setText( BaseMessages.getString( PKG,
-        "PropertyInputDialog.LastModificationTimeName.Label" ) );
+    wlLastModificationTimeName.setText( BaseMessages.getString(
+        PKG, "PropertyInputDialog.LastModificationTimeName.Label" ) );
     props.setLook( wlLastModificationTimeName );
     fdlLastModificationTimeName = new FormData();
     fdlLastModificationTimeName.left = new FormAttachment( 0, 0 );

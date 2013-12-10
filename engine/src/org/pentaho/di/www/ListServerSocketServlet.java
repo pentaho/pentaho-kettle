@@ -78,8 +78,8 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
     Encoder encoder = ESAPI.encoder();
 
     out.println( "<HTML>" );
-    out.println( "<HEAD><TITLE>List of server sockets on server '" + encoder.encodeForHTML( hostname )
-        + "'</TITLE></HEAD>" );
+    out.println( "<HEAD><TITLE>List of server sockets on server '"
+        + encoder.encodeForHTML( hostname ) + "'</TITLE></HEAD>" );
     out.println( "<BODY>" );
     out.println( "<H1>Ports for host '" + encoder.encodeForHTML( hostname ) + "'</H1>" );
 
@@ -98,10 +98,11 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
 
       if ( !onlyOpen || ( onlyOpen && allocation.isAllocated() ) ) {
 
-        out.println( allocation.getPort() + " : Transformation=" + allocation.getTransformationName() + ", "
-            + allocation.getSourceSlaveName() + "/" + allocation.getSourceStepName() + "."
-            + allocation.getSourceStepCopy() );
-        out.println( " --> " + allocation.getTargetSlaveName() + "/" + allocation.getTargetStepName() + "."
+        out.println( allocation.getPort()
+            + " : Transformation=" + allocation.getTransformationName() + ", " + allocation.getSourceSlaveName() + "/"
+            + allocation.getSourceStepName() + "." + allocation.getSourceStepCopy() );
+        out.println( " --> "
+            + allocation.getTargetSlaveName() + "/" + allocation.getTargetStepName() + "."
             + allocation.getTargetStepCopy() );
         out.println( " id=" + allocation.getClusterRunId() + ", allocated=" + allocation.isAllocated() );
         out.println( " time=" + allocation.getLastRequested() );

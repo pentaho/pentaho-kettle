@@ -264,8 +264,8 @@ public class CharsetToolkit {
           // a six-bytes sequence was encoutered
           // there must be five continuation bytes of the form 10xxxxxx,
           // otherwise the following characteris is not a valid UTF-8 construct
-          if ( !( isContinuationChar( b1 ) && isContinuationChar( b2 ) && isContinuationChar( b3 )
-              && isContinuationChar( b4 ) && isContinuationChar( b5 ) ) ) {
+          if ( !( isContinuationChar( b1 )
+              && isContinuationChar( b2 ) && isContinuationChar( b3 ) && isContinuationChar( b4 ) && isContinuationChar( b5 ) ) ) {
             validU8Char = false;
           } else {
             i += 5;

@@ -513,36 +513,36 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "HTTPMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "HTTPMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "HTTPMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "HTTPMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
     // check Url
     if ( urlInField ) {
       if ( Const.isEmpty( urlField ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "HTTPMeta.CheckResult.UrlfieldMissing" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "HTTPMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "HTTPMeta.CheckResult.UrlfieldOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "HTTPMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( url ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "HTTPMeta.CheckResult.UrlMissing" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "HTTPMeta.CheckResult.UrlMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "HTTPMeta.CheckResult.UrlOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "HTTPMeta.CheckResult.UrlOk" ), stepMeta );
       }
     }
     remarks.add( cr );

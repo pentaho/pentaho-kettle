@@ -949,7 +949,9 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, "stream_data", streamingData );
       rep.saveStepAttribute( id_transformation, id_step, "protect_sheet", protectsheet );
       rep.saveStepAttribute( id_transformation, id_step, "protected_by", protectedBy );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveStepAttribute( id_transformation, id_step, "password", Encr
+              .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveStepAttribute( id_transformation, id_step, "template_enabled", templateEnabled );
       rep.saveStepAttribute( id_transformation, id_step, "template_filename", templateFileName );
       rep.saveStepAttribute( id_transformation, id_step, "template_sheet_enabled", templateSheetEnabled );
@@ -987,8 +989,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelWriterStepMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ExcelWriterStepMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -1008,8 +1010,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ExcelWriterStepMeta.CheckResult.AllFieldsFound" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ExcelWriterStepMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -1017,19 +1019,19 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelWriterStepMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ExcelWriterStepMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ExcelWriterStepMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ExcelWriterStepMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "ExcelWriterStepMeta.CheckResult.FilesNotChecked" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
+            PKG, "ExcelWriterStepMeta.CheckResult.FilesNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 

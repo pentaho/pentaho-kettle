@@ -337,8 +337,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     wlLimit.setLayoutData( fdlLimit );
 
     wLimit =
-        new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobEntryEvalTableContent.Limit.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobEntryEvalTableContent.Limit.Tooltip" ) );
     props.setLook( wLimit );
     wLimit.addModifyListener( lsMod );
     fdLimit = new FormData();
@@ -607,8 +607,9 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
       DatabaseExplorerDialog std = new DatabaseExplorerDialog( shell, SWT.NONE, inf, jobMeta.getDatabases() );
       if ( std.open() ) {
         String sql =
-            "SELECT *" + Const.CR + "FROM "
-                + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() ) + Const.CR;
+            "SELECT *"
+                + Const.CR + "FROM " + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() )
+                + Const.CR;
         wSQL.setText( sql );
 
         MessageBox yn = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
@@ -650,8 +651,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
             } catch ( KettleException e ) {
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
               mb.setText( BaseMessages.getString( PKG, "JobEntryEvalTableContent.DialogCaptionError3" ) );
-              mb.setMessage( BaseMessages.getString( PKG, "JobEntryEvalTableContent.AnErrorOccurred" ) + Const.CR
-                  + e.getMessage() );
+              mb.setMessage( BaseMessages.getString( PKG, "JobEntryEvalTableContent.AnErrorOccurred" )
+                  + Const.CR + e.getMessage() );
               mb.open();
             } finally {
               db.disconnect();

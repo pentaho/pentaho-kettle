@@ -247,8 +247,8 @@ public class XMLInputSaxDataRetriever extends DefaultHandler {
                 int i = 0;
                 while ( i < attributes.getLength() ) {
                   XMLInputSaxFieldPosition tempP =
-                      new XMLInputSaxFieldPosition( attributes.getQName( i ), XMLInputSaxFieldPosition.XML_ATTRIBUTE,
-                          i + 1 );
+                      new XMLInputSaxFieldPosition(
+                          attributes.getQName( i ), XMLInputSaxFieldPosition.XML_ATTRIBUTE, i + 1 );
                   XMLInputSaxField tempF =
                       new XMLInputSaxField( tempP.getName(), new XMLInputSaxFieldPosition[] { tempP } );
 
@@ -261,12 +261,12 @@ public class XMLInputSaxDataRetriever extends DefaultHandler {
               }
               counterUp();
             } else {
-              _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-                  position[_counter] + 1 ) );
+              _pathToRootElement.add( new XMLInputSaxFieldPosition(
+                  qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
             }
           } else {
-            _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-                position[_counter] + 1 ) );
+            _pathToRootElement.add( new XMLInputSaxFieldPosition(
+                qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
             counterUp();
           }
           // normal attributes in root
@@ -281,14 +281,14 @@ public class XMLInputSaxDataRetriever extends DefaultHandler {
             }
           }
         } else {
-          _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-              position[_counter] + 1 ) );
+          _pathToRootElement.add( new XMLInputSaxFieldPosition(
+              qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
         }
       } else {
         XMLInputSaxField tempF = null;
         if ( attributes.getLength() == 0 ) {
-          _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-              position[_counter] + 1 ) );
+          _pathToRootElement.add( new XMLInputSaxFieldPosition(
+              qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
           XMLInputSaxFieldPosition[] path = pathFromRoot();
           tempF = new XMLInputSaxField( naming( path ), path );
         } else {

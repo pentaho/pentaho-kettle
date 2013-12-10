@@ -49,15 +49,16 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
 
   private enum Entry implements StepMetaInjectionEnumEntry {
 
-    INPUT_FILE_FIELD( ValueMetaInterface.TYPE_STRING, "The name of the field containing the report file path (.prpt)" ), OUTPUT_FILE_FIELD(
-        ValueMetaInterface.TYPE_STRING, "The name of the field containing the output file name" ), OUTPUT_PROCESSOR_TYPE(
+    INPUT_FILE_FIELD( ValueMetaInterface.TYPE_STRING, "The name of the field containing the report file path (.prpt)" ),
+    OUTPUT_FILE_FIELD( ValueMetaInterface.TYPE_STRING, "The name of the field containing the output file name" ),
+    OUTPUT_PROCESSOR_TYPE(
         ValueMetaInterface.TYPE_STRING,
         "The output processor type, one of PDF, PagedHtml, StreamingHtml, CSV, Excel, Excel 2007 or RTF" ),
 
     PARAMETERS( ValueMetaInterface.TYPE_NONE, "All the parameters for the report" ), PARAMETER(
-        ValueMetaInterface.TYPE_NONE, "One parameter" ), PARAMETER_NAME( PARAMETER, ValueMetaInterface.TYPE_STRING,
-        "The name of the report parameter" ), FIELDNAME( PARAMETER, ValueMetaInterface.TYPE_STRING,
-        "The field name providing the source data" ), ;
+        ValueMetaInterface.TYPE_NONE, "One parameter" ), PARAMETER_NAME(
+        PARAMETER, ValueMetaInterface.TYPE_STRING, "The name of the report parameter" ), FIELDNAME(
+        PARAMETER, ValueMetaInterface.TYPE_STRING, "The field name providing the source data" ), ;
 
     private int valueType;
     private String description;

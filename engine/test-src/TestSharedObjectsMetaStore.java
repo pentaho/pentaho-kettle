@@ -35,10 +35,10 @@ import org.pentaho.metastore.util.PentahoDefaults;
 
 public class TestSharedObjectsMetaStore extends TestCase {
 
-  private static String databaseMetaXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<connection>"
-      + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>" + "<access>Native</access>"
-      + "<database>mem:db</database>" + "<port>${PORT_NUMBER_STRING}</port>" + "<username>sa</username>"
-      + "<password></password>" + "</connection>";
+  private static String databaseMetaXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+      + "<access>Native</access>" + "<database>mem:db</database>" + "<port>${PORT_NUMBER_STRING}</port>"
+      + "<username>sa</username>" + "<password></password>" + "</connection>";
 
   private static String namespace = PentahoDefaults.NAMESPACE;
 

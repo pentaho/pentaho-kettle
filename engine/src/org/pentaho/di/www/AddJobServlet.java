@@ -177,8 +177,9 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
         out.println( new WebResult( WebResult.STRING_OK, message, carteObjectId ) );
       } else {
         out.println( "<H1>" + message + "</H1>" );
-        out.println( "<p><a href=\"" + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-            + job.getJobname() + "&id=" + carteObjectId + "\">Go to the job status page</a><p>" );
+        out.println( "<p><a href=\""
+            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name=" + job.getJobname() + "&id="
+            + carteObjectId + "\">Go to the job status page</a><p>" );
       }
     } catch ( Exception ex ) {
       if ( useXML ) {

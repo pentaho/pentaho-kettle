@@ -170,8 +170,9 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       //
       if ( iMaximumTimeout < 0 ) {
         iMaximumTimeout = Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 );
-        logBasic( BaseMessages.getString( PKG, "JobEntryDelay.MaximumTimeReset.Label",
-            String.valueOf( iMaximumTimeout ), String.valueOf( Waitscale ) ) );
+        logBasic( BaseMessages
+            .getString( PKG, "JobEntryDelay.MaximumTimeReset.Label", String.valueOf( iMaximumTimeout ), String
+                .valueOf( Waitscale ) ) );
       }
 
       // Loop until the delay time has expired.

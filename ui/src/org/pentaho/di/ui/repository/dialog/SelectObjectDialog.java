@@ -339,9 +339,9 @@ public class SelectObjectDialog extends Dialog {
     try {
       directoryTree = rep.loadRepositoryDirectoryTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ), BaseMessages.getString( PKG,
-          "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ), BaseMessages.getString(
+          PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
     }
 
     getData();
@@ -437,20 +437,23 @@ public class SelectObjectDialog extends Dialog {
         ti = new TreeItem( wTree, SWT.NONE );
         ti.setImage( GUIResource.getInstance().getImageFolderConnections() );
         ti.setExpanded( true );
-        RepositoryDirectoryUI.getTreeWithNames( ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans,
-            showJobs, directoryTree, filterString, pattern );
+        RepositoryDirectoryUI.getTreeWithNames(
+            ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString,
+            pattern );
       } else {
         for ( int i = 0; i < directoryTree.getNrSubdirectories(); i++ ) {
           RepositoryDirectory subdir = directoryTree.getSubdirectory( i );
           ti = new TreeItem( wTree, SWT.NONE );
           ti.setImage( GUIResource.getInstance().getImageArrow() );
-          RepositoryDirectoryUI.getTreeWithNames( ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans,
-              showJobs, subdir, filterString, pattern );
+          RepositoryDirectoryUI.getTreeWithNames(
+              ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString,
+              pattern );
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title" ),
-          BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title" ), BaseMessages
+              .getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Message" ), e );
     }
   }
 

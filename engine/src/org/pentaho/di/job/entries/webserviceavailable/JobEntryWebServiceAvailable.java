@@ -94,8 +94,8 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
       connectTimeOut = XMLHandler.getTagValue( entrynode, "connectTimeOut" );
       readTimeOut = XMLHandler.getTagValue( entrynode, "readTimeOut" );
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryWebServiceAvailable.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryWebServiceAvailable.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
     }
   }
 
@@ -106,8 +106,8 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
       connectTimeOut = rep.getJobEntryAttributeString( id_jobentry, "connectTimeOut" );
       readTimeOut = rep.getJobEntryAttributeString( id_jobentry, "readTimeOut" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryWebServiceAvailable.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryWebServiceAvailable.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry ), dbe );
     }
   }
 
@@ -117,8 +117,8 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
       rep.saveJobEntryAttribute( id_job, getObjectId(), "connectTimeOut", connectTimeOut );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "readTimeOut", readTimeOut );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryWebServiceAvailable.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryWebServiceAvailable.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job ), dbe );
     }
   }
 

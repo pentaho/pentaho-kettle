@@ -89,8 +89,8 @@ public class SortRows extends BaseStep implements StepInterface {
       //
       data.buffer.add( r );
     }
-    if ( data.files.size() == 0 && r == null ) // No more records: sort buffer
-    {
+    if ( data.files.size() == 0 && r == null ) { // No more records: sort buffer
+
       quickSort( data.buffer );
     }
 
@@ -121,8 +121,8 @@ public class SortRows extends BaseStep implements StepInterface {
                                                                             // from
                                                                             // disk
     doSort |=
-        data.freeMemoryPctLimit > 0 && data.freeMemoryPct < data.freeMemoryPctLimit
-            && data.buffer.size() >= data.minSortSize;
+        data.freeMemoryPctLimit > 0
+            && data.freeMemoryPct < data.freeMemoryPctLimit && data.buffer.size() >= data.minSortSize;
 
     // time to sort the buffer and write the data to disk...
     //
@@ -144,8 +144,8 @@ public class SortRows extends BaseStep implements StepInterface {
 
     try {
       FileObject fileObject =
-          KettleVFS.createTempFile( meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ),
-              getTransMeta() );
+          KettleVFS.createTempFile(
+              meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ), getTransMeta() );
 
       data.files.add( fileObject ); // Remember the files!
       OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
@@ -329,7 +329,7 @@ public class SortRows extends BaseStep implements StepInterface {
           } else {
             data.tempRows.add( index, extra );
           }
-        } catch ( KettleFileException fe ) {// empty file or EOF mostly
+        } catch ( KettleFileException fe ) { // empty file or EOF mostly
           GZIPInputStream gzfi = ( data.compressFiles ) ? data.gzis.get( smallest ) : null;
           try {
             di.close();
@@ -446,8 +446,8 @@ public class SortRows extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getFieldName().length; i++ ) {
         data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getFieldName()[i] );
         if ( data.fieldnrs[i] < 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SortRowsMeta.CheckResult.StepFieldNotInInputStream",
-              meta.getFieldName()[i], getStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.StepFieldNotInInputStream", meta.getFieldName()[i], getStepname() ) );
         }
         data.convertKeysToNative[i] = getInputRowMeta().getValueMeta( data.fieldnrs[i] ).isStorageBinaryString();
       }
@@ -463,8 +463,8 @@ public class SortRows extends BaseStep implements StepInterface {
       return false;
     }
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       passBuffer( !meta.isGroupSortEnabled() );
       return false;
     }

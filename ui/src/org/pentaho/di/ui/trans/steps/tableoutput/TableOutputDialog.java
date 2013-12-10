@@ -721,15 +721,17 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
     ciFields = new ColumnInfo[tableCols];
     ciFields[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TableOutputDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TableOutputDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciFields[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TableOutputDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "TableOutputDialog.ColumnInfo.StreamField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     tableFieldColumns.add( ciFields[0] );
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciFields, UpInsRows, lsMod, props );
+        new TableView( transMeta, wFieldsComp, SWT.BORDER
+            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciFields, UpInsRows, lsMod, props );
 
     wGetFields = new Button( wFieldsComp, SWT.PUSH );
     wGetFields.setText( BaseMessages.getString( PKG, "TableOutputDialog.GetFields.Button" ) );
@@ -903,8 +905,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
           wPartField.setText( partfield );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -925,8 +928,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "TableOutputDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "TableOutputDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+          .getString( PKG, "TableOutputDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+          PKG, "TableOutputDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
 
@@ -938,8 +941,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "TableOutputDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "TableOutputDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+          .getString( PKG, "TableOutputDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+          PKG, "TableOutputDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -998,8 +1001,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       message += BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "TableOutputDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "TableOutputDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
@@ -1038,9 +1041,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "TableOutputDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "TableOutputDialog.AvailableSchemas.Message", wConnection.getText() ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+                  PKG, "TableOutputDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+                  PKG, "TableOutputDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -1312,8 +1315,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     boolean hasErrorHandling = stepMeta.isDoingErrorHandling();
     if ( !supportsBatchErrorHandling && hasErrorHandling ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
-      mb.setMessage( BaseMessages.getString( PKG,
-          "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
+      mb.setMessage( BaseMessages.getString(
+          PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
       mb.setText( BaseMessages.getString( PKG, "TableOutput.Warning" ) );
       mb.open();
     }
@@ -1357,8 +1360,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "TableOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "TableOutputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -1390,8 +1394,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
             insertValue.setName( info.getFieldDatabase()[i] );
             prevNew.addValueMeta( insertValue );
           } else {
-            throw new KettleStepException( BaseMessages.getString( PKG, "TableOutputDialog.FailedToFindField.Message",
-                info.getFieldStream()[i] ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "TableOutputDialog.FailedToFindField.Message", info.getFieldStream()[i] ) );
           }
         }
         prev = prevNew;
@@ -1429,8 +1433,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TableOutputDialog.BuildSQLError.DialogTitle" ),
-          BaseMessages.getString( PKG, "TableOutputDialog.BuildSQLError.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "TableOutputDialog.BuildSQLError.DialogTitle" ), BaseMessages.getString(
+              PKG, "TableOutputDialog.BuildSQLError.DialogMessage" ), ke );
     }
   }
 }

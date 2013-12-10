@@ -333,15 +333,18 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.DimensionField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.DimensionField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.FieldInStream" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.FieldInStream" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     tableFieldColumns.add( ciKey[0] );
     wKey =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrKeyRows, lsMod, props );
 
     // THE BUTTONS
     wOK = new Button( shell, SWT.PUSH );
@@ -905,9 +908,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "CombinationLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
-                  PKG, "CombinationLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+                  PKG, "CombinationLookupDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
+                  .getString( PKG, "CombinationLookupDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -959,8 +962,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 2 }, new int[] {}, -1, -1,
-            new TableItemInsertListener() {
+        BaseStepDialog.getFieldsFromPrevious(
+            r, wKey, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, new TableItemInsertListener() {
               public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
                 tableItem.setText( 3, "N" );
                 return true;
@@ -969,8 +972,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages.getString( PKG,
-          "CombinationLookupDialog.UnableToGetFieldsError.DialogMessage" ), ke );
+          .getString( PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages.getString(
+          PKG, "CombinationLookupDialog.UnableToGetFieldsError.DialogMessage" ), ke );
     }
   }
 
@@ -1006,8 +1009,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogTitle" ), BaseMessages
+              .getString( PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogMessage" ), ke );
     }
   }
 }

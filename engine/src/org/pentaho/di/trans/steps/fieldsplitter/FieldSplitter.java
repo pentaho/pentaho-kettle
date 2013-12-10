@@ -150,8 +150,8 @@ public class FieldSplitter extends BaseStep implements StepInterface {
             valueMeta.convertDataFromString( split, conversionValueMeta, meta.getFieldNullIf()[i], meta
                 .getFieldIfNull()[i], meta.getFieldTrimType()[i] );
       } catch ( Exception e ) {
-        throw new KettleValueException( BaseMessages.getString( PKG,
-            "FieldSplitter.Log.ErrorConvertingSplitValue", split, meta.getSplitField() + "]!" ), e ); //$NON-NLS-3$
+        throw new KettleValueException( BaseMessages.getString(
+            PKG, "FieldSplitter.Log.ErrorConvertingSplitValue", split, meta.getSplitField() + "]!" ), e ); //$NON-NLS-3$
       }
       outputRow[data.fieldnr + i] = value;
     }
@@ -164,8 +164,9 @@ public class FieldSplitter extends BaseStep implements StepInterface {
     data = (FieldSplitterData) sdi;
 
     Object[] r = getRow(); // get row from rowset, wait for our turn, indicate busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
+
       setOutputDone();
       return false;
     }

@@ -50,8 +50,8 @@ public class ConnectionPoolUtil {
       String name = dbMeta.getName() + Const.NVL( partitionId, "" );
       return Const.indexOfString( name, pd.getPoolNames() ) >= 0;
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.UnableToCheckIfConnectionPoolExists.Exception" ), e );
+      throw new KettleDatabaseException( BaseMessages.getString(
+          PKG, "Database.UnableToCheckIfConnectionPoolExists.Exception" ), e );
     }
   }
 
@@ -68,8 +68,8 @@ public class ConnectionPoolUtil {
     try {
       Class.forName( clazz ).newInstance();
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.UnableToLoadConnectionPoolDriver.Exception", databaseMeta.getName(), clazz ), e );
+      throw new KettleDatabaseException( BaseMessages.getString(
+          PKG, "Database.UnableToLoadConnectionPoolDriver.Exception", databaseMeta.getName(), clazz ), e );
     }
 
     String url;
@@ -111,8 +111,8 @@ public class ConnectionPoolUtil {
       try {
         gpool.addObject();
       } catch ( Exception e ) {
-        throw new KettleDatabaseException( BaseMessages.getString( PKG,
-            "Database.UnableToPreLoadConnectionToConnectionPool.Exception" ), e );
+        throw new KettleDatabaseException( BaseMessages.getString(
+            PKG, "Database.UnableToPreLoadConnectionToConnectionPool.Exception" ), e );
       }
     }
 

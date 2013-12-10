@@ -133,15 +133,15 @@ public class XMLInputSaxFieldPosition {
     // Is there an element defining attribute
     int semiIndex2 = nameAndNumber.indexOf( ATT_MARKER );
 
-    if ( positionType.equalsIgnoreCase( "Ea" ) ) // Element
-    {
+    if ( positionType.equalsIgnoreCase( "Ea" ) ) { // Element
+
       this.type = XML_ELEMENT_ATT;
       // this.name = positionName;
     } else if ( positionType.equalsIgnoreCase( "Ep" ) ) {
       this.type = XML_ELEMENT_POS;
       this.name = positionName;
-    } else if ( positionType.equalsIgnoreCase( "A" ) ) // Attribute
-    {
+    } else if ( positionType.equalsIgnoreCase( "A" ) ) { // Attribute
+
       this.type = XML_ATTRIBUTE;
       this.name = positionName;
     } else {

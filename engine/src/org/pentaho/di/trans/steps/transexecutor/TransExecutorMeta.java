@@ -237,8 +237,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     // The output side...
     //
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "execution_result_target_step", executionResultTargetStepMeta == null ? null
-            : executionResultTargetStepMeta.getName() ) );
+        XMLHandler.addTagValue( "execution_result_target_step", executionResultTargetStepMeta == null
+            ? null : executionResultTargetStepMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "execution_time_field", executionTimeField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "execution_result_field", executionResultField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "execution_errors_field", executionNrErrorsField ) );
@@ -246,8 +246,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     retval.append( "    " ).append(
         XMLHandler.addTagValue( "execution_lines_written_field", executionLinesWrittenField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "execution_lines_input_field", executionLinesInputField ) );
-    retval.append( "    " )
-        .append( XMLHandler.addTagValue( "execution_lines_output_field", executionLinesOutputField ) );
+    retval
+        .append( "    " ).append( XMLHandler.addTagValue( "execution_lines_output_field", executionLinesOutputField ) );
     retval.append( "    " ).append(
         XMLHandler.addTagValue( "execution_lines_rejected_field", executionLinesRejectedField ) );
     retval.append( "    " ).append(
@@ -262,8 +262,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
         XMLHandler.addTagValue( "execution_log_channelid_field", executionLogChannelIdField ) );
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "result_rows_target_step", outputRowsSourceStepMeta == null ? null
-            : outputRowsSourceStepMeta.getName() ) );
+        XMLHandler.addTagValue( "result_rows_target_step", outputRowsSourceStepMeta == null
+            ? null : outputRowsSourceStepMeta.getName() ) );
     for ( int i = 0; i < outputRowsField.length; i++ ) {
       retval.append( "      " ).append( XMLHandler.openTag( "result_rows_field" ) );
       retval.append( XMLHandler.addTagValue( "name", outputRowsField[i], false ) );
@@ -274,8 +274,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "result_files_target_step", resultFilesTargetStepMeta == null ? null
-            : resultFilesTargetStepMeta.getName() ) );
+        XMLHandler.addTagValue( "result_files_target_step", resultFilesTargetStepMeta == null
+            ? null : resultFilesTargetStepMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "result_files_file_name_field", resultFilesFileNameField ) );
 
     return retval.toString();
@@ -340,8 +340,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       resultFilesTargetStep = XMLHandler.getTagValue( stepnode, "result_files_target_step" );
       resultFilesFileNameField = XMLHandler.getTagValue( stepnode, "result_files_file_name_field" );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "TransExecutorMeta.Exception.ErrorLoadingTransExecutorDetailsFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "TransExecutorMeta.Exception.ErrorLoadingTransExecutorDetailsFromXML" ), e );
     }
   }
 
@@ -396,8 +396,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
-    rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null ? null
-        : specificationMethod.getCode() );
+    rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null
+        ? null : specificationMethod.getCode() );
     rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null ? null : transObjectId
         .toString() );
     rep.saveStepAttribute( id_transformation, id_step, "filename", fileName );
@@ -414,8 +414,9 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
     // The output side...
     //
-    rep.saveStepAttribute( id_transformation, id_step, "execution_result_target_step",
-        executionResultTargetStepMeta == null ? null : executionResultTargetStepMeta.getName() );
+    rep.saveStepAttribute(
+        id_transformation, id_step, "execution_result_target_step", executionResultTargetStepMeta == null
+            ? null : executionResultTargetStepMeta.getName() );
     rep.saveStepAttribute( id_transformation, id_step, "execution_time_field", executionTimeField );
     rep.saveStepAttribute( id_transformation, id_step, "execution_result_field", executionResultField );
     rep.saveStepAttribute( id_transformation, id_step, "execution_errors_field", executionNrErrorsField );
@@ -491,8 +492,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
         ValueMetaInterface value = new ValueMeta( "filename", ValueMeta.TYPE_STRING, 255, 0 );
         row.addValueMeta( value );
       }
-    } else if ( nextStep != null && executionResultTargetStepMeta != null
-        && nextStep.equals( executionResultTargetStepMeta ) ) {
+    } else if ( nextStep != null
+        && executionResultTargetStepMeta != null && nextStep.equals( executionResultTargetStepMeta ) ) {
       if ( !Const.isEmpty( executionTimeField ) ) {
         ValueMetaInterface value = new ValueMeta( executionTimeField, ValueMeta.TYPE_INTEGER, 15, 0 );
         row.addValueMeta( value );
@@ -578,7 +579,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   @Deprecated
-  public synchronized static final TransMeta loadTransMeta( TransExecutorMeta executorMeta, Repository rep,
+  public static final synchronized TransMeta loadTransMeta( TransExecutorMeta executorMeta, Repository rep,
       VariableSpace space ) throws KettleException {
     return loadTransMeta( executorMeta, rep, null, space );
   }
@@ -596,8 +597,9 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
           // Don't set internal variables: they belong to the parent thread!
           //
           mappingTransMeta = new TransMeta( realFilename, metaStore, rep, true, space, null );
-          LogChannel.GENERAL.logDetailed( "Loading transformation from repository",
-              "Transformation was loaded from XML file [" + realFilename + "]" );
+          LogChannel.GENERAL.logDetailed(
+              "Loading transformation from repository", "Transformation was loaded from XML file ["
+                  + realFilename + "]" );
         } catch ( Exception e ) {
           throw new KettleException( BaseMessages.getString( PKG, "TransExecutorMeta.Exception.UnableToLoadTrans" ), e );
         }
@@ -623,8 +625,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
               throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
             }
           } else {
-            throw new KettleException( BaseMessages.getString( PKG, "TransExecutorMeta.Exception.UnableToLoadTrans",
-                realTransname )
+            throw new KettleException( BaseMessages.getString(
+                PKG, "TransExecutorMeta.Exception.UnableToLoadTrans", realTransname )
                 + realDirectory );
           }
         }
@@ -654,26 +656,26 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "TransExecutorMeta.CheckResult.NotReceivingAnyFields" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "TransExecutorMeta.CheckResult.NotReceivingAnyFields" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "TransExecutorMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "TransExecutorMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepinfo );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "TransExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "TransExecutorMeta.CheckResult.StepReceivingFieldsFromOtherSteps" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "TransExecutorMeta.CheckResult.NoInputReceived" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "TransExecutorMeta.CheckResult.NoInputReceived" ), stepinfo );
       remarks.add( cr );
     }
   }
@@ -725,8 +727,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
-          executorTransMeta.exportResources( executorTransMeta, definitions, resourceNamingInterface, repository,
-              metaStore );
+          executorTransMeta.exportResources(
+              executorTransMeta, definitions, resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Transformation.Filename.Directory}
@@ -764,12 +766,12 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
       ioMeta = new StepIOMeta( true, true, true, false, true, false );
 
-      ioMeta.addStream( new Stream( StreamType.TARGET, executionResultTargetStepMeta, BaseMessages.getString( PKG,
-          "TransExecutorMeta.ResultStream.Description" ), StreamIcon.TARGET, null ) );
-      ioMeta.addStream( new Stream( StreamType.TARGET, outputRowsSourceStepMeta, BaseMessages.getString( PKG,
-          "TransExecutorMeta.ResultRowsStream.Description" ), StreamIcon.TARGET, null ) );
-      ioMeta.addStream( new Stream( StreamType.TARGET, resultFilesTargetStepMeta, BaseMessages.getString( PKG,
-          "TransExecutorMeta.ResultFilesStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, executionResultTargetStepMeta, BaseMessages.getString(
+          PKG, "TransExecutorMeta.ResultStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, outputRowsSourceStepMeta, BaseMessages.getString(
+          PKG, "TransExecutorMeta.ResultRowsStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, resultFilesTargetStepMeta, BaseMessages.getString(
+          PKG, "TransExecutorMeta.ResultFilesStream.Description" ), StreamIcon.TARGET, null ) );
     }
     return ioMeta;
   }
@@ -1267,8 +1269,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   private boolean isTransDefined() {
-    return !Const.isEmpty( fileName ) || transObjectId != null
-        || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
+    return !Const.isEmpty( fileName )
+        || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {

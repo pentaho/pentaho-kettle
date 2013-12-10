@@ -351,12 +351,14 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     int nrKeyRows = ( keys != null ? keys.length : 1 );
 
     ciKeys =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false ), };
 
     final TableView wKeys =
-        new TableView( transMeta, subShell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, subShell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys,
+            nrKeyRows, lsMod, props );
 
     FormData fdKeys = new FormData();
     fdKeys.top = new FormAttachment( wlKeys, margin );
@@ -510,8 +512,9 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
       if ( inputSteps != null && inputSteps.length != 0 ) {
         for ( int i = 0; i < inputSteps.length; i++ ) {
           meta.getStepIOMeta().addStream(
-              new Stream( StreamType.INFO, null,
-                  BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, null ) );
+              new Stream(
+                  StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
+                  StreamIcon.INFO, null ) );
         }
         infoStreams = meta.getStepIOMeta().getInfoStreams();
       }
@@ -520,7 +523,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
       for ( int i = 0; i < requiredStreams; i++ ) {
         meta.getStepIOMeta().addStream(
-            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
+            new Stream(
+                StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
                 StreamIcon.INFO, null ) );
       }
       infoStreams = meta.getStepIOMeta().getInfoStreams();
@@ -545,12 +549,12 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     // Show a warning (optional)
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
+          new MessageDialogWithToggle( shell, BaseMessages.getString(
+              PKG, "MultiMergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
+              PKG, "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
+              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+              PKG, "MultiMergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
+              PKG, "MultiMergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
               STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();

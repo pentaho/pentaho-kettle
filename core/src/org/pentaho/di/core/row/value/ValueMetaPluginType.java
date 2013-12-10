@@ -93,8 +93,8 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
         try {
           inputStream = new FileInputStream( kettleValueMetaPluginsXmlFile );
         } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native value meta plugins '" + kettleValueMetaPluginsXmlFile
-              + "'", e );
+          throw new KettlePluginException( "Unable to load native value meta plugins '"
+              + kettleValueMetaPluginsXmlFile + "'", e );
         }
       }
       if ( inputStream == null ) {
@@ -129,8 +129,9 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(),
-                  false, file.getParent().getURL() );
+              registerPluginFromXmlResource(
+                  pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
+                      .getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...

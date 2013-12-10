@@ -91,8 +91,8 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
         data = null;
       }
     } catch ( SQLException e ) {
-      throw new KettleDatabaseException( "Unable to get value '" + val.toStringMeta()
-          + "' from database resultset, index " + i, e );
+      throw new KettleDatabaseException( "Unable to get value '"
+          + val.toStringMeta() + "' from database resultset, index " + i, e );
     }
 
     return data;

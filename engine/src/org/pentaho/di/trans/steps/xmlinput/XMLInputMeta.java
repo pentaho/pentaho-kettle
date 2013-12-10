@@ -576,13 +576,13 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLInputMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -590,13 +590,13 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
     // String files[] = getFiles();
     if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.NoFiles" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLInputMeta.CheckResult.NoFiles" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
       remarks.add( cr );
     }
   }

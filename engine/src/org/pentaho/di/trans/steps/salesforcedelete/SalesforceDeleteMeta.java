@@ -317,8 +317,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
       rep.saveStepAttribute( id_transformation, id_step, "timeout", timeout );
       rep.saveStepAttribute( id_transformation, id_step, "rollbackAllChangesOnError", rollbackAllChangesOnError );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceDeleteMeta.Exception.ErrorSavingToRepository",
-          "" + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SalesforceDeleteMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
@@ -330,48 +330,48 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.NoInputExpected" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.NoInput" ), stepMeta );
     }
     remarks.add( cr );
 
     // check URL
     if ( Const.isEmpty( targeturl ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.NoURL" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.NoURL" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.URLOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.URLOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check username
     if ( Const.isEmpty( username ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.NoUsername" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.NoUsername" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.UsernameOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.UsernameOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check module
     if ( Const.isEmpty( module ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.NoModule" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.NoModule" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceDeleteMeta.CheckResult.ModuleOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SalesforceDeleteMeta.CheckResult.ModuleOk" ), stepMeta );
     }
     remarks.add( cr );
 

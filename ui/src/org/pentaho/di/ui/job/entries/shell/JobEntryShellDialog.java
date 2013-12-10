@@ -75,8 +75,8 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
   private static Class<?> PKG = JobEntryShell.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final String[] FILEFORMATS = new String[] {
-    BaseMessages.getString( PKG, "JobShell.Fileformat.Scripts" ),
-    BaseMessages.getString( PKG, "JobShell.Fileformat.All" ) };
+      BaseMessages.getString( PKG, "JobShell.Fileformat.Scripts" ),
+      BaseMessages.getString( PKG, "JobShell.Fileformat.All" ) };
 
   private Label wlName;
 
@@ -565,13 +565,13 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobShell.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "JobShell.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[0].setUsingVariables( true );
 
     wFields =
-        new TableView( jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

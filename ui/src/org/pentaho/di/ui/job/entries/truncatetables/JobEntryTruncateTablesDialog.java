@@ -224,10 +224,12 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobTruncateTables.Fields.Table.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobTruncateTables.Fields.Schema.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobTruncateTables.Fields.Table.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobTruncateTables.Fields.Schema.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobTruncateTables.Fields.Table.Tooltip" ) );
@@ -407,9 +409,9 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
         database.connect();
         String[] Tablenames = database.getTablenames();
         EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, Tablenames, BaseMessages.getString( PKG,
-                "JobTruncateTables.SelectTables.Title" ), BaseMessages.getString( PKG,
-                "JobTruncateTables.SelectTables.Message" ) );
+            new EnterSelectionDialog( shell, Tablenames, BaseMessages.getString(
+                PKG, "JobTruncateTables.SelectTables.Title" ), BaseMessages.getString(
+                PKG, "JobTruncateTables.SelectTables.Message" ) );
         dialog.setMulti( true );
         dialog.setAvoidQuickSearch();
         if ( dialog.open() != null ) {

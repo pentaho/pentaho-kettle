@@ -42,9 +42,6 @@ public class NormaliserData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface inputRowMeta;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public NormaliserData() {
     super();
 

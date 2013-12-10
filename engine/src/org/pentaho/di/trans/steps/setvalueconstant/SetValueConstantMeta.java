@@ -250,13 +250,13 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "SetValueConstantMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "SetValueConstantMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SetValueConstantMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SetValueConstantMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -278,12 +278,12 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "SetValueConstantMeta.CheckResult.AllFieldsFound" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "SetValueConstantMeta.CheckResult.AllFieldsFound" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "SetValueConstantMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+                  PKG, "SetValueConstantMeta.CheckResult.NoFieldsEntered" ), stepMeta );
         }
         remarks.add( cr );
       }
@@ -293,12 +293,12 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SetValueConstantMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SetValueConstantMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SetValueConstantMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SetValueConstantMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
   }

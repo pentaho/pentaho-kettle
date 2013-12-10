@@ -57,18 +57,18 @@ public class UserDefinedJavaClassCodeSnippits {
 
   public void addSnippits( String strFileName ) throws KettleXMLException {
     Document doc =
-        XMLHandler.loadXMLFile( UserDefinedJavaClassCodeSnippits.class.getResourceAsStream( strFileName ), null, false,
-            false );
+        XMLHandler.loadXMLFile(
+            UserDefinedJavaClassCodeSnippits.class.getResourceAsStream( strFileName ), null, false, false );
     buildSnippitList( doc );
   }
 
   public enum Category {
     COMMON( BaseMessages.getString( PKG, "UserDefinedJavaClassCodeSnippits.categories.COMMON" ) ), STATUS( BaseMessages
         .getString( PKG, "UserDefinedJavaClassCodeSnippits.categories.STATUS" ) ), LOGGING( BaseMessages.getString(
-        PKG, "UserDefinedJavaClassCodeSnippits.categories.LOGGING" ) ), LISTENERS( BaseMessages.getString( PKG,
-        "UserDefinedJavaClassCodeSnippits.categories.LISTENERS" ) ), ROW( BaseMessages.getString( PKG,
-        "UserDefinedJavaClassCodeSnippits.categories.ROW" ) ), OTHER( BaseMessages.getString( PKG,
-        "UserDefinedJavaClassCodeSnippits.categories.OTHER" ) );
+        PKG, "UserDefinedJavaClassCodeSnippits.categories.LOGGING" ) ), LISTENERS( BaseMessages.getString(
+        PKG, "UserDefinedJavaClassCodeSnippits.categories.LISTENERS" ) ), ROW( BaseMessages.getString(
+        PKG, "UserDefinedJavaClassCodeSnippits.categories.ROW" ) ), OTHER( BaseMessages.getString(
+        PKG, "UserDefinedJavaClassCodeSnippits.categories.OTHER" ) );
 
     private String description;
 
@@ -122,8 +122,8 @@ public class UserDefinedJavaClassCodeSnippits {
     List<Node> nodes = XMLHandler.getNodes( XMLHandler.getSubNode( doc, "codeSnippits" ), "codeSnippit" );
     for ( Node node : nodes ) {
       Snippit snippit =
-          new Snippit( Category.valueOf( XMLHandler.getTagValue( node, "category" ) ), XMLHandler.getTagValue( node,
-              "name" ), XMLHandler.getTagValue( node, "sample" ), XMLHandler.getTagValue( node, "code" ) );
+          new Snippit( Category.valueOf( XMLHandler.getTagValue( node, "category" ) ), XMLHandler.getTagValue(
+              node, "name" ), XMLHandler.getTagValue( node, "sample" ), XMLHandler.getTagValue( node, "code" ) );
       snippits.add( snippit );
       Snippit oldSnippit = snippitsMap.put( snippit.name, snippit );
       if ( oldSnippit != null ) {

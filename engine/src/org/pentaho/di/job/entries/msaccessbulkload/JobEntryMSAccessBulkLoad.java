@@ -273,8 +273,9 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
         logDebug( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.FileAddedToResultFilesName", fileaddentry ) );
       }
     } catch ( Exception e ) {
-      log.logError( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult" ),
-          fileaddentry + "" + e.getMessage() );
+      log.logError(
+          BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult" ), fileaddentry
+              + "" + e.getMessage() );
     }
   }
 
@@ -297,8 +298,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Meta.UnableSave", "" + id_job,
-          dbe.getMessage() ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryMSAccessBulkLoad.Meta.UnableSave", "" + id_job, dbe.getMessage() ), dbe );
     }
   }
 
@@ -407,8 +408,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
       // load data from file
       Database.open( targetDbFile ).importFile( tablename, sourceDataFile, delimiter );
 
-      logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.FileImported", sourceFilename, tablename,
-          targetFilename ) );
+      logBasic( BaseMessages.getString(
+          PKG, "JobEntryMSAccessBulkLoad.Log.FileImported", sourceFilename, tablename, targetFilename ) );
 
       // add filename to result filename
       if ( add_result_filenames ) {
@@ -417,8 +418,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 
       retval = true;
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Error.LoadingDataToFile", sourceFilename,
-          targetFilename, e.getMessage() ) );
+      logError( BaseMessages.getString(
+          PKG, "JobEntryMSAccessBulkLoad.Error.LoadingDataToFile", sourceFilename, targetFilename, e.getMessage() ) );
 
     }
     if ( retval ) {
@@ -478,8 +479,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 
       if ( is_args_from_previous ) {
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found",
-              ( rows != null ? rows.size() : 0 ) + "" ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found", ( rows != null ? rows.size() : 0 ) + "" ) );
         }
       }
       if ( is_args_from_previous && rows != null ) {
@@ -493,7 +494,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
           String vTargetDb_previous = resultRow.getString( 3, null );
           String vTargetTable_previous = resultRow.getString( 4, null );
 
-          processOneRow( vSourceFileFolder_previous, vSourceWildcard_previous, vDelimiter_previous, vTargetDb_previous,
+          processOneRow(
+              vSourceFileFolder_previous, vSourceWildcard_previous, vDelimiter_previous, vTargetDb_previous,
               vTargetTable_previous, parentJob, result );
 
         }
@@ -506,8 +508,9 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
           String realTargetDb = environmentSubstitute( targetDb[i] );
           String realTargetTable = environmentSubstitute( targetTable[i] );
 
-          processOneRow( realSourceFileFolder, realSourceWildcard, realSourceDelimiter, realTargetDb, realTargetTable,
-              parentJob, result );
+          processOneRow(
+              realSourceFileFolder, realSourceWildcard, realSourceDelimiter, realTargetDb, realTargetTable, parentJob,
+              result );
         }
       }
     } catch ( Exception e ) {

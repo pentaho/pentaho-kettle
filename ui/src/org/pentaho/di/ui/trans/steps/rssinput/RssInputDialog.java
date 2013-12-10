@@ -502,29 +502,35 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              RssInputField.ColumnDesc, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Format" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              formats ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Group" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.TrimType" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, RssInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RssInputDialog.Field.Repeat" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                RssInputField.ColumnDesc, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                    .getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Format" ), ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.TrimType" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                RssInputField.trimTypeDesc, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RssInputDialog.Field.Repeat" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
 
         };
 
@@ -682,8 +688,9 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RssInputDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "RssInputDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RssInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+              PKG, "RssInputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -701,27 +708,28 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
       // Clear Fields Grid
       wFields.removeAll();
 
-      wFields.add( new String[] { RssInputField.getColumnDesc( 0 ), RssInputField.getColumnDesc( 0 ), "String", "", "",
-        "", "", "", "", "N" } );
-      wFields.add( new String[] { RssInputField.getColumnDesc( 1 ), RssInputField.getColumnDesc( 1 ), "String", "", "",
-        "", "", "", "", "N" } );
-      wFields.add( new String[] { RssInputField.getColumnDesc( 2 ), RssInputField.getColumnDesc( 2 ), "String", "", "",
-        "", "", "", "", "N" } );
-      wFields.add( new String[] { RssInputField.getColumnDesc( 3 ), RssInputField.getColumnDesc( 3 ), "String", "", "",
-        "", "", "", "", "N" } );
-      wFields.add( new String[] { RssInputField.getColumnDesc( 4 ), RssInputField.getColumnDesc( 4 ), "String", "", "",
-        "", "", "", "", "N" } );
-      wFields.add( new String[] { RssInputField.getColumnDesc( 5 ), RssInputField.getColumnDesc( 5 ), "String", "", "",
-        "", "", "", "", "N" } );
-      wFields.add( new String[] { RssInputField.getColumnDesc( 6 ), RssInputField.getColumnDesc( 6 ), "String", "", "",
-        "", "", "", "", "N" } );
+      wFields.add( new String[] {
+          RssInputField.getColumnDesc( 0 ), RssInputField.getColumnDesc( 0 ), "String", "", "", "", "", "", "", "N" } );
+      wFields.add( new String[] {
+          RssInputField.getColumnDesc( 1 ), RssInputField.getColumnDesc( 1 ), "String", "", "", "", "", "", "", "N" } );
+      wFields.add( new String[] {
+          RssInputField.getColumnDesc( 2 ), RssInputField.getColumnDesc( 2 ), "String", "", "", "", "", "", "", "N" } );
+      wFields.add( new String[] {
+          RssInputField.getColumnDesc( 3 ), RssInputField.getColumnDesc( 3 ), "String", "", "", "", "", "", "", "N" } );
+      wFields.add( new String[] {
+          RssInputField.getColumnDesc( 4 ), RssInputField.getColumnDesc( 4 ), "String", "", "", "", "", "", "", "N" } );
+      wFields.add( new String[] {
+          RssInputField.getColumnDesc( 5 ), RssInputField.getColumnDesc( 5 ), "String", "", "", "", "", "", "", "N" } );
+      wFields.add( new String[] {
+          RssInputField.getColumnDesc( 6 ), RssInputField.getColumnDesc( 6 ), "String", "", "", "", "", "", "", "N" } );
 
       wFields.removeEmptyRows();
       wFields.setRowNums();
       wFields.optWidth( true );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RssInputDialog.ErrorGettingFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "getXMLDataDialog.ErrorGettingFields.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RssInputDialog.ErrorGettingFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "getXMLDataDialog.ErrorGettingFields.DialogMessage" ), e );
     }
   }
 
@@ -792,8 +800,8 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+                PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -856,8 +864,9 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RssInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "RssInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RssInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
+              PKG, "RssInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -934,15 +943,15 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "getXMLDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "getXMLDataDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "getXMLDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "getXMLDataDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -951,23 +960,25 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RssInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "RssInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RssInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "RssInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

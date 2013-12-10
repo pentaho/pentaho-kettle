@@ -73,7 +73,8 @@ public class TransDataService implements XMLInterface {
   }
 
   public TransDataService( Node serviceNode ) {
-    this( XMLHandler.getTagValue( serviceNode, "name" ), XMLHandler.getTagValue( serviceNode, "filename" ), null,
+    this(
+        XMLHandler.getTagValue( serviceNode, "name" ), XMLHandler.getTagValue( serviceNode, "filename" ), null,
         XMLHandler.getTagValue( serviceNode, "service_step" ), extractFieldVariableMapping( serviceNode ),
         ServiceCacheMethod.None );
   }

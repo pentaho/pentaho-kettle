@@ -249,8 +249,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
 
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         setOutputDone();
 
         // Close the output stream...

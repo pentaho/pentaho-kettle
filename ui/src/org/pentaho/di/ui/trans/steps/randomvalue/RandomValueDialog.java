@@ -131,17 +131,17 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RandomValueDialog.NameColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "RandomValueDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RandomValueDialog.TypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "RandomValueDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1].setSelectionAdapter( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, functionDesc, BaseMessages.getString( PKG,
-                "RandomValueDialog.SelectInfoType.DialogTitle" ), BaseMessages.getString( PKG,
-                "RandomValueDialog.SelectInfoType.DialogMessage" ) );
+            new EnterSelectionDialog( shell, functionDesc, BaseMessages.getString(
+                PKG, "RandomValueDialog.SelectInfoType.DialogTitle" ), BaseMessages.getString(
+                PKG, "RandomValueDialog.SelectInfoType.DialogMessage" ) );
         String string = esd.open();
         if ( string != null ) {
           TableView tv = (TableView) e.widget;

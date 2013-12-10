@@ -45,9 +45,6 @@ public class SFTPPutData extends BaseStepData implements StepDataInterface {
   // index of remote filename
   public int indexOfRemoteFilename;
 
-  /**
-	 * 
-	 */
   public SFTPPutData() {
     super();
     this.indexOfSourceFileFieldName = -1;

@@ -369,8 +369,8 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
     Display display = new Display();
     String[] inputFields = { "firstname", "name", };
     LibFormulaEditor lbe =
-        new LibFormulaEditor( new Shell( display, SWT.NONE ), SWT.NONE,
-            "MID(UPPER([name] & \" \" & [firstname]);5;10)", inputFields );
+        new LibFormulaEditor(
+            new Shell( display, SWT.NONE ), SWT.NONE, "MID(UPPER([name] & \" \" & [firstname]);5;10)", inputFields );
     lbe.open();
   }
 

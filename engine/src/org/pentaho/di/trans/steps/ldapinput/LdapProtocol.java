@@ -146,8 +146,8 @@ public class LdapProtocol {
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage() ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage() ), e );
     }
   }
 

@@ -89,7 +89,7 @@ public class Script extends BaseStep implements StepInterface {
 
   // public static Row insertRow;
 
-  // public String script;//TODO AKRETION should be compiled script actually
+  // public String script; //TODO AKRETION should be compiled script actually
 
   public Script( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -155,13 +155,13 @@ public class Script extends BaseStep implements StepInterface {
           data.replaceIndex[i] = rowMeta.indexOfValue( meta.getFieldname()[i] );
           if ( data.replaceIndex[i] < 0 ) {
             if ( Const.isEmpty( meta.getFieldname()[i] ) ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
+              throw new KettleStepException( BaseMessages.getString(
+                  PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
             }
             data.replaceIndex[i] = rowMeta.indexOfValue( meta.getRename()[i] );
             if ( data.replaceIndex[i] < 0 ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
+              throw new KettleStepException( BaseMessages.getString(
+                  PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
             }
           }
         } else {
@@ -224,8 +224,8 @@ public class Script extends BaseStep implements StepInterface {
             }
           }
         } catch ( Exception e ) {
-          throw new KettleValueException( BaseMessages.getString( PKG, "Script.Log.CouldNotAttachAdditionalScripts" ),
-              e );
+          throw new KettleValueException(
+              BaseMessages.getString( PKG, "Script.Log.CouldNotAttachAdditionalScripts" ), e );
         }
 
         // Adding some default JavaScriptFunctions to the System
@@ -318,7 +318,7 @@ public class Script extends BaseStep implements StepInterface {
         bFirstRun = false;
         // Check if we had a Transformation Status
         Object tran_stat = data.scope.get( "trans_Status" );
-        if ( tran_stat != null ) {// TODO AKRETION not sure: !=
+        if ( tran_stat != null ) { // TODO AKRETION not sure: !=
           // ScriptableObject.NOT_FOUND
           bWithTransStat = true;
           if ( log.isDetailed() ) {
@@ -333,7 +333,7 @@ public class Script extends BaseStep implements StepInterface {
       }
 
       if ( bWithTransStat ) {
-        iTranStat = (Integer) data.scope.get( "trans_Status" );// TODO
+        iTranStat = (Integer) data.scope.get( "trans_Status" ); // TODO
         // ARETION
         // not
         // sure
@@ -417,7 +417,7 @@ public class Script extends BaseStep implements StepInterface {
                 }
               } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
                 Number nb = (Number) result;
-                return new Double( nb.doubleValue() );// TODO AKRETION
+                return new Double( nb.doubleValue() ); // TODO AKRETION
                 // not sure
               } else {
                 Number nb = (Number) result;
@@ -440,7 +440,7 @@ public class Script extends BaseStep implements StepInterface {
               } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
                 return null;
               } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = (Number) result;// TODO AKRETION not
+                Number nb = (Number) result; // TODO AKRETION not
                 // sure
                 return new Long( nb.longValue() );
               } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
@@ -486,7 +486,7 @@ public class Script extends BaseStep implements StepInterface {
                 return null;
               } else {
                 if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeDate" ) ) {
-                  dbl = (Double) result;// TODO AKRETION not sure
+                  dbl = (Double) result; // TODO AKRETION not sure
                 } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" )
                     || classType.equalsIgnoreCase( "java.util.Date" ) ) {
                   // Is it a java Date() class ?
@@ -526,7 +526,7 @@ public class Script extends BaseStep implements StepInterface {
               if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
                 return null;
               } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = (Number) result;// TODO AKRETION not
+                Number nb = (Number) result; // TODO AKRETION not
                 // sure
                 return new BigDecimal( nb.longValue() );
               } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
@@ -564,7 +564,7 @@ public class Script extends BaseStep implements StepInterface {
               }
 
             case ValueMetaInterface.TYPE_BINARY: {
-              return result;// TODO AKRETION not sure
+              return result; // TODO AKRETION not sure
               // //Context.jsToJava(result,
               // byte[].class);
             }
@@ -573,8 +573,8 @@ public class Script extends BaseStep implements StepInterface {
                   + meta.getFieldname()[i] + "]" );
             }
             default: {
-              throw new RuntimeException( "JavaScript conversion not implemented for type " + meta.getType()[i] + " ("
-                  + ValueMeta.getTypeDesc( meta.getType()[i] ) + ")" );
+              throw new RuntimeException( "JavaScript conversion not implemented for type "
+                  + meta.getType()[i] + " (" + ValueMeta.getTypeDesc( meta.getType()[i] ) + ")" );
             }
           }
         } else {

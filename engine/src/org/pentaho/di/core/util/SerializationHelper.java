@@ -66,8 +66,8 @@ public class SerializationHelper {
     for ( Field field : fields ) {
 
       // ignore fields which are final, static or transient
-      if ( Modifier.isFinal( field.getModifiers() ) || Modifier.isStatic( field.getModifiers() )
-          || Modifier.isTransient( field.getModifiers() ) ) {
+      if ( Modifier.isFinal( field.getModifiers() )
+          || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
         continue;
       }
 
@@ -186,8 +186,8 @@ public class SerializationHelper {
             }
 
             // create an instance of 'fieldClassName'
-            if ( String.class.isAssignableFrom( clazz ) || Number.class.isAssignableFrom( clazz )
-                || Boolean.class.isAssignableFrom( clazz ) ) {
+            if ( String.class.isAssignableFrom( clazz )
+                || Number.class.isAssignableFrom( clazz ) || Boolean.class.isAssignableFrom( clazz ) ) {
               Constructor<?> constructor = clazz.getConstructor( String.class );
               Object instance = constructor.newInstance( XMLHandler.getTagAttribute( child, "value" ) );
               list.add( instance );
@@ -279,8 +279,8 @@ public class SerializationHelper {
     for ( Field field : fields ) {
 
       // ignore fields which are final, static or transient
-      if ( Modifier.isFinal( field.getModifiers() ) || Modifier.isStatic( field.getModifiers() )
-          || Modifier.isTransient( field.getModifiers() ) ) {
+      if ( Modifier.isFinal( field.getModifiers() )
+          || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
         continue;
       }
 
@@ -296,8 +296,8 @@ public class SerializationHelper {
 
           continue;
         }
-        if ( field.getType().isPrimitive() || String.class.isAssignableFrom( field.getType() )
-            || Number.class.isAssignableFrom( field.getType() ) ) {
+        if ( field.getType().isPrimitive()
+            || String.class.isAssignableFrom( field.getType() ) || Number.class.isAssignableFrom( field.getType() ) ) {
           indent( buffer, indentLevel );
           buffer.append( XMLHandler.addTagValue( field.getName(), fieldValue.toString() ) );
         } else if ( field.getType().isArray() ) {
@@ -306,8 +306,8 @@ public class SerializationHelper {
 
           // open node (add class name attribute)
           indent( buffer, indentLevel );
-          buffer.append(
-              "<" + field.getName() + " class=\"" + fieldValue.getClass().getComponentType().getName() + "\">" )
+          buffer
+              .append( "<" + field.getName() + " class=\"" + fieldValue.getClass().getComponentType().getName() + "\">" )
               .append( Const.CR );
 
           for ( int i = 0; i < length; i++ ) {

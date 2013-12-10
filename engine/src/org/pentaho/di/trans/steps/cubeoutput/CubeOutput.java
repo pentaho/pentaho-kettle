@@ -183,8 +183,9 @@ public class CubeOutput extends BaseStep implements StepInterface {
       if ( meta.isAddToResultFiles() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
-                getTransMeta().getName(), getStepname() );
+            new ResultFile(
+                ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
+                    .getName(), getStepname() );
         resultFile.setComment( "This file was created with a cube file output step" );
         addResultFile( resultFile );
       }

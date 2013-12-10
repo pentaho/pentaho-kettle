@@ -239,8 +239,8 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
         outputLineDelimiter = ""; // default to empty string for backward compatibility
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -286,12 +286,12 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ExecProcessMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ExecProcessMeta.CheckResult.NoInpuReceived" ), stepMeta );
     }
     remarks.add( cr );
 

@@ -71,8 +71,8 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
   private static final String[] EXTENSIONS = new String[] { "*.ZIP;*.zip", "*" }; //$NON-NLS-3$
 
   private static final String[] FILETYPES = new String[] {
-    BaseMessages.getString( PKG, "JobEntryTalendJobExec.Filetype.ZIP" ),
-    BaseMessages.getString( PKG, "JobEntryTalendJobExec.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobEntryTalendJobExec.Filetype.ZIP" ),
+      BaseMessages.getString( PKG, "JobEntryTalendJobExec.Filetype.All" ) };
 
   private Label wlName;
 

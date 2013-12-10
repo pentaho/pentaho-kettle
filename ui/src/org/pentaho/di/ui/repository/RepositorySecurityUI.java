@@ -64,8 +64,8 @@ public class RepositorySecurityUI {
       }
       repository.getSecurityProvider().validateAction( operations );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, "Security error", "There was a security error performing operations:" + Const.CR
-          + operationsDesc, e );
+      new ErrorDialog( shell, "Security error", "There was a security error performing operations:"
+          + Const.CR + operationsDesc, e );
       return true;
     }
     return false;
@@ -103,8 +103,8 @@ public class RepositorySecurityUI {
    */
   public static boolean showVersionCommentMandatoryDialog( Shell shell ) {
     MessageBox box = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_ERROR );
-    box.setMessage( "Version comments are mandatory for this repository." + Const.CR
-        + "Do you want to enter a comment?" );
+    box.setMessage( "Version comments are mandatory for this repository."
+        + Const.CR + "Do you want to enter a comment?" );
     box.setText( "Version comments are mandatory!" );
     return box.open() == SWT.YES;
   }

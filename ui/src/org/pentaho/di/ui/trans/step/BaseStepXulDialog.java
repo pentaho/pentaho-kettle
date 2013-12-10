@@ -294,18 +294,19 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
           new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-              null, BaseMessages.getString( PKG,
-                  "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
-              MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+          null, BaseMessages.getString(
+              PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
+              MessageDialog.WARNING, new String[] {
+                  BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       int idx = md.open();
       choice = idx & 0xFF;
     }
 
-    if ( choice == 3 || choice == 255 /* 255 = escape pressed */) {
+    if ( choice == 3 || choice == 255 ) {
       return; // Cancel clicked
     }
 
@@ -318,8 +319,8 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
 
       boolean add = true;
 
-      if ( choice == 0 ) // hang on, see if it's not yet in the table view
-      {
+      if ( choice == 0 ) { // hang on, see if it's not yet in the table view
+
         if ( keys.indexOf( v.getName() ) >= 0 ) {
           add = false;
         }
@@ -393,9 +394,9 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( comboVar.getShell(), BaseMessages.getString( PKG,
-          "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString( PKG,
-          "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
+      new ErrorDialog( comboVar.getShell(), BaseMessages.getString(
+          PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString(
+          PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
     }
   }
 
@@ -452,18 +453,19 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
           new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-              null, BaseMessages.getString( PKG,
-                  "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
-              MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+          null, BaseMessages.getString(
+              PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
+              MessageDialog.WARNING, new String[] {
+                  BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+                  BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       int idx = md.open();
       choice = idx & 0xFF;
     }
 
-    if ( choice == 3 || choice == 255 /* 255 = escape pressed */) {
+    if ( choice == 3 || choice == 255 ) {
       return; // Cancel clicked
     }
 
@@ -474,8 +476,8 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
     for ( int i = 0; i < row.size(); i++ ) {
       ValueMetaInterface v = row.getValueMeta( i );
 
-      if ( choice == 0 ) // hang on, see if it's not yet in the table view
-      {
+      if ( choice == 0 ) { // hang on, see if it's not yet in the table view
+
         if ( keys.indexOf( v.getName() ) >= 0 ) {
           continue;
         }

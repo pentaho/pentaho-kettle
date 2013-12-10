@@ -92,17 +92,18 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
   public static final int SPECIAL_FUNCTION = 4;
   public static final int FILE_FUNCTION = 5;
 
-  public static String[] jsFunctionList = { "appendToFile", "getTransformationName", "writeToLog", "getFiscalDate",
-    "getProcessCount", "ceil", "floor", "abs", "getDayNumber", "isWorkingDay", "fireToDB", "getNextWorkingDay",
-    "quarter", "dateDiff", "dateAdd", "fillString", "isCodepage", "ltrim", "rtrim", "lpad", "rpad", "week", "month",
-    "year", "str2RegExp", "fileExists", "touch", "isRegExp", "date2str", "str2date", "sendMail", "replace", "decode",
-    "isNum", "isDate", "lower", "upper", "str2num", "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar",
-    "LoadScriptFile", "LoadScriptFromTab", "print", "println", "resolveIP", "trim", "substr", "getVariable",
-    "setVariable", "LuhnCheck", "getDigitsOnly", "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy",
-    "putRow", "deleteFile", "createFolder", "copyFile", "getFileSize", "isFile", "isFolder", "getShortFilename",
-    "getFileExtension", "getParentFoldername", "getLastModifiedTime", "trunc", "truncDate", "moveFile", "execProcess",
-    "isEmpty", "isMailValid", "escapeXml", "removeDigits", "initCap", "protectXMLCDATA", "unEscapeXml", "escapeSQL",
-    "escapeHtml", "unEscapeHtml", "loadFileContent", "getOcuranceString", "removeCRLF" };
+  public static String[] jsFunctionList = {
+      "appendToFile", "getTransformationName", "writeToLog", "getFiscalDate", "getProcessCount", "ceil", "floor",
+      "abs", "getDayNumber", "isWorkingDay", "fireToDB", "getNextWorkingDay", "quarter", "dateDiff", "dateAdd",
+      "fillString", "isCodepage", "ltrim", "rtrim", "lpad", "rpad", "week", "month", "year", "str2RegExp",
+      "fileExists", "touch", "isRegExp", "date2str", "str2date", "sendMail", "replace", "decode", "isNum", "isDate",
+      "lower", "upper", "str2num", "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile",
+      "LoadScriptFromTab", "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable",
+      "LuhnCheck", "getDigitsOnly", "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow",
+      "deleteFile", "createFolder", "copyFile", "getFileSize", "isFile", "isFolder", "getShortFilename",
+      "getFileExtension", "getParentFoldername", "getLastModifiedTime", "trunc", "truncDate", "moveFile",
+      "execProcess", "isEmpty", "isMailValid", "escapeXml", "removeDigits", "initCap", "protectXMLCDATA",
+      "unEscapeXml", "escapeSQL", "escapeHtml", "unEscapeHtml", "loadFileContent", "getOcuranceString", "removeCRLF" };
 
   // This is only used for reading, so no concurrency problems.
   // todo: move in the real variables of the step.
@@ -1027,8 +1028,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           Format dfFormatter = new SimpleDateFormat( sArg2 );
           oRC = dfFormatter.parseObject( sArg1 );
         } catch ( Exception e ) {
-          throw Context.reportRuntimeError( "Could not apply the given format " + sArg2 + " on the string for " + sArg1
-              + " : " + e.getMessage() );
+          throw Context.reportRuntimeError( "Could not apply the given format "
+              + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
         }
         break;
       case 3:
@@ -1050,8 +1051,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             throw Context.reportRuntimeError( "Locale " + sArg3 + " is not 2 characters long." );
           }
         } catch ( Exception e ) {
-          throw Context.reportRuntimeError( "Could not apply the local format for locale " + sArg3
-              + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
+          throw Context.reportRuntimeError( "Could not apply the local format for locale "
+              + sArg3 + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
         }
         break;
       case 4:
@@ -1080,8 +1081,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             throw Context.reportRuntimeError( "Locale " + sArg3 + " is not 2 characters long." );
           }
         } catch ( Exception e ) {
-          throw Context.reportRuntimeError( "Could not apply the local format for locale " + sArg3
-              + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
+          throw Context.reportRuntimeError( "Could not apply the local format for locale "
+              + sArg3 + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
         }
         break;
       default:
@@ -1751,14 +1752,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     } catch ( FileNotFoundException Signal ) {
       Context.reportError( "Unable to open file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } catch ( WrappedException Signal ) {
-      Context.reportError( "WrappedException while evaluating file \"" + fileName + "\" (reason: \""
-          + Signal.getMessage() + "\")" );
+      Context.reportError( "WrappedException while evaluating file \""
+          + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } catch ( EvaluatorException Signal ) {
-      Context.reportError( "EvaluatorException while evaluating file \"" + fileName + "\" (reason: \""
-          + Signal.getMessage() + "\")" );
+      Context.reportError( "EvaluatorException while evaluating file \""
+          + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } catch ( JavaScriptException Signal ) {
-      Context.reportError( "JavaScriptException while evaluating file \"" + fileName + "\" (reason: \""
-          + Signal.getMessage() + "\")" );
+      Context.reportError( "JavaScriptException while evaluating file \""
+          + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } catch ( IOException Signal ) {
       Context.reportError( "Error while reading file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } catch ( KettleFileException Signal ) {
@@ -1893,8 +1894,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           return scm.getOutputRowMeta();
         }
       } catch ( Exception e ) {
-        throw Context.reportRuntimeError( "Unable to get the output row metadata because of an error: " + Const.CR
-            + e.toString() );
+        throw Context.reportRuntimeError( "Unable to get the output row metadata because of an error: "
+            + Const.CR + e.toString() );
       }
     } else {
       throw Context.reportRuntimeError( "The function call getOutputRowMeta doesn't require arguments." );
@@ -1915,8 +1916,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           return scm.getInputRowMeta();
         }
       } catch ( Exception e ) {
-        throw Context.reportRuntimeError( "Unable to get the input row metadata because of an error: " + Const.CR
-            + e.toString() );
+        throw Context.reportRuntimeError( "Unable to get the input row metadata because of an error: "
+            + Const.CR + e.toString() );
       }
     } else {
       throw Context.reportRuntimeError( "The function call getInputRowMeta doesn't require arguments." );
@@ -2048,8 +2049,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
       Function FunctionContext ) {
 
     try {
-      if ( ArgList.length == 3 && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] )
-          && !isUndefined( ArgList[1] ) ) {
+      if ( ArgList.length == 3
+          && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] ) && !isUndefined( ArgList[1] ) ) {
         FileObject fileSource = null, fileDestination = null;
 
         try {
@@ -2476,8 +2477,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
       Function FunctionContext ) {
 
     try {
-      if ( ArgList.length == 3 && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] )
-          && !isUndefined( ArgList[1] ) ) {
+      if ( ArgList.length == 3
+          && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] ) && !isUndefined( ArgList[1] ) ) {
         FileObject fileSource = null, fileDestination = null;
 
         try {

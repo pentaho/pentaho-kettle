@@ -193,8 +193,8 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
       createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "createparentfolder" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "ChangeFileEncodingMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "ChangeFileEncodingMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -211,8 +211,8 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
       createparentfolder = rep.getStepAttributeBoolean( id_step, "createparentfolder" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ChangeFileEncodingMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ChangeFileEncodingMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -282,13 +282,13 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ChangeFileEncodingMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ChangeFileEncodingMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ChangeFileEncodingMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ChangeFileEncodingMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

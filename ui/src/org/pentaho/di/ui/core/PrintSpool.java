@@ -123,8 +123,8 @@ public class PrintSpool {
       double margin_bottom = 0.40;
 
       EnterPrintDialog epd =
-          new EnterPrintDialog( sh, 1, 1, 100, factorx, factory, page, margin_left, margin_right, margin_top,
-              margin_bottom, img );
+          new EnterPrintDialog(
+              sh, 1, 1, 100, factorx, factory, page, margin_left, margin_right, margin_top, margin_bottom, img );
       if ( epd.open() == SWT.OK ) {
         double page_left = epd.leftMargin * dpi_printer.x;
         double page_right = epd.rightMargin * dpi_printer.x;
@@ -162,19 +162,20 @@ public class PrintSpool {
             printer.startPage();
             GC gc_printer = new GC( printer );
 
-            gc_printer.drawImage( img, fromx, fromy, imx, imy, (int) page_left, (int) page_top, (int) printx,
-                (int) printy );
+            gc_printer.drawImage(
+                img, fromx, fromy, imx, imy, (int) page_left, (int) page_top, (int) printx, (int) printy );
 
             // ShowImageDialog sid = new ShowImageDialog(sh, props, img);
             // sid.open();
 
             System.out.println( "img dept = " + img.getImageData().depth );
             System.out.println( "prn dept = " + printer.getDepth() );
-            System.out.println( "img size = (" + img.getBounds().x + "," + img.getBounds().y + ") : ("
-                + img.getBounds().width + "," + img.getBounds().height + ")" );
-            System.out.println( "fromx=" + fromx + ", fromy=" + fromy + ", imx=" + imx + ", imy=" + imy
-                + ", page_left=" + (int) page_left + ", page_top=" + (int) page_top + ", printx=" + (int) printx
-                + ", printy=" + (int) printy );
+            System.out.println( "img size = ("
+                + img.getBounds().x + "," + img.getBounds().y + ") : (" + img.getBounds().width + ","
+                + img.getBounds().height + ")" );
+            System.out.println( "fromx="
+                + fromx + ", fromy=" + fromy + ", imx=" + imx + ", imy=" + imy + ", page_left=" + (int) page_left
+                + ", page_top=" + (int) page_top + ", printx=" + (int) printx + ", printy=" + (int) printy );
 
             printer.endPage();
             gc_printer.dispose();

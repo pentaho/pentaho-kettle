@@ -36,7 +36,8 @@ public class AbortTest {
   @Test
   public void testAbortDoesntAbortWithoutInputRow() throws KettleException {
     Abort abort =
-        new Abort( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        new Abort(
+            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet() );
@@ -49,7 +50,8 @@ public class AbortTest {
   @Test
   public void testAbortAbortsWithInputRow() throws KettleException {
     Abort abort =
-        new Abort( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        new Abort(
+            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] {} ) );

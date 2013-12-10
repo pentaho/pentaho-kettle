@@ -293,15 +293,18 @@ public class ClusterSchemaDialog extends Dialog {
 
     ColumnInfo[] partitionColumns =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "ClusterSchemaDialog.ColumnInfoName.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, true, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ClusterSchemaDialog.ColumnInfoServiceURL.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, true, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ClusterSchemaDialog.ColumnInfoMaster.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, true, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ClusterSchemaDialog.ColumnInfoName.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                true, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ClusterSchemaDialog.ColumnInfoServiceURL.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, true, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ClusterSchemaDialog.ColumnInfoMaster.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, true, true ), };
     wServers =
-        new TableView( clusterSchema, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, partitionColumns, 1, lsMod,
-            props );
+        new TableView(
+            clusterSchema, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, partitionColumns, 1, lsMod, props );
     wServers.setReadonly( false );
     props.setLook( wServers );
     FormData fdServers = new FormData();
@@ -377,9 +380,9 @@ public class ClusterSchemaDialog extends Dialog {
     int[] idx = Const.indexsOfFoundStrings( wServers.getItems( 0 ), names );
 
     EnterSelectionDialog dialog =
-        new EnterSelectionDialog( shell, names,
-            BaseMessages.getString( PKG, "ClusterSchemaDialog.SelectServers.Label" ), BaseMessages.getString( PKG,
-                "ClusterSchemaDialog.SelectServersCluster.Label" ) );
+        new EnterSelectionDialog(
+            shell, names, BaseMessages.getString( PKG, "ClusterSchemaDialog.SelectServers.Label" ), BaseMessages
+                .getString( PKG, "ClusterSchemaDialog.SelectServersCluster.Label" ) );
     dialog.setAvoidQuickSearch();
     dialog.setSelectedNrs( idx );
     dialog.setMulti( true );

@@ -41,9 +41,6 @@ public class SortedMergeData extends BaseStepData implements StepDataInterface {
   public List<RowSetRow> sortedBuffer;
   public Comparator<RowSetRow> comparator;
 
-  /**
-	 * 
-	 */
   public SortedMergeData() {
     super();
   }

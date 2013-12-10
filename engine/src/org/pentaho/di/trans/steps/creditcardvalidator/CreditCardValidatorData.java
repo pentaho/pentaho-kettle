@@ -40,9 +40,6 @@ public class CreditCardValidatorData extends BaseStepData implements StepDataInt
   public int NrPrevFields;
   public RowMetaInterface previousRowMeta;
 
-  /**
-	 * 
-	 */
   public CreditCardValidatorData() {
     super();
     indexOfField = -1;

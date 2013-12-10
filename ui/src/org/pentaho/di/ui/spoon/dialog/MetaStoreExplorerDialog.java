@@ -224,22 +224,23 @@ public class MetaStoreExplorerDialog {
       }
       IMetaStoreElementType elementType = metaStore.getElementTypeByName( namespace, elementTypeName );
       if ( elementType == null ) {
-        throw new MetaStoreException( "Unable to find element type '" + elementTypeName + "' from metastore '"
-            + metaStoreName + "' in namespace '" + namespace + "'" );
+        throw new MetaStoreException( "Unable to find element type '"
+            + elementTypeName + "' from metastore '" + metaStoreName + "' in namespace '" + namespace + "'" );
       }
       IMetaStoreElement element = metaStore.getElementByName( namespace, elementType, elementName );
       if ( element == null ) {
-        throw new MetaStoreException( "Unable to find element '" + elementName + "' of type '" + elementTypeName
-            + "' from metastore '" + metaStoreName + "' in namespace '" + namespace + "'" );
+        throw new MetaStoreException( "Unable to find element '"
+            + elementName + "' of type '" + elementTypeName + "' from metastore '" + metaStoreName + "' in namespace '"
+            + namespace + "'" );
       }
       metaStore.deleteElement( namespace, elementType, element.getId() );
 
       refreshTree();
 
     } catch ( MetaStoreException e ) {
-      new ErrorDialog( shell, "Error removing element", "There was an error removing the element '" + elementName
-          + "' of type '" + elementTypeName + "' from metastore '" + metaStoreName + "' in namespace '" + namespace
-          + "'", e );
+      new ErrorDialog( shell, "Error removing element", "There was an error removing the element '"
+          + elementName + "' of type '" + elementTypeName + "' from metastore '" + metaStoreName + "' in namespace '"
+          + namespace + "'", e );
     }
 
   }

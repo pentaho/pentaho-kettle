@@ -159,26 +159,26 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     ValueMetaInterface parentValueMeta = prev.searchValueMeta( parentIdFieldName );
     if ( parentValueMeta != null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
-              "The fieldname of the parent id could not be found.", stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the parent id could not be found.", stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the parent id could be found",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the parent id could be found", stepMeta );
       remarks.add( cr );
     }
 
     ValueMetaInterface childValueMeta = prev.searchValueMeta( childIdFieldName );
     if ( childValueMeta != null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the child id could not be found.",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR, "The fieldname of the child id could not be found.", stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the child id could be found",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_OK, "The fieldname of the child id could be found", stepMeta );
       remarks.add( cr );
     }
   }

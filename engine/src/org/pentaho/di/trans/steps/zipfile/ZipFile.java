@@ -74,8 +74,8 @@ public class ZipFile extends BaseStep implements StepInterface {
     data = (ZipFileData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -138,7 +138,7 @@ public class ZipFile extends BaseStep implements StepInterface {
         }
       }
 
-    }// End If first
+    } // End If first
 
     boolean sendToErrorRow = false;
     String errorMessage = null;
@@ -199,8 +199,8 @@ public class ZipFile extends BaseStep implements StepInterface {
             if ( !meta.isCreateParentFolder() ) {
               // Parent folder not exist
               // So we will fail
-              throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.TargetParentFolderNotExists",
-                  parentFolder.toString() ) );
+              throw new KettleException( BaseMessages.getString(
+                  PKG, "ZipFile.Error.TargetParentFolderNotExists", parentFolder.toString() ) );
             } else {
               // Create parent folder
               parentFolder.createFolder();

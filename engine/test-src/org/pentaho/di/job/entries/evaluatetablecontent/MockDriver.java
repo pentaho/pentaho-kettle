@@ -40,8 +40,9 @@ public class MockDriver implements Driver {
     when( rs.getLong( anyInt() ) ).thenReturn( 5L );
     when( rs.next() ).thenAnswer( new Answer<Boolean>() {
       private int count = 0;
+
       public Boolean answer( org.mockito.invocation.InvocationOnMock invocation ) throws Throwable {
-          return count++ == 0;
+        return count++ == 0;
       };
     } );
 

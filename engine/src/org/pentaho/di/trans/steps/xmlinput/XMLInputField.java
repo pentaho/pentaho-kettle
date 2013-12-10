@@ -47,10 +47,11 @@ public class XMLInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "XMLInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "XMLInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "XMLInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "XMLInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "XMLInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "XMLInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "XMLInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "XMLInputField.TrimType.Both" ) };
 
   public static final String POSITION_MARKER = ",";
 
@@ -338,8 +339,8 @@ public class XMLInputField implements Cloneable {
         fieldPosition[i] = new XMLInputFieldPosition( codes[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to parse the field positions because of an error" + Const.CR
-          + "Please use E=element or A=attribute in a comma separated list (code: " + encoded + ")", e );
+      throw new KettleException( "Unable to parse the field positions because of an error"
+          + Const.CR + "Please use E=element or A=attribute in a comma separated list (code: " + encoded + ")", e );
     }
   }
 }

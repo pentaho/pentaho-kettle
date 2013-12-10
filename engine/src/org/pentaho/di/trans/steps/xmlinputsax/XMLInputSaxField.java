@@ -321,8 +321,8 @@ public class XMLInputSaxField implements Cloneable {
         fieldPosition[i] = new XMLInputSaxFieldPosition( codes[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to parse the field positions because of an error" + Const.CR
-          + "Please use E=element or A=attribute in a comma separated list (code: " + encoded + ")", e );
+      throw new KettleException( "Unable to parse the field positions because of an error"
+          + Const.CR + "Please use E=element or A=attribute in a comma separated list (code: " + encoded + ")", e );
     }
   }
 

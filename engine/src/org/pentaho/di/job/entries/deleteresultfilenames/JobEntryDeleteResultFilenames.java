@@ -203,8 +203,8 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
               FileObject file = resultFile.getFile();
               if ( file != null && file.exists() ) {
                 if ( CheckFileWildcard( file.getName().getBaseName(), environmentSubstitute( wildcard ), true )
-                    && !CheckFileWildcard( file.getName().getBaseName(), environmentSubstitute( wildcardexclude ),
-                        false ) ) {
+                    && !CheckFileWildcard(
+                        file.getName().getBaseName(), environmentSubstitute( wildcardexclude ), false ) ) {
                   // Remove file from result files list
                   result.getResultFiles().remove( resultFile.getFile().toString() );
 

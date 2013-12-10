@@ -346,8 +346,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -369,13 +369,13 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.AllSortKeysFound" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "SortRowsMeta.CheckResult.AllSortKeysFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.NoSortKeysEntered" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "SortRowsMeta.CheckResult.NoSortKeysEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -387,38 +387,38 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       if ( f.exists() ) {
         if ( f.isDirectory() ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "SortRowsMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "SortRowsMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
           remarks.add( cr );
         }
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.NoFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }

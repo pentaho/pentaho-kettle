@@ -71,8 +71,9 @@ public class StaxPoiSheet implements KSheet {
                     break;
                   }
                 }
-              } else
+              } else {
                 break;
+              }
             }
           }
           // we have parsed the header row
@@ -95,16 +96,19 @@ public class StaxPoiSheet implements KSheet {
         int event = sheetReader.next();
         if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
           currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
-          if ( currentRow < rownr )
+          if ( currentRow < rownr ) {
             continue;
-          if ( currentRow > rownr )
+          }
+          if ( currentRow > rownr ) {
             throw new KettleException( "Going back in stream is not supported yet" );
+          }
           KCell[] cells = new StaxPoiCell[numCols];
           for ( int i = 0; i < numCols; i++ ) {
             // go to the "c" <cell> tag
             while ( sheetReader.hasNext() ) {
-              if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) )
+              if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
                 break;
+              }
               event = sheetReader.next();
             }
             String cellType = sheetReader.getAttributeValue( null, "t" );
@@ -112,8 +116,9 @@ public class StaxPoiSheet implements KSheet {
             // go to the "v" <value> tag
             while ( sheetReader.hasNext() ) {
               event = sheetReader.next();
-              if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) )
+              if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
                 break;
+              }
               if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
                 // we have encountered an empty/incomplete row, so we set the max rows to current row number
                 // TODO: accept empty row is option is check and go till the end of the xml (need to detect the end)
@@ -125,8 +130,9 @@ public class StaxPoiSheet implements KSheet {
             if ( cellType != null && cellType.equals( "s" ) ) {
               int idx = Integer.parseInt( sheetReader.getElementText() );
               content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
-            } else
+            } else {
               content = sheetReader.getElementText();
+            }
             cells[i] = new StaxPoiCell( content, currentRow );
           }
           return cells;
@@ -151,9 +157,10 @@ public class StaxPoiSheet implements KSheet {
 
   @Override
   public KCell getCell( int colnr, int rownr ) {
-    if ( rownr == 0 && colnr < numCols )
+    if ( rownr == 0 && colnr < numCols ) {
       // only possible to return header
       return new StaxPoiCell( headerRow.get( colnr ), rownr );
+    }
     return null;
     // throw new RuntimeException("getCell(col, row) is not supported yet");
   }

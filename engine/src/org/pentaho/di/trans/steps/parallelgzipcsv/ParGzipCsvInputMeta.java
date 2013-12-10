@@ -233,8 +233,8 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         inputFields[i].setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         inputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         inputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
-            "field_trim_type" ) ) );
+        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString(
+            id_step, i, "field_trim_type" ) ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -342,26 +342,26 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ParGzipCsvInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ParGzipCsvInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ParGzipCsvInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ParGzipCsvInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ParGzipCsvInputMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ParGzipCsvInputMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ParGzipCsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ParGzipCsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

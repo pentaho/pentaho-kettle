@@ -248,8 +248,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
       }
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -338,8 +338,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
         tabIsEnable[i] = rep.getStepAttributeBoolean( id_step, i, "tab_is_enable" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -376,8 +376,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -836,22 +836,22 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMeta
           if ( db.checkTableExists( schemaTable ) ) {
             return db.getTableFields( schemaTable );
           } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "LucidDBStreamingLoaderMeta.Exception.TableNotFound" ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "LucidDBStreamingLoaderMeta.Exception.TableNotFound" ) );
           }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "LucidDBStreamingLoaderMeta.Exception.TableNotSpecified" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "LucidDBStreamingLoaderMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "LucidDBStreamingLoaderMeta.Exception.ErrorGettingFields" ), e );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "LucidDBStreamingLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }
     } else {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderMeta.Exception.ConnectionNotDefined" ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderMeta.Exception.ConnectionNotDefined" ) );
     }
 
   }

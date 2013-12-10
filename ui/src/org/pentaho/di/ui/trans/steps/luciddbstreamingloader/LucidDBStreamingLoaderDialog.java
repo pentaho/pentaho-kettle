@@ -355,10 +355,11 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     wOperation.setLayoutData( fdOperation );
 
     final String[] operations =
-        new String[] { BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item1" ),
-          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2" ),
-          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3" ),
-          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4" )
+        new String[] {
+            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item1" ),
+            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2" ),
+            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3" ),
+            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4" )
 
         };
 
@@ -480,10 +481,12 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column1" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column2" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column1" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Key.Column2" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ), };
     wKeysTb = new TableView( transMeta, wKeysComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, lsMod, props );
 
     fdKeysTb = new FormData();
@@ -556,12 +559,15 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
     ColumnInfo[] colinf1 =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column1" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column2" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column3" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true )
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column1" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column2" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.Field.Column3" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true )
 
         };
 
@@ -869,9 +875,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -881,9 +887,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+          PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -906,14 +912,14 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeSourceFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeTargetFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       message += Const.CR;
@@ -921,8 +927,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
           BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
@@ -1065,8 +1071,8 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         }
       } else {
         count =
-            ( ( fieldNamesOfStream.length >= fieldsNamesOfTbl.length ) ? fieldNamesOfStream.length
-                : fieldsNamesOfTbl.length );
+            ( ( fieldNamesOfStream.length >= fieldsNamesOfTbl.length )
+                ? fieldNamesOfStream.length : fieldsNamesOfTbl.length );
         myTb.table.setItemCount( count );
         for ( int i = 0; i < count; i++ ) {
           TableItem item = myTb.table.getItem( i );
@@ -1171,9 +1177,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
-              .getString( PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
+          BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }

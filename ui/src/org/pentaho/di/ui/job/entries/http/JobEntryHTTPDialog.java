@@ -274,8 +274,8 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     fdlURL.right = new FormAttachment( middle, -margin );
     wlURL.setLayoutData( fdlURL );
     wURL =
-        new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobHTTP.URL.Tooltip" ) );
+        new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobHTTP.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -682,16 +682,18 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     wHeadersComp.setLayout( HeadersLayout );
 
     int rows =
-        jobEntry.getHeaderName() == null ? 1 : ( jobEntry.getHeaderName().length == 0 ? 0
-            : jobEntry.getHeaderName().length );
+        jobEntry.getHeaderName() == null ? 1 : ( jobEntry.getHeaderName().length == 0
+            ? 0 : jobEntry.getHeaderName().length );
 
     colinf =
         new ColumnInfo[] {
 
-          new ColumnInfo( BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              HTTPProtocol.getRequestHeaders(), false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO, HTTPProtocol
+                    .getRequestHeaders(), false ),
 
-          new ColumnInfo( BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[0].setUsingVariables( true );
     colinf[1].setUsingVariables( true );
 

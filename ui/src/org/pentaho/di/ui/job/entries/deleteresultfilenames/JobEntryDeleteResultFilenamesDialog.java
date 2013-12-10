@@ -153,8 +153,8 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
     wlSpecifyWildcard.setLayoutData( fdlSpecifyWildcard );
     wSpecifyWildcard = new Button( shell, SWT.CHECK );
     props.setLook( wSpecifyWildcard );
-    wSpecifyWildcard.setToolTipText( BaseMessages.getString( PKG,
-        "JobEntryDeleteResultFilenames.SpecifyWildcard.Tooltip" ) );
+    wSpecifyWildcard.setToolTipText( BaseMessages.getString(
+        PKG, "JobEntryDeleteResultFilenames.SpecifyWildcard.Tooltip" ) );
     fdSpecifyWildcard = new FormData();
     fdSpecifyWildcard.left = new FormAttachment( middle, 0 );
     fdSpecifyWildcard.top = new FormAttachment( wName, margin );
@@ -203,8 +203,8 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
     fdlWildcardExclude.right = new FormAttachment( middle, -margin );
     wlWildcardExclude.setLayoutData( fdlWildcardExclude );
     wWildcardExclude = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wWildcardExclude.setToolTipText( BaseMessages.getString( PKG,
-        "JobEntryDeleteResultFilenames.WildcardExclude.Tooltip" ) );
+    wWildcardExclude.setToolTipText( BaseMessages.getString(
+        PKG, "JobEntryDeleteResultFilenames.WildcardExclude.Tooltip" ) );
     props.setLook( wWildcardExclude );
     wWildcardExclude.addModifyListener( lsMod );
     fdWildcardExclude = new FormData();

@@ -62,8 +62,8 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
     data = (WebServiceAvailableData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -86,12 +86,12 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
       data.indexOfURL = data.previousRowMeta.indexOfValue( meta.getURLField() );
       if ( data.indexOfURL < 0 ) {
         // The field is unreachable !
-        logError( BaseMessages.getString( PKG, "WebServiceAvailable.Exception.CouldnotFindField" ) + "["
-            + meta.getURLField() + "]" );
+        logError( BaseMessages.getString( PKG, "WebServiceAvailable.Exception.CouldnotFindField" )
+            + "[" + meta.getURLField() + "]" );
         throw new KettleException( BaseMessages.getString( PKG, "WebServiceAvailable.Exception.CouldnotFindField", meta
             .getURLField() ) );
       }
-    }// End If first
+    } // End If first
 
     try {
 
@@ -137,8 +137,8 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
                                                                                                            // rowset(s);
 
       if ( isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "FileExists.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "FileExists.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       boolean sendToErrorRow = false;

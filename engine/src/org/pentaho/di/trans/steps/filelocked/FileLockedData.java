@@ -37,9 +37,6 @@ public class FileLockedData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
   public int NrPrevFields;
 
-  /**
-	 * 
-	 */
   public FileLockedData() {
     super();
     indexOfFileename = -1;

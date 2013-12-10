@@ -76,8 +76,8 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final String[] YES_NO_COMBO = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   private static final String YES = BaseMessages.getString( PKG, "System.Combo.Yes" );
   private static final String NO = BaseMessages.getString( PKG, "System.Combo.No" );
 
@@ -448,8 +448,8 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     wlCloseIdleConnectionsTime.setLayoutData( fdlCloseIdleConnectionsTime );
     wCloseIdleConnectionsTime = new TextVar( transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wCloseIdleConnectionsTime.addModifyListener( lsMod );
-    wCloseIdleConnectionsTime.setToolTipText( BaseMessages.getString( PKG,
-        "HTTPPOSTDialog.CloseIdleConnectionsTime.Tooltip" ) );
+    wCloseIdleConnectionsTime.setToolTipText( BaseMessages.getString(
+        PKG, "HTTPPOSTDialog.CloseIdleConnectionsTime.Tooltip" ) );
     props.setLook( wCloseIdleConnectionsTime );
     FormData fdCloseIdleConnectionsTime = new FormData();
     fdCloseIdleConnectionsTime.top = new FormAttachment( wSocketTimeOut, margin );
@@ -696,16 +696,19 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.Name" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.Parameter" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.Header" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.Header" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                YES_NO_COMBO ), };
     colinf[1].setUsingVariables( true );
     wFields =
-        new TableView( transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
-            lsMod, props );
+        new TableView(
+            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     wGetBodyParam = new Button( wAdditionalComp, SWT.PUSH );
     wGetBodyParam.setText( BaseMessages.getString( PKG, "HTTPPOSTDialog.GetFields.Button" ) );
@@ -733,14 +736,17 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
     colinfquery =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.QueryName" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.QueryParameter" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.QueryName" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPPOSTDialog.ColumnInfo.QueryParameter" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ), };
     colinfquery[1].setUsingVariables( true );
     wQuery =
-        new TableView( transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfquery, QueryRows,
-            lsMod, props );
+        new TableView(
+            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfquery, QueryRows, lsMod,
+            props );
 
     wGet = new Button( wAdditionalComp, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "HTTPPOSTDialog.GetFields.Button" ) );
@@ -1095,8 +1101,9 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, null, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+              PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -1108,8 +1115,9 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         BaseStepDialog.getFieldsFromPrevious( r, wQuery, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+              PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }

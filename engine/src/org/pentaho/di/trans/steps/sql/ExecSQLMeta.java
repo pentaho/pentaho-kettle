@@ -263,8 +263,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
         arguments[i] = XMLHandler.getTagValue( argnode, "name" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "ExecSQLMeta.Exception.UnableToLoadStepInfoFromXML" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "ExecSQLMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -330,8 +330,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
         arguments[i] = rep.getStepAttributeString( id_step, i, "arg_name" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ExecSQLMeta.Exception.UnexpectedErrorReadingStepInfo" ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ExecSQLMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -359,8 +359,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "arg_name", arguments[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ExecSQLMeta.Exception.UnableToSaveStepInfo" ) + id_step,
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ExecSQLMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
     }
   }
 
@@ -371,8 +371,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( databaseMeta != null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExecSQLMeta.CheckResult.ConnectionExists" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ExecSQLMeta.CheckResult.ConnectionExists" ), stepMeta );
       remarks.add( cr );
 
       Database db = new Database( loggingObject, databaseMeta );
@@ -383,25 +383,25 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
       try {
         db.connect();
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ExecSQLMeta.CheckResult.DBConnectionOK" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ExecSQLMeta.CheckResult.DBConnectionOK" ), stepMeta );
         remarks.add( cr );
 
         if ( sql != null && sql.length() != 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "ExecSQLMeta.CheckResult.SQLStatementEntered" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "ExecSQLMeta.CheckResult.SQLStatementEntered" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "ExecSQLMeta.CheckResult.SQLStatementMissing" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "ExecSQLMeta.CheckResult.SQLStatementMissing" ), stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleException e ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ExecSQLMeta.CheckResult.ErrorOccurred" )
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "ExecSQLMeta.CheckResult.ErrorOccurred" )
                 + e.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {
@@ -409,8 +409,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ExecSQLMeta.CheckResult.ConnectionNeeded" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ExecSQLMeta.CheckResult.ConnectionNeeded" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -418,25 +418,25 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
     if ( executedEachInputRow ) {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ExecSQLMeta.CheckResult.StepReceivingInfoOK" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ExecSQLMeta.CheckResult.StepReceivingInfoOK" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ExecSQLMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "ExecSQLMeta.CheckResult.NoInputReceivedError" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ExecSQLMeta.CheckResult.SQLOnlyExecutedOnce" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "ExecSQLMeta.CheckResult.SQLOnlyExecutedOnce" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ExecSQLMeta.CheckResult.InputReceivedOKForSQLOnlyExecuteOnce" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ExecSQLMeta.CheckResult.InputReceivedOKForSQLOnlyExecuteOnce" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -454,11 +454,12 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMeta prev,
       String[] input, String[] output, RowMeta info ) throws KettleStepException {
     DatabaseImpact ii =
-        new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-            databaseMeta.getDatabaseName(), BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown.Label" ),
-            BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown2.Label" ), BaseMessages.getString( PKG,
-                "ExecSQLMeta.DatabaseMeta.Unknown3.Label" ), stepMeta.getName(), sql, BaseMessages.getString( PKG,
-                "ExecSQLMeta.DatabaseMeta.Title" ) );
+        new DatabaseImpact(
+            DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                .getDatabaseName(), BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown.Label" ),
+            BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown2.Label" ), BaseMessages.getString(
+                PKG, "ExecSQLMeta.DatabaseMeta.Unknown3.Label" ), stepMeta.getName(), sql, BaseMessages.getString(
+                PKG, "ExecSQLMeta.DatabaseMeta.Title" ) );
     impact.add( ii );
   }
 

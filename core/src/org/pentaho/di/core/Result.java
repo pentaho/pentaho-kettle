@@ -238,8 +238,9 @@ public class Result implements Cloneable {
       }
       if ( getNrLinesWritten() > 0 ) {
         writtenClause =
-            String.format( "%slines written: %d ( %d lines/s)", ( getNrLinesRead() > 0 ? "; " : "" ),
-                getNrLinesWritten(), ( getNrLinesWritten() / seconds ) );
+            String.format(
+                "%slines written: %d ( %d lines/s)", ( getNrLinesRead() > 0 ? "; " : "" ), getNrLinesWritten(),
+                ( getNrLinesWritten() / seconds ) );
       }
       if ( readClause != null || writtenClause != null ) {
         throughput =
@@ -257,7 +258,8 @@ public class Result implements Cloneable {
    */
   @Override
   public String toString() {
-    return "nr=" + entryNr + ", errors=" + nrErrors + ", exit_status=" + exitStatus
+    return "nr="
+        + entryNr + ", errors=" + nrErrors + ", exit_status=" + exitStatus
         + ( stopped ? " (Stopped)" : "" + ", result=" + result );
   }
 

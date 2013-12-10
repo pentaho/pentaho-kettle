@@ -183,8 +183,8 @@ public class XBase {
                 r[i] = ( (Integer) rowobj[i] ).doubleValue();
               }
             } catch ( NumberFormatException e ) {
-              throw new KettleException( "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(),
-                  e );
+              throw new KettleException(
+                  "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
             }
             break;
           case DBFField.FIELD_TYPE_N: // Numeric
@@ -194,8 +194,8 @@ public class XBase {
                 r[i] = rowobj[i];
               }
             } catch ( NumberFormatException e ) {
-              throw new KettleException( "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(),
-                  e );
+              throw new KettleException(
+                  "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
             }
             break;
           case DBFField.FIELD_TYPE_F: // Float
@@ -205,8 +205,8 @@ public class XBase {
                 r[i] = new Double( (Float) rowobj[i] );
               }
             } catch ( NumberFormatException e ) {
-              throw new KettleException( "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(),
-                  e );
+              throw new KettleException(
+                  "Error parsing field #" + ( i + 1 ) + " : " + reader.getField( i ).getName(), e );
             }
             break;
           case DBFField.FIELD_TYPE_L: // Logical

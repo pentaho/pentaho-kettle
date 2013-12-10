@@ -468,11 +468,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
       }
     } catch ( NoClassDefFoundError e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
+      throw new KettleDatabaseException(
+          BaseMessages.getString( PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta
+              .getDriverClass(), plugin.getName() ), e );
     } catch ( ClassNotFoundException e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
+      throw new KettleDatabaseException(
+          BaseMessages.getString( PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta
+              .getDriverClass(), plugin.getName() ), e );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Exception while loading class", e );
     }
@@ -517,8 +519,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
               connection = DriverManager.getConnection( url + ";user=" + username + ";password=" + password );
             } else {
               connection =
-                  DriverManager.getConnection( url + ";user=" + username + ";password=" + password + ";instanceName="
-                      + instance );
+                  DriverManager.getConnection( url
+                      + ";user=" + username + ";password=" + password + ";instanceName=" + instance );
             }
           } else {
             // also allow for empty username with given password, in this case
@@ -641,8 +643,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // Canceling statements only if we're not streaming results on MySQL with
     // the v3 driver
     //
-    if ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults()
-        && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
+    if ( databaseMeta.isMySQLVariant()
+        && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
       return;
     }
 
@@ -696,11 +698,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       connection.setAutoCommit( useAutoCommit );
     } catch ( SQLException e ) {
       if ( useAutoCommit ) {
-        throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Exception.UnableToEnableAutoCommit",
-            toString() ) );
+        throw new KettleDatabaseException( BaseMessages.getString(
+            PKG, "Database.Exception.UnableToEnableAutoCommit", toString() ) );
       } else {
-        throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Exception.UnableToDisableAutoCommit",
-            toString() ) );
+        throw new KettleDatabaseException( BaseMessages.getString(
+            PKG, "Database.Exception.UnableToDisableAutoCommit", toString() ) );
       }
 
     }
@@ -1145,7 +1147,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // That's why we disable the batch insert in that case.
       //
       boolean useBatchInsert =
-          batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates()
+          batch
+              && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates()
               && Const.isEmpty( connectionGroup );
 
       //
@@ -1429,8 +1432,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
 
       // See if a cache needs to be cleared...
-      if ( upperSql.startsWith( "ALTER TABLE" ) || upperSql.startsWith( "DROP TABLE" )
-          || upperSql.startsWith( "CREATE TABLE" ) ) {
+      if ( upperSql.startsWith( "ALTER TABLE" )
+          || upperSql.startsWith( "DROP TABLE" ) || upperSql.startsWith( "CREATE TABLE" ) ) {
         DBCache.getInstance().clear( databaseMeta.getName() );
       }
     } catch ( SQLException ex ) {
@@ -1591,8 +1594,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( params != null ) {
         log.snap( Metrics.METRIC_DATABASE_PREPARE_SQL_START, databaseMeta.getName() );
         pstmt =
-            connection.prepareStatement( databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY,
-                ResultSet.CONCUR_READ_ONLY );
+            connection.prepareStatement(
+                databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
         log.snap( Metrics.METRIC_DATABASE_PREPARE_SQL_STOP, databaseMeta.getName() );
 
         log.snap( Metrics.METRIC_DATABASE_SQL_VALUES_START, databaseMeta.getName() );
@@ -1602,8 +1605,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( canWeSetFetchSize( pstmt ) ) {
           int fs = Const.FETCH_SIZE <= pstmt.getMaxRows() ? pstmt.getMaxRows() : Const.FETCH_SIZE;
 
-          if ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults()
-              && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
+          if ( databaseMeta.isMySQLVariant()
+              && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
             pstmt.setFetchSize( Integer.MIN_VALUE );
           } else {
             pstmt.setFetchSize( fs );
@@ -1678,8 +1681,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       if ( canWeSetFetchSize( ps ) ) {
         int fs = Const.FETCH_SIZE <= ps.getMaxRows() ? ps.getMaxRows() : Const.FETCH_SIZE;
-        if ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults()
-            && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
+        if ( databaseMeta.isMySQLVariant()
+            && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
           ps.setFetchSize( Integer.MIN_VALUE );
         } else {
           ps.setFetchSize( fs );
@@ -1760,8 +1763,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
        * "Unable to get database meta-data from the database."); }
        */
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unable to check if table [" + tablename + "] exists on connection ["
-          + databaseMeta.getName() + "]", e );
+      throw new KettleDatabaseException( "Unable to check if table ["
+          + tablename + "] exists on connection [" + databaseMeta.getName() + "]", e );
     }
   }
 
@@ -1792,8 +1795,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         return false;
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unable to check if column [" + columnname + "] exists in table [" + tablename
-          + "] on connection [" + databaseMeta.getName() + "]", e );
+      throw new KettleDatabaseException( "Unable to check if column ["
+          + columnname + "] exists in table [" + tablename + "] on connection [" + databaseMeta.getName() + "]", e );
     }
   }
 
@@ -1837,8 +1840,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         closeQuery( res );
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unexpected error checking whether or not sequence [" + schemaSequence
-          + "] exists", e );
+      throw new KettleDatabaseException( "Unexpected error checking whether or not sequence ["
+          + schemaSequence + "] exists", e );
     }
 
     return retval;
@@ -1940,8 +1943,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public String getCreateSequenceStatement( String schemaName, String sequence, long start_at, long increment_by,
       long max_value, boolean semi_colon ) {
-    return getCreateSequenceStatement( schemaName, sequence, Long.toString( start_at ), Long.toString( increment_by ),
-        Long.toString( max_value ), semi_colon );
+    return getCreateSequenceStatement(
+        schemaName, sequence, Long.toString( start_at ), Long.toString( increment_by ), Long.toString( max_value ),
+        semi_colon );
   }
 
   public String getCreateSequenceStatement( String schemaName, String sequenceName, String start_at,
@@ -2023,8 +2027,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       PreparedStatement preparedStatement = null;
       try {
         preparedStatement =
-            connection.prepareStatement( databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY,
-                ResultSet.CONCUR_READ_ONLY );
+            connection.prepareStatement(
+                databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
         preparedStatement.setMaxRows( 1 );
         ResultSetMetaData rsmd = preparedStatement.getMetaData();
         fields = getRowInfo( rsmd, false, false );
@@ -2219,8 +2223,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       return valueMeta;
     }
 
-    throw new KettleDatabaseException( "Unable to handle database column '" + name + "', on column index " + i
-        + " : not a handled data type" );
+    throw new KettleDatabaseException( "Unable to handle database column '"
+        + name + "', on column index " + i + " : not a handled data type" );
   }
 
   public boolean absolute( ResultSet rs, int position ) throws KettleDatabaseException {
@@ -3138,8 +3142,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       boolean update = ( logTable.getKeyField() != null ) && !status.equals( LogStatus.START );
       String schemaTable =
-          databaseMeta.getQuotedSchemaTableCombination( environmentSubstitute( logTable.getActualSchemaName() ),
-              environmentSubstitute( logTable.getActualTableName() ) );
+          databaseMeta.getQuotedSchemaTableCombination(
+              environmentSubstitute( logTable.getActualSchemaName() ), environmentSubstitute( logTable
+                  .getActualTableName() ) );
       RowMetaInterface rowMeta = logRecord.getRowMeta();
       Object[] rowData = logRecord.getData();
 
@@ -3189,8 +3194,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         // bother
         //
         String schemaTable =
-            databaseMeta.getQuotedSchemaTableCombination( environmentSubstitute( logTable.getActualSchemaName() ),
-                environmentSubstitute( logTable.getActualTableName() ) );
+            databaseMeta.getQuotedSchemaTableCombination(
+                environmentSubstitute( logTable.getActualSchemaName() ), environmentSubstitute( logTable
+                    .getActualTableName() ) );
 
         // The log date field
         //
@@ -3209,14 +3215,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           execStatement( sql, row.getRowMeta(), row.getData() );
 
         } else {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", environmentSubstitute( logTable
+          throw new KettleException( BaseMessages.getString(
+              PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", environmentSubstitute( logTable
                   .getActualTableName() ) ) );
         }
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", environmentSubstitute( logTable
+      throw new KettleDatabaseException( BaseMessages.getString(
+          PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", environmentSubstitute( logTable
               .getActualTableName() ) ), e );
     }
   }
@@ -3229,15 +3235,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     String sql = "";
     sql +=
-        " SELECT " + databaseMeta.quoteField( "ENDDATE" ) + ", " + databaseMeta.quoteField( "DEPDATE" ) + ", "
+        " SELECT "
+            + databaseMeta.quoteField( "ENDDATE" ) + ", " + databaseMeta.quoteField( "DEPDATE" ) + ", "
             + databaseMeta.quoteField( "STARTDATE" );
     sql += " FROM " + logtable;
     sql += " WHERE  " + databaseMeta.quoteField( "ERRORS" ) + "    = 0";
     sql += " AND    " + databaseMeta.quoteField( "STATUS" ) + "    = 'end'";
     sql += " AND    " + jobtrans + " = ?";
     sql +=
-        " ORDER BY " + databaseMeta.quoteField( "LOGDATE" ) + " DESC, " + databaseMeta.quoteField( "ENDDATE" )
-            + " DESC";
+        " ORDER BY "
+            + databaseMeta.quoteField( "LOGDATE" ) + " DESC, " + databaseMeta.quoteField( "ENDDATE" ) + " DESC";
 
     try {
       pstmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
@@ -3582,8 +3589,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           alltables.close();
         }
       } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Error closing resultset after getting views from schema [" + schemaname
-            + "]", e );
+        throw new KettleDatabaseException( "Error closing resultset after getting views from schema ["
+            + schemaname + "]", e );
       }
     }
 
@@ -3681,8 +3688,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           allviews.close();
         }
       } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Error closing resultset after getting views from schema [" + schemaname
-            + "]", e );
+        throw new KettleDatabaseException( "Error closing resultset after getting views from schema ["
+            + schemaname + "]", e );
       }
     }
 
@@ -3780,8 +3787,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           alltables.close();
         }
       } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Error closing resultset after getting synonyms from schema [" + schemaname
-            + "]", e );
+        throw new KettleDatabaseException( "Error closing resultset after getting synonyms from schema ["
+            + schemaname + "]", e );
       }
     }
 
@@ -4263,8 +4270,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         cstmt = null;
       }
     } catch ( SQLException ex ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.ErrorClosingCallableStatement" ), ex );
+      throw new KettleDatabaseException( BaseMessages.getString(
+          PKG, "Database.Exception.ErrorClosingCallableStatement" ), ex );
     }
   }
 
@@ -4417,8 +4424,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     try {
       return connection.setSavepoint( savePointName );
     } catch ( SQLException e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Exception.UnableToSetSavepointName",
-          savePointName ), e );
+      throw new KettleDatabaseException( BaseMessages.getString(
+          PKG, "Database.Exception.UnableToSetSavepointName", savePointName ), e );
     }
   }
 
@@ -4426,8 +4433,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     try {
       connection.releaseSavepoint( savepoint );
     } catch ( SQLException e ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Exception.UnableToReleaseSavepoint" ),
-          e );
+      throw new KettleDatabaseException(
+          BaseMessages.getString( PKG, "Database.Exception.UnableToReleaseSavepoint" ), e );
     }
   }
 

@@ -37,9 +37,6 @@ public class DataGridData extends BaseStepData implements StepDataInterface {
 
   public int linesWritten;
 
-  /**
-	 * 
-	 */
   public DataGridData() {
     super();
   }

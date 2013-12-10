@@ -190,10 +190,10 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute( id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldName", targetFieldName );
-    rep.saveStepAttribute( id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldLength",
-        targetFieldLength );
-    rep.saveStepAttribute( id_transformation, id_step, ConcatFieldsNodeNameSpace + "removeSelectedFields",
-        removeSelectedFields );
+    rep.saveStepAttribute(
+        id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldLength", targetFieldLength );
+    rep.saveStepAttribute(
+        id_transformation, id_step, ConcatFieldsNodeNameSpace + "removeSelectedFields", removeSelectedFields );
   }
 
   @Override
@@ -205,24 +205,24 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     // Check Target Field Name
     if ( Const.isEmpty( targetFieldName ) ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check Target Field Length when Fast Data Dump
     if ( targetFieldLength <= 0 && isFastDump() ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "ConcatFieldsMeta.CheckResult.TargetFieldLengthMissingFastDataDump" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "ConcatFieldsMeta.CheckResult.TargetFieldLengthMissingFastDataDump" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ConcatFieldsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ConcatFieldsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -242,8 +242,8 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ConcatFieldsMeta.CheckResult.AllFieldsFound" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ConcatFieldsMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }

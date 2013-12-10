@@ -41,9 +41,6 @@ public class FlattenerData extends BaseStepData implements StepDataInterface {
   public int fieldNr;
   public Object[] previousRow;
 
-  /**
-	 * 
-	 */
   public FlattenerData() {
     super();
 

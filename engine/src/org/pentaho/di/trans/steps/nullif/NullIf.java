@@ -57,8 +57,8 @@ public class NullIf extends BaseStep implements StepInterface {
     // Get one row from one of the rowsets...
     Object[] r = getRow();
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }

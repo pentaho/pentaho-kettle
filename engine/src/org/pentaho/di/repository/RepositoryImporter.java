@@ -503,8 +503,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     if ( limitDirs.size() > 0 && Const.indexOfString( directoryPath, limitDirs ) < 0 ) {
       // Not in the limiting set of source directories, skip the import of this transformation...
       //
-      feedback.addLog( BaseMessages.getString( PKG,
-          "RepositoryImporter.SkippedTransformationNotPartOfLimitingDirectories.Log", transMeta.getName() ) );
+      feedback.addLog( BaseMessages.getString(
+          PKG, "RepositoryImporter.SkippedTransformationNotPartOfLimitingDirectories.Log", transMeta.getName() ) );
       return true;
     }
 
@@ -548,9 +548,9 @@ public class RepositoryImporter implements IRepositoryImporter {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer
             .toString( transformationNumber ), transMeta.getName(), Const.getStackTracker( e ) ) );
 
-        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
-            "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
-            "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
+            PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+            PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
@@ -566,8 +566,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     //
     JobMeta jobMeta = new JobMeta( jobnode, rep, false, SpoonFactory.getInstance() );
     replaceSharedObjects( jobMeta );
-    feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportJob.Label",
-        Integer.toString( jobNumber ), jobMeta.getName() ) );
+    feedback.setLabel( BaseMessages.getString(
+        PKG, "RepositoryImporter.ImportJob.Label", Integer.toString( jobNumber ), jobMeta.getName() ) );
     validateImportedElement( importRules, jobMeta );
 
     // What's the directory path?
@@ -587,8 +587,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     if ( limitDirs.size() > 0 && Const.indexOfString( directoryPath, limitDirs ) < 0 ) {
       // Not in the limiting set of source directories, skip the import of this transformation...
       //
-      feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.SkippedJobNotPartOfLimitingDirectories.Log",
-          jobMeta.getName() ) );
+      feedback.addLog( BaseMessages.getString(
+          PKG, "RepositoryImporter.SkippedJobNotPartOfLimitingDirectories.Log", jobMeta.getName() ) );
       return true;
     }
 
@@ -626,15 +626,15 @@ public class RepositoryImporter implements IRepositoryImporter {
               .getRepositoryDirectory(), null, null, RepositoryObjectType.JOB, null, false ) );
         }
 
-        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.JobSaved.Log", Integer.toString( jobNumber ),
-            jobMeta.getName() ) );
+        feedback.addLog( BaseMessages.getString(
+            PKG, "RepositoryImporter.JobSaved.Log", Integer.toString( jobNumber ), jobMeta.getName() ) );
       } catch ( Exception e ) {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingJob.Log", Integer
             .toString( jobNumber ), jobMeta.getName(), Const.getStackTracker( e ) ) );
 
-        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
-            "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
-            "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
+            PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+            PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
@@ -659,13 +659,13 @@ public class RepositoryImporter implements IRepositoryImporter {
       // This is usually a problem with a missing plugin or something
       // like that...
       //
-      feedback.showError( BaseMessages.getString( PKG,
-          "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ), BaseMessages.getString( PKG,
-          "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
+      feedback.showError( BaseMessages.getString(
+          PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ), BaseMessages.getString(
+          PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
 
-      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
-          "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
-          "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
+          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }
@@ -690,9 +690,9 @@ public class RepositoryImporter implements IRepositoryImporter {
       showError( BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Title" ), BaseMessages
           .getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Message" ), e );
 
-      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
-          "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
-          "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
+          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
+          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }
@@ -705,8 +705,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     if ( dirOverride != null ) {
       targetDirectory = rep.findDirectory( directoryPath );
       if ( targetDirectory == null ) {
-        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.CreateDir.Log", directoryPath,
-            getRepositoryRoot().toString() ) );
+        feedback.addLog( BaseMessages.getString(
+            PKG, "RepositoryImporter.CreateDir.Log", directoryPath, getRepositoryRoot().toString() ) );
         targetDirectory = rep.createRepositoryDirectory( getRepositoryRoot(), directoryPath );
       }
     } else {

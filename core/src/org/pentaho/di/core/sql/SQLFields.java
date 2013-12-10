@@ -99,8 +99,8 @@ public class SQLFields {
         // Add all service fields
         //
         for ( ValueMetaInterface valueMeta : serviceFields.getValueMetaList() ) {
-          fields.add( new SQLField( tableAlias, "\"" + valueMeta.getName() + "\"", serviceFields, orderClause,
-              selectFields ) );
+          fields.add( new SQLField(
+              tableAlias, "\"" + valueMeta.getName() + "\"", serviceFields, orderClause, selectFields ) );
         }
       } else {
         fields.add( new SQLField( tableAlias, fieldString, serviceFields, orderClause, selectFields ) );

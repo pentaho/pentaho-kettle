@@ -44,7 +44,8 @@ public abstract class AbstractFileValidator implements JobEntryValidator {
     if ( obj instanceof VariableSpace ) {
       return (VariableSpace) obj;
     } else {
-      JobEntryValidatorUtils.addGeneralRemark( source, propertyName, getName(), remarks, "messages.failed.missingKey",
+      JobEntryValidatorUtils.addGeneralRemark(
+          source, propertyName, getName(), remarks, "messages.failed.missingKey",
           CheckResultInterface.TYPE_RESULT_ERROR );
       return null;
     }

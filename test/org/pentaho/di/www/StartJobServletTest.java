@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.www;
 
@@ -51,48 +51,48 @@ public class StartJobServletTest {
 
   @Before
   public void setup() {
-    mockJobMap = mock(JobMap.class);
-    startJobServlet = new StartJobServlet(mockJobMap);
+    mockJobMap = mock( JobMap.class );
+    startJobServlet = new StartJobServlet( mockJobMap );
   }
 
   @Test
   public void testStartJobServletEscapesHtmlWhenTransNotFound() throws ServletException, IOException {
-    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
-    HttpServletResponse mockHttpServletResponse = mock(HttpServletResponse.class);
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
 
     StringWriter out = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(out);
+    PrintWriter printWriter = new PrintWriter( out );
 
-    when(mockHttpServletRequest.getContextPath()).thenReturn(StartJobServlet.CONTEXT_PATH);
-    when(mockHttpServletRequest.getParameter(anyString())).thenReturn(ServletTestUtils.BAD_STRING);
-    when(mockHttpServletResponse.getWriter()).thenReturn(printWriter);
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
-    startJobServlet.doGet(mockHttpServletRequest, mockHttpServletResponse);
-    assertFalse(ServletTestUtils.hasBadText(ServletTestUtils.getInsideOfTag("H1", out.toString())));
+    startJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
   }
 
   @Test
   public void testStartJobServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
     KettleLogStore.init();
-    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
-    HttpServletResponse mockHttpServletResponse = mock(HttpServletResponse.class);
-    Job mockJob = mock(Job.class);
-    JobMeta mockJobMeta = mock(JobMeta.class);
-    LogChannelInterface mockLogChannelInterface = mock(LogChannelInterface.class);
-    mockJob.setName(ServletTestUtils.BAD_STRING);
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    Job mockJob = mock( Job.class );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    LogChannelInterface mockLogChannelInterface = mock( LogChannelInterface.class );
+    mockJob.setName( ServletTestUtils.BAD_STRING );
     StringWriter out = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(out);
+    PrintWriter printWriter = new PrintWriter( out );
 
-    when(mockHttpServletRequest.getContextPath()).thenReturn(StartJobServlet.CONTEXT_PATH);
-    when(mockHttpServletRequest.getParameter(anyString())).thenReturn(ServletTestUtils.BAD_STRING);
-    when(mockHttpServletResponse.getWriter()).thenReturn(printWriter);
-    when(mockJobMap.getJob(any(CarteObjectEntry.class))).thenReturn(mockJob);
-    when(mockJob.getLogChannelId()).thenReturn(ServletTestUtils.BAD_STRING);
-    when(mockJob.getLogChannel()).thenReturn(mockLogChannelInterface);
-    when(mockJob.getJobMeta()).thenReturn(mockJobMeta);
-    when(mockJobMeta.getMaximum()).thenReturn(new Point(10,10));
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StartJobServlet.CONTEXT_PATH );
+    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockJobMap.getJob( any( CarteObjectEntry.class ) ) ).thenReturn( mockJob );
+    when( mockJob.getLogChannelId() ).thenReturn( ServletTestUtils.BAD_STRING );
+    when( mockJob.getLogChannel() ).thenReturn( mockLogChannelInterface );
+    when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
+    when( mockJobMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
-    startJobServlet.doGet(mockHttpServletRequest, mockHttpServletResponse);
-    assertFalse(ServletTestUtils.hasBadText(ServletTestUtils.getInsideOfTag("H1", out.toString())));
+    startJobServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
   }
 }

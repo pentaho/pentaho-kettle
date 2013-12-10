@@ -91,8 +91,8 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
         try {
           inputStream = new FileInputStream( kettleLoggingPluginsXmlFile );
         } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native logging plugins '" + kettleLoggingPluginsXmlFile
-              + "'", e );
+          throw new KettlePluginException( "Unable to load native logging plugins '"
+              + kettleLoggingPluginsXmlFile + "'", e );
         }
       }
       if ( inputStream == null ) {
@@ -125,8 +125,9 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(),
-                  false, file.getParent().getURL() );
+              registerPluginFromXmlResource(
+                  pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
+                      .getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...

@@ -50,8 +50,8 @@ public class MondrianInput extends BaseStep implements StepInterface {
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    if ( first ) // we just got started
-    {
+    if ( first ) {
+      // we just got started
       first = false;
       String mdx = meta.getSQL();
       if ( meta.isVariableReplacementActive() ) {

@@ -71,8 +71,8 @@ public class JobHasDescriptionImportRule extends BaseImportRule implements Impor
       feedback
           .add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL, "A description is present" ) );
     } else {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-          "A description is not present or too short" ) );
+      feedback.add( new ImportValidationFeedback(
+          this, ImportValidationResultType.ERROR, "A description is not present or too short" ) );
     }
 
     return feedback;

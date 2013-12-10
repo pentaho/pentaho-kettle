@@ -193,8 +193,8 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   public ResultSet getColumns( String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern )
     throws SQLException {
 
-    System.out.println( "getColumns(" + catalog + ", " + schemaPattern + ", " + tableNamePattern + ", "
-        + columnNamePattern + ")" );
+    System.out.println( "getColumns("
+        + catalog + ", " + schemaPattern + ", " + tableNamePattern + ", " + columnNamePattern + ")" );
 
     try {
 

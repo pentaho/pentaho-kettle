@@ -49,9 +49,6 @@ public class SalesforceDeleteData extends BaseStepData implements StepDataInterf
 
   public int indexOfKeyField;
 
-  /**
-	 * 
-	 */
   public SalesforceDeleteData() {
     super();
 

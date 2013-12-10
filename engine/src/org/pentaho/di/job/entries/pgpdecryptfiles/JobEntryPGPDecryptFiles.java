@@ -252,12 +252,10 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
         destination_filefolder[i] = XMLHandler.getTagValue( fnode, "destination_filefolder" );
         wildcard[i] = XMLHandler.getTagValue( fnode, "wildcard" );
       }
-    }
+    } catch ( KettleXMLException xe ) {
 
-    catch ( KettleXMLException xe ) {
-
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.Exception.UnableLoadXML" ),
-          xe );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.Exception.UnableLoadXML" ), xe );
     }
   }
 
@@ -450,20 +448,23 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
           if ( !Const.isEmpty( vsourcefilefolder_previous ) && !Const.isEmpty( vdestinationfilefolder_previous ) ) {
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.ProcessingRow",
-                  vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous ) );
+              logDetailed( BaseMessages.getString(
+                  PKG, "JobPGPDecryptFiles.Log.ProcessingRow", vsourcefilefolder_previous,
+                  vdestinationfilefolder_previous, vwildcard_previous ) );
             }
 
-            if ( !ProcessFileFolder( vsourcefilefolder_previous, vpassphrase_previous, vdestinationfilefolder_previous,
-                vwildcard_previous, parentJob, result, MoveToFolder ) ) {
+            if ( !ProcessFileFolder(
+                vsourcefilefolder_previous, vpassphrase_previous, vdestinationfilefolder_previous, vwildcard_previous,
+                parentJob, result, MoveToFolder ) ) {
               // The move process fail
               // Update Errors
               updateErrors();
             }
           } else {
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.IgnoringRow",
-                  vsourcefilefolder[iteration], vdestinationfilefolder[iteration], vwildcard[iteration] ) );
+              logDetailed( BaseMessages.getString(
+                  PKG, "JobPGPDecryptFiles.Log.IgnoringRow", vsourcefilefolder[iteration],
+                  vdestinationfilefolder[iteration], vwildcard[iteration] ) );
             }
           }
         }
@@ -483,20 +484,23 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
           if ( !Const.isEmpty( vsourcefilefolder[i] ) && !Const.isEmpty( vdestinationfilefolder[i] ) ) {
             // ok we can process this file/folder
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.ProcessingRow", vsourcefilefolder[i],
-                  vdestinationfilefolder[i], vwildcard[i] ) );
+              logDetailed( BaseMessages.getString(
+                  PKG, "JobPGPDecryptFiles.Log.ProcessingRow", vsourcefilefolder[i], vdestinationfilefolder[i],
+                  vwildcard[i] ) );
             }
 
-            if ( !ProcessFileFolder( vsourcefilefolder[i], Encr
-                .decryptPasswordOptionallyEncrypted( environmentSubstitute( vpassphrase[i] ) ),
+            if ( !ProcessFileFolder(
+                vsourcefilefolder[i],
+                Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( vpassphrase[i] ) ),
                 vdestinationfilefolder[i], vwildcard[i], parentJob, result, MoveToFolder ) ) {
               // Update Errors
               updateErrors();
             }
           } else {
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.IgnoringRow", vsourcefilefolder[i],
-                  vdestinationfilefolder[i], vwildcard[i] ) );
+              logDetailed( BaseMessages.getString(
+                  PKG, "JobPGPDecryptFiles.Log.IgnoringRow", vsourcefilefolder[i], vdestinationfilefolder[i],
+                  vwildcard[i] ) );
             }
           }
         }
@@ -576,8 +580,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
             // Source is a folder, destination is a file
             // WARNING !!! CAN NOT MOVE FOLDER TO FILE !!!
 
-            logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.Forbidden" ), BaseMessages.getString( PKG,
-                "JobPGPDecryptFiles.Log.CanNotMoveFolderToFile", realSourceFilefoldername,
+            logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.Forbidden" ), BaseMessages.getString(
+                PKG, "JobPGPDecryptFiles.Log.CanNotMoveFolderToFile", realSourceFilefoldername,
                 realDestinationFilefoldername ) );
 
             // Update Errors
@@ -602,8 +606,9 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
               FileObject destinationfile = KettleVFS.getFileObject( destinationfilenamefull );
 
               entrystatus =
-                  DecryptFile( shortfilename, sourcefilefolder, passPhrase, destinationfile, movetofolderfolder,
-                      parentJob, result );
+                  DecryptFile(
+                      shortfilename, sourcefilefolder, passPhrase, destinationfile, movetofolderfolder, parentJob,
+                      result );
 
             } else if ( sourcefilefolder.getType().equals( FileType.FILE ) && destination_is_a_file ) {
               // Source is a file, destination is a file
@@ -625,8 +630,9 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
               destinationfile = KettleVFS.getFileObject( destinationfilenamefull );
 
               entrystatus =
-                  DecryptFile( shortfilename, sourcefilefolder, passPhrase, destinationfile, movetofolderfolder,
-                      parentJob, result );
+                  DecryptFile(
+                      shortfilename, sourcefilefolder, passPhrase, destinationfile, movetofolderfolder, parentJob,
+                      result );
 
             } else {
               // Both source and destination are folders
@@ -650,9 +656,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
                   } catch ( Exception ex ) {
                     // Upon error don't process the file.
                     return false;
-                  }
-
-                  finally {
+                  } finally {
                     if ( fileObject != null ) {
                       try {
                         fileObject.close();
@@ -679,8 +683,9 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
                   // Fetch files in list one after one ...
                   Currentfile = fileObjects[j];
 
-                  if ( !DecryptOneFile( Currentfile, sourcefilefolder, passPhrase, realDestinationFilefoldername,
-                      realWildcard, parentJob, result, movetofolderfolder ) ) {
+                  if ( !DecryptOneFile(
+                      Currentfile, sourcefilefolder, passPhrase, realDestinationFilefoldername, realWildcard,
+                      parentJob, result, movetofolderfolder ) ) {
                     // Update Errors
                     updateErrors();
                   }
@@ -690,19 +695,16 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
             }
           }
           entrystatus = true;
-        } // end if
-        else {
+        } else {
           // Destination Folder or Parent folder is missing
-          logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.DestinationFolderNotFound",
-              realDestinationFilefoldername ) );
+          logError( BaseMessages.getString(
+              PKG, "JobPGPDecryptFiles.Error.DestinationFolderNotFound", realDestinationFilefoldername ) );
         }
-      } // end if
-      else {
+      } else {
         logError( BaseMessages
             .getString( PKG, "JobPGPDecryptFiles.Error.SourceFileNotExists", realSourceFilefoldername ) );
       }
-    } // end try
-    catch ( Exception e ) {
+    } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.Exception.MoveProcess", realSourceFilefoldername
           .toString(), destinationfilefolder.toString(), e.getMessage() ) );
       // Update Errors
@@ -746,8 +748,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
         gpg.decryptFile( sourcefilename, passPharse, destinationfilename );
 
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FileDecrypted", sourcefilename.getName()
-              .toString(), destinationfilename.getName().toString() ) );
+          logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FileDecrypted", sourcefilename
+              .getName().toString(), destinationfilename.getName().toString() ) );
         }
 
         // add filename to result filename
@@ -795,8 +797,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
           gpg.decryptFile( sourcefilename, passPharse, destinationfile );
 
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FileDecrypted", sourcefilename.getName()
-                .toString(), destinationfile.getName().toString() ) );
+            logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FileDecrypted", sourcefilename
+                .getName().toString(), destinationfile.getName().toString() ) );
           }
 
           // add filename to result filename
@@ -914,8 +916,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
         try {
           shortfilename = getDestinationFilename( sourceshortfilename );
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.GettingFilename", Currentfile.getName()
-              .getBaseName(), e.toString() ) );
+          logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.GettingFilename", Currentfile
+              .getName().getBaseName(), e.toString() ) );
           return entrystatus;
         }
 
@@ -931,38 +933,26 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
         // Built destination filename
         file_name =
-            KettleVFS.getFileObject( realDestinationFilefoldername + Const.FILE_SEPARATOR
-                + short_filename_from_basefolder );
+            KettleVFS.getFileObject( realDestinationFilefoldername
+                + Const.FILE_SEPARATOR + short_filename_from_basefolder );
 
         if ( !Currentfile.getParent().toString().equals( sourcefilefolder.toString() ) ) {
 
           // Not in the Base Folder..Only if include sub folders
           if ( include_subfolders ) {
             // Folders..only if include subfolders
-            if ( Currentfile.getType() == FileType.FOLDER ) {
-              /*
-               * if (include_subfolders && move_empty_folders && Const.isEmpty(wildcard)) {
-               * entrystatus=DecryptFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result); }
-               */
-            } else {
-
+            if ( Currentfile.getType() != FileType.FOLDER ) {
               if ( GetFileWildcard( sourceshortfilename, realWildcard ) ) {
                 entrystatus =
-                    DecryptFile( shortfilename, Currentfile, passPhrase, file_name, movetofolderfolder, parentJob,
-                        result );
+                    DecryptFile(
+                        shortfilename, Currentfile, passPhrase, file_name, movetofolderfolder, parentJob, result );
               }
             }
           }
         } else {
           // In the Base Folder...
           // Folders..only if include subfolders
-          if ( Currentfile.getType() == FileType.FOLDER ) {
-            /*
-             * if (include_subfolders && move_empty_folders && Const.isEmpty(wildcard)) {
-             * entrystatus=DecryptFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result); }
-             */
-          } else {
-
+          if ( Currentfile.getType() != FileType.FOLDER ) {
             // file...Check if exists
             if ( GetFileWildcard( sourceshortfilename, realWildcard ) ) {
               entrystatus =
@@ -1015,8 +1005,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
   private void addFileToResultFilenames( String fileaddentry, Result result, Job parentJob ) {
     try {
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry ),
-              parentJob.getJobname(), toString() );
+          new ResultFile(
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry ), parentJob.getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
       if ( isDebug() ) {
@@ -1025,8 +1015,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
       }
 
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.AddingToFilenameResult" ), fileaddentry + ""
-          + e.getMessage() );
+      logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Error.AddingToFilenameResult" ), fileaddentry
+          + "" + e.getMessage() );
     }
   }
 
@@ -1042,13 +1032,13 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
       if ( !folder.exists() ) {
         if ( create_destination_folder ) {
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FolderNotExist", folder.getName()
-                .toString() ) );
+            logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FolderNotExist", folder
+                .getName().toString() ) );
           }
           folder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FolderWasCreated", folder.getName()
-                .toString() ) );
+            logDetailed( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FolderWasCreated", folder
+                .getName().toString() ) );
           }
         } else {
           logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.FolderNotExist", folder.getName().toString() ) );
@@ -1057,8 +1047,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
       }
       return true;
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.CanNotCreateParentFolder", folder.getName()
-          .toString() ), e );
+      logError( BaseMessages.getString( PKG, "JobPGPDecryptFiles.Log.CanNotCreateParentFolder", folder
+          .getName().toString() ), e );
 
     } finally {
       if ( folder != null ) {

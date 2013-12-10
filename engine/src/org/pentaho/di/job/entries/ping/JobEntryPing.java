@@ -257,12 +257,12 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         status = systemPing( hostname, timeoutInt );
         if ( status ) {
           if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString( PKG,
-                "JobPing.OK.Label", hostname ) );
+            log.logDetailed( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
+                PKG, "JobPing.OK.Label", hostname ) );
           }
         } else {
-          log.logError( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString( PKG,
-              "JobPing.NOK.Label", hostname ) );
+          log.logError( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
+              PKG, "JobPing.NOK.Label", hostname ) );
         }
       }
       if ( ( ipingtype == iclassicPing ) || ( ipingtype == ibothPings && !status ) ) {
@@ -270,17 +270,15 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         status = classicPing( hostname, packets );
         if ( status ) {
           if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString( PKG,
-                "JobPing.OK.Label", hostname ) );
+            log.logDetailed( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
+                PKG, "JobPing.OK.Label", hostname ) );
           }
         } else {
-          log.logError( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString( PKG,
-              "JobPing.NOK.Label", hostname ) );
+          log.logError( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
+              PKG, "JobPing.NOK.Label", hostname ) );
         }
       }
-    }
-
-    catch ( Exception ex ) {
+    } catch ( Exception ex ) {
       logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
     }
     if ( status ) {
@@ -359,9 +357,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
       if ( processPing.exitValue() == 0 ) {
         retval = true;
       }
-    }
-
-    catch ( IOException ex ) {
+    } catch ( IOException ex ) {
       logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
     }
     return retval;

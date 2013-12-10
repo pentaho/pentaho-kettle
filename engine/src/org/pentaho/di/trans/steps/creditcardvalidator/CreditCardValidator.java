@@ -61,8 +61,8 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -91,8 +91,8 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
         data.indexOfField = getInputRowMeta().indexOfValue( meta.getDynamicField() );
         if ( data.indexOfField < 0 ) {
           // The field is unreachable !
-          throw new KettleException( BaseMessages.getString( PKG, "CreditCardValidator.Exception.CouldnotFindField",
-              meta.getDynamicField() ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "CreditCardValidator.Exception.CouldnotFindField", meta.getDynamicField() ) );
         }
       }
       data.realResultFieldname = environmentSubstitute( meta.getResultFieldName() );
@@ -102,7 +102,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
       data.realCardTypeFieldname = environmentSubstitute( meta.getCardType() );
       data.realNotValidMsgFieldname = environmentSubstitute( meta.getNotValidMsg() );
 
-    }// End If first
+    } // End If first
 
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
     for ( int i = 0; i < data.NrPrevFields; i++ ) {
@@ -146,8 +146,8 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "CreditCardValidator.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "CreditCardValidator.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
 
     } catch ( Exception e ) {

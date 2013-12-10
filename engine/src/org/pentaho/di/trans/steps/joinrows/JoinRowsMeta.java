@@ -241,8 +241,8 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface {
         condition = new Condition();
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JoinRowsMeta.Exception.UnexpectedErrorInReadStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JoinRowsMeta.Exception.UnexpectedErrorInReadStepInfoFromRepository" ), e );
     }
   }
 
@@ -288,8 +288,8 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "JoinRowsMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "JoinRowsMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       // Check the sort directory
@@ -298,38 +298,40 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface {
       if ( f.exists() ) {
         if ( f.isDirectory() ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "[" + realDirectory
-                  + BaseMessages.getString( PKG, "JoinRowsMeta.CheckResult.DirectoryExists" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "["
+                  + realDirectory + BaseMessages.getString( PKG, "JoinRowsMeta.CheckResult.DirectoryExists" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "[" + realDirectory
-                  + BaseMessages.getString( PKG, "JoinRowsMeta.CheckResult.DirectoryExistsButNotValid" ), stepMeta );
+              new CheckResult(
+                  CheckResultInterface.TYPE_RESULT_ERROR, "["
+                      + realDirectory
+                      + BaseMessages.getString( PKG, "JoinRowsMeta.CheckResult.DirectoryExistsButNotValid" ), stepMeta );
           remarks.add( cr );
         }
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "JoinRowsMeta.CheckResult.DirectoryDoesNotExist", realDirectory ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "JoinRowsMeta.CheckResult.DirectoryDoesNotExist", realDirectory ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "JoinRowsMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "JoinRowsMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "JoinRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "JoinRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "JoinRowsMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "JoinRowsMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
   }

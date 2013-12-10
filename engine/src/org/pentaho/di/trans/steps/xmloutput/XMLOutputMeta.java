@@ -530,7 +530,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     RowMeta row = new RowMeta();
     for ( int i = 0; i < outputFields.length; i++ ) {
       XMLField field = outputFields[i];
-      row.addValueMeta( new ValueMeta( field.getFieldName(), field.getType(), field.getLength(), field.getPrecision() ) );
+      row
+          .addValueMeta( new ValueMeta( field.getFieldName(), field.getType(), field.getLength(), field.getPrecision() ) );
     }
     return row;
   }
@@ -615,8 +616,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < nrfields; i++ ) {
         outputFields[i] = new XMLField();
 
-        outputFields[i].setContentType( ContentType.valueOf( Const.NVL( rep.getStepAttributeString( id_step, i,
-            "field_content_type" ), ContentType.Element.name() ) ) );
+        outputFields[i].setContentType( ContentType.valueOf( Const.NVL( rep.getStepAttributeString(
+            id_step, i, "field_content_type" ), ContentType.Element.name() ) ) );
         outputFields[i].setFieldName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         outputFields[i].setElementName( rep.getStepAttributeString( id_step, i, "field_element" ) );
         outputFields[i].setType( rep.getStepAttributeString( id_step, i, "field_type" ) );
@@ -684,8 +685,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepinfo );
       remarks.add( cr );
 
       String error_message = "";
@@ -705,8 +706,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "XMLOutputMeta.CheckResult.AllFieldsFound" ), stepinfo );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "XMLOutputMeta.CheckResult.AllFieldsFound" ), stepinfo );
         remarks.add( cr );
       }
     }
@@ -714,19 +715,19 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLOutputMeta.CheckResult.ExpectedInputOk" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLOutputMeta.CheckResult.ExpectedInputOk" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLOutputMeta.CheckResult.ExpectedInputError" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLOutputMeta.CheckResult.ExpectedInputError" ), stepinfo );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "XMLOutputMeta.CheckResult.FilesNotChecked" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
+            PKG, "XMLOutputMeta.CheckResult.FilesNotChecked" ), stepinfo );
     remarks.add( cr );
   }
 

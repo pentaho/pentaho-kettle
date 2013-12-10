@@ -212,8 +212,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     } catch ( AuthenticationException ae ) {
       wsdl = null;
       ShowMessageDialog smd =
-          new ShowMessageDialog( shell, SWT.OK, BaseMessages.getString( PKG, "WebServiceDialog.ErrorDialog.Title" ),
-              BaseMessages.getString( PKG, "Webservices.Error.Authentication", anURI ) );
+          new ShowMessageDialog(
+              shell, SWT.OK, BaseMessages.getString( PKG, "WebServiceDialog.ErrorDialog.Title" ), BaseMessages
+                  .getString( PKG, "Webservices.Error.Authentication", anURI ) );
       smd.open();
       return;
     } catch ( Exception e ) {
@@ -264,7 +265,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       //
       String request = "";
       WsdlOpParameterList parameters = wsdlOperation.getParameters();
-      if ( parameters != null && parameters.getOperation() != null && parameters.getOperation().getInput() != null
+      if ( parameters != null
+          && parameters.getOperation() != null && parameters.getOperation().getInput() != null
           && parameters.getOperation().getInput().getName() != null ) {
         request = wsdlOperation.getParameters().getOperation().getInput().getName().toString();
       }
@@ -281,49 +283,49 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 String attributeName = itrType.next();
                 QName attributeType = type.getElementType( attributeName );
                 if ( !WebServiceMeta.XSD_NS_URI.equals( attributeType.getNamespaceURI() ) ) {
-                  throw new KettleStepException( BaseMessages.getString( PKG,
-                      "WebServiceDialog.ERROR0007.UnsupporteOperation.ComplexType" ) );
+                  throw new KettleStepException( BaseMessages.getString(
+                      PKG, "WebServiceDialog.ERROR0007.UnsupporteOperation.ComplexType" ) );
                 }
               }
             }
-            if ( ParameterMode.IN.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-                || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+            if ( ParameterMode.IN.equals( param.getMode() )
+                || ParameterMode.INOUT.equals( param.getMode() ) || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
               if ( inWsdlParamContainer != null ) {
-                throw new KettleStepException( BaseMessages.getString( PKG,
-                    "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
+                throw new KettleStepException( BaseMessages.getString(
+                    PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
               } else {
                 inWsdlParamContainer = new WsdlOpParameterContainer( param );
               }
-            } else if ( ParameterMode.OUT.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-                || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+            } else if ( ParameterMode.OUT.equals( param.getMode() )
+                || ParameterMode.INOUT.equals( param.getMode() ) || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
               if ( outWsdlParamContainer != null ) {
-                throw new KettleStepException( BaseMessages.getString( PKG,
-                    "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
+                throw new KettleStepException( BaseMessages.getString(
+                    PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
               } else {
                 outWsdlParamContainer = new WsdlOpParameterContainer( param );
               }
             }
           }
         } else {
-          if ( ParameterMode.IN.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-              || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+          if ( ParameterMode.IN.equals( param.getMode() )
+              || ParameterMode.INOUT.equals( param.getMode() ) || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
             if ( inWsdlParamContainer != null && !( inWsdlParamContainer instanceof WsdlOperationContainer ) ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
+              throw new KettleStepException( BaseMessages.getString(
+                  PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
             } else {
               inWsdlParamContainer = new WsdlOperationContainer( wsdlOperation, param.getMode() );
             }
-          } else if ( ParameterMode.OUT.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-              || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+          } else if ( ParameterMode.OUT.equals( param.getMode() )
+              || ParameterMode.INOUT.equals( param.getMode() ) || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
             if ( outWsdlParamContainer != null && !( outWsdlParamContainer instanceof WsdlOperationContainer ) ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
+              throw new KettleStepException( BaseMessages.getString(
+                  PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
             } else {
               outWsdlParamContainer = new WsdlOperationContainer( wsdlOperation, param.getMode() );
             }
           } else {
-            System.out.println( "Parameter : " + param.getName().getLocalPart() + ", mode="
-                + param.getMode().toString() + ", is not considered" );
+            System.out.println( "Parameter : "
+                + param.getName().getLocalPart() + ", mode=" + param.getMode().toString() + ", is not considered" );
           }
         }
       }
@@ -337,8 +339,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 String attributeName = itrType.next();
                 QName attributeType = type.getElementType( attributeName );
                 if ( !WebServiceMeta.XSD_NS_URI.equals( attributeType.getNamespaceURI() ) ) {
-                  throw new KettleStepException( BaseMessages.getString( PKG,
-                      "WebServiceDialog.ERROR0007.UnsupportedOperation.ComplexType" ) );
+                  throw new KettleStepException( BaseMessages.getString(
+                      PKG, "WebServiceDialog.ERROR0007.UnsupportedOperation.ComplexType" ) );
                 }
               }
             }
@@ -382,16 +384,18 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       tabItemFieldIn = new CTabItem( wTabFolder, SWT.NONE );
     }
     final ColumnInfo fieldColumn =
-        new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {}, false );
     fieldColumns.add( fieldColumn );
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          fieldColumn,
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            fieldColumn,
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     fieldInTableView =
         new TableView( transMeta, vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, lsMod, props );
     fieldInTableView.setReadonly( false );
@@ -512,12 +516,13 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     }
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ) };
     fieldOutTableView =
         new TableView( transMeta, vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, lsMod, props );
     String outContainerName =
@@ -659,8 +664,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       wOperation.setText( meta.getOperationName() == null ? "" : meta.getOperationName() );
     }
     wOperationRequest.setText( Const.NVL( meta.getOperationRequestName(), "" ) );
-    if ( meta.getInFieldContainerName() != null || meta.getInFieldArgumentName() != null
-        || !meta.getFieldsIn().isEmpty() ) {
+    if ( meta.getInFieldContainerName() != null
+        || meta.getInFieldArgumentName() != null || !meta.getFieldsIn().isEmpty() ) {
       addTabFieldIn();
 
       for ( Iterator<WebServiceField> itr = meta.getFieldsIn().iterator(); itr.hasNext(); ) {
@@ -856,9 +861,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
           try {
             initTreeTabWebService( wURL.getText() );
           } catch ( Throwable throwable ) {
-            new ErrorDialog( shell, BaseMessages.getString( PKG,
-                "WebServiceDialog.Exception.UnableToLoadWebService.Title" ), // $NON-NLS-1$
-                BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ), // $NON-NLS-1$
+            new ErrorDialog( shell, BaseMessages.getString(
+                PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Title" ), // $NON-NLS-1$
+            BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ), // $NON-NLS-1$
                 throwable );
           }
         }
@@ -880,19 +885,20 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         //
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
         dialog.setFilterExtensions( new String[] { "*.wsdl;*.WSDL", "*.*" } );
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "WebServiceDialog.FileType.WsdlFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "WebServiceDialog.FileType.WsdlFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
           String filename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
           try {
             initTreeTabWebService( new File( filename ).toURI().toASCIIString() );
           } catch ( Throwable throwable ) {
-            new ErrorDialog( shell, BaseMessages.getString( PKG,
-                "WebServiceDialog.Exception.UnableToLoadWebService.Title" ), // $NON-NLS-1$
-                BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ), // $NON-NLS-1$
+            new ErrorDialog( shell, BaseMessages.getString(
+                PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Title" ), // $NON-NLS-1$
+            BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ), // $NON-NLS-1$
                 throwable );
           }
         }

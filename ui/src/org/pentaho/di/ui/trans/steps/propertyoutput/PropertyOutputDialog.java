@@ -564,9 +564,9 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "PropertyOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "PropertyOutputDialog.SelectOutputFiles.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                  PKG, "PropertyOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+                  PKG, "PropertyOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -696,16 +696,18 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
           if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
+            wFilename.setText( dialog.getFilterPath()
+                + System.getProperty( "file.separator" )
                 + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
             wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
@@ -772,8 +774,9 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
           fieldNames = r.getFieldNames();
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

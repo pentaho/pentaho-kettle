@@ -51,13 +51,13 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 //@Step(
-//		id = "TableCompare",
-//		image = "be/kjube/plugins/images/table_compare.png",
-//		description ="kJube.Plugins.TableCompare.Description",
-//		name = "kJube.Plugins.TableCompare.Name",
-//		categoryDescription="kJube.Category.Name",
-//		i18nPackageName="be.kjube.plugins" 
-//	)
+//    id = "TableCompare",
+//    image = "be/kjube/plugins/images/table_compare.png",
+//    description ="kJube.Plugins.TableCompare.Description",
+//    name = "kJube.Plugins.TableCompare.Name",
+//    categoryDescription="kJube.Category.Name",
+//    i18nPackageName="be.kjube.plugins" 
+//  )
 public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = TableCompare.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
@@ -357,28 +357,28 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( Const.isEmpty( nrErrorsField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsFieldIsNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "TableCompareMeta.Exception.NrErrorsFieldIsNotSpecified" ) );
     }
     if ( Const.isEmpty( nrRecordsReferenceField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrRecordsReferenceFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "TableCompareMeta.Exception.NrRecordsReferenceFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrRecordsCompareField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrRecordsCompareFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "TableCompareMeta.Exception.NrRecordsCompareFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrErrorsLeftJoinField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsLeftJoinFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "TableCompareMeta.Exception.NrErrorsLeftJoinFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrErrorsInnerJoinField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsInnerJoinFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "TableCompareMeta.Exception.NrErrorsInnerJoinFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrErrorsRightJoinField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsRightJoinFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "TableCompareMeta.Exception.NrErrorsRightJoinFieldNotSpecified" ) );
     }
 
     ValueMetaInterface nrErrorsValueMeta = new ValueMeta( nrErrorsField, ValueMetaInterface.TYPE_INTEGER );
@@ -548,26 +548,26 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

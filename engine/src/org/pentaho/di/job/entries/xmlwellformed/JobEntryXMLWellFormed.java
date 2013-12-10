@@ -170,9 +170,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
         source_filefolder[i] = XMLHandler.getTagValue( fnode, "source_filefolder" );
         wildcard[i] = XMLHandler.getTagValue( fnode, "wildcard" );
       }
-    }
-
-    catch ( KettleXMLException xe ) {
+    } catch ( KettleXMLException xe ) {
 
       throw new KettleXMLException( BaseMessages.getString( PKG, "JobXMLWellFormed.Error.Exception.UnableLoadXML" ), xe );
     }
@@ -275,8 +273,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
         String vwildcard_previous = resultRow.getString( 1, null );
 
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobXMLWellFormed.Log.ProcessingRow", vsourcefilefolder_previous,
-              vwildcard_previous ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobXMLWellFormed.Log.ProcessingRow", vsourcefilefolder_previous, vwildcard_previous ) );
         }
 
         processFileFolder( vsourcefilefolder_previous, vwildcard_previous, parentJob, result );
@@ -295,8 +293,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
         }
 
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobXMLWellFormed.Log.ProcessingRow", vsourcefilefolder[i],
-              vwildcard[i] ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobXMLWellFormed.Log.ProcessingRow", vsourcefilefolder[i], vwildcard[i] ) );
         }
 
         processFileFolder( vsourcefilefolder[i], vwildcard[i], parentJob, result );
@@ -422,13 +420,12 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
               } catch ( Exception ex ) {
                 // Upon error don't process the file.
                 return false;
-              }
-
-              finally {
+              } finally {
                 if ( fileObject != null ) {
                   try {
                     fileObject.close();
-                  } catch ( IOException ex ) { /* Ignore */
+                  } catch ( IOException ex ) {
+                    /* Ignore */
                   }
                 }
 
@@ -477,9 +474,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
         // Update Errors
         updateErrors();
       }
-    } // end try
-
-    catch ( Exception e ) {
+    } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobXMLWellFormed.Error.Exception.Processing", realSourceFilefoldername
           .toString(), e ) );
       // Update Errors
@@ -488,21 +483,23 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
       if ( sourcefilefolder != null ) {
         try {
           sourcefilefolder.close();
-        } catch ( IOException ex ) { /* Ignore */
+        } catch ( IOException ex ) {
+          /* Ignore */
         }
 
       }
       if ( CurrentFile != null ) {
         try {
           CurrentFile.close();
-        } catch ( IOException ex ) { /* Ignore */
+        } catch ( IOException ex ) {
+          /* Ignore */
         }
       }
     }
     return entrystatus;
   }
 
-  private boolean checkOneFile( FileObject file, Result result, Job parentJob ) {
+  private boolean checkOneFile( FileObject file, Result result, Job parentJob ) throws KettleException {
     boolean retval = false;
     try {
       // We deal with a file..so let's check if it's well formed
@@ -527,6 +524,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
       }
 
     } catch ( Exception e ) {
+      throw new KettleException( "Unable to verify file '" + file + "'", e );
     }
     return retval;
   }

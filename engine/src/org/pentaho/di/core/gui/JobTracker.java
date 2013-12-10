@@ -176,7 +176,8 @@ public class JobTracker {
       JobTracker tracker = getJobTracker( i );
       JobEntryResult result = tracker.getJobEntryResult();
       if ( result != null ) {
-        if ( jobEntryCopy.getName() != null && jobEntryCopy.getName().equals( result.getJobEntryName() )
+        if ( jobEntryCopy.getName() != null
+            && jobEntryCopy.getName().equals( result.getJobEntryName() )
             && jobEntryCopy.getNr() == result.getJobEntryNr() ) {
           return tracker;
         }

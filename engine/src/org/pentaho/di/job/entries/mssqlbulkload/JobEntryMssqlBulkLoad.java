@@ -383,8 +383,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
         if ( !( fileObject instanceof LocalFile ) ) {
           // MSSQL BUKL INSERT can only use local files, so that's what we limit ourselves to.
           //
-          throw new KettleException( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.OnlyLocalFileSupported",
-              vfsFilename ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "JobMssqlBulkLoad.Error.OnlyLocalFileSupported", vfsFilename ) );
         }
 
         // Convert it to a regular platform specific file name
@@ -500,8 +500,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
                 // Build BULK Command
                 SQLBULKLOAD =
-                    SQLBULKLOAD + "BULK INSERT " + realTablename + " FROM " + "'" + realFilename.replace( '\\', '/' )
-                        + "'";
+                    SQLBULKLOAD
+                        + "BULK INSERT " + realTablename + " FROM " + "'" + realFilename.replace( '\\', '/' ) + "'";
                 SQLBULKLOAD = SQLBULKLOAD + " WITH (";
                 if ( useFieldSeparator ) {
                   SQLBULKLOAD = SQLBULKLOAD + FieldTerminatedby;
@@ -565,8 +565,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   if ( isAddFileToResult() ) {
                     // Add filename to output files
                     ResultFile resultFile =
-                        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ),
-                            parentJob.getJobname(), toString() );
+                        new ResultFile(
+                            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
+                                .getJobname(), toString() );
                     result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   }
 

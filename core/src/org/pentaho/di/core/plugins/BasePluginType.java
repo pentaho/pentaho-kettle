@@ -263,8 +263,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
               if ( impls != null ) {
 
                 for ( String fil : impls ) {
-                  classFiles.add( new JarFileAnnotationPlugin( fil, fileObject.getURL(), fileObject.getParent()
-                      .getURL() ) );
+                  classFiles.add( new JarFileAnnotationPlugin( fil, fileObject.getURL(), fileObject
+                      .getParent().getURL() ) );
                 }
               }
             }
@@ -336,8 +336,9 @@ public abstract class BasePluginType implements PluginTypeInterface {
     PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation( PluginMainClassType.class );
     classMap.put( mainClassTypesAnnotation.value(), clazz.getName() );
     PluginInterface stepPlugin =
-        new Plugin( new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false,
-            false, classMap, new ArrayList<String>(), null, null, null, null, null );
+        new Plugin(
+            new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false, false,
+            classMap, new ArrayList<String>(), null, null, null, null, null );
     registry.registerPlugin( pluginType, stepPlugin );
   }
 
@@ -410,15 +411,16 @@ public abstract class BasePluginType implements PluginTypeInterface {
       }
 
       PluginInterface pluginInterface =
-          new Plugin( id.split( "," ), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip,
+          new Plugin(
+              id.split( "," ), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip,
               iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder, documentationUrl,
               casesUrl, forumUrl );
       registry.registerPlugin( pluginType, pluginInterface );
 
       return pluginInterface;
     } catch ( Throwable e ) {
-      throw new KettlePluginException( BaseMessages.getString( PKG,
-          "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001" ), e );
+      throw new KettlePluginException( BaseMessages.getString(
+          PKG, "BasePluginType.RuntimeError.UnableToReadPluginXML.PLUGIN0001" ), e );
     }
   }
 
@@ -507,8 +509,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
         }
       }
     } catch ( Exception e ) {
-      LogChannel.GENERAL.logError( "Unexpected error searching for jar files in lib/ folder next to '" + jarFileUrl
-          + "'", e );
+      LogChannel.GENERAL.logError( "Unexpected error searching for jar files in lib/ folder next to '"
+          + jarFileUrl + "'", e );
     }
 
     urls.add( jarFileUrl );
@@ -590,8 +592,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
             }
           }
         } catch ( Exception e ) {
-          throw new KettlePluginException( "Unexpected error loading class " + clazz.getName() + " of plugin type: "
-              + pluginType, e );
+          throw new KettlePluginException( "Unexpected error loading class "
+              + clazz.getName() + " of plugin type: " + pluginType, e );
         }
 
         handlePluginAnnotation( clazz, annotation, libraries, false, jarFilePlugin.getPluginFolder() );
@@ -662,14 +664,14 @@ public abstract class BasePluginType implements PluginTypeInterface {
      */
 
     PluginInterface plugin =
-        new Plugin( ids, this.getClass(), mainType.value(), category, name, description, imageFile,
-            separateClassLoader, nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl,
-            forumUrl );
+        new Plugin(
+            ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
+            nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl, forumUrl );
     registry.registerPlugin( this.getClass(), plugin );
 
     if ( libraries != null && libraries.size() > 0 ) {
-      LogChannel.GENERAL.logDetailed( "Plugin with id [" + ids[0] + "] has " + libraries.size()
-          + " libaries in its private class path" );
+      LogChannel.GENERAL.logDetailed( "Plugin with id ["
+          + ids[0] + "] has " + libraries.size() + " libaries in its private class path" );
     }
   }
 

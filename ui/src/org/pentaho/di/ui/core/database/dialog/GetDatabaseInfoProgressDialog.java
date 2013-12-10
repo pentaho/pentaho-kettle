@@ -65,8 +65,8 @@ public class GetDatabaseInfoProgressDialog {
         try {
           dmi.getData( Spoon.loggingObject, new ProgressMonitorAdapter( monitor ) );
         } catch ( Exception e ) {
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "GetDatabaseInfoProgressDialog.Error.GettingInfoTable", e.toString() ) );
+          throw new InvocationTargetException( e, BaseMessages.getString(
+              PKG, "GetDatabaseInfoProgressDialog.Error.GettingInfoTable", e.toString() ) );
         }
       }
     };

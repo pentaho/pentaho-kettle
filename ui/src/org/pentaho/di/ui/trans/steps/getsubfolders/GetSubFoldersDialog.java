@@ -344,17 +344,19 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
 
     ColumnInfo[] colinfo = new ColumnInfo[2];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetSubFoldersDialog.FileDirColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GetSubFoldersDialog.FileDirColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinfo[0].setUsingVariables( true );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetSubFoldersDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, GetSubFoldersMeta.RequiredFoldersDesc );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GetSubFoldersDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            GetSubFoldersMeta.RequiredFoldersDesc );
     colinfo[1].setToolTip( BaseMessages.getString( PKG, "GetSubFoldersDialog.Required.Tooltip" ) );
 
     wFoldernameList =
-        new TableView( transMeta, wFolderComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, colinfo.length,
-            lsMod, props );
+        new TableView(
+            transMeta, wFolderComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, colinfo.length, lsMod, props );
     props.setLook( wFoldernameList );
     fdFoldernameList = new FormData();
     fdFoldernameList.left = new FormAttachment( middle, 0 );
@@ -713,14 +715,14 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "GetSubFoldersDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "GetSubFoldersDialog.PreviewSize.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "GetSubFoldersDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+            PKG, "GetSubFoldersDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       if ( !progressDialog.isCancelled() ) {
@@ -736,8 +738,9 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
         }
 
         PreviewRowsDialog prd =
-            new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
+            new PreviewRowsDialog(
+                shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
+                    .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
                 loggingText );
         prd.open();
       }

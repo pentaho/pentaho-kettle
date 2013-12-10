@@ -72,7 +72,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
   }
 
   public void dupeStep( TransMeta transMeta, StepMeta stepMeta ) {
-    spoon.getLog().logDebug( toString(), BaseMessages.getString( PKG, "Spoon.Log.DuplicateStep" ) + stepMeta.getName() );// Duplicate
+    spoon.getLog().logDebug( toString(), BaseMessages.getString( PKG, "Spoon.Log.DuplicateStep" ) + stepMeta.getName() ); // Duplicate
     // step:
 
     StepMeta stMeta = (StepMeta) stepMeta.clone();
@@ -178,8 +178,9 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       if ( spoon.getShell().isDisposed() ) {
         return null;
       }
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnableOpenDialog.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.UnableOpenDialog.Message" ), e );
+      new ErrorDialog(
+          spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnableOpenDialog.Title" ), BaseMessages
+              .getString( PKG, "Spoon.Dialog.UnableOpenDialog.Message" ), e );
     }
 
     if ( refresh ) {
@@ -192,7 +193,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
   }
 
   public void delStep( TransMeta transMeta, StepMeta stepMeta ) {
-    spoon.getLog().logDebug( toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() );// "Delete
+    spoon.getLog().logDebug( toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() ); // "Delete
     // step:
     // "
 
@@ -235,8 +236,8 @@ public class SpoonStepsDelegate extends SpoonDelegate {
         Class<?>[] sig = new Class[] { Shell.class, StepMetaInterface.class, TransMeta.class, String.class };
         method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
         if ( method != null ) {
-          return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta,
-            stepName } );
+          return (StepDialogInterface) method.invoke( stepMeta, new Object[] {
+              spoon.getShell(), stepMeta, transMeta, stepName } );
         }
       } catch ( Throwable t ) {
       }

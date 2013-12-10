@@ -164,9 +164,9 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
       swtToolbar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( jobLogComposite.getShell(), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( jobLogComposite.getShell(), BaseMessages.getString(
+          PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -218,8 +218,8 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
       }
 
       EnterSelectionDialog esd =
-          new EnterSelectionDialog( jobGraph.getShell(), err_lines, BaseMessages.getString( PKG,
-              "JobLog.Dialog.ErrorLines.Title" ), BaseMessages.getString( PKG, "JobLog.Dialog.ErrorLines.Message" ) );
+          new EnterSelectionDialog( jobGraph.getShell(), err_lines, BaseMessages.getString(
+              PKG, "JobLog.Dialog.ErrorLines.Title" ), BaseMessages.getString( PKG, "JobLog.Dialog.ErrorLines.Message" ) );
       line = esd.open();
       if ( line != null ) {
         JobMeta jobMeta = jobGraph.getManagedObject();

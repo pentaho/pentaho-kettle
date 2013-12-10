@@ -325,8 +325,8 @@ public class PropsUI extends Props {
     for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
       LastUsedFile lastUsedFile = lastUsedFiles.get( i );
 
-      properties.setProperty( "filetype" + ( i + 1 ), Const.NVL( lastUsedFile.getFileType(),
-          LastUsedFile.FILE_TYPE_TRANSFORMATION ) );
+      properties.setProperty( "filetype" + ( i + 1 ), Const.NVL(
+          lastUsedFile.getFileType(), LastUsedFile.FILE_TYPE_TRANSFORMATION ) );
       properties.setProperty( "lastfile" + ( i + 1 ), Const.NVL( lastUsedFile.getFilename(), "" ) );
       properties.setProperty( "lastdir" + ( i + 1 ), Const.NVL( lastUsedFile.getDirectory(), "" ) );
       properties.setProperty( "lasttype" + ( i + 1 ), lastUsedFile.isSourceRepository() ? YES : NO );
@@ -339,8 +339,8 @@ public class PropsUI extends Props {
     for ( int i = 0; i < openTabFiles.size(); i++ ) {
       LastUsedFile openTabFile = openTabFiles.get( i );
 
-      properties.setProperty( "tabtype" + ( i + 1 ), Const.NVL( openTabFile.getFileType(),
-          LastUsedFile.FILE_TYPE_TRANSFORMATION ) );
+      properties.setProperty( "tabtype" + ( i + 1 ), Const.NVL(
+          openTabFile.getFileType(), LastUsedFile.FILE_TYPE_TRANSFORMATION ) );
       properties.setProperty( "tabfile" + ( i + 1 ), Const.NVL( openTabFile.getFilename(), "" ) );
       properties.setProperty( "tabdir" + ( i + 1 ), Const.NVL( openTabFile.getDirectory(), "" ) );
       properties.setProperty( "tabrep" + ( i + 1 ), openTabFile.isSourceRepository() ? YES : NO );
@@ -367,7 +367,8 @@ public class PropsUI extends Props {
   public void addLastFile( String fileType, String filename, String directory, boolean sourceRepository,
       String repositoryName ) {
     LastUsedFile lastUsedFile =
-        new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, false,
+        new LastUsedFile(
+            fileType, filename, directory, sourceRepository, repositoryName, false,
             LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH );
 
     int idx = lastUsedFiles.indexOf( lastUsedFile );
@@ -417,8 +418,8 @@ public class PropsUI extends Props {
       boolean isOpened = YES.equalsIgnoreCase( properties.getProperty( "lastopened" + ( i + 1 ), NO ) );
       int openItemTypes = Const.toInt( properties.getProperty( "lastopentypes" + ( i + 1 ), "0" ), 0 );
 
-      lastUsedFiles.add( new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
-          openItemTypes ) );
+      lastUsedFiles.add( new LastUsedFile(
+          fileType, filename, directory, sourceRepository, repositoryName, isOpened, openItemTypes ) );
     }
   }
 
@@ -435,8 +436,8 @@ public class PropsUI extends Props {
       boolean isOpened = YES.equalsIgnoreCase( properties.getProperty( "tabopened" + ( i + 1 ), NO ) );
       int openItemTypes = Const.toInt( properties.getProperty( "tabopentypes" + ( i + 1 ), "0" ), 0 );
 
-      openTabFiles.add( new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
-          openItemTypes ) );
+      openTabFiles.add( new LastUsedFile(
+          fileType, filename, directory, sourceRepository, repositoryName, isOpened, openItemTypes ) );
     }
   }
 
@@ -941,8 +942,9 @@ public class PropsUI extends Props {
         tabFolder.setBorderVisible( false );
 
         // Set a small vertical gradient
-        tabFolder.setSelectionBackground( new Color[] { display.getSystemColor( SWT.COLOR_WIDGET_NORMAL_SHADOW ),
-          display.getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ), }, new int[] { 55, }, true );
+        tabFolder.setSelectionBackground( new Color[] {
+            display.getSystemColor( SWT.COLOR_WIDGET_NORMAL_SHADOW ),
+            display.getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ), }, new int[] { 55, }, true );
         break;
       default:
         background = gui.getColorBackground();

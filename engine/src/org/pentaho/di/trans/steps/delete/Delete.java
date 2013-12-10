@@ -93,8 +93,8 @@ public class Delete extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -107,8 +107,8 @@ public class Delete extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-              environmentSubstitute( meta.getTableName() ) );
+          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       // lookup the values!
       if ( log.isDetailed() ) {
@@ -262,8 +262,8 @@ public class Delete extends BaseStep implements StepInterface {
         }
         data.db.closeUpdate();
       } catch ( KettleDatabaseException e ) {
-        logError( BaseMessages.getString( PKG, "Delete.Log.UnableToCommitUpdateConnection" ) + data.db + "] :"
-            + e.toString() );
+        logError( BaseMessages.getString( PKG, "Delete.Log.UnableToCommitUpdateConnection" )
+            + data.db + "] :" + e.toString() );
         setErrors( 1 );
       } finally {
         data.db.disconnect();

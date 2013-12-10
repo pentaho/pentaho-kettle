@@ -225,8 +225,8 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
       addHostName = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addHostName" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "SyslogMessageMeta.Exception.UnableToReadStepInfo" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "SyslogMessageMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -244,8 +244,8 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
       addHostName = rep.getJobEntryAttributeBoolean( id_step, "addHostName" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SyslogMessageMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SyslogMessageMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -287,13 +287,13 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SyslogMessageMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SyslogMessageMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SyslogMessageMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SyslogMessageMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

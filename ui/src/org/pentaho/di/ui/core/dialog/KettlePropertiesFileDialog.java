@@ -130,12 +130,15 @@ public class KettlePropertiesFileDialog extends Dialog {
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Name.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Value.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Description.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Name.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Value.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Description.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
     colinf[2].setDisabledListener( new FieldDisabledListener() {
       public boolean isFieldDisabled( int rowNr ) {
         return false;
@@ -143,8 +146,9 @@ public class KettlePropertiesFileDialog extends Dialog {
     } );
 
     wFields =
-        new TableView( Variables.getADefaultVariableSpace(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-            colinf, FieldsRows, null, props );
+        new TableView(
+            Variables.getADefaultVariableSpace(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+            FieldsRows, null, props );
 
     wFields.setReadonly( false );
 
@@ -257,9 +261,9 @@ public class KettlePropertiesFileDialog extends Dialog {
       wFields.setRowNums();
       wFields.optWidth( true );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Title" ), BaseMessages.getString( PKG,
-          "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Title" ), BaseMessages.getString(
+          PKG, "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Message" ), e );
     }
   }
 
@@ -297,14 +301,14 @@ public class KettlePropertiesFileDialog extends Dialog {
       properties.store( out, Const.getKettlePropertiesFileHeader() );
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Title" ), BaseMessages.getString( PKG,
-          "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message" ), e );
+          .getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Title" ), BaseMessages.getString(
+          PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message" ), e );
     } finally {
       try {
         out.close();
       } catch ( IOException e ) {
-        LogChannel.GENERAL.logError( BaseMessages.getString( PKG,
-            "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message", Const.KETTLE_PROPERTIES,
+        LogChannel.GENERAL.logError( BaseMessages.getString(
+            PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message", Const.KETTLE_PROPERTIES,
             getKettlePropertiesFilename() ), e );
       }
     }

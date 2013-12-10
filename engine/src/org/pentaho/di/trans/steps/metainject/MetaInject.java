@@ -183,8 +183,8 @@ public class MetaInject extends BaseStep implements StepInterface {
                         setEntryValue( rowEntry, row, detailSource );
                       } else {
                         if ( log.isDetailed() ) {
-                          logDetailed( "No detail source found for key: " + rowEntry.getKey() + " and target step: "
-                              + targetStep );
+                          logDetailed( "No detail source found for key: "
+                              + rowEntry.getKey() + " and target step: " + targetStep );
                         }
                       }
                     }

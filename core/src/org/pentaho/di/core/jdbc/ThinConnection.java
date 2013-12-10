@@ -138,8 +138,9 @@ public class ThinConnection implements Connection {
 
       // Try to get a status from the carte server to see if the connection works...
       //
-      HttpUtil.execService( new Variables(), hostname, port, webAppName, service + "/status/", username, password,
-          proxyHostname, proxyPort, nonProxyHosts );
+      HttpUtil.execService(
+          new Variables(), hostname, port, webAppName, service + "/status/", username, password, proxyHostname,
+          proxyPort, nonProxyHosts );
 
     } catch ( Exception e ) {
       throw new SQLException( "Unable to de-compose slave server address for URL: " + slaveBaseAddress, e );

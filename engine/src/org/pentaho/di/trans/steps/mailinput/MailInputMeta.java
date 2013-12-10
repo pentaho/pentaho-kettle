@@ -149,8 +149,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     subjectSearch = XMLHandler.getTagValue( stepnode, "subjectsearch" );
     notTermSubjectSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "nottermsubjectsearch" ) );
     conditionReceivedDate =
-        MailConnectionMeta.getConditionByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "conditionreceiveddate" ),
-            "" ) );
+        MailConnectionMeta.getConditionByCode( Const.NVL(
+            XMLHandler.getTagValue( stepnode, "conditionreceiveddate" ), "" ) );
     notTermReceivedDateSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "nottermreceiveddatesearch" ) );
     receivedDate1 = XMLHandler.getTagValue( stepnode, "receivedDate1" );
     receivedDate2 = XMLHandler.getTagValue( stepnode, "receivedDate2" );
@@ -246,8 +246,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       protocol = Const.NVL( rep.getStepAttributeString( id_step, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
       valueimaplist =
-          MailConnectionMeta.getValueListImapListByCode( Const.NVL( rep.getStepAttributeString( id_step,
-              "valueimaplist" ), "" ) );
+          MailConnectionMeta.getValueListImapListByCode( Const.NVL( rep.getStepAttributeString(
+              id_step, "valueimaplist" ), "" ) );
       imapfirstmails = rep.getStepAttributeString( id_step, "imapfirstmails" );
       imapfolder = rep.getStepAttributeString( id_step, "imapfolder" );
       // search term
@@ -258,8 +258,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       subjectSearch = rep.getStepAttributeString( id_step, "subjectsearch" );
       notTermSubjectSearch = rep.getStepAttributeBoolean( id_step, "nottermsubjectsearch" );
       conditionReceivedDate =
-          MailConnectionMeta.getConditionByCode( Const.NVL( rep.getStepAttributeString( id_step,
-              "conditionreceiveddate" ), "" ) );
+          MailConnectionMeta.getConditionByCode( Const.NVL( rep.getStepAttributeString(
+              id_step, "conditionreceiveddate" ), "" ) );
       notTermReceivedDateSearch = rep.getStepAttributeBoolean( id_step, "nottermreceiveddatesearch" );
       receivedDate1 = rep.getStepAttributeString( id_step, "receiveddate1" );
       receivedDate2 = rep.getStepAttributeString( id_step, "receiveddate2" );
@@ -301,7 +301,9 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "servername", servername );
       rep.saveStepAttribute( id_transformation, id_step, "username", username );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveStepAttribute( id_transformation, id_step, "password", Encr
+              .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveStepAttribute( id_transformation, id_step, "usessl", usessl );
       rep.saveStepAttribute( id_transformation, id_step, "sslport", sslport );
       rep.saveStepAttribute( id_transformation, id_step, "retrievemails", retrievemails );
@@ -422,8 +424,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
@@ -608,8 +610,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * <li>0 = retrieve all
-   * <li>2 = retrieve unread
+   * <li>0 = retrieve all <li>2 = retrieve unread
    * 
    * @param nr
    * @see {@link #setValueImapList(int)}

@@ -66,22 +66,24 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The algorithms description
    */
-  public static final String[] algorithmDesc = { BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.Levenshtein" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.DamerauLevenshtein" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.NeedlemanWunsch" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.Jaro" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.JaroWinkler" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.PairSimilarity" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.Metaphone" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.DoubleMetaphone" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.SoundEx" ),
-    BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.RefinedSoundEx" ) };
+  public static final String[] algorithmDesc = {
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.Levenshtein" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.DamerauLevenshtein" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.NeedlemanWunsch" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.Jaro" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.JaroWinkler" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.PairSimilarity" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.Metaphone" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.DoubleMetaphone" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.SoundEx" ),
+      BaseMessages.getString( PKG, "FuzzyMatchMeta.algorithm.RefinedSoundEx" ) };
 
   /**
    * The algorithms type codes
    */
-  public static final String[] algorithmCode = { "levenshtein", "dameraulevenshtein", "needlemanwunsch", "jaro",
-    "jarowinkler", "pairsimilarity", "metaphone", "doublemataphone", "soundex", "refinedsoundex" };
+  public static final String[] algorithmCode = {
+      "levenshtein", "dameraulevenshtein", "needlemanwunsch", "jaro", "jarowinkler", "pairsimilarity", "metaphone",
+      "doublemataphone", "soundex", "refinedsoundex" };
 
   public static final int OPERATION_TYPE_LEVENSHTEIN = 0;
 
@@ -476,7 +478,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     boolean activateAdditionalFields =
-        isGetCloserValue() || ( getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
+        isGetCloserValue()
+            || ( getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
             || ( getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX )
             || ( getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX )
             || ( getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_METAPHONE );
@@ -485,15 +488,16 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
       if ( info != null && info.length == 1 && info[0] != null ) {
         for ( int i = 0; i < valueName.length; i++ ) {
           v = info[0].searchValueMeta( value[i] );
-          if ( v != null ) // Configuration error/missing resources...
-          {
+          if ( v != null ) {
+            // Configuration error/missing resources...
+
             v.setName( valueName[i] );
             v.setOrigin( name );
             v.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL ); // Only normal storage goes into the cache
             inputRowMeta.addValueMeta( v );
           } else {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.Exception.ReturnValueCanNotBeFound", value[i] ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.Exception.ReturnValueCanNotBeFound", value[i] ) );
           }
         }
       } else {
@@ -563,8 +567,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
         valueName[i] = rep.getStepAttributeString( id_step, i, "return_value_rename" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FuzzyMatchMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FuzzyMatchMeta.Exception.UnexpecteErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -590,8 +594,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_rename", valueName[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FuzzyMatchMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FuzzyMatchMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -603,8 +607,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       // Starting from selected fields in ...
@@ -613,26 +617,26 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
       int idx = prev.indexOfValue( mainField );
       if ( idx < 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.CheckResult.MainFieldNotFound", mainField ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.CheckResult.MainFieldNotFound", mainField ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.CheckResult.MainFieldFound", mainField ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.CheckResult.MainFieldFound", mainField ), stepMeta );
       }
       remarks.add( cr );
 
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( info != null && info.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.StepReceivingLookupData", info.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.StepReceivingLookupData", info.size() + "" ), stepMeta );
       remarks.add( cr );
 
       // Check the fields from the lookup stream!
@@ -641,12 +645,12 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
       int idx = info.indexOfValue( lookupField );
       if ( idx < 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.CheckResult.FieldNotFoundInLookupStream", lookupField ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.CheckResult.FieldNotFoundInLookupStream", lookupField ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.CheckResult.FieldFoundInTheLookupStream", lookupField ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.CheckResult.FieldFoundInTheLookupStream", lookupField ), stepMeta );
       }
       remarks.add( cr );
 
@@ -663,19 +667,19 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
       }
       if ( error_found ) {
         error_message =
-            BaseMessages.getString( PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundInLookupStream2" ) + Const.CR
-                + Const.CR + error_message;
+            BaseMessages.getString( PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundInLookupStream2" )
+                + Const.CR + Const.CR + error_message;
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.CheckResult.AllFieldsFoundInTheLookupStream2" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.CheckResult.AllFieldsFoundInTheLookupStream2" ), stepMeta );
       }
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.FieldsNotFoundFromInLookupSep" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundFromInLookupSep" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -683,26 +687,26 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
     if ( infoStream.getStepMeta() == null ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.SourceStepNotSelected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.SourceStepNotSelected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.SourceStepIsSelected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.SourceStepIsSelected" ), stepMeta );
       remarks.add( cr );
 
       // See if the step exists!
       //
       if ( info != null ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.CheckResult.SourceStepExist", infoStream.getStepname() + "" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.CheckResult.SourceStepExist", infoStream.getStepname() + "" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "FuzzyMatchMeta.CheckResult.SourceStepDoesNotExist", infoStream.getStepname() + "" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "FuzzyMatchMeta.CheckResult.SourceStepDoesNotExist", infoStream.getStepname() + "" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -710,13 +714,13 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length >= 2 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.StepReceivingInfoFromInputSteps", input.length + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.StepReceivingInfoFromInputSteps", input.length + "" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FuzzyMatchMeta.CheckResult.NeedAtLeast2InputStreams", Const.CR, Const.CR ), stepMeta ); //$NON-NLS-3$
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FuzzyMatchMeta.CheckResult.NeedAtLeast2InputStreams", Const.CR, Const.CR ), stepMeta ); //$NON-NLS-3$
       remarks.add( cr );
     }
   }
@@ -754,7 +758,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
       StreamInterface stream =
-          new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "FuzzyMatchMeta.InfoStream.Description" ),
+          new Stream(
+              StreamType.INFO, null, BaseMessages.getString( PKG, "FuzzyMatchMeta.InfoStream.Description" ),
               StreamIcon.INFO, null );
       ioMeta.addStream( stream );
     }

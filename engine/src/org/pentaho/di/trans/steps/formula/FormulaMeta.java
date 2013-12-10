@@ -145,9 +145,11 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < formula.length; i++ ) {
       FormulaMetaFunction fn = formula[i];
-      if ( Const.isEmpty( fn.getReplaceField() ) ) { // Not replacing a field.
-        if ( !Const.isEmpty( fn.getFieldName() ) ) // It's a new field!
-        {
+      if ( Const.isEmpty( fn.getReplaceField() ) ) {
+        // Not replacing a field.
+        if ( !Const.isEmpty( fn.getFieldName() ) ) {
+          // It's a new field!
+
           try {
             ValueMetaInterface v = ValueMetaFactory.createValueMeta( fn.getFieldName(), fn.getValueType() );
             v.setLength( fn.getValueLength(), fn.getValuePrecision() );
@@ -157,7 +159,8 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
             throw new KettleStepException( e );
           }
         }
-      } else { // Replacing a field
+      } else {
+        // Replacing a field
         int index = row.indexOfValue( fn.getReplaceField() );
         if ( index < 0 ) {
           throw new KettleStepException( "Unknown field specified to replace with a formula result: ["
@@ -195,26 +198,26 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FormulaMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FormulaMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FormulaMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FormulaMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FormulaMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }

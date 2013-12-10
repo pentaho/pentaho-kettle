@@ -201,9 +201,9 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       try {
         previousFields = transMeta.getPrevStepFields( stepMeta );
       } catch ( KettleStepException e ) {
-        new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages
-                .getString( PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ),
+            BaseMessages.getString( PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
         previousFields = new RowMeta();
       }
 
@@ -533,24 +533,33 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     // Fields
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_NAME" ) ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_TYPE" ) ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_FORMAT" ) ),
-              ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_LENGTH" ) ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_PRECISION" ) ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_CURRENCY" ) ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_DECIMAL" ) ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_GROUP" ) ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_TRIM_TYPE" ) ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_NAME" ) ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_TYPE" ) ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_FORMAT" ) ),
+                ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_LENGTH" ) ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_PRECISION" ) ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_CURRENCY" ) ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_DECIMAL" ) ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_GROUP" ) ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_TRIM_TYPE" ) ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
 
     colinf[2].setComboValuesSelectionListener( new ComboValuesSelectionListener() {
 
@@ -651,11 +660,11 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
           }
 
           dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) + ", "
-                + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+              BaseMessages.getString( PKG, "System.FileType.CSVFiles" )
+                  + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+              BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+              BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
           if ( dialog.open() != null ) {
             String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -892,8 +901,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       } else {
         if ( !Const.isEmpty( meta.getEnclosure() ) ) {
           for ( int i = 0; i < fieldNames.length; i++ ) {
-            if ( fieldNames[i].startsWith( meta.getEnclosure() ) && fieldNames[i].endsWith( meta.getEnclosure() )
-                && fieldNames[i].length() > 1 ) {
+            if ( fieldNames[i].startsWith( meta.getEnclosure() )
+                && fieldNames[i].endsWith( meta.getEnclosure() ) && fieldNames[i].length() > 1 ) {
               fieldNames[i] = fieldNames[i].substring( 1, fieldNames[i].length() - 1 );
             }
           }
@@ -940,8 +949,9 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
           wFields.optWidth( true );
 
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "CsvInputDialog.ScanResults.DialogTitle" ),
-                  BaseMessages.getString( PKG, "CsvInputDialog.ScanResults.DialogMessage" ), message, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "CsvInputDialog.ScanResults.DialogTitle" ), BaseMessages
+                      .getString( PKG, "CsvInputDialog.ScanResults.DialogMessage" ), message, true );
           etd.setReadOnly();
           etd.open();
 
@@ -952,8 +962,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       new ErrorDialog( shell, BaseMessages.getString( PKG, "CsvInputDialog.IOError.DialogTitle" ), BaseMessages
           .getString( PKG, "CsvInputDialog.IOError.DialogMessage" ), e );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString( PKG,
-          "CsvInputDialog.ErrorGettingFileDesc.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
+          PKG, "CsvInputDialog.ErrorGettingFileDesc.DialogMessage" ), e );
     } finally {
       try {
         inputStream.close();
@@ -973,14 +983,14 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     previewMeta.getVariable( "Internal.Transformation.Filename.Directory" );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "CsvInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "CsvInputDialog.PreviewSize.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "CsvInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+            PKG, "CsvInputDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -989,17 +999,19 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-              loggingText );
+          new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(),
+              progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname
+                  .getText() ), loggingText );
       prd.open();
     }
   }

@@ -60,8 +60,8 @@ public class StringEvaluator {
   private String[] dateFormats;
   private String[] numberFormats;
 
-  private static final String[] DEFAULT_NUMBER_FORMATS = new String[] { "#,###,###.#", "#.#", " #.#", "#", "#.0",
-    "#.00", "#.000", "#.0000", "#.00000", "#.000000", " #.0#", };
+  private static final String[] DEFAULT_NUMBER_FORMATS = new String[] {
+      "#,###,###.#", "#.#", " #.#", "#", "#.0", "#.00", "#.000", "#.0000", "#.00000", "#.000000", " #.0#", };
 
   public StringEvaluator() {
     this( true );
@@ -298,11 +298,11 @@ public class StringEvaluator {
           @Override
           public int compare( StringEvaluationResult r1, StringEvaluationResult r2 ) {
             Integer length1 =
-                r1.getConversionMeta().getConversionMask() == null ? 0 : r1.getConversionMeta().getConversionMask()
-                    .length();
+                r1.getConversionMeta().getConversionMask() == null ? 0 : r1
+                    .getConversionMeta().getConversionMask().length();
             Integer length2 =
-                r2.getConversionMeta().getConversionMask() == null ? 0 : r2.getConversionMeta().getConversionMask()
-                    .length();
+                r2.getConversionMeta().getConversionMask() == null ? 0 : r2
+                    .getConversionMeta().getConversionMask().length();
             return length2.compareTo( length1 );
           }
         };
@@ -312,11 +312,11 @@ public class StringEvaluator {
           @Override
           public int compare( StringEvaluationResult r1, StringEvaluationResult r2 ) {
             Integer length1 =
-                r1.getConversionMeta().getConversionMask() == null ? 0 : r1.getConversionMeta().getConversionMask()
-                    .length();
+                r1.getConversionMeta().getConversionMask() == null ? 0 : r1
+                    .getConversionMeta().getConversionMask().length();
             Integer length2 =
-                r2.getConversionMeta().getConversionMask() == null ? 0 : r2.getConversionMeta().getConversionMask()
-                    .length();
+                r2.getConversionMeta().getConversionMask() == null ? 0 : r2
+                    .getConversionMeta().getConversionMask().length();
             return length1.compareTo( length2 );
           }
         };

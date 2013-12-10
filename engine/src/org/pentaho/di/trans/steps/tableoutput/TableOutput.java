@@ -73,8 +73,8 @@ public class TableOutput extends BaseStep implements StepInterface {
     data = (TableOutputData) sdi;
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       return false;
     }
 
@@ -141,8 +141,7 @@ public class TableOutput extends BaseStep implements StepInterface {
 
   protected Object[] writeToTable( RowMetaInterface rowMeta, Object[] r ) throws KettleException {
 
-    if ( r == null ) // Stop: last line or error encountered
-    {
+    if ( r == null ) { // Stop: last line or error encountered
       if ( log.isDetailed() ) {
         logDetailed( "Last line inserted: stop" );
       }
@@ -186,7 +185,8 @@ public class TableOutput extends BaseStep implements StepInterface {
       } else {
         insertRowData = r;
       }
-    } else if ( meta.isPartitioningEnabled() && ( meta.isPartitioningDaily() || meta.isPartitioningMonthly() )
+    } else if ( meta.isPartitioningEnabled()
+        && ( meta.isPartitioningDaily() || meta.isPartitioningMonthly() )
         && ( meta.getPartitioningField() != null && meta.getPartitioningField().length() > 0 ) ) {
       // Initialize some stuff!
       if ( data.indexOfPartitioningField < 0 ) {
@@ -372,8 +372,8 @@ public class TableOutput extends BaseStep implements StepInterface {
         if ( meta.ignoreErrors() ) {
           if ( data.warnings < 20 ) {
             if ( log.isBasic() ) {
-              logBasic( "WARNING: Couldn't insert row into table: " + rowMeta.getString( r ) + Const.CR
-                  + dbe.getMessage() );
+              logBasic( "WARNING: Couldn't insert row into table: "
+                  + rowMeta.getString( r ) + Const.CR + dbe.getMessage() );
             }
           } else if ( data.warnings == 20 ) {
             if ( log.isBasic() ) {
@@ -385,8 +385,8 @@ public class TableOutput extends BaseStep implements StepInterface {
         } else {
           setErrors( getErrors() + 1 );
           data.db.rollback();
-          throw new KettleException( "Error inserting row into table [" + tableName + "] with values: "
-              + rowMeta.getString( r ), dbe );
+          throw new KettleException( "Error inserting row into table ["
+              + tableName + "] with values: " + rowMeta.getString( r ), dbe );
         }
       }
     }
@@ -500,15 +500,16 @@ public class TableOutput extends BaseStep implements StepInterface {
         // - if we are reverting to save-points
         //
         data.batchMode =
-            meta.useBatchUpdate() && data.commitSize > 0 && !meta.isReturningGeneratedKeys()
+            meta.useBatchUpdate()
+                && data.commitSize > 0 && !meta.isReturningGeneratedKeys()
                 && !getTransMeta().isUsingUniqueConnections() && !data.useSafePoints;
 
         // Per PDI-6211 : give a warning that batch mode operation in combination with step error handling can lead to
         // incorrectly processed rows.
         //
         if ( getStepMeta().isDoingErrorHandling() && !dbInterface.supportsErrorHandlingOnBatchUpdates() ) {
-          log.logMinimal( BaseMessages.getString( PKG,
-              "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
+          log.logMinimal( BaseMessages.getString(
+              PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing" ) );
         }
 
         if ( meta.getDatabaseMeta() == null ) {

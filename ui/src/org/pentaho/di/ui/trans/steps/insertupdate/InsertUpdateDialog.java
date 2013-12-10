@@ -301,22 +301,27 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.Comparator" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=", //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-              ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.Comparator" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "=", "= ~NULL", "<>", "<", "<=", //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     ciKey[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.StreamField1" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.StreamField1" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciKey[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.StreamField2" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.StreamField2" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     tableFieldColumns.add( ciKey[0] );
     wKey =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrKeyRows, lsMod, props );
 
     wGet = new Button( shell, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "InsertUpdateDialog.GetFields.Button" ) );
@@ -356,18 +361,22 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.TableField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.StreamField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.Update" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "InsertUpdateDialog.ColumnInfo.Update" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "Y", "N" } );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+            UpInsRows, lsMod, props );
 
     wGetLU = new Button( shell, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "InsertUpdateDialog.GetAndUpdateFields.Label" ) );
@@ -533,9 +542,9 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "InsertUpdateDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "InsertUpdateDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "InsertUpdateDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+          PKG, "InsertUpdateDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -545,9 +554,9 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "InsertUpdateDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "InsertUpdateDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "InsertUpdateDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+          PKG, "InsertUpdateDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -606,8 +615,8 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
       message += BaseMessages.getString( PKG, "InsertUpdateDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "InsertUpdateDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "InsertUpdateDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
@@ -822,9 +831,9 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "InsertUpDateDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "InsertUpDateDialog.AvailableSchemas.Message", wConnection.getText() ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+                  PKG, "InsertUpDateDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+                  PKG, "InsertUpDateDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -887,8 +896,9 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 3 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -905,8 +915,9 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "InsertUpdateDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -940,8 +951,9 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "InsertUpdateDialog.CouldNotBuildSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "InsertUpdateDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "InsertUpdateDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
+              .getString( PKG, "InsertUpdateDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
   }
 }

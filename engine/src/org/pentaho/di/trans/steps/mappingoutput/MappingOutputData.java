@@ -44,9 +44,6 @@ public class MappingOutputData extends BaseStepData implements StepDataInterface
   public List<MappingValueRename> inputValueRenames;
   public List<MappingValueRename> outputValueRenames;
 
-  /**
-	 * 
-	 */
   public MappingOutputData() {
     super();
   }

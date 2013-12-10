@@ -262,8 +262,8 @@ public class CommandLineOption {
       int osLength = optionStart[s].length();
       for ( int d = 0; d < optionDelim.length; d++ ) {
         int optLength = optionDelim[d].length();
-        if ( arg != null && arg.length() > osLength
-            && arg.toUpperCase().substring( osLength ).equals( option.toUpperCase() ) ) {
+        if ( arg != null
+            && arg.length() > osLength && arg.toUpperCase().substring( osLength ).equals( option.toUpperCase() ) ) {
           // OK, this is it.
           // Do we expect anything after this?
           // after the start, the option and the delimiter?
@@ -379,7 +379,8 @@ public class CommandLineOption {
             } else {
               // we did not get a valid value
               if ( log != null ) {
-                log.logError( "Command Line Options", "Option " + optionName + " expects an argument",
+                log.logError(
+                    "Command Line Options", "Option " + optionName + " expects an argument",
                     new Object[] { optionName } );
               }
               return false;
@@ -406,14 +407,16 @@ public class CommandLineOption {
                 }
               } catch ( DuplicateParamException e ) {
                 if ( log != null ) {
-                  log.logError( "Command Line Options", "Parameter '" + key
-                      + "' is specified multiple times, first occurrence is used.", new Object[] { optionName } );
+                  log.logError( "Command Line Options", "Parameter '"
+                      + key + "' is specified multiple times, first occurrence is used.", new Object[] { optionName } );
                 }
               }
             } else {
               if ( log != null ) {
-                log.logError( "Command Line Options", "Option " + optionName
-                    + " expects an argument of the format KEY=VALUE (missing '=')", new Object[] { optionName } );
+                log.logError(
+                    "Command Line Options", "Option "
+                        + optionName + " expects an argument of the format KEY=VALUE (missing '=')",
+                    new Object[] { optionName } );
               }
               return false;
             }
@@ -432,7 +435,8 @@ public class CommandLineOption {
             } else {
               // we did not get a valid value
               if ( log != null ) {
-                log.logError( "Command Line Options", "Option " + optionName + " expects an argument",
+                log.logError(
+                    "Command Line Options", "Option " + optionName + " expects an argument",
                     new Object[] { optionName } );
               }
               return false;

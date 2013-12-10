@@ -83,7 +83,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
   public SelectMetadataChange( StepAttributesInterface attributesInterface, String name, String rename, int type,
       int length, int precision, int storageType, String conversionMask, String decimalSymbol, String groupingSymbol,
       String currencySymbol ) {
-    this( attributesInterface, name, rename, type, length, precision, storageType, conversionMask, false, null, null,
+    this(
+        attributesInterface, name, rename, type, length, precision, storageType, conversionMask, false, null, null,
         false, decimalSymbol, groupingSymbol, currencySymbol );
   }
 

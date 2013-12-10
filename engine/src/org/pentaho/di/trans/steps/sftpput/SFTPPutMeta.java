@@ -182,8 +182,8 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "createRemoteFolder", createRemoteFolder ) );
     retval.append( "      " ).append(
         XMLHandler.addTagValue( "aftersftpput", JobEntrySFTPPUT.getAfterSFTPPutCode( getAfterFTPS() ) ) );
-    retval.append( "      " )
-        .append( XMLHandler.addTagValue( "destinationfolderFieldName", destinationfolderFieldName ) );
+    retval
+        .append( "      " ).append( XMLHandler.addTagValue( "destinationfolderFieldName", destinationfolderFieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "createdestinationfolder", createDestinationFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "remoteFilenameFieldName", remoteFilenameFieldName ) );
 
@@ -216,8 +216,8 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
       createRemoteFolder = rep.getStepAttributeBoolean( id_step, "createRemoteFolder" );
 
       boolean remove = rep.getStepAttributeBoolean( id_step, "remove" );
-      setAfterFTPS( JobEntrySFTPPUT.getAfterSFTPPutByCode( Const.NVL( rep.getStepAttributeString( id_step,
-          "aftersftpput" ), "" ) ) );
+      setAfterFTPS( JobEntrySFTPPUT.getAfterSFTPPutByCode( Const.NVL( rep.getStepAttributeString(
+          id_step, "aftersftpput" ), "" ) ) );
       if ( remove && getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING ) {
         setAfterFTPS( JobEntrySFTPPUT.AFTER_FTPSPUT_DELETE );
       }
@@ -235,7 +235,9 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "servername", serverName );
       rep.saveStepAttribute( id_transformation, id_step, "serverport", serverPort );
       rep.saveStepAttribute( id_transformation, id_step, "username", userName );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveStepAttribute( id_transformation, id_step, "password", Encr
+              .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveStepAttribute( id_transformation, id_step, "sourceFileFieldName", sourceFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "remoteDirectoryFieldName", remoteDirectoryFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "inputIsStream", inputIsStream );
@@ -276,26 +278,26 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "SFTPPutMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "SFTPPutMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SFTPPutMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SFTPPutMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SFTPPutMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SFTPPutMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SFTPPutMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SFTPPutMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

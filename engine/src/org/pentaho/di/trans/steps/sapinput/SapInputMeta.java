@@ -263,8 +263,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < outputFields.size(); i++ ) {
         SapOutputField field = outputFields.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_sap_field_name", field.getSapFieldName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_sap_type", field.getSapType() == null ? null
-            : field.getSapType().getCode() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_sap_type", field.getSapType() == null
+            ? null : field.getSapType().getCode() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_table_name", field.getTableName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_target_type", ValueMeta.getTypeDesc( field
             .getTargetType() ) );
@@ -327,8 +327,8 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta );
       remarks.add( cr );
     }
 

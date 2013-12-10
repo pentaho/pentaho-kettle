@@ -166,8 +166,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       }
     } catch ( Exception ex ) {
 
-      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-          "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "ExecuteTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
   }
 

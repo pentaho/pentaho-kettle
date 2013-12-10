@@ -102,8 +102,8 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
       String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ADD COLUMN ( " + getFieldDefinition( v, tk, pk, use_autoinc, true, false )
-        + " ) ";
+    return "ALTER TABLE "
+        + tablename + " ADD COLUMN ( " + getFieldDefinition( v, tk, pk, use_autoinc, true, false ) + " ) ";
   }
 
   /**

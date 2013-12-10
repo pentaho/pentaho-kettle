@@ -67,9 +67,6 @@ public class LoadFileInputData extends BaseStepData implements StepDataInterface
   public String uriName;
   public String rootUriName;
 
-  /**
-	 * 
-	 */
   public LoadFileInputData() {
     super();
 

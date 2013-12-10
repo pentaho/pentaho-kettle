@@ -63,8 +63,8 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static final String YES = "Y";
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   /** Array of filenames */
@@ -711,8 +711,8 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we get input...
     if ( input.length <= 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "YamlInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "YamlInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
@@ -723,21 +723,21 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( getInputFields().length <= 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "YamlInputMeta.CheckResult.NoInputField" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "YamlInputMeta.CheckResult.NoInputField" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( isInFields() ) {
       if ( Const.isEmpty( getYamlField() ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.NoField" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "YamlInputMeta.CheckResult.NoField" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.FieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "YamlInputMeta.CheckResult.FieldOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
@@ -745,13 +745,13 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
       // String files[] = getFiles();
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.NoFiles" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "YamlInputMeta.CheckResult.NoFiles" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "YamlInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
         remarks.add( cr );
       }
     }

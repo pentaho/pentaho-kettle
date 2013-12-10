@@ -59,8 +59,8 @@ import org.w3c.dom.Node;
 public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
   private static final String NO = "N";
   private static final String YES = "Y";
@@ -939,7 +939,9 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+      rep
+          .saveStepAttribute(
+              id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
@@ -950,8 +952,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFileList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -971,8 +973,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LDIFInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "LDIFInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
@@ -984,13 +986,13 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
     FileInputList fileInputList = getFiles( transMeta );
     if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LDIFInputMeta.CheckResult.NoFiles" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "LDIFInputMeta.CheckResult.NoFiles" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "LDIFInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "LDIFInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
       remarks.add( cr );
     }
   }

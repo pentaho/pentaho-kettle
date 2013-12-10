@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.rowgenerator;
 
@@ -46,24 +46,21 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
-
 /**
  * Test class for the RowGenerator step.
  * 
- * TODO For the moment only the basic stuff is verified. Formats, lengths, precision should best also be tested. 
- *
+ * TODO For the moment only the basic stuff is verified. Formats, lengths, precision should best also be tested.
+ * 
  * @author Sven Boden
  */
 public class RowGeneratorTest extends TestCase {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = {
-      new ValueMeta( "string",  ValueMeta.TYPE_STRING ),
-      new ValueMeta( "boolean", ValueMeta.TYPE_BOOLEAN ),
-      new ValueMeta( "integer", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "timestamp", ValueMeta.TYPE_TIMESTAMP )
-    };
+    ValueMetaInterface[] valuesMeta =
+        {
+            new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "boolean", ValueMeta.TYPE_BOOLEAN ),
+            new ValueMeta( "integer", ValueMeta.TYPE_INTEGER ), new ValueMeta( "timestamp", ValueMeta.TYPE_TIMESTAMP ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -77,12 +74,8 @@ public class RowGeneratorTest extends TestCase {
 
     RowMetaInterface rm = createRowMetaInterface();
 
-    Object[] r1 = new Object[] {
-      "string_value",
-      Boolean.TRUE,
-      new Long( 20L ),
-      Timestamp.valueOf( "1970-01-01 00:00:00.000" )
-    };
+    Object[] r1 =
+        new Object[] { "string_value", Boolean.TRUE, new Long( 20L ), Timestamp.valueOf( "1970-01-01 00:00:00.000" ) };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r1 ) );
@@ -92,8 +85,7 @@ public class RowGeneratorTest extends TestCase {
   }
 
   /**
-   *  Check the 2 lists comparing the rows in order.
-   *  If they are not the same fail the test. 
+   * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
    */
   public void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2 ) {
     int idx = 1;
@@ -143,7 +135,7 @@ public class RowGeneratorTest extends TestCase {
 
     PluginRegistry registry = PluginRegistry.getInstance();
 
-    // 
+    //
     // create a row generator step...
     //
     String rowGeneratorStepname = "row generator step";
@@ -180,7 +172,7 @@ public class RowGeneratorTest extends TestCase {
     rm.setCurrency( currency );
     rm.setEmptyString( setEmptystring );
 
-    // 
+    //
     // Create a dummy step
     //
     String dummyStepname = "dummy step";

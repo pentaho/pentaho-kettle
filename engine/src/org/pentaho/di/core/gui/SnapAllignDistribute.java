@@ -276,8 +276,8 @@ public class SnapAllignDistribute {
       for ( int j = 0; j < elements.size() - 1; j++ ) {
         Point p1 = ( elements.get( order[j] ) ).getLocation();
         Point p2 = ( elements.get( order[j + 1] ) ).getLocation();
-        if ( p1.x > p2.x ) // swap
-        {
+        if ( p1.x > p2.x ) { // swap
+
           int dummy = order[j];
           order[j] = order[j + 1];
           order[j + 1] = dummy;
@@ -347,8 +347,8 @@ public class SnapAllignDistribute {
       for ( int j = 0; j < elements.size() - 1; j++ ) {
         Point p1 = ( elements.get( order[j] ) ).getLocation();
         Point p2 = ( elements.get( order[j + 1] ) ).getLocation();
-        if ( p1.y > p2.y ) // swap
-        {
+        if ( p1.y > p2.y ) { // swap
+
           int dummy = order[j];
           order[j] = order[j + 1];
           order[j + 1] = dummy;

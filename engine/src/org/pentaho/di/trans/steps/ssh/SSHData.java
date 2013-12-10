@@ -47,9 +47,6 @@ public class SSHData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public SSHData() {
     super();
     this.indexOfCommand = -1;

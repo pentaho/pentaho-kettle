@@ -248,9 +248,8 @@ public class GaInputStep extends BaseStep implements StepInterface {
         throw new KettleException( e3 );
       }
 
-    }
-    // query is there, check whether we hit the last entry and requery as necessary
-    else if ( data.entryIndex >= data.feed.getEntries().size() ) {
+    } else if ( data.entryIndex >= data.feed.getEntries().size() ) {
+      // query is there, check whether we hit the last entry and re-query as necessary
       if ( data.feed.getStartIndex() + data.entryIndex <= data.feed.getTotalResults() ) {
         // need to query for next page
         data.query.setStartIndex( data.feed.getStartIndex() + data.entryIndex );

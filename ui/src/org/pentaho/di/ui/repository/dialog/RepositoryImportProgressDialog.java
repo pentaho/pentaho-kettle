@@ -183,8 +183,8 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
       public void run() {
         IRepositoryImporter importer = rep.getImporter();
         importer.setImportRules( importRules );
-        importer.importAll( RepositoryImportProgressDialog.this, fileDirectory, filenames, baseDirectory, false, false,
-            versionComment );
+        importer.importAll(
+            RepositoryImportProgressDialog.this, fileDirectory, filenames, baseDirectory, false, false, versionComment );
       }
     } );
 
@@ -214,12 +214,15 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
   public boolean transOverwritePrompt( TransMeta transMeta ) {
     MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell,
-            BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Title" ), null, BaseMessages.getString(
-                PKG, "RepositoryImportDialog.OverwriteTrans.Message", transMeta.getName() ), MessageDialog.QUESTION,
-            new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
-              BaseMessages.getString( PKG, "System.Button.No" ) }, 1, BaseMessages.getString( PKG,
-                "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
+        new MessageDialogWithToggle(
+            shell,
+            BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Title" ),
+            null,
+            BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Message", transMeta.getName() ),
+            MessageDialog.QUESTION,
+            new String[] {
+                BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) },
+            1, BaseMessages.getString( PKG, "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
     MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
     int answer = md.open();
 
@@ -230,11 +233,15 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
   public boolean jobOverwritePrompt( JobMeta jobMeta ) {
     MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteJob.Title" ),
-            null, BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteJob.Message", jobMeta.getName() ),
-            MessageDialog.QUESTION, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
-              BaseMessages.getString( PKG, "System.Button.No" ) }, 1, BaseMessages.getString( PKG,
-                "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
+        new MessageDialogWithToggle(
+            shell,
+            BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteJob.Title" ),
+            null,
+            BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteJob.Message", jobMeta.getName() ),
+            MessageDialog.QUESTION,
+            new String[] {
+                BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) },
+            1, BaseMessages.getString( PKG, "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
     MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
     int answer = md.open();
     askOverwrite = !md.getToggleState();

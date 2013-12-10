@@ -292,8 +292,9 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
           wFileName.setText( filefield );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "FileLockedDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "FileLockedDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "FileLockedDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "FileLockedDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

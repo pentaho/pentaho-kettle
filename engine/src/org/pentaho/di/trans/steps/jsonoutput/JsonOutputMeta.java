@@ -68,9 +68,9 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-    BaseMessages.getString( PKG, "JsonOutputMeta.operationType.OutputValue" ),
-    BaseMessages.getString( PKG, "JsonOutputMeta.operationType.WriteToFile" ),
-    BaseMessages.getString( PKG, "JsonOutputMeta.operationType.Both" ) };
+      BaseMessages.getString( PKG, "JsonOutputMeta.operationType.OutputValue" ),
+      BaseMessages.getString( PKG, "JsonOutputMeta.operationType.WriteToFile" ),
+      BaseMessages.getString( PKG, "JsonOutputMeta.operationType.Both" ) };
 
   /**
    * The operations type codes
@@ -586,22 +586,22 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
       // We need to have output field name
       if ( Const.isEmpty( transMeta.environmentSubstitute( getOutputValue() ) ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "JsonOutput.Error.MissingOutputFieldName" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "JsonOutput.Error.MissingOutputFieldName" ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( Const.isEmpty( transMeta.environmentSubstitute( getFileName() ) ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "JsonOutput.Error.MissingTargetFilename" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "JsonOutput.Error.MissingTargetFilename" ), stepMeta );
       remarks.add( cr );
     }
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "JsonOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "JsonOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -621,8 +621,8 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "JsonOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "JsonOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -630,19 +630,19 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "JsonOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "JsonOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "JsonOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "JsonOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "JsonOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+            PKG, "JsonOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 

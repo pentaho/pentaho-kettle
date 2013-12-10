@@ -51,8 +51,8 @@ public class ExtensionPointHandler {
     for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
       if ( id.equals( extensionPointPlugin.getName() ) ) {
         ExtensionPointInterface extensionPoint = (ExtensionPointInterface) registry.loadClass( extensionPointPlugin );
-        log.logDetailed( "Handling extension point for plugin with id '" + extensionPointPlugin.getIds()[0]
-            + "' and extension point id '" + id + "'" );
+        log.logDetailed( "Handling extension point for plugin with id '"
+            + extensionPointPlugin.getIds()[0] + "' and extension point id '" + id + "'" );
         extensionPoint.callExtensionPoint( log, object );
       }
     }

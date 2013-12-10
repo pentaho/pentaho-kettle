@@ -58,8 +58,8 @@ public class StepInjectionMetaEntry implements Cloneable {
 
   @Override
   public String toString() {
-    return "{" + key + ":" + ValueMeta.getTypeDesc( valueType ) + ( value == null ? "" : "(" + value.toString() + ")" )
-        + "}";
+    return "{"
+        + key + ":" + ValueMeta.getTypeDesc( valueType ) + ( value == null ? "" : "(" + value.toString() + ")" ) + "}";
   }
 
   public StepInjectionMetaEntry clone() {

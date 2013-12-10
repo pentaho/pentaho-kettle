@@ -120,8 +120,8 @@ public class PartitionsController extends LazilyInitializedController implements
         ObjectId partitionId = repository.getPartitionSchemaID( partitionSchema.getName() );
         if ( partitionId == null ) {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-          mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message",
-              partitionSchemaName ) );
+          mb.setMessage( BaseMessages.getString(
+              PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName ) );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Edit.Title" ) );
           mb.open();
         } else {
@@ -129,8 +129,10 @@ public class PartitionsController extends LazilyInitializedController implements
               new PartitionSchemaDialog( shell, partitionSchema, repository.readDatabases(), variableSpace );
           if ( partitionDialog.open() ) {
             if ( partitionSchema.getName() != null && !partitionSchema.getName().equals( "" ) ) {
-              repository.insertLogEntry( BaseMessages.getString( RepositoryExplorer.class,
-                  "PartitionsController.Message.UpdatingPartition", partitionSchema.getName() ) );
+              repository.insertLogEntry( BaseMessages
+                  .getString(
+                      RepositoryExplorer.class, "PartitionsController.Message.UpdatingPartition", partitionSchema
+                          .getName() ) );
               repository.save( partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null );
             } else {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
@@ -148,8 +150,9 @@ public class PartitionsController extends LazilyInitializedController implements
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Edit.Title" ),
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message" )
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Edit.Title" ), BaseMessages
+              .getString( PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message" )
               + partitionSchemaName + "]", e );
     } finally {
       refreshPartitions();
@@ -166,12 +169,14 @@ public class PartitionsController extends LazilyInitializedController implements
         ObjectId idPartition = repository.getPartitionSchemaID( partition.getName() );
         if ( idPartition == null ) {
           if ( partition.getName() != null && !partition.getName().equals( "" ) ) {
-            repository.insertLogEntry( BaseMessages.getString( RepositoryExplorer.class,
-                "PartitionsController.Message.CreatingPartition", partition.getName() ) );
+            repository.insertLogEntry( BaseMessages.getString(
+                RepositoryExplorer.class, "PartitionsController.Message.CreatingPartition", partition.getName() ) );
             repository.save( partition, Const.VERSION_COMMENT_INITIAL_VERSION, null );
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-            mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message" ) );
+            mb
+                .setMessage( BaseMessages
+                    .getString( PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message" ) );
             mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Create.Title" ) );
             mb.open();
           }
@@ -184,9 +189,9 @@ public class PartitionsController extends LazilyInitializedController implements
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title" ), BaseMessages.getString( PKG,
-          "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title" ), BaseMessages.getString(
+          PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message" ), e );
     } finally {
       refreshPartitions();
     }
@@ -207,8 +212,8 @@ public class PartitionsController extends LazilyInitializedController implements
             ObjectId partitionId = repository.getPartitionSchemaID( partitionSchema.getName() );
             if ( partitionId == null ) {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-              mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message",
-                  partitionSchemaName ) );
+              mb.setMessage( BaseMessages.getString(
+                  PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName ) );
               mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Delete.Title" ) );
               mb.open();
             } else {

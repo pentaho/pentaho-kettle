@@ -296,22 +296,25 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
 
     ColumnInfo[] colval = new ColumnInfo[FieldsCols];
     colval[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.ValueType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IfNullDialog.ValueType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
             ValueMetaInterface.typeCodes );
     colval[1] =
         new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colval[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats() );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ), ColumnInfo.COLUMN_TYPE_CCOMBO, Const
+                .getDateFormats() );
     colval[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-              BaseMessages.getString( PKG, "System.Combo.No" ) } );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {
+                BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     colval[1].setUsingVariables( true );
     wValueTypes =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colval, ValueTypesRows, oldlsMod,
-            props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colval, ValueTypesRows, oldlsMod, props );
 
     fdValueTypes = new FormData();
     fdValueTypes.left = new FormAttachment( 0, 0 );
@@ -417,22 +420,25 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     wlFields.setLayoutData( fdlFields );
 
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IfNullDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
             new String[] {}, false );
     colinf[1] =
         new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats() );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IfNullDialog.Value.ConversionMask" ), ColumnInfo.COLUMN_TYPE_CCOMBO, Const
+                .getDateFormats() );
     colinf[1].setUsingVariables( true );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-              BaseMessages.getString( PKG, "System.Combo.No" ) } );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IfNullDialog.Value.SetEmptyString" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {
+                BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod,
-            props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

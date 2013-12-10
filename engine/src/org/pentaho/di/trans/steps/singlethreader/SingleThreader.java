@@ -263,12 +263,12 @@ public class SingleThreader extends BaseStep implements StepInterface {
     try {
       boolean ok = data.executor.init();
       if ( !ok ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "SingleThreader.Exception.UnableToInitSingleThreadedTransformation" ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "SingleThreader.Exception.UnableToInitSingleThreadedTransformation" ) );
       }
     } catch ( KettleException e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SingleThreader.Exception.UnableToPrepareExecutionOfMapping" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SingleThreader.Exception.UnableToPrepareExecutionOfMapping" ), e );
     }
 
     // Add the mapping transformation to the active sub-transformations map in the parent transformation
@@ -293,8 +293,8 @@ public class SingleThreader extends BaseStep implements StepInterface {
         meta.setRepository( getTransMeta().getRepository() );
 
         data.mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta( meta, meta.getRepository(), this );
-        if ( data.mappingTransMeta != null ) // Do we have a mapping at all?
-        {
+        if ( data.mappingTransMeta != null ) { // Do we have a mapping at all?
+
           // Validate the inject and retrieve step names
           //
           String injectStepName = environmentSubstitute( meta.getInjectStep() );
@@ -307,8 +307,8 @@ public class SingleThreader extends BaseStep implements StepInterface {
           if ( !Const.isEmpty( retrieveStepName ) ) {
             data.retrieveStepMeta = data.mappingTransMeta.findStep( retrieveStepName );
             if ( data.retrieveStepMeta == null ) {
-              logError( "The retrieve step with name '" + retrieveStepName
-                  + "' couldn't be found in the sub-transformation" );
+              logError( "The retrieve step with name '"
+                  + retrieveStepName + "' couldn't be found in the sub-transformation" );
             }
           }
 

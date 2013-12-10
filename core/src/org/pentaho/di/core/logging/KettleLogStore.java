@@ -135,8 +135,9 @@ public class KettleLogStore {
    *          The maximum time that a log line times out in hours.
    */
   public static void init( int maxSize, int maxLogTimeoutMinutes ) {
-    init( maxSize, maxLogTimeoutMinutes, EnvUtil.getSystemProperty( Const.KETTLE_REDIRECT_STDOUT, "N" )
-        .equalsIgnoreCase( "Y" ), EnvUtil.getSystemProperty( Const.KETTLE_REDIRECT_STDERR, "N" ).equalsIgnoreCase( "Y" ) );
+    init( maxSize, maxLogTimeoutMinutes, EnvUtil
+        .getSystemProperty( Const.KETTLE_REDIRECT_STDOUT, "N" ).equalsIgnoreCase( "Y" ), EnvUtil.getSystemProperty(
+        Const.KETTLE_REDIRECT_STDERR, "N" ).equalsIgnoreCase( "Y" ) );
   }
 
   public static void init() {

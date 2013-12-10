@@ -66,8 +66,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryFoldersCompare.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "JobFoldersCompare.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+      PKG, "JobFoldersCompare.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -244,8 +244,8 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
     fdlWildcard.right = new FormAttachment( middle, -margin );
     wlWildcard.setLayoutData( fdlWildcard );
     wWildcard =
-        new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFoldersCompare.Wildcard.Tooltip" ) );
+        new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobFoldersCompare.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();

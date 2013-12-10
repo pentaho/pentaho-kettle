@@ -52,9 +52,6 @@ public class SalesforceUpsertData extends BaseStepData implements StepDataInterf
 
   public String realSalesforceFieldName;
 
-  /**
-	 * 
-	 */
   public SalesforceUpsertData() {
     super();
 

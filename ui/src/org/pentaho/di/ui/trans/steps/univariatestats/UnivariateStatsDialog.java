@@ -171,28 +171,37 @@ public class UnivariateStatsDialog extends BaseStepDialog implements StepDialogI
 
     m_colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.InputFieldColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.NColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.MeanColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.StdDevColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.MinColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.MaxColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.MedianColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.PercentileColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "UnivariateStatsDialog.InterpolateColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.InputFieldColumn.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.NColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "True", "False" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.MeanColumn.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.StdDevColumn.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.MinColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "True", "False" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.MaxColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "True", "False" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.MedianColumn.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.PercentileColumn.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UnivariateStatsDialog.InterpolateColumn.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "True", "False" }, true ) };
 
     m_wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, m_colinf, fieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, m_colinf, fieldsRows, lsMod, props );
 
     m_fdFields = new FormData();
     m_fdFields.left = new FormAttachment( 0, 0 );

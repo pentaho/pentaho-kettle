@@ -192,8 +192,8 @@ public class RegexEvalHelperDialog extends Dialog {
     wlRegExScript.setLayoutData( fdlRegExScript );
 
     wRegExScript =
-        new StyledTextComp( transmeta, wNoteContentComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL
-            | SWT.V_SCROLL, "" );
+        new StyledTextComp( transmeta, wNoteContentComp, SWT.MULTI
+            | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     wRegExScript.setText( "" );
     props.setLook( wRegExScript, Props.WIDGET_STYLE_FIXED );
     props.setLook( wRegExScript );

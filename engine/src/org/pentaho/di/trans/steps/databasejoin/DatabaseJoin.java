@@ -61,8 +61,9 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = rowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
-          repository, metaStore );
+      meta.getFields(
+          data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this, repository,
+          metaStore );
 
       data.lookupRowMeta = new RowMeta();
 
@@ -149,8 +150,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }

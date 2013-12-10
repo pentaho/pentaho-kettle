@@ -348,12 +348,14 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.GroupField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.GroupField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
 
     wGroup =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrKeyRows, lsMod, props );
 
     wGet = new Button( shell, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "GroupByDialog.GetFields.Button" ) );
@@ -383,23 +385,26 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Subject" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Subject" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
             GroupByMeta.typeGroupLongDesc );
     ciReturn[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[3].setToolTip( BaseMessages.getString( PKG, "GroupByDialog.ColumnInfo.Value.Tooltip" ) );
     ciReturn[3].setUsingVariables( true );
 
     wAgg =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+            UpInsRows, lsMod, props );
 
     wGetAgg = new Button( shell, SWT.PUSH );
     wGetAgg.setText( BaseMessages.getString( PKG, "GroupByDialog.GetLookupFields.Button" ) );
@@ -629,12 +634,12 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
     if ( sizegroup > 0 && "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "GroupByDialog.GroupByWarningDialog.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "GroupByDialog.GroupByWarningDialog.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "GroupByDialog.GroupByWarningDialog.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "GroupByDialog.GroupByWarningDialog.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
+          new MessageDialogWithToggle( shell, BaseMessages.getString(
+              PKG, "GroupByDialog.GroupByWarningDialog.DialogTitle" ), null, BaseMessages.getString(
+              PKG, "GroupByDialog.GroupByWarningDialog.DialogMessage", Const.CR )
+              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+              PKG, "GroupByDialog.GroupByWarningDialog.Option1" ) }, 0, BaseMessages.getString(
+              PKG, "GroupByDialog.GroupByWarningDialog.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
               STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
@@ -652,8 +657,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         BaseStepDialog.getFieldsFromPrevious( r, wGroup, 1, new int[] { 1 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "GroupByDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "GroupByDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "GroupByDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+              PKG, "GroupByDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -664,8 +670,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         BaseStepDialog.getFieldsFromPrevious( r, wAgg, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "GroupByDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "GroupByDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "GroupByDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+              PKG, "GroupByDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

@@ -170,8 +170,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         setOutputDone();
         try {
           writeBufferToMonetDB();
@@ -466,8 +466,9 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
         nullRep = new String( data.nullrepresentation );
       }
 
-      cmdBuff.append( "COPY " ).append( data.bufferIndex ).append( " RECORDS INTO " ).append( data.schemaTable )
-          .append( " FROM STDIN USING DELIMITERS '" ).append( new String( data.separator ) ).append(
+      cmdBuff
+          .append( "COPY " ).append( data.bufferIndex ).append( " RECORDS INTO " ).append( data.schemaTable ).append(
+              " FROM STDIN USING DELIMITERS '" ).append( new String( data.separator ) ).append(
               "','" + Const.CR + "','" ).append( new String( data.quote ) ).append( "' NULL AS '" + nullRep + "';" );
       String cmd = cmdBuff.toString();
       if ( log.isDetailed() ) {
@@ -570,8 +571,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-          meta.getDatabaseMeta( this ).getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-              environmentSubstitute( meta.getTableName() ) );
+          meta.getDatabaseMeta( this ).getQuotedSchemaTableCombination(
+              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       return true;
     }

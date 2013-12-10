@@ -135,8 +135,8 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
             break;
         }
         if ( replacement == null ) {
-          throw new KettleSQLException( "Unhandled data type: " + valueMeta.getTypeDesc() + " replacing parameter "
-              + ( i + 1 ) );
+          throw new KettleSQLException( "Unhandled data type: "
+              + valueMeta.getTypeDesc() + " replacing parameter " + ( i + 1 ) );
         }
 
         // replace the ?

@@ -96,9 +96,6 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface {
 
   public WorkbookSettings ws;
 
-  /**
-	 * 
-	 */
   public ExcelOutputData() {
     super();
 

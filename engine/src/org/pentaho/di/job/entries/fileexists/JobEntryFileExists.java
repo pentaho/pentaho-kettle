@@ -98,8 +98,8 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
       super.loadXML( entrynode, databases, slaveServers );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryFileExists.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryFileExists.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
     }
   }
 
@@ -108,8 +108,8 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
     try {
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -117,8 +117,8 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "filename", filename );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryFileExists.ERROR_0003_Cannot_Save_Job_Entry",
-          id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryFileExists.ERROR_0003_Cannot_Save_Job_Entry", id_job ), dbe );
     }
   }
 

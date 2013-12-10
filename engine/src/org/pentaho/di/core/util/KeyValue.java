@@ -94,8 +94,8 @@ public class KeyValue<T> implements Serializable {
   public static final void assertKey( final String lowerKey ) throws IllegalArgumentException {
     Assert.assertNotEmpty( lowerKey, "Key cannot be null or empty" );
     if ( !StringUtils.containsOnly( lowerKey, VALID_KEY_CHARS ) ) {
-      throw new IllegalArgumentException( "Key contains invalid characters [validKeyCharacters=" + VALID_KEY_CHARS
-          + "]" );
+      throw new IllegalArgumentException( "Key contains invalid characters [validKeyCharacters="
+          + VALID_KEY_CHARS + "]" );
     }
     if ( lowerKey.charAt( 0 ) == '-' ) {
       throw new IllegalArgumentException( "Key must not start with '-'" );

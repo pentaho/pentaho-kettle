@@ -82,8 +82,8 @@ public class Abort extends BaseStep implements StepInterface {
         //
         // Here we abort!!
         //
-        logError( BaseMessages.getString( PKG, "Abort.Log.Wrote.AbortRow", Long.toString( nrInputRows ),
-            getInputRowMeta().getString( r ) ) );
+        logError( BaseMessages.getString(
+            PKG, "Abort.Log.Wrote.AbortRow", Long.toString( nrInputRows ), getInputRowMeta().getString( r ) ) );
 
         String message = environmentSubstitute( meta.getMessage() );
         if ( message == null || message.length() == 0 ) {
@@ -96,12 +96,12 @@ public class Abort extends BaseStep implements StepInterface {
       } else {
         // seen a row but not yet reached the threshold
         if ( meta.isAlwaysLogRows() ) {
-          logMinimal( BaseMessages.getString( PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ),
-              getInputRowMeta().getString( r ) ) );
+          logMinimal( BaseMessages.getString(
+              PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ), getInputRowMeta().getString( r ) ) );
         } else {
           if ( log.isRowLevel() ) {
-            logRowlevel( BaseMessages.getString( PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ),
-                getInputRowMeta().getString( r ) ) );
+            logRowlevel( BaseMessages.getString(
+                PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ), getInputRowMeta().getString( r ) ) );
           }
         }
       }

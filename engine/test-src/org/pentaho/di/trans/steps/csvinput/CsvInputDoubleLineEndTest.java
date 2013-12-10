@@ -45,7 +45,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 /**
  * Tests for double line endings in CsvInput step
- *
+ * 
  * @author Pavel Sakun
  * @see CsvInput
  */
@@ -95,7 +95,8 @@ public class CsvInputDoubleLineEndTest {
     CsvInputData data = new CsvInputData();
 
     CsvInput csvInput =
-        new CsvInput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        new CsvInput(
+            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
 
     csvInput.init( meta, data );

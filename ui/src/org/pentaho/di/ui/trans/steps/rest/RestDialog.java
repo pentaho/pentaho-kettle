@@ -785,8 +785,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         }
         dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
-          wTrustStoreFile.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
-              + dialog.getFileName() );
+          wTrustStoreFile.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );
@@ -871,15 +871,16 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ) };
 
     colinf[1].setUsingVariables( true );
     wFields =
-        new TableView( transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
-            lsMod, props );
+        new TableView(
+            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -931,14 +932,17 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     colinfoparams =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterField" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "RestDialog.ColumnInfo.ParameterName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ), };
 
     wParameters =
-        new TableView( transMeta, wParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfoparams,
-            ParametersRows, lsMod, props );
+        new TableView(
+            transMeta, wParametersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfoparams, ParametersRows,
+            lsMod, props );
 
     fdParameters = new FormData();
     fdParameters.left = new FormAttachment( 0, 0 );

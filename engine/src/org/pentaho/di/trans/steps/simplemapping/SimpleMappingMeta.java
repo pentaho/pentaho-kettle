@@ -172,8 +172,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
       mappingParameters = new MappingParameters( mappingParametersNode );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SimpleMappingMeta.Exception.ErrorLoadingTransformationStepFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SimpleMappingMeta.Exception.ErrorLoadingTransformationStepFromXML" ), e );
     }
   }
 
@@ -250,8 +250,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
-    rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null ? null
-        : specificationMethod.getCode() );
+    rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null
+        ? null : specificationMethod.getCode() );
     rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null ? null : transObjectId
         .toString() );
     rep.saveStepAttribute( id_transformation, id_step, "filename", fileName );
@@ -290,8 +290,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
     try {
       mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
     } catch ( KettleException e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "SimpleMappingMeta.Exception.UnableToLoadMappingTransformation" ), e );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "SimpleMappingMeta.Exception.UnableToLoadMappingTransformation" ), e );
     }
 
     // The field structure may depend on the input parameters as well (think of parameter replacements in MDX queries
@@ -346,8 +346,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
       for ( MappingValueRename valueRename : inputMapping.getValueRenames() ) {
         ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta( valueRename.getSourceValueName() );
         if ( valueMeta == null ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "SimpleMappingMeta.Exception.UnableToFindField",
-              valueRename.getSourceValueName() ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "SimpleMappingMeta.Exception.UnableToFindField", valueRename.getSourceValueName() ) );
         }
         valueMeta.setName( valueRename.getTargetValueName() );
       }
@@ -418,11 +418,12 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
           // Don't set internal variables: they belong to the parent thread!
           //
           mappingTransMeta = new TransMeta( realFilename, metaStore, rep, true, space, null );
-          mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+          mappingTransMeta.getLogChannel().logDetailed(
+              "Loading Mapping from repository",
               "Mapping transformation was loaded from XML file [" + realFilename + "]" );
         } catch ( Exception e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SimpleMappingMeta.Exception.UnableToLoadMapping" ),
-              e );
+          throw new KettleException(
+              BaseMessages.getString( PKG, "SimpleMappingMeta.Exception.UnableToLoadMapping" ), e );
         }
         break;
 
@@ -432,8 +433,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
 
         if ( rep == null ) { // hardening because TransMeta.setRepositoryOnMappingSteps(); might be missing in special
                              // situations
-          throw new KettleException( BaseMessages.getString( PKG,
-              "SimpleMappingMeta.Exception.InternalErrorRepository.Message" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SimpleMappingMeta.Exception.InternalErrorRepository.Message" ) );
         }
 
         if ( !Const.isEmpty( realTransname ) && !Const.isEmpty( realDirectory ) && rep != null ) {
@@ -449,19 +450,20 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
                                                                                                     // Repository
                                                                                                     // methods?
 
-              mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+              mappingTransMeta.getLogChannel().logDetailed(
+                  "Loading Mapping from repository",
                   "Mapping transformation [" + realTransname + "] was loaded from the repository" );
             } catch ( Exception e ) {
               throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
             }
           } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "SimpleMappingMeta.Exception.UnableToLoadTransformation", realTransname )
+            throw new KettleException( BaseMessages.getString(
+                PKG, "SimpleMappingMeta.Exception.UnableToLoadTransformation", realTransname )
                 + realDirectory );
           }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "SimpleMappingMeta.Exception.UnableToLoadTransformationNameOrDirNotGiven" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SimpleMappingMeta.Exception.UnableToLoadTransformationNameOrDirNotGiven" ) );
         }
         break;
 
@@ -469,8 +471,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
         // Read the last revision by reference...
         if ( rep == null ) { // hardening because TransMeta.setRepositoryOnMappingSteps(); might be missing in special
                              // situations
-          throw new KettleException( BaseMessages.getString( PKG,
-              "SimpleMappingMeta.Exception.InternalErrorRepository.Message" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SimpleMappingMeta.Exception.InternalErrorRepository.Message" ) );
         }
         mappingTransMeta = rep.loadTransformation( mappingMeta.getTransObjectId(), null );
         break;
@@ -481,8 +483,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
     // Pass some important information to the mapping transformation metadata:
     //
     if ( mappingTransMeta == null ) { // hardening because TransMeta might have issues in special situations
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SimpleMappingMeta.Exception.InternalErrorTransMetaIsNULL.Message" ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SimpleMappingMeta.Exception.InternalErrorTransMetaIsNULL.Message" ) );
     }
     mappingTransMeta.copyVariablesFrom( space );
     mappingTransMeta.setRepository( rep );
@@ -498,26 +500,26 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "SimpleMappingMeta.CheckResult.NotReceivingAnyFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "SimpleMappingMeta.CheckResult.NotReceivingAnyFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SimpleMappingMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SimpleMappingMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SimpleMappingMeta.CheckResult.StepReceivingFieldsFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SimpleMappingMeta.CheckResult.StepReceivingFieldsFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SimpleMappingMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SimpleMappingMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -633,8 +635,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
       // there. (mapping recursively down)
       //
       String proposedNewFilename =
-          mappingTransMeta.exportResources( mappingTransMeta, definitions, resourceNamingInterface, repository,
-              metaStore );
+          mappingTransMeta.exportResources(
+              mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Job.Filename.Directory}
@@ -657,8 +659,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
 
       return proposedNewFilename;
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SimpleMappingMeta.Exception.UnableToLoadTransformation",
-          fileName ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SimpleMappingMeta.Exception.UnableToLoadTransformation", fileName ) );
     }
   }
 
@@ -756,8 +758,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   private boolean isMapppingDefined() {
-    return !Const.isEmpty( fileName ) || transObjectId != null
-        || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
+    return !Const.isEmpty( fileName )
+        || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {

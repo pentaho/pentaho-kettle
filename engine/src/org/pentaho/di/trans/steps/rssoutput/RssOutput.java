@@ -81,15 +81,15 @@ public class RssOutput extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       if ( !first ) {
         if ( !meta.isCustomRss() ) {
           // No more input..so write and close the file.
-          WriteToFile( data.channeltitlevalue, data.channellinkvalue, data.channeldescriptionvalue,
-              data.channelpubdatevalue, data.channelcopyrightvalue, data.channelimagelinkvalue,
-              data.channelimagedescriptionvalue, data.channelimagelinkvalue, data.channelimageurlvalue,
-              data.channellanguagevalue, data.channelauthorvalue );
+          WriteToFile(
+              data.channeltitlevalue, data.channellinkvalue, data.channeldescriptionvalue, data.channelpubdatevalue,
+              data.channelcopyrightvalue, data.channelimagelinkvalue, data.channelimagedescriptionvalue,
+              data.channelimagelinkvalue, data.channelimageurlvalue, data.channellanguagevalue, data.channelauthorvalue );
         } else {
 
           // Write to document
@@ -159,8 +159,8 @@ public class RssOutput extends BaseStep implements StepInterface {
           parentfolder = KettleVFS.getFileObject( data.filename, getTransMeta() ).getParent();
           if ( !parentfolder.exists() ) {
             if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "RssOutput.Log.ParentFolderExists", parentfolder.getName()
-                  .toString() ) );
+              logDetailed( BaseMessages.getString( PKG, "RssOutput.Log.ParentFolderExists", parentfolder
+                  .getName().toString() ) );
             }
             parentfolder.createFolder();
             if ( log.isDetailed() ) {
@@ -170,10 +170,10 @@ public class RssOutput extends BaseStep implements StepInterface {
           }
         } catch ( Exception e ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "RssOutput.Log.CanNotCreateParentFolder", parentfolder.getName()
-              .toString() ) );
-          throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.CanNotCreateParentFolder",
-              parentfolder.getName().toString() ) );
+          logError( BaseMessages.getString( PKG, "RssOutput.Log.CanNotCreateParentFolder", parentfolder
+              .getName().toString() ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "RssOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString() ) );
 
         } finally {
           if ( parentfolder != null ) {
@@ -435,8 +435,8 @@ public class RssOutput extends BaseStep implements StepInterface {
         data.customchannels = new int[meta.getChannelCustomFields().length];
         for ( int i = 0; i < meta.getChannelCustomFields().length; i++ ) {
           data.customchannels[i] = data.inputRowMeta.indexOfValue( meta.getChannelCustomFields()[i] );
-          if ( data.customchannels[i] < 0 ) // couldn't find field!
-          {
+          if ( data.customchannels[i] < 0 ) { // couldn't find field!
+
             throw new KettleStepException( BaseMessages.getString( PKG, "RssOutput.Exception.FieldRequired", meta
                 .getChannelCustomFields()[i] ) );
           }
@@ -445,8 +445,8 @@ public class RssOutput extends BaseStep implements StepInterface {
         data.customitems = new int[meta.getItemCustomFields().length];
         for ( int i = 0; i < meta.getItemCustomFields().length; i++ ) {
           data.customitems[i] = data.inputRowMeta.indexOfValue( meta.getItemCustomFields()[i] );
-          if ( data.customitems[i] < 0 ) // couldn't find field!
-          {
+          if ( data.customitems[i] < 0 ) { // couldn't find field!
+
             throw new KettleStepException( BaseMessages.getString( PKG, "RssOutput.Exception.FieldRequired", meta
                 .getItemCustomFields()[i] ) );
           }
@@ -457,8 +457,8 @@ public class RssOutput extends BaseStep implements StepInterface {
         data.rssElement.addAttribute( "version", "2.0" );
         // add namespaces here ...
         for ( int i = 0; i < meta.getNameSpaces().length; i++ ) {
-          data.rssElement.addNamespace( environmentSubstitute( meta.getNameSpacesTitle()[i] ),
-              environmentSubstitute( meta.getNameSpaces()[i] ) );
+          data.rssElement.addNamespace(
+              environmentSubstitute( meta.getNameSpacesTitle()[i] ), environmentSubstitute( meta.getNameSpaces()[i] ) );
         }
 
         // Add channel
@@ -514,8 +514,8 @@ public class RssOutput extends BaseStep implements StepInterface {
       }
 
       // Now add entry ..
-      if ( !createEntry( itemauthorvalue, itemtitlevalue, itemlinkvalue, itemdatevalue, itemdescvalue, itemgeopointx,
-          itemgeopointy ) ) {
+      if ( !createEntry(
+          itemauthorvalue, itemtitlevalue, itemlinkvalue, itemdatevalue, itemdescvalue, itemgeopointx, itemgeopointy ) ) {
         throw new KettleException( "Error adding item to feed" );
       }
     } else {
@@ -664,7 +664,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         data.feed.setDescription( description );
       }
       if ( Pubdate != null ) {
-        data.feed.setPublishedDate( Pubdate );// data.dateParser.parse(Pubdate.toString()));
+        data.feed.setPublishedDate( Pubdate ); // data.dateParser.parse(Pubdate.toString()));
       }
       // Set image ..
       if ( meta.AddImage() ) {
@@ -704,8 +704,9 @@ public class RssOutput extends BaseStep implements StepInterface {
       if ( meta.AddToResult() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileName, getTransMeta() ),
-                getTransMeta().getName(), getStepname() );
+            new ResultFile(
+                ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileName, getTransMeta() ), getTransMeta()
+                    .getName(), getStepname() );
         resultFile.setComment( "This file was created with a RSS Output step" );
         addResultFile( resultFile );
       }

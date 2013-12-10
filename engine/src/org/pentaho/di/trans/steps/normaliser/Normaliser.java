@@ -59,14 +59,14 @@ public class Normaliser extends BaseStep implements StepInterface {
     data = (NormaliserData) sdi;
 
     Object[] r = getRow(); // get row from rowset, wait for our turn, indicate busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
 
-    if ( first ) // INITIALISE
-    {
+    if ( first ) { // INITIALISE
+
       first = false;
 
       data.inputRowMeta = getInputRowMeta();

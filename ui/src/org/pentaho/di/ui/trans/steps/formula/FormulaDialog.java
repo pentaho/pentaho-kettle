@@ -147,18 +147,20 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "FormulaDialog.NewField.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "FormulaDialog.Formula.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "FormulaDialog.ValueType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "FormulaDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "FormulaDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "FormulaDialog.Replace.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] {} ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "FormulaDialog.NewField.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "FormulaDialog.Formula.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "FormulaDialog.ValueType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "FormulaDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "FormulaDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "FormulaDialog.Replace.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {} ), };
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );

@@ -96,11 +96,11 @@ public class Carte {
         try {
           SlaveServerDetection slaveServerDetection = new SlaveServerDetection( client );
           master.sendXML( slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH + "/" );
-          log.logBasic( "Registered this slave server to master slave server [" + master.toString() + "] on address ["
-              + master.getServerAndPort() + "]" );
+          log.logBasic( "Registered this slave server to master slave server ["
+              + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
         } catch ( Exception e ) {
-          log.logError( "Unable to register to master slave server [" + master.toString() + "] on address ["
-              + master.getServerAndPort() + "]" );
+          log.logError( "Unable to register to master slave server ["
+              + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
           allOK = false;
         }
       }

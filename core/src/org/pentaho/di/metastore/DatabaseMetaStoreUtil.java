@@ -51,8 +51,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // If the data type doesn't exist, it's an empty list...
     //
     IMetaStoreElementType elementType =
-        metaStore.getElementTypeByName( PentahoDefaults.NAMESPACE,
-            PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+        metaStore.getElementTypeByName(
+            PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
     if ( elementType == null ) {
       return databases;
     }
@@ -63,8 +63,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
         DatabaseMeta databaseMeta = loadDatabaseMetaFromDatabaseElement( metaStore, element );
         databases.add( databaseMeta );
       } catch ( Exception e ) {
-        throw new MetaStoreException( "Unable to load database from element with name '" + element.getName()
-            + "' and type '" + elementType.getName() + "'", e );
+        throw new MetaStoreException( "Unable to load database from element with name '"
+            + element.getName() + "' and type '" + elementType.getName() + "'", e );
       }
     }
 
@@ -82,8 +82,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // If the database connection element type doesn't exist, create it
     //
     IMetaStoreElementType elementType =
-        metaStore.getElementTypeByName( PentahoDefaults.NAMESPACE,
-            PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+        metaStore.getElementTypeByName(
+            PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
     if ( elementType == null ) {
       elementType = populateDatabaseElementType( metaStore );
       metaStore.createElementType( PentahoDefaults.NAMESPACE, elementType );
@@ -121,8 +121,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     // If the data type doesn't exist, error out...
     //
     IMetaStoreElementType elementType =
-        metaStore.getElementTypeByName( PentahoDefaults.NAMESPACE,
-            PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+        metaStore.getElementTypeByName(
+            PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
     if ( elementType == null ) {
       throw new MetaStoreException( "Unable to find the database connection type" );
     }
@@ -146,8 +146,8 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     element
         .addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_DATABASE_NAME, databaseMeta.getDatabaseName() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_USERNAME, databaseMeta.getUsername() ) );
-    element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_PASSWORD, metaStore.getTwoWayPasswordEncoder()
-        .encode( databaseMeta.getPassword() ) ) );
+    element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_PASSWORD, metaStore
+        .getTwoWayPasswordEncoder().encode( databaseMeta.getPassword() ) ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_SERVERNAME, databaseMeta.getServername() ) );
     element.addChild( metaStore.newAttribute( MetaStoreConst.DB_ATTR_ID_DATA_TABLESPACE, databaseMeta
         .getDataTablespace() ) );

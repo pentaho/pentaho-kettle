@@ -56,8 +56,8 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
     data = (UniqueRowsByHashSetData) sdi;
 
     Object[] r = getRow(); // get row!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       data.clearHashSet();
       setOutputDone();
       return false;
@@ -86,8 +86,8 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
         }
         if ( data.sendDuplicateRows ) {
           data.compareFields =
-              data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields + ","
-                  + meta.getCompareFields()[i];
+              data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields
+                  + "," + meta.getCompareFields()[i];
         }
       }
       if ( data.sendDuplicateRows && !Const.isEmpty( meta.getErrorDescription() ) ) {
@@ -101,8 +101,8 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
       incrementLinesRejected();
       if ( data.sendDuplicateRows ) {
         // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == "" ? null
-            : data.compareFields, "UNRH001" );
+        putError( getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == ""
+            ? null : data.compareFields, "UNRH001" );
       }
     }
 

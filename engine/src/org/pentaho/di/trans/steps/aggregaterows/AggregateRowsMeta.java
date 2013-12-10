@@ -68,16 +68,16 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
   public static final int TYPE_AGGREGATE_LAST_NULL = 9;
 
   public static final String[] aggregateTypeDesc = {
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.NONE" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.SUM" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.AVERAGE" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.COUNT" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.MIN" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.MAX" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST_NULL" ),
-    BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST_NULL" ), };
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.NONE" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.SUM" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.AVERAGE" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.COUNT" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.MIN" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.MAX" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.FIRST_NULL" ),
+      BaseMessages.getString( PKG, "AggregateRowsMeta.AggregateTypeDesc.LAST_NULL" ), };
 
   private String[] fieldName;
   private String[] fieldNewName;
@@ -192,8 +192,8 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
         aggregateType[i] = getType( type );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "AggregateRowsMeta.Exception.UnableToLoadStepInfo" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "AggregateRowsMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -277,8 +277,8 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
         aggregateType[i] = getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "AggregateRowsMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "AggregateRowsMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
     }
 
   }
@@ -354,13 +354,13 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AggregateRowsMeta.CheckResult.StepReceiveInfo.DialogMessage" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "AggregateRowsMeta.CheckResult.StepReceiveInfo.DialogMessage" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AggregateRowsMeta.CheckResult.NoInputReceived.DialogMessage" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "AggregateRowsMeta.CheckResult.NoInputReceived.DialogMessage" ), stepMeta );
       remarks.add( cr );
     }
 

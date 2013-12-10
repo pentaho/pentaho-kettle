@@ -326,8 +326,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "JsonOutput.Error.ErrorCreatingParentFolder",
-          parentfolder.getName() ) );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "JsonOutput.Error.ErrorCreatingParentFolder", parentfolder.getName() ) );
     } finally {
       if ( parentfolder != null ) {
         try {
@@ -354,8 +354,9 @@ public class JsonOutput extends BaseStep implements StepInterface {
         if ( meta.AddToResult() ) {
           // Add this to the result file names...
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
-                  getTransMeta().getName(), getStepname() );
+              new ResultFile(
+                  ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
+                      .getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "JsonOutput.ResultFilenames.Comment" ) );
           addResultFile( resultFile );
         }

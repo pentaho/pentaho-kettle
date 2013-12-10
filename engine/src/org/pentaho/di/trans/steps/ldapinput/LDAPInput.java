@@ -180,7 +180,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
               .getDynamicFilterFieldName() ) );
         }
       }
-    }// end if
+    } // end if
 
     String searchBase = data.staticSearchBase;
     if ( data.indexOfSearchBaseField > 0 ) {

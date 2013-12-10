@@ -270,8 +270,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
             dataFilePrintStream.print( byt );
             break;
           default:
-            throw new KettleException( BaseMessages.getString( PKG, "GPLoadDataOutput.Exception.TypeNotSupported",
-                valueMeta.getType() ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "GPLoadDataOutput.Exception.TypeNotSupported", valueMeta.getType() ) );
         }
       }
       dataFilePrintStream.print( FastloadControlBuilder.DATAFILE_COLUMN_SEPERATOR );
@@ -328,8 +328,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
       new Thread(
           new ConfigurableStreamLogger( getLogChannel(), this.process.getErrorStream(), LogLevel.ERROR, "ERROR" ) )
           .start();
-      new Thread( new ConfigurableStreamLogger( getLogChannel(), this.process.getInputStream(), LogLevel.DETAILED,
-          "OUTPUT" ) ).start();
+      new Thread( new ConfigurableStreamLogger(
+          getLogChannel(), this.process.getInputStream(), LogLevel.DETAILED, "OUTPUT" ) ).start();
       this.fastload = this.process.getOutputStream();
     } catch ( Exception e ) {
       throw new KettleException( "Error while setup: " + command, e );
@@ -374,12 +374,13 @@ public class TeraFast extends AbstractStep implements StepInterface {
     final FastloadControlBuilder builder = new FastloadControlBuilder();
     builder.setSessions( this.meta.getSessions().getValue() );
     builder.setErrorLimit( this.meta.getErrorLimit().getValue() );
-    builder.logon( this.meta.getDbMeta().getHostname(), this.meta.getDbMeta().getUsername(), this.meta.getDbMeta()
-        .getPassword() );
+    builder.logon( this.meta.getDbMeta().getHostname(), this.meta.getDbMeta().getUsername(), this.meta
+        .getDbMeta().getPassword() );
     builder.setRecordFormat( FastloadControlBuilder.RECORD_VARTEXT );
     try {
-      builder.define( this.meta.getRequiredFields( this.getTransMeta() ), meta.getTableFieldList(),
-          resolveFileName( this.meta.getDataFile().getValue() ) );
+      builder.define(
+          this.meta.getRequiredFields( this.getTransMeta() ), meta.getTableFieldList(), resolveFileName( this.meta
+              .getDataFile().getValue() ) );
     } catch ( Exception ex ) {
       throw new KettleException( "Error defining data file!", ex );
     }

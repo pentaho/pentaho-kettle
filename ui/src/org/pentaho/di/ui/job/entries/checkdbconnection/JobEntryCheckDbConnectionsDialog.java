@@ -160,8 +160,8 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
     wbdSourceFileFolder = new Button( shell, SWT.PUSH | SWT.CENTER );
     props.setLook( wbdSourceFileFolder );
     wbdSourceFileFolder.setText( BaseMessages.getString( PKG, "JobCheckDbConnections.DeleteEntry" ) );
-    wbdSourceFileFolder.setToolTipText( BaseMessages.getString( PKG,
-        "JobCheckDbConnections.DeleteSourceFileButton.Label" ) );
+    wbdSourceFileFolder.setToolTipText( BaseMessages.getString(
+        PKG, "JobCheckDbConnections.DeleteSourceFileButton.Label" ) );
     fdbdSourceFileFolder = new FormData();
     fdbdSourceFileFolder.right = new FormAttachment( 100, -margin );
     fdbdSourceFileFolder.top = new FormAttachment( wlFields, 50 );
@@ -185,12 +185,15 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.Argument.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, connections, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitFor.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitForTime.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryCheckDbConnections.unitTimeDesc, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.Argument.Label" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, connections, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitFor.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitForTime.Label" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryCheckDbConnections.unitTimeDesc, false ), };
 
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.Column" ) );
     colinf[1].setUsingVariables( true );

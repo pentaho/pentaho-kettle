@@ -31,7 +31,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 
-@Step( id = "TableAgileMart", image = "plugins/steps/MonetDBAgileMartPlugin/icon.png", name = "Table Agile Mart",
+@Step(
+    id = "TableAgileMart", image = "plugins/steps/MonetDBAgileMartPlugin/icon.png", name = "Table Agile Mart",
     description = "Table Agile Mart", categoryDescription = "Agile BI" )
 public class TableAgileMartMeta extends TableOutputMeta {
 

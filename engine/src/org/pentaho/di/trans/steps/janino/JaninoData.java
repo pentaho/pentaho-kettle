@@ -51,9 +51,6 @@ public class JaninoData extends BaseStepData implements StepDataInterface {
   public ExpressionEvaluator[] expressionEvaluators;
   public List<List<Integer>> argumentIndexes;
 
-  /**
-	 * 
-	 */
   public JaninoData() {
     super();
   }

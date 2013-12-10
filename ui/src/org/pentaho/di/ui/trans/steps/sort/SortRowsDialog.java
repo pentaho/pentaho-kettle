@@ -319,17 +319,24 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.Fieldname.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.Ascending.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.CaseInsensitive.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.PreSortedField.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SortRowsDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SortRowsDialog.Ascending.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SortRowsDialog.CaseInsensitive.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SortRowsDialog.PreSortedField.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } ) };
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );

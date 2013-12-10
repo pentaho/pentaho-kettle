@@ -75,9 +75,9 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static final String[] fileTypeCode = new String[] { "NONE", "UNIX", "DOS", };
   public static final String[] fileTypeDesc = new String[] {
-    BaseMessages.getString( PKG, "FixedFileInputMeta.FileType.None.Desc" ),
-    BaseMessages.getString( PKG, "FixedFileInputMeta.FileType.Unix.Desc" ),
-    BaseMessages.getString( PKG, "FixedFileInputMeta.FileType.Dos.Desc" ), };
+      BaseMessages.getString( PKG, "FixedFileInputMeta.FileType.None.Desc" ),
+      BaseMessages.getString( PKG, "FixedFileInputMeta.FileType.Unix.Desc" ),
+      BaseMessages.getString( PKG, "FixedFileInputMeta.FileType.Dos.Desc" ), };
 
   private String filename;
 
@@ -295,26 +295,26 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FixedInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FixedInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( Const.isEmpty( filename ) ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.NoFilenameSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FixedInputMeta.CheckResult.NoFilenameSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.FilenameSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FixedInputMeta.CheckResult.FilenameSpecified" ), stepMeta );
       remarks.add( cr );
     }
   }

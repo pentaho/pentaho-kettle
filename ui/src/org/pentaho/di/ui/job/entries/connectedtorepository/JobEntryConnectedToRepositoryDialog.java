@@ -194,8 +194,8 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
     props.setLook( wbRepositoryname );
     wbRepositoryname.setText( BaseMessages
         .getString( PKG, "JobEntryConnectedToRepositoryDialog.ListRepositories.Label" ) );
-    wbRepositoryname.setToolTipText( BaseMessages.getString( PKG,
-        "JobEntryConnectedToRepositoryDialog.ListRepositories.Tooltip" ) );
+    wbRepositoryname.setToolTipText( BaseMessages.getString(
+        PKG, "JobEntryConnectedToRepositoryDialog.ListRepositories.Tooltip" ) );
     fdbRepositoryname = new FormData();
     fdbRepositoryname.right = new FormAttachment( 100, 0 );
     fdbRepositoryname.top = new FormAttachment( wspecificRep, 0 );
@@ -227,8 +227,8 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
     wlspecificUser.setLayoutData( fdlspecificUser );
     wspecificUser = new Button( shell, SWT.CHECK );
     props.setLook( wspecificUser );
-    wspecificUser.setToolTipText( BaseMessages.getString( PKG,
-        "JobEntryConnectedToRepositoryDialog.specificUser.Tooltip" ) );
+    wspecificUser.setToolTipText( BaseMessages.getString(
+        PKG, "JobEntryConnectedToRepositoryDialog.specificUser.Tooltip" ) );
     fdspecificUser = new FormData();
     fdspecificUser.left = new FormAttachment( middle, 0 );
     fdspecificUser.top = new FormAttachment( wRepName, margin );
@@ -402,8 +402,8 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 
         int nrRepositories = reps_info.nrRepositories();
         if ( nrRepositories == 0 ) {
-          displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString( PKG,
-              "JobEntryConnectedToRepositoryDialog.Error.NoRep.DialogMessage" ), true );
+          displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
+              PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRep.DialogMessage" ), true );
         } else {
           String[] available = new String[nrRepositories];
 
@@ -416,9 +416,9 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
           source[0] = wRepName.getText();
           int[] idxSource = Const.indexsOfStrings( source, available );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, available, BaseMessages.getString( PKG,
-                  "JobEntryConnectedToRepositoryDialog.SelectRepository.Title" ), BaseMessages.getString( PKG,
-                  "JobEntryConnectedToRepositoryDialog.SelectRepository.Message" ) );
+              new EnterSelectionDialog( shell, available, BaseMessages.getString(
+                  PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Title" ), BaseMessages.getString(
+                  PKG, "JobEntryConnectedToRepositoryDialog.SelectRepository.Message" ) );
           dialog.setMulti( false );
           dialog.setAvoidQuickSearch();
           dialog.setSelectedNrs( idxSource );
@@ -428,12 +428,13 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
           }
         }
       } catch ( Exception e ) {
-        displayMsg( BaseMessages.getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefined" ),
-            BaseMessages.getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefinedMsg" ), true );
+        displayMsg(
+            BaseMessages.getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefined" ), BaseMessages
+                .getString( PKG, "JobEntryConnectedToRepositoryDialog.Error.NoRepsDefinedMsg" ), true );
       }
     } catch ( Exception e ) {
-      displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString( PKG,
-          "JobEntryConnectedToRepositoryDialog.ErrorGettingRepositories.DialogMessage" )
+      displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
+          PKG, "JobEntryConnectedToRepositoryDialog.ErrorGettingRepositories.DialogMessage" )
           + Const.CR + ":" + e.getMessage(), true );
     } finally {
       reps_info.clear();

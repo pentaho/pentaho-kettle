@@ -73,8 +73,9 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryDosToUnix.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobDosToUnix.Filetype.Xml" ),
-    BaseMessages.getString( PKG, "JobDosToUnix.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] {
+      BaseMessages.getString( PKG, "JobDosToUnix.Filetype.Xml" ),
+      BaseMessages.getString( PKG, "JobDosToUnix.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -426,18 +427,20 @@ public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryD
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0 ? 0
-            : jobEntry.source_filefolder.length );
+        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+            ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDosToUnix.Fields.SourceFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDosToUnix.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDosToUnix.Fields.ConversionType.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryDosToUnix.ConversionTypeDesc, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDosToUnix.Fields.SourceFileFolder.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDosToUnix.Fields.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDosToUnix.Fields.ConversionType.Label" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryDosToUnix.ConversionTypeDesc, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobDosToUnix.Fields.SourceFileFolder.Tooltip" ) );
@@ -445,8 +448,8 @@ public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryD
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobDosToUnix.Fields.Wildcard.Tooltip" ) );
 
     wFields =
-        new TableView( jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -580,8 +583,8 @@ public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryD
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wNrErrorsLessThan =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobDosToUnix.NrErrorFilesCountLessThan.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobDosToUnix.NrErrorFilesCountLessThan.Tooltip" ) );
     props.setLook( wNrErrorsLessThan );
     wNrErrorsLessThan.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();
@@ -771,7 +774,7 @@ public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryD
         if ( jobEntry.wildcard[i] != null ) {
           ti.setText( 2, jobEntry.wildcard[i] );
         }
-        ti.setText( 3, JobEntryDosToUnix.getConversionTypeDesc( jobEntry.ConversionTypes[i] ) );
+        ti.setText( 3, JobEntryDosToUnix.getConversionTypeDesc( jobEntry.conversionTypes[i] ) );
       }
       wFields.setRowNums();
       wFields.optWidth( true );
@@ -863,7 +866,7 @@ public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryD
     }
     jobEntry.source_filefolder = new String[nr];
     jobEntry.wildcard = new String[nr];
-    jobEntry.ConversionTypes = new int[nr];
+    jobEntry.conversionTypes = new int[nr];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
       String source = wFields.getNonEmpty( i ).getText( 1 );
@@ -871,7 +874,7 @@ public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryD
       if ( source != null && source.length() != 0 ) {
         jobEntry.source_filefolder[nr] = source;
         jobEntry.wildcard[nr] = wild;
-        jobEntry.ConversionTypes[nr] =
+        jobEntry.conversionTypes[nr] =
             JobEntryDosToUnix.getConversionTypeByDesc( wFields.getNonEmpty( i ).getText( 3 ) );
         nr++;
       }

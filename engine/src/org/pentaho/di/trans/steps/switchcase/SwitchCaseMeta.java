@@ -154,8 +154,8 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
         caseTargets.add( target );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SwitchCaseMeta.Exception..UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SwitchCaseMeta.Exception..UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -184,8 +184,8 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
         caseTargets.add( target );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SwitchCaseMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SwitchCaseMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -199,8 +199,8 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "case_value_decimal", caseValueDecimal );
       rep.saveStepAttribute( id_transformation, id_step, "case_value_group", caseValueGroup );
 
-      rep.saveStepAttribute( id_transformation, id_step, "default_target_step", defaultTargetStep == null ? null
-          : defaultTargetStep.getName() );
+      rep.saveStepAttribute( id_transformation, id_step, "default_target_step", defaultTargetStep == null
+          ? null : defaultTargetStep.getName() );
 
       for ( int i = 0; i < caseTargets.size(); i++ ) {
         SwitchCaseTarget target = caseTargets.get( i );
@@ -209,8 +209,8 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
             ? target.caseTargetStep.getName() : null );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SwitchCaseMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SwitchCaseMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -231,33 +231,33 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
 
       if ( target != null && target.caseTargetStep == null ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SwitchCaseMeta.CheckResult.TargetStepInvalid", "false", target.caseTargetStepname ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "SwitchCaseMeta.CheckResult.TargetStepInvalid", "false", target.caseTargetStepname ), stepMeta );
         remarks.add( cr );
       }
     }
 
     if ( Const.isEmpty( fieldname ) ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SwitchCaseMeta.CheckResult.NoFieldSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SwitchCaseMeta.CheckResult.NoFieldSpecified" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SwitchCaseMeta.CheckResult.FieldSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SwitchCaseMeta.CheckResult.FieldSpecified" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SwitchCaseMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SwitchCaseMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SwitchCaseMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SwitchCaseMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -396,8 +396,9 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
       //
       for ( SwitchCaseTarget target : caseTargets ) {
         StreamInterface stream =
-            new Stream( StreamType.TARGET, target.caseTargetStep, BaseMessages.getString( PKG,
-                "SwitchCaseMeta.TargetStream.CaseTarget.Description", Const.NVL( target.caseValue, "" ) ),
+            new Stream(
+                StreamType.TARGET, target.caseTargetStep, BaseMessages.getString(
+                    PKG, "SwitchCaseMeta.TargetStream.CaseTarget.Description", Const.NVL( target.caseValue, "" ) ),
                 StreamIcon.TARGET, target );
         ioMeta.addStream( stream );
       }
@@ -405,8 +406,8 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
       // Add the default target step as a stream
       //
       if ( getDefaultTargetStep() != null ) {
-        ioMeta.addStream( new Stream( StreamType.TARGET, getDefaultTargetStep(), BaseMessages.getString( PKG,
-            "SwitchCaseMeta.TargetStream.Default.Description" ), StreamIcon.TARGET, null ) );
+        ioMeta.addStream( new Stream( StreamType.TARGET, getDefaultTargetStep(), BaseMessages.getString(
+            PKG, "SwitchCaseMeta.TargetStream.Default.Description" ), StreamIcon.TARGET, null ) );
       }
     }
 
@@ -424,8 +425,8 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
     resetStepIoMeta();
   }
 
-  private static StreamInterface newDefaultStream = new Stream( StreamType.TARGET, null, BaseMessages.getString( PKG,
-      "SwitchCaseMeta.TargetStream.Default.Description" ), StreamIcon.TARGET, null );
+  private static StreamInterface newDefaultStream = new Stream( StreamType.TARGET, null, BaseMessages.getString(
+      PKG, "SwitchCaseMeta.TargetStream.Default.Description" ), StreamIcon.TARGET, null );
   private static StreamInterface newCaseTargetStream = new Stream( StreamType.TARGET, null, BaseMessages.getString(
       PKG, "SwitchCaseMeta.TargetStream.NewCaseTarget.Description" ), StreamIcon.TARGET, null );
 

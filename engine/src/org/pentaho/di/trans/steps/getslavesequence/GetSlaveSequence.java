@@ -76,8 +76,8 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
       outputRowData[inputRowMeta.size()] = next;
       return outputRowData;
     } else {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "GetSequence.Exception.CouldNotFindNextValueForSequence" )
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "GetSequence.Exception.CouldNotFindNextValueForSequence" )
           + meta.getValuename() );
     }
   }
@@ -87,8 +87,8 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
     data = (GetSlaveSequenceData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -104,16 +104,16 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
     }
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "GetSequence.Log.ReadRow" ) + getLinesRead() + " : "
-          + getInputRowMeta().getString( r ) );
+      logRowlevel( BaseMessages.getString( PKG, "GetSequence.Log.ReadRow" )
+          + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
     }
 
     try {
       putRow( data.outputRowMeta, addSequence( getInputRowMeta(), r ) );
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "GetSequence.Log.WriteRow" ) + getLinesWritten() + " : "
-            + getInputRowMeta().getString( r ) );
+        logRowlevel( BaseMessages.getString( PKG, "GetSequence.Log.WriteRow" )
+            + getLinesWritten() + " : " + getInputRowMeta().getString( r ) );
       }
       if ( checkFeedback( getLinesRead() ) ) {
         if ( log.isBasic() ) {

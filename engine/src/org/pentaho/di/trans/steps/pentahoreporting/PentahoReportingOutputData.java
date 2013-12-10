@@ -33,9 +33,6 @@ public class PentahoReportingOutputData extends BaseStepData implements StepData
   public int inputFieldIndex;
   public int outputFieldIndex;
 
-  /**
-	 * 
-	 */
   public PentahoReportingOutputData() {
     super();
   }

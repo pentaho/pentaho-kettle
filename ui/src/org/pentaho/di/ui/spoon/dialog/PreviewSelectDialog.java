@@ -111,14 +111,16 @@ public class PreviewSelectDialog extends Dialog {
 
     ColumnInfo[] colinf =
         {
-          new ColumnInfo( BaseMessages.getString( PKG, "PreviewSelectDialog.Column.Stepname" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, "PreviewSelectDialog.Column.PreviewSize" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PreviewSelectDialog.Column.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false, true ), // Stepname
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PreviewSelectDialog.Column.PreviewSize" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false, false ), // Preview size
         };
 
     wFields = new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, true, // read-only
-        null, props );
+    null, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

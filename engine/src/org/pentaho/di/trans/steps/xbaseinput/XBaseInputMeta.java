@@ -269,8 +269,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       acceptingStepName = XMLHandler.getTagValue( stepnode, "accept_stepname" );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "XBaseInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
     }
   }
 
@@ -316,8 +316,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
       rowMeta.addRowMeta( add );
     } catch ( Exception ke ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile" ), ke );
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile" ), ke );
     } finally {
       if ( xbi != null ) {
         xbi.close();
@@ -388,8 +388,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       acceptingStepName = rep.getStepAttributeString( id_step, "accept_stepname" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
     }
   }
 
@@ -410,8 +410,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", ( acceptingStep != null ? acceptingStep
           .getName() : "" ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository" )
           + id_step, e );
     }
   }
@@ -426,35 +426,35 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       if ( isAcceptingFilenames() ) {
         if ( Const.isEmpty( getAcceptingStepName() ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "XBaseInput.Log.Error.InvalidAcceptingStepName" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName" ), stepMeta );
           remarks.add( cr );
         }
 
         if ( Const.isEmpty( getAcceptingField() ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "XBaseInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "XBaseInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
           remarks.add( cr );
         }
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XBaseInputMeta.Remark.PleaseSelectFileToUse" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "XBaseInputMeta.Remark.PleaseSelectFileToUse" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XBaseInputMeta.Remark.FileToUseIsSpecified" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XBaseInputMeta.Remark.FileToUseIsSpecified" ), stepMeta );
       remarks.add( cr );
 
       XBase xbi = new XBase( getLog(), transMeta.environmentSubstitute( dbfFileName ) );
       try {
         xbi.open();
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "XBaseInputMeta.Remark.FileExistsAndCanBeOpened" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "XBaseInputMeta.Remark.FileExistsAndCanBeOpened" ), stepMeta );
         remarks.add( cr );
 
         RowMetaInterface r = xbi.getFields();
@@ -465,8 +465,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       } catch ( KettleException ke ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError" )
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError" )
                 + Const.CR + ke.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {
@@ -485,13 +485,13 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getFilePaths( VariableSpace space ) {
-    return FileInputList.createFilePathList( space, new String[] { dbfFileName }, new String[] { null },
-        new String[] { null }, new String[] { "N" } );
+    return FileInputList.createFilePathList(
+        space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
   }
 
   public FileInputList getTextFileList( VariableSpace space ) {
-    return FileInputList.createFileList( space, new String[] { dbfFileName }, new String[] { null },
-        new String[] { null }, new String[] { "N" } );
+    return FileInputList.createFileList(
+        space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
   }
 
   public String[] getUsedLibraries() {

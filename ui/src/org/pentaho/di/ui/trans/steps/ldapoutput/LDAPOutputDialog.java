@@ -997,19 +997,23 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.ColumnInfo.TableField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.ColumnInfo.TableField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.ColumnInfo.StreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.ColumnInfo.StreamField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.ColumnInfo.Update" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.ColumnInfo.Update" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "Y", "N" } );
 
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, wFields, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+        new TableView(
+            transMeta, wFields, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+            UpInsRows, lsMod, props );
 
     wGetLU = new Button( wFields, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.GetAndUpdateFields.Label" ) );
@@ -1298,8 +1302,9 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPOutputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDAPOutputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPOutputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "LDAPOutputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1373,8 +1378,9 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
           }
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPOutputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "LDAPOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "LDAPOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "LDAPOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPrevious = true;
     }
@@ -1410,8 +1416,9 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "LDAPOutputUpdateDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1494,9 +1501,9 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages
-              .getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindSourceFields.Title" ),
+          BaseMessages.getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     LDAPConnection connection = null;
@@ -1506,9 +1513,9 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
       targetFields = getLDAPFields();
 
     } catch ( Exception e ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages
-              .getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindTargetFields.Title" ),
+          BaseMessages.getString( PKG, "LDAPOutputDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     } finally {
       if ( connection != null ) {
@@ -1574,15 +1581,15 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
       message += BaseMessages.getString( PKG, "LDAPOutputDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "LDAPOutputDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "LDAPOutputDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-        new EnterMappingDialog( LDAPOutputDialog.this.shell, sourceFields.getFieldNames(),
-            targetFields.getFieldNames(), mappings );
+        new EnterMappingDialog(
+            LDAPOutputDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -1663,8 +1670,8 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 
   private void trustAll() {
     boolean enable =
-        wsetTrustStore.getSelection() && !LdapProtocol.getName().equals( wProtocol.getText() )
-            && !wTrustAll.getSelection();
+        wsetTrustStore.getSelection()
+            && !LdapProtocol.getName().equals( wProtocol.getText() ) && !wTrustAll.getSelection();
     wlTrustStorePath.setEnabled( enable );
     wTrustStorePath.setEnabled( enable );
     wlTrustStorePassword.setEnabled( enable );

@@ -81,9 +81,10 @@ public class CsvInput1Test extends CsvInputBase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
-          new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "d", ValueMeta.TYPE_STRING ),
-          new ValueMeta( "e", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+        {
+            new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
+            new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "d", ValueMeta.TYPE_STRING ),
+            new ValueMeta( "e", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

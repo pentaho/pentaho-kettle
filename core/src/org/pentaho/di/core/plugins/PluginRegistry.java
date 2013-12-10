@@ -375,8 +375,8 @@ public class PluginRegistry {
   @SuppressWarnings( "unchecked" )
   public <T> T loadClass( PluginInterface plugin, Class<T> pluginClass ) throws KettlePluginException {
     if ( plugin == null ) {
-      throw new KettlePluginException( BaseMessages.getString( PKG,
-          "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
+      throw new KettlePluginException( BaseMessages.getString(
+          PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
     }
 
     if ( plugin instanceof ClassLoadingPluginInterface ) {
@@ -384,8 +384,8 @@ public class PluginRegistry {
     } else {
       String className = plugin.getClassMap().get( pluginClass );
       if ( className == null ) {
-        throw new KettlePluginException( BaseMessages.getString( PKG,
-            "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName() ) );
+        throw new KettlePluginException( BaseMessages.getString(
+            PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName() ) );
       }
 
       try {
@@ -454,21 +454,21 @@ public class PluginRegistry {
 
         return cl.newInstance();
       } catch ( ClassNotFoundException e ) {
-        throw new KettlePluginException( BaseMessages.getString( PKG,
-            "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003" ), e );
+        throw new KettlePluginException( BaseMessages.getString(
+            PKG, "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003" ), e );
       } catch ( InstantiationException e ) {
-        throw new KettlePluginException( BaseMessages.getString( PKG,
-            "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004" ), e );
+        throw new KettlePluginException( BaseMessages.getString(
+            PKG, "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004" ), e );
       } catch ( IllegalAccessException e ) {
-        throw new KettlePluginException( BaseMessages.getString( PKG,
-            "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005" ), e );
+        throw new KettlePluginException( BaseMessages.getString(
+            PKG, "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005" ), e );
       } catch ( MalformedURLException e ) {
-        throw new KettlePluginException( BaseMessages.getString( PKG,
-            "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
+        throw new KettlePluginException( BaseMessages.getString(
+            PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
       } catch ( Throwable e ) {
         e.printStackTrace();
-        throw new KettlePluginException( BaseMessages.getString( PKG,
-            "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007" ), e );
+        throw new KettlePluginException( BaseMessages.getString(
+            PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007" ), e );
       }
     }
   }
@@ -579,30 +579,31 @@ public class PluginRegistry {
             // Register this one!
             //
             pluginType.handlePluginAnnotation( clazz, annotation, new ArrayList<String>(), true, null );
-            LogChannel.GENERAL.logBasic( "Plugin class " + className + " registered for plugin type '"
-                + pluginType.getName() + "'" );
+            LogChannel.GENERAL.logBasic( "Plugin class "
+                + className + " registered for plugin type '" + pluginType.getName() + "'" );
           } else {
             if ( KettleLogStore.isInitialized() ) {
-              LogChannel.GENERAL.logDebug( "Plugin class " + className
-                  + " doesn't contain annotation for plugin type '" + pluginType.getName() + "'" );
+              LogChannel.GENERAL.logDebug( "Plugin class "
+                  + className + " doesn't contain annotation for plugin type '" + pluginType.getName() + "'" );
             }
           }
         } else {
           if ( KettleLogStore.isInitialized() ) {
-            LogChannel.GENERAL.logDebug( "Plugin class " + className + " doesn't contain valid class for plugin type '"
-                + pluginType.getName() + "'" );
+            LogChannel.GENERAL.logDebug( "Plugin class "
+                + className + " doesn't contain valid class for plugin type '" + pluginType.getName() + "'" );
           }
         }
       } catch ( Exception e ) {
         if ( KettleLogStore.isInitialized() ) {
-          LogChannel.GENERAL.logError( "Error registring plugin class from KETTLE_PLUGIN_CLASSES: " + className
-              + Const.CR + Const.getStackTracker( e ) );
+          LogChannel.GENERAL.logError( "Error registring plugin class from KETTLE_PLUGIN_CLASSES: "
+              + className + Const.CR + Const.getStackTracker( e ) );
         }
       }
     }
 
-    LogChannel.GENERAL.logDetailed( "Registered " + getPlugins( pluginType.getClass() ).size() + " plugins of type '"
-        + pluginType.getName() + "' in " + ( System.currentTimeMillis() - startScan ) + "ms." );
+    LogChannel.GENERAL.logDetailed( "Registered "
+        + getPlugins( pluginType.getClass() ).size() + " plugins of type '" + pluginType.getName() + "' in "
+        + ( System.currentTimeMillis() - startScan ) + "ms." );
 
   }
 
@@ -748,22 +749,24 @@ public class PluginRegistry {
   private RowMetaInterface getPluginInformationRowMeta() {
     RowMetaInterface row = new RowMeta();
 
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.Type.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.ID.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.Name.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.Description.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.Libraries.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.ImageFile.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.ClassName.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta( BaseMessages.getString( PKG, "PluginRegistry.Information.Category.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.Type.Label" ), ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.ID.Label" ), ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.Name.Label" ), ValueMetaInterface.TYPE_STRING ) );
+    row
+        .addValueMeta( new ValueMeta(
+            BaseMessages.getString( PKG, "PluginRegistry.Information.Description.Label" ),
+            ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.Libraries.Label" ), ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.ImageFile.Label" ), ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.ClassName.Label" ), ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMeta(
+        BaseMessages.getString( PKG, "PluginRegistry.Information.Category.Label" ), ValueMetaInterface.TYPE_STRING ) );
 
     return row;
   }
@@ -877,8 +880,8 @@ public class PluginRegistry {
   public ClassLoader getClassLoader( PluginInterface plugin ) throws KettlePluginException {
 
     if ( plugin == null ) {
-      throw new KettlePluginException( BaseMessages.getString( PKG,
-          "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
+      throw new KettlePluginException( BaseMessages.getString(
+          PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001" ) );
     }
 
     try {
@@ -957,12 +960,12 @@ public class PluginRegistry {
         return ucl;
       }
     } catch ( MalformedURLException e ) {
-      throw new KettlePluginException( BaseMessages.getString( PKG,
-          "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
+      throw new KettlePluginException( BaseMessages.getString(
+          PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006" ), e );
     } catch ( Throwable e ) {
       e.printStackTrace();
-      throw new KettlePluginException( BaseMessages.getString( PKG,
-          "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008" ), e );
+      throw new KettlePluginException( BaseMessages.getString(
+          PKG, "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008" ), e );
     }
   }
 

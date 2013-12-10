@@ -126,8 +126,7 @@ public class XMLInputSax extends BaseStep implements StepInterface {
 
   private boolean openNextFile() {
     try {
-      if ( data.filenr >= data.files.length ) // finished processing!
-      {
+      if ( data.filenr >= data.files.length ) { // finished processing!
         if ( log.isDetailed() ) {
           logDetailed( "Finished processing files." );
         }

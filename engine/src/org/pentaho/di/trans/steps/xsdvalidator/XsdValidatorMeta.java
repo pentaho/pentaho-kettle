@@ -206,8 +206,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       xmlSourceFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "xmlsourcefile" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "XsdValidatorMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "XsdValidatorMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -289,8 +289,8 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       xsdSource = rep.getStepAttributeString( id_step, "xsdsource" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "XsdValidatorMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "XsdValidatorMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -323,60 +323,60 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     // Check XML stream field
     if ( Const.isEmpty( xmlStream ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.XMLStreamFieldOK" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.XMLStreamFieldOK" ), stepinfo );
       remarks.add( cr );
     }
 
     // Check result fieldname
     if ( Const.isEmpty( resultFieldname ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.ResultFieldEmpty" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.ResultFieldEmpty" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.ResultFieldOK" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.ResultFieldOK" ), stepinfo );
       remarks.add( cr );
     }
 
     if ( xsdSource.equals( SPECIFY_FILENAME ) ) {
       if ( Const.isEmpty( xsdFilename ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XsdValidatorMeta.CheckResult.XSDFieldEmpty" ), stepinfo );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "XsdValidatorMeta.CheckResult.XSDFieldEmpty" ), stepinfo );
         remarks.add( cr );
       }
     }
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.NoInputReceived" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.NoInputReceived" ), stepinfo );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.ExpectedInputOk" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.ExpectedInputOk" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XsdValidatorMeta.CheckResult.ExpectedInputError" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XsdValidatorMeta.CheckResult.ExpectedInputError" ), stepinfo );
       remarks.add( cr );
     }
   }

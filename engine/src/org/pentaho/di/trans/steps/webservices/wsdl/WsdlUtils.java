@@ -113,8 +113,8 @@ final class WsdlUtils {
       } else if ( soapBindingElem instanceof SOAPBinding ) {
         style = ( (SOAPBinding) soapBindingElem ).getStyle();
       } else {
-        throw new KettleException( "Binding type " + soapBindingElem
-            + " encountered. The Web Service Lookup step only supports SOAP Bindings!" );
+        throw new KettleException( "Binding type "
+            + soapBindingElem + " encountered. The Web Service Lookup step only supports SOAP Bindings!" );
       }
     }
     return style;

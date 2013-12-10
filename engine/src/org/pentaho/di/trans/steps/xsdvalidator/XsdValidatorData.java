@@ -36,9 +36,6 @@ public class XsdValidatorData extends BaseStepData implements StepDataInterface 
   public int xsdindex;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public XsdValidatorData() {
     super();
     xmlindex = -1;

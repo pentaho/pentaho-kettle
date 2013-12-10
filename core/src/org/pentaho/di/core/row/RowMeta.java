@@ -632,8 +632,8 @@ public class RowMeta implements RowMetaInterface {
   public void removeValueMeta( String valueName ) throws KettleValueException {
     int index = indexOfValue( valueName );
     if ( index < 0 ) {
-      throw new KettleValueException( "Unable to find value metadata with name '" + valueName
-          + "', so I can't delete it." );
+      throw new KettleValueException( "Unable to find value metadata with name '"
+          + valueName + "', so I can't delete it." );
     }
     valueMetaList.remove( index );
   }

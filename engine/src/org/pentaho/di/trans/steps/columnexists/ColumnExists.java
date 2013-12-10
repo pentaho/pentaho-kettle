@@ -94,8 +94,8 @@ public class ColumnExists extends BaseStep implements StepInterface {
           data.indexOfTablename = getInputRowMeta().indexOfValue( meta.getDynamicTablenameField() );
           if ( data.indexOfTablename < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" ) + "["
-                + meta.getDynamicTablenameField() + "]" );
+            logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" )
+                + "[" + meta.getDynamicTablenameField() + "]" );
             throw new KettleException( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField", meta
                 .getDynamicTablenameField() ) );
           }
@@ -113,8 +113,8 @@ public class ColumnExists extends BaseStep implements StepInterface {
         data.indexOfColumnname = getInputRowMeta().indexOfValue( meta.getDynamicColumnnameField() );
         if ( data.indexOfColumnname < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" ) + "["
-              + meta.getDynamicColumnnameField() + "]" );
+          logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" )
+              + "[" + meta.getDynamicColumnnameField() + "]" );
           throw new KettleException( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField", meta
               .getDynamicColumnnameField() ) );
         }
@@ -146,8 +146,8 @@ public class ColumnExists extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "ColumnExists.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "ColumnExists.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( KettleException e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

@@ -107,8 +107,9 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
 
-            registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(),
-                false, file.getParent().getURL() );
+            registerPluginFromXmlResource(
+                pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
+                    .getParent().getURL() );
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...
             //

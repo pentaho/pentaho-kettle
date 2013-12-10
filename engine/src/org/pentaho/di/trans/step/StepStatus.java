@@ -106,12 +106,13 @@ public class StepStatus {
 
   public String getHTMLTableRow( boolean urlInStepname ) {
     Encoder encoder = ESAPI.encoder();
-    return "<tr> " + "<th>" + ( urlInStepname ? stepname : encoder.encodeForHTML( stepname ) ) + "</th> " + "<th>"
-        + copy + "</th> " + "<th>" + linesRead + "</th> " + "<th>" + linesWritten + "</th> " + "<th>" + linesInput
-        + "</th> " + "<th>" + linesOutput + "</th> " + "<th>" + linesUpdated + "</th> " + "<th>" + linesRejected
-        + "</th> " + "<th>" + errors + "</th> " + "<th>" + encoder.encodeForHTML( statusDescription ) + "</th> "
-        + "<th>" + seconds + "</th> " + "<th>" + encoder.encodeForHTML( speed ) + "</th> " + "<th>"
-        + encoder.encodeForHTML( priority ) + "</th> " + "</tr>";
+    return "<tr> " + "<th>"
+        + ( urlInStepname ? stepname : encoder.encodeForHTML( stepname ) ) + "</th> " + "<th>" + copy + "</th> "
+        + "<th>" + linesRead + "</th> " + "<th>" + linesWritten + "</th> " + "<th>" + linesInput + "</th> " + "<th>"
+        + linesOutput + "</th> " + "<th>" + linesUpdated + "</th> " + "<th>" + linesRejected + "</th> " + "<th>"
+        + errors + "</th> " + "<th>" + encoder.encodeForHTML( statusDescription ) + "</th> " + "<th>" + seconds
+        + "</th> " + "<th>" + encoder.encodeForHTML( speed ) + "</th> " + "<th>" + encoder.encodeForHTML( priority )
+        + "</th> " + "</tr>";
   }
 
   public String getXML() throws KettleException {
@@ -199,11 +200,11 @@ public class StepStatus {
   public String[] getTransLogFields() {
     String[] fields =
         new String[] {
-          "", // Row number
-          stepname, Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
-          Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
-          Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ), speed,
-          priority, };
+            "", // Row number
+            stepname, Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
+            Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
+            Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
+            speed, priority, };
 
     return fields;
   }
@@ -247,10 +248,10 @@ public class StepStatus {
     String[] fields =
         new String[] {
 
-        Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
-          Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
-          Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ), speed,
-          priority, };
+            Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
+            Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
+            Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
+            speed, priority, };
 
     return fields;
 

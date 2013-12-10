@@ -69,7 +69,8 @@ public class Plugin implements PluginInterface {
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category,
       String name, String description, String imageFile, boolean separateClassLoaderNeeded, boolean nativePlugin,
       Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile, URL pluginFolder ) {
-    this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, nativePlugin,
+    this(
+        ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, nativePlugin,
         classMap, libraries, errorHelpFile, pluginFolder, null, null, null );
   }
 

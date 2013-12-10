@@ -136,8 +136,8 @@ public class DBProc extends BaseStep implements StepInterface {
 
     if ( data.readsRows ) {
       r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         setOutputDone();
         return false;
       }

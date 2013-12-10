@@ -254,16 +254,17 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
         replace[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue( fnode, "replace" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "ScriptMeta.Exception.UnableToLoadStepInfoFromXML" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "ScriptMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
   public void setDefault() {
     jsScripts = new ScriptValuesScript[1];
     jsScripts[0] =
-        new ScriptValuesScript( ScriptValuesScript.TRANSFORM_SCRIPT, BaseMessages.getString( PKG, "Script.Script1" ),
-            "//" + BaseMessages.getString( PKG, "Script.ScriptHere" ) + Const.CR + Const.CR );
+        new ScriptValuesScript(
+            ScriptValuesScript.TRANSFORM_SCRIPT, BaseMessages.getString( PKG, "Script.Script1" ), "//"
+                + BaseMessages.getString( PKG, "Script.ScriptHere" ) + Const.CR + Const.CR );
 
     int nrfields = 0;
     allocate( nrfields );
@@ -290,8 +291,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
           // Look up the field to replace...
           //
           if ( row.searchValueMeta( fieldname[i] ) == null && Const.isEmpty( rename[i] ) ) {
-            throw new KettleStepException( BaseMessages.getString( PKG, "ScriptMeta.Exception.FieldToReplaceNotFound",
-                fieldname[i] ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "ScriptMeta.Exception.FieldToReplaceNotFound", fieldname[i] ) );
           }
           replaceIndex = row.indexOfValue( rename[i] );
 
@@ -370,8 +371,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
         for ( int i = 0; i < nrScripts; i++ ) {
           jsScripts[i] =
               new ScriptValuesScript( (int) rep.getStepAttributeInteger( id_step, i, JSSCRIPT_TAG_TYPE ), rep
-                  .getStepAttributeString( id_step, i, JSSCRIPT_TAG_NAME ), rep.getStepAttributeString( id_step, i,
-                  JSSCRIPT_TAG_SCRIPT ) );
+                  .getStepAttributeString( id_step, i, JSSCRIPT_TAG_NAME ), rep.getStepAttributeString(
+                  id_step, i, JSSCRIPT_TAG_SCRIPT ) );
 
         }
       }
@@ -411,8 +412,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_replace", replace[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ScriptMeta.Exception.UnableToSaveStepInfo" ) + id_step,
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ScriptMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
     }
   }
 
@@ -456,8 +457,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev != null && strActiveScript.length() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ScriptMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ScriptMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepMeta );
       remarks.add( cr );
 
       // Adding the existing Scripts to the Context
@@ -583,8 +584,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
           jsscript.eval( jsscope );
 
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "ScriptMeta.CheckResult.ScriptCompiledOK2" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "ScriptMeta.CheckResult.ScriptCompiledOK2" ), stepMeta );
           remarks.add( cr );
 
           if ( fieldname.length > 0 ) {
@@ -644,13 +645,13 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ScriptMeta.CheckResult.ConnectedStepOK2" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ScriptMeta.CheckResult.ConnectedStepOK2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ScriptMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ScriptMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -740,14 +741,14 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
                 res.setNull();
               } else {
                 if ( classname.equalsIgnoreCase( "org.mozilla.javascript.NativeDate" ) ) {
-                  dbl = (Double) result;// TODO AKRETION not sure!
+                  dbl = (Double) result; // TODO AKRETION not sure!
                 } else if ( classname.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
                   // Is it a java Date() class ?
                   try {
                     Date dat = (Date) result;
                     dbl = dat.getTime();
-                  } catch ( Exception e ) // Nope, try a Value
-                  {
+                  } catch ( Exception e ) { // Nope, try a Value
+
                     Value v = (Value) result;
                     Date dat = v.getDate();
                     if ( dat != null ) {
@@ -756,8 +757,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
                       res.setNull();
                     }
                   }
-                } else // Finally, try a number conversion to time
-                {
+                } else { // Finally, try a number conversion to time
+
                   dbl = ( (Double) result ).doubleValue();
                 }
                 long lng = Math.round( dbl );
@@ -822,8 +823,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
         additionalClasses[i] = new ScriptAddClasses( addClass, addObject, strJSName );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ScriptMeta.Exception.UnableToParseXMLforAdditionalClasses" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ScriptMeta.Exception.UnableToParseXMLforAdditionalClasses" ), e );
     }
   }
 
@@ -872,13 +873,13 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
    * @return
    */
   public static ScriptEngine createNewScriptEngine( String stepName ) {
-    System.setProperty( "org.jruby.embed.localvariable.behavior", "persistent" );// required for JRuby, transparent for
-                                                                                 // others
+    System.setProperty( "org.jruby.embed.localvariable.behavior", "persistent" ); // required for JRuby, transparent for
+                                                                                  // others
     ScriptEngineManager manager = new ScriptEngineManager();
     String[] strings = stepName.split( "\\." );
-    String extension = strings[strings.length > 0 ? 1 : 0];// skip the script number extension
+    String extension = strings[strings.length > 0 ? 1 : 0]; // skip the script number extension
     ScriptEngine scriptEngine = manager.getEngineByName( extension );
-    if ( scriptEngine == null ) {// falls back to Javascript
+    if ( scriptEngine == null ) { // falls back to Javascript
       scriptEngine = manager.getEngineByName( "javascript" );
     }
     return scriptEngine;

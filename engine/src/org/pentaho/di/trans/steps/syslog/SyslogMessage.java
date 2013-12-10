@@ -59,8 +59,8 @@ public class SyslogMessage extends BaseStep implements StepInterface {
     data = (SyslogMessageData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -90,8 +90,9 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       }
 
       // Send message
-      SyslogDefs.sendMessage( data.syslog, SyslogDefs.getPriority( meta.getPriority() ), message,
-          meta.isAddTimestamp(), data.datePattern, meta.isAddHostName() );
+      SyslogDefs.sendMessage(
+          data.syslog, SyslogDefs.getPriority( meta.getPriority() ), message, meta.isAddTimestamp(), data.datePattern,
+          meta.isAddHostName() );
 
       putRow( getInputRowMeta(), r ); // copy row to output rowset(s);
 

@@ -280,8 +280,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "GPBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "GPBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -363,8 +363,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
         dateMask[i] = rep.getStepAttributeString( id_step, i, "date_mask" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "GPBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "GPBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -398,8 +398,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "GPBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "GPBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -423,8 +423,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
 
         if ( !Const.isEmpty( tableName ) ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "GPBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "GPBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -438,8 +438,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "GPBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "GPBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             // How about the fields to insert/dateMask in the table?
@@ -466,8 +466,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "GPBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "GPBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
@@ -480,8 +480,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "GPBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "GPBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -504,8 +504,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "GPBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "GPBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
         } else {
@@ -531,13 +531,13 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GPBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GPBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GPBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GPBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -605,9 +605,10 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
         ValueMetaInterface v = prev.searchValueMeta( fieldStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-                databaseMeta.getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
-                fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
+            new DatabaseImpact(
+                DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                    .getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i], fieldStream[i],
+                v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
         impact.add( ii );
       }
     }

@@ -43,9 +43,6 @@ public class SymmetricCryptoTransData extends BaseStepData implements StepDataIn
   public SymmetricCryptoMeta CryptMeta;
   public SymmetricCrypto Crypt;
 
-  /**
-	 * 
-	 */
   public SymmetricCryptoTransData() {
     super();
     indexOfSecretkeyField = -1;

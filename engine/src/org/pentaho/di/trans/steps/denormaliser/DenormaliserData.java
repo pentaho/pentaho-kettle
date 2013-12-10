@@ -61,9 +61,6 @@ public class DenormaliserData extends BaseStepData implements StepDataInterface 
 
   public RowMetaInterface inputRowMeta;
 
-  /**
-	 * 
-	 */
   public DenormaliserData() {
     super();
 

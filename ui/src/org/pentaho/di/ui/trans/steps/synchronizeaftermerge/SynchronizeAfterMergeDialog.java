@@ -373,8 +373,8 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     fdlTablenameInField.right = new FormAttachment( middle, -margin );
     wlTablenameInField.setLayoutData( fdlTablenameInField );
     wTablenameInField = new Button( wGeneralComp, SWT.CHECK );
-    wTablenameInField.setToolTipText( BaseMessages.getString( PKG,
-        "SynchronizeAfterMergeDialog.TablenameInField.Tooltip" ) );
+    wTablenameInField.setToolTipText( BaseMessages.getString(
+        PKG, "SynchronizeAfterMergeDialog.TablenameInField.Tooltip" ) );
     props.setLook( wTablenameInField );
     fdTablenameInField = new FormData();
     fdTablenameInField.left = new FormAttachment( middle, 0 );
@@ -431,22 +431,26 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.TableField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.TableField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.Comparator" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.Comparator" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-              ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     ciKey[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.StreamField1" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.StreamField1" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.StreamField2" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.StreamField2" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     tableFieldColumns.add( ciKey[0] );
     wKey =
-        new TableView( transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciKey, nrKeyRows, lsMod, props );
+        new TableView( transMeta, wGeneralComp, SWT.BORDER
+            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey, nrKeyRows, lsMod, props );
 
     wGet = new Button( wGeneralComp, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.GetFields.Button" ) );
@@ -486,18 +490,21 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.TableField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.TableField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.StreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.StreamField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.Update" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.ColumnInfo.Update" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+        new TableView( transMeta, wGeneralComp, SWT.BORDER
+            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
 
     wGetLU = new Button( wGeneralComp, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.GetAndUpdateFields.Label" ) );
@@ -831,9 +838,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
 
@@ -844,9 +851,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -891,14 +898,14 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.DoMapping.SomeSourceFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "SynchronizeAfterMergeDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.DoMapping.SomeTargetFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "SynchronizeAfterMergeDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       message += Const.CR;
@@ -906,8 +913,8 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
           BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "SynchronizeAfterMergeDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "SynchronizeAfterMergeDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
@@ -1027,9 +1034,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
           wOperationField.setText( fieldoperation );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG,
-            "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString( PKG,
-            "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell, BaseMessages.getString(
+            PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+            PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1233,9 +1240,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 3 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1252,9 +1259,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-              .getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1289,9 +1296,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
-              .getString( PKG, "SynchronizeAfterMergeDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.CouldNotBuildSQL.DialogTitle" ),
+          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }
@@ -1307,8 +1314,8 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "SynchronizeAfterMergeDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+                  PKG, "SynchronizeAfterMergeDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
                   .getString( PKG, "SynchronizeAfterMergeDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {

@@ -140,8 +140,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       }
     }
 
-    if ( add == null ) // nothing was found, unknown code: add default values
-    {
+    if ( add == null ) { // nothing was found, unknown code: add default values
       if ( meta.isEatingRowOnLookupFailure() ) {
         return null;
       }
@@ -267,10 +266,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       if ( timedRow != null ) {
         return timedRow.getRow();
       }
-    } else // special handling of conditions <,>, <> etc.
-    {
-      if ( !data.hasDBCondition ) // e.g. LIKE not handled by this routine, yet
-      {
+    } else { // special handling of conditions <,>, <> etc.
+      if ( !data.hasDBCondition ) { // e.g. LIKE not handled by this routine, yet
         // TODO: find an alternative way to look up the data based on the condition.
         // Not all conditions are "=" so we are going to have to evaluate row by row
         // A sorted list or index might be a good solution here...
@@ -355,8 +352,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -376,8 +372,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         }
       }
 
-      data.db.setLookup( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ),
-          meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(),
+      data.db.setLookup(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ), meta
+              .getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(),
           meta.getOrderByClause(), meta.isFailingOnMultipleResults() );
 
       // lookup the values!
@@ -394,8 +391,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
             !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
             !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
         ) {
-          throw new KettleStepException( BaseMessages.getString( PKG,
-              "DatabaseLookup.ERROR0001.FieldRequired1.Exception" )
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "DatabaseLookup.ERROR0001.FieldRequired1.Exception" )
               + meta.getStreamKeyField1()[i]
               + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired2.Exception" ) );
         }
@@ -403,14 +400,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         if ( data.keynrs2[i] < 0 && // couldn't find field!
             "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
         ) {
-          throw new KettleStepException( BaseMessages.getString( PKG,
-              "DatabaseLookup.ERROR0001.FieldRequired3.Exception" )
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "DatabaseLookup.ERROR0001.FieldRequired3.Exception" )
               + meta.getStreamKeyField2()[i]
               + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired4.Exception" ) );
         }
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex1" ) + meta.getStreamKeyField1()[i]
-              + BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex2" ) + data.keynrs[i] );
+          logDebug( BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex1" )
+              + meta.getStreamKeyField1()[i] + BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex2" )
+              + data.keynrs[i] );
         }
       }
 
@@ -430,8 +428,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       // Determine the types...
       data.keytypes = new int[meta.getTableKeyField().length];
       String schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-              environmentSubstitute( meta.getTablename() ) );
+          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
       RowMetaInterface fields = data.db.getTableFields( schemaTable );
       if ( fields != null ) {
         // Fill in the types...
@@ -440,15 +438,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           if ( key != null ) {
             data.keytypes[i] = key.getType();
           } else {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "DatabaseLookup.ERROR0001.FieldRequired5.Exception" )
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "DatabaseLookup.ERROR0001.FieldRequired5.Exception" )
                 + meta.getTableKeyField()[i]
                 + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired6.Exception" ) );
           }
         }
       } else {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
             + schemaTable + "]" );
       }
 
@@ -562,8 +560,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       //
       sql +=
           " FROM "
-              + dbMeta.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-                  environmentSubstitute( meta.getTablename() ) );
+              + dbMeta.getQuotedSchemaTableCombination(
+                  environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
 
       // order by?
       if ( meta.getOrderByClause() != null && meta.getOrderByClause().length() != 0 ) {

@@ -137,8 +137,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       }
     }
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -230,30 +230,30 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       parentfolder = file.getParent();
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderExist", parentfolder.getName()
-              .toString() ) );
+          logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderExist", parentfolder
+              .getName().toString() ) );
         }
       } else {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderNotExist", parentfolder.getName()
-              .toString() ) );
+          logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderNotExist", parentfolder
+              .getName().toString() ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderCreated", parentfolder.getName()
-                .toString() ) );
+            logDetailed( BaseMessages.getString( PKG, "ExcelOutput.Log.ParentFolderCreated", parentfolder
+                .getName().toString() ) );
           }
         } else {
           retval = false;
-          logError( BaseMessages.getString( PKG, "ExcelOutput.Error.CanNotFoundParentFolder", parentfolder.getName()
-              .toString(), file.getName().toString() ) );
+          logError( BaseMessages.getString( PKG, "ExcelOutput.Error.CanNotFoundParentFolder", parentfolder
+              .getName().toString(), file.getName().toString() ) );
         }
       }
     } catch ( Exception e ) {
       retval = false;
-      logError( BaseMessages.getString( PKG, "ExcelOutput.Log.CouldNotCreateParentFolder", parentfolder.getName()
-          .toString() ) );
+      logError( BaseMessages.getString( PKG, "ExcelOutput.Log.CouldNotCreateParentFolder", parentfolder
+          .getName().toString() ) );
     } finally {
       if ( parentfolder != null ) {
         try {
@@ -333,8 +333,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       }
 
       // Do we need to use a specific format to header?
-      if ( isHeader )// && cellFormat==null)
-      {
+      if ( isHeader ) {
         // Set font for header and footer+
         data.sheet.addCell( new Label( data.positionX, data.positionY, vMeta.getName(), data.headerCellFormat ) );
         if ( cellFormat == null ) {
@@ -777,8 +776,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       try {
         imageFile = KettleVFS.getFileObject( data.realHeaderImage );
         if ( !imageFile.exists() ) {
-          throw new KettleException( BaseMessages.getString( PKG, "ExcelInputLog.ImageFileNotExists",
-              data.realHeaderImage ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "ExcelInputLog.ImageFileNotExists", data.realHeaderImage ) );
         }
         data.realHeaderImage = KettleVFS.getFilename( imageFile );
         // Put an image
@@ -789,8 +788,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         byte[] imageData = new byte[(int) imageFile.getContent().getSize()];
         KettleVFS.getInputStream( imageFile ).read( imageData );
 
-        data.headerImage = new WritableImage( 0, 0, data.headerImageWidth, data.headerImageHeight, imageData );// imageFile.g.new
-                                                                                                               // File(data.realHeaderImage));
+        data.headerImage = new WritableImage( 0, 0, data.headerImageWidth, data.headerImageHeight, imageData ); // imageFile.g.new
+                                                                                                                // File(data.realHeaderImage));
         imageData = null;
       } catch ( Exception e ) {
         throw new KettleException( e );

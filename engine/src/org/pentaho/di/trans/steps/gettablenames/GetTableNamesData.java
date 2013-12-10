@@ -48,9 +48,6 @@ public class GetTableNamesData extends BaseStepData implements StepDataInterface
 
   public Object[] readrow;
 
-  /**
-	 * 
-	 */
   public GetTableNamesData() {
     super();
     db = null;

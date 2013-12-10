@@ -458,39 +458,39 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     // Now see what we can find as previous step...
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.NoFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check if filename is given
     if ( !Const.isEmpty( fileName ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.FilenameOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.FilenameOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.FilenameError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.FilenameError" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -499,13 +499,13 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     ValueMetaInterface v = prev.searchValueMeta( keyfield );
     if ( v == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.KeyFieldMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.KeyFieldMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.KeyFieldOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.KeyFieldOk" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -514,13 +514,13 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     v = prev.searchValueMeta( valuefield );
     if ( v == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.ValueFieldMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.ValueFieldMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyOutputMeta.CheckResult.ValueFieldOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PropertyOutputMeta.CheckResult.ValueFieldOk" ), stepMeta );
       remarks.add( cr );
     }
 

@@ -42,10 +42,11 @@ public class AccessInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "AccessInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "AccessInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "AccessInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "AccessInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "AccessInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "AccessInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "AccessInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "AccessInputField.TrimType.Both" ) };
 
   private String name;
   private String Column;

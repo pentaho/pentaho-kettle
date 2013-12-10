@@ -339,9 +339,9 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
           wURL.setText( filefield );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogTitle" ),
+            BaseMessages.getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

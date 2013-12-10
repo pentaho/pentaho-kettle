@@ -88,11 +88,12 @@ public class RandomCreditCardNumberGenerator {
   public static final int CARD_TYPE_SWITCH = 13;
   public static final int CARD_TYPE_LASER = 14;
 
-  public static final String[] cardTypes = { "American Express", "Diners", "Discover", "En Route", "JCB1", "JCB2",
-    "MasterCard", "Visa", "Voyager", "Airplus", "BankCard", "Maestro", "Solo", "Switch", "Laser" };
+  public static final String[] cardTypes = {
+      "American Express", "Diners", "Discover", "En Route", "JCB1", "JCB2", "MasterCard", "Visa", "Voyager", "Airplus",
+      "BankCard", "Maestro", "Solo", "Switch", "Laser" };
 
-  private static final String[] VISA_PREFIX_LIST = new String[] { "4539", "4556", "4916", "4532", "4929", "40240071",
-    "4485", "4716", "4" };
+  private static final String[] VISA_PREFIX_LIST = new String[] {
+      "4539", "4556", "4916", "4532", "4929", "40240071", "4485", "4716", "4" };
   private static final String[] MASTERCARD_PREFIX_LIST = new String[] { "51", "52", "53", "54", "55" };
   private static final String[] AMEX_PREFIX_LIST = new String[] { "34", "37" };
   private static final String[] DISCOVER_PREFIX_LIST = new String[] { "6011" };
@@ -105,8 +106,8 @@ public class RandomCreditCardNumberGenerator {
   private static final String[] BANKCARD_PREFIX_LIST = new String[] { "56" };
   private static final String[] MAESTRO_PREFIX_LIST = new String[] { "5020", "6" };
   private static final String[] SOLO_PREFIX_LIST = new String[] { "6334", "6767" };
-  private static final String[] SWITCH_PREFIX_LIST = new String[] { "4903", "4905", "4911", "4936", "564182", "633110",
-    "6333", "6759" };
+  private static final String[] SWITCH_PREFIX_LIST = new String[] {
+      "4903", "4905", "4911", "4936", "564182", "633110", "6333", "6759" };
   private static final String[] LASER_PREFIX_LIST = new String[] { "6304", "6706", "6771", "6709" };
 
   private static final int[] VISA_LENGTH_LIST = new int[] { 13, 16 };
@@ -229,8 +230,8 @@ public class RandomCreditCardNumberGenerator {
         return;
       }
     }
-    throw new KettleException( BaseMessages.getString( PKG, "RandomCreditCardNumbberGenerator.UnSupportedLength",
-        String.valueOf( size ), getCardName( cardType ) ) );
+    throw new KettleException( BaseMessages.getString(
+        PKG, "RandomCreditCardNumbberGenerator.UnSupportedLength", String.valueOf( size ), getCardName( cardType ) ) );
   }
 
   public static String[] GenerateCreditCardNumbers( int cardType, int size, int howMany ) throws KettleException {
@@ -297,8 +298,8 @@ public class RandomCreditCardNumberGenerator {
         cards = credit_card_number( LASER_PREFIX_LIST, size, howMany );
         break;
       default:
-        throw new KettleException( BaseMessages.getString( PKG, "RandomCreditCardNumbberGenerator.UnknownCardtype",
-            String.valueOf( cardType ) ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "RandomCreditCardNumbberGenerator.UnknownCardtype", String.valueOf( cardType ) ) );
     }
     return cards;
   }

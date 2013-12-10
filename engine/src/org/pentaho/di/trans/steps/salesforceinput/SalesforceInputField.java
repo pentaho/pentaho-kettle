@@ -45,10 +45,11 @@ public class SalesforceInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "SalesforceInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "SalesforceInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Both" ) };
 
   private String name;
   private String field;

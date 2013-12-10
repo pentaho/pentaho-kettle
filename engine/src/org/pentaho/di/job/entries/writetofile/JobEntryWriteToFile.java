@@ -198,8 +198,8 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
           osw = new OutputStreamWriter( os );
         } else {
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "JobWriteToFile.Log.WritingToFileWithEncoding", realFilename,
-                encoding ) );
+            logDebug( BaseMessages.getString(
+                PKG, "JobWriteToFile.Log.WritingToFileWithEncoding", realFilename, encoding ) );
           }
           osw = new OutputStreamWriter( os, encoding );
         }
@@ -240,13 +240,13 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
       if ( !parent.exists() ) {
         if ( isCreateParentFolder() ) {
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFoldetNotExist", parent.getName()
-                .toString() ) );
+            logDetailed( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFoldetNotExist", parent
+                .getName().toString() ) );
           }
           parent.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFolderCreated", parent.getName()
-                .toString() ) );
+            logDetailed( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFolderCreated", parent
+                .getName().toString() ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "JobWriteToFile.Log.ParentFoldetNotExist", parent

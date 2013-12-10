@@ -45,9 +45,6 @@ public class MailValidatorData extends BaseStepData implements StepDataInterface
   public RowMetaInterface outputRowMeta;
   public int NrPrevFields;
 
-  /**
-	 * 
-	 */
   public MailValidatorData() {
     super();
     indexOfeMailField = -1;

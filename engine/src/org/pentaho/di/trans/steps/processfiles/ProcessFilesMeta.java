@@ -71,9 +71,9 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-    BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Copy" ),
-    BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Move" ),
-    BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Delete" ) };
+      BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Copy" ),
+      BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Move" ),
+      BaseMessages.getString( PKG, "ProcessFilesMeta.operationType.Delete" ) };
 
   /**
    * The operations type codes
@@ -260,8 +260,8 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
       simulate = rep.getStepAttributeBoolean( id_step, "simulate" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ProcessFilesMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ProcessFilesMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -311,13 +311,13 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ProcessFilesMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ProcessFilesMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ProcessFilesMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ProcessFilesMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

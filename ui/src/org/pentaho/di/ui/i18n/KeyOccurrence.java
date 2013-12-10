@@ -78,9 +78,6 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
    */
   private String sourceLine;
 
-  /**
-	 * 
-	 */
   public KeyOccurrence() {
     occurrences = 0;
   }
@@ -124,7 +121,8 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
     if ( this == occ ) {
       return true;
     }
-    return sourceFolder.equals( ( (KeyOccurrence) occ ).sourceFolder ) && key.equals( ( (KeyOccurrence) occ ).key )
+    return sourceFolder.equals( ( (KeyOccurrence) occ ).sourceFolder )
+        && key.equals( ( (KeyOccurrence) occ ).key )
         && messagesPackage.equals( ( (KeyOccurrence) occ ).messagesPackage );
   }
 

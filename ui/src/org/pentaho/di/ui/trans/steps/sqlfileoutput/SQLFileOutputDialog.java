@@ -457,8 +457,8 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
     fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( wFileName, SWT.CHECK );
-    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString( PKG,
-        "SQLFileOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+        PKG, "SQLFileOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
@@ -610,9 +610,9 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
         String[] files = tfoi.getFiles( transMeta.environmentSubstitute( wFilename.getText() ) );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "SQLFileOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "SQLFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                  PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+                  PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -818,16 +818,18 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
           if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
+            wFilename.setText( dialog.getFilterPath()
+                + System.getProperty( "file.separator" )
                 + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
             wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
@@ -1048,8 +1050,9 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SQLFileOutputDialog.BuildSQLError.DialogTitle" ),
-          BaseMessages.getString( PKG, "SQLFileOutputDialog.BuildSQLError.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SQLFileOutputDialog.BuildSQLError.DialogTitle" ), BaseMessages
+              .getString( PKG, "SQLFileOutputDialog.BuildSQLError.DialogMessage" ), ke );
     }
   }
 }

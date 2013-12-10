@@ -123,8 +123,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
     }
 
     Object[] outputRowData = readOneRow( true ); // get row, set busy!
-    if ( outputRowData == null ) // no more input to be expected...
-    {
+    if ( outputRowData == null ) { // no more input to be expected...
+
       if ( skipToNextBlock() ) {
         // If we need to open a new file, make sure we don't stop when we get a false from the openNextFile() algorithm.
         // It can also mean that the file is smaller than the block size
@@ -182,8 +182,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       //
       long bytesToSkip = positionToReach - data.fileReadPosition;
 
-      logBasic( "Skipping " + bytesToSkip + " bytes to go to position " + positionToReach + " for step copy "
-          + data.stepNumber );
+      logBasic( "Skipping "
+          + bytesToSkip + " bytes to go to position " + positionToReach + " for step copy " + data.stepNumber );
 
       // Get into position...
       //
@@ -238,8 +238,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
         String filenameField = environmentSubstitute( meta.getFilenameField() );
         index = getInputRowMeta().indexOfValue( filenameField );
         if ( index < 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "ParGzipCsvInput.Exception.FilenameFieldNotFound",
-              filenameField ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "ParGzipCsvInput.Exception.FilenameFieldNotFound", filenameField ) );
         }
       }
 
@@ -324,8 +324,8 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
         if ( bytesToSkip > 0 ) {
           // Get into position for block 0
           //
-          logBasic( "Skipping " + bytesToSkip + " bytes to go to position " + bytesToSkip + " for step copy "
-              + data.stepNumber );
+          logBasic( "Skipping "
+              + bytesToSkip + " bytes to go to position " + bytesToSkip + " for step copy " + data.stepNumber );
 
           long bytesSkipped = 0L;
           while ( bytesSkipped < bytesToSkip ) {
@@ -485,12 +485,10 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
           //
           if ( data.byteBuffer[data.endBuffer] == data.delimiter[0] ) {
             delimiterFound = true;
-          }
-          // Perhaps we found a new line?
-          // "\n\r".getBytes()
-          //
-          else if ( data.byteBuffer[data.endBuffer] == '\n' || data.byteBuffer[data.endBuffer] == '\r' ) {
-
+          } else if ( data.byteBuffer[data.endBuffer] == '\n' || data.byteBuffer[data.endBuffer] == '\r' ) {
+            // Perhaps we found a new line?
+            // "\n\r".getBytes()
+            //
             data.endBuffer++;
             data.totalBytesRead++;
             newLines = 1;
@@ -508,13 +506,12 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
 
             newLineFound = true;
             delimiterFound = true;
-          }
-          // Perhaps we need to skip over an enclosed part?
-          // We always expect exactly one enclosure character
-          // If we find the enclosure doubled, we consider it escaped.
-          // --> "" is converted to " later on.
-          //
-          else if ( data.enclosure != null && data.byteBuffer[data.endBuffer] == data.enclosure[0] ) {
+          } else if ( data.enclosure != null && data.byteBuffer[data.endBuffer] == data.enclosure[0] ) {
+            // Perhaps we need to skip over an enclosed part?
+            // We always expect exactly one enclosure character
+            // If we find the enclosure doubled, we consider it escaped.
+            // --> "" is converted to " later on.
+            //
 
             enclosureFound = true;
             boolean keepGoing;
@@ -553,9 +550,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
               newLines += 2; // to remove the enclosures in case of missing newline on last line.
               break;
             }
-          }
-
-          else {
+          } else {
 
             data.endBuffer++;
             data.totalBytesRead++;

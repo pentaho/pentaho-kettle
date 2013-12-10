@@ -70,8 +70,9 @@ public class TransformationResource {
     int lastLineNr = KettleLogStore.getLastBufferLineNr();
     Trans trans = CarteResource.getTransformation( id );
     String logText =
-        KettleLogStore.getAppender()
-            .getBuffer( trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
+        KettleLogStore
+            .getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr )
+            .toString();
     return logText;
   }
 
@@ -238,8 +239,8 @@ public class TransformationResource {
       trans.setRepository( repository );
       trans.setSocketRepository( CarteSingleton.getInstance().getSocketRepository() );
 
-      CarteSingleton.getInstance().getTransformationMap().addTransformation( transMeta.getName(), carteObjectId, trans,
-          transConfiguration );
+      CarteSingleton.getInstance().getTransformationMap().addTransformation(
+          transMeta.getName(), carteObjectId, trans, transConfiguration );
       trans.setContainerObjectId( carteObjectId );
 
       if ( repository != null ) {

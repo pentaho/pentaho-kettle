@@ -125,8 +125,8 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
       username = XMLHandler.getTagValue( entrynode, "username" );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryConnectedToRepository.Meta.UnableToLoadFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryConnectedToRepository.Meta.UnableToLoadFromXML" ), e );
     }
   }
 
@@ -196,8 +196,8 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
 
       if ( rep.getSecurityProvider().getUserInfo() != null
           && !realUsername.equals( rep.getSecurityProvider().getUserInfo().getLogin() ) ) {
-        logError( BaseMessages.getString( PKG, "JobEntryConnectedToRepository.Error.DiffUser", rep.getUserInfo()
-            .getLogin(), realUsername ) );
+        logError( BaseMessages.getString( PKG, "JobEntryConnectedToRepository.Error.DiffUser", rep
+            .getUserInfo().getLogin(), realUsername ) );
         return result;
       }
     }

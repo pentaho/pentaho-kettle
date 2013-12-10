@@ -41,9 +41,6 @@ public class UniqueRowsData extends BaseStepData implements StepDataInterface {
   public String realErrorDescription;
   public boolean sendDuplicateRows;
 
-  /**
-	 * 
-	 */
   public UniqueRowsData() {
     super();
 

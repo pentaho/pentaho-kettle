@@ -127,9 +127,6 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface {
   public String rootUriName;
   public long size;
 
-  /**
-	 * 
-	 */
   public ExcelInputData() {
     super();
     workbook = null;

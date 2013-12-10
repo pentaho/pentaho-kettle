@@ -204,68 +204,68 @@ public class XMLJoinMeta extends BaseStepMeta implements StepMetaInterface {
     // checks for empty field which are required
     if ( this.targetXMLstep == null || this.targetXMLstep.length() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.TargetXMLStepNotSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.TargetXMLStepNotSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.TargetXMLStepSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.TargetXMLStepSpecified" ), stepMeta );
       remarks.add( cr );
     }
     if ( this.targetXMLfield == null || this.targetXMLfield.length() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.TargetXMLFieldNotSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.TargetXMLFieldNotSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.TargetXMLFieldSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.TargetXMLFieldSpecified" ), stepMeta );
       remarks.add( cr );
     }
     if ( this.sourceXMLstep == null || this.sourceXMLstep.length() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.SourceXMLStepNotSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.SourceXMLStepNotSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.SourceXMLStepSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.SourceXMLStepSpecified" ), stepMeta );
       remarks.add( cr );
     }
     if ( this.sourceXMLfield == null || this.sourceXMLfield.length() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.SourceXMLFieldNotSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.SourceXMLFieldNotSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.SourceXMLFieldSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.SourceXMLFieldSpecified" ), stepMeta );
       remarks.add( cr );
     }
     if ( this.valueXMLfield == null || this.valueXMLfield.length() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.ResultFieldNotSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.ResultFieldNotSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.ResultFieldSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.ResultFieldSpecified" ), stepMeta );
       remarks.add( cr );
     }
     if ( this.targetXPath == null || this.targetXPath.length() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.TargetXPathNotSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.TargetXPathNotSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.TargetXPathSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.TargetXPathSpecified" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -277,35 +277,35 @@ public class XMLJoinMeta extends BaseStepMeta implements StepMetaInterface {
         if ( this.targetXMLstep != null && this.targetXMLstep.equals( input[i] ) ) {
           targetStepFound = true;
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "XMLJoin.CheckResult.TargetXMLStepFound", this.targetXMLstep ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "XMLJoin.CheckResult.TargetXMLStepFound", this.targetXMLstep ), stepMeta );
           remarks.add( cr );
         }
         if ( this.sourceXMLstep != null && this.sourceXMLstep.equals( input[i] ) ) {
           sourceStepFound = true;
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "XMLJoin.CheckResult.SourceXMLStepFound", this.sourceXMLstep ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "XMLJoin.CheckResult.SourceXMLStepFound", this.sourceXMLstep ), stepMeta );
           remarks.add( cr );
         }
       }
 
       if ( !targetStepFound ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XMLJoin.CheckResult.TargetXMLStepNotFound", this.targetXMLstep ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "XMLJoin.CheckResult.TargetXMLStepNotFound", this.targetXMLstep ), stepMeta );
         remarks.add( cr );
       }
       if ( !sourceStepFound ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XMLJoin.CheckResult.SourceXMLStepNotFound", this.sourceXMLstep ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "XMLJoin.CheckResult.SourceXMLStepNotFound", this.sourceXMLstep ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLJoin.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XMLJoin.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }

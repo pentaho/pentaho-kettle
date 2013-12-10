@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans;
 
@@ -31,36 +31,35 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 /**
  * Tests for RowProducer
- *
+ * 
  */
 public class RowProducerTest extends TestCase {
 
   /**
-   * Verify that putting a row into a RowProducer does 
-   * not block if the underlying rowSet is not full.
+   * Verify that putting a row into a RowProducer does not block if the underlying rowSet is not full.
    */
   public void testPutRow_not_full() {
     final int attempts = 1;
-    MockBlockingRowSet rs = new MockBlockingRowSet(attempts);
-    RowProducer rp = new RowProducer(null, rs);
+    MockBlockingRowSet rs = new MockBlockingRowSet( attempts );
+    RowProducer rp = new RowProducer( null, rs );
 
-    rp.putRow(null, null);
+    rp.putRow( null, null );
 
-    assertEquals("Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts()); 
+    assertEquals( "Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts() );
   }
 
   /**
-   * Verify that putting a row into a RowProducer blocks until the row  
-   * is successfully added instead of returning immediately.
+   * Verify that putting a row into a RowProducer blocks until the row is successfully added instead of returning
+   * immediately.
    */
   public void testPutRow_full() {
     final int attempts = 10;
-    MockBlockingRowSet rs = new MockBlockingRowSet(attempts);
-    RowProducer rp = new RowProducer(null, rs);
+    MockBlockingRowSet rs = new MockBlockingRowSet( attempts );
+    RowProducer rp = new RowProducer( null, rs );
 
-    rp.putRow(null, null);
+    rp.putRow( null, null );
 
-    assertEquals("Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts()); 
+    assertEquals( "Total attempts to putRow() exceeded expected amount", attempts, rs.getTotalAttempts() );
   }
 
   class MockBlockingRowSet implements RowSet {
@@ -72,12 +71,13 @@ public class RowProducerTest extends TestCase {
     private int totalAttempts;
 
     /**
-     * Create a blocking row set that requires {@code attempts} calls to 
-     * {@link #putRowWait(RowMetaInterface, Object[], long, TimeUnit)} before actually adding the row. 
+     * Create a blocking row set that requires {@code attempts} calls to
+     * {@link #putRowWait(RowMetaInterface, Object[], long, TimeUnit)} before actually adding the row.
      * 
-     * @param attempts Number of calls required to actually put a row.
+     * @param attempts
+     *          Number of calls required to actually put a row.
      */
-    public MockBlockingRowSet(int attempts) {
+    public MockBlockingRowSet( int attempts ) {
       this.reqdAttempts = attempts;
       totalAttempts = 0;
     }
@@ -86,19 +86,19 @@ public class RowProducerTest extends TestCase {
       return totalAttempts;
     }
 
-    public boolean putRow(RowMetaInterface rowMeta, Object[] rowData) {
+    public boolean putRow( RowMetaInterface rowMeta, Object[] rowData ) {
       throw new UnsupportedOperationException();
     }
 
-    public boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu) {
+    public boolean putRowWait( RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu ) {
       totalAttempts++;
-      if (totalAttempts % reqdAttempts == 0) {
+      if ( totalAttempts % reqdAttempts == 0 ) {
         return true;
       }
       try {
-        Thread.sleep(10); // Simulate overhead of blocking
-      } catch (Exception ex) {
-        throw new RuntimeException(ex);
+        Thread.sleep( 10 ); // Simulate overhead of blocking
+      } catch ( Exception ex ) {
+        throw new RuntimeException( ex );
       }
       return false;
     }
@@ -111,7 +111,7 @@ public class RowProducerTest extends TestCase {
       throw new UnsupportedOperationException();
     }
 
-    public Object[] getRowWait(long timeout, TimeUnit tu) {
+    public Object[] getRowWait( long timeout, TimeUnit tu ) {
       throw new UnsupportedOperationException();
     }
 
@@ -147,7 +147,7 @@ public class RowProducerTest extends TestCase {
       throw new UnsupportedOperationException();
     }
 
-    public void setThreadNameFromToCopy(String from, int from_copy, String to, int to_copy) {
+    public void setThreadNameFromToCopy( String from, int from_copy, String to, int to_copy ) {
       throw new UnsupportedOperationException();
     }
 
@@ -155,7 +155,7 @@ public class RowProducerTest extends TestCase {
       throw new UnsupportedOperationException();
     }
 
-    public void setRowMeta(RowMetaInterface rowMeta) {
+    public void setRowMeta( RowMetaInterface rowMeta ) {
       throw new UnsupportedOperationException();
     }
 
@@ -163,7 +163,7 @@ public class RowProducerTest extends TestCase {
       throw new UnsupportedOperationException();
     }
 
-    public void setRemoteSlaveServerName(String remoteSlaveServerName) {
+    public void setRemoteSlaveServerName( String remoteSlaveServerName ) {
       throw new UnsupportedOperationException();
     }
 

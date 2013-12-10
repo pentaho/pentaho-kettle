@@ -256,7 +256,8 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "ftpdirectory", ftpDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localdirectory", localDirectory );
@@ -722,8 +723,8 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
         try {
           // Create a connection instance
           conn =
-              getConnection( realServerName, realServerPort, realProxyHost, realProxyPort, realproxyUserName,
-                  realProxyPassword );
+              getConnection(
+                  realServerName, realServerPort, realProxyHost, realProxyPort, realproxyUserName, realProxyPassword );
 
           if ( timeout > 0 ) {
             // Use timeout
@@ -914,8 +915,8 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
       long length = localFile.getContent().getSize();
 
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobSSH2PUT.Log.SendingFile", localFile.toString(), "" + length,
-            remotefilename ) );
+        logDetailed( BaseMessages.getString(
+            PKG, "JobSSH2PUT.Log.SendingFile", localFile.toString(), "" + length, remotefilename ) );
       }
 
       // Write to remote file
@@ -938,8 +939,8 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
       retval = true;
     } catch ( Exception e ) {
       // We failed to put files
-      logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.ErrorCopyingFile", localFile.toString() ) + ":"
-          + e.getMessage() );
+      logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.ErrorCopyingFile", localFile.toString() )
+          + ":" + e.getMessage() );
     } finally {
       if ( in != null ) {
         try {
@@ -1094,8 +1095,8 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
           file.moveTo( destination );
           retval = true;
         } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "JobSSH2PUT.Cant_Move_File.Label", file.toString(), destinationFolder,
-              e.getMessage() ) );
+          logError( BaseMessages.getString(
+              PKG, "JobSSH2PUT.Cant_Move_File.Label", file.toString(), destinationFolder, e.getMessage() ) );
         } finally {
           if ( destination != null ) {
             try {
@@ -1139,8 +1140,8 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+        this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );

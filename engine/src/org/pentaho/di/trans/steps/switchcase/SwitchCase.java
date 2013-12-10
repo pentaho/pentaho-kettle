@@ -64,16 +64,16 @@ public class SwitchCase extends BaseStep implements StepInterface {
     data = (SwitchCaseData) sdi;
 
     Object[] r = getRow(); // Get next usable row from input rowset(s)!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
 
     if ( first ) {
       first = false;
-      
-      //map input to output streams
+
+      // map input to output streams
       createOutputValueMapping();
     }
 
@@ -86,15 +86,15 @@ public class SwitchCase extends BaseStep implements StepInterface {
     // Determine the output set of rowset to use...
     Set<RowSet> rowSetSet = null;
     rowSetSet = ( lookupData == null ) ? data.nullRowSetSet : data.outputMap.get( lookupData );
- 
+
     // If the rowset is still not found (unspecified key value, we drop down to the default option
     // For now: send it to the default step...
-    if ( rowSetSet == null ){
+    if ( rowSetSet == null ) {
       rowSetSet = data.defaultRowSetSet;
     }
 
     for ( RowSet rowSet : rowSetSet ) {
-      putRowTo(data.outputRowMeta, r, rowSet );
+      putRowTo( data.outputRowMeta, r, rowSet );
     }
 
     if ( checkFeedback( getLinesRead() ) ) {
@@ -134,7 +134,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
     }
 
     return true;
-  }  
+  }
 
   /**
    * This will prepare step for execution:
@@ -142,13 +142,15 @@ public class SwitchCase extends BaseStep implements StepInterface {
    * <li>will copy input row meta info, fields info, etc. step related info
    * <li>will get step IO meta info and discover target streams for target output steps
    * <li>for every target output find output rowset and expected value.
-   * <li>for every discovered output rowset put it as a key-value: 'expected value'-'output rowSet'.
-   * If expected value is null - put output rowset to special 'null set' (avoid usage of null as a map keys)
-   * <li>Discover default row set. We expect only one default rowset, even if technically can have many.   * 
+   * <li>for every discovered output rowset put it as a key-value: 'expected value'-'output rowSet'. If expected value
+   * is null - put output rowset to special 'null set' (avoid usage of null as a map keys)
+   * <li>Discover default row set. We expect only one default rowset, even if technically can have many. *
    * </ol>
-   * @throws KettleException if something goes wrong during step preparation.
+   * 
+   * @throws KettleException
+   *           if something goes wrong during step preparation.
    */
-  void createOutputValueMapping() throws KettleException{
+  void createOutputValueMapping() throws KettleException {
     data.outputRowMeta = getInputRowMeta().clone();
     meta.getFields( getInputRowMeta(), getStepname(), null, null, this, repository, metaStore );
 
@@ -173,20 +175,20 @@ public class SwitchCase extends BaseStep implements StepInterface {
           break; // Skip over default option
         }
         if ( target.caseTargetStep == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue",
-              target.caseValue ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", target.caseValue ) );
         }
-        
+
         RowSet rowSet = findOutputRowSet( target.caseTargetStep.getName() );
         if ( rowSet == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep",
-              target.caseTargetStep ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", target.caseTargetStep ) );
         }
-        
+
         try {
           Object value =
-              data.valueMeta.convertDataFromString( target.caseValue, data.stringValueMeta, null, null,
-                  ValueMeta.TRIM_TYPE_NONE );
+              data.valueMeta.convertDataFromString(
+                  target.caseValue, data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE );
 
           // If we have a value and a rowset, we can store the combination in the map
           //
@@ -196,14 +198,14 @@ public class SwitchCase extends BaseStep implements StepInterface {
             data.outputMap.put( value, rowSet );
           }
         } catch ( Exception e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SwitchCase.Log.UnableToConvertValue",
-              target.caseValue ), e );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SwitchCase.Log.UnableToConvertValue", target.caseValue ), e );
         }
       }
 
       if ( meta.getDefaultTargetStep() != null ) {
         RowSet rowSet = findOutputRowSet( meta.getDefaultTargetStep().getName() );
-        if ( rowSet != null ){
+        if ( rowSet != null ) {
           data.defaultRowSetSet.add( rowSet );
         }
       }

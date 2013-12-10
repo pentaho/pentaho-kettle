@@ -93,8 +93,8 @@ public class ValueString implements ValueInterface, Cloneable {
 
   @Override
   public boolean getBoolean() {
-    return "Y".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string ) || "YES".equalsIgnoreCase( string )
-        || "1".equalsIgnoreCase( string );
+    return "Y".equalsIgnoreCase( string )
+        || "TRUE".equalsIgnoreCase( string ) || "YES".equalsIgnoreCase( string ) || "1".equalsIgnoreCase( string );
   }
 
   @Override

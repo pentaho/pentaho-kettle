@@ -136,14 +136,16 @@ public class RulesAccumulatorMetaMapper extends XulEventSourceAdapter {
   @SuppressWarnings( "deprecation" )
   public void saveMeta( RulesAccumulatorMeta meta ) {
     if ( ruleSource != null && ruleSource.equalsIgnoreCase( "file" ) ) {
-      if ( meta.getRuleFile() != null && !meta.getRuleFile().equals( getRuleFile() )
-          || ( meta.getRuleFile() != getRuleFile() ) || meta.getRuleDefinition() != null ) {
+      if ( meta.getRuleFile() != null
+          && !meta.getRuleFile().equals( getRuleFile() ) || ( meta.getRuleFile() != getRuleFile() )
+          || meta.getRuleDefinition() != null ) {
         meta.setRuleFile( getRuleFile() );
         meta.setRuleDefinition( null );
         meta.setChanged();
       }
     } else if ( ruleSource != null && ruleSource.equalsIgnoreCase( "definition" ) ) {
-      if ( meta.getRuleDefinition() != null && !meta.getRuleDefinition().equals( getRuleDefinition() )
+      if ( meta.getRuleDefinition() != null
+          && !meta.getRuleDefinition().equals( getRuleDefinition() )
           || ( meta.getRuleDefinition() != getRuleDefinition() ) || meta.getRuleFile() != null ) {
         meta.setRuleDefinition( getRuleDefinition() );
         meta.setRuleFile( null );

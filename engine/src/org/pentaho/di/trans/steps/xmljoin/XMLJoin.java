@@ -112,8 +112,9 @@ public class XMLJoin extends BaseStep implements StepInterface {
       }
 
       data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() },
-          null, this, repository, metaStore );
+      meta.getFields(
+          data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null, this,
+          repository, metaStore );
       data.outputRowData = rTarget.clone();
 
       // get the target xml structure and create a DOM
@@ -140,8 +141,8 @@ public class XMLJoin extends BaseStep implements StepInterface {
 
     Object[] rJoinSource = getRowFrom( data.SourceRowSet ); // This also waits for a row to be finished.
     // no more input to be expected... create the output row
-    if ( rJoinSource == null ) // no more input to be expected...
-    {
+    if ( rJoinSource == null ) { // no more input to be expected...
+
       // create string from xml tree
       try {
         String strOmitXMLHeader;

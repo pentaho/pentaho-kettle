@@ -54,8 +54,8 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
     if ( tabMapEntry == null ) {
       SpoonSlave spoonSlave = new SpoonSlave( tabfolder.getSwtTabset(), SWT.NONE, spoon, slaveServer );
       TabItem tabItem = new TabItem( tabfolder, tabName, tabName );
-      tabItem.setToolTipText( "Status of slave server : " + slaveServer.getName() + " : "
-          + slaveServer.getServerAndPort() );
+      tabItem.setToolTipText( "Status of slave server : "
+          + slaveServer.getName() + " : " + slaveServer.getServerAndPort() );
       tabItem.setControl( spoonSlave );
 
       tabMapEntry = new TabMapEntry( tabItem, null, tabName, null, null, spoonSlave, ObjectType.SLAVE_SERVER );
@@ -96,8 +96,9 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
             throw new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ),
-              BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
+          new ErrorDialog(
+              spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ), BaseMessages
+                  .getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
         }
       }
 

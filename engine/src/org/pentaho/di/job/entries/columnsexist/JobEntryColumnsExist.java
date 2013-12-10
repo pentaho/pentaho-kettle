@@ -170,8 +170,8 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryColumnsExist.Meta.UnableSaveRep", "" + id_job ),
-          dbe );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "JobEntryColumnsExist.Meta.UnableSaveRep", "" + id_job ), dbe );
     }
   }
 
@@ -249,13 +249,13 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 
             if ( db.checkColumnExists( realColumnname, realTablename ) ) {
               if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryColumnsExist.Log.ColumnExists", realColumnname,
-                    realTablename ) );
+                logDetailed( BaseMessages.getString(
+                    PKG, "JobEntryColumnsExist.Log.ColumnExists", realColumnname, realTablename ) );
               }
               nrexistcolums++;
             } else {
-              logError( BaseMessages.getString( PKG, "JobEntryColumnsExist.Log.ColumnNotExists", realColumnname,
-                  realTablename ) );
+              logError( BaseMessages.getString(
+                  PKG, "JobEntryColumnsExist.Log.ColumnNotExists", realColumnname, realTablename ) );
               nrnotexistcolums++;
             }
           }

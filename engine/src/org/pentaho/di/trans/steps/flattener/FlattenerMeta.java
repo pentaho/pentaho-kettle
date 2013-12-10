@@ -112,8 +112,8 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
     if ( fieldName != null && fieldName.length() > 0 ) {
       int idx = row.indexOfValue( fieldName );
       if ( idx < 0 ) {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName ) );
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName ) );
       }
 
       ValueMetaInterface v = row.getValueMeta( idx );
@@ -180,8 +180,8 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
         targetField[i] = rep.getStepAttributeString( id_step, i, "target_field" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -194,8 +194,8 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "target_field", targetField[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FlattenerMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FlattenerMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -208,13 +208,13 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

@@ -140,10 +140,12 @@ public class SetValueFieldDialog extends BaseStepDialog implements StepDialogInt
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueFieldDialog.ColumnInfo.Name" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetValueFieldDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueFieldDialog.ColumnInfo.ValueFromField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetValueFieldDialog.ColumnInfo.ValueFromField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );

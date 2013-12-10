@@ -169,8 +169,8 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, "Step is not seeing input field: " + realInputField + "!",
-              stepMeta );
+          new CheckResult(
+              CheckResult.TYPE_RESULT_ERROR, "Step is not seeing input field: " + realInputField + "!", stepMeta );
       remarks.add( cr );
     }
 

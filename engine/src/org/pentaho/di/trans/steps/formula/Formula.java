@@ -59,8 +59,8 @@ public class Formula extends BaseStep implements StepInterface {
     data = (FormulaData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -128,8 +128,8 @@ public class Formula extends BaseStep implements StepInterface {
           if ( !Const.isEmpty( fn.getFieldName() ) ) {
             data.formulas[i] = data.createFormula( meta.getFormula()[i].getFormula() );
           } else {
-            throw new KettleException( "Unable to find field name for formula [" + Const.NVL( fn.getFormula(), "" )
-                + "]" );
+            throw new KettleException( "Unable to find field name for formula ["
+                + Const.NVL( fn.getFormula(), "" ) + "]" );
           }
         }
       }
@@ -150,50 +150,50 @@ public class Formula extends BaseStep implements StepInterface {
             if ( formulaResult instanceof String ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_STRING;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_STRING ) {
-                throw new KettleValueException( "Please specify a String type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify a String type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else if ( formulaResult instanceof Number ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_NUMBER;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_NUMBER ) {
-                throw new KettleValueException( "Please specify a Number type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify a Number type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else if ( formulaResult instanceof Integer ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_INTEGER;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER ) {
-                throw new KettleValueException( "Please specify an Integer type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify an Integer type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else if ( formulaResult instanceof Long ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_LONG;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER ) {
-                throw new KettleValueException( "Please specify an Integer type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify an Integer type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else if ( formulaResult instanceof Date ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_DATE;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_DATE ) {
-                throw new KettleValueException( "Please specify a Date type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify a Date type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else if ( formulaResult instanceof BigDecimal ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_BIGDECIMAL;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_BIGNUMBER ) {
-                throw new KettleValueException( "Please specify a BigNumber type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify a BigNumber type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else if ( formulaResult instanceof byte[] ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_BYTE_ARRAY;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_BINARY ) {
-                throw new KettleValueException( "Please specify a Binary type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify a Binary type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else if ( formulaResult instanceof Boolean ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_BOOLEAN;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_BOOLEAN ) {
-                throw new KettleValueException( "Please specify a Boolean type for field [" + fn.getFieldName()
-                    + "] as a result of formula [" + fn.getFormula() + "]" );
+                throw new KettleValueException( "Please specify a Boolean type for field ["
+                    + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
               }
             } else {
               data.returnType[i] = FormulaData.RETURN_TYPE_STRING;

@@ -188,9 +188,9 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
             String[] procs = db.getProcedures();
             if ( procs != null && procs.length > 0 ) {
               EnterSelectionDialog esd =
-                  new EnterSelectionDialog( shell, procs, BaseMessages.getString( PKG,
-                      "DBProcDialog.EnterSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                      "DBProcDialog.EnterSelection.DialogMessage" ) );
+                  new EnterSelectionDialog( shell, procs, BaseMessages.getString(
+                      PKG, "DBProcDialog.EnterSelection.DialogTitle" ), BaseMessages.getString(
+                      PKG, "DBProcDialog.EnterSelection.DialogMessage" ) );
               String proc = esd.open();
               if ( proc != null ) {
                 wProcName.setText( proc );
@@ -202,9 +202,9 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
               mb.open();
             }
           } catch ( KettleDatabaseException dbe ) {
-            new ErrorDialog( shell,
-                BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle" ), BaseMessages
-                    .getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage" ), dbe );
+            new ErrorDialog(
+                shell, BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle" ),
+                BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage" ), dbe );
           } finally {
             db.disconnect();
           }
@@ -304,14 +304,16 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
             new String[] { "" }, false );
     colinf[1] =
         new ColumnInfo(
             BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Direction" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "IN", "OUT", "INOUT" } ); //$NON-NLS-3$ //$NON-NLS-4$
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            ValueMeta.getTypes() );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                .getTypes() );
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );

@@ -237,8 +237,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Server port line
     wServerName =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Server.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.Server.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Server.Label" ), BaseMessages.getString(
+                PKG, "SSHDialog.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -249,8 +250,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Server port line
     wPort =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Port.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.Port.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Port.Label" ), BaseMessages.getString(
+                PKG, "SSHDialog.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -261,8 +263,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Server TimeOut line
     wTimeOut =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.TimeOut.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.TimeOut.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.TimeOut.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.TimeOut.Tooltip" ) );
     props.setLook( wTimeOut );
     wTimeOut.addModifyListener( lsMod );
     fdTimeOut = new FormData();
@@ -273,8 +276,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Usernameline
     wUserName =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.UserName.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.UserName.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.UserName.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.UserName.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -285,8 +289,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Passwordline
     wPassword =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Password.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.Password.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Password.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
@@ -334,8 +339,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
         if ( wPrivateKey.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wPrivateKey.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.PEMFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.PEMFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wPrivateKey.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
@@ -344,8 +350,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Private key
     wPrivateKey =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.PrivateKey.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.PrivateKey.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.PrivateKey.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.PrivateKey.Tooltip" ) );
     props.setLook( wPassword );
     wPrivateKey.addModifyListener( lsMod );
     fdPrivateKey = new FormData();
@@ -356,8 +363,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Passphraseline
     wPassphrase =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Passphrase.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.Passphrase.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Passphrase.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.Passphrase.Tooltip" ) );
     props.setLook( wPassphrase );
     wPassphrase.addModifyListener( lsMod );
     fdPassphrase = new FormData();
@@ -368,8 +376,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // ProxyHostline
     wProxyHost =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyHost.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.ProxyHost.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyHost.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -380,8 +389,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // ProxyPortline
     wProxyPort =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyPort.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.ProxyPort.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyPort.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -392,8 +402,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // ProxyUsernameline
     wProxyUsername =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.ProxyUsername.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyUsername.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -404,8 +415,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // ProxyUsernameline
     wProxyPassword =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.ProxyPassword.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyPassword.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPassword = new FormData();
@@ -477,8 +489,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // ResultOutFieldNameline
     wResultOutFieldName =
-        new LabelTextVar( transMeta, wOutput, BaseMessages.getString( PKG, "SSHDialog.ResultOutFieldName.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.ResultOutFieldName.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wOutput, BaseMessages.getString( PKG, "SSHDialog.ResultOutFieldName.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.ResultOutFieldName.Tooltip" ) );
     props.setLook( wResultOutFieldName );
     wResultOutFieldName.addModifyListener( lsMod );
     fdResultOutFieldName = new FormData();
@@ -489,8 +502,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
     // ResultErrFieldNameline
     wResultErrFieldName =
-        new LabelTextVar( transMeta, wOutput, BaseMessages.getString( PKG, "SSHDialog.ResultErrFieldName.Label" ),
-            BaseMessages.getString( PKG, "SSHDialog.ResultErrFieldName.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wOutput, BaseMessages.getString( PKG, "SSHDialog.ResultErrFieldName.Label" ), BaseMessages
+                .getString( PKG, "SSHDialog.ResultErrFieldName.Tooltip" ) );
     props.setLook( wResultErrFieldName );
     wResultErrFieldName.addModifyListener( lsMod );
     fdResultErrFieldName = new FormData();
@@ -843,8 +857,9 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     Connection conn = null;
     try {
       conn =
-          SSHMeta.OpenConnection( servername, nrPort, username, password, wUseKey.getSelection(), keyFilename,
-              passphrase, timeOut, transMeta, proxyhost, proxyport, proxyusername, proxypassword );
+          SSHMeta.OpenConnection(
+              servername, nrPort, username, password, wUseKey.getSelection(), keyFilename, passphrase, timeOut,
+              transMeta, proxyhost, proxyport, proxyusername, proxypassword );
       testOK = true;
 
     } catch ( Exception e ) {
@@ -885,14 +900,15 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
       TransMeta previewMeta =
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, 1, BaseMessages.getString( PKG, "SSHDialog.NumberRows.DialogTitle" ),
-              BaseMessages.getString( PKG, "SSHDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog(
+              shell, 1, BaseMessages.getString( PKG, "SSHDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+                  PKG, "SSHDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -901,15 +917,16 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }

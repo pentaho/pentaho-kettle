@@ -125,8 +125,9 @@ public class CopyTableWizardPage2 extends WizardPage {
       sourceDb.connect();
       input = sourceDb.getTablenames();
     } catch ( KettleDatabaseException dbe ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogTitle" ),
-          BaseMessages.getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogMessage" ), dbe );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogTitle" ), BaseMessages
+              .getString( PKG, "CopyTableWizardPage2.ErrorGettingTables.DialogMessage" ), dbe );
       input = null;
       return false;
     } finally {

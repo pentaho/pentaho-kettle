@@ -212,8 +212,8 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 
     wRejectDuplicateRow = new Button( wSettings, SWT.CHECK );
     props.setLook( wRejectDuplicateRow );
-    wRejectDuplicateRow.setToolTipText( BaseMessages.getString( PKG, "UniqueRowsDialog.RejectDuplicateRow.ToolTip",
-        Const.CR ) );
+    wRejectDuplicateRow.setToolTipText( BaseMessages.getString(
+        PKG, "UniqueRowsDialog.RejectDuplicateRow.ToolTip", Const.CR ) );
     fdRejectDuplicateRow = new FormData();
     fdRejectDuplicateRow.left = new FormAttachment( middle, margin );
     fdRejectDuplicateRow.top = new FormAttachment( wCountField, margin );
@@ -274,10 +274,11 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "UniqueRowsDialog.ColumnInfo.Fieldname" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo(
-              BaseMessages.getString( PKG, "UniqueRowsDialog.ColumnInfo.IgnoreCase" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }, true ) //$NON-NLS-3$
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UniqueRowsDialog.ColumnInfo.Fieldname" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "UniqueRowsDialog.ColumnInfo.IgnoreCase" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }, true ) //$NON-NLS-3$
         };
 
     wFields =
@@ -449,11 +450,11 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
           new MessageDialogWithToggle( shell, BaseMessages
-              .getString( PKG, "UniqueRowsDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "UniqueRowsDialog.InputNeedSort.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "UniqueRowsDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "UniqueRowsDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
+              .getString( PKG, "UniqueRowsDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
+              PKG, "UniqueRowsDialog.InputNeedSort.DialogMessage", Const.CR )
+              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+              PKG, "UniqueRowsDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
+              PKG, "UniqueRowsDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
               STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
@@ -471,8 +472,9 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "UniqueRowsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "UniqueRowsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "UniqueRowsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "UniqueRowsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 

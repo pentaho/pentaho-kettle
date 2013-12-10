@@ -432,25 +432,25 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CalculatorMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CalculatorMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
 
       if ( prev == null || prev.size() == 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                "CalculatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+                PKG, "CalculatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "CalculatorMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "CalculatorMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CalculatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "CalculatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }

@@ -49,9 +49,6 @@ public class DeleteData extends BaseStepData implements StepDataInterface {
 
   public PreparedStatement prepStatementDelete;
 
-  /**
-	 * 
-	 */
   public DeleteData() {
     super();
 

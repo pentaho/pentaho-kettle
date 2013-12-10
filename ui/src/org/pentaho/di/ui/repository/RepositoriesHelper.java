@@ -78,8 +78,8 @@ public class RepositoriesHelper {
       } catch ( KettleException e ) {
         log.logDetailed( BaseMessages.getString( PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e
             .getLocalizedMessage() ) );
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString( PKG,
-            "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage() ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString(
+            PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage() ), e );
       }
       List<RepositoryMeta> repositoryList = new ArrayList<RepositoryMeta>();
       for ( int i = 0; i < this.input.nrRepositories(); i++ ) {
@@ -88,8 +88,8 @@ public class RepositoriesHelper {
       model.setAvailableRepositories( repositoryList );
     } catch ( Exception e ) {
       log.logDetailed( BaseMessages.getString( PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions" ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString( PKG,
-          "RepositoryLogin.ErrorReadingRepositoryDefinitions" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString(
+          PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions" ), e );
     }
   }
 
@@ -106,9 +106,9 @@ public class RepositoriesHelper {
 
     // TODO: make this a bit fancier!
     EnterSelectionDialog selectRepositoryType =
-        new EnterSelectionDialog( this.shell, names, BaseMessages.getString( PKG,
-            "RepositoryLogin.SelectRepositoryType" ), BaseMessages.getString( PKG,
-            "RepositoryLogin.SelectRepositoryTypeCreate" ) );
+        new EnterSelectionDialog( this.shell, names, BaseMessages.getString(
+            PKG, "RepositoryLogin.SelectRepositoryType" ), BaseMessages.getString(
+            PKG, "RepositoryLogin.SelectRepositoryTypeCreate" ) );
     String choice = selectRepositoryType.open();
     if ( choice != null ) {
       int index = selectRepositoryType.getSelectionNr();
@@ -135,8 +135,8 @@ public class RepositoriesHelper {
       } catch ( Exception e ) {
         log.logDetailed( BaseMessages.getString( PKG, "RepositoryLogin.ErrorCreatingRepository", e
             .getLocalizedMessage() ) );
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString( PKG,
-            "RepositoryLogin.ErrorCreatingRepository", e.getLocalizedMessage() ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString(
+            PKG, "RepositoryLogin.ErrorCreatingRepository", e.getLocalizedMessage() ), e );
       }
     }
   }
@@ -159,9 +159,10 @@ public class RepositoriesHelper {
         writeData();
       }
     } catch ( Exception e ) {
-      log.logDetailed( BaseMessages.getString( PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage() ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString( PKG,
-          "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage() ), e );
+      log
+          .logDetailed( BaseMessages.getString( PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage() ) );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString(
+          PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage() ), e );
     }
   }
 
@@ -188,8 +189,8 @@ public class RepositoriesHelper {
           public void onError( XulComponent sender, Throwable t ) {
             log.logDetailed( BaseMessages.getString( PKG, "RepositoryLogin.UnableToDeleteRepository", t
                 .getLocalizedMessage() ) );
-            new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString( PKG,
-                "RepositoryLogin.UnableToDeleteRepository", t.getLocalizedMessage() ), t );
+            new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString(
+                PKG, "RepositoryLogin.UnableToDeleteRepository", t.getLocalizedMessage() ), t );
           }
         } );
         confirmBox.open();
@@ -197,8 +198,8 @@ public class RepositoriesHelper {
     } catch ( Exception e ) {
       log.logDetailed( BaseMessages
           .getString( PKG, "RepositoryLogin.UnableToDeleteRepository", e.getLocalizedMessage() ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString( PKG,
-          "RepositoryLogin.UnableToDeleteRepository", e.getLocalizedMessage() ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString(
+          PKG, "RepositoryLogin.UnableToDeleteRepository", e.getLocalizedMessage() ), e );
     }
   }
 
@@ -208,8 +209,8 @@ public class RepositoriesHelper {
     Class<? extends RepositoryDialogInterface> dialogClass = PluginRegistry.getInstance().getClass( plugin, className );
     Constructor<?> constructor =
         dialogClass.getConstructor( Shell.class, Integer.TYPE, RepositoryMeta.class, RepositoriesMeta.class );
-    return (RepositoryDialogInterface) constructor.newInstance( new Object[] { shell, Integer.valueOf( SWT.NONE ),
-      repositoryMeta, input, } );
+    return (RepositoryDialogInterface) constructor.newInstance( new Object[] {
+        shell, Integer.valueOf( SWT.NONE ), repositoryMeta, input, } );
   }
 
   /**
@@ -280,8 +281,8 @@ public class RepositoriesHelper {
     } catch ( Exception e ) {
       log.logDetailed( BaseMessages.getString( PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e
           .getLocalizedMessage() ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString( PKG,
-          "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage() ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Dialog.Error" ), BaseMessages.getString(
+          PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage() ), e );
     }
   }
 }

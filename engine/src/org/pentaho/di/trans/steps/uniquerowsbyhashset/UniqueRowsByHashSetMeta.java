@@ -155,8 +155,8 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
       }
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "UniqueRowsByHashSetMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "UniqueRowsByHashSetMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -207,8 +207,8 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
         compareFields[i] = rep.getStepAttributeString( id_step, i, "field_name" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "UniqueRowsByHashSetMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "UniqueRowsByHashSetMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -233,13 +233,13 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "UniqueRowsByHashSetMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "UniqueRowsByHashSetMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "UniqueRowsByHashSetMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "UniqueRowsByHashSetMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

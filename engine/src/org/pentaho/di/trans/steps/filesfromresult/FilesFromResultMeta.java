@@ -90,8 +90,8 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
     // Add the fields from a ResultFile
     try {
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( "foo.bar", space ), "parentOrigin",
-              "origin" );
+          new ResultFile(
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( "foo.bar", space ), "parentOrigin", "origin" );
       RowMetaAndData add = resultFile.getRow();
 
       // Set the origin on the fields...
@@ -110,13 +110,13 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FilesFromResultMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FilesFromResultMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilesFromResultMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FilesFromResultMeta.CheckResult.NoInputReceivedError" ), stepMeta );
       remarks.add( cr );
     }
   }

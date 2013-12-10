@@ -46,10 +46,11 @@ public class YamlInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "YamlInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "YamlInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "YamlInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "YamlInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "YamlInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "YamlInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "YamlInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "YamlInputField.TrimType.Both" ) };
 
   private String name;
   private String path;

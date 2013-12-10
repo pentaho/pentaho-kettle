@@ -87,16 +87,17 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   private static final String selectCount = "SELECT count(*) FROM ";
 
   public static final String[] successConditionsDesc = new String[] {
-    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountEqual.Label" ),
-    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountDifferent.Label" ),
-    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerThan.Label" ),
-    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerOrEqualThan.Label" ),
-    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterThan.Label" ),
-    BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterOrEqual.Label" )
+      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountEqual.Label" ),
+      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountDifferent.Label" ),
+      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerThan.Label" ),
+      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountSmallerOrEqualThan.Label" ),
+      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterThan.Label" ),
+      BaseMessages.getString( PKG, "JobEntryWaitForSQL.SuccessWhenRowCountGreaterOrEqual.Label" )
 
   };
-  public static final String[] successConditionsCode = new String[] { "rows_count_equal", "rows_count_different",
-    "rows_count_smaller", "rows_count_smaller_equal", "rows_count_greater", "rows_count_greater_equal" };
+  public static final String[] successConditionsCode = new String[] {
+      "rows_count_equal", "rows_count_different", "rows_count_smaller", "rows_count_smaller_equal",
+      "rows_count_greater", "rows_count_greater_equal" };
 
   public static final int SUCCESS_CONDITION_ROWS_COUNT_EQUAL = 0;
   public static final int SUCCESS_CONDITION_ROWS_COUNT_DIFFERENT = 1;
@@ -273,8 +274,8 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       successOnTimeout = rep.getJobEntryAttributeBoolean( id_jobentry, "success_on_timeout" );
       isClearResultList = rep.getJobEntryAttributeBoolean( id_jobentry, "clear_result_rows" );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryWaitForSQL.UnableLoadRep", "" + id_jobentry ),
-          dbe );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "JobEntryWaitForSQL.UnableLoadRep", "" + id_jobentry ), dbe );
     }
   }
 
@@ -297,7 +298,9 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "schemaname", schemaname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "tablename", tablename );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
+      rep
+          .saveJobEntryAttribute(
+              id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "rows_count_value", rowsCountValue );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "custom_sql", customSQL );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "is_custom_sql", iscustomSQL );

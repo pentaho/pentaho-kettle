@@ -51,6 +51,8 @@ public @interface PluginClassTypeMapping {
    * 
    * @return
    */
-  Class<?>[] implementationClass() default {};
+  Class<?>[] implementationClass() default {
+  // Empty
+  };
 
 }

@@ -80,8 +80,7 @@ public class TextFileFilterProcessor {
               }
             }
           }
-        } else // anywhere on the line
-        {
+        } else { // anywhere on the line
           int idx = line.indexOf( filter.getFilterString() );
           if ( idx >= 0 ) {
             if ( filter.isFilterPositive() ) {

@@ -279,7 +279,8 @@ public class MailValidation {
         }
 
         if ( log.isDebug() ) {
-          log.logDebug( className(), BaseMessages.getString( PKG, "MailValidator.ReceiverAccepted", address, "" + res ) );
+          log
+              .logDebug( className(), BaseMessages.getString( PKG, "MailValidator.ReceiverAccepted", address, "" + res ) );
         }
         valid = true;
 

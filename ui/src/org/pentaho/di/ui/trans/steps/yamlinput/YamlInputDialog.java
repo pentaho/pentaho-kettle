@@ -427,22 +427,24 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] colinfo = new ColumnInfo[4];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.Files.Filename.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "YamlInputDialog.Files.Filename.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.Files.Wildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "YamlInputDialog.Files.Wildcard.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
     colinfo[1].setToolTip( BaseMessages.getString( PKG, "YamlInputDialog.Files.Wildcard.Tooltip" ) );
     colinfo[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YamlInputMeta.RequiredFilesDesc );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "YamlInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            YamlInputMeta.RequiredFilesDesc );
     colinfo[2].setToolTip( BaseMessages.getString( PKG, "YamlInputDialog.Required.Tooltip" ) );
     colinfo[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.IncludeSubDirs.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YamlInputMeta.RequiredFilesDesc );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "YamlInputDialog.IncludeSubDirs.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            YamlInputMeta.RequiredFilesDesc );
     colinfo[3].setToolTip( BaseMessages.getString( PKG, "YamlInputDialog.IncludeSubDirs.Tooltip" ) );
 
     wFilenameList =
@@ -721,26 +723,36 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.XPath.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_FORMAT, 4 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, YamlInputField.trimTypeDesc, true ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.XPath.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Type.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Format.Column" ),
+                ColumnInfo.COLUMN_TYPE_FORMAT, 4 ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Length.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Precision.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Currency.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Decimal.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.TrimType.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, YamlInputField.trimTypeDesc, true ) };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Name.Column.Tooltip" ) );
@@ -871,9 +883,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "YamlInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                    "YamlInputDialog.FilesReadSelection.DialogMessage" ) );
+                new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                    PKG, "YamlInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
+                    PKG, "YamlInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -883,8 +895,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogTitle" ),
-              BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+                  .getString( PKG, "YamlInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -932,8 +945,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
             dialog.setFileName( fname );
           }
 
-          dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.YAMLFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          dialog.setFilterNames( new String[] {
+              BaseMessages.getString( PKG, "System.FileType.YAMLFiles" ),
+              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
           if ( dialog.open() != null ) {
             String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -985,8 +999,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "YamlInputDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "YamlInputDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "YamlInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "YamlInputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1066,8 +1081,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
         wFields.optWidth( true );
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
+              PKG, "YamlInputDialog.ErrorParsingData.DialogMessage" ), e );
     } finally {
       if ( yaml != null ) {
         try {
@@ -1099,10 +1115,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
       wFilenameList.removeAll();
 
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList
-            .add( new String[] { in.getFileName()[i], in.getFileMask()[i],
-              in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-              in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+        wFilenameList.add( new String[] {
+            in.getFileName()[i], in.getFileMask()[i], in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+            in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
@@ -1199,8 +1214,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
+              PKG, "YamlInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1262,15 +1278,15 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "YamlInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "YamlInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "YamlInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "YamlInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1279,21 +1295,23 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "YamlInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "YamlInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "YamlInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

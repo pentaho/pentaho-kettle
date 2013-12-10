@@ -48,8 +48,8 @@ public class DummyTrans extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    // no more input to be expected...
+    if ( r == null ) {
       setOutputDone();
       return false;
     }

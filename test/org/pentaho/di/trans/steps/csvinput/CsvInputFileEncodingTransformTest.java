@@ -109,8 +109,7 @@ public class CsvInputFileEncodingTransformTest extends CsvInput3Test {
   public void testCSVException() throws Exception {
     try {
       ( (CsvInputMeta) csvInputStep.getStepMetaInterface() ).setEncoding( "${P_ENCODING}" );
-      createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName,
-          createTextFileInputFields().length );
+      createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
       fail();
     } catch ( Exception ex ) {
       System.out.println( "Expected exception" );

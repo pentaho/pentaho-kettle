@@ -118,7 +118,6 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
     kbase.addKnowledgePackages( pkgs );
   }
 
-
   public void initializeColumns( RowMetaInterface inputRowMeta ) {
     if ( inputRowMeta == null ) {
       BaseMessages.getString( PKG, "RulesData.InitializeColumns.InputRowMetaIsNull" );

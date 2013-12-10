@@ -57,9 +57,6 @@ public class SingleThreaderData extends BaseStepData implements StepDataInterfac
   public List<Object[]> errorBuffer;
   public int lastLogLine;
 
-  /**
-	 * 
-	 */
   public SingleThreaderData() {
     super();
     mappingTrans = null;

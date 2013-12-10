@@ -59,8 +59,8 @@ import org.w3c.dom.Node;
 public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   public static final String DEFAULT_ENCODING = "UTF-8";
@@ -69,8 +69,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   private String fileType;
   public static final String[] fileTypeDesc = new String[] {
-    BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Property" ),
-    BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Ini" ) };
+      BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Property" ),
+      BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Ini" ) };
   public static final String[] fileTypeCode = new String[] { "property", "ini" };
   public static final int FILE_TYPE_PROPERTY = 0;
   public static final int FILE_TYPE_INI = 1;
@@ -1033,8 +1033,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( PropertyInputField.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
-            "field_trim_type" ) ) );
+        field.setTrimType( PropertyInputField.getTrimTypeByCode( rep.getStepAttributeString(
+            id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         inputFields[i] = field;
@@ -1097,7 +1097,9 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+      rep
+          .saveStepAttribute(
+              id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
@@ -1126,13 +1128,13 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PropertyInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PropertyInputMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -1140,13 +1142,13 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.NoFiles" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PropertyInputMeta.CheckResult.NoFiles" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PropertyInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
       remarks.add( cr );
     }
 

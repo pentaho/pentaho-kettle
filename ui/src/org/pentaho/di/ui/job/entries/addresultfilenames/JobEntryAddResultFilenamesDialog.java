@@ -70,8 +70,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
   private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!
                                                                   // $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "JobEntryAddResultFilenames.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+      PKG, "JobEntryAddResultFilenames.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -196,8 +196,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     wlIncludeSubfolders.setLayoutData( fdlIncludeSubfolders );
     wIncludeSubfolders = new Button( wSettings, SWT.CHECK );
     props.setLook( wIncludeSubfolders );
-    wIncludeSubfolders.setToolTipText( BaseMessages.getString( PKG,
-        "JobEntryAddResultFilenames.IncludeSubfolders.Tooltip" ) );
+    wIncludeSubfolders.setToolTipText( BaseMessages.getString(
+        PKG, "JobEntryAddResultFilenames.IncludeSubfolders.Tooltip" ) );
     fdIncludeSubfolders = new FormData();
     fdIncludeSubfolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubfolders.top = new FormAttachment( wName, margin );
@@ -362,8 +362,8 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
     fdlFilemask.right = new FormAttachment( middle, -margin );
     wlFilemask.setLayoutData( fdlFilemask );
     wFilemask =
-        new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobEntryAddResultFilenames.Wildcard.Tooltip" ) );
+        new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobEntryAddResultFilenames.Wildcard.Tooltip" ) );
     props.setLook( wFilemask );
     wFilemask.addModifyListener( lsMod );
     fdFilemask = new FormData();
@@ -406,10 +406,12 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Argument.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Argument.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Wildcard.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobEntryAddResultFilenames.Fields.Column" ) );

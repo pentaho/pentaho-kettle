@@ -123,8 +123,8 @@ public class SQLField {
             //
             int openIndex = value.indexOf( '(', agg.getKeyWord().length() );
             if ( openIndex < 0 ) {
-              throw new KettleSQLException( "No opening bracket found after keyword [" + aggregation.getKeyWord()
-                  + "] in clause [" + fieldClause + "]" );
+              throw new KettleSQLException( "No opening bracket found after keyword ["
+                  + aggregation.getKeyWord() + "] in clause [" + fieldClause + "]" );
             }
             int closeIndex = value.indexOf( ')', openIndex );
             if ( closeIndex < 0 ) {
@@ -251,8 +251,8 @@ public class SQLField {
             valueMeta = vmad.getValueMeta();
             valueData = vmad.getValueData();
           } else {
-            throw new KettleSQLException( "The field with name [" + field
-                + "] could not be found in the service output" );
+            throw new KettleSQLException( "The field with name ["
+                + field + "] could not be found in the service output" );
           }
         }
       }

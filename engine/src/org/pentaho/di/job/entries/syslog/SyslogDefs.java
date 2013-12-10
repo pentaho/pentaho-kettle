@@ -51,10 +51,11 @@ public class SyslogDefs {
   private static Hashtable<String, Integer> facHash;
   private static Hashtable<String, Integer> priHash;
 
-  public static final String[] FACILITYS = new String[] { "KERNEL", "USER", "MAIL", "DAEMON", "AUTH", "SYSLOG", "LPR",
-    "NEWS", "UUCP", "CRON", "LOCAL0", "LOCAL1", "LOCAL2", "LOCAL3", "LOCAL4", "LOCAL5", "LOCAL6", "LOCAL7", };
-  public static final String[] PRIORITYS = new String[] { "EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING",
-    "NOTICE", "INFO", "DEBUG", };
+  public static final String[] FACILITYS = new String[] {
+      "KERNEL", "USER", "MAIL", "DAEMON", "AUTH", "SYSLOG", "LPR", "NEWS", "UUCP", "CRON", "LOCAL0", "LOCAL1",
+      "LOCAL2", "LOCAL3", "LOCAL4", "LOCAL5", "LOCAL6", "LOCAL7", };
+  public static final String[] PRIORITYS = new String[] {
+      "EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING", "NOTICE", "INFO", "DEBUG", };
 
   static {
     facHash = new Hashtable<String, Integer>( 18 );

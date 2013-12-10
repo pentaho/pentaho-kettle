@@ -105,8 +105,8 @@ public class LogBrowser {
               LoggingRegistry registry = LoggingRegistry.getInstance();
               Date registryModDate = registry.getLastModificationTime();
 
-              if ( childIds == null || lastLogRegistryChange == null
-                  || registryModDate.compareTo( lastLogRegistryChange ) > 0 ) {
+              if ( childIds == null
+                  || lastLogRegistryChange == null || registryModDate.compareTo( lastLogRegistryChange ) > 0 ) {
                 lastLogRegistryChange = registry.getLastModificationTime();
                 childIds = LoggingRegistry.getInstance().getLogChannelChildren( parentLogChannelId );
               }

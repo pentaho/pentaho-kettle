@@ -162,8 +162,8 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
       readTimeOut = XMLHandler.getTagValue( stepnode, "readTimeOut" );
       resultfieldname = XMLHandler.getTagValue( stepnode, "resultfieldname" );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "WebServiceAvailableMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "WebServiceAvailableMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -175,8 +175,8 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
       readTimeOut = rep.getStepAttributeString( id_step, "readTimeOut" );
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "WebServiceAvailableMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "WebServiceAvailableMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -220,13 +220,13 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "WebServiceAvailableMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "WebServiceAvailableMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "WebServiceAvailableMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "WebServiceAvailableMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

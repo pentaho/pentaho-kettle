@@ -157,8 +157,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "weekDay", weekDay );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "dayOfMonth", dayOfMonth );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'special' to the repository with id_job=" + id_job,
-          dbe );
+      throw new KettleException(
+          "Unable to save job entry of type 'special' to the repository with id_job=" + id_job, dbe );
     }
   }
 
@@ -177,7 +177,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
       try {
         long sleepTime = getNextExecutionTime();
         if ( sleepTime > 0 ) {
-          parentJob.getLogChannel().logBasic( parentJob.getJobname(),
+          parentJob.getLogChannel().logBasic(
+              parentJob.getJobname(),
               "Sleeping: " + ( sleepTime / 1000 / 60 ) + " minutes (sleep time=" + sleepTime + ")" );
           long totalSleep = 0L;
           while ( totalSleep < sleepTime && !parentJob.isStopped() ) {

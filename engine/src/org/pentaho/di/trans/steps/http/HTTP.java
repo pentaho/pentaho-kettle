@@ -118,12 +118,12 @@ public class HTTP extends BaseStep implements StepInterface {
       // Add Custom HTTP headers
       if ( data.useHeaderParameters ) {
         for ( int i = 0; i < data.header_parameters_nrs.length; i++ ) {
-          method.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString( rowData,
-              data.header_parameters_nrs[i] ) );
+          method.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString(
+              rowData, data.header_parameters_nrs[i] ) );
           if ( isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "HTTPDialog.Log.HeaderValue",
-                data.headerParameters[i].getName(), data.inputRowMeta
-                    .getString( rowData, data.header_parameters_nrs[i] ) ) );
+            log.logDebug( BaseMessages.getString(
+                PKG, "HTTPDialog.Log.HeaderValue", data.headerParameters[i].getName(), data.inputRowMeta.getString(
+                    rowData, data.header_parameters_nrs[i] ) ) );
           }
         }
       }
@@ -267,8 +267,9 @@ public class HTTP extends BaseStep implements StepInterface {
     data = (HTTPData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -291,8 +292,8 @@ public class HTTP extends BaseStep implements StepInterface {
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField", realUrlfieldName ) );
-            throw new KettleException( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField",
-                realUrlfieldName ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "HTTP.Exception.ErrorFindingField", realUrlfieldName ) );
           }
         }
       } else {
@@ -319,8 +320,8 @@ public class HTTP extends BaseStep implements StepInterface {
 
         data.header_parameters_nrs[i] = fieldIndex;
         data.headerParameters[i] =
-            new NameValuePair( environmentSubstitute( meta.getHeaderParameter()[i] ), data.outputRowMeta.getString( r,
-                data.header_parameters_nrs[i] ) );
+            new NameValuePair( environmentSubstitute( meta.getHeaderParameter()[i] ), data.outputRowMeta.getString(
+                r, data.header_parameters_nrs[i] ) );
       }
 
     } // end if first

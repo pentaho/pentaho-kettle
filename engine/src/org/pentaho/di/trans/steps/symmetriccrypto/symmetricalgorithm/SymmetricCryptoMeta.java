@@ -97,8 +97,8 @@ public class SymmetricCryptoMeta {
       }
     }
 
-    throw new CryptoException( BaseMessages.getString( PKG, "SymmetricCryptoMeta.CouldNotFoundAlgorithm",
-        cryptograhname ) );
+    throw new CryptoException( BaseMessages.getString(
+        PKG, "SymmetricCryptoMeta.CouldNotFoundAlgorithm", cryptograhname ) );
   }
 
   public static final synchronized SymmetricCryptoInterface[] getSymmetricCryptoInterfaces() {

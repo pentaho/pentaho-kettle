@@ -550,8 +550,9 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
       DatabaseExplorerDialog std = new DatabaseExplorerDialog( shell, SWT.NONE, inf, transMeta.getDatabases() );
       if ( std.open() ) {
         String sql =
-            "SELECT *" + Const.CR + "FROM "
-                + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() ) + Const.CR;
+            "SELECT *"
+                + Const.CR + "FROM " + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() )
+                + Const.CR;
         wSQL.setText( sql );
 
         MessageBox yn = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
@@ -594,8 +595,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
             } catch ( KettleException e ) {
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
               mb.setText( BaseMessages.getString( PKG, "TableInputDialog.DialogCaptionError3" ) );
-              mb.setMessage( BaseMessages.getString( PKG, "TableInputDialog.AnErrorOccurred" ) + Const.CR
-                  + e.getMessage() );
+              mb.setMessage( BaseMessages.getString( PKG, "TableInputDialog.AnErrorOccurred" )
+                  + Const.CR + e.getMessage() );
               mb.open();
             } finally {
               db.disconnect();
@@ -646,14 +647,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "TableInputDialog.EnterPreviewSize" ), BaseMessages.getString( PKG,
-            "TableInputDialog.NumberOfRowsToPreview" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "TableInputDialog.EnterPreviewSize" ), BaseMessages.getString(
+            PKG, "TableInputDialog.NumberOfRowsToPreview" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -662,15 +663,16 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         } else {
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
         }
       }

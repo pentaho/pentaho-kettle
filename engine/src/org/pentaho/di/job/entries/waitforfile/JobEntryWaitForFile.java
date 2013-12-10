@@ -288,8 +288,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
           while ( oldSize != newSize && !parentJob.isStopped() ) {
             try {
               if ( log.isDetailed() ) {
-                logDetailed( "Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename
-                    + "] to stop growing" );
+                logDetailed( "Sleeping "
+                    + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing" );
               }
               Thread.sleep( iCycleTime * 1000 );
             } catch ( InterruptedException e ) {

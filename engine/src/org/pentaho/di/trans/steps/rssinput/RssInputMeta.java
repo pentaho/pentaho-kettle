@@ -478,25 +478,25 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
     if ( urlInField ) {
       if ( Const.isEmpty( getUrlFieldname() ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RssInputMeta.CheckResult.NoField" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RssInputMeta.CheckResult.NoField" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "RssInputMeta.CheckResult.FieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "RssInputMeta.CheckResult.FieldOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       if ( getUrl() == null || getUrl().length == 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RssInputMeta.CheckResult.NoUrl" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RssInputMeta.CheckResult.NoUrl" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "RssInputMeta.CheckResult.UrlOk",
-                "" + getUrl().length ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "RssInputMeta.CheckResult.UrlOk", "" + getUrl().length ), stepMeta );
         remarks.add( cr );
       }
     }

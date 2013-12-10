@@ -624,15 +624,16 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.FieldReturn" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.FieldReturn" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.NewName" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "FuzzyMatchDialog.ColumnInfo.NewName" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wReturn =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+        new TableView( transMeta, wFieldsComp, SWT.BORDER
+            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
 
     fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
@@ -815,9 +816,13 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
     if ( infoStream.getStepMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       if ( Const.isEmpty( wStep.getText() ) ) {
-        mb.setMessage( BaseMessages.getString( PKG, "FuzzyMatchDialog.NotStepSpecified.DialogMessage", wStep.getText() ) );
+        mb
+            .setMessage( BaseMessages.getString( PKG, "FuzzyMatchDialog.NotStepSpecified.DialogMessage", wStep
+                .getText() ) );
       } else {
-        mb.setMessage( BaseMessages.getString( PKG, "FuzzyMatchDialog.StepCanNotFound.DialogMessage", wStep.getText() ) );
+        mb
+            .setMessage( BaseMessages
+                .getString( PKG, "FuzzyMatchDialog.StepCanNotFound.DialogMessage", wStep.getText() ) );
       }
 
       mb.setText( BaseMessages.getString( PKG, "FuzzyMatchDialog.StepCanNotFound.DialogTitle" ) );
@@ -840,8 +845,9 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
           wMainStreamField.setItems( r.getFieldNames() );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       if ( field != null ) {
         wMainStreamField.setText( field );
@@ -861,8 +867,9 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
           wLookupField.setItems( r.getFieldNames() );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogMessage" ), ke );
       }
       if ( field != null ) {
         wLookupField.setText( field );
@@ -957,8 +964,9 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }

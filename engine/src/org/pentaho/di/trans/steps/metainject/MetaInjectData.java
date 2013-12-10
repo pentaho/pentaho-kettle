@@ -40,9 +40,6 @@ public class MetaInjectData extends BaseStepData implements StepDataInterface {
   public Map<String, StepMetaInjectionInterface> stepInjectionMap;
   public Map<String, List<RowMetaAndData>> rowMap;
 
-  /**
-	 * 
-	 */
   public MetaInjectData() {
     super();
   }

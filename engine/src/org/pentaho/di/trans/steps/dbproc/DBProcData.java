@@ -42,9 +42,6 @@ public class DBProcData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface inputRowMeta;
 
-  /**
-	 * 
-	 */
   public DBProcData() {
     super();
 

@@ -301,8 +301,8 @@ public class SlaveServerConfig {
 
             slaveSequences.add( slaveSequence );
 
-            LogChannel.GENERAL.logBasic( "Automatically created slave sequence '" + slaveSequence.getName()
-                + "' with start value " + slaveSequence.getStartValue() );
+            LogChannel.GENERAL.logBasic( "Automatically created slave sequence '"
+                + slaveSequence.getName() + "' with start value " + slaveSequence.getStartValue() );
           }
         }
       }
@@ -329,12 +329,13 @@ public class SlaveServerConfig {
           // Also change the name of the slave...
           //
           slaveServer.setName( slaveServer.getName() + "-" + newHostname );
-          log.logBasic( "Hostname for slave server [" + slaveServer.getName() + "] is set to [" + newHostname
-              + "], information derived from network " + networkInterfaceName );
+          log.logBasic( "Hostname for slave server ["
+              + slaveServer.getName() + "] is set to [" + newHostname + "], information derived from network "
+              + networkInterfaceName );
         }
       } catch ( SocketException e ) {
-        log.logError( "Unable to get the IP address for network interface " + networkInterfaceName
-            + " for slave server [" + slaveServer.getName() + "]", e );
+        log.logError( "Unable to get the IP address for network interface "
+            + networkInterfaceName + " for slave server [" + slaveServer.getName() + "]", e );
       }
     }
 

@@ -862,8 +862,8 @@ public class EnterOptionsDialog extends Dialog {
     wIndicateSlowSteps = new Button( wLookComp, SWT.CHECK );
     props.setLook( wIndicateSlowSteps );
     wIndicateSlowSteps.setSelection( props.isIndicateSlowTransStepsEnabled() );
-    wIndicateSlowSteps.setToolTipText( BaseMessages.getString( PKG,
-        "EnterOptionsDialog.CanvasIndicateSlowSteps.Tooltip" ) );
+    wIndicateSlowSteps.setToolTipText( BaseMessages.getString(
+        PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Tooltip" ) );
     FormData fdIndicateSlowSteps = new FormData();
     fdIndicateSlowSteps.left = new FormAttachment( middle, 0 );
     fdIndicateSlowSteps.top = new FormAttachment( wAntiAlias, margin );

@@ -303,18 +303,18 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( referenceStream.getStepname() != null && compareStream.getStepname() != null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MergeRowsMeta.CheckResult.SourceStepsOK" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MergeRowsMeta.CheckResult.SourceStepsOK" ), stepMeta );
       remarks.add( cr );
     } else if ( referenceStream.getStepname() == null && compareStream.getStepname() == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MergeRowsMeta.CheckResult.SourceStepsMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MergeRowsMeta.CheckResult.SourceStepsMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MergeRowsMeta.CheckResult.OneSourceStepMissing" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MergeRowsMeta.CheckResult.OneSourceStepMissing" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -336,10 +336,10 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "MergeRowsMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "MergeRowsMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+          PKG, "MergeRowsMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+          PKG, "MergeRowsMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
     }
 
     return ioMeta;

@@ -164,8 +164,8 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
        * fieldAdded[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "added") ); }
        */
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "MappingOutputMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "MappingOutputMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -240,8 +240,8 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
        * rep.getStepAttributeBoolean(id_step, i, "field_added"); }
        */
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MappingOutputMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "MappingOutputMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -268,26 +268,26 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MappingOutputMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "MappingOutputMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MappingOutputMeta.CheckResult.StepReceivingDatasOK", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MappingOutputMeta.CheckResult.StepReceivingDatasOK", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MappingOutputMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MappingOutputMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MappingOutputMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MappingOutputMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
   }

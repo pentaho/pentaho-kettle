@@ -450,8 +450,8 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     // IncludeXmlDataTypeNumeric?
     //
     Label wlIncludeXmlDataTypeNumeric = new Label( shell, SWT.RIGHT );
-    wlIncludeXmlDataTypeNumeric.setText( BaseMessages.getString( PKG,
-        "XMLInputStreamDialog.IncludeXmlDataTypeNumeric.Label" ) );
+    wlIncludeXmlDataTypeNumeric.setText( BaseMessages.getString(
+        PKG, "XMLInputStreamDialog.IncludeXmlDataTypeNumeric.Label" ) );
     props.setLook( wlIncludeXmlDataTypeNumeric );
     FormData fdlIncludeXmlDataTypeNumeric = new FormData();
     fdlIncludeXmlDataTypeNumeric.top = new FormAttachment( lastControl, margin );
@@ -489,8 +489,8 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     // IncludeXmlDataTypeDescription?
     //
     Label wlIncludeXmlDataTypeDescription = new Label( shell, SWT.RIGHT );
-    wlIncludeXmlDataTypeDescription.setText( BaseMessages.getString( PKG,
-        "XMLInputStreamDialog.IncludeXmlDataTypeDescription.Label" ) );
+    wlIncludeXmlDataTypeDescription.setText( BaseMessages.getString(
+        PKG, "XMLInputStreamDialog.IncludeXmlDataTypeDescription.Label" ) );
     props.setLook( wlIncludeXmlDataTypeDescription );
     FormData fdlIncludeXmlDataTypeDescription = new FormData();
     fdlIncludeXmlDataTypeDescription.top = new FormAttachment( lastControl, margin );
@@ -567,8 +567,8 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     // IncludeXmlLocationColumn?
     //
     Label wlIncludeXmlLocationColumn = new Label( shell, SWT.RIGHT );
-    wlIncludeXmlLocationColumn.setText( BaseMessages.getString( PKG,
-        "XMLInputStreamDialog.IncludeXmlLocationColumn.Label" ) );
+    wlIncludeXmlLocationColumn.setText( BaseMessages.getString(
+        PKG, "XMLInputStreamDialog.IncludeXmlLocationColumn.Label" ) );
     props.setLook( wlIncludeXmlLocationColumn );
     FormData fdlIncludeXmlLocationColumn = new FormData();
     fdlIncludeXmlLocationColumn.top = new FormAttachment( lastControl, margin );
@@ -644,8 +644,8 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     // IncludeXmlParentElementID?
     //
     Label wlIncludeXmlParentElementID = new Label( shell, SWT.RIGHT );
-    wlIncludeXmlParentElementID.setText( BaseMessages.getString( PKG,
-        "XMLInputStreamDialog.IncludeXmlParentElementID.Label" ) );
+    wlIncludeXmlParentElementID.setText( BaseMessages.getString(
+        PKG, "XMLInputStreamDialog.IncludeXmlParentElementID.Label" ) );
     props.setLook( wlIncludeXmlParentElementID );
     FormData fdlIncludeXmlParentElementID = new FormData();
     fdlIncludeXmlParentElementID.top = new FormAttachment( lastControl, margin );
@@ -923,8 +923,9 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
           dialog.setFileName( fname );
         }
 
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
           String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -1158,14 +1159,14 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "XMLInputStreamDialog.Dialog.EnterPreviewSize.Title" ), BaseMessages.getString( PKG,
-            "XMLInputStreamDialog.Dialog.EnterPreviewSize.Message" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "XMLInputStreamDialog.Dialog.EnterPreviewSize.Title" ), BaseMessages.getString(
+            PKG, "XMLInputStreamDialog.Dialog.EnterPreviewSize.Message" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -1174,17 +1175,19 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-              loggingText );
+          new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(),
+              progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname
+                  .getText() ), loggingText );
       prd.open();
     }
   }

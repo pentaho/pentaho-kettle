@@ -535,8 +535,9 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
           wBaseFolderField.setItems( fields );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "ZipFileDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "ZipFileDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "ZipFileDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "ZipFileDialog.FailedToGetFields.DialogMessage" ), ke );
       } finally {
         if ( source != null ) {
           wSourceFileNameField.setText( source );

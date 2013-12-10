@@ -72,37 +72,39 @@ public class Import {
 
     CommandLineOption[] options =
         new CommandLineOption[] {
-          // Basic options
-          //
-          new CommandLineOption( "rep", BaseMessages.getString( PKG, "Import.CmdLine.RepName" ), optionRepname =
-              new StringBuffer() ),
-          new CommandLineOption( "user", BaseMessages.getString( PKG, "Import.CmdLine.RepUsername" ), optionUsername =
-              new StringBuffer() ),
-          new CommandLineOption( "pass", BaseMessages.getString( PKG, "Import.CmdLine.RepPassword" ), optionPassword =
-              new StringBuffer() ),
-          new CommandLineOption( "dir", BaseMessages.getString( PKG, "Import.CmdLine.RepDir" ), optionDirname =
-              new StringBuffer() ),
-          new CommandLineOption( "limitdir", BaseMessages.getString( PKG, "Import.CmdLine.LimitDir" ), optionLimitDir =
-              new StringBuffer() ),
-          new CommandLineOption( "file", BaseMessages.getString( PKG, "Import.CmdLine.File" ), optionFilename =
-              new StringBuffer() ),
-          new CommandLineOption( "filedir", BaseMessages.getString( PKG, "Import.CmdLine.FileDir" ), optionFileDir =
-              new StringBuffer() ),
-          new CommandLineOption( "rules", BaseMessages.getString( PKG, "Import.CmdLine.RulesFile" ), optionRules =
-              new StringBuffer() ),
-          new CommandLineOption( "norules", BaseMessages.getString( PKG, "Import.CmdLine.NoRules" ), optionNoRules =
-              new StringBuffer(), true, false ),
-          new CommandLineOption( "comment", BaseMessages.getString( PKG, "Import.CmdLine.Comment" ), optionComment =
-              new StringBuffer(), true, false ),
-          new CommandLineOption( "replace", BaseMessages.getString( PKG, "Import.CmdLine.Replace" ), optionReplace =
-              new StringBuffer(), true, false ),
-          new CommandLineOption( "coe", BaseMessages.getString( PKG, "Import.CmdLine.ContinueOnError" ),
-              optionContinueOnError = new StringBuffer(), true, false ),
-          new CommandLineOption( "version", BaseMessages.getString( PKG, "Import.CmdLine.Version" ), optionVersion =
-              new StringBuffer(), true, false ),
+            // Basic options
+            //
+            new CommandLineOption( "rep", BaseMessages.getString( PKG, "Import.CmdLine.RepName" ), optionRepname =
+                new StringBuffer() ),
+            new CommandLineOption( "user", BaseMessages.getString( PKG, "Import.CmdLine.RepUsername" ), optionUsername =
+                new StringBuffer() ),
+            new CommandLineOption( "pass", BaseMessages.getString( PKG, "Import.CmdLine.RepPassword" ), optionPassword =
+                new StringBuffer() ),
+            new CommandLineOption( "dir", BaseMessages.getString( PKG, "Import.CmdLine.RepDir" ), optionDirname =
+                new StringBuffer() ),
+            new CommandLineOption(
+                "limitdir", BaseMessages.getString( PKG, "Import.CmdLine.LimitDir" ), optionLimitDir =
+                    new StringBuffer() ),
+            new CommandLineOption( "file", BaseMessages.getString( PKG, "Import.CmdLine.File" ), optionFilename =
+                new StringBuffer() ),
+            new CommandLineOption( "filedir", BaseMessages.getString( PKG, "Import.CmdLine.FileDir" ), optionFileDir =
+                new StringBuffer() ),
+            new CommandLineOption( "rules", BaseMessages.getString( PKG, "Import.CmdLine.RulesFile" ), optionRules =
+                new StringBuffer() ),
+            new CommandLineOption( "norules", BaseMessages.getString( PKG, "Import.CmdLine.NoRules" ), optionNoRules =
+                new StringBuffer(), true, false ),
+            new CommandLineOption( "comment", BaseMessages.getString( PKG, "Import.CmdLine.Comment" ), optionComment =
+                new StringBuffer(), true, false ),
+            new CommandLineOption( "replace", BaseMessages.getString( PKG, "Import.CmdLine.Replace" ), optionReplace =
+                new StringBuffer(), true, false ),
+            new CommandLineOption(
+                "coe", BaseMessages.getString( PKG, "Import.CmdLine.ContinueOnError" ), optionContinueOnError =
+                    new StringBuffer(), true, false ),
+            new CommandLineOption( "version", BaseMessages.getString( PKG, "Import.CmdLine.Version" ), optionVersion =
+                new StringBuffer(), true, false ),
 
-          new CommandLineOption( "", BaseMessages.getString( PKG, "Import.CmdLine.ExtraFiles" ), new StringBuffer(),
-              false, true, true ), };
+            new CommandLineOption(
+                "", BaseMessages.getString( PKG, "Import.CmdLine.ExtraFiles" ), new StringBuffer(), false, true, true ), };
 
     if ( args.size() == 0 ) {
       CommandLineOption.printUsage( options );
@@ -162,8 +164,8 @@ public class Import {
       exitJVM( 1 );
     }
 
-    if ( Const.isEmpty( optionRules ) && Const.isEmpty( optionNoRules )
-        && !"Y".equalsIgnoreCase( optionNoRules.toString() ) ) {
+    if ( Const.isEmpty( optionRules )
+        && Const.isEmpty( optionNoRules ) && !"Y".equalsIgnoreCase( optionNoRules.toString() ) ) {
       log.logError( BaseMessages.getString( PKG, "Import.Error.NoRulesFileProvided" ) );
       exitJVM( 1 );
     }
@@ -264,8 +266,8 @@ public class Import {
 
       RepositoryDirectoryInterface targetDirectory = tree.findDirectory( optionDirname.toString() );
       if ( targetDirectory == null ) {
-        log.logError( BaseMessages.getString( PKG, "Import.Error.UnableToFindTargetDirectoryInRepository",
-            optionDirname.toString() ) );
+        log.logError( BaseMessages.getString(
+            PKG, "Import.Error.UnableToFindTargetDirectoryInRepository", optionDirname.toString() ) );
         exitJVM( 1 );
       }
 
@@ -316,9 +318,9 @@ public class Import {
 
       // Import files in a certain directory
       //
-      importer.importAll( feedbackInterface, optionFileDir.toString(),
-          filenames.toArray( new String[filenames.size()] ), targetDirectory, replace, continueOnError, optionComment
-              .toString() );
+      importer.importAll(
+          feedbackInterface, optionFileDir.toString(), filenames.toArray( new String[filenames.size()] ),
+          targetDirectory, replace, continueOnError, optionComment.toString() );
 
       // If the importer has exceptions, then our return code is 2
       List<Exception> exceptions = importer.getExceptions();

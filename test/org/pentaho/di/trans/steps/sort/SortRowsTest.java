@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.sort;
 
@@ -50,12 +50,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
-
 /**
  * Test class for the Sort step.
  * 
  * TODO: ascii data case sensitive and case insensitive.
- *
+ * 
  * @author Sven Boden
  */
 public class SortRowsTest extends TestCase {
@@ -64,10 +63,8 @@ public class SortRowsTest extends TestCase {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = {
-      new ValueMeta( "KEY1", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "KEY2", ValueMeta.TYPE_STRING ),
-    };
+    ValueMetaInterface[] valuesMeta =
+        { new ValueMeta( "KEY1", ValueMeta.TYPE_STRING ), new ValueMeta( "KEY2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -77,7 +74,7 @@ public class SortRowsTest extends TestCase {
   }
 
   public List<RowMetaAndData> createIntegerData() {
-    // Create 
+    // Create
     List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
     String old_key1 = null;
 
@@ -102,7 +99,7 @@ public class SortRowsTest extends TestCase {
   }
 
   public List<RowMetaAndData> createTimestampData() {
-    // Create 
+    // Create
     long time = new Date().getTime();
     List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
 
@@ -116,13 +113,14 @@ public class SortRowsTest extends TestCase {
       int key1 = Math.abs( rand.nextInt() % 10000 );
       int key2 = Math.abs( rand.nextInt() % 10000 );
 
-      Object[] r1 = new Object[] { new Timestamp( time + key1 ), new Timestamp( time + key2 )};
+      Object[] r1 = new Object[] { new Timestamp( time + key1 ), new Timestamp( time + key2 ) };
       list.add( new RowMetaAndData( rm, r1 ) );
     }
     return list;
   }
+
   /**
-   *  Check the list, the list has to be sorted. 
+   * Check the list, the list has to be sorted.
    */
   public void checkRows( List<RowMetaAndData> rows, boolean ascending ) throws Exception {
     String prev_key1 = null, prev_key2 = null;
@@ -162,6 +160,7 @@ public class SortRowsTest extends TestCase {
       fail( "less rows returned than expected: " + idx );
     }
   }
+
   /**
    * Test case for sorting step .. ascending order on "numeric" data.
    */
@@ -175,18 +174,18 @@ public class SortRowsTest extends TestCase {
     transMeta.setName( "sortrowstest" );
     PluginRegistry registry = PluginRegistry.getInstance();
 
-    // 
+    //
     // create an injector step...
     //
     String injectorStepname = "injector step";
     InjectorMeta im = new InjectorMeta();
 
-    // Set the information of the injector.                
+    // Set the information of the injector.
     String injectorPid = registry.getPluginId( StepPluginType.class, im );
     StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
     transMeta.addStep( injectorStep );
 
-    // 
+    //
     // Create a sort rows step
     //
     String sortRowsStepname = "sort rows step";
@@ -210,7 +209,7 @@ public class SortRowsTest extends TestCase {
     TransHopMeta hi = new TransHopMeta( injectorStep, sortRowsStep );
     transMeta.addTransHop( hi );
 
-    // 
+    //
     // Create a dummy step
     //
     String dummyStepname = "dummy step";
@@ -260,18 +259,18 @@ public class SortRowsTest extends TestCase {
 
     PluginRegistry registry = PluginRegistry.getInstance();
 
-    // 
+    //
     // create an injector step...
     //
     String injectorStepname = "injector step";
     InjectorMeta im = new InjectorMeta();
 
-    // Set the information of the injector.                
+    // Set the information of the injector.
     String injectorPid = registry.getPluginId( StepPluginType.class, im );
     StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
     transMeta.addStep( injectorStep );
 
-    // 
+    //
     // Create a sort rows step
     //
     String sortRowsStepname = "sort rows step";
@@ -295,7 +294,7 @@ public class SortRowsTest extends TestCase {
     TransHopMeta hi = new TransHopMeta( injectorStep, sortRowsStep );
     transMeta.addTransHop( hi );
 
-    // 
+    //
     // Create a dummy step
     //
     String dummyStepname = "dummy step";
@@ -347,7 +346,7 @@ public class SortRowsTest extends TestCase {
 
     PluginRegistry registry = PluginRegistry.getInstance();
 
-    // 
+    //
     // create an injector step
     //
     String injectorStepname = "injector step";
@@ -358,7 +357,7 @@ public class SortRowsTest extends TestCase {
     StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
     transMeta.addStep( injectorStep );
 
-    // 
+    //
     // Create a sort rows step
     //
     String sortRowsStepname = "sort rows step";
@@ -383,7 +382,7 @@ public class SortRowsTest extends TestCase {
     TransHopMeta hi = new TransHopMeta( injectorStep, sortRowsStep );
     transMeta.addTransHop( hi );
 
-    // 
+    //
     // Create a dummy step
     //
     String dummyStepname = "dummy step";

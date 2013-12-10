@@ -63,14 +63,14 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class CheckResultDialog extends Dialog {
   private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String STRING_HIDE_SUCESSFUL = BaseMessages.getString( PKG,
-      "CheckResultDialog.HideSuccessful.Label" );
-  private static final String STRING_SHOW_SUCESSFUL = BaseMessages.getString( PKG,
-      "CheckResultDialog.ShowSuccessful.Label" );
+  private static final String STRING_HIDE_SUCESSFUL = BaseMessages.getString(
+      PKG, "CheckResultDialog.HideSuccessful.Label" );
+  private static final String STRING_SHOW_SUCESSFUL = BaseMessages.getString(
+      PKG, "CheckResultDialog.ShowSuccessful.Label" );
 
   private static final String STRING_HIDE_REMARKS = BaseMessages.getString( PKG, "CheckResultDialog.Remarks.Label" );
-  private static final String STRING_SHOW_REMARKS = BaseMessages.getString( PKG,
-      "CheckResultDialog.WarningsErrors.Label" );
+  private static final String STRING_SHOW_REMARKS = BaseMessages.getString(
+      PKG, "CheckResultDialog.WarningsErrors.Label" );
 
   private List<CheckResultInterface> remarks;
 
@@ -136,17 +136,17 @@ public class CheckResultDialog extends Dialog {
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "CheckResultDialog.Stepname.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "CheckResultDialog.Stepname.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "CheckResultDialog.Result.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "CheckResultDialog.Result.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "CheckResultDialog.Remark.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "CheckResultDialog.Remark.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
 
     wFields = new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, true, // read-only
-        null, props );
+    null, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -310,11 +310,12 @@ public class CheckResultDialog extends Dialog {
     }
 
     String subtitle =
-        ( item.length != 1 ? BaseMessages.getString( PKG, "CheckResultDialog.TextDialog.SubtitlePlural" )
-            : BaseMessages.getString( PKG, "CheckResultDialog.TextDialog.Subtitle" ) );
+        ( item.length != 1
+            ? BaseMessages.getString( PKG, "CheckResultDialog.TextDialog.SubtitlePlural" ) : BaseMessages.getString(
+                PKG, "CheckResultDialog.TextDialog.Subtitle" ) );
     EnterTextDialog etd =
-        new EnterTextDialog( shell, BaseMessages.getString( PKG, "CheckResultDialog.TextDialog.Title" ), subtitle,
-            message.toString() );
+        new EnterTextDialog(
+            shell, BaseMessages.getString( PKG, "CheckResultDialog.TextDialog.Title" ), subtitle, message.toString() );
     etd.setReadOnly();
     etd.open();
   }

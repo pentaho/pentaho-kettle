@@ -139,7 +139,8 @@ public class FieldHelper {
       sb.append( "value" );
     }
     String typeDesc = v.getTypeDesc();
-    sb.append( " = " ).append( accessor ).append( ".get" ).append( "-".equals( typeDesc ) ? "Object" : typeDesc )
+    sb
+        .append( " = " ).append( accessor ).append( ".get" ).append( "-".equals( typeDesc ) ? "Object" : typeDesc )
         .append( "(r);" );
 
     return sb.toString();

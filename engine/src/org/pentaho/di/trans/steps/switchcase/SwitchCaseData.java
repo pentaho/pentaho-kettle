@@ -44,7 +44,7 @@ public class SwitchCaseData extends BaseStepData implements StepDataInterface {
   public Set<RowSet> nullRowSetSet = new HashSet<RowSet>();
   public int fieldIndex;
   public ValueMetaInterface inputValueMeta;
-  //we expect only one default set for now
+  // we expect only one default set for now
   public Set<RowSet> defaultRowSetSet = new HashSet<RowSet>( 1, 1 );
   public ValueMetaInterface stringValueMeta;
 

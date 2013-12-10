@@ -76,8 +76,8 @@ public class TabMapEntry {
             || ( versionLabel != null && versionLabel.equals( entry.versionLabel ) );
     boolean sameDirectory =
         ( repositoryDirectory == null && entry.repositoryDirectory == null )
-            || ( repositoryDirectory != null && entry.repositoryDirectory != null && repositoryDirectory.getPath()
-                .equals( entry.repositoryDirectory.getPath() ) );
+            || ( repositoryDirectory != null && entry.repositoryDirectory != null && repositoryDirectory
+                .getPath().equals( entry.repositoryDirectory.getPath() ) );
 
     return sameType && sameName && sameVersion && sameFile && sameDirectory;
   }

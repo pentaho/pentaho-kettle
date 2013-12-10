@@ -79,8 +79,8 @@ public class RunThread implements Runnable {
         String parentLogChannelId = loggingObject.getParent().getLogChannelId();
         List<String> logChannelChildren = LoggingRegistry.getInstance().getLogChannelChildren( parentLogChannelId );
         int childIndex = Const.indexOfString( log.getLogChannelId(), logChannelChildren );
-        System.out.println( "child index = " + childIndex + ", logging object : " + loggingObject.toString()
-            + " parent=" + parentLogChannelId );
+        System.out.println( "child index = "
+            + childIndex + ", logging object : " + loggingObject.toString() + " parent=" + parentLogChannelId );
         KettleLogStore.getAppender().getBuffer( "2bcc6b3f-c660-4a8b-8b17-89e8cbd5b29b", false );
         // baseStep.logError(Const.getStackTracker(t));
       } catch ( OutOfMemoryError e ) {

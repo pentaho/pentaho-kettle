@@ -55,9 +55,6 @@ public class YamlInputData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface rowMeta;
 
-  /**
-	 * 
-	 */
   public YamlInputData() {
     super();
 

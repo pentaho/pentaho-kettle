@@ -98,9 +98,6 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
    */
   public RowMetaInterface inputRowMeta;
 
-  /**
-	 * 
-	 */
   public DimensionLookupData() {
     super();
 

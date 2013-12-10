@@ -326,8 +326,9 @@ public class ExcelInput extends BaseStep implements StepInterface {
       }
         break;
       case LABEL: {
-        if ( v.getType() == ValueMetaInterface.TYPE_BOOLEAN || v.getType() == ValueMetaInterface.TYPE_DATE
-            || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_NUMBER ) {
+        if ( v.getType() == ValueMetaInterface.TYPE_BOOLEAN
+            || v.getType() == ValueMetaInterface.TYPE_DATE || v.getType() == ValueMetaInterface.TYPE_INTEGER
+            || v.getType() == ValueMetaInterface.TYPE_NUMBER ) {
           throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.InvalidTypeLabel", cell
               .getContents(), v.getTypeDesc() ) );
         }
@@ -338,9 +339,9 @@ public class ExcelInput extends BaseStep implements StepInterface {
       }
         break;
       case NUMBER: {
-        if ( !( v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE
-            || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_BIGNUMBER || v
-              .getType() == ValueMetaInterface.TYPE_NUMBER ) ) {
+        if ( !( v.getType() == ValueMetaInterface.TYPE_STRING
+            || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_INTEGER
+            || v.getType() == ValueMetaInterface.TYPE_BIGNUMBER || v.getType() == ValueMetaInterface.TYPE_NUMBER ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Exception.InvalidTypeNumber", cell
               .getContents(), v.getTypeDesc() ) );
         }
@@ -543,8 +544,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
         }
 
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ExcelInput.Log.OpeningFile", "" + data.filenr + " : "
-              + data.filename ) );
+          logDetailed( BaseMessages.getString( PKG, "ExcelInput.Log.OpeningFile", ""
+              + data.filenr + " : " + data.filename ) );
         }
 
         data.workbook = WorkbookFactory.getWorkbook( meta.getSpreadSheetType(), data.filename, meta.getEncoding() );
@@ -598,8 +599,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
             retval = null; // placeholder, was already null
           } else {
             if ( log.isRowLevel() ) {
-              logRowlevel( BaseMessages.getString( PKG, "ExcelInput.Log.GetLine", "" + lineNr, data.filenr + "."
-                  + data.sheetnr ) );
+              logRowlevel( BaseMessages.getString( PKG, "ExcelInput.Log.GetLine", "" + lineNr, data.filenr
+                  + "." + data.sheetnr ) );
             }
 
             if ( log.isRowLevel() ) {

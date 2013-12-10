@@ -58,8 +58,8 @@ public class SetValueConstant extends BaseStep implements StepInterface {
     data = (SetValueConstantData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -86,8 +86,8 @@ public class SetValueConstant extends BaseStep implements StepInterface {
           for ( int j = 0; j < meta.getFieldName().length; j++ ) {
             if ( meta.getFieldName()[j].equals( meta.getFieldName()[i] ) ) {
               if ( j != i ) {
-                throw new KettleException( BaseMessages.getString( PKG,
-                    "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
+                throw new KettleException( BaseMessages.getString(
+                    PKG, "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
               }
             }
           }

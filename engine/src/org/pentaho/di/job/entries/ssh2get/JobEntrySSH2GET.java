@@ -263,7 +263,8 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "ftpdirectory", ftpDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localdirectory", localDirectory );
@@ -744,8 +745,8 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
       try {
         // Create a connection instance
         conn =
-            getConnection( realServerName, realServerPort, realProxyHost, realProxyPort, realproxyUserName,
-                realProxyPassword );
+            getConnection(
+                realServerName, realServerPort, realProxyHost, realProxyPort, realproxyUserName, realProxyPassword );
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobSSH2GET.Log.ConnectionInstanceCreated" ) );
         }
@@ -1067,14 +1068,15 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
           continue;
         }
 
-        if ( dirEntry.filename.equals( "." ) || dirEntry.filename.equals( ".." )
-            || isDirectory( sftpClient, sourceFolder + dirEntry.filename ) ) {
+        if ( dirEntry.filename.equals( "." )
+            || dirEntry.filename.equals( ".." ) || isDirectory( sftpClient, sourceFolder + dirEntry.filename ) ) {
           continue;
         }
 
         if ( getFileWildcard( dirEntry.filename, pattern ) ) {
           // Copy file from remote host
-          copyFile( sourceFolder + dirEntry.filename, targetLocation + FTPUtils.FILE_SEPARATOR + dirEntry.filename,
+          copyFile(
+              sourceFolder + dirEntry.filename, targetLocation + FTPUtils.FILE_SEPARATOR + dirEntry.filename,
               sftpClient );
         }
 
@@ -1159,8 +1161,8 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 
       transferFile = new File( targetLocation );
 
-      if ( ( onlyGettingNewFiles == false ) || ( onlyGettingNewFiles == true )
-          && !FileExists( transferFile.getAbsolutePath() ) ) {
+      if ( ( onlyGettingNewFiles == false )
+          || ( onlyGettingNewFiles == true ) && !FileExists( transferFile.getAbsolutePath() ) ) {
 
         new File( transferFile.getParent() ).mkdirs();
 
@@ -1194,13 +1196,14 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
         if ( remoteFileSize > 0 && remoteFileSize != transferFile.length() ) {
           filecopied = false;
           nbrerror++;
-          logError( BaseMessages.getString( PKG, "JobSSH2GET.Log.Error.RemoteFileLocalDifferent", "" + remoteFileSize,
-              transferFile.length() + "", "" + offset ) );
+          logError( BaseMessages.getString(
+              PKG, "JobSSH2GET.Log.Error.RemoteFileLocalDifferent", "" + remoteFileSize, transferFile.length() + "", ""
+                  + offset ) );
         } else {
           nbgot++;
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobSSH2GET.Log.RemoteFileLocalCopied", sourceLocation,
-                transferFile + "" ) );
+            logDetailed( BaseMessages.getString(
+                PKG, "JobSSH2GET.Log.RemoteFileLocalCopied", sourceLocation, transferFile + "" ) );
           }
         }
       }
@@ -1307,8 +1310,8 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+        this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );

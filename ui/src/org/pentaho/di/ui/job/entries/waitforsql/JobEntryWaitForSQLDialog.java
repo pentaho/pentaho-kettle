@@ -345,8 +345,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     wlRowsCountValue.setLayoutData( fdlRowsCountValue );
 
     wRowsCountValue =
-        new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobEntryWaitForSQL.RowsCountValue.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobEntryWaitForSQL.RowsCountValue.Tooltip" ) );
     props.setLook( wRowsCountValue );
     wRowsCountValue.addModifyListener( lsMod );
     fdRowsCountValue = new FormData();
@@ -676,8 +676,9 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
       DatabaseExplorerDialog std = new DatabaseExplorerDialog( shell, SWT.NONE, inf, jobMeta.getDatabases() );
       if ( std.open() ) {
         String sql =
-            "SELECT *" + Const.CR + "FROM "
-                + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() ) + Const.CR;
+            "SELECT *"
+                + Const.CR + "FROM " + inf.getQuotedSchemaTableCombination( std.getSchemaName(), std.getTableName() )
+                + Const.CR;
         wSQL.setText( sql );
 
         MessageBox yn = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
@@ -719,8 +720,8 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
             } catch ( KettleException e ) {
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
               mb.setText( BaseMessages.getString( PKG, "JobEntryWaitForSQL.DialogCaptionError3" ) );
-              mb.setMessage( BaseMessages.getString( PKG, "JobEntryWaitForSQL.AnErrorOccurred" ) + Const.CR
-                  + e.getMessage() );
+              mb.setMessage( BaseMessages.getString( PKG, "JobEntryWaitForSQL.AnErrorOccurred" )
+                  + Const.CR + e.getMessage() );
               mb.open();
             } finally {
               db.disconnect();

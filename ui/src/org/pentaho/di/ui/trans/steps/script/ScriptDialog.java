@@ -124,8 +124,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class ScriptDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ScriptMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final String[] YES_NO_COMBO = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   private ModifyListener lsMod;
   private SashForm wSash;
@@ -249,8 +249,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
     try {
       scVHelp = new ScriptHelp( "jsFunctionHelp.xml" );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, "Unexpected error",
-          "There was an unexpected error reading the javascript functions help", e );
+      new ErrorDialog(
+          shell, "Unexpected error", "There was an unexpected error reading the javascript functions help", e );
     }
 
   }
@@ -406,22 +406,24 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Filename" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.RenameTo" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Precision" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Replace" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Filename" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.RenameTo" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                    .getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptDialog.ColumnInfo.Replace" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                YES_NO_COMBO ), };
 
     wFields =
-        new TableView( transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -969,8 +971,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
       TableItem item = wFields.getNonEmpty( i );
       meta.getFieldname()[i] = item.getText( 1 );
       meta.getRename()[i] = item.getText( 2 );
-      if ( meta.getRename()[i] == null || meta.getRename()[i].length() == 0
-          || meta.getRename()[i].equalsIgnoreCase( meta.getFieldname()[i] ) ) {
+      if ( meta.getRename()[i] == null
+          || meta.getRename()[i].length() == 0 || meta.getRename()[i].equalsIgnoreCase( meta.getFieldname()[i] ) ) {
         meta.getRename()[i] = meta.getFieldname()[i];
       }
       meta.getType()[i] = ValueMeta.getType( item.getText( 3 ) );
@@ -1120,8 +1122,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
         ScriptMeta scriptMeta = new ScriptMeta();
         getInfo( scriptMeta );
         StepMeta scriptStep =
-            new StepMeta( registry.getPluginId( StepPluginType.class, scriptMeta ), Const.NVL( scriptStepName,
-                "## SCRIPT ##" ), scriptMeta );
+            new StepMeta( registry.getPluginId( StepPluginType.class, scriptMeta ), Const.NVL(
+                scriptStepName, "## SCRIPT ##" ), scriptMeta );
         scriptStepName = scriptStep.getName();
         scriptStep.setLocation( 150, 50 );
 
@@ -1153,8 +1155,9 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
           if ( !progressDialog.isCancelled() ) {
             if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
               EnterTextDialog etd =
-                  new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                      BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                  new EnterTextDialog(
+                      shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                          PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
               etd.setReadOnly();
               etd.open();
             }
@@ -1165,8 +1168,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
 
           if ( previewRowsMeta != null && previewRows != null && previewRows.size() > 0 ) {
             PreviewRowsDialog prd =
-                new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), previewRowsMeta, previewRows,
-                    loggingText );
+                new PreviewRowsDialog(
+                    shell, transMeta, SWT.NONE, wStepname.getText(), previewRowsMeta, previewRows, loggingText );
             prd.open();
           }
         }
@@ -1235,8 +1238,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
         // Adding some default JavaScriptFunctions to the System
         try {
           Context.javaToJS( ScriptAddedFunctions.class, jsscope );
-          ( (ScriptableObject) jsscope ).defineFunctionProperties( jsFunctionList, ScriptAddedFunctions.class,
-              ScriptableObject.DONTENUM );
+          ( (ScriptableObject) jsscope ).defineFunctionProperties(
+              jsFunctionList, ScriptAddedFunctions.class, ScriptableObject.DONTENUM );
         } catch ( Exception ex ) {
           testException =
               new KettleException( BaseMessages.getString( PKG, "ScriptDialog.CouldNotAddDefaultFunctions", ex
@@ -1321,8 +1324,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
 
         try {
           // Checking for StartScript
-          if ( strActiveStartScript != null && !folder.getSelection().getText().equals( strActiveStartScript )
-              && strActiveStartScript.length() > 0 ) {
+          if ( strActiveStartScript != null
+              && !folder.getSelection().getText().equals( strActiveStartScript ) && strActiveStartScript.length() > 0 ) {
             String strStartScript =
                 getStyledTextComp( folder.getItem( getCTabPosition( strActiveStartScript ) ) ).getText();
             /* Object startScript = */jscx.evaluateString( jsscope, strStartScript, "trans_Start", 1, null );

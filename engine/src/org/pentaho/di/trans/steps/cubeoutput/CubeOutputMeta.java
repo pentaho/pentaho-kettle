@@ -164,8 +164,8 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
       doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, "do_not_open_newfile_init" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "CubeOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "CubeOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -190,14 +190,14 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CubeOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CubeOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "CubeOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+            PKG, "CubeOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 

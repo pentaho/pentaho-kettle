@@ -275,8 +275,9 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "JobEntryColumnsExist.Fields.Argument.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "JobEntryColumnsExist.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobEntryColumnsExist.Fields.Column" ) );
@@ -482,8 +483,9 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         try {
           database.connect();
           String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination( jobMeta.environmentSubstitute( wSchemaname.getText() ),
-                  jobMeta.environmentSubstitute( wTablename.getText() ) );
+              databaseMeta.getQuotedSchemaTableCombination(
+                  jobMeta.environmentSubstitute( wSchemaname.getText() ), jobMeta.environmentSubstitute( wTablename
+                      .getText() ) );
           RowMetaInterface row = database.getTableFields( schemaTable );
           if ( row != null ) {
             String[] available = row.getFieldNames();
@@ -525,9 +527,9 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Message" ) );
+              new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+                  PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
+                  PKG, "System.Dialog.AvailableSchemas.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchemaname.setText( Const.NVL( d.toString(), "" ) );

@@ -569,8 +569,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlListmails.setLayoutData( fdlListmails );
     wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveAllMails.Label" ) );
-    //[PDI-7241] pop3 does not support retrive unread option
-    //wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveUnreadMails.Label" ) );
+    // [PDI-7241] pop3 does not support retrive unread option
+    // wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveUnreadMails.Label" ) );
     wListmails.add( BaseMessages.getString( PKG, "MailInput.RetrieveFirstMails.Label" ) );
     wListmails.select( 0 ); // +1: starts at -1
 
@@ -800,8 +800,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     // START OF Batch Settings GROUP///
     //
     wBatchSettingsGroup =
-        createGroup( wSettingsComp, wIMAPSettings, BaseMessages.getString( PKG,
-            "MailInputDialog.BatchSettingsGroup.Label" ) );
+        createGroup( wSettingsComp, wIMAPSettings, BaseMessages.getString(
+            PKG, "MailInputDialog.BatchSettingsGroup.Label" ) );
 
     // Batch size
     Label wlBatchSize = new Label( wBatchSettingsGroup, SWT.RIGHT );
@@ -1187,10 +1187,12 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, MailInputField.ColumnDesc, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Column.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, MailInputField.ColumnDesc, true ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "MailInputdialog.FieldsTable.Name.Column.Tooltip" ) );
@@ -1348,13 +1350,13 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( input.getPort() != null ) {
       wPort.setText( input.getPort() );
     }
-    
+
     String protocol = input.getProtocol();
 
     boolean isPop3 = StringUtils.equals( protocol, MailConnectionMeta.PROTOCOL_STRING_POP3 );
     wProtocol.setText( protocol );
     int iRet = input.getRetrievemails();
-    
+
     // [PDI-7241] POP3 does not support retrieve email flags.
     // if anyone already used 'unread' for POP3 in transformation or 'retrieve... first'
     // now they realize that all this time it was 'retrieve all mails'.
@@ -1451,8 +1453,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "MailInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
+              PKG, "MailInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1465,12 +1468,12 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setPassword( wPassword.getText() );
     in.setUseSSL( wUseSSL.getSelection() );
     in.setPort( wPort.getText() );
-    
-    //[PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
-    //for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
+
+    // [PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
+    // for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
     int actualIndex = wListmails.getSelectionIndex();
     in.setRetrievemails( actualIndex > 0 ? 2 : 0 );
-    
+
     in.setFirstMails( wFirstmails.getText() );
     in.setProtocol( wProtocol.getText() );
     in.setValueImapList( MailConnectionMeta.getValueImapListByDesc( wIMAPListmails.getText() ) );
@@ -1704,9 +1707,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       try {
         mailConn =
-            new MailConnection( LogChannel.UI, MailConnectionMeta.getProtocolFromString( wProtocol.getText(),
-                MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser, realpass, wUseSSL.getSelection(),
-                wUseProxy.getSelection(), realProxyUsername );
+            new MailConnection(
+                LogChannel.UI, MailConnectionMeta.getProtocolFromString(
+                    wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser, realpass,
+                wUseSSL.getSelection(), wUseProxy.getSelection(), realProxyUsername );
         mailConn.connect();
 
         retval = true;
@@ -1766,15 +1770,15 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "MailInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "MailInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "MailInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "MailInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1783,22 +1787,24 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "MailInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 

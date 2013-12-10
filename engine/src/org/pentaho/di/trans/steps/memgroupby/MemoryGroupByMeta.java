@@ -92,26 +92,27 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   public static final int TYPE_GROUP_COUNT_ANY = 16;
 
   public static final String[] typeGroupCode = /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */
-  { "-", "SUM", "AVERAGE", "MEDIAN", "PERCENTILE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST",
-    "FIRST_INCL_NULL", "LAST_INCL_NULL", "STD_DEV", "CONCAT_STRING", "COUNT_DISTINCT", "COUNT_ANY", };
+  {
+      "-", "SUM", "AVERAGE", "MEDIAN", "PERCENTILE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST",
+      "FIRST_INCL_NULL", "LAST_INCL_NULL", "STD_DEV", "CONCAT_STRING", "COUNT_DISTINCT", "COUNT_ANY", };
 
-  public static final String[] typeGroupLongDesc = { "-",
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.SUM" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.AVERAGE" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.MEDIAN" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.PERCENTILE" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.MIN" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.MAX" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.CONCAT_ALL" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.CONCAT_COMMA" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.FIRST" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.LAST" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.CONCAT_STRING" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT" ),
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.COUNT_ANY" ), };
+  public static final String[] typeGroupLongDesc = {
+      "-", BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.SUM" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.AVERAGE" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.MEDIAN" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.PERCENTILE" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.MIN" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.MAX" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.CONCAT_ALL" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.CONCAT_COMMA" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.FIRST" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.LAST" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.CONCAT_STRING" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT" ),
+      BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.COUNT_ANY" ), };
 
   /** Fields to group over */
   private String[] groupField;
@@ -249,8 +250,8 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         subjectField[i] = XMLHandler.getTagValue( fnode, "subject" );
         aggregateType[i] = getType( XMLHandler.getTagValue( fnode, "type" ) );
 
-        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
-            || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
+        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL
+            || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
           hasNumberOfValues = true;
         }
 
@@ -264,8 +265,8 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow ); // $NON-NLS-1$
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "MemoryGroupByMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "MemoryGroupByMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -361,15 +362,15 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
             break;
         }
 
-        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
-            || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
+        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL
+            || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
           length = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
           precision = 0;
-        }
-        // If it ain't numeric, we change it to Number
-        //
-        else if ( aggregateType[i] == TYPE_GROUP_SUM && value_type != ValueMetaInterface.TYPE_INTEGER
-            && value_type != ValueMetaInterface.TYPE_NUMBER && value_type != ValueMetaInterface.TYPE_BIGNUMBER ) {
+        } else if ( aggregateType[i] == TYPE_GROUP_SUM
+            && value_type != ValueMetaInterface.TYPE_INTEGER && value_type != ValueMetaInterface.TYPE_NUMBER
+            && value_type != ValueMetaInterface.TYPE_BIGNUMBER ) {
+          // If it ain't numeric, we change it to Number
+          //
           value_type = ValueMetaInterface.TYPE_NUMBER;
           precision = -1;
           length = -1;
@@ -435,8 +436,8 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         subjectField[i] = rep.getStepAttributeString( id_step, i, "aggregate_subject" );
         aggregateType[i] = getType( rep.getStepAttributeString( id_step, i, "aggregate_type" ) );
 
-        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
-            || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
+        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL
+            || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
           hasNumberOfValues = true;
         }
         valueField[i] = rep.getStepAttributeString( id_step, i, "aggregate_value_field" );
@@ -444,8 +445,8 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
 
       alwaysGivingBackOneRow = rep.getStepAttributeBoolean( id_step, 0, "give_back_row", hasNumberOfValues ); // $NON-NLS-1$
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MemoryGroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "MemoryGroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -465,8 +466,8 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_value_field", valueField[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MemoryGroupByMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "MemoryGroupByMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -478,13 +479,13 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MemoryGroupByMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MemoryGroupByMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MemoryGroupByMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MemoryGroupByMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }

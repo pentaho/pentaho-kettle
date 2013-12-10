@@ -240,8 +240,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
   private Connection conn = null;
   private String pwdFolder = null;
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobFTPDelete.Filetype.Pem" ),
-    BaseMessages.getString( PKG, "JobFTPDelete.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] {
+      BaseMessages.getString( PKG, "JobFTPDelete.Filetype.Pem" ),
+      BaseMessages.getString( PKG, "JobFTPDelete.Filetype.All" ) };
 
   public JobEntryFTPDeleteDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
@@ -283,8 +284,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Job entry name line
     wName =
-        new LabelText( shell, BaseMessages.getString( PKG, "JobFTPDelete.Name.Label" ), BaseMessages.getString( PKG,
-            "JobFTPDelete.Name.Tooltip" ) );
+        new LabelText( shell, BaseMessages.getString( PKG, "JobFTPDelete.Name.Label" ), BaseMessages.getString(
+            PKG, "JobFTPDelete.Name.Tooltip" ) );
     wName.addModifyListener( lsMod );
     fdName = new FormData();
     fdName.top = new FormAttachment( 0, 0 );
@@ -353,8 +354,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // ServerName line
     wServerName =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.Server.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.Server.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.Server.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -365,8 +367,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Proxy port line
     wPort =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.Port.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.Port.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.Port.Label" ), BaseMessages.getString(
+                PKG, "JobFTPDelete.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -377,8 +380,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // UserName line
     wUserName =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.User.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.User.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.User.Label" ), BaseMessages.getString(
+                PKG, "JobFTPDelete.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -389,8 +393,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Password line
     wPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.Password.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.Password.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.Password.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -451,8 +456,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Proxy host line
     wProxyHost =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyHost.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.ProxyHost.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyHost.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -463,8 +469,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Proxy port line
     wProxyPort =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyPort.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.ProxyPort.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyPort.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -475,8 +482,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Proxy username line
     wProxyUsername =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.ProxyUsername.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyUsername.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -487,8 +495,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Proxy password line
     wProxyPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
@@ -581,8 +590,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // keyfilePass line
     wkeyfilePass =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.keyfilePass.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.keyfilePass.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.keyfilePass.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
     wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
@@ -664,8 +674,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Timeout line
     wTimeout =
-        new LabelTextVar( jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobFTPDelete.Timeout.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.Timeout.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobFTPDelete.Timeout.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.Timeout.Tooltip" ) );
     props.setLook( wTimeout );
     wTimeout.addModifyListener( lsMod );
     fdTimeout = new FormData();
@@ -758,8 +769,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     wbTestChangeFolderExists.setLayoutData( fdbTestChangeFolderExists );
 
     wFtpDirectory =
-        new TextVar( jobMeta, wRemoteSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPDelete.RemoteDir.Tooltip" ) );
+        new TextVar( jobMeta, wRemoteSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobFTPDelete.RemoteDir.Tooltip" ) );
     props.setLook( wFtpDirectory );
     wFtpDirectory.addModifyListener( lsMod );
     fdFtpDirectory = new FormData();
@@ -770,8 +781,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Wildcard line
     wWildcard =
-        new LabelTextVar( jobMeta, wRemoteSettings, BaseMessages.getString( PKG, "JobFTPDelete.Wildcard.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.Wildcard.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wRemoteSettings, BaseMessages.getString( PKG, "JobFTPDelete.Wildcard.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();
@@ -842,8 +854,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wNrErrorsLessThan =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPDelete.NrBadFormedLessThan.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobFTPDelete.NrBadFormedLessThan.Tooltip" ) );
     props.setLook( wNrErrorsLessThan );
     wNrErrorsLessThan.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();
@@ -904,8 +916,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // host line
     wSocksProxyHost =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyHost.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyHost.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyHost.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.SocksProxyHost.Tooltip" ) );
     props.setLook( wSocksProxyHost );
     wSocksProxyHost.addModifyListener( lsMod );
     fdSocksProxyHost = new FormData();
@@ -916,8 +929,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // port line
     wSocksProxyPort =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPort.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPort.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPort.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.SocksProxyPort.Tooltip" ) );
     props.setLook( wSocksProxyPort );
     wSocksProxyPort.addModifyListener( lsMod );
     fdSocksProxyPort = new FormData();
@@ -928,8 +942,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // username line
     wSocksProxyUsername =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyUsername.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
     props.setLook( wSocksProxyUsername );
     wSocksProxyUsername.addModifyListener( lsMod );
     fdSocksProxyUsername = new FormData();
@@ -940,8 +955,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // password line
     wSocksProxyPassword =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Label" ), BaseMessages
+                .getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
     props.setLook( wSocksProxyPort );
     wSocksProxyPassword.setEchoChar( '*' );
     wSocksProxyPassword.addModifyListener( lsMod );
@@ -1179,8 +1195,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       mb.open();
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.FolderExists.NOK", wFtpDirectory.getText() ) + Const.CR
-          + errmsg );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.FolderExists.NOK", wFtpDirectory.getText() )
+          + Const.CR + errmsg );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.FolderExists.Title.Bad" ) );
       mb.open();
     }
@@ -1280,8 +1296,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
         // Create ftp client to host:port ...
         ftpsclient =
-            new FTPSConnection( FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername,
-                port, realUsername, realPassword );
+            new FTPSConnection(
+                FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, port,
+                realUsername, realPassword );
 
         if ( !Const.isEmpty( wProxyHost.getText() ) ) {
           // Set proxy

@@ -351,8 +351,8 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
       resultType = ValueMeta.getType( rep.getStepAttributeString( id_step, "result_type" ) );
       autoCommit = rep.getStepAttributeBoolean( id_step, 0, "auto_commit", true );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "DBProcMeta.Exception.UnexpectedErrorReadingStepInfo" ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "DBProcMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -377,8 +377,8 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
         rep.insertStepDatabase( id_transformation, id_step, database.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "DBProcMeta.Exception.UnableToSaveStepInfo" ) + id_step,
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "DBProcMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
     }
   }
 
@@ -408,9 +408,9 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
               }
               error_found = true;
               error_message += "\t\t" + argument[i] + Const.CR;
-            } else
-            // Argument exists in input stream: same type?
-            {
+            } else {
+              // Argument exists in input stream: same type?
+
               if ( v.getType() != argumentType[i] && !( v.isNumeric() && ValueMeta.isNumeric( argumentType[i] ) ) ) {
                 error_found = true;
                 error_message +=
@@ -422,8 +422,8 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "DBProcMeta.CheckResult.AllArgumentsOK" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "DBProcMeta.CheckResult.AllArgumentsOK" ), stepMeta );
           }
           remarks.add( cr );
         } else {
@@ -445,13 +445,13 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "DBProcMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "DBProcMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "DBProcMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "DBProcMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

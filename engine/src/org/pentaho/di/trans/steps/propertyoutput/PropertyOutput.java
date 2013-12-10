@@ -64,8 +64,8 @@ public class PropertyOutput extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -218,8 +218,8 @@ public class PropertyOutput extends BaseStep implements StepInterface {
         parentfolder = data.file.getParent();
         if ( !parentfolder.exists() ) {
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "PropertyOutput.Log.ParentFolderExists", parentfolder.getName()
-                .toString() ) );
+            logDetailed( BaseMessages.getString( PKG, "PropertyOutput.Log.ParentFolderExists", parentfolder
+                .getName().toString() ) );
           }
           parentfolder.createFolder();
           if ( log.isDetailed() ) {
@@ -228,10 +228,10 @@ public class PropertyOutput extends BaseStep implements StepInterface {
           }
         }
       } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder.getName()
-            .toString() ) );
-        throw new KettleException( BaseMessages.getString( PKG, "PropertyOutput.Log.CanNotCreateParentFolder",
-            parentfolder.getName().toString() ) );
+        logError( BaseMessages.getString( PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder
+            .getName().toString() ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "PropertyOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString() ) );
 
       } finally {
         if ( parentfolder != null ) {

@@ -74,9 +74,6 @@ public class SortRowsData extends BaseStepData implements StepDataInterface {
   public int[] groupnrs;
   public boolean newBatch;
 
-  /**
-	 * 
-	 */
   public SortRowsData() {
     super();
 

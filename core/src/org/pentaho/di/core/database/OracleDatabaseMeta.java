@@ -39,8 +39,9 @@ import org.pentaho.di.core.variables.VariableSpace;
 public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI,
-      DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+        DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI,
+        DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -115,8 +116,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
       // the database name can be a SID (starting with :) or a Service (starting with /)
       // <host>:<port>/<service>
       // <host>:<port>:<SID>
-      if ( databaseName != null && databaseName.length() > 0
-          && ( databaseName.startsWith( "/" ) || databaseName.startsWith( ":" ) ) ) {
+      if ( databaseName != null
+          && databaseName.length() > 0 && ( databaseName.startsWith( "/" ) || databaseName.startsWith( ":" ) ) ) {
         return "jdbc:oracle:thin:@" + hostname + ":" + port + databaseName;
       } else if ( Const.isEmpty( hostname ) && ( Const.isEmpty( port ) || port.equals( "-1" ) ) ) { // -1 when file
                                                                                                     // based stored
@@ -146,8 +147,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         // Has the user specified hostname & port number?
         if ( hostname != null && hostname.length() > 0 && port != null && port.length() > 0 ) {
           // User wants the full url
-          return "jdbc:oracle:oci:@(description=(address=(host=" + hostname + ")(protocol=tcp)(port=" + port
-              + "))(connect_data=(sid=" + databaseName + ")))";
+          return "jdbc:oracle:oci:@(description=(address=(host="
+              + hostname + ")(protocol=tcp)(port=" + port + "))(connect_data=(sid=" + databaseName + ")))";
         } else {
           // User wants the shortcut url
           return "jdbc:oracle:oci:@" + databaseName;
@@ -193,8 +194,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
       String schemaName = sequenceName.substring( 0, dotPos );
       String seqName = sequenceName.substring( dotPos + 1 );
       sql =
-          "SELECT * FROM ALL_SEQUENCES WHERE SEQUENCE_NAME = '" + seqName.toUpperCase() + "' AND SEQUENCE_OWNER = '"
-              + schemaName.toUpperCase() + "'";
+          "SELECT * FROM ALL_SEQUENCES WHERE SEQUENCE_NAME = '"
+              + seqName.toUpperCase() + "' AND SEQUENCE_OWNER = '" + schemaName.toUpperCase() + "'";
     }
     return sql;
   }
@@ -421,16 +422,17 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   public String[] getReservedWords() {
-    return new String[] { "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "ARRAYLEN", "AS", "ASC", "AUDIT", "BETWEEN",
-      "BY", "CHAR", "CHECK", "CLUSTER", "COLUMN", "COMMENT", "COMPRESS", "CONNECT", "CREATE", "CURRENT", "DATE",
-      "DECIMAL", "DEFAULT", "DELETE", "DESC", "DISTINCT", "DROP", "ELSE", "EXCLUSIVE", "EXISTS", "FILE", "FLOAT",
-      "FOR", "FROM", "GRANT", "GROUP", "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT", "INDEX", "INITIAL",
-      "INSERT", "INTEGER", "INTERSECT", "INTO", "IS", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS", "MODE",
-      "MODIFY", "NOAUDIT", "NOCOMPRESS", "NOT", "NOTFOUND", "NOWAIT", "NULL", "NUMBER", "OF", "OFFLINE", "ON",
-      "ONLINE", "OPTION", "OR", "ORDER", "PCTFREE", "PRIOR", "PRIVILEGES", "PUBLIC", "RAW", "RENAME", "RESOURCE",
-      "REVOKE", "ROW", "ROWID", "ROWLABEL", "ROWNUM", "ROWS", "SELECT", "SESSION", "SET", "SHARE", "SIZE", "SMALLINT",
-      "SQLBUF", "START", "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO", "TRIGGER", "UID", "UNION",
-      "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES", "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE", "WITH" };
+    return new String[] {
+        "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "ARRAYLEN", "AS", "ASC", "AUDIT", "BETWEEN", "BY", "CHAR",
+        "CHECK", "CLUSTER", "COLUMN", "COMMENT", "COMPRESS", "CONNECT", "CREATE", "CURRENT", "DATE", "DECIMAL",
+        "DEFAULT", "DELETE", "DESC", "DISTINCT", "DROP", "ELSE", "EXCLUSIVE", "EXISTS", "FILE", "FLOAT", "FOR", "FROM",
+        "GRANT", "GROUP", "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT", "INDEX", "INITIAL", "INSERT",
+        "INTEGER", "INTERSECT", "INTO", "IS", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS", "MODE", "MODIFY",
+        "NOAUDIT", "NOCOMPRESS", "NOT", "NOTFOUND", "NOWAIT", "NULL", "NUMBER", "OF", "OFFLINE", "ON", "ONLINE",
+        "OPTION", "OR", "ORDER", "PCTFREE", "PRIOR", "PRIVILEGES", "PUBLIC", "RAW", "RENAME", "RESOURCE", "REVOKE",
+        "ROW", "ROWID", "ROWLABEL", "ROWNUM", "ROWS", "SELECT", "SESSION", "SET", "SHARE", "SIZE", "SMALLINT",
+        "SQLBUF", "START", "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO", "TRIGGER", "UID", "UNION",
+        "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES", "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE", "WITH" };
   }
 
   /**

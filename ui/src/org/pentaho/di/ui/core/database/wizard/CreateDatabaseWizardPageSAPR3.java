@@ -179,8 +179,8 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage {
   public void setData() {
     wHostname.setText( Const.NVL( info.getHostname(), "" ) );
 
-    wSAPLanguage.setText( Const.NVL( info.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, "" ),
-        "" ) );
+    wSAPLanguage.setText( Const.NVL(
+        info.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, "" ), "" ) );
     wSAPSystemNumber.setText( Const.NVL( info.getAttributes().getProperty(
         SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, "" ), "" ) );
     wSAPClient
@@ -192,8 +192,8 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage {
     String language =
         wSAPLanguage.getText() != null ? wSAPLanguage.getText().length() > 0 ? wSAPLanguage.getText() : null : null;
     String systemNumber =
-        wSAPSystemNumber.getText() != null ? wSAPSystemNumber.getText().length() > 0 ? wSAPSystemNumber.getText()
-            : null : null;
+        wSAPSystemNumber.getText() != null ? wSAPSystemNumber.getText().length() > 0
+            ? wSAPSystemNumber.getText() : null : null;
     String client =
         wSAPClient.getText() != null ? wSAPClient.getText().length() > 0 ? wSAPClient.getText() : null : null;
 

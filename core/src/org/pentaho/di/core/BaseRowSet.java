@@ -67,8 +67,8 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet {
   public int compareTo( RowSet rowSet ) {
     String target = remoteSlaveServerName + "." + destinationStepName + "." + destinationStepCopy.intValue();
     String comp =
-        rowSet.getRemoteSlaveServerName() + "." + rowSet.getDestinationStepName() + "."
-            + rowSet.getDestinationStepCopy();
+        rowSet.getRemoteSlaveServerName()
+            + "." + rowSet.getDestinationStepName() + "." + rowSet.getDestinationStepCopy();
 
     return target.compareTo( comp );
   }

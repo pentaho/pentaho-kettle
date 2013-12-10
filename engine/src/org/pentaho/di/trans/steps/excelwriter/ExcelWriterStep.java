@@ -113,8 +113,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.commentfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentField() );
         if ( data.commentfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getCommentField() ) ) {
-          logError( "Comment Field [" + meta.getOutputFields()[i].getCommentField()
-              + "] couldn't be found in the input stream!" );
+          logError( "Comment Field ["
+              + meta.getOutputFields()[i].getCommentField() + "] couldn't be found in the input stream!" );
           setErrors( 1 );
           stopAll();
           return false;
@@ -127,8 +127,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.commentauthorfieldnrs[i] =
             data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentAuthorField() );
         if ( data.commentauthorfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getCommentAuthorField() ) ) {
-          logError( "Comment Author Field [" + meta.getOutputFields()[i].getCommentAuthorField()
-              + "] couldn't be found in the input stream!" );
+          logError( "Comment Author Field ["
+              + meta.getOutputFields()[i].getCommentAuthorField() + "] couldn't be found in the input stream!" );
           setErrors( 1 );
           stopAll();
           return false;
@@ -140,8 +140,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.linkfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getHyperlinkField() );
         if ( data.linkfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getHyperlinkField() ) ) {
-          logError( "Link Field [" + meta.getOutputFields()[i].getHyperlinkField()
-              + "] couldn't be found in the input stream!" );
+          logError( "Link Field ["
+              + meta.getOutputFields()[i].getHyperlinkField() + "] couldn't be found in the input stream!" );
           setErrors( 1 );
           stopAll();
           return false;
@@ -153,8 +153,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     if ( r != null ) {
 
       // File Splitting Feature, is it time to create a new file?
-      if ( !meta.isAppendLines() && meta.getSplitEvery() > 0 && data.datalines > 0
-          && data.datalines % meta.getSplitEvery() == 0 ) {
+      if ( !meta.isAppendLines()
+          && meta.getSplitEvery() > 0 && data.datalines > 0 && data.datalines % meta.getSplitEvery() == 0 ) {
         closeOutputFile();
         prepareNextOutputFile();
       }
@@ -296,8 +296,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
          */
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           v = r[data.fieldnrs[i]];
-          writeField( v, data.inputRowMeta.getValueMeta( data.fieldnrs[i] ), meta.getOutputFields()[i], xlsRow,
-              data.posX++, r, i, false );
+          writeField(
+              v, data.inputRowMeta.getValueMeta( data.fieldnrs[i] ), meta.getOutputFields()[i], xlsRow, data.posX++, r,
+              i, false );
         }
 
         // go to the next line
@@ -401,7 +402,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           }
 
           // set cell format as specified, specific format overrides cell specification
-          if ( !isTitle && excelField != null && !Const.isEmpty( excelField.getFormat() )
+          if ( !isTitle
+              && excelField != null && !Const.isEmpty( excelField.getFormat() )
               && !excelField.getFormat().startsWith( "Image" ) ) {
             DataFormat format = data.wb.createDataFormat();
             short formatIndex = format.getFormat( excelField.getFormat() );
@@ -478,9 +480,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
                 row[data.commentfieldnrs[fieldNr]] );
         if ( !Const.isEmpty( comment ) ) {
           String author =
-              data.commentauthorfieldnrs[fieldNr] >= 0 ? data.inputRowMeta.getValueMeta(
-                  data.commentauthorfieldnrs[fieldNr] ).getString( row[data.commentauthorfieldnrs[fieldNr]] )
-                  : "Kettle PDI";
+              data.commentauthorfieldnrs[fieldNr] >= 0
+                  ? data.inputRowMeta.getValueMeta( data.commentauthorfieldnrs[fieldNr] ).getString(
+                      row[data.commentauthorfieldnrs[fieldNr]] ) : "Kettle PDI";
           cell.setCellComment( createCellComment( author, comment ) );
         }
       }
@@ -651,8 +653,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           // ensure extensions match
           String templateExt = KettleVFS.getFileObject( data.realTemplateFileName ).getName().getExtension();
           if ( !meta.getExtension().equalsIgnoreCase( templateExt ) ) {
-            throw new KettleException( "Template Format Mismatch: Template has extension: " + templateExt
-                + ", but output file has extension: " + meta.getExtension()
+            throw new KettleException( "Template Format Mismatch: Template has extension: "
+                + templateExt + ", but output file has extension: " + meta.getExtension()
                 + ". Template and output file must share the same format!" );
           }
 
@@ -720,9 +722,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           data.wb.setSheetName( data.wb.getSheetIndex( data.sheet ), data.realSheetname );
           // unhide sheet in case it was hidden
           data.wb.setSheetHidden( data.wb.getSheetIndex( data.sheet ), false );
-        }
-        // no template to use, simply create a new sheet
-        else {
+        } else {
+          // no template to use, simply create a new sheet
+
           data.sheet = data.wb.createSheet( data.realSheetname );
         }
 
@@ -921,8 +923,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   }
 
   /**
-   * Write protect Sheet by setting password
-   * works only for xls output at the moment
+   * Write protect Sheet by setting password works only for xls output at the moment
    */
   protected void protectSheet( Sheet sheet, String password ) {
     if ( sheet instanceof HSSFSheet ) {

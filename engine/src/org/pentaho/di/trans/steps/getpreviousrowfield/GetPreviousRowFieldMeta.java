@@ -141,8 +141,8 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
         fieldOutStream[i] = Const.NVL( XMLHandler.getTagValue( fnode, "out_stream_name" ), "" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "GetPreviousRowFieldMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "GetPreviousRowFieldMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -188,8 +188,8 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
         fieldOutStream[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "out_stream_name" ), "" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "GetPreviousRowFieldMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "GetPreviousRowFieldMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -268,8 +268,8 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetPreviousRowFieldMeta.CheckResult.FoundInStreamFields" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetPreviousRowFieldMeta.CheckResult.FoundInStreamFields" ), stepMeta );
       }
       remarks.add( cr );
 
@@ -293,8 +293,8 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetPreviousRowFieldMeta.CheckResult.OutputFieldSpecified" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetPreviousRowFieldMeta.CheckResult.OutputFieldSpecified" ), stepMeta );
       }
       remarks.add( cr );
 
@@ -302,9 +302,10 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
           if ( Const.isEmpty( fieldInStream[idx] ) ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "GetPreviousRowFieldMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 ).toString() ),
-                    stepMeta );
+                new CheckResult(
+                    CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                        PKG, "GetPreviousRowFieldMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 )
+                            .toString() ), stepMeta );
             remarks.add( cr );
 
           }

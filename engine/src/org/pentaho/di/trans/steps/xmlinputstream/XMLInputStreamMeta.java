@@ -498,21 +498,23 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute( id_transformation, id_step, "includeDataTypeNumericField", includeXmlDataTypeNumericField );
       rep.saveStepAttribute( id_transformation, id_step, "dataTypeNumericField", xmlDataTypeNumericField );
 
-      rep.saveStepAttribute( id_transformation, id_step, "includeDataTypeDescriptionField",
-          includeXmlDataTypeDescriptionField );
+      rep.saveStepAttribute(
+          id_transformation, id_step, "includeDataTypeDescriptionField", includeXmlDataTypeDescriptionField );
       rep.saveStepAttribute( id_transformation, id_step, "dataTypeDescriptionField", xmlDataTypeDescriptionField );
 
       rep.saveStepAttribute( id_transformation, id_step, "includeXmlLocationLineField", includeXmlLocationLineField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlLocationLineField", xmlLocationLineField );
 
-      rep.saveStepAttribute( id_transformation, id_step, "includeXmlLocationColumnField", includeXmlLocationColumnField );
+      rep
+          .saveStepAttribute(
+              id_transformation, id_step, "includeXmlLocationColumnField", includeXmlLocationColumnField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlLocationColumnField", xmlLocationColumnField );
 
       rep.saveStepAttribute( id_transformation, id_step, "includeXmlElementIDField", includeXmlElementIDField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlElementIDField", xmlElementIDField );
 
-      rep.saveStepAttribute( id_transformation, id_step, "includeXmlParentElementIDField",
-          includeXmlParentElementIDField );
+      rep.saveStepAttribute(
+          id_transformation, id_step, "includeXmlParentElementIDField", includeXmlParentElementIDField );
       rep.saveStepAttribute( id_transformation, id_step, "xmlParentElementIDField", xmlParentElementIDField );
 
       rep.saveStepAttribute( id_transformation, id_step, "includeXmlElementLevelField", includeXmlElementLevelField );
@@ -549,22 +551,26 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlDataTypeNumericField || includeXmlDataTypeDescriptionField ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT,
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_COMMENT,
               "At least one Data Type field (numeric or description) is in the data stream", stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING,
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_WARNING,
               "Data Type field (numeric or description) is missing in the data stream", stepMeta );
     }
     remarks.add( cr );
 
     if ( includeXmlDataValueField && includeXmlDataNameField ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT,
-              "Data Name and Data Value fields are in the data stream", stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_COMMENT, "Data Name and Data Value fields are in the data stream",
+              stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING,
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_WARNING,
               "Both Data Name and Data Value fields should be in the data stream", stepMeta );
     }
     remarks.add( cr );

@@ -127,8 +127,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
     List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
-      logError( BaseMessages.getString( PKG, "PropertyInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "PropertyInput.Log.RequiredFiles", message ) );
+      logError( BaseMessages.getString( PKG, "PropertyInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "PropertyInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "PropertyInput.Log.RequiredFilesMissing", message ) );
     }
@@ -136,11 +136,11 @@ public class PropertyInput extends BaseStep implements StepInterface {
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
-      logError( BaseMessages.getString( PKG, "PropertyInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "PropertyInput.Log.RequiredNotAccessibleFiles", message ) );
+      logError( BaseMessages.getString( PKG, "PropertyInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "PropertyInput.Log.RequiredNotAccessibleFiles", message ) );
 
-      throw new KettleException( BaseMessages.getString( PKG, "PropertyInput.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "PropertyInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
@@ -323,8 +323,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
   private boolean openNextFile() {
     try {
       if ( !meta.isFileField() ) {
-        if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-        {
+        if ( data.filenr >= data.files.nrOfFiles() ) { // finished processing!
+
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "PropertyInput.Log.FinishedProcessing" ) );
           }
@@ -370,8 +370,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
             data.indexOfFilenameField = getInputRowMeta().indexOfValue( meta.getDynamicFilenameField() );
             if ( data.indexOfFilenameField < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "PropertyInput.Log.ErrorFindingField" ) + "["
-                  + meta.getDynamicFilenameField() + "]" );
+              logError( BaseMessages.getString( PKG, "PropertyInput.Log.ErrorFindingField" )
+                  + "[" + meta.getDynamicFilenameField() + "]" );
               throw new KettleException( BaseMessages.getString( PKG, "PropertyInput.Exception.CouldnotFindField", meta
                   .getDynamicFilenameField() ) );
             }
@@ -455,8 +455,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
           // just one section
           data.iniSection = data.wini.get( data.realSection );
           if ( data.iniSection == null ) {
-            throw new KettleException( BaseMessages.getString( PKG, "PropertyInput.Error.CanNotFindSection",
-                data.realSection, "" + data.file.getName() ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "PropertyInput.Error.CanNotFindSection", data.realSection, "" + data.file.getName() ) );
           }
         } else {
           // We need to fetch all sections

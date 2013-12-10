@@ -103,8 +103,8 @@ public class SocketWriter extends BaseStep implements StepInterface {
     Object[] r = getRow(); // get row, set busy!
     // Input rowMeta is automatically set, available when needed
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -148,8 +148,8 @@ public class SocketWriter extends BaseStep implements StepInterface {
       try {
         int port = Integer.parseInt( environmentSubstitute( meta.getPort() ) );
         data.serverSocket =
-            getTrans().getSocketRepository()
-                .openServerSocket( port, getTransMeta().getName() + " - " + this.toString() );
+            getTrans()
+                .getSocketRepository().openServerSocket( port, getTransMeta().getName() + " - " + this.toString() );
 
         return true;
       } catch ( Exception e ) {

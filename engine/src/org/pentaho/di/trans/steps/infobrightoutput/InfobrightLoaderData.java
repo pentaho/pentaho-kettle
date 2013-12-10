@@ -85,8 +85,8 @@ public class InfobrightLoaderData extends BaseStepData implements StepDataInterf
       Charset charset = meta.getCharset();
       Connection conn = db.getConnection();
       String tableName =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( step.environmentSubstitute( meta.getSchemaName() ),
-              step.environmentSubstitute( meta.getTableName() ) );
+          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+              step.environmentSubstitute( meta.getSchemaName() ), step.environmentSubstitute( meta.getTableName() ) );
       EtlLogger logger = new KettleEtlLogger( step );
       loader = new InfobrightNamedPipeLoader( tableName, conn, logger, dataFormat, charset, agentPort );
       loader.setTimeout( 30 );

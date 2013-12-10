@@ -130,11 +130,12 @@ public class HTTPPOST extends BaseStep implements StepInterface {
       if ( data.useHeaderParameters ) {
         // set header parameters that we want to send
         for ( int i = 0; i < data.header_parameters_nrs.length; i++ ) {
-          post.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString( rowData,
-              data.header_parameters_nrs[i] ) );
+          post.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString(
+              rowData, data.header_parameters_nrs[i] ) );
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.HeaderValue", data.headerParameters[i].getName(),
-                data.inputRowMeta.getString( rowData, data.header_parameters_nrs[i] ) ) );
+            logDebug( BaseMessages.getString(
+                PKG, "HTTPPOST.Log.HeaderValue", data.headerParameters[i].getName(), data.inputRowMeta.getString(
+                    rowData, data.header_parameters_nrs[i] ) ) );
           }
         }
       }
@@ -145,8 +146,9 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         for ( int i = 0; i < data.body_parameters_nrs.length; i++ ) {
           data.bodyParameters[i].setValue( data.inputRowMeta.getString( rowData, data.body_parameters_nrs[i] ) );
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.BodyValue", data.bodyParameters[i].getName(),
-                data.inputRowMeta.getString( rowData, data.body_parameters_nrs[i] ) ) );
+            logDebug( BaseMessages.getString(
+                PKG, "HTTPPOST.Log.BodyValue", data.bodyParameters[i].getName(), data.inputRowMeta.getString(
+                    rowData, data.body_parameters_nrs[i] ) ) );
           }
         }
         post.setRequestBody( data.bodyParameters );
@@ -157,8 +159,9 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         for ( int i = 0; i < data.query_parameters_nrs.length; i++ ) {
           data.queryParameters[i].setValue( data.inputRowMeta.getString( rowData, data.query_parameters_nrs[i] ) );
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.QueryValue", data.queryParameters[i].getName(),
-                data.inputRowMeta.getString( rowData, data.query_parameters_nrs[i] ) ) );
+            logDebug( BaseMessages.getString(
+                PKG, "HTTPPOST.Log.QueryValue", data.queryParameters[i].getName(), data.inputRowMeta.getString(
+                    rowData, data.query_parameters_nrs[i] ) ) );
           }
         }
         post.setQueryString( data.queryParameters );
@@ -261,8 +264,8 @@ public class HTTPPOST extends BaseStep implements StepInterface {
               logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.ResponseBody", body ) );
             }
           } else { // the status is a 401
-            throw new KettleStepException( BaseMessages.getString( PKG, "HTTPPOST.Exception.Authentication",
-                data.realUrl ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "HTTPPOST.Exception.Authentication", data.realUrl ) );
 
           }
         }
@@ -307,8 +310,9 @@ public class HTTPPOST extends BaseStep implements StepInterface {
     data = (HTTPPOSTData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -331,8 +335,8 @@ public class HTTPPOST extends BaseStep implements StepInterface {
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "HTTPPOST.Log.ErrorFindingField", realUrlfieldName ) );
-            throw new KettleException( BaseMessages.getString( PKG, "HTTPPOST.Exception.ErrorFindingField",
-                realUrlfieldName ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "HTTPPOST.Exception.ErrorFindingField", realUrlfieldName ) );
           }
         }
       } else {
@@ -346,8 +350,9 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         data.contentTypeHeaderOverwrite = false;
         int nrheader = 0;
         int nrbody = 0;
-        for ( int i = 0; i < nrargs; i++ ) // split into body / header
-        {
+        for ( int i = 0; i < nrargs; i++ ) {
+          // split into body / header
+
           if ( meta.getArgumentHeader()[i] ) {
             data.useHeaderParameters = true; // at least one header parameter
             nrheader++;
@@ -365,8 +370,8 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         for ( int i = 0; i < nrargs; i++ ) {
           int fieldIndex = data.inputRowMeta.indexOfValue( meta.getArgumentField()[i] );
           if ( fieldIndex < 0 ) {
-            logError( BaseMessages.getString( PKG, "HTTPPOST.Log.ErrorFindingField" ) + meta.getArgumentField()[i]
-                + "]" );
+            logError( BaseMessages.getString( PKG, "HTTPPOST.Log.ErrorFindingField" )
+                + meta.getArgumentField()[i] + "]" );
             throw new KettleStepException( BaseMessages.getString( PKG, "HTTPPOST.Exception.CouldnotFindField", meta
                 .getArgumentField()[i] ) );
           }
@@ -402,16 +407,16 @@ public class HTTPPOST extends BaseStep implements StepInterface {
                 .getQueryField()[i] ) );
           }
           data.queryParameters[i] =
-              new NameValuePair( environmentSubstitute( meta.getQueryParameter()[i] ), data.outputRowMeta.getString( r,
-                  data.query_parameters_nrs[i] ) );
+              new NameValuePair( environmentSubstitute( meta.getQueryParameter()[i] ), data.outputRowMeta.getString(
+                  r, data.query_parameters_nrs[i] ) );
         }
       }
       // set request entity?
       if ( !Const.isEmpty( meta.getRequestEntity() ) ) {
         data.indexOfRequestEntity = data.inputRowMeta.indexOfValue( environmentSubstitute( meta.getRequestEntity() ) );
         if ( data.indexOfRequestEntity < 0 ) {
-          throw new KettleStepException( BaseMessages.getString( PKG,
-              "HTTPPOST.Exception.CouldnotFindRequestEntityField", meta.getRequestEntity() ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "HTTPPOST.Exception.CouldnotFindRequestEntityField", meta.getRequestEntity() ) );
         }
       }
       data.realEncoding = environmentSubstitute( meta.getEncoding() );

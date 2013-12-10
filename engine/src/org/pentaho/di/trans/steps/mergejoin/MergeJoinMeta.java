@@ -263,8 +263,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
      * 2) Number of input streams must be two (for now at least) 3) The field names of input streams must be unique
      */
     CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-            "MergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+            PKG, "MergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
     remarks.add( cr );
   }
 
@@ -304,10 +304,10 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "MergeJoinMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "MergeJoinMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+          PKG, "MergeJoinMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+          PKG, "MergeJoinMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
     }
 
     return ioMeta;

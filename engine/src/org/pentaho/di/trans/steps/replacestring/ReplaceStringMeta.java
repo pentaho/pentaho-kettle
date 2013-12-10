@@ -75,15 +75,15 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
   public static final String[] caseSensitiveCode = { "no", "yes" };
 
-  public static final String[] caseSensitiveDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] caseSensitiveDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   public static final int CASE_SENSITIVE_NO = 0;
 
   public static final int CASE_SENSITIVE_YES = 1;
 
-  public static final String[] wholeWordDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] wholeWordDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   public static final String[] wholeWordCode = { "no", "yes" };
 
@@ -91,8 +91,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
   public static final int WHOLE_WORD_YES = 1;
 
-  public static final String[] useRegExDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] useRegExDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   public static final String[] useRegExCode = { "no", "yes" };
 
@@ -244,8 +244,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "ReplaceStringMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "ReplaceStringMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -302,8 +302,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ReplaceStringMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ReplaceStringMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -319,7 +319,9 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "set_empty_string", setEmptyString[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "replace_field_by_string", replaceFieldByString[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "whole_world", getWholeWordCode( wholeWord[i] ) );
-        rep.saveStepAttribute( id_transformation, id_step, i, "case_sensitive", getCaseSensitiveCode( caseSensitive[i] ) );
+        rep
+            .saveStepAttribute(
+                id_transformation, id_step, i, "case_sensitive", getCaseSensitiveCode( caseSensitive[i] ) );
 
       }
     } catch ( Exception e ) {
@@ -376,8 +378,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ReplaceStringMeta.CheckResult.FoundInStreamFields" ), stepinfo );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ReplaceStringMeta.CheckResult.FoundInStreamFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -404,8 +406,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ReplaceStringMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "ReplaceStringMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -413,8 +415,10 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
           if ( Const.isEmpty( fieldInStream[idx] ) ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "ReplaceStringMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 ).toString() ), stepinfo );
+                new CheckResult(
+                    CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                        PKG, "ReplaceStringMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 ).toString() ),
+                    stepinfo );
             remarks.add( cr );
 
           }

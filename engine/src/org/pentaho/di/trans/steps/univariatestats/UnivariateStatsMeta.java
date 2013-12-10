@@ -327,8 +327,8 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving " + prev.size()
-              + " fields", stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
+              + prev.size() + " fields", stepMeta );
       remarks.add( cr );
     }
 

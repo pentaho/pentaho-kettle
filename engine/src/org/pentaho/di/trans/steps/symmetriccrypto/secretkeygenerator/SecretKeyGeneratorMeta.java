@@ -360,29 +360,29 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
       int len = Const.toInt( transMeta.environmentSubstitute( getSecretKeyLength()[i] ), -1 );
       if ( len < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SecretKeyGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "SecretKeyGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
       int size = Const.toInt( transMeta.environmentSubstitute( getSecretKeyCount()[i] ), -1 );
       if ( size < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SecretKeyGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "SecretKeyGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SecretKeyGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SecretKeyGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( Const.isEmpty( getSecretKeyFieldName() ) ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SecretKeyGeneratorMeta.CheckResult.secretKeyFieldMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SecretKeyGeneratorMeta.CheckResult.secretKeyFieldMissing" ), stepMeta );
       remarks.add( cr );
     }
   }

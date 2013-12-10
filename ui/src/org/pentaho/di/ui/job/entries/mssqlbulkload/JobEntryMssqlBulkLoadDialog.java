@@ -78,9 +78,9 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
   private static Class<?> PKG = JobEntryMssqlBulkLoad.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final String[] FILETYPES = new String[] {
-    BaseMessages.getString( PKG, "JobMssqlBulkLoad.Filetype.Text" ),
-    BaseMessages.getString( PKG, "JobMssqlBulkLoad.Filetype.Csv" ),
-    BaseMessages.getString( PKG, "JobMssqlBulkLoad.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobMssqlBulkLoad.Filetype.Text" ),
+      BaseMessages.getString( PKG, "JobMssqlBulkLoad.Filetype.Csv" ),
+      BaseMessages.getString( PKG, "JobMssqlBulkLoad.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -1335,9 +1335,9 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
           }
           int[] idxSource = Const.indexsOfStrings( source, available );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, available, BaseMessages.getString( PKG,
-                  "JobMssqlBulkLoad.SelectColumns.Title" ), BaseMessages.getString( PKG,
-                  "JobMssqlBulkLoad.SelectColumns.Message" ) );
+              new EnterSelectionDialog( shell, available, BaseMessages.getString(
+                  PKG, "JobMssqlBulkLoad.SelectColumns.Title" ), BaseMessages.getString(
+                  PKG, "JobMssqlBulkLoad.SelectColumns.Message" ) );
           dialog.setMulti( true );
           dialog.setAvoidQuickSearch();
           dialog.setSelectedNrs( idxSource );

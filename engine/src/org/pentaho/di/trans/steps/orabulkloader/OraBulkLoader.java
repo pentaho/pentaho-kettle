@@ -234,7 +234,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
       // For concurrent input, data command line argument must be specified
       contents.append( "INFILE " ).append( infile );
       if ( !Const.isEmpty( meta.getAltRecordTerm() ) ) {
-        contents.append( " \"STR x'" ).append( encodeRecordTerminator( meta.getAltRecordTerm(), meta.getEncoding() ) )
+        contents
+            .append( " \"STR x'" ).append( encodeRecordTerminator( meta.getAltRecordTerm(), meta.getEncoding() ) )
             .append( "'\"" );
       }
       contents.append( Const.CR );
@@ -489,8 +490,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
+
         setOutputDone();
 
         if ( !preview ) {
@@ -638,8 +640,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
-            logError( "Error deleting data file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(),
-                ex );
+            logError(
+                "Error deleting data file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
           }
         }
       }

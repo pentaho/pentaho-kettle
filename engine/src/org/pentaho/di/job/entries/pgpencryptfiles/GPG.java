@@ -265,8 +265,9 @@ public class GPG {
   public void decryptFile( String cryptedFilename, String passPhrase, String decryptedFilename ) throws KettleException {
 
     try {
-      execGnuPG( "--batch --yes " + ( Const.isEmpty( passPhrase ) ? "" : "--passphrase " + "\"" + passPhrase + "\" " )
-          + "--output " + "\"" + decryptedFilename + "\" " + "--decrypt " + "\"" + cryptedFilename + "\"", null, true );
+      execGnuPG( "--batch --yes "
+          + ( Const.isEmpty( passPhrase ) ? "" : "--passphrase " + "\"" + passPhrase + "\" " ) + "--output " + "\""
+          + decryptedFilename + "\" " + "--decrypt " + "\"" + cryptedFilename + "\"", null, true );
 
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -307,8 +308,9 @@ public class GPG {
   public void encryptFile( String filename, String userID, String cryptedFilename, boolean asciiMode )
     throws KettleException {
     try {
-      execGnuPG( "--batch --yes" + ( asciiMode ? " -a" : "" ) + " -r " + "\"" + Const.NVL( userID, "" ) + "\" "
-          + "--output " + "\"" + cryptedFilename + "\" " + "--encrypt  " + "\"" + filename + "\"", null, true );
+      execGnuPG( "--batch --yes"
+          + ( asciiMode ? " -a" : "" ) + " -r " + "\"" + Const.NVL( userID, "" ) + "\" " + "--output " + "\""
+          + cryptedFilename + "\" " + "--encrypt  " + "\"" + filename + "\"", null, true );
 
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -351,9 +353,9 @@ public class GPG {
 
     try {
 
-      execGnuPG( "--batch --yes" + ( asciiMode ? " -a" : "" )
-          + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " " + "--output " + "\""
-          + cryptedFilename + "\" " + "--encrypt --sign " + "\"" + filename + "\"", null, true );
+      execGnuPG( "--batch --yes"
+          + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
+          + "--output " + "\"" + cryptedFilename + "\" " + "--encrypt --sign " + "\"" + filename + "\"", null, true );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -375,9 +377,10 @@ public class GPG {
   public void signFile( String filename, String userID, String signedFilename, boolean asciiMode )
     throws KettleException {
     try {
-      execGnuPG( "--batch --yes" + ( asciiMode ? " -a" : "" )
-          + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " " + "--output " + "\""
-          + signedFilename + "\" " + ( asciiMode ? "--clearsign " : "--sign " ) + "\"" + filename + "\"", null, true );
+      execGnuPG( "--batch --yes"
+          + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
+          + "--output " + "\"" + signedFilename + "\" " + ( asciiMode ? "--clearsign " : "--sign " ) + "\"" + filename
+          + "\"", null, true );
 
     } catch ( Exception e ) {
       throw new KettleException( e );

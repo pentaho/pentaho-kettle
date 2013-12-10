@@ -76,10 +76,11 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
       response.setContentType( "text/html;charset=UTF-8" );
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
-      out.println( "<TITLE>" + BaseMessages.getString( PKG, "PrepareExecutionTransServlet.TransPrepareExecution" )
-          + "</TITLE>" );
-      out.println( "<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath( GetStatusServlet.CONTEXT_PATH )
-          + "?name=" + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
+      out.println( "<TITLE>"
+          + BaseMessages.getString( PKG, "PrepareExecutionTransServlet.TransPrepareExecution" ) + "</TITLE>" );
+      out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( transName, "UTF-8" )
+          + "\">" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
@@ -115,38 +116,42 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
             out.println( WebResult.OK.getXML() );
           } else {
             out.println( "<H1>Transformation '" + encoder.encodeForHTML( transName ) + "' has been executed.</H1>" );
-            out.println( "<a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            out.println( "<a href=\""
+                + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
                 + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
                 + "\">Back to the transformation status page</a><p>" );
           }
         } else {
           String message =
-              "The specified transformation [" + transName
-                  + "] is not ready to be started. (Was not prepared for execution)";
+              "The specified transformation ["
+                  + transName + "] is not ready to be started. (Was not prepared for execution)";
           if ( useXML ) {
             out.println( new WebResult( WebResult.STRING_ERROR, message ) );
           } else {
             out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-            out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            out.println( "<a href=\""
+                + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
                 + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
           }
         }
       } else {
         if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-              "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
+          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+              PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
         } else {
           out.println( "<H1>"
-              + encoder.encodeForHTML( BaseMessages.getString( PKG, "TransStatusServlet.Log.CoundNotFindTrans",
-                  transName ) ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+              + encoder.encodeForHTML( BaseMessages.getString(
+                  PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
+          out.println( "<a href=\""
+              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
     } catch ( Exception ex ) {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR,
-            "Unexpected error during transformation execution preparation:" + Const.CR + Const.getStackTracker( ex ) ) );
+        out.println( new WebResult(
+            WebResult.STRING_ERROR, "Unexpected error during transformation execution preparation:"
+                + Const.CR + Const.getStackTracker( ex ) ) );
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );

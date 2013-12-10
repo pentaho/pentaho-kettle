@@ -87,8 +87,8 @@ public class JarfileGenerator {
       executeJarCommand( kar, karFile, new File( "manifest.mf" ), new File( TRANSFORMATION_FILENAME ), deps
           .getLibraryFiles() );
     } catch ( Exception e ) {
-      log.logError( JarfileGenerator.class.getName(), "Error zipping files into archive [" + karFile.getPath() + "] : "
-          + e.toString() );
+      log.logError( JarfileGenerator.class.getName(), "Error zipping files into archive ["
+          + karFile.getPath() + "] : " + e.toString() );
       log.logError( JarfileGenerator.class.getName(), Const.getStackTracker( e ) );
     }
   }

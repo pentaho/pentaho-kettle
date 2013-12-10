@@ -38,9 +38,6 @@ public class ExecProcessData extends BaseStepData implements StepDataInterface {
   public int NrPrevFields;
   public Runtime runtime;
 
-  /**
-	 * 
-	 */
   public ExecProcessData() {
     super();
     indexOfProcess = -1;

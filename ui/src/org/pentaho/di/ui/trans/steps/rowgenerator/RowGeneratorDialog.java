@@ -243,19 +243,23 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
-              .getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.SetEmptyString" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } )
+            new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                    .getTypes() ),
+            new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
+            new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "System.Column.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "System.Column.SetEmptyString" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } )
 
         };
 
@@ -394,8 +398,8 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         item.setText( col++, Const.NVL( decim, "" ) );
         item.setText( col++, Const.NVL( group, "" ) );
         item.setText( col++, Const.NVL( def, "" ) );
-        item.setText( col++, input.isSetEmptyString()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" )
-            : BaseMessages.getString( PKG, "System.Combo.No" ) );
+        item.setText( col++, input.isSetEmptyString()[i]
+            ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
 
       }
     }
@@ -426,8 +430,9 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
       getInfo( input ); // to put the content on the input structure for real if all is well.
       dispose();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Title" ),
-          BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Title" ), BaseMessages
+              .getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message" ), e );
     }
   }
 
@@ -480,22 +485,23 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
     try {
       getInfo( oneMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Title" ),
-          BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Title" ), BaseMessages
+              .getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message" ), e );
       return;
     }
 
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "System.Dialog.EnterPreviewSize.Title" ), BaseMessages.getString( PKG,
-            "System.Dialog.EnterPreviewSize.Message" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "System.Dialog.EnterPreviewSize.Title" ), BaseMessages.getString(
+            PKG, "System.Dialog.EnterPreviewSize.Message" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -504,17 +510,19 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-              loggingText );
+          new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(),
+              progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname
+                  .getText() ), loggingText );
       prd.open();
     }
   }

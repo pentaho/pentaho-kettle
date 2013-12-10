@@ -137,8 +137,9 @@ public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialo
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Fieldname.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, previousSteps, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            previousSteps, false );
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 

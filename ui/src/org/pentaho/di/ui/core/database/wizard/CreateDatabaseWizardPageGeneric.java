@@ -139,8 +139,8 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage {
         wDriverClass.getText() != null ? wDriverClass.getText().length() > 0 ? wDriverClass.getText() : null : null;
 
     if ( url == null || driverClass == null ) {
-      setErrorMessage( BaseMessages.getString( PKG,
-          "CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired" ) );
+      setErrorMessage( BaseMessages.getString(
+          PKG, "CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired" ) );
       return false;
     } else {
       getDatabaseInfo();

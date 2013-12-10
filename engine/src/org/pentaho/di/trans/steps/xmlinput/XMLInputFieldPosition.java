@@ -103,8 +103,8 @@ public class XMLInputFieldPosition implements Cloneable {
   public XMLInputFieldPosition( String encoded ) throws KettleValueException {
     int equalIndex = encoded.indexOf( '=' );
     if ( equalIndex < 0 ) {
-      throw new KettleValueException( BaseMessages.getString( PKG,
-          "XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded ) );
+      throw new KettleValueException( BaseMessages.getString(
+          PKG, "XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded ) );
     }
 
     String positionType = Const.trim( encoded.substring( 0, equalIndex ) );
@@ -121,21 +121,21 @@ public class XMLInputFieldPosition implements Cloneable {
       this.elementNr = 1;
     }
 
-    if ( positionType.equalsIgnoreCase( "E" ) ) // Element
-    {
+    if ( positionType.equalsIgnoreCase( "E" ) ) { // Element
+
       this.type = XML_ELEMENT;
       this.name = positionName;
-    } else if ( positionType.equalsIgnoreCase( "A" ) ) // Attribute
-    {
+    } else if ( positionType.equalsIgnoreCase( "A" ) ) { // Attribute
+
       this.type = XML_ATTRIBUTE;
       this.name = positionName;
-    } else if ( positionType.equalsIgnoreCase( "R" ) ) // Root of the repeating element. There is only one
-    {
+    } else if ( positionType.equalsIgnoreCase( "R" ) ) { // Root of the repeating element. There is only one
+
       this.type = XML_ROOT;
       this.name = positionName;
     } else {
-      throw new KettleValueException( BaseMessages.getString( PKG, "XMLInputFieldPosition.Exception.WrongPositionType",
-          positionType ) );
+      throw new KettleValueException( BaseMessages.getString(
+          PKG, "XMLInputFieldPosition.Exception.WrongPositionType", positionType ) );
     }
 
     // Get the element nr

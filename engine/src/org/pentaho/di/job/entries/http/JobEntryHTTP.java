@@ -264,7 +264,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "run_every_row", runForEveryRow );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", username );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_host", proxyHostname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_port", proxyPort );
@@ -476,11 +477,12 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           }
           for ( int j = 0; j < headerName.length; j++ ) {
             if ( !Const.isEmpty( headerValue[j] ) ) {
-              connection.setRequestProperty( environmentSubstitute( headerName[j] ),
-                  environmentSubstitute( headerValue[j] ) );
+              connection.setRequestProperty(
+                  environmentSubstitute( headerName[j] ), environmentSubstitute( headerValue[j] ) );
               if ( log.isDebug() ) {
-                log.logDebug( BaseMessages.getString( PKG, "JobHTTP.Log.HeaderSet",
-                    environmentSubstitute( headerName[j] ), environmentSubstitute( headerValue[j] ) ) );
+                log.logDebug( BaseMessages.getString(
+                    PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute( headerName[j] ),
+                    environmentSubstitute( headerValue[j] ) ) );
               }
             }
           }

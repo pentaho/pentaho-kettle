@@ -200,8 +200,9 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
       inputfields = transMeta.getPrevStepFields( stepname );
     } catch ( KettleException ke ) {
       inputfields = new RowMeta();
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "FilterRowsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
     // Some buttons

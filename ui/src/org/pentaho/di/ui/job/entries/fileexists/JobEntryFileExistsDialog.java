@@ -70,9 +70,9 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
   private static final String[] EXTENSIONS = new String[] { "*.txt", "*.csv", "*" }; //$NON-NLS-3$
 
   private static final String[] FILETYPES = new String[] {
-    BaseMessages.getString( PKG, "JobFileExists.Filetype.Text" ),
-    BaseMessages.getString( PKG, "JobFileExists.Filetype.CSV" ),
-    BaseMessages.getString( PKG, "JobFileExists.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobFileExists.Filetype.Text" ),
+      BaseMessages.getString( PKG, "JobFileExists.Filetype.CSV" ),
+      BaseMessages.getString( PKG, "JobFileExists.Filetype.All" ) };
 
   private Label wlName;
 

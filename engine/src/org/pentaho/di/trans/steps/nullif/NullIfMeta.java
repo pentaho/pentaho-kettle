@@ -130,8 +130,8 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface {
         fieldValue[i] = XMLHandler.getTagValue( fnode, "value" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "NullIfMeta.Exception.UnableToReadStepInfoFromXML" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "NullIfMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -184,8 +184,8 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface {
         fieldValue[i] = rep.getStepAttributeString( id_step, i, "field_value" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "NullIfMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "NullIfMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -209,26 +209,26 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "NullIfMeta.CheckResult.NoReceivingFieldsError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "NullIfMeta.CheckResult.NoReceivingFieldsError" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "NullIfMeta.CheckResult.StepReceivingFieldsOK", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "NullIfMeta.CheckResult.StepReceivingFieldsOK", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "NullIfMeta.CheckResult.StepRecevingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "NullIfMeta.CheckResult.StepRecevingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "NullIfMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "NullIfMeta.CheckResult.NoInputReceivedError" ), stepMeta );
       remarks.add( cr );
     }
   }

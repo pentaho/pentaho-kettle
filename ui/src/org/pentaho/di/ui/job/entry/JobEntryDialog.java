@@ -66,8 +66,8 @@ public class JobEntryDialog extends Dialog {
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   /** The loggingObject for the dialog */
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Job entry dialog",
-      LoggingObjectType.JOBENTRYDIALOG, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Job entry dialog", LoggingObjectType.JOBENTRYDIALOG, null );
 
   /** A reference to the job entry interface */
   protected JobEntryInterface jobEntryInt;
@@ -142,8 +142,8 @@ public class JobEntryDialog extends Dialog {
    * @return the combo box UI component
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin ) {
-    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button( parent,
-        SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ) );
+    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button(
+        parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ) );
   }
 
   /**

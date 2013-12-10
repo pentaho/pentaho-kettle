@@ -55,7 +55,7 @@ public class FlattenerTargetField {
 
   public static final String[] typeAggrLongDesc =
       {
-        "-", BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.SUM" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.AVERAGE" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MIN" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MAX" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.COUNT_ALL" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.CONCAT_COMMA" ) //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+          "-", BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.SUM" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.AVERAGE" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MIN" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MAX" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.COUNT_ALL" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.CONCAT_COMMA" ) //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
       };
 
   /**

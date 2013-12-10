@@ -140,11 +140,12 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface 
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
             new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.ValueToNull" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "NullIfDialog.ColumnInfo.ValueToNull" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );

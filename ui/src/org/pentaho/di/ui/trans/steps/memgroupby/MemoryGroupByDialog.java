@@ -169,12 +169,14 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.GroupField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.GroupField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
 
     wGroup =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrKeyRows, lsMod, props );
 
     wGet = new Button( shell, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "MemoryGroupByDialog.GetFields.Button" ) );
@@ -204,23 +206,26 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Name" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Subject" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Subject" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Type" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, MemoryGroupByMeta.typeGroupLongDesc );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            MemoryGroupByMeta.typeGroupLongDesc );
     ciReturn[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Value" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[3].setToolTip( BaseMessages.getString( PKG, "MemoryGroupByDialog.ColumnInfo.Value.Tooltip" ) );
     ciReturn[3].setUsingVariables( true );
 
     wAgg =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+            UpInsRows, lsMod, props );
 
     wGetAgg = new Button( shell, SWT.PUSH );
     wGetAgg.setText( BaseMessages.getString( PKG, "MemoryGroupByDialog.GetLookupFields.Button" ) );
@@ -427,8 +432,9 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
         BaseStepDialog.getFieldsFromPrevious( r, wGroup, 1, new int[] { 1 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -439,8 +445,9 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
         BaseStepDialog.getFieldsFromPrevious( r, wAgg, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

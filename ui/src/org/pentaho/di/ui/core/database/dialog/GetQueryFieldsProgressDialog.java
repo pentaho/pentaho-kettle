@@ -96,8 +96,8 @@ public class GetQueryFieldsProgressDialog {
             }
           }
 
-          if ( monitor.isCanceled() ) // Disconnect and see what happens!
-          {
+          if ( monitor.isCanceled() ) { // Disconnect and see what happens!
+
             try {
               db.cancelQuery();
             } catch ( Exception e ) {

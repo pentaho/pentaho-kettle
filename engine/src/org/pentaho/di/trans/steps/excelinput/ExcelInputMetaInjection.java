@@ -104,8 +104,8 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
       filesEntry.getDetails().add( fileEntry );
 
       Entry[] fieldsEntries =
-          new Entry[] { Entry.FILENAME, Entry.FILEMASK, Entry.EXCLUDE_FILEMASK, Entry.FILE_REQUIRED,
-            Entry.INCLUDE_SUBFOLDERS, };
+          new Entry[] {
+              Entry.FILENAME, Entry.FILEMASK, Entry.EXCLUDE_FILEMASK, Entry.FILE_REQUIRED, Entry.INCLUDE_SUBFOLDERS, };
       for ( Entry entry : fieldsEntries ) {
         StepInjectionMetaEntry metaEntry =
             new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );

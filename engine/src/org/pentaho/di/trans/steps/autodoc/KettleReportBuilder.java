@@ -330,7 +330,8 @@ public class KettleReportBuilder {
     String packName = KettleReportBuilder.class.getPackage().getName();
     if ( options.isIncludingImage() ) {
       String bshCode =
-          "Object getValue() { " + Const.CR + "  return new " + packName + ".TransJobDrawable(dataRow, "
+          "Object getValue() { "
+              + Const.CR + "  return new " + packName + ".TransJobDrawable(dataRow, "
               + ( options.getOutputType() == OutputType.PDF ? "true" : "false" ) + ");" + Const.CR + "}";
       BSHExpression bshExpression = new BSHExpression();
       bshExpression.setExpression( bshCode );
@@ -369,8 +370,9 @@ public class KettleReportBuilder {
     double topMargin = 0.08; // this is a very small topMargin
     double bottomMargin = 0.78;
 
-    a4Paper.setImageableArea( leftMargin * 72.0, topMargin * 72.0, ( paperWidth - leftMargin - rightMargin ) * 72.0,
-        ( paperHeight - topMargin - bottomMargin ) * 72.0 );
+    a4Paper.setImageableArea(
+        leftMargin * 72.0, topMargin * 72.0, ( paperWidth - leftMargin - rightMargin ) * 72.0, ( paperHeight
+            - topMargin - bottomMargin ) * 72.0 );
 
     /*
      * create a PageFormat and associate the Paper with it.

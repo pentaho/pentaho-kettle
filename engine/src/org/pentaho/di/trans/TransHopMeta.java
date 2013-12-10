@@ -106,10 +106,11 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
   }
 
   private StepMeta searchStep( List<StepMeta> steps, String name ) {
-    for ( StepMeta stepMeta : steps )
+    for ( StepMeta stepMeta : steps ) {
       if ( stepMeta.getName().equalsIgnoreCase( name ) ) {
         return stepMeta;
       }
+    }
 
     return null;
   }

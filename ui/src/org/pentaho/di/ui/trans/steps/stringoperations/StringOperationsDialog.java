@@ -150,37 +150,48 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 
     ciKey = new ColumnInfo[nrFieldCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InStreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InStreamField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciKey[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Trim" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.trimTypeDesc, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Trim" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            StringOperationsMeta.trimTypeDesc, true );
     ciKey[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LowerUpper" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LowerUpper" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.lowerUpperDesc, true );
     ciKey[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Padding" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.paddingDesc, true );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Padding" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            StringOperationsMeta.paddingDesc, true );
     ciKey[5] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.CharPad" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.CharPad" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     ciKey[6] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LenPad" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LenPad" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     ciKey[7] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InitCap" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.initCapDesc );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InitCap" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            StringOperationsMeta.initCapDesc );
     ciKey[8] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.MaskXML" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.maskXMLDesc );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.MaskXML" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            StringOperationsMeta.maskXMLDesc );
     ciKey[9] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Digits" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.digitsDesc );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Digits" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            StringOperationsMeta.digitsDesc );
     ciKey[10] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.RemoveSpecialCharacters" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.RemoveSpecialCharacters" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.removeSpecialCharactersDesc );
 
     ciKey[1].setToolTip( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField.Tooltip" ) );
@@ -191,8 +202,9 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
     ciKey[7].setUsingVariables( true );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrFieldRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrFieldRows, lsMod, props );
 
     fdKey = new FormData();
     fdKey.left = new FormAttachment( 0, 0 );
@@ -425,8 +437,9 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

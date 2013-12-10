@@ -71,8 +71,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-    BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Encrypt" ),
-    BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Decrypt" ) };
+      BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Encrypt" ),
+      BaseMessages.getString( PKG, "SymmetricCryptoTransMeta.operationType.Decrypt" ) };
 
   /**
    * The operations type codes
@@ -262,8 +262,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
       outputResultAsBinary = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "outputResultAsBinary" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SymmetricCryptoTransMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SymmetricCryptoTransMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -333,8 +333,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
       outputResultAsBinary = rep.getStepAttributeBoolean( id_step, "outputResultAsBinary" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SymmetricCryptoTransMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SymmetricCryptoTransMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -377,12 +377,12 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SymmetricCryptoTransMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SymmetricCryptoTransMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepinfo );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SymmetricCryptoTransMeta.CheckResult.NoInputReceived" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SymmetricCryptoTransMeta.CheckResult.NoInputReceived" ), stepinfo );
 
     }
     remarks.add( cr );
@@ -391,8 +391,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     if ( getResultfieldname() == null ) {
       // Result Field is missing !
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SymmetricCryptoTransMeta.CheckResult.ErrorResultFieldNameMissing" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SymmetricCryptoTransMeta.CheckResult.ErrorResultFieldNameMissing" ), stepinfo );
       remarks.add( cr );
 
     }

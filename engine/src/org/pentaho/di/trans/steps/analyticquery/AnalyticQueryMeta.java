@@ -65,8 +65,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
   { "LEAD", "LAG", };
 
   public static final String[] typeGroupLongDesc = {
-    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LEAD" ),
-    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ) };
+      BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LEAD" ),
+      BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ) };
 
   /** Fields to partition by ie, CUSTOMER, PRODUCT */
   private String[] groupField;
@@ -208,8 +208,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
       }
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "AnalyticQueryMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "AnalyticQueryMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -277,8 +277,9 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
         for ( int j = 0; j < fieldNames.length; j++ ) {
           sbfieldNames.append( "[" + fieldNames[j] + "]" + ( j < fieldNames.length - 1 ? ", " : "" ) );
         }
-        throw new KettleStepException( BaseMessages.getString( PKG, "AnalyticQueryMeta.Exception.SubjectFieldNotFound",
-            getParentStepMeta().getName(), subjectField[i], sbfieldNames.toString() ) );
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "AnalyticQueryMeta.Exception.SubjectFieldNotFound", getParentStepMeta().getName(), subjectField[i],
+            sbfieldNames.toString() ) );
       }
     }
 
@@ -333,8 +334,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "AnalyticQueryMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "AnalyticQueryMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -353,8 +354,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_value_field", valueField[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "AnalyticQueryMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "AnalyticQueryMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -366,13 +367,13 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AnalyticQueryMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "AnalyticQueryMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AnalyticQueryMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "AnalyticQueryMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }

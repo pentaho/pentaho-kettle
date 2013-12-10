@@ -80,14 +80,14 @@ public class MergeJoin extends BaseStep implements StepInterface {
 
       data.oneRowSet = findInputRowSet( infoStreams.get( 0 ).getStepname() );
       if ( data.oneRowSet == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep",
-            infoStreams.get( 0 ).getStepname() ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 0 ).getStepname() ) );
       }
 
       data.twoRowSet = findInputRowSet( infoStreams.get( 1 ).getStepname() );
       if ( data.twoRowSet == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep",
-            infoStreams.get( 1 ).getStepname() ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 1 ).getStepname() ) );
       }
 
       data.one = getRowFrom( data.oneRowSet );
@@ -159,8 +159,8 @@ public class MergeJoin extends BaseStep implements StepInterface {
      * We can stop processing if any of the following is true: a) Both streams are empty b) First stream is empty and
      * join type is INNER or LEFT OUTER c) Second stream is empty and join type is INNER or RIGHT OUTER
      */
-    if ( ( data.one == null && data.two == null ) || ( data.one == null && data.one_optional == false )
-        || ( data.two == null && data.two_optional == false ) ) {
+    if ( ( data.one == null && data.two == null )
+        || ( data.one == null && data.one_optional == false ) || ( data.two == null && data.two_optional == false ) ) {
       // Before we stop processing, we have to make sure that all rows from both input streams are depleted!
       // If we don't do this, the transformation can stall.
       //
@@ -201,8 +201,8 @@ public class MergeJoin extends BaseStep implements StepInterface {
             ( data.one_next == null ) ? -1 : data.oneMeta.compare( data.one, data.one_next, data.keyNrs1, data.keyNrs1 );
         int compare2 =
             ( data.two_next == null ) ? -1 : data.twoMeta.compare( data.two, data.two_next, data.keyNrs2, data.keyNrs2 );
-        if ( compare1 == 0 || compare2 == 0 ) // Duplicate keys
-        {
+        if ( compare1 == 0 || compare2 == 0 ) { // Duplicate keys
+
           if ( data.ones == null ) {
             data.ones = new ArrayList<Object[]>();
           } else {
@@ -214,13 +214,14 @@ public class MergeJoin extends BaseStep implements StepInterface {
             data.twos.clear();
           }
           data.ones.add( data.one );
-          if ( compare1 == 0 ) // First stream has duplicates
-          {
+          if ( compare1 == 0 ) {
+            // First stream has duplicates
+
             data.ones.add( data.one_next );
             for ( ; !isStopped(); ) {
               data.one_next = getRowFrom( data.oneRowSet );
-              if ( 0 != ( ( data.one_next == null ) ? -1 : data.oneMeta.compare( data.one, data.one_next, data.keyNrs1,
-                  data.keyNrs1 ) ) ) {
+              if ( 0 != ( ( data.one_next == null ) ? -1 : data.oneMeta.compare(
+                  data.one, data.one_next, data.keyNrs1, data.keyNrs1 ) ) ) {
                 break;
               }
               data.ones.add( data.one_next );
@@ -230,13 +231,13 @@ public class MergeJoin extends BaseStep implements StepInterface {
             }
           }
           data.twos.add( data.two );
-          if ( compare2 == 0 ) // Second stream has duplicates
-          {
+          if ( compare2 == 0 ) { // Second stream has duplicates
+
             data.twos.add( data.two_next );
             for ( ; !isStopped(); ) {
               data.two_next = getRowFrom( data.twoRowSet );
-              if ( 0 != ( ( data.two_next == null ) ? -1 : data.twoMeta.compare( data.two, data.two_next, data.keyNrs2,
-                  data.keyNrs2 ) ) ) {
+              if ( 0 != ( ( data.two_next == null ) ? -1 : data.twoMeta.compare(
+                  data.two, data.two_next, data.keyNrs2, data.keyNrs2 ) ) ) {
                 break;
               }
               data.twos.add( data.two_next );
@@ -257,8 +258,9 @@ public class MergeJoin extends BaseStep implements StepInterface {
             oneIter.remove();
           }
           data.twos.clear();
-        } else // No duplicates
-        {
+        } else {
+          // No duplicates
+
           Object[] outputRowData = RowDataUtil.addRowData( data.one, data.oneMeta.size(), data.two );
           putRow( data.outputRowMeta, outputRowData );
         }

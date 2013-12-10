@@ -79,8 +79,8 @@ public class AddSequence extends BaseStep implements StepInterface {
       try {
         next = data.getDb().getNextSequenceValue( data.realSchemaName, data.realSequenceName, meta.getValuename() );
       } catch ( KettleDatabaseException dbe ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "AddSequence.Exception.ErrorReadingSequence",
-            data.realSequenceName ), dbe );
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "AddSequence.Exception.ErrorReadingSequence", data.realSequenceName ), dbe );
       }
     } else {
       // This should never happen, but if it does, don't continue!!!
@@ -95,8 +95,8 @@ public class AddSequence extends BaseStep implements StepInterface {
       outputRowData[inputRowMeta.size()] = next;
       return outputRowData;
     } else {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "AddSequence.Exception.CouldNotFindNextValueForSequence" )
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "AddSequence.Exception.CouldNotFindNextValueForSequence" )
           + meta.getValuename() );
     }
   }
@@ -119,16 +119,16 @@ public class AddSequence extends BaseStep implements StepInterface {
     }
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.ReadRow" ) + getLinesRead() + " : "
-          + getInputRowMeta().getString( r ) );
+      logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.ReadRow" )
+          + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
     }
 
     try {
       putRow( data.outputRowMeta, addSequence( getInputRowMeta(), r ) );
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.WriteRow" ) + getLinesWritten() + " : "
-            + getInputRowMeta().getString( r ) );
+        logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.WriteRow" )
+            + getLinesWritten() + " : " + getInputRowMeta().getString( r ) );
       }
       if ( checkFeedback( getLinesRead() ) ) {
         if ( log.isBasic() ) {
@@ -221,8 +221,8 @@ public class AddSequence extends BaseStep implements StepInterface {
             } else {
               // Check whether counter characteristics are the same as a previously
               // defined counter with the same name.
-              if ( ( data.counter.getStart() != data.start ) || ( data.counter.getIncrement() != data.increment )
-                  || ( data.counter.getMaximum() != data.maximum ) ) {
+              if ( ( data.counter.getStart() != data.start )
+                  || ( data.counter.getIncrement() != data.increment ) || ( data.counter.getMaximum() != data.maximum ) ) {
                 logError( BaseMessages.getString( PKG, "AddSequence.Log.CountersWithDifferentCharacteristics", data
                     .getLookup() ) );
                 return false;

@@ -45,7 +45,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 /**
  * Tests for unicode support in CsvInput step
- *
+ * 
  * @author Pavel Sakun
  * @see CsvInput
  */
@@ -88,15 +88,15 @@ public class CsvInputUnicodeTest {
     doTest( UTF8, UTF8, TEST_DATA );
   }
 
-  private void doTest( final String fileEncoding, final String stepEncoding, final String testData )
-    throws Exception {
+  private void doTest( final String fileEncoding, final String stepEncoding, final String testData ) throws Exception {
     String testFilePath = createTestFile( fileEncoding, testData );
 
     CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding );
     CsvInputData data = new CsvInputData();
 
     CsvInput csvInput =
-        new CsvInput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        new CsvInput(
+            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
 
     csvInput.init( meta, data );

@@ -76,7 +76,8 @@ public class KettleDialog extends SwtDialog {
   @Override
   public void hide() {
 
-    if ( closing || dialog.getMainArea().isDisposed() || getParentShell( getParent() ).isDisposed()
+    if ( closing
+        || dialog.getMainArea().isDisposed() || getParentShell( getParent() ).isDisposed()
         || ( getParent() instanceof SwtDialog && ( (SwtDialog) getParent() ).isDisposing() ) ) {
       return;
     }

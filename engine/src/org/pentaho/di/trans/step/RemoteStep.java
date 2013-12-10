@@ -211,7 +211,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
   @Override
   public String toString() {
-    return hostname + ":" + port + " (" + sourceSlaveServerName + "/" + sourceStep + "." + sourceStepCopyNr + " --> "
+    return hostname
+        + ":" + port + " (" + sourceSlaveServerName + "/" + sourceStep + "." + sourceStepCopyNr + " --> "
         + targetSlaveServerName + "/" + targetStep + "." + targetStepCopyNr + ")"; // "  -  "+sourceStep+"."+sourceStepCopyNr+" --> "+targetStep+"."+targetStepCopyNr+")";
   }
 
@@ -332,8 +333,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
           }
           outputStream = new DataOutputStream( bufferedOutputStream );
 
-          baseStep.logBasic( "Server socket accepted for port [" + port + "], reading from server "
-              + targetSlaveServerName );
+          baseStep.logBasic( "Server socket accepted for port ["
+              + port + "], reading from server " + targetSlaveServerName );
 
           // get a row of data...
           //
@@ -499,15 +500,15 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
     KettleException lastException = null;
 
     // // timeout with retry until connected
-    while ( !connected && ( TIMEOUT_IN_SECONDS > ( System.currentTimeMillis() - startTime ) / 1000 )
-        && !baseStep.isStopped() ) {
+    while ( !connected
+        && ( TIMEOUT_IN_SECONDS > ( System.currentTimeMillis() - startTime ) / 1000 ) && !baseStep.isStopped() ) {
       try {
         socket = new Socket();
         socket.setReuseAddress( true );
 
         baseStep.logDetailed( "Step variable MASTER_HOST : [" + baseStep.getVariable( "MASTER_HOST" ) + "]" );
-        baseStep.logDetailed( "Opening client (reader) socket to server [" + Const.NVL( realHostname, "" ) + ":" + port
-            + "]" );
+        baseStep.logDetailed( "Opening client (reader) socket to server ["
+            + Const.NVL( realHostname, "" ) + ":" + port + "]" );
         socket.connect( new InetSocketAddress( realHostname, portNumber ), 5000 );
 
         connected = true;
@@ -557,13 +558,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
       throw lastException;
     } else {
       if ( inputStream == null ) {
-        throw new KettleException( "Unable to connect to the SocketWriter in the " + TIMEOUT_IN_SECONDS
-            + "s timeout period." );
+        throw new KettleException( "Unable to connect to the SocketWriter in the "
+            + TIMEOUT_IN_SECONDS + "s timeout period." );
       }
     }
 
-    baseStep.logDetailed( "Opened connection to server socket to read rows from remote step on server " + realHostname
-        + " port " + portNumber + " - Local port=" + socket.getLocalPort() );
+    baseStep.logDetailed( "Opened connection to server socket to read rows from remote step on server "
+        + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort() );
 
     // Create a thread to take care of the reading from the client socket.
     // The rows read will be put in a RowSet buffer.

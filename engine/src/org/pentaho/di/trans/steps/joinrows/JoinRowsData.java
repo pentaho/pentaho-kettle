@@ -65,9 +65,6 @@ public class JoinRowsData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public JoinRowsData() {
     super();
   }

@@ -150,8 +150,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
       try {
         this.repositoryDirectory =
-            UIObjectRegistry.getInstance().constructUIRepositoryDirectory( repository.loadRepositoryDirectoryTree(),
-                null, repository );
+            UIObjectRegistry.getInstance().constructUIRepositoryDirectory(
+                repository.loadRepositoryDirectoryTree(), null, repository );
       } catch ( UIObjectCreationException uoe ) {
         this.repositoryDirectory =
             new UIRepositoryDirectory( repository.loadRepositoryDirectoryTree(), null, repository );
@@ -629,12 +629,13 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         // Check for overwriting
         for ( UIRepositoryObject newChild : moveList ) {
           for ( UIRepositoryObject currChild : targetDirectory.getRepositoryObjects() ) {
-            if ( ( currChild instanceof UIRepositoryDirectory ) && ( newChild instanceof UIRepositoryDirectory )
+            if ( ( currChild instanceof UIRepositoryDirectory )
+                && ( newChild instanceof UIRepositoryDirectory )
                 && ( currChild.getName().equalsIgnoreCase( newChild.getName() ) ) ) {
               messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
               messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-              messageBox.setMessage( BaseMessages.getString( PKG,
-                  "BrowseController.UnableToMove.DirectoryAlreadyExists", currChild.getPath() ) );
+              messageBox.setMessage( BaseMessages.getString(
+                  PKG, "BrowseController.UnableToMove.DirectoryAlreadyExists", currChild.getPath() ) );
               messageBox.open();
               result = false;
               break;
@@ -786,8 +787,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
       // Add children Listener
       if ( this.repositoryDirectories != null && this.repositoryDirectories.size() > 0 ) {
-        this.repositoryDirectories.get( 0 ).getRepositoryObjects().addPropertyChangeListener( "children",
-            fileChildrenListener );
+        this.repositoryDirectories.get( 0 ).getRepositoryObjects().addPropertyChangeListener(
+            "children", fileChildrenListener );
 
       }
     } catch ( KettleException e ) {

@@ -286,8 +286,8 @@ public class SwingDirectGC implements GCInterface {
           int rgb = bi.getRGB( x, y );
           gc.setColor( new Color( rgb ) );
           gc.setStroke( new BasicStroke( 1.0f ) );
-          gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY + yOffset
-              + y );
+          gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY
+              + yOffset + y );
           // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y,
           // locationX+xOffset+x+1, locationY+yOffset+y);
           // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y+1,
@@ -565,8 +565,8 @@ public class SwingDirectGC implements GCInterface {
     gc.fillRect( x + xOffset, y + yOffset, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
     BufferedImage im = stepImages.get( steptype );
-    if ( im != null ) // Draw the icon!
-    {
+    if ( im != null ) { // Draw the icon!
+
       drawPixelatedImage( im, x + xOffset, y + xOffset );
 
       // gc.drawImage(im, x+xOffset, y+yOffset, observer);

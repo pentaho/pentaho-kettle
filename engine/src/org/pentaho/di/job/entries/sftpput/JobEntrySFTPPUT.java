@@ -78,9 +78,9 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
   private int afterFTPS;
 
   public static final String[] afterFTPSDesc = new String[] {
-    BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.DoNothing.Label" ),
-    BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Delete.Label" ),
-    BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Move.Label" ), };
+      BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.DoNothing.Label" ),
+      BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Delete.Label" ),
+      BaseMessages.getString( PKG, "JobSFTPPUT.AfterSFTP.Move.Label" ), };
   public static final String[] afterFTPSCode = new String[] { "nothing", "delete", "move" };
 
   public static final int AFTER_FTPSPUT_NOTHING = 0;
@@ -317,7 +317,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sftpdirectory", sftpDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localdirectory", localDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -344,8 +345,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "successWhenNoFile", successWhenNoFile );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'SFTPPUT' to the repository for id_job=" + id_job,
-          dbe );
+      throw new KettleException(
+          "Unable to load job entry of type 'SFTPPUT' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -765,7 +766,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
       // Create sftp client to host ...
       sftpclient =
-          new SFTPClient( InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
+          new SFTPClient(
+              InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
               realKeyFilename, realPassPhrase );
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Log.OpenedConnection", realServerName, ""
@@ -779,8 +781,9 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       String realProxyHost = environmentSubstitute( getProxyHost() );
       if ( !Const.isEmpty( realProxyHost ) ) {
         // Set proxy
-        sftpclient.setProxy( realProxyHost, environmentSubstitute( getProxyPort() ),
-            environmentSubstitute( getProxyUsername() ), environmentSubstitute( getProxyPassword() ), getProxyType() );
+        sftpclient.setProxy(
+            realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
+            environmentSubstitute( getProxyPassword() ), getProxyType() );
       }
 
       // login to ftp host ...
@@ -793,8 +796,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         boolean existfolder = sftpclient.folderExists( realSftpDirString );
         if ( !existfolder ) {
           if ( !isCreateRemoteFolder() ) {
-            throw new KettleException( BaseMessages.getString( PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder",
-                realSftpDirString ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder", realSftpDirString ) );
           }
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder", realSftpDirString ) );
@@ -893,8 +896,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
                 FileObject destination = null;
                 try {
                   destination =
-                      KettleVFS.getFileObject( realDestinationFolder + Const.FILE_SEPARATOR
-                          + myFile.getName().getBaseName(), this );
+                      KettleVFS.getFileObject( realDestinationFolder
+                          + Const.FILE_SEPARATOR + myFile.getName().getBaseName(), this );
                   myFile.moveTo( destination );
                   if ( log.isDetailed() ) {
                     logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Log.FileMoved", myFile, destination ) );
@@ -912,8 +915,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
                       new ResultFile( ResultFile.FILE_TYPE_GENERAL, myFile, parentJob.getJobname(), toString() );
                   result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   if ( log.isDetailed() ) {
-                    logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Log.FilenameAddedToResultFilenames",
-                        localFilename ) );
+                    logDetailed( BaseMessages.getString(
+                        PKG, "JobSFTPPUT.Log.FilenameAddedToResultFilenames", localFilename ) );
                   }
                 }
                 break;
@@ -930,8 +933,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       result.setResult( true );
       // JKU: no idea if this is needed...!
       // result.setNrFilesRetrieved(filesRetrieved);
-    } // end try
-    catch ( Exception e ) {
+    } catch ( Exception e ) {
       result.setNrErrors( 1 );
       logError( BaseMessages.getString( PKG, "JobSFTPPUT.Exception", e.getMessage() ) );
       logError( Const.getStackTracker( e ) );
@@ -969,8 +971,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+        this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );

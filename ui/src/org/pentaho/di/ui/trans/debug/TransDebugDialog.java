@@ -159,14 +159,17 @@ public class TransDebugDialog extends Dialog {
     // Add the list of steps
     //
     ColumnInfo[] stepColumns =
-        { new ColumnInfo( BaseMessages.getString( PKG, "TransDebugDialog.Column.StepName" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // name, non-numeric, readonly
+        { new ColumnInfo(
+            BaseMessages.getString( PKG, "TransDebugDialog.Column.StepName" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // name,
+                                                                                                                           // non-numeric,
+                                                                                                                           // readonly
         };
 
     int nrSteps = transDebugMeta.getTransMeta().nrSteps();
     wSteps =
-        new TableView( transDebugMeta.getTransMeta(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, stepColumns,
-            nrSteps, true, null, props );
+        new TableView(
+            transDebugMeta.getTransMeta(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, stepColumns, nrSteps,
+            true, null, props );
     FormData fdSteps = new FormData();
     fdSteps.left = new FormAttachment( 0, 0 );
     fdSteps.right = new FormAttachment( middle, -margin );
@@ -336,8 +339,9 @@ public class TransDebugDialog extends Dialog {
     // Now that we have all the information to display, let's put some widgets on our composite.
     // Before we go there, let's clear everything that was on there...
     //
-    for ( Control control : wComposite.getChildren() )
+    for ( Control control : wComposite.getChildren() ) {
       control.dispose();
+    }
     wComposite.layout( true, true );
 
     int[] selectionIndices = wSteps.table.getSelectionIndices();

@@ -246,13 +246,13 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       boolean error_found = false;
@@ -274,13 +274,13 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "FieldsChangeSequenceMeta.CheckResult.AllFieldsFound" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "FieldsChangeSequenceMeta.CheckResult.AllFieldsFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "FieldsChangeSequenceMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+                  PKG, "FieldsChangeSequenceMeta.CheckResult.NoFieldsEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -290,13 +290,13 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

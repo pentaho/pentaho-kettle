@@ -64,8 +64,8 @@ import org.w3c.dom.Node;
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   private static final String NO = "N";
@@ -78,10 +78,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static final String[] type_trim_code = { "none", "left", "right", "both" };
 
-  public static final String[] type_trim_desc = { BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.None" ),
-    BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Left" ),
-    BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Right" ),
-    BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Both" ) };
+  public static final String[] type_trim_desc = {
+      BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.None" ),
+      BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Left" ),
+      BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Right" ),
+      BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Both" ) };
 
   public static final String STRING_SEPARATOR = " \t --> ";
 

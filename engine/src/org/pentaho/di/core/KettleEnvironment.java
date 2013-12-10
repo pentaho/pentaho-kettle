@@ -136,8 +136,8 @@ public class KettleEnvironment {
         try {
           s.onEnvironmentShutdown();
         } catch ( Throwable t ) {
-          System.err.println( BaseMessages.getString( PKG,
-              "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
+          System.err.println( BaseMessages.getString(
+              PKG, "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
           t.printStackTrace();
         }
       }

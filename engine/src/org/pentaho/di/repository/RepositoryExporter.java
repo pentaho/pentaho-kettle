@@ -312,8 +312,8 @@ public class RepositoryExporter implements IRepositoryExporter {
             TransMeta transMeta = repository.loadTransformation( trans[i], repdir, null, true, null ); // reads last
                                                                                                        // version
             transMeta.setRepository( repository );
-            System.out.println( "Loading/Exporting transformation [" + repdir.getPath() + " : " + trans[i] + "]  ("
-                + transMeta.getRepositoryDirectory().getPath() + ")" );
+            System.out.println( "Loading/Exporting transformation ["
+                + repdir.getPath() + " : " + trans[i] + "]  (" + transMeta.getRepositoryDirectory().getPath() + ")" );
             if ( monitor != null ) {
               monitor.subTask( "Exporting transformation [" + trans[i] + "]" );
             }
@@ -333,8 +333,8 @@ public class RepositoryExporter implements IRepositoryExporter {
             // In case of a validation error against the rules, bail out.
             //
             if ( continueOnError ) {
-              log.logError( "An error occurred reading transformation [" + trans[i] + "] from directory [" + repdir
-                  + "] : ", ke );
+              log.logError( "An error occurred reading transformation ["
+                  + trans[i] + "] from directory [" + repdir + "] : ", ke );
             } else {
               throw ke;
             }

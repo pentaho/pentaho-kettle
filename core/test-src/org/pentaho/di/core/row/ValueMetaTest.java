@@ -45,13 +45,15 @@ public class ValueMetaTest extends TestCase {
    * @return true if equal
    */
   private boolean byteCompare( byte[] b1, byte[] b2 ) {
-    if ( b1.length != b2.length )
+    if ( b1.length != b2.length ) {
       return false;
+    }
 
     int idx = 0;
     while ( idx < b1.length ) {
-      if ( b1[idx] != b2[idx] )
+      if ( b1[idx] != b2[idx] ) {
         return false;
+      }
       idx++;
     }
     return true;

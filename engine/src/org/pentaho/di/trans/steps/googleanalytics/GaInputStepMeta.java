@@ -362,11 +362,11 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuffer retval = new StringBuffer( 800 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "user", gaEmail ) );
-    retval.append( "    " )
-        .append( XMLHandler.addTagValue( "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) ) );
+    retval
+        .append( "    " ).append( XMLHandler.addTagValue( "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "appName", gaAppName ) );
-    retval.append( "    " )
-        .append( XMLHandler.addTagValue( "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) ) );
+    retval
+        .append( "    " ).append( XMLHandler.addTagValue( "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "profileName", gaProfileName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "profileTableId", gaProfileTableId ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "customTableId", gaCustomTableId ) );
@@ -416,8 +416,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       filters = XMLHandler.getTagValue( stepnode, "filters" );
       sort = XMLHandler.getTagValue( stepnode, "sort" );
       useSegment =
-          XMLHandler.getTagValue( stepnode, "useSegment" ) == null ? true : getBooleanAttributeFromNode( stepnode,
-              "useSegment" ); // assume true for non-present
+          XMLHandler.getTagValue( stepnode, "useSegment" ) == null ? true : getBooleanAttributeFromNode(
+              stepnode, "useSegment" ); // assume true for non-present
       useCustomSegment = getBooleanAttributeFromNode( stepnode, "useCustomSegment" );
       customSegment = XMLHandler.getTagValue( stepnode, "customSegment" );
       segmentId = XMLHandler.getTagValue( stepnode, "segmentId" );
@@ -542,26 +542,26 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GoogleAnalytics.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GoogleAnalytics.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GoogleAnalytics.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GoogleAnalytics.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
 

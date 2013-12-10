@@ -55,8 +55,8 @@ public class Delay extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // get row, set busy!
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }

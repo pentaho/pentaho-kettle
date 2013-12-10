@@ -393,7 +393,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       socksProxyPort = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_port" );
       socksProxyUsername = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_username" );
       socksProxyPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "socksproxy_password" ) );
+          Encr
+              .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "socksproxy_password" ) );
       SifFileExists = rep.getJobEntryAttributeString( id_jobentry, "ifFileExists" );
       if ( Const.isEmpty( SifFileExists ) ) {
         ifFileExists = ifFileExistsSkip;
@@ -421,7 +422,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute( id_job, getObjectId(), "port", port );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "ftpdirectory", ftpDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "targetdirectory", targetDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -912,7 +914,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       ftpclient = initFTPClient();
       String realServername = environmentSubstitute( serverName );
       String realServerPort = environmentSubstitute( port );
-      ftpclient.setRemoteAddr( getInetAddress(realServername ) );
+      ftpclient.setRemoteAddr( getInetAddress( realServername ) );
       if ( !Const.isEmpty( realServerPort ) ) {
         ftpclient.setRemotePort( Const.toInt( realServerPort, 21 ) );
       }
@@ -930,7 +932,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           ftpclient.setRemotePort( port );
         }
       } else {
-        ftpclient.setRemoteAddr( getInetAddress(realServername ) );
+        ftpclient.setRemoteAddr( getInetAddress( realServername ) );
 
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.OpenedConnectionTo", realServername ) );
@@ -966,18 +968,19 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         if ( !Const.isEmpty( socksProxyPort ) ) {
           FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
         } else {
-          throw new FTPException( BaseMessages.getString( PKG, "JobEntryFTP.SocksProxy.PortMissingException",
-              environmentSubstitute( socksProxyHost ), getName() ) );
+          throw new FTPException( BaseMessages.getString(
+              PKG, "JobEntryFTP.SocksProxy.PortMissingException", environmentSubstitute( socksProxyHost ), getName() ) );
         }
         // then if we have authentication information
         if ( !Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
-          FTPClient.initSOCKSAuthentication( environmentSubstitute( socksProxyUsername ),
-              environmentSubstitute( socksProxyPassword ) );
-        } else if ( !Const.isEmpty( socksProxyUsername ) && Const.isEmpty( socksProxyPassword )
-            || Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
+          FTPClient.initSOCKSAuthentication(
+              environmentSubstitute( socksProxyUsername ), environmentSubstitute( socksProxyPassword ) );
+        } else if ( !Const.isEmpty( socksProxyUsername )
+            && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
+            && !Const.isEmpty( socksProxyPassword ) ) {
           // we have a username without a password or vica versa
-          throw new FTPException( BaseMessages.getString( PKG, "JobEntryFTP.SocksProxy.IncompleteCredentials",
-              environmentSubstitute( socksProxyHost ), getName() ) );
+          throw new FTPException( BaseMessages.getString(
+              PKG, "JobEntryFTP.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ), getName() ) );
         }
       }
 
@@ -985,7 +988,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       ftpclient.connect();
 
       String realUsername =
-          environmentSubstitute( userName ) + ( !Const.isEmpty( proxyHost ) ? "@" + realServername : "" )
+          environmentSubstitute( userName )
+              + ( !Const.isEmpty( proxyHost ) ? "@" + realServername : "" )
               + ( !Const.isEmpty( proxyUsername ) ? " " + environmentSubstitute( proxyUsername ) : "" );
 
       String realPassword =
@@ -1177,8 +1181,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
     if ( ( !onlyGettingNewFiles ) || ( onlyGettingNewFiles && needsDownload( targetFilename ) ) ) {
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobEntryFTP.GettingFile", filename,
-            environmentSubstitute( targetDirectory ) ) );
+        logDetailed( BaseMessages.getString(
+            PKG, "JobEntryFTP.GettingFile", filename, environmentSubstitute( targetDirectory ) ) );
       }
       ftpclient.get( targetFilename, filename );
 
@@ -1393,8 +1397,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         }
 
         targetFilename =
-            targetFilename.substring( 0, lastindexOfDot ) + StringUtil.getFormattedDateTimeNow( true )
-                + targetFilename.substring( lastindexOfDot, lenstring );
+            targetFilename.substring( 0, lastindexOfDot )
+                + StringUtil.getFormattedDateTimeNow( true ) + targetFilename.substring( lastindexOfDot, lenstring );
 
         return true;
       } else if ( ifFileExists == ifFileExistsFail ) {
@@ -1428,8 +1432,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "targetDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+        this, "targetDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
   }

@@ -260,8 +260,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
     // queryOnlyOnChange ?
     wlqueryOnlyOnChange = new Label( shell, SWT.RIGHT );
     wlqueryOnlyOnChange.setText( BaseMessages.getString( PKG, "DynamicSQLRowDialog.queryOnlyOnChangejoin.Label" ) );
-    wlqueryOnlyOnChange.setToolTipText( BaseMessages.getString( PKG,
-        "DynamicSQLRowDialog.queryOnlyOnChangejoin.Tooltip" ) );
+    wlqueryOnlyOnChange.setToolTipText( BaseMessages.getString(
+        PKG, "DynamicSQLRowDialog.queryOnlyOnChangejoin.Tooltip" ) );
     props.setLook( wlqueryOnlyOnChange );
     fdlqueryOnlyOnChange = new FormData();
     fdlqueryOnlyOnChange.left = new FormAttachment( 0, 0 );
@@ -487,8 +487,9 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
           wSQLFieldName.setText( sqlfield );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

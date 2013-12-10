@@ -197,8 +197,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     setUsingAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_auth" ) ) );
     setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_secure_auth" ) ) );
     setAuthenticationUser( XMLHandler.getTagValue( stepnode, "auth_user" ) );
-    setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode,
-        "auth_password" ) ) );
+    setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(
+        stepnode, "auth_password" ) ) );
     setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "only_comment" ) ) );
     setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_HTML" ) ) );
     setUsePriority( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_Priority" ) ) );
@@ -889,43 +889,43 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.NotReceivingFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
 
     // Servername
     if ( Const.isEmpty( server ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.ServerEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.ServerEmpty" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.ServerOk" ),
-              stepMeta );
+          new CheckResult(
+              CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.ServerOk" ), stepMeta );
       remarks.add( cr );
       // is the field exists?
       if ( prev.indexOfValue( transMeta.environmentSubstitute( server ) ) < 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.ServerFieldNotFound", server ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+                PKG, "MailMeta.CheckResult.ServerFieldNotFound", server ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -933,56 +933,56 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     // port number
     if ( Const.isEmpty( port ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.PortEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.PortEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.PortOk" ),
-              stepMeta );
+          new CheckResult(
+              CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.PortOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // reply address
     if ( Const.isEmpty( replyAddress ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.ReplayAddressEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.ReplayAddressEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.ReplayAddressOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.ReplayAddressOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // Destination
     if ( Const.isEmpty( destination ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.DestinationEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.DestinationEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.DestinationOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.DestinationOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // Subject
     if ( Const.isEmpty( subject ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.SubjectEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.SubjectEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.SubjectOk" ),
-              stepMeta );
+          new CheckResult(
+              CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.SubjectOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // Comment
     if ( Const.isEmpty( comment ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.CommentEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.CommentEmpty" ), stepMeta );
     } else {
       cr =
           new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages
@@ -994,12 +994,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       // Dynamic Filename field
       if ( Const.isEmpty( dynamicFieldname ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.DynamicFilenameFieldEmpty" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "MailMeta.CheckResult.DynamicFilenameFieldEmpty" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.DynamicFilenameFieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "MailMeta.CheckResult.DynamicFilenameFieldOk" ), stepMeta );
       }
       remarks.add( cr );
 
@@ -1007,12 +1007,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       // static filename
       if ( Const.isEmpty( sourcefilefoldername ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.SourceFilenameEmpty" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "MailMeta.CheckResult.SourceFilenameEmpty" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.SourceFilenameOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "MailMeta.CheckResult.SourceFilenameOk" ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -1022,12 +1022,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
         // dynamic zipfilename
         if ( Const.isEmpty( getDynamicZipFilenameField() ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.DynamicZipfilenameEmpty" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "MailMeta.CheckResult.DynamicZipfilenameEmpty" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.DynamicZipfilenameOK" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "MailMeta.CheckResult.DynamicZipfilenameOK" ), stepMeta );
         }
         remarks.add( cr );
 
@@ -1035,12 +1035,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
         // static zipfilename
         if ( Const.isEmpty( zipFilename ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.ZipfilenameEmpty" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "MailMeta.CheckResult.ZipfilenameEmpty" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.ZipfilenameOk" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "MailMeta.CheckResult.ZipfilenameOk" ), stepMeta );
         }
         remarks.add( cr );
       }

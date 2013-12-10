@@ -32,9 +32,6 @@ public class ProcessResult {
   private String errorStream;
   private long exitValue;
 
-  /**
-	 * 
-	 */
   public ProcessResult() {
     super();
     this.outputStream = null;

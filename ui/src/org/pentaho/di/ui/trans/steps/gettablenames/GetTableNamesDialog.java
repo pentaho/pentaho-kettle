@@ -523,8 +523,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     fdlisSystemObjectField.top = new FormAttachment( wObjectTypeField, margin );
     wlisSystemObjectField.setLayoutData( fdlisSystemObjectField );
     wisSystemObjectField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wisSystemObjectField.setToolTipText( BaseMessages.getString( PKG,
-        "GetTableNamesDialog.isSystemObjectFieldName.Tooltip" ) );
+    wisSystemObjectField.setToolTipText( BaseMessages.getString(
+        PKG, "GetTableNamesDialog.isSystemObjectFieldName.Tooltip" ) );
     props.setLook( wisSystemObjectField );
     wisSystemObjectField.addModifyListener( lsMod );
     fdisSystemObjectField = new FormData();
@@ -716,8 +716,9 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
           wSchemaField.setText( value );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotpreviousfields = true;
     }
@@ -791,14 +792,14 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "GetTableNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "GetTableNamesDialog.PreviewSize.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "GetTableNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+            PKG, "GetTableNamesDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       if ( !progressDialog.isCancelled() ) {
@@ -814,8 +815,9 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
         }
 
         PreviewRowsDialog prd =
-            new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
+            new PreviewRowsDialog(
+                shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
+                    .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
                 loggingText );
         prd.open();
       }

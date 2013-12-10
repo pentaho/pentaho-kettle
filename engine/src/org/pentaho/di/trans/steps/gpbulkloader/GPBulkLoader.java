@@ -433,8 +433,9 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
+
         setOutputDone();
 
         if ( !preview ) {
@@ -551,8 +552,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
-            logError( "Error deleting data file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(),
-                ex );
+            logError(
+                "Error deleting data file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
           }
         }
       }

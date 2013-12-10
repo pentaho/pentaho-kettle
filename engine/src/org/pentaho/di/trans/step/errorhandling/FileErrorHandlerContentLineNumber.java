@@ -44,8 +44,8 @@ public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler 
       getWriter( filePart ).write( String.valueOf( lineNr ) );
       getWriter( filePart ).write( Const.CR );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FileErrorHandlerContentLineNumber.Exception.CouldNotCreateWriteLine" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FileErrorHandlerContentLineNumber.Exception.CouldNotCreateWriteLine" )
           + lineNr, e );
 
     }

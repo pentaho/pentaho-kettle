@@ -93,9 +93,6 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
   public String fileName;
 
-  /**
-	 * 
-	 */
   public TextFileOutputData() {
     super();
 

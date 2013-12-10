@@ -74,8 +74,9 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntrySQL.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobSQL.Filetype.Sql" ),
-    BaseMessages.getString( PKG, "JobSQL.Filetype.Text" ), BaseMessages.getString( PKG, "JobSQL.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] {
+      BaseMessages.getString( PKG, "JobSQL.Filetype.Sql" ), BaseMessages.getString( PKG, "JobSQL.Filetype.Text" ),
+      BaseMessages.getString( PKG, "JobSQL.Filetype.All" ) };
 
   private Label wlName;
 

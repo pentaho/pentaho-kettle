@@ -45,15 +45,15 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
   }
 
   public RowMetaAndData getUser( ObjectId id_user ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_USER ),
-        quote( KettleDatabaseRepository.FIELD_USER_ID_USER ), id_user );
+    return repository.connectionDelegate.getOneRow(
+        quoteTable( KettleDatabaseRepository.TABLE_R_USER ), quote( KettleDatabaseRepository.FIELD_USER_ID_USER ),
+        id_user );
   }
 
   public synchronized ObjectId getUserID( String login ) throws KettleException {
-    return repository.connectionDelegate
-        .getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_USER ),
-            quote( KettleDatabaseRepository.FIELD_USER_ID_USER ), quote( KettleDatabaseRepository.FIELD_USER_LOGIN ),
-            login );
+    return repository.connectionDelegate.getIDWithValue(
+        quoteTable( KettleDatabaseRepository.TABLE_R_USER ), quote( KettleDatabaseRepository.FIELD_USER_ID_USER ),
+        quote( KettleDatabaseRepository.FIELD_USER_LOGIN ), login );
   }
 
   // Load user with login from repository, don't verify password...
@@ -163,14 +163,15 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 
   public synchronized void renameUser( ObjectId id_user, String newname ) throws KettleException {
     String sql =
-        "UPDATE " + quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " SET "
+        "UPDATE "
+            + quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " SET "
             + quote( KettleDatabaseRepository.FIELD_USER_NAME ) + " = ? WHERE "
             + quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " = ?";
 
     RowMetaAndData table = new RowMetaAndData();
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING ), newname );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER ),
-        id_user );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER ), id_user );
 
     repository.connectionDelegate.getDatabase().execStatement( sql, table.getRowMeta(), table.getData() );
   }

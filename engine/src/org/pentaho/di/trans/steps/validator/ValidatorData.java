@@ -63,9 +63,6 @@ public class ValidatorData extends BaseStepData implements StepDataInterface {
   public String[] regularExpression;
   public String[] regularExpressionNotAllowed;
 
-  /**
-	 * 
-	 */
   public ValidatorData() {
     super();
   }

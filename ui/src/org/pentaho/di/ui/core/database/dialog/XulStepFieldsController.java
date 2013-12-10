@@ -83,8 +83,8 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
       };
 
       this.acceptButtonBinding =
-          this.bf.createBinding( this.stepFieldsTree, "selectedItem", "stepFieldsDialog_accept", "disabled",
-              isDisabledConvertor );
+          this.bf.createBinding(
+              this.stepFieldsTree, "selectedItem", "stepFieldsDialog_accept", "disabled", isDisabledConvertor );
     }
     fireBindings();
 

@@ -144,8 +144,8 @@ public class ErrorDialog extends Dialog {
     final StringBuffer details = new StringBuffer();
 
     if ( exception != null ) {
-      if ( exception instanceof KettleException ) // Normal error
-      {
+      if ( exception instanceof KettleException ) {
+        // Normal error
         KettleException ke = (KettleException) exception;
         Throwable cause = ke.getCause();
         if ( cause != null ) {
@@ -170,8 +170,9 @@ public class ErrorDialog extends Dialog {
             }
           }
         }
-      } else // Error from somewhere else...
-      {
+      } else {
+        // Error from somewhere else...
+
         if ( exception.getMessage() == null ) {
           text.append( message );
         } else {

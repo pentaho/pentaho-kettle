@@ -155,8 +155,8 @@ public class SharedObjects {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "SharedOjects.Readingfile.UnexpectedError",
-          sharedObjectsFile ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SharedOjects.Readingfile.UnexpectedError", sharedObjectsFile ), e );
     }
   }
 

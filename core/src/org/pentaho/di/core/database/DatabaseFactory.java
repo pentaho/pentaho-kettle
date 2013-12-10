@@ -39,8 +39,8 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Database factory",
-      LoggingObjectType.GENERAL, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Database factory", LoggingObjectType.GENERAL, null );
 
   public DatabaseFactory() {
   }

@@ -278,8 +278,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       columns.add( colinf ); // keep for later
 
       TableView tableView =
-          new TableView( jobGraph.getManagedObject(), sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, colinf,
-              FieldsRows, true, // readonly!
+          new TableView(
+              jobGraph.getManagedObject(), sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, colinf, FieldsRows,
+              true, // readonly!
               null, spoon.props );
       wFields.add( tableView );
 
@@ -339,9 +340,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( jobHistoryComposite.getShell(), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( jobHistoryComposite.getShell(), BaseMessages.getString(
+          PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -365,8 +366,10 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
 
       MessageBox mb = new MessageBox( jobGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-      mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message",
-          schemaTable ) ); // Nothing found that matches your criteria
+      mb.setMessage( BaseMessages.getString(
+          PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) ); // Nothing found that
+                                                                                                  // matches your
+                                                                                                  // criteria
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) ); // Sorry!
       if ( mb.open() == SWT.YES ) {
         Database database = new Database( loggingObject, databaseMeta );
@@ -374,9 +377,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           database.connect();
           database.truncateTable( schemaTable );
         } catch ( Exception e ) {
-          new ErrorDialog( jobGraph.getShell(), BaseMessages.getString( PKG,
-              "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString( PKG,
-              "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
+          new ErrorDialog( jobGraph.getShell(), BaseMessages.getString(
+              PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString(
+              PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
         } finally {
           if ( database != null ) {
             database.disconnect();
@@ -420,16 +423,17 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
                 databaseMeta.getQuotedSchemaTableCombination( jeLogTable.getActualSchemaName(), jeLogTable
                     .getActualTableName() );
             String sql =
-                "SELECT * FROM " + schemaTable + " WHERE "
-                    + databaseMeta.quoteField( jeLogTable.getKeyField().getFieldName() ) + " = " + batchId;
+                "SELECT * FROM "
+                    + schemaTable + " WHERE " + databaseMeta.quoteField( jeLogTable.getKeyField().getFieldName() )
+                    + " = " + batchId;
 
             List<Object[]> rows = db.getRows( sql, 0 );
             RowMetaInterface rowMeta = db.getReturnRowMeta();
             results = new ArrayList<JobEntryCopyResult>();
 
             int jobEntryNameIndex =
-                rowMeta.indexOfValue( jeLogTable.findField( JobEntryLogTable.ID.JOBENTRYNAME.toString() )
-                    .getFieldName() );
+                rowMeta.indexOfValue( jeLogTable
+                    .findField( JobEntryLogTable.ID.JOBENTRYNAME.toString() ).getFieldName() );
             int jobEntryResultIndex =
                 rowMeta.indexOfValue( jeLogTable.findField( JobEntryLogTable.ID.RESULT.toString() ).getFieldName() );
             int jobEntryErrorsIndex =
@@ -454,9 +458,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
           gotResults = true;
         } catch ( Exception e ) {
-          new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG,
-              "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Text" ), BaseMessages.getString(
-              PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Message" ), e );
+          new ErrorDialog( spoon.getShell(), BaseMessages.getString(
+              PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Text" ), BaseMessages
+              .getString( PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Message" ), e );
 
         }
       } else {
@@ -502,8 +506,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       // Present all job entries to the user.
       //
       for ( JobEntryCopyResult result : results ) {
-        System.out.println( "Job entry copy result --  Name=" + result.getJobEntryName() + ", result="
-            + result.getResult() + ", errors=" + result.getErrors() + ", nr=" + result.getCopyNr() );
+        System.out.println( "Job entry copy result --  Name="
+            + result.getJobEntryName() + ", result=" + result.getResult() + ", errors=" + result.getErrors() + ", nr="
+            + result.getCopyNr() );
       }
 
     }

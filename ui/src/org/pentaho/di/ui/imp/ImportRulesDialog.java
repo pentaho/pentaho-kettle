@@ -228,8 +228,9 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
       swtToolbar.layout( true, true );
     } catch ( Throwable t ) {
       LogChannel.GENERAL.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title" ),
-          BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ),
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title" ), BaseMessages
+              .getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ),
           new Exception( t ) );
     }
   }
@@ -322,8 +323,9 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
   protected void exportRules() {
     FileDialog dialog = new FileDialog( shell, SWT.SAVE );
     dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
-    dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-      BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+    dialog.setFilterNames( new String[] {
+        BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
     if ( dialog.open() != null ) {
       String filename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
 
@@ -361,8 +363,9 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
     FileDialog dialog = new FileDialog( shell, SWT.OPEN );
     dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
-    dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-      BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+    dialog.setFilterNames( new String[] {
+        BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
     if ( dialog.open() != null ) {
       String filename = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
 
@@ -376,8 +379,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
         getCompositesData();
 
       } catch ( Exception e ) {
-        new ErrorDialog( shell, "Error",
-            "There was an error during the import of the import rules file, verify the XML format.", e );
+        new ErrorDialog(
+            shell, "Error", "There was an error during the import of the import rules file, verify the XML format.", e );
       }
 
     }

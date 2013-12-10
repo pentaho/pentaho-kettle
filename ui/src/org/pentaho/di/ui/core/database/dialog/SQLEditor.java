@@ -81,8 +81,8 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 public class SQLEditor {
   private static Class<?> PKG = SQLEditor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "SQL Editor",
-      LoggingObjectType.SPOON, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "SQL Editor", LoggingObjectType.SPOON, null );
 
   private PropsUI props;
 
@@ -369,8 +369,8 @@ public class SQLEditor {
               RowMetaInterface rowMeta = db.getReturnRowMeta();
               if ( rows.size() > 0 ) {
                 PreviewRowsDialog prd =
-                    new PreviewRowsDialog( shell, ci, SWT.NONE, BaseMessages.getString( PKG,
-                        "SQLEditor.ResultRows.Title", Integer.toString( nrstats ) ), rowMeta, rows );
+                    new PreviewRowsDialog( shell, ci, SWT.NONE, BaseMessages.getString(
+                        PKG, "SQLEditor.ResultRows.Title", Integer.toString( nrstats ) ), rowMeta, rows );
                 prd.open();
               } else {
                 MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
@@ -409,15 +409,15 @@ public class SQLEditor {
               String error = BaseMessages.getString( PKG, "SQLEditor.Log.SQLExecError", sql, dbe.toString() );
               message.append( error ).append( Const.CR );
               ErrorDialog dialog =
-                  new ErrorDialog( shell, BaseMessages.getString( PKG, "SQLEditor.ErrorExecSQL.Title" ), error, dbe,
-                      true );
+                  new ErrorDialog(
+                      shell, BaseMessages.getString( PKG, "SQLEditor.ErrorExecSQL.Title" ), error, dbe, true );
               if ( dialog.isCancelled() ) {
                 break;
               }
             } finally {
               int endLogLine = KettleLogStore.getLastBufferLineNr();
-              sql.setLoggingText( KettleLogStore.getAppender().getLogBufferFromTo( db.getLogChannelId(), true,
-                  startLogLine, endLogLine ).toString() );
+              sql.setLoggingText( KettleLogStore.getAppender().getLogBufferFromTo(
+                  db.getLogChannelId(), true, startLogLine, endLogLine ).toString() );
               sql.setComplete( true );
               refreshExecutionResults();
             }
@@ -431,8 +431,8 @@ public class SQLEditor {
       } catch ( KettleDatabaseException dbe ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
         String error =
-            BaseMessages.getString( PKG, "SQLEditor.Error.CouldNotConnect.Message", ( connection == null ? ""
-                : connection.getName() ), dbe.getMessage() );
+            BaseMessages.getString( PKG, "SQLEditor.Error.CouldNotConnect.Message", ( connection == null
+                ? "" : connection.getName() ), dbe.getMessage() );
         message.append( error ).append( Const.CR );
         mb.setMessage( error );
         mb.setText( BaseMessages.getString( PKG, "SQLEditor.Error.CouldNotConnect.Title" ) );

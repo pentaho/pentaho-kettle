@@ -235,11 +235,13 @@ public class Rest extends BaseStep implements StepInterface {
 
       if ( !Const.isEmpty( data.realProxyHost ) ) {
         // PROXY CONFIGURATION
-        data.config.getProperties().put( DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI,
-            "http://" + data.realProxyHost + ":" + data.realProxyPort );
+        data.config
+            .getProperties().put(
+                DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI,
+                "http://" + data.realProxyHost + ":" + data.realProxyPort );
         if ( !Const.isEmpty( data.realHttpLogin ) && !Const.isEmpty( data.realHttpPassword ) ) {
-          data.config.getState().setProxyCredentials( AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort,
-              data.realHttpLogin, data.realHttpPassword );
+          data.config.getState().setProxyCredentials(
+              AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort, data.realHttpLogin, data.realHttpPassword );
         }
       } else {
         if ( !Const.isEmpty( data.realHttpLogin ) ) {
@@ -323,8 +325,8 @@ public class Rest extends BaseStep implements StepInterface {
           data.indexOfUrlField = data.inputRowMeta.indexOfValue( realUrlfieldName );
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
-            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField",
-                realUrlfieldName ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
           }
         }
       } else {

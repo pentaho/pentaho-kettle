@@ -41,8 +41,8 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
  * 
  */
 public class RipDatabaseWizard implements IWizard {
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Rid database wizard",
-      LoggingObjectType.SPOON, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Rid database wizard", LoggingObjectType.SPOON, null );
 
   public RipDatabaseWizard() {
     super();

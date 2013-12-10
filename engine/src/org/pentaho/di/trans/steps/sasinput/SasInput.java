@@ -112,20 +112,22 @@ public class SasInput extends BaseStep implements StepInterface {
       // Verify that all files are of the same file format, this is a requirement...
       //
       if ( data.fileLayout.size() != data.helper.getRowMeta().size() ) {
-        throw new KettleException( "All input files need to have the same number of fields. File '" + filename
-            + "' has " + data.helper.getRowMeta().size() + " fields while the first file only had "
+        throw new KettleException( "All input files need to have the same number of fields. File '"
+            + filename + "' has " + data.helper.getRowMeta().size() + " fields while the first file only had "
             + data.fileLayout.size() );
       }
       for ( int i = 0; i < data.fileLayout.size(); i++ ) {
         ValueMetaInterface first = data.fileLayout.getValueMeta( i );
         ValueMetaInterface second = data.helper.getRowMeta().getValueMeta( i );
         if ( !first.getName().equalsIgnoreCase( second.getName() ) ) {
-          throw new KettleException( "Field nr " + i + " in file '" + filename + "' is called '" + second.getName()
-              + "' while it was called '" + first.getName() + "' in the first file" );
+          throw new KettleException( "Field nr "
+              + i + " in file '" + filename + "' is called '" + second.getName() + "' while it was called '"
+              + first.getName() + "' in the first file" );
         }
         if ( first.getType() != second.getType() ) {
-          throw new KettleException( "Field nr " + i + " in file '" + filename + "' is of data type '"
-              + second.getTypeDesc() + "' while it was '" + first.getTypeDesc() + "' in the first file" );
+          throw new KettleException( "Field nr "
+              + i + " in file '" + filename + "' is of data type '" + second.getTypeDesc() + "' while it was '"
+              + first.getTypeDesc() + "' in the first file" );
         }
       }
     }
@@ -139,8 +141,8 @@ public class SasInput extends BaseStep implements StepInterface {
       for ( SasInputField field : meta.getOutputFields() ) {
         int fieldIndex = data.fileLayout.indexOfValue( field.getName() );
         if ( fieldIndex < 0 ) {
-          throw new KettleException( "Selected field '" + field.getName() + "' couldn't be found in file '" + filename
-              + "'" );
+          throw new KettleException( "Selected field '"
+              + field.getName() + "' couldn't be found in file '" + filename + "'" );
         }
         data.fieldIndexes.add( fieldIndex );
       }
@@ -149,8 +151,8 @@ public class SasInput extends BaseStep implements StepInterface {
     // Add this to the result file names...
     //
     ResultFile resultFile =
-        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename ), getTransMeta().getName(),
-            getStepname() );
+        new ResultFile(
+            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename ), getTransMeta().getName(), getStepname() );
     resultFile.setComment( BaseMessages.getString( PKG, "SASInput.ResultFile.Comment" ) );
     addResultFile( resultFile );
 

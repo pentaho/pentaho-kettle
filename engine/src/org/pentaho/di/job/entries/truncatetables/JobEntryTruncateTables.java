@@ -178,8 +178,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryTruncateTables.UnableSaveRep", "" + id_job ),
-          dbe );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "JobEntryTruncateTables.UnableSaveRep", "" + id_job ), dbe );
     }
   }
 
@@ -268,8 +268,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 
             if ( !Const.isEmpty( tablename_previous ) ) {
               if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous,
-                    schemaname_previous ) );
+                logDetailed( BaseMessages.getString(
+                    PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous ) );
               }
 
               // let's truncate table
@@ -289,8 +289,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
             String realSchemaname = environmentSubstitute( schemaname[i] );
             if ( !Const.isEmpty( realTablename ) ) {
               if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i],
-                    schemaname[i] ) );
+                logDetailed( BaseMessages.getString(
+                    PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i] ) );
               }
 
               // let's truncate table

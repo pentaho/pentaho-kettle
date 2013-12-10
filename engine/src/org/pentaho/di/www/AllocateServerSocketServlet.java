@@ -99,9 +99,9 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     }
 
     SocketPortAllocation port =
-        getTransformationMap()
-            .allocateServerSocketPort( Const.toInt( rangeStart, 40000 ), hostname, clusteredRunId, transName,
-                sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
+        getTransformationMap().allocateServerSocketPort(
+            Const.toInt( rangeStart, 40000 ), hostname, clusteredRunId, transName, sourceSlaveName, sourceStepName,
+            sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
 
     PrintStream out = new PrintStream( response.getOutputStream() );
     if ( useXML ) {
@@ -118,10 +118,10 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
       out.println( "Run ID : " + encoder.encodeForHTML( clusteredRunId ) + "<br>" );
       out.println( "Host name : " + encoder.encodeForHTML( hostname ) + "<br>" );
       out.println( "Transformation name : " + encoder.encodeForHTML( transName ) + "<br>" );
-      out.println( "Source step : " + encoder.encodeForHTML( sourceStepName ) + "."
-          + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
-      out.println( "Target step : " + encoder.encodeForHTML( targetStepName ) + "."
-          + encoder.encodeForHTML( targetStepCopy ) + "<br>" );
+      out.println( "Source step : "
+          + encoder.encodeForHTML( sourceStepName ) + "." + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
+      out.println( "Target step : "
+          + encoder.encodeForHTML( targetStepName ) + "." + encoder.encodeForHTML( targetStepCopy ) + "<br>" );
       out.println( "Step copy: " + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
       out.println( "<p>" );
       out.println( "--> port : " + encoder.encodeForHTML( port.toString() ) + "<br>" );

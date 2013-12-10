@@ -141,8 +141,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       // The new situation...
       if ( condnode != null ) {
         condition = new Condition( condnode );
-      } else // Old style condition: Line1 OR Line2 OR Line3: @deprecated!
-      {
+      } else {
+        // Old style condition: Line1 OR Line2 OR Line3: @deprecated!
         condition = new Condition();
 
         int nrkeys = XMLHandler.countNodes( compare, "key" );
@@ -184,8 +184,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "FilterRowsMeta.Exception..UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "FilterRowsMeta.Exception..UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -206,8 +206,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       condition = rep.loadConditionFromStepAttribute( id_step, "id_condition" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FilterRowsMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FilterRowsMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -229,8 +229,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, "send_false_to", targetStreams.get( 1 ).getStepname() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FilterRowsMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FilterRowsMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -261,9 +261,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int trueTargetIdx = Const.indexOfString( targetStreams.get( 0 ).getStepname(), output );
       if ( trueTargetIdx < 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "FilterRowsMeta.CheckResult.TargetStepInvalid", "true", targetStreams.get( 0 ).getStepname() ),
-                stepMeta );
+            new CheckResult(
+                CheckResultInterface.TYPE_RESULT_ERROR,
+                BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "true", targetStreams.get(
+                    0 ).getStepname() ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -272,29 +273,30 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int falseTargetIdx = Const.indexOfString( targetStreams.get( 1 ).getStepname(), output );
       if ( falseTargetIdx < 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "FilterRowsMeta.CheckResult.TargetStepInvalid", "false", targetStreams.get( 1 ).getStepname() ),
-                stepMeta );
+            new CheckResult(
+                CheckResultInterface.TYPE_RESULT_ERROR,
+                BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "false", targetStreams
+                    .get( 1 ).getStepname() ), stepMeta );
         remarks.add( cr );
       }
     }
 
     if ( condition.isEmpty() ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.NoConditionSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FilterRowsMeta.CheckResult.NoConditionSpecified" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.ConditionSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FilterRowsMeta.CheckResult.ConditionSpecified" ), stepMeta );
     }
     remarks.add( cr );
 
     // Look up fields in the input stream <prev>
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FilterRowsMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       boolean first = true;
@@ -319,8 +321,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
       }
       remarks.add( cr );
     } else {
@@ -333,13 +335,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FilterRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FilterRowsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -361,10 +363,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
-      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString( PKG,
-          "FilterRowsMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
-      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString( PKG,
-          "FilterRowsMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
+          PKG, "FilterRowsMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
+          PKG, "FilterRowsMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
     }
 
     return ioMeta;

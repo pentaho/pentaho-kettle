@@ -130,16 +130,17 @@ public class JobInformation {
     GCInterface gc = new SwingGC( null, area, iconsize, 50, 20 );
     List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
     JobPainter painter =
-        new JobPainter( gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(),
-            iconsize, 1, 0, 0, true, "FreeSans", 10 );
+        new JobPainter(
+            gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(), iconsize, 1, 0,
+            0, true, "FreeSans", 10 );
     painter.setMagnification( 0.25f );
     painter.drawJob();
     BufferedImage bufferedImage = (BufferedImage) gc.getImage();
     int newWidth = bufferedImage.getWidth() - min.x;
     int newHeigth = bufferedImage.getHeight() - min.y;
     BufferedImage image = new BufferedImage( newWidth, newHeigth, bufferedImage.getType() );
-    image.getGraphics().drawImage( bufferedImage, 0, 0, newWidth, newHeigth, min.x, min.y, min.x + newWidth,
-        min.y + newHeigth, null );
+    image.getGraphics().drawImage(
+        bufferedImage, 0, 0, newWidth, newHeigth, min.x, min.y, min.x + newWidth, min.y + newHeigth, null );
 
     JobInformationValues values = new JobInformationValues();
     values.jobMeta = jobMeta;
@@ -180,8 +181,9 @@ public class JobInformation {
     gc.setDrawingPixelatedImages( pixelateImages );
     List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
     JobPainter painter =
-        new JobPainter( gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(),
-            iconsize, 1, 0, 0, true, "FreeSans", 10 );
+        new JobPainter(
+            gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(), iconsize, 1, 0,
+            0, true, "FreeSans", 10 );
     painter.setMagnification( (float) Math.min( magnification, 1 ) );
     if ( pixelateImages ) {
       painter.setTranslationX( 100 + min.x );

@@ -215,8 +215,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
           // ok we can process this file/folder
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous,
-                fmasks_previous ) );
+            logDetailed( BaseMessages.getString(
+                PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous, fmasks_previous ) );
           }
 
           ProcessFile( filefolder_previous, fmasks_previous );
@@ -226,8 +226,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         for ( int i = 0; i < arguments.length && !parentJob.isStopped(); i++ ) {
           // ok we can process this file/folder
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i],
-                filemasks[i] ) );
+            logDetailed( BaseMessages.getString(
+                PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i], filemasks[i] ) );
           }
 
           ProcessFile( arguments[i], filemasks[i] );
@@ -338,11 +338,11 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
           if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
 
             // Not in the Base Folder..Only if include sub folders
-            if ( includeSubfolders && ( info.getFile().getType() == FileType.FILE )
-                && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( includeSubfolders
+                && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
               if ( isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info.getFile()
-                    .toString() ) );
+                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info
+                    .getFile().toString() ) );
               }
 
               returncode = true;
@@ -353,8 +353,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
             if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
               if ( isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info.getFile()
-                    .toString() ) );
+                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info
+                    .getFile().toString() ) );
               }
 
               returncode = true;

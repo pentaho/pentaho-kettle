@@ -181,8 +181,9 @@ public class InsertUpdate extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -194,8 +195,8 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-              environmentSubstitute( meta.getTableName() ) );
+          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       // lookup the values!
       if ( log.isDebug() ) {
@@ -233,8 +234,8 @@ public class InsertUpdate extends BaseStep implements StepInterface {
         keynrs2.add( keynr2 );
 
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "InsertUpdate.Log.FieldHasDataNumbers", meta.getKeyStream()[i] ) + ""
-              + keynrs.get( keynrs.size() - 1 ) );
+          logDebug( BaseMessages.getString( PKG, "InsertUpdate.Log.FieldHasDataNumbers", meta.getKeyStream()[i] )
+              + "" + keynrs.get( keynrs.size() - 1 ) );
         }
       }
 
@@ -246,8 +247,9 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       data.valuenrs = new int[meta.getUpdateLookup().length];
       for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
         data.valuenrs[i] = getInputRowMeta().indexOfValue( meta.getUpdateStream()[i] );
-        if ( data.valuenrs[i] < 0 ) // couldn't find field!
-        {
+        if ( data.valuenrs[i] < 0 ) {
+          // couldn't find field!
+
           throw new KettleStepException( BaseMessages.getString( PKG, "InsertUpdate.Exception.FieldRequired", meta
               .getUpdateStream()[i] ) );
         }
@@ -264,8 +266,9 @@ public class InsertUpdate extends BaseStep implements StepInterface {
       // Insert the update fields: just names. Type doesn't matter!
       for ( int i = 0; i < meta.getUpdateLookup().length; i++ ) {
         ValueMetaInterface insValue = data.insertRowMeta.searchValueMeta( meta.getUpdateLookup()[i] );
-        if ( insValue == null ) // Don't add twice!
-        {
+        if ( insValue == null ) {
+          // Don't add twice!
+
           // we already checked that this value exists so it's probably safe to ignore lookup failure...
           ValueMetaInterface insertValue = getInputRowMeta().searchValueMeta( meta.getUpdateStream()[i] ).clone();
           insertValue.setName( meta.getUpdateLookup()[i] );
@@ -275,7 +278,8 @@ public class InsertUpdate extends BaseStep implements StepInterface {
               + insValue.getName() ); // TODO i18n
         }
       }
-      data.db.prepareInsert( data.insertRowMeta, environmentSubstitute( meta.getSchemaName() ),
+      data.db.prepareInsert(
+          data.insertRowMeta, environmentSubstitute( meta.getSchemaName() ),
           environmentSubstitute( meta.getTableName() ) );
 
       if ( !meta.isUpdateBypassed() ) {

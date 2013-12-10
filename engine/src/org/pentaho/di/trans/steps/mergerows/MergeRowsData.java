@@ -42,9 +42,6 @@ public class MergeRowsData extends BaseStepData implements StepDataInterface {
   public RowSet oneRowSet;
   public RowSet twoRowSet;
 
-  /**
-	 * 
-	 */
   public MergeRowsData() {
     super();
   }

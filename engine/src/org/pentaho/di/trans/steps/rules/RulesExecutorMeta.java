@@ -64,8 +64,8 @@ public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
   // Contain storage keys in single location to cut down on save/load bugs
   private static enum StorageKeys {
-    NODE_FIELDS( "fields" ), SUBNODE_FIELD( "field" ), COLUMN_NAME( "column-name" ), COLUMN_TYPE( "column-type" ), RULE_FILE(
-        "rule-file" ), RULE_DEFINITION( "rule-definition" );
+    NODE_FIELDS( "fields" ), SUBNODE_FIELD( "field" ), COLUMN_NAME( "column-name" ), COLUMN_TYPE( "column-type" ),
+    RULE_FILE( "rule-file" ), RULE_DEFINITION( "rule-definition" );
 
     private final String storageKey;
 
@@ -199,10 +199,10 @@ public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface
     throws KettleException {
 
     for ( int i = 0; i < ruleResultColumns.size(); i++ ) {
-      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_NAME.toString(), ruleResultColumns.get( i )
-          .getName() );
-      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns.get( i )
-          .getTypeDesc() );
+      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_NAME.toString(), ruleResultColumns
+          .get( i ).getName() );
+      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns
+          .get( i ).getTypeDesc() );
     }
 
     rep.saveStepAttribute( idTransformation, idStep, StorageKeys.RULE_FILE.toString(), getRuleFile() );

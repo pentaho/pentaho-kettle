@@ -326,25 +326,25 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     CheckResult cr;
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RowGeneratorMeta.CheckResult.NoInputStreamsError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "RowGeneratorMeta.CheckResult.NoInputStreamsError" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RowGeneratorMeta.CheckResult.NoInputStreamOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "RowGeneratorMeta.CheckResult.NoInputStreamOk" ), stepMeta );
       remarks.add( cr );
 
       String strLimit = transMeta.environmentSubstitute( rowLimit );
       if ( Const.toLong( strLimit, -1L ) <= 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                "RowGeneratorMeta.CheckResult.WarnNoRows" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+                PKG, "RowGeneratorMeta.CheckResult.WarnNoRows" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "RowGeneratorMeta.CheckResult.WillReturnRows", strLimit ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "RowGeneratorMeta.CheckResult.WillReturnRows", strLimit ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -352,13 +352,13 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RowGeneratorMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "RowGeneratorMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RowGeneratorMeta.CheckResult.NoInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "RowGeneratorMeta.CheckResult.NoInputOk" ), stepMeta );
       remarks.add( cr );
     }
   }

@@ -156,9 +156,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     FileObject xmlfile = null;
     FileObject xsdfile = null;
 
-    try
-
-    {
+    try {
 
       if ( xmlfilename != null && xsdfilename != null ) {
         xmlfile = KettleVFS.getFileObject( realxmlfilename, this );
@@ -187,12 +185,12 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         } else {
 
           if ( !xmlfile.exists() ) {
-            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" ) + realxmlfilename
-                + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
+            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" )
+                + realxmlfilename + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
           }
           if ( !xsdfile.exists() ) {
-            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" ) + realxsdfilename
-                + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
+            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" )
+                + realxsdfilename + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
           }
           result.setResult( false );
           result.setNrErrors( 1 );
@@ -204,9 +202,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         result.setNrErrors( 1 );
       }
 
-    }
-
-    catch ( SAXException ex ) {
+    } catch ( SAXException ex ) {
       logError( "Error :" + ex.getMessage() );
     } catch ( Exception e ) {
 

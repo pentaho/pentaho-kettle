@@ -58,9 +58,6 @@ public class JavaFilterData extends BaseStepData implements StepDataInterface {
   public RowSet falseRowSet;
   public Object[] argumentData;
 
-  /**
-	 * 
-	 */
   public JavaFilterData() {
     super();
   }

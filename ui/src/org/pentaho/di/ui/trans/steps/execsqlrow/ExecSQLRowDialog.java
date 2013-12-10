@@ -475,8 +475,9 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
           wSQLFieldName.setText( sqlfield );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "ExecSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

@@ -36,9 +36,6 @@ public class SyslogMessageData extends BaseStepData implements StepDataInterface
   public SyslogIF syslog;
   public String datePattern;
 
-  /**
-	 * 
-	 */
   public SyslogMessageData() {
     super();
     indexOfMessageFieldName = -1;

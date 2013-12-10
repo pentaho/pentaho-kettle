@@ -150,8 +150,9 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
             }
           }
         } catch ( Exception ke ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "FilesToResultDialog.FailedToGetFields.DialogTitle" ),
-              BaseMessages.getString( PKG, "FilesToResultDialog.FailedToGetFields.DialogMessage" ), ke );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "FilesToResultDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                  .getString( PKG, "FilesToResultDialog.FailedToGetFields.DialogMessage" ), ke );
         }
       }
     };

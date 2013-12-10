@@ -66,7 +66,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
                                                                 // $NON-NLS-1$
 
   public enum ElementNames {
-    class_type, class_name, class_source, definitions, definition, fields, field, field_name, field_type, field_length, field_precision, clear_result_fields,
+    class_type, class_name, class_source, definitions, definition, fields, field, field_name, field_type, field_length,
+    field_precision, clear_result_fields,
 
     info_steps, info_step, info_, target_steps, target_step, target_,
 
@@ -130,9 +131,9 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       sr = new StringReader( def.getSource() );
     }
 
-    cbe.setDefaultImports( new String[] { "org.pentaho.di.trans.steps.userdefinedjavaclass.*",
-      "org.pentaho.di.trans.step.*", "org.pentaho.di.core.row.*", "org.pentaho.di.core.*",
-      "org.pentaho.di.core.exception.*" } );
+    cbe.setDefaultImports( new String[] {
+        "org.pentaho.di.trans.steps.userdefinedjavaclass.*", "org.pentaho.di.trans.step.*",
+        "org.pentaho.di.core.row.*", "org.pentaho.di.core.*", "org.pentaho.di.core.exception.*" } );
     cbe.cook( new Scanner( null, sr ) );
 
     return cbe.getClazz();
@@ -165,8 +166,9 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     }
 
     try {
-      return cookedTransformClass.getConstructor( UserDefinedJavaClass.class, UserDefinedJavaClassMeta.class,
-          UserDefinedJavaClassData.class ).newInstance( parent, meta, data );
+      return cookedTransformClass.getConstructor(
+          UserDefinedJavaClass.class, UserDefinedJavaClassMeta.class, UserDefinedJavaClassData.class ).newInstance(
+          parent, meta, data );
     } catch ( Exception e ) {
       if ( log.isDebug() ) {
         log.logError( "Full debugging stacktrace of UserDefinedJavaClass instanciation exception:", e.getCause() );
@@ -263,9 +265,10 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
       for ( int i = 0; i < nrDefinitions; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( definitionsNode, ElementNames.definition.name(), i );
-        definitions.add( new UserDefinedJavaClassDef( ClassType.valueOf( XMLHandler.getTagValue( fnode,
-            ElementNames.class_type.name() ) ), XMLHandler.getTagValue( fnode, ElementNames.class_name.name() ),
-            XMLHandler.getTagValue( fnode, ElementNames.class_source.name() ) ) );
+        definitions.add( new UserDefinedJavaClassDef(
+            ClassType.valueOf( XMLHandler.getTagValue( fnode, ElementNames.class_type.name() ) ), XMLHandler
+                .getTagValue( fnode, ElementNames.class_name.name() ), XMLHandler.getTagValue(
+                fnode, ElementNames.class_source.name() ) ) );
       }
 
       Node fieldsNode = XMLHandler.getSubNode( stepnode, ElementNames.fields.name() );
@@ -275,8 +278,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         Node fnode = XMLHandler.getSubNodeByNr( fieldsNode, ElementNames.field.name(), i );
         fields.add( new FieldInfo( XMLHandler.getTagValue( fnode, ElementNames.field_name.name() ), ValueMeta
             .getType( XMLHandler.getTagValue( fnode, ElementNames.field_type.name() ) ), Const.toInt( XMLHandler
-            .getTagValue( fnode, ElementNames.field_length.name() ), -1 ), Const.toInt( XMLHandler.getTagValue( fnode,
-            ElementNames.field_precision.name() ), -1 ) ) );
+            .getTagValue( fnode, ElementNames.field_length.name() ), -1 ), Const.toInt( XMLHandler.getTagValue(
+            fnode, ElementNames.field_precision.name() ), -1 ) ) );
       }
 
       setClearingResultFields( !"N"
@@ -318,8 +321,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         usageParameters.add( usageParameter );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "UserDefinedJavaClassMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "UserDefinedJavaClassMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -391,10 +394,11 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
     try {
       Method getFieldsMethod =
-          cookedTransformClass.getMethod( "getFields", boolean.class, RowMetaInterface.class, String.class,
-              RowMetaInterface[].class, StepMeta.class, VariableSpace.class, List.class );
-      getFieldsMethod.invoke( null, isClearingResultFields(), row, originStepname, info, nextStep, space,
-          getFieldInfo() );
+          cookedTransformClass.getMethod(
+              "getFields", boolean.class, RowMetaInterface.class, String.class, RowMetaInterface[].class,
+              StepMeta.class, VariableSpace.class, List.class );
+      getFieldsMethod.invoke(
+          null, isClearingResultFields(), row, originStepname, info, nextStep, space, getFieldInfo() );
     } catch ( Exception e ) {
       throw new KettleStepException( "Error executing UserDefinedJavaClass.getFields(): ", e );
     }
@@ -408,8 +412,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       retval.append( String.format( "\n        <%s>", ElementNames.definition.name() ) );
       retval.append( "\n        " ).append(
           XMLHandler.addTagValue( ElementNames.class_type.name(), def.getClassType().name() ) );
-      retval.append( "\n        " )
-          .append( XMLHandler.addTagValue( ElementNames.class_name.name(), def.getClassName() ) );
+      retval
+          .append( "\n        " ).append( XMLHandler.addTagValue( ElementNames.class_name.name(), def.getClassName() ) );
       retval.append( "\n        " ).append( XMLHandler.openTag( ElementNames.class_source.name() ) );
       retval.append( XMLHandler.buildCDATA( def.getSource() ) ).append(
           XMLHandler.closeTag( ElementNames.class_source.name() ) );
@@ -424,8 +428,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       retval.append( "\n        " ).append(
           XMLHandler.addTagValue( ElementNames.field_type.name(), ValueMeta.getTypeDesc( fi.type ) ) );
       retval.append( "\n        " ).append( XMLHandler.addTagValue( ElementNames.field_length.name(), fi.length ) );
-      retval.append( "\n        " )
-          .append( XMLHandler.addTagValue( ElementNames.field_precision.name(), fi.precision ) );
+      retval
+          .append( "\n        " ).append( XMLHandler.addTagValue( ElementNames.field_precision.name(), fi.precision ) );
       retval.append( String.format( "\n        </%s>", ElementNames.field.name() ) );
     }
     retval.append( String.format( "\n    </%s>", ElementNames.fields.name() ) );
@@ -477,8 +481,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       for ( int i = 0; i < nrScripts; i++ ) {
         definitions.add( new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.valueOf( rep
             .getStepAttributeString( id_step, i, ElementNames.class_type.name() ) ), rep.getStepAttributeString(
-            id_step, i, ElementNames.class_name.name() ), rep.getStepAttributeString( id_step, i,
-            ElementNames.class_source.name() ) ) );
+            id_step, i, ElementNames.class_name.name() ), rep.getStepAttributeString(
+            id_step, i, ElementNames.class_source.name() ) ) );
 
       }
 
@@ -524,8 +528,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         usageParameters.add( usageParameter );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "UserDefinedJavaClassMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "UserDefinedJavaClassMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -537,7 +541,9 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         UserDefinedJavaClassDef def = definitions.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.class_name.name(), def.getClassName() );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.class_source.name(), def.getSource() );
-        rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.class_type.name(), def.getClassType().name() );
+        rep
+            .saveStepAttribute( id_transformation, id_step, i, ElementNames.class_type.name(), def
+                .getClassType().name() );
       }
 
       for ( int i = 0; i < fields.size(); i++ ) {
@@ -553,11 +559,13 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
       for ( int i = 0; i < infoStepDefinitions.size(); i++ ) {
         StepDefinition stepDefinition = infoStepDefinitions.get( i );
-        rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.info_.name() + ElementNames.step_tag.name(),
-            stepDefinition.tag );
-        rep.saveStepAttribute( id_transformation, id_step, i,
-            ElementNames.info_.name() + ElementNames.step_name.name(), stepDefinition.stepMeta != null
-                ? stepDefinition.stepMeta.getName() : null );
+        rep
+            .saveStepAttribute(
+                id_transformation, id_step, i, ElementNames.info_.name() + ElementNames.step_tag.name(),
+                stepDefinition.tag );
+        rep.saveStepAttribute(
+            id_transformation, id_step, i, ElementNames.info_.name() + ElementNames.step_name.name(),
+            stepDefinition.stepMeta != null ? stepDefinition.stepMeta.getName() : null );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.info_.name()
             + ElementNames.step_description.name(), stepDefinition.description );
       }
@@ -565,8 +573,10 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         StepDefinition stepDefinition = targetStepDefinitions.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.target_.name()
             + ElementNames.step_tag.name(), stepDefinition.tag );
-        rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.target_.name()
-            + ElementNames.step_name.name(), stepDefinition.stepMeta != null ? stepDefinition.stepMeta.getName() : null );
+        rep
+            .saveStepAttribute( id_transformation, id_step, i, ElementNames.target_.name()
+                + ElementNames.step_name.name(), stepDefinition.stepMeta != null
+                ? stepDefinition.stepMeta.getName() : null );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.target_.name()
             + ElementNames.step_description.name(), stepDefinition.description );
       }
@@ -574,9 +584,11 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       for ( int i = 0; i < usageParameters.size(); i++ ) {
         UsageParameter usageParameter = usageParameters.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.parameter_tag.name(), usageParameter.tag );
-        rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.parameter_value.name(), usageParameter.value );
-        rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.parameter_description.name(),
-            usageParameter.description );
+        rep
+            .saveStepAttribute(
+                id_transformation, id_step, i, ElementNames.parameter_value.name(), usageParameter.value );
+        rep.saveStepAttribute(
+            id_transformation, id_step, i, ElementNames.parameter_description.name(), usageParameter.description );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages
@@ -593,13 +605,13 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "UserDefinedJavaClassMeta.CheckResult.ConnectedStepOK2" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "UserDefinedJavaClassMeta.CheckResult.ConnectedStepOK2" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "UserDefinedJavaClassMeta.CheckResult.NoInputReceived" ), stepinfo );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "UserDefinedJavaClassMeta.CheckResult.NoInputReceived" ), stepinfo );
       remarks.add( cr );
     }
   }

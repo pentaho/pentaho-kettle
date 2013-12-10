@@ -170,26 +170,26 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "ValidatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "ValidatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ValidatorMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ValidatorMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ValidatorMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ValidatorMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ValidatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ValidatorMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -283,9 +283,10 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
       //
       for ( Validation validation : validations ) {
         StreamInterface stream =
-            new Stream( StreamType.INFO, validation.getSourcingStep(), BaseMessages.getString( PKG,
-                "ValidatorMeta.InfoStream.ValidationInput.Description", Const.NVL( validation.getName(), "" ) ),
-                StreamIcon.INFO, validation );
+            new Stream(
+                StreamType.INFO, validation.getSourcingStep(),
+                BaseMessages.getString( PKG, "ValidatorMeta.InfoStream.ValidationInput.Description", Const.NVL(
+                    validation.getName(), "" ) ), StreamIcon.INFO, validation );
         ioMeta.addStream( stream );
       }
     }
@@ -303,8 +304,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
     resetStepIoMeta();
   }
 
-  private static StreamInterface newValidation = new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-      "ValidatorMeta.NewValidation.Description" ), StreamIcon.INFO, null );
+  private static StreamInterface newValidation = new Stream( StreamType.INFO, null, BaseMessages.getString(
+      PKG, "ValidatorMeta.NewValidation.Description" ), StreamIcon.INFO, null );
 
   public List<StreamInterface> getOptionalStreams() {
     List<StreamInterface> list = new ArrayList<StreamInterface>();

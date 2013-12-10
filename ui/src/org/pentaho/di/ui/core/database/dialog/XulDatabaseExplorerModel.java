@@ -89,7 +89,8 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
       if ( theNode != null ) {
         if ( lookingForSchema && theNode.isSchema() && theNode.getName().equals( aSchema ) ) {
           break;
-        } else if ( !lookingForSchema && theNode.isTable() && theNode.getName().equals( aTable )
+        } else if ( !lookingForSchema
+            && theNode.isTable() && theNode.getName().equals( aTable )
             && ( theNode.getSchema() != null ? theNode.getSchema().equals( aSchema ) : aSchema == null ) ) {
           break;
         } else {

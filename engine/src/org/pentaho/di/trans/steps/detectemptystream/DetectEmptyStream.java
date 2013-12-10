@@ -65,8 +65,8 @@ public class DetectEmptyStream extends BaseStep implements StepInterface {
     data = (DetectEmptyStreamData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       if ( first ) {
         // input stream is empty !
         data.outputRowMeta = getTransMeta().getPrevStepFields( getStepMeta() );

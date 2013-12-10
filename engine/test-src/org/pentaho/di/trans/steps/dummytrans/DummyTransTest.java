@@ -24,8 +24,8 @@ public class DummyTransTest {
   @Before
   public void setup() {
     stepMockHelper =
-        new StepMockHelper<StepMetaInterface, StepDataInterface>( "DUMMY TEST", StepMetaInterface.class,
-            StepDataInterface.class );
+        new StepMockHelper<StepMetaInterface, StepDataInterface>(
+            "DUMMY TEST", StepMetaInterface.class, StepDataInterface.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -39,7 +39,8 @@ public class DummyTransTest {
   @Test
   public void testDummyTransDoesntWriteOutputWithoutInputRow() throws KettleException {
     DummyTrans dummy =
-        new DummyTrans( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        new DummyTrans(
+            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
     dummy.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     RowSet rowSet = stepMockHelper.getMockInputRowSet();
@@ -56,7 +57,8 @@ public class DummyTransTest {
   @Test
   public void testDummyTransWritesOutputWithInputRow() throws KettleException {
     DummyTrans dummy =
-        new DummyTrans( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        new DummyTrans(
+            stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
     dummy.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     Object[] row = new Object[] { "abcd" };

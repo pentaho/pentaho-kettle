@@ -144,8 +144,8 @@ public class RssInput extends BaseStep implements StepInterface {
       if ( data.last_url ) {
         return false;
       }
-      if ( data.urlnr >= data.urlsize ) // finished processing!
-      {
+      if ( data.urlnr >= data.urlsize ) { // finished processing!
+
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "RssInput.Log.FinishedProcessing" ) );
         }
@@ -209,8 +209,8 @@ public class RssInput extends BaseStep implements StepInterface {
     // Get item
     FeedItem item = data.feed.getItem( data.itemsnr );
 
-    if ( ( Const.isEmpty( meta.getRealReadFrom() ) || ( !Const.isEmpty( meta.getRealReadFrom() ) && item.getPubDate()
-        .compareTo( data.readfromdatevalide ) > 0 ) ) ) {
+    if ( ( Const.isEmpty( meta.getRealReadFrom() ) || ( !Const.isEmpty( meta.getRealReadFrom() ) && item
+        .getPubDate().compareTo( data.readfromdatevalide ) > 0 ) ) ) {
 
       // Execute for each Input field...
       for ( int j = 0; j < meta.getInputFields().length; j++ ) {

@@ -61,8 +61,8 @@ public class XBaseInput extends BaseStep implements StepInterface {
     data = (XBaseInputData) sdi;
 
     // See if we need to get a list of files from input...
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       first = false;
 
       // The output row meta data, what does it look like?
@@ -219,8 +219,9 @@ public class XBaseInput extends BaseStep implements StepInterface {
       resultFile.setComment( BaseMessages.getString( PKG, "XBaseInput.ResultFile.Comment" ) );
       addResultFile( resultFile );
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile1" ) + data.file_dbf
-          + BaseMessages.getString( PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile2" ) + e.getMessage() );
+      logError( BaseMessages.getString( PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile1" )
+          + data.file_dbf + BaseMessages.getString( PKG, "XBaseInput.Log.Error.CouldNotOpenXBaseFile2" )
+          + e.getMessage() );
       throw new KettleException( e );
     }
   }

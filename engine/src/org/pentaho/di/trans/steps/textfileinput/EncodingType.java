@@ -27,8 +27,8 @@ import java.io.UnsupportedEncodingException;
 import org.pentaho.di.core.Const;
 
 public enum EncodingType {
-  SINGLE( 1, 0, '\n', '\r' ), DOUBLE_BIG_ENDIAN( 2, 0xFEFF, 0x000d, 0x000a ), DOUBLE_LITTLE_ENDIAN( 2, 0xFFFE, 0x0d00,
-      0x0a00 ), ;
+  SINGLE( 1, 0, '\n', '\r' ), DOUBLE_BIG_ENDIAN( 2, 0xFEFF, 0x000d, 0x000a ), DOUBLE_LITTLE_ENDIAN(
+      2, 0xFFFE, 0x0d00, 0x0a00 ), ;
 
   private int length;
 

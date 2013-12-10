@@ -413,8 +413,9 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "ExecProcessDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

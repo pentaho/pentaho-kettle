@@ -462,9 +462,9 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "XMLOutputDialog.OutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "XMLOutputDialog.OutputFiles.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                  PKG, "XMLOutputDialog.OutputFiles.DialogTitle" ), BaseMessages.getString(
+                  PKG, "XMLOutputDialog.OutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -722,32 +722,35 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Fieldname.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.ElementName.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.ContentType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Element", "Attribute", }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLOutputDialog.Null.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.ElementName.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.ContentType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "Element", "Attribute", }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                    .getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLOutputDialog.Null.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ) };
 
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -854,10 +857,11 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }

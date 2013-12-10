@@ -522,8 +522,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           //
         }
         jerEnd =
-            new JobEntryResult( res, jes.getLogChannelId(), BaseMessages.getString( PKG, "Job.Comment.JobFinished" ),
-                BaseMessages.getString( PKG, "Job.Reason.Finished" ), null, 0, null );
+            new JobEntryResult(
+                res, jes.getLogChannelId(), BaseMessages.getString( PKG, "Job.Comment.JobFinished" ), BaseMessages
+                    .getString( PKG, "Job.Reason.Finished" ), null, 0, null );
       } else {
         res = execute( 0, res, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.Started" ) );
         jerEnd =
@@ -650,7 +651,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       newResult = prevResult;
     } else {
       if ( log.isDetailed() ) {
-        log.logDetailed( "exec(" + nr + ", " + ( prev_result != null ? prev_result.getNrErrors() : 0 ) + ", "
+        log.logDetailed( "exec("
+            + nr + ", " + ( prev_result != null ? prev_result.getNrErrors() : 0 ) + ", "
             + ( jobEntryCopy != null ? jobEntryCopy.toString() : "null" ) + ")" );
       }
 
@@ -724,8 +726,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Save this result as well...
       //
       JobEntryResult jerAfter =
-          new JobEntryResult( newResult, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString( PKG,
-              "Job.Comment.JobFinished" ), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
+          new JobEntryResult(
+              newResult, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(
+                  PKG, "Job.Comment.JobFinished" ), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
               environmentSubstitute( jobEntryCopy.getEntry().getFilename() ) );
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerAfter ) );
       synchronized ( jobEntryResults ) {
@@ -809,8 +812,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 threadResults.add( threadResult );
               } catch ( Throwable e ) {
                 log.logError( Const.getStackTracker( e ) );
-                threadExceptions.add( new KettleException( BaseMessages.getString( PKG, "Job.Log.UnexpectedError",
-                    nextEntry.toString() ), e ) );
+                threadExceptions.add( new KettleException( BaseMessages.getString(
+                    PKG, "Job.Log.UnexpectedError", nextEntry.toString() ), e ) );
                 Result threadResult = new Result();
                 threadResult.setResult( false );
                 threadResult.setNrErrors( 1L );
@@ -831,8 +834,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             res = execute( nr + 1, newResult, nextEntry, jobEntryCopy, nextComment );
           } catch ( Throwable e ) {
             log.logError( Const.getStackTracker( e ) );
-            throw new KettleException( BaseMessages.getString( PKG, "Job.Log.UnexpectedError", nextEntry.toString() ),
-                e );
+            throw new KettleException(
+                BaseMessages.getString( PKG, "Job.Log.UnexpectedError", nextEntry.toString() ), e );
           }
           if ( log.isBasic() ) {
             log.logBasic( BaseMessages.getString( PKG, "Job.Log.FinishedJobEntry", nextEntry.getName(), res.getResult()
@@ -853,10 +856,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         try {
           thread.join();
         } catch ( InterruptedException e ) {
-          log.logError( jobMeta.toString(), BaseMessages.getString( PKG,
-              "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ) );
-          threadExceptions.add( new KettleException( BaseMessages.getString( PKG,
-              "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ), e ) );
+          log.logError( jobMeta.toString(), BaseMessages.getString(
+              PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ) );
+          threadExceptions.add( new KettleException( BaseMessages.getString(
+              PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ), e ) );
         }
       }
       // if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG,
@@ -1075,8 +1078,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           try {
             writeJobEntryLogInformation();
           } catch ( KettleException e ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "Job.Exception.UnableToPerformJobEntryLoggingAtJobEnd" ), e );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "Job.Exception.UnableToPerformJobEntryLoggingAtJobEnd" ), e );
           }
         }
       } );
@@ -1093,8 +1096,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           try {
             writeLogChannelInformation();
           } catch ( KettleException e ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToPerformLoggingAtTransEnd" ),
-                e );
+            throw new KettleException(
+                BaseMessages.getString( PKG, "Job.Exception.UnableToPerformLoggingAtTransEnd" ), e );
           }
         }
       } );
@@ -1202,8 +1205,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       db.cleanupLogRecords( channelLogTable );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commit( true );
@@ -1232,8 +1235,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ), e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commit( true );
@@ -1714,10 +1717,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     try {
       // Inject certain internal variables to make it more intuitive.
       //
-      for ( String var : Const.INTERNAL_TRANS_VARIABLES )
+      for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
         executionConfiguration.getVariables().put( var, jobMeta.getVariable( var ) );
-      for ( String var : Const.INTERNAL_JOB_VARIABLES )
+      }
+      for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
         executionConfiguration.getVariables().put( var, jobMeta.getVariable( var ) );
+      }
 
       if ( executionConfiguration.isPassingExport() ) {
         // First export the job... slaveServer.getVariable("MASTER_HOST")
@@ -1726,8 +1731,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             KettleVFS.createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta );
 
         TopLevelResource topLevelResource =
-            ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), jobMeta, jobMeta, repository,
-                metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+            ResourceUtil.serializeResourceExportInterface(
+                tempFile.getName().toString(), jobMeta, jobMeta, repository, metaStore,
+                executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
         //
@@ -1736,8 +1742,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 .getBaseResourceName() );
         WebResult webResult = WebResult.fromXMLString( result );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR
-              + webResult.getMessage() );
+          throw new KettleException( "There was an error passing the exported job to the remote server: "
+              + Const.CR + webResult.getMessage() );
         }
         carteObjectId = webResult.getId();
       } else {
@@ -1746,8 +1752,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         String reply = slaveServer.sendXML( xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y" );
         WebResult webResult = WebResult.fromXMLString( reply );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error posting the job on the remote server: " + Const.CR
-              + webResult.getMessage() );
+          throw new KettleException( "There was an error posting the job on the remote server: "
+              + Const.CR + webResult.getMessage() );
         }
         carteObjectId = webResult.getId();
       }
@@ -1755,12 +1761,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Start the job
       //
       String reply =
-          slaveServer.execService( StartJobServlet.CONTEXT_PATH + "/?name="
-              + URLEncoder.encode( jobMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
+          slaveServer.execService( StartJobServlet.CONTEXT_PATH
+              + "/?name=" + URLEncoder.encode( jobMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
       WebResult webResult = WebResult.fromXMLString( reply );
       if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-        throw new KettleException( "There was an error starting the job on the remote server: " + Const.CR
-            + webResult.getMessage() );
+        throw new KettleException( "There was an error starting the job on the remote server: "
+            + Const.CR + webResult.getMessage() );
       }
       return carteObjectId;
     } catch ( Exception e ) {

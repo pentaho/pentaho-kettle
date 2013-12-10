@@ -323,15 +323,18 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterFieldname" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterFieldname" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterType" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterType" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
 
     wParam =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrKeyRows, lsMod, props );
 
     fdParam = new FormData();
     fdParam.left = new FormAttachment( 0, 0 );
@@ -532,8 +535,9 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious( r, wParam, 1, new int[] { 1 }, new int[] { 2 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogTitle" ),
-          BaseMessages.getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogTitle" ), BaseMessages
+              .getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogMessage" ), ke );
     }
 
   }

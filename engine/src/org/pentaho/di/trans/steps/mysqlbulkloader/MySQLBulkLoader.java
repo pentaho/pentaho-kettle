@@ -141,8 +141,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
 
     String loadCommand = "";
     loadCommand +=
-        "LOAD DATA " + ( meta.isLocalFile() ? "LOCAL" : "" ) + " INFILE '"
-            + environmentSubstitute( meta.getFifoFileName() ) + "' ";
+        "LOAD DATA "
+            + ( meta.isLocalFile() ? "LOCAL" : "" ) + " INFILE '" + environmentSubstitute( meta.getFifoFileName() )
+            + "' ";
     if ( meta.isReplacingData() ) {
       loadCommand += "REPLACE ";
     } else if ( meta.isIgnoringErrors() ) {
@@ -162,8 +163,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       loadCommand += "OPTIONALLY ENCLOSED BY '" + meta.getEnclosure() + "' ";
     }
     loadCommand +=
-        "ESCAPED BY '" + meta.getEscapeChar() + ( "\\".equals( meta.getEscapeChar() ) ? meta.getEscapeChar() : "" )
-            + "' ";
+        "ESCAPED BY '"
+            + meta.getEscapeChar() + ( "\\".equals( meta.getEscapeChar() ) ? meta.getEscapeChar() : "" ) + "' ";
 
     // Build list of column names to set
     loadCommand += "(";
@@ -224,8 +225,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         setOutputDone();
 
         closeOutput();
@@ -415,8 +416,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     } catch ( IOException e ) {
       // If something went wrong with writing to the fifo, get the underlying error from MySQL
       try {
-        logError( "IOException writing to fifo.  Waiting up to " + this.threadWaitTimeText
-            + " for the MySQL load command thread to return with the error." );
+        logError( "IOException writing to fifo.  Waiting up to "
+            + this.threadWaitTimeText + " for the MySQL load command thread to return with the error." );
         try {
           data.sqlRunner.join( this.threadWaitTime );
         } catch ( InterruptedException ex ) {
@@ -470,8 +471,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-              environmentSubstitute( meta.getTableName() ) );
+          meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       return true;
     }

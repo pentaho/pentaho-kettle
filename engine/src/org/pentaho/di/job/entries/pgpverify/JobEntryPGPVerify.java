@@ -111,8 +111,8 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       useDetachedSignature = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "useDetachedSignature" ) );
 
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryPGPVerify.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryPGPVerify.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
     }
   }
 
@@ -124,8 +124,8 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       detachedfilename = rep.getJobEntryAttributeString( id_jobentry, "detachedfilename" );
       useDetachedSignature = rep.getJobEntryAttributeBoolean( id_jobentry, "useDetachedSignature" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryPGPVerify.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryPGPVerify.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -136,8 +136,8 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "detachedfilename", detachedfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "useDetachedSignature", useDetachedSignature );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryPGPVerify.ERROR_0003_Cannot_Save_Job_Entry",
-          id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryPGPVerify.ERROR_0003_Cannot_Save_Job_Entry", id_job ), dbe );
     }
   }
 

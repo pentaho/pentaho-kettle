@@ -143,11 +143,12 @@ public class HttpUtil {
   public static void addCredentials( HttpClient client, VariableSpace space, String hostname, String port,
       String webAppName, String username, String password ) {
     if ( StringUtils.isEmpty( webAppName ) ) {
-      client.getState().setCredentials(
-          new AuthScope( space.environmentSubstitute( hostname ),
-              Const.toInt( space.environmentSubstitute( port ), 80 ), "Kettle" ),
-          new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
-              .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) ) );
+      client
+          .getState().setCredentials(
+              new AuthScope( space.environmentSubstitute( hostname ), Const.toInt(
+                  space.environmentSubstitute( port ), 80 ), "Kettle" ),
+              new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
+                  .decryptPasswordOptionallyEncrypted( space.environmentSubstitute( password ) ) ) );
     } else {
       Credentials creds =
           new UsernamePasswordCredentials( space.environmentSubstitute( username ), Encr
@@ -158,10 +159,11 @@ public class HttpUtil {
   }
 
   /**
-   * Base 64 decode, unzip and extract text using {@link Const#XML_ENCODING} 
-   * predefined charset value for byte-wise multi-byte character handling. 
+   * Base 64 decode, unzip and extract text using {@link Const#XML_ENCODING} predefined charset value for byte-wise
+   * multi-byte character handling.
    * 
-   * @param loggingString64 base64 zip archive string representation
+   * @param loggingString64
+   *          base64 zip archive string representation
    * @return text from zip archive
    * @throws IOException
    */
@@ -170,9 +172,9 @@ public class HttpUtil {
       return "";
     }
     StringWriter writer = new StringWriter();
-    //base 64 decode
+    // base 64 decode
     byte[] bytes64 = Base64.decodeBase64( loggingString64.getBytes() );
-    //unzip to string encoding-wise
+    // unzip to string encoding-wise
     ByteArrayInputStream zip = new ByteArrayInputStream( bytes64 );
 
     GZIPInputStream unzip = null;
@@ -181,36 +183,36 @@ public class HttpUtil {
     try {
       unzip = new GZIPInputStream( zip, HttpUtil.ZIP_BUFFER_SIZE );
       in = new BufferedInputStream( unzip, HttpUtil.ZIP_BUFFER_SIZE );
-      //PDI-4325 originally used xml encoding in servlet
+      // PDI-4325 originally used xml encoding in servlet
       reader = new InputStreamReader( in, Const.XML_ENCODING );
       writer = new StringWriter();
 
-      //use same buffer size
+      // use same buffer size
       char[] buff = new char[HttpUtil.ZIP_BUFFER_SIZE];
       for ( int length = 0; ( length = reader.read( buff ) ) > 0; ) {
         writer.write( buff, 0, length );
       }
     } finally {
-      //close resources
+      // close resources
       if ( reader != null ) {
         try {
           reader.close();
         } catch ( IOException e ) {
-          //Suppress
+          // Suppress
         }
       }
       if ( in != null ) {
         try {
           in.close();
         } catch ( IOException e ) {
-          //Suppress
+          // Suppress
         }
       }
       if ( unzip != null ) {
         try {
           unzip.close();
         } catch ( IOException e ) {
-          //Suppress
+          // Suppress
         }
       }
     }

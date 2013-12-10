@@ -60,8 +60,8 @@ public class UniqueRows extends BaseStep implements StepInterface {
     data = (UniqueRowsData) sdi;
 
     Object[] r = getRow(); // get row!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       // Don't forget the last set of rows...
       if ( data.previous != null ) {
         Object[] outputRow = addCounter( data.outputRowMeta, data.previous, data.counter );
@@ -98,8 +98,8 @@ public class UniqueRows extends BaseStep implements StepInterface {
 
         if ( data.sendDuplicateRows ) {
           data.compareFields =
-              data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields + ","
-                  + meta.getCompareFields()[i];
+              data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields
+                  + "," + meta.getCompareFields()[i];
         }
       }
       if ( data.sendDuplicateRows && !Const.isEmpty( meta.getErrorDescription() ) ) {
@@ -130,8 +130,8 @@ public class UniqueRows extends BaseStep implements StepInterface {
     } else {
       data.counter++;
       if ( data.sendDuplicateRows && !first ) {
-        putError( getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == "" ? null
-            : data.compareFields, "UNR001" );
+        putError( getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == ""
+            ? null : data.compareFields, "UNR001" );
       }
     }
 

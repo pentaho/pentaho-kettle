@@ -88,14 +88,14 @@ public class TransPerfDelegate extends SpoonDelegate {
   private static final int DATA_CHOICE_OUTPUT_BUFFER_SIZE = 7;
 
   private static String[] dataChoices = new String[] {
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Written" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Read" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Input" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Output" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Updated" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Rejected" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.InputBufferSize" ),
-    BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.OutputBufferSize" ), };
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Written" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Read" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Input" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Output" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Updated" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.Rejected" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.InputBufferSize" ),
+      BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.OutputBufferSize" ), };
 
   private TransGraph transGraph;
 
@@ -173,8 +173,8 @@ public class TransPerfDelegate extends SpoonDelegate {
     // there is a potential infinite loop below if this method
     // is called when the transgraph is not running, so we check
     // early to make sure it won't happen (see PDI-5009)
-    if ( !transGraph.isRunning() || transGraph.trans == null
-        || !transGraph.trans.getTransMeta().isCapturingStepPerformanceSnapShots() ) {
+    if ( !transGraph.isRunning()
+        || transGraph.trans == null || !transGraph.trans.getTransMeta().isCapturingStepPerformanceSnapShots() ) {
       showEmptyGraph();
       return; // TODO: display help text and rerty button
     }
@@ -185,10 +185,11 @@ public class TransPerfDelegate extends SpoonDelegate {
 
     // Remove anything on the perf composite, like an empty page message
     //
-    for ( Control control : perfComposite.getChildren() )
+    for ( Control control : perfComposite.getChildren() ) {
       if ( !control.isDisposed() ) {
         control.dispose();
       }
+    }
 
     emptyGraph = false;
 
@@ -225,8 +226,8 @@ public class TransPerfDelegate extends SpoonDelegate {
     dataListLabel.setLayoutData( fdDataListLabel );
 
     dataList =
-        new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT
-            | SWT.BORDER );
+        new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI
+            | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
     spoon.props.setLook( dataList );
     dataList.setItems( dataChoices );
     dataList.addSelectionListener( new SelectionAdapter() {
@@ -263,8 +264,8 @@ public class TransPerfDelegate extends SpoonDelegate {
     stepsListLabel.setLayoutData( fdStepsListLabel );
 
     stepsList =
-        new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT
-            | SWT.BORDER );
+        new org.eclipse.swt.widgets.List( perfComposite, SWT.MULTI
+            | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
     spoon.props.setLook( stepsList );
     stepsList.setItems( steps );
     stepsList.addSelectionListener( new SelectionAdapter() {
@@ -366,8 +367,8 @@ public class TransPerfDelegate extends SpoonDelegate {
 
     button.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent event ) {
-        TransGraph.editProperties( spoon.getActiveTransformation(), spoon, spoon.rep, true,
-            TransDialog.Tabs.MONITOR_TAB );
+        TransGraph.editProperties(
+            spoon.getActiveTransformation(), spoon, spoon.rep, true, TransDialog.Tabs.MONITOR_TAB );
       }
     } );
 
@@ -401,8 +402,9 @@ public class TransPerfDelegate extends SpoonDelegate {
     transGraph.getDisplay().asyncExec( new Runnable() {
 
       public void run() {
-        if ( perfComposite != null && !perfComposite.isDisposed() && canvas != null && !canvas.isDisposed()
-            && transPerfTab != null && !transPerfTab.isDisposed() ) {
+        if ( perfComposite != null
+            && !perfComposite.isDisposed() && canvas != null && !canvas.isDisposed() && transPerfTab != null
+            && !transPerfTab.isDisposed() ) {
           if ( transPerfTab.isShowing() ) {
             updateCanvas();
           }

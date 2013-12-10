@@ -44,17 +44,15 @@ public class KettleValidatorException extends KettleValueException {
   public static final int ERROR_MATCHING_REGULAR_EXPRESSION_NOT_ALLOWED = 14;
   public static final int ERROR_ONLY_NULL_VALUE_ALLOWED = 15;
 
-  private static final String[] errorCode = new String[] { "KVD000", "KVD001", "KVD002", "KVD003", "KVD004", "KVD005",
-    "KVD006", "KVD007", "KVD008", "KVD009", "KVD010", "KVD011", "KVD012", "KVD013", "KVD014", "KVD015", };
+  private static final String[] errorCode = new String[] {
+      "KVD000", "KVD001", "KVD002", "KVD003", "KVD004", "KVD005", "KVD006", "KVD007", "KVD008", "KVD009", "KVD010",
+      "KVD011", "KVD012", "KVD013", "KVD014", "KVD015", };
 
   private Validator validator;
   private Validation validatorField;
   private int code;
   private String fieldname;
 
-  /**
-	 * 
-	 */
   private static final long serialVersionUID = -212228277329271284L;
 
   /**

@@ -123,13 +123,14 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
         } else {
           error = true;
           message =
-              "The specified transformation [" + transName + "] with id [" + Const.NVL( id, "" )
-                  + "] could not be found";
+              "The specified transformation ["
+                  + transName + "] with id [" + Const.NVL( id, "" ) + "] could not be found";
           if ( useXML ) {
             out.println( new WebResult( WebResult.STRING_ERROR, message ) );
           } else {
             out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-            out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            out.println( "<a href=\""
+                + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
                 + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
           }
         }
@@ -140,7 +141,8 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
           out.println( new WebResult( WebResult.STRING_OK, message ).getXML() );
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+          out.println( "<a href=\""
+              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( transName, "UTF-8" ) + "\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }

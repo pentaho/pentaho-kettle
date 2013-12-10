@@ -189,10 +189,12 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     // Fields
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "PentahoReportingOutput.Column.ParameterName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "PentahoReportingOutput.Column.FieldName" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNames, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PentahoReportingOutput.Column.ParameterName" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "PentahoReportingOutput.Column.FieldName" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNames, true ), };
 
     wFields = new TableView( transMeta, shell, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER, colinf, 1, lsMod, props );
 
@@ -362,8 +364,8 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
       }
 
       dialog.setFilterNames( new String[] {
-        BaseMessages.getString( PKG, "PentahoReportingOutputDialog.PentahoReportingFiles" ),
-        BaseMessages.getString( PKG, "System.FileType.AllFiles" ), } );
+          BaseMessages.getString( PKG, "PentahoReportingOutputDialog.PentahoReportingFiles" ),
+          BaseMessages.getString( PKG, "System.FileType.AllFiles" ), } );
 
       if ( dialog.open() == null ) {
         return;
@@ -393,8 +395,8 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
       shell.setCursor( null );
 
-      BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1,
-          new TableItemInsertListener() {
+      BaseStepDialog.getFieldsFromPrevious(
+          r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, new TableItemInsertListener() {
 
             public boolean tableItemInserted( TableItem item, ValueMetaInterface valueMeta ) {
               item.setText( 2, valueMeta.getComments() );
@@ -404,9 +406,9 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
     } catch ( Exception e ) {
       shell.setCursor( null );
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Title" ), BaseMessages
-              .getString( PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Title" ),
+          BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Message" ), e );
     } finally {
       shell.setCursor( null );
       busy.dispose();
@@ -460,8 +462,8 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     } else {
       // We don't know
       type =
-          BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.Unknown", entry.getValueType()
-              .getSimpleName() );
+          BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParameterType.Unknown", entry
+              .getValueType().getSimpleName() );
     }
 
     if ( attributes.length == 0 ) {

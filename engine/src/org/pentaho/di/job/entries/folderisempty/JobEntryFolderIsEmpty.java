@@ -296,8 +296,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
         return true;
 
       } catch ( Exception e ) {
-        log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString( PKG,
-            "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
+        log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString(
+            PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
         returncode = false;
       } finally {
         if ( file_name != null ) {

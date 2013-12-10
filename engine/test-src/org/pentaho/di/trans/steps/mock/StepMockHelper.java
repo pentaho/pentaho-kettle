@@ -43,14 +43,14 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
     KettleLogStore.setLogChannelInterfaceFactory( logChannelInterfaceFactory );
     stepMeta = mock( StepMeta.class );
     when( stepMeta.getName() ).thenReturn( stepName );
-    stepDataInterface = (Data) mock( stepDataClass );
+    stepDataInterface = mock( stepDataClass );
     transMeta = mock( TransMeta.class );
     when( transMeta.findStep( stepName ) ).thenReturn( stepMeta );
     trans = mock( Trans.class );
-    initStepMetaInterface = (Meta) mock( stepMetaClass );
-    initStepDataInterface = (Data) mock( stepDataClass );
-    processRowsStepDataInterface = (Data) mock( stepDataClass );
-    processRowsStepMetaInterface = (Meta) mock( stepMetaClass );
+    initStepMetaInterface = mock( stepMetaClass );
+    initStepDataInterface = mock( stepDataClass );
+    processRowsStepDataInterface = mock( stepDataClass );
+    processRowsStepMetaInterface = mock( stepMetaClass );
   }
 
   public RowSet getMockInputRowSet( Object[]... rows ) {

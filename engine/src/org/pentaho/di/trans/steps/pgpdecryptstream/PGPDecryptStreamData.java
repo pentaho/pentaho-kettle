@@ -42,9 +42,6 @@ public class PGPDecryptStreamData extends BaseStepData implements StepDataInterf
   public String passPhrase;
   public int indexOfPassphraseField;
 
-  /**
-	 * 
-	 */
   public PGPDecryptStreamData() {
     super();
     this.indexOfField = -1;

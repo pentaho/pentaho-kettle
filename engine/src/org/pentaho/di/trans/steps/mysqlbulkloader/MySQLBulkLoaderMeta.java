@@ -83,11 +83,11 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 
   private static final String[] fieldFormatTypeCodes = { "OK", "DATE", "TIMESTAMP", "NUMBER", "STRING_ESC" };
   private static final String[] fieldFormatTypeDescriptions = {
-    BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.OK.Description" ),
-    BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.Date.Description" ),
-    BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.Timestamp.Description" ),
-    BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.Number.Description" ),
-    BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.StringEscape.Description" ), };
+      BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.OK.Description" ),
+      BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.Date.Description" ),
+      BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.Timestamp.Description" ),
+      BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.Number.Description" ),
+      BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.StringEscape.Description" ), };
 
   /** what's the schema for the target? */
   private String schemaName;
@@ -256,8 +256,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         fieldFormatType[i] = getFieldFormatType( XMLHandler.getTagValue( vnode, "field_format_type" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "MySQLBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "MySQLBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -337,8 +337,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         fieldFormatType[i] = getFieldFormatType( rep.getStepAttributeString( id_step, i, "field_format_type" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MySQLBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "MySQLBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -361,8 +361,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
       for ( int i = 0; i < fieldTable.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "stream_name", fieldTable[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldStream[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_format_ok",
-            getFieldFormatTypeCode( fieldFormatType[i] ) );
+        rep.saveStepAttribute(
+            id_transformation, id_step, i, "field_format_ok", getFieldFormatTypeCode( fieldFormatType[i] ) );
       }
 
       // Also, save the step-database relationship!
@@ -370,8 +370,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MySQLBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "MySQLBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -395,8 +395,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 
         if ( !Const.isEmpty( tableName ) ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "MySQLBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "MySQLBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -410,8 +410,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "MySQLBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "MySQLBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             // How about the fields to insert/dateMask in the table?
@@ -438,8 +438,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
@@ -452,8 +452,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "MySQLBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -476,8 +476,8 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "MySQLBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
         } else {
@@ -503,13 +503,13 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MySQLBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MySQLBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MySQLBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MySQLBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -579,9 +579,10 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         ValueMetaInterface v = prev.searchValueMeta( fieldStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-                databaseMeta.getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
-                fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
+            new DatabaseImpact(
+                DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                    .getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i], fieldStream[i],
+                v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
         impact.add( ii );
       }
     }

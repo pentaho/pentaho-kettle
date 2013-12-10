@@ -63,8 +63,8 @@ import org.w3c.dom.Node;
 public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] RequiredFoldersDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFoldersDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFoldersCode = new String[] { "N", "Y" };
 
   public static final String NO = "N";
@@ -437,48 +437,48 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
     if ( isFoldernameDynamic ) {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.InputOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.InputOk" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.InputErrorKo" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.InputErrorKo" ), stepMeta );
       }
       remarks.add( cr );
 
       if ( Const.isEmpty( dynamicFoldernameField ) ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameOk" ), stepMeta );
       }
 
       remarks.add( cr );
     } else {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.NoInputError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.NoInputError" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.NoInputOk" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.NoInputOk" ), stepMeta );
       }
       remarks.add( cr );
       // check specified folder names
       FileInputList fileList = getFolderList( transMeta );
       if ( fileList.nrOfFiles() == 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.ExpectedFoldersError" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.ExpectedFoldersError" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "GetSubFoldersMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "GetSubFoldersMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
         remarks.add( cr );
       }
     }

@@ -127,8 +127,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final String[] YES_NO_COMBO = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   private ModifyListener lsMod;
   private SashForm wSash;
@@ -264,8 +264,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     try {
       scVHelp = new ScriptValuesHelp( "jsFunctionHelp.xml" );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, "Unexpected error",
-          "There was an unexpected error reading the javascript functions help", e );
+      new ErrorDialog(
+          shell, "Unexpected error", "There was an unexpected error reading the javascript functions help", e );
     }
 
   }
@@ -463,22 +463,28 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Filename" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.RenameTo" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Type" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Length" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Precision" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Replace" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Filename" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.RenameTo" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Precision" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Replace" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ), };
 
     wFields =
-        new TableView( transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1036,8 +1042,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
       TableItem item = wFields.getNonEmpty( i );
       meta.getFieldname()[i] = item.getText( 1 );
       meta.getRename()[i] = item.getText( 2 );
-      if ( meta.getRename()[i] == null || meta.getRename()[i].length() == 0
-          || meta.getRename()[i].equalsIgnoreCase( meta.getFieldname()[i] ) ) {
+      if ( meta.getRename()[i] == null
+          || meta.getRename()[i].length() == 0 || meta.getRename()[i].equalsIgnoreCase( meta.getFieldname()[i] ) ) {
         meta.getRename()[i] = meta.getFieldname()[i];
       }
       meta.getType()[i] = ValueMeta.getType( item.getText( 3 ) );
@@ -1204,8 +1210,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
         ScriptValuesMetaMod scriptMeta = new ScriptValuesMetaMod();
         getInfo( scriptMeta );
         StepMeta scriptStep =
-            new StepMeta( registry.getPluginId( StepPluginType.class, scriptMeta ), Const.NVL( scriptStepName,
-                "## SCRIPT ##" ), scriptMeta );
+            new StepMeta( registry.getPluginId( StepPluginType.class, scriptMeta ), Const.NVL(
+                scriptStepName, "## SCRIPT ##" ), scriptMeta );
         scriptStepName = scriptStep.getName();
         scriptStep.setLocation( 150, 50 );
 
@@ -1237,8 +1243,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
           if ( !progressDialog.isCancelled() ) {
             if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
               EnterTextDialog etd =
-                  new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                      BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                  new EnterTextDialog(
+                      shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                          PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
               etd.setReadOnly();
               etd.open();
             }
@@ -1249,8 +1256,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
           if ( previewRowsMeta != null && previewRows != null && previewRows.size() > 0 ) {
             PreviewRowsDialog prd =
-                new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), previewRowsMeta, previewRows,
-                    loggingText );
+                new PreviewRowsDialog(
+                    shell, transMeta, SWT.NONE, wStepname.getText(), previewRowsMeta, previewRows, loggingText );
             prd.open();
           }
         }
@@ -1260,8 +1267,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
         throw new KettleException( BaseMessages.getString( PKG, "ScriptValuesDialogMod.Exception.CouldNotGetFields" ) );
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle" ),
-          BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle" ), BaseMessages.getString(
+              PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage" ), e );
       return false;
     }
 
@@ -1320,8 +1328,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
         // Adding some default JavaScriptFunctions to the System
         try {
           Context.javaToJS( ScriptValuesAddedFunctions.class, jsscope );
-          ( (ScriptableObject) jsscope ).defineFunctionProperties( jsFunctionList, ScriptValuesAddedFunctions.class,
-              ScriptableObject.DONTENUM );
+          ( (ScriptableObject) jsscope ).defineFunctionProperties(
+              jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM );
         } catch ( Exception ex ) {
           testException =
               new KettleException( BaseMessages.getString( PKG, "ScriptValuesDialogMod.CouldNotAddDefaultFunctions", ex
@@ -1337,8 +1345,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
           jsscope.put( "CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf( CONTINUE_TRANSFORMATION ) );
         } catch ( Exception ex ) {
           testException =
-              new KettleException( BaseMessages.getString( PKG,
-                  "ScriptValuesDialogMod.CouldNotAddTransformationConstants", ex.toString() ) );
+              new KettleException( BaseMessages.getString(
+                  PKG, "ScriptValuesDialogMod.CouldNotAddTransformationConstants", ex.toString() ) );
           retval = false;
         }
 
@@ -1419,8 +1427,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
         try {
           // Checking for StartScript
-          if ( strActiveStartScript != null && !folder.getSelection().getText().equals( strActiveStartScript )
-              && strActiveStartScript.length() > 0 ) {
+          if ( strActiveStartScript != null
+              && !folder.getSelection().getText().equals( strActiveStartScript ) && strActiveStartScript.length() > 0 ) {
             String strStartScript =
                 getStyledTextComp( folder.getItem( getCTabPosition( strActiveStartScript ) ) ).getText();
             /* Object startScript = */jscx.evaluateString( jsscope, strStartScript, "trans_Start", 1, null );
@@ -1507,8 +1515,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
           retval = false;
         } catch ( Exception e ) {
           testException =
-              new KettleException( BaseMessages.getString( PKG,
-                  "ScriptValuesDialogMod.Exception.CouldNotExecuteScript2" ), e );
+              new KettleException( BaseMessages.getString(
+                  PKG, "ScriptValuesDialogMod.Exception.CouldNotExecuteScript2" ), e );
           retval = false;
         }
       } else {
@@ -1526,14 +1534,16 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
             mb.open();
           }
         } else {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle" ),
-              BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage" ), testException );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle" ), BaseMessages
+                  .getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage" ), testException );
         }
       }
     } catch ( KettleException ke ) {
       retval = false;
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle" ),
-          BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "ScriptValuesDialogMod.TestFailed.DialogTitle" ), BaseMessages.getString(
+              PKG, "ScriptValuesDialogMod.TestFailed.DialogMessage" ), ke );
     } finally {
       if ( jscx != null ) {
         Context.exit();

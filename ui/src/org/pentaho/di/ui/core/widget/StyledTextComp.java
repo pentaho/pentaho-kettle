@@ -110,8 +110,8 @@ public class StyledTextComp extends Composite {
           bFullSelection = true;
           styledText.selectAll();
         } else if ( e.keyCode == 'f' && ( e.stateMask & SWT.MOD1 ) != 0 ) {
-          new StyledTextCompFind( styledTextPopupmenu.getShell(), styledText, BaseMessages.getString( PKG,
-              "WidgetDialog.Styled.Find" ) ).open();
+          new StyledTextCompFind( styledTextPopupmenu.getShell(), styledText, BaseMessages.getString(
+              PKG, "WidgetDialog.Styled.Find" ) ).open();
         }
       }
     };
@@ -282,8 +282,8 @@ public class StyledTextComp extends Composite {
     findItem.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event e ) {
         StyledTextCompFind stFind =
-            new StyledTextCompFind( styledText.getShell(), styledText, BaseMessages.getString( PKG,
-                "WidgetDialog.Styled.FindString", strTabName ) );
+            new StyledTextCompFind( styledText.getShell(), styledText, BaseMessages.getString(
+                PKG, "WidgetDialog.Styled.FindString", strTabName ) );
         stFind.open();
       }
     } );
@@ -406,8 +406,8 @@ public class StyledTextComp extends Composite {
         redoStack.remove( redoStack.size() - 1 );
       }
       UndoRedoStack rro =
-          new UndoRedoStack( urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(),
-              urs.getEventLength(), urs.getType() );
+          new UndoRedoStack(
+              urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(), urs.getEventLength(), urs.getType() );
       bFullSelection = false;
       styledText.setText( urs.getReplacedText() );
       if ( urs.getType() == UndoRedoStack.INSERT ) {
@@ -431,8 +431,8 @@ public class StyledTextComp extends Composite {
         undoStack.remove( undoStack.size() - 1 );
       }
       UndoRedoStack rro =
-          new UndoRedoStack( urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(),
-              urs.getEventLength(), urs.getType() );
+          new UndoRedoStack(
+              urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(), urs.getEventLength(), urs.getType() );
       bFullSelection = false;
       styledText.setText( urs.getReplacedText() );
       if ( urs.getType() == UndoRedoStack.INSERT ) {

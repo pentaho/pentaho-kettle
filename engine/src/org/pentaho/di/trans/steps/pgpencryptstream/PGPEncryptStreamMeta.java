@@ -229,8 +229,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       streamfield = rep.getStepAttributeString( id_step, "streamfield" );
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "PGPEncryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "PGPEncryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -296,13 +296,13 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PGPEncryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PGPEncryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PGPEncryptStreamMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "PGPEncryptStreamMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

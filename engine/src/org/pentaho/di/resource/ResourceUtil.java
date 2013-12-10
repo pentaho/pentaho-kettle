@@ -63,8 +63,8 @@ public class ResourceUtil {
   public static final TopLevelResource
     serializeResourceExportInterface( String zipFilename, ResourceExportInterface resourceExportInterface,
         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleException {
-    return serializeResourceExportInterface( zipFilename, resourceExportInterface, space, repository, metaStore, null,
-        null );
+    return serializeResourceExportInterface(
+        zipFilename, resourceExportInterface, space, repository, metaStore, null, null );
   }
 
   /**
@@ -124,9 +124,9 @@ public class ResourceUtil {
           ZipEntry zipEntry = new ZipEntry( resourceDefinition.getFilename() );
 
           String comment =
-              BaseMessages.getString( PKG,
-                  "ResourceUtil.SerializeResourceExportInterface.ZipEntryComment.OriginatingFile", filename, Const.NVL(
-                      resourceDefinition.getOrigin(), "-" ) );
+              BaseMessages.getString(
+                  PKG, "ResourceUtil.SerializeResourceExportInterface.ZipEntryComment.OriginatingFile", filename, Const
+                      .NVL( resourceDefinition.getOrigin(), "-" ) );
           zipEntry.setComment( comment );
           out.putNextEntry( zipEntry );
 
@@ -139,15 +139,15 @@ public class ResourceUtil {
         throw new KettleException( BaseMessages.getString( PKG, "ResourceUtil.Exception.NoResourcesFoundToExport" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ResourceUtil.Exception.ErrorSerializingExportInterface",
-          resourceExportInterface.toString() ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ResourceUtil.Exception.ErrorSerializingExportInterface", resourceExportInterface.toString() ), e );
     } finally {
       if ( out != null ) {
         try {
           out.close();
         } catch ( IOException e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "ResourceUtil.Exception.ErrorClosingZipStream",
-              zipFilename ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "ResourceUtil.Exception.ErrorClosingZipStream", zipFilename ) );
         }
       }
     }
@@ -178,8 +178,8 @@ public class ResourceUtil {
     }
 
     String message =
-        BaseMessages.getString( PKG, "ResourceUtil.ExportResourcesExplanation", zipFilename, commandString, launchFile,
-            Const.CR );
+        BaseMessages.getString(
+            PKG, "ResourceUtil.ExportResourcesExplanation", zipFilename, commandString, launchFile, Const.CR );
     return message;
   }
 }

@@ -90,9 +90,6 @@ public class RestData extends BaseStepData implements StepDataInterface {
 
   public MediaType mediaType;
 
-  /**
-	 * 
-	 */
   public RestData() {
     super();
     this.indexOfUrlField = -1;

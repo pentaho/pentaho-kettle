@@ -324,15 +324,15 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < fieldName.length; i++ ) {
       if ( Const.isEmpty( variableString[i] ) ) {
         CheckResult cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i] ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i] ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetVariableMeta.CheckResult.AllVariablesSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetVariableMeta.CheckResult.AllVariablesSpecified" ), stepMeta );
       remarks.add( cr );
     }
   }

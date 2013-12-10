@@ -146,8 +146,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getDatabaseFactoryName() {
-    return EnvUtil.getSystemProperty( Const.KETTLE_SAP_CONNECTION_FACTORY,
-        Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME );
+    return EnvUtil.getSystemProperty(
+        Const.KETTLE_SAP_CONNECTION_FACTORY, Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME );
   }
 
   /**

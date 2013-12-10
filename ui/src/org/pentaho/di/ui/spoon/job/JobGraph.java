@@ -179,10 +179,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   private static final String XUL_FILE_JOB_GRAPH = "ui/job-graph.xul";
 
-  public final static String START_TEXT = BaseMessages.getString( PKG, "JobLog.Button.Start" );
-  public final static String STOP_TEXT = BaseMessages.getString( PKG, "JobLog.Button.Stop" );
+  public static final String START_TEXT = BaseMessages.getString( PKG, "JobLog.Button.Start" );
+  public static final String STOP_TEXT = BaseMessages.getString( PKG, "JobLog.Button.Stop" );
 
-  private final static String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
+  private static final String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
 
   private static final int HOP_SEL_MARGIN = 9;
 
@@ -377,9 +377,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       menuMap.put( "job-graph-entry", (XulMenupopup) doc.getElementById( "job-graph-entry" ) );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JobGraph.Exception.ErrorReadingXULFile.Title" ),
-          BaseMessages.getString( PKG, "JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS ),
-          new Exception( t ) );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "JobGraph.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
+              PKG, "JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS ), new Exception( t ) );
     }
 
     toolTip = new DefaultToolTip( canvas, ToolTip.NO_RECREATE, true );
@@ -488,8 +488,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                 // See if we want to draw a tool tip explaining how to create new hops...
                 //
                 if ( jobMeta.nrJobEntries() > 1 && jobMeta.nrJobEntries() < 5 && spoon.props.isShowingHelpToolTips() ) {
-                  showHelpTip( p.x, p.y, BaseMessages.getString( PKG, "JobGraph.HelpToolTip.CreatingHops.Title" ),
-                      BaseMessages.getString( PKG, "JobGraph.HelpToolTip.CreatingHops.Message" ) );
+                  showHelpTip(
+                      p.x, p.y, BaseMessages.getString( PKG, "JobGraph.HelpToolTip.CreatingHops.Title" ), BaseMessages
+                          .getString( PKG, "JobGraph.HelpToolTip.CreatingHops.Message" ) );
                 }
               }
             }
@@ -497,8 +498,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             case DragAndDropContainer.TYPE_JOB_ENTRY: // Drag existing one onto the canvas
             {
               JobEntryCopy jge = jobMeta.findJobEntry( entry, 0, true );
-              if ( jge != null ) // Create duplicate of existing entry
-              {
+              if ( jge != null ) {
+                // Create duplicate of existing entry
+
                 // There can be only 1 start!
                 if ( jge.isStart() && jge.isDrawn() ) {
                   showOnlyStartOnceMessage( shell );
@@ -538,13 +540,14 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                 PropsUI.setLocation( newjge, p.x, p.y );
                 newjge.setDrawn();
                 if ( jge_changed ) {
-                  spoon.addUndoChange( jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { newjge },
-                      new int[] { jobMeta.indexOfJobEntry( newjge ) } );
+                  spoon.addUndoChange(
+                      jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { newjge }, new int[] { jobMeta
+                          .indexOfJobEntry( newjge ) } );
                 }
                 redraw();
                 spoon.refreshTree();
-                log.logBasic( "DropTargetEvent", "DROP " + newjge.toString() + "!, type="
-                    + newjge.getEntry().getPluginId() );
+                log.logBasic( "DropTargetEvent", "DROP "
+                    + newjge.toString() + "!, type=" + newjge.getEntry().getPluginId() );
               } else {
                 log.logError( "Unknown job entry dropped onto the canvas." );
               }
@@ -554,8 +557,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               break;
           }
         } catch ( Exception e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorDroppingObject.Message" ),
-              BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorDroppingObject.Title" ), e );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorDroppingObject.Message" ), BaseMessages
+                  .getString( PKG, "JobGraph.Dialog.ErrorDroppingObject.Title" ), e );
         }
       }
 
@@ -607,8 +611,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( jobentry != null ) {
       if ( e.button == 1 ) {
         editEntry( jobentry );
-      } else // open tab in Spoon
-      {
+      } else {
+        // open tab in Spoon
         launchStuff( jobentry );
       }
     } else {
@@ -692,12 +696,12 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
             if ( hop_candidate != null ) {
               addCandidateAsHop();
-            }
 
-            else if ( e.button == 2 || ( e.button == 1 && shift ) ) {
+            } else if ( e.button == 2 || ( e.button == 1 && shift ) ) {
               // SHIFT CLICK is start of drag to create a new hop
               //
               startHopEntry = jobEntryCopy;
+
             } else {
               selectedEntries = jobMeta.getSelectedEntries();
               selectedEntry = jobEntryCopy;
@@ -788,11 +792,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( hop_candidate != null ) {
       addCandidateAsHop();
       redraw();
-    }
-    // Did we select a region on the screen? Mark steps in region as
-    // selected
-    //
-    else {
+    } else {
+      // Did we select a region on the screen? Mark steps in region as
+      // selected
+      //
       if ( selectionRegion != null ) {
         selectionRegion.width = real.x - selectionRegion.x;
         selectionRegion.height = real.y - selectionRegion.y;
@@ -802,10 +805,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         selectionRegion = null;
         stopEntryMouseOverDelayTimers();
         redraw();
-      }
-      // Clicked on an icon?
-      //
-      else {
+      } else {
+        // Clicked on an icon?
+        //
         if ( selectedEntry != null && startHopEntry == null ) {
           if ( e.button == 1 ) {
             Point realclick = screen2real( e.x, e.y );
@@ -829,13 +831,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               if ( selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null ) {
                 int[] indexes = jobMeta.getNoteIndexes( selectedNotes );
 
-                addUndoPosition( selectedNotes.toArray( new NotePadMeta[selectedNotes.size()] ), indexes,
-                    previous_note_locations, jobMeta.getSelectedNoteLocations(), also );
+                addUndoPosition(
+                    selectedNotes.toArray( new NotePadMeta[selectedNotes.size()] ), indexes, previous_note_locations,
+                    jobMeta.getSelectedNoteLocations(), also );
                 also = selectedEntries != null && selectedEntries.size() > 0;
               }
               if ( selectedEntries != null && selectedEntries.size() > 0 && previous_step_locations != null ) {
                 int[] indexes = jobMeta.getEntryIndexes( selectedEntries );
-                addUndoPosition( selectedEntries.toArray( new JobEntryCopy[selectedEntries.size()] ), indexes,
+                addUndoPosition(
+                    selectedEntries.toArray( new JobEntryCopy[selectedEntries.size()] ), indexes,
                     previous_step_locations, jobMeta.getSelectedLocations(), also );
               }
             }
@@ -856,14 +860,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                         BaseMessages.getString( PKG, "TransGraph.Dialog.SplitHop.Message" ) + Const.CR + hi.toString(),
                         MessageDialog.QUESTION,
                         new String[] {
-                          BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString( PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ), spoon.props.getAutoSplit() ); //$NON-NLS-3$
+                            BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString( PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ), spoon.props.getAutoSplit() ); //$NON-NLS-3$
                 MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
                 id = md.open();
                 spoon.props.setAutoSplit( md.getToggleState() );
               }
 
-              if ( ( id & 0xFF ) == 0 ) // Means: "Yes" button clicked!
-              {
+              if ( ( id & 0xFF ) == 0 ) {
+                // Means: "Yes" button clicked!
+
                 // Only split A-->--B by putting C in between IF...
                 // C-->--A or B-->--C don't exists...
                 // A ==> hi.getFromEntry()
@@ -913,10 +918,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           endHopLocation = null;
           redraw();
           spoon.setShellText();
-        }
-
-        // Notes?
-        else {
+        } else {
+          // Notes?
           if ( selectedNote != null ) {
             if ( e.button == 1 ) {
               if ( lastclick.x == e.x && lastclick.y == e.y ) {
@@ -937,13 +940,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                 boolean also = false;
                 if ( selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null ) {
                   int[] indexes = jobMeta.getNoteIndexes( selectedNotes );
-                  addUndoPosition( selectedNotes.toArray( new NotePadMeta[selectedNotes.size()] ), indexes,
-                      previous_note_locations, jobMeta.getSelectedNoteLocations(), also );
+                  addUndoPosition(
+                      selectedNotes.toArray( new NotePadMeta[selectedNotes.size()] ), indexes, previous_note_locations,
+                      jobMeta.getSelectedNoteLocations(), also );
                   also = selectedEntries != null && selectedEntries.size() > 0;
                 }
                 if ( selectedEntries != null && selectedEntries.size() > 0 && previous_step_locations != null ) {
                   int[] indexes = jobMeta.getEntryIndexes( selectedEntries );
-                  addUndoPosition( selectedEntries.toArray( new JobEntryCopy[selectedEntries.size()] ), indexes,
+                  addUndoPosition(
+                      selectedEntries.toArray( new JobEntryCopy[selectedEntries.size()] ), indexes,
                       previous_step_locations, jobMeta.getSelectedLocations(), also );
                 }
               }
@@ -1031,23 +1036,20 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       selectedNotes.add( selectedNote );
       previous_note_locations = new Point[] { selectedNote.getLocation() };
       redraw();
-    }
-
-    // Did we select a region...?
-    //
-    else if ( selectionRegion != null && startHopEntry == null ) {
+    } else if ( selectionRegion != null && startHopEntry == null ) {
+      // Did we select a region...?
+      //
       selectionRegion.width = real.x - selectionRegion.x;
       selectionRegion.height = real.y - selectionRegion.y;
       redraw();
-    }
-    // Move around steps & notes
-    //
-    else if ( selectedEntry != null && lastButton == 1 && !shift && startHopEntry == null ) {
-      /*
-       * One or more icons are selected and moved around...
-       * 
-       * new : new position of the ICON (not the mouse pointer) dx : difference with previous position
-       */
+    } else if ( selectedEntry != null && lastButton == 1 && !shift && startHopEntry == null ) {
+      // Move around steps & notes
+      //
+      //
+      // One or more icons are selected and moved around...
+      //
+      // new : new position of the ICON (not the mouse pointer) dx : difference with previous position
+      //
       int dx = icon.x - selectedEntry.getLocation().x;
       int dy = icon.y - selectedEntry.getLocation().y;
 
@@ -1090,11 +1092,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       }
 
       redraw();
-    }
+    } else if ( ( startHopEntry != null && endHopEntry == null ) || ( endHopEntry != null && startHopEntry == null ) ) {
+      // Are we creating a new hop with the middle button or pressing SHIFT?
+      //
 
-    // Are we creating a new hop with the middle button or pressing SHIFT?
-    //
-    else if ( ( startHopEntry != null && endHopEntry == null ) || ( endHopEntry != null && startHopEntry == null ) ) {
       JobEntryCopy jobEntryCopy = jobMeta.getJobEntryCopy( real.x, real.y, iconsize );
       endHopLocation = new Point( real.x, real.y );
       if ( jobEntryCopy != null
@@ -1685,13 +1686,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       //
       if ( "Y".equalsIgnoreCase( spoon.props.getCustomParameter( STRING_PARALLEL_WARNING_PARAMETER, "Y" ) ) ) {
         MessageDialogWithToggle md =
-            new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-                "JobGraph.ParallelJobEntriesWarning.DialogTitle" ), null, BaseMessages.getString( PKG,
-                "JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR )
-                + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-                "JobGraph.ParallelJobEntriesWarning.Option1" ) }, 0, BaseMessages.getString( PKG,
-                "JobGraph.ParallelJobEntriesWarning.Option2" ), "N".equalsIgnoreCase( spoon.props.getCustomParameter(
-                STRING_PARALLEL_WARNING_PARAMETER, "Y" ) ) );
+            new MessageDialogWithToggle( shell, BaseMessages.getString(
+                PKG, "JobGraph.ParallelJobEntriesWarning.DialogTitle" ), null, BaseMessages.getString(
+                PKG, "JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR )
+                + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+                PKG, "JobGraph.ParallelJobEntriesWarning.Option1" ) }, 0, BaseMessages.getString(
+                PKG, "JobGraph.ParallelJobEntriesWarning.Option2" ), "N".equalsIgnoreCase( spoon.props
+                .getCustomParameter( STRING_PARALLEL_WARNING_PARAMETER, "Y" ) ) );
         MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
         md.open();
         spoon.props.setCustomParameter( STRING_PARALLEL_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
@@ -1756,8 +1757,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     final JobEntryCopy jobEntry = jobMeta.getJobEntryCopy( x, y, iconsize );
     setJobEntry( jobEntry );
     Document doc = xulDomContainer.getDocumentRoot();
-    if ( jobEntry != null ) // We clicked on a Job Entry!
-    {
+    if ( jobEntry != null ) {
+      // We clicked on a Job Entry!
+
       XulMenupopup menu = (XulMenupopup) doc.getElementById( "job-graph-entry" );
       if ( menu != null ) {
         List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
@@ -1831,13 +1833,14 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         ConstUI.displayMenu( menu, canvas );
       }
 
-    } else // Clear the menu
-    {
+    } else {
+      // Clear the menu
+
       final JobHopMeta hi = findJobHop( x, y );
       setCurrentHop( hi );
 
-      if ( hi != null ) // We clicked on a HOP!
-      {
+      if ( hi != null ) {
+        // We clicked on a HOP!
 
         XulMenupopup menu = (XulMenupopup) doc.getElementById( "job-graph-hop" );
         if ( menu != null ) {
@@ -2150,16 +2153,16 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           hi = (JobHopMeta) areaOwner.getOwner();
           if ( hi.isUnconditional() ) {
             tipImage = GUIResource.getInstance().getImageUnconditionalHop();
-            tip.append( BaseMessages.getString( PKG, "JobGraph.Hop.Tooltip.Unconditional", hi.getFromEntry().getName(),
-                Const.CR ) );
+            tip.append( BaseMessages.getString(
+                PKG, "JobGraph.Hop.Tooltip.Unconditional", hi.getFromEntry().getName(), Const.CR ) );
           } else {
             if ( hi.getEvaluation() ) {
-              tip.append( BaseMessages.getString( PKG, "JobGraph.Hop.Tooltip.EvaluatingTrue", hi.getFromEntry()
-                  .getName(), Const.CR ) );
+              tip.append( BaseMessages.getString( PKG, "JobGraph.Hop.Tooltip.EvaluatingTrue", hi
+                  .getFromEntry().getName(), Const.CR ) );
               tipImage = GUIResource.getInstance().getImageTrue();
             } else {
-              tip.append( BaseMessages.getString( PKG, "JobGraph.Hop.Tooltip.EvaluatingFalse", hi.getFromEntry()
-                  .getName(), Const.CR ) );
+              tip.append( BaseMessages.getString( PKG, "JobGraph.Hop.Tooltip.EvaluatingFalse", hi
+                  .getFromEntry().getName(), Const.CR ) );
               tipImage = GUIResource.getInstance().getImageFalse();
             }
           }
@@ -2167,8 +2170,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
         case JOB_HOP_PARALLEL_ICON:
           hi = (JobHopMeta) areaOwner.getOwner();
-          tip.append( BaseMessages.getString( PKG, "JobGraph.Hop.Tooltip.Parallel", hi.getFromEntry().getName(),
-              Const.CR ) );
+          tip.append( BaseMessages.getString(
+              PKG, "JobGraph.Hop.Tooltip.Parallel", hi.getFromEntry().getName(), Const.CR ) );
           tipImage = GUIResource.getInstance().getImageParallelHop();
           break;
 
@@ -2266,7 +2269,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           break;
 
         case JOB_ENTRY_RESULT_CHECKPOINT:
-          tip.append( "The job started here since this is the furthest checkpoint that was reached last time the transformation was executed." );
+          tip
+              .append( "The job started here since this is the furthest checkpoint that was reached last time the transformation was executed." );
           tipImage = GUIResource.getInstance().getImageCheckpoint();
           break;
         default:
@@ -2394,9 +2398,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         spoon.applyVariables();
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ), BaseMessages.getString( PKG,
-          "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ), BaseMessages.getString(
+          PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), e );
     }
   }
 
@@ -2502,9 +2506,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       spoon.applyVariables();
 
     } catch ( Throwable e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ), BaseMessages.getString( PKG,
-          "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), (Exception) e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ), BaseMessages.getString(
+          PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), (Exception) e );
     }
   }
 
@@ -2599,8 +2603,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       spoon.applyVariables();
 
     } catch ( Throwable e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title" ),
-          BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title" ), BaseMessages
+              .getString( PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message" ), e );
     }
   }
 
@@ -2676,8 +2681,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       int leftPosition = ( area.x - messageSize.x - pentahoImage.getBounds().width - 10 ) / 2;
       int topPosition = ( area.y - messageSize.y ) / 2;
       e.gc.drawText( message, leftPosition, topPosition );
-      e.gc.drawImage( pentahoImage, leftPosition - pentahoImage.getBounds().width - 10, topPosition + messageSize.y / 2
-          - pentahoImage.getBounds().height / 2 );
+      e.gc.drawImage( pentahoImage, leftPosition - pentahoImage.getBounds().width - 10, topPosition
+          + messageSize.y / 2 - pentahoImage.getBounds().height / 2 );
     }
     img.dispose();
 
@@ -2687,11 +2692,12 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     GCInterface gc = new SWTGC( device, new Point( x, y ), iconsize );
 
     JobPainter jobPainter =
-        new JobPainter( gc, jobMeta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ),
-            hop_candidate, drop_candidate, selectionRegion, areaOwners, mouseOverEntries, PropsUI.getInstance()
-                .getIconSize(), PropsUI.getInstance().getLineWidth(), PropsUI.getInstance().getCanvasGridSize(),
-            PropsUI.getInstance().getShadowSize(), PropsUI.getInstance().isAntiAliasingEnabled(), PropsUI.getInstance()
-                .getNoteFont().getName(), PropsUI.getInstance().getNoteFont().getHeight() );
+        new JobPainter(
+            gc, jobMeta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ), hop_candidate,
+            drop_candidate, selectionRegion, areaOwners, mouseOverEntries, PropsUI.getInstance().getIconSize(), PropsUI
+                .getInstance().getLineWidth(), PropsUI.getInstance().getCanvasGridSize(), PropsUI
+                .getInstance().getShadowSize(), PropsUI.getInstance().isAntiAliasingEnabled(), PropsUI
+                .getInstance().getNoteFont().getName(), PropsUI.getInstance().getNoteFont().getHeight() );
 
     jobPainter.setMagnification( magnificationFactor );
     jobPainter.setEntryLogMap( entryLogMap );
@@ -3025,10 +3031,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             rep != null ? rep.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
         spoon.sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
       } catch ( Exception e ) {
-        new ErrorDialog( spoon.getShell(),
-            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages.getString( PKG,
-                "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs.makeTabName( jobMeta, true ) ),
-            e );
+        new ErrorDialog(
+            spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs
+                .makeTabName( jobMeta, true ) ), e );
       }
     }
 
@@ -3276,12 +3282,14 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           spoon.saveToFile( jobMeta );
         } else {
           MessageDialogWithToggle md =
-              new MessageDialogWithToggle( shell, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Title" ),
-                  null, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" ) + Const.CR
-                      + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" ) + Const.CR,
-                  MessageDialog.QUESTION, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
-                    BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString( PKG,
-                      "JobLog.Dialog.SaveChangedFile.Toggle" ), spoon.props.getAutoSave() );
+              new MessageDialogWithToggle(
+                  shell, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Title" ), null, BaseMessages
+                      .getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" )
+                      + Const.CR + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" ) + Const.CR,
+                  MessageDialog.QUESTION, new String[] {
+                      BaseMessages.getString( PKG, "System.Button.Yes" ),
+                      BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString(
+                      PKG, "JobLog.Dialog.SaveChangedFile.Toggle" ), spoon.props.getAutoSave() );
           int answer = md.open();
           if ( ( answer & 0xFF ) == 0 ) {
             spoon.saveToFile( jobMeta );

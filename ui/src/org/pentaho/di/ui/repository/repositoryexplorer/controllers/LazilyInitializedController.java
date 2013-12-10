@@ -70,8 +70,8 @@ public abstract class LazilyInitializedController extends AbstractXulEventHandle
     messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
     messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
     if ( e != null ) {
-      messageBox.setMessage( BaseMessages.getString( PKG, "LazilyInitializedController.Message.UnableToInitWithParam",
-          e.getLocalizedMessage() ) );
+      messageBox.setMessage( BaseMessages.getString(
+          PKG, "LazilyInitializedController.Message.UnableToInitWithParam", e.getLocalizedMessage() ) );
     } else {
       messageBox.setMessage( BaseMessages.getString( PKG, "LazilyInitializedController.Message.UnableToInit" ) );
     }

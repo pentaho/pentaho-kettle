@@ -234,8 +234,8 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
           dialog.setFileName( wFilename.getText() );
         }
         dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "CubeOutputDialog.FilterNames.Options.CubeFiles" ),
-          BaseMessages.getString( PKG, "CubeOutputDialog.FilterNames.Options.AllFiles" ) } );
+            BaseMessages.getString( PKG, "CubeOutputDialog.FilterNames.Options.CubeFiles" ),
+            BaseMessages.getString( PKG, "CubeOutputDialog.FilterNames.Options.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }

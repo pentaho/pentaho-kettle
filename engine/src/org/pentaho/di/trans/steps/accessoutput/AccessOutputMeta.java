@@ -219,13 +219,13 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AccessOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "AccessOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AccessOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "AccessOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -245,8 +245,8 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
     Database db = null;
     try {
       if ( !file.exists() || !file.isFile() ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AccessOutputMeta.Exception.FileDoesNotExist",
-            realFilename ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename ) );
       }
 
       // open the database and get the table
@@ -254,8 +254,8 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
       String realTablename = space.environmentSubstitute( tablename );
       Table table = db.getTable( realTablename );
       if ( table == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AccessOutputMeta.Exception.TableDoesNotExist",
-            realTablename ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "AccessOutputMeta.Exception.TableDoesNotExist", realTablename ) );
       }
 
       RowMetaInterface layout = getLayout( table );
@@ -605,8 +605,9 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String[] getUsedLibraries() {
-    return new String[] { "jackcess-1.1.13.jar", "commons-collections-3.1.jar", "commons-logging.jar",
-      "commons-lang-2.2.jar", "commons-dbcp-1.2.1.jar", "commons-pool-1.3.jar", };
+    return new String[] {
+        "jackcess-1.1.13.jar", "commons-collections-3.1.jar", "commons-logging.jar", "commons-lang-2.2.jar",
+        "commons-dbcp-1.2.1.jar", "commons-pool-1.3.jar", };
   }
 
   /**

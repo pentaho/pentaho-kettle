@@ -267,21 +267,27 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     ColumnInfo[] ciKey =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.Field" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPType" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, SapType.getDescriptions() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TableOrStruct" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPParameterName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TargetType" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPType" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                SapType.getDescriptions() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TableOrStruct" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPParameterName" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TargetType" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes() ), };
     inputFieldColumns.add( ciKey[0] );
 
     wInput =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, input.getParameters().size(), lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey, input
+                .getParameters().size(), lsMod, props );
 
     FormData fdInput = new FormData();
     fdInput.left = new FormAttachment( 0, 0 );
@@ -318,21 +324,26 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     ColumnInfo[] ciReturn =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPField" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPType" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, SapType.getDescriptions(), false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TableOrStruct" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.NewName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TargetType" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {}, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.SAPType" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                SapType.getDescriptions(), false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TableOrStruct" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.NewName" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SapInputDialog.ColumnInfo.TargetType" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes() ), };
     outputFieldColumns.add( ciReturn[0] );
 
     wOutput =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, input.getOutputFields().size(), lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+            input.getOutputFields().size(), lsMod, props );
 
     FormData fdOutput = new FormData();
     fdOutput.left = new FormAttachment( 0, 0 );
@@ -561,14 +572,14 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
     previewMeta.getVariable( "Internal.Transformation.Filename.Directory" );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "CsvInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "CsvInputDialog.PreviewSize.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "CsvInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+            PKG, "CsvInputDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -577,17 +588,19 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-              loggingText );
+          new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(),
+              progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname
+                  .getText() ), loggingText );
       prd.open();
     }
   }

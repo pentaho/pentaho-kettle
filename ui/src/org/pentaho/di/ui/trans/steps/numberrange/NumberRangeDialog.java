@@ -359,8 +359,8 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
 
         input.addRule( lowerBound, upperBound, value );
       } catch ( NumberFormatException e ) {
-        throw new IllegalArgumentException( "Bounds of this rule are not numeric: lowerBound=" + lowerBoundStr
-            + ", upperBound=" + upperBoundStr + ", value=" + value, e );
+        throw new IllegalArgumentException( "Bounds of this rule are not numeric: lowerBound="
+            + lowerBoundStr + ", upperBound=" + upperBoundStr + ", value=" + value, e );
       }
     }
 

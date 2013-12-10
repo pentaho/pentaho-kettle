@@ -61,8 +61,9 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.outputRowMeta = rowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
-          repository, metaStore );
+      meta.getFields(
+          data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this, repository,
+          metaStore );
 
       loadFromBuffer = false;
     }
@@ -130,8 +131,8 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
       if ( add != null ) {
         int nrTemplateFields = data.outputRowMeta.size() - getInputRowMeta().size();
         if ( addMeta.size() != nrTemplateFields ) {
-          throw new KettleException( BaseMessages.getString( PKG, "DynamicSQLRow.Exception.IncorrectNrTemplateFields",
-              nrTemplateFields, addMeta.size(), sql ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "DynamicSQLRow.Exception.IncorrectNrTemplateFields", nrTemplateFields, addMeta.size(), sql ) );
         }
         StringBuilder typeErrors = new StringBuilder();
         for ( int i = 0; i < addMeta.size(); i++ ) {
@@ -142,8 +143,9 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
             if ( typeErrors.length() > 0 ) {
               typeErrors.append( Const.CR );
             }
-            typeErrors.append( BaseMessages.getString( PKG, "DynamicSQLRow.Exception.TemplateReturnDataTypeError",
-                templateValueMeta.toString(), outputValueMeta.toString() ) );
+            typeErrors.append( BaseMessages.getString(
+                PKG, "DynamicSQLRow.Exception.TemplateReturnDataTypeError", templateValueMeta.toString(),
+                outputValueMeta.toString() ) );
           }
         }
         if ( typeErrors.length() > 0 ) {
@@ -219,8 +221,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
     data = (DynamicSQLRowData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }

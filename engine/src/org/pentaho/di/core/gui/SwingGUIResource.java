@@ -70,8 +70,8 @@ public class SwingGUIResource {
           map.put( id, image );
         }
       } catch ( Exception e ) {
-        log.logError( "Unable to load step icon image for plugin: " + plugin.getName() + " (id=" + plugin.getIds()[0],
-            e );
+        log.logError(
+            "Unable to load step icon image for plugin: " + plugin.getName() + " (id=" + plugin.getIds()[0], e );
         try {
           getImageIcon( plugin );
         } catch ( Exception ex ) {
@@ -110,8 +110,8 @@ public class SwingGUIResource {
 
         map.put( plugin.getIds()[0], image );
       } catch ( Exception e ) {
-        log.logError( "Unable to load job entry icon image for plugin: " + plugin.getName() + " (id="
-            + plugin.getIds()[0], e );
+        log.logError( "Unable to load job entry icon image for plugin: "
+            + plugin.getName() + " (id=" + plugin.getIds()[0], e );
       }
     }
 
@@ -161,8 +161,8 @@ public class SwingGUIResource {
 
       return image;
     } catch ( Throwable e ) {
-      throw new KettleException( "Unable to load image from file : '" + plugin.getImageFile() + "' for plugin: "
-          + plugin, e );
+      throw new KettleException( "Unable to load image from file : '"
+          + plugin.getImageFile() + "' for plugin: " + plugin, e );
     }
   }
 

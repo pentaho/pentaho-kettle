@@ -93,8 +93,8 @@ public class RulesExecutor extends BaseStep implements StepInterface {
     data = (RulesExecutorData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       data.shutdown();
       setOutputDone();
       return false;

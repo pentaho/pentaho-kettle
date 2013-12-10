@@ -43,37 +43,37 @@ public class RulesExecutorDataTest {
   @Before
   public void beforeTest() {
     // init
-    data = spy(new RulesExecutorData());
-    ValueMetaInterface c1 = mock(ValueMetaInterface.class);
-    when(c1.getName()).thenReturn( "c1" );
-    ValueMetaInterface c2 = mock(ValueMetaInterface.class);
-    when(c2.getName()).thenReturn( "c2" );
-    List<ValueMetaInterface> initColumns = Arrays.asList(c1, c2);
+    data = spy( new RulesExecutorData() );
+    ValueMetaInterface c1 = mock( ValueMetaInterface.class );
+    when( c1.getName() ).thenReturn( "c1" );
+    ValueMetaInterface c2 = mock( ValueMetaInterface.class );
+    when( c2.getName() ).thenReturn( "c2" );
+    List<ValueMetaInterface> initColumns = Arrays.asList( c1, c2 );
 
     Rules.Column fc1 = new Rules.Column();
     fc1.setName( "c1" );
-    List fetchedColumns = new ArrayList(Arrays.asList( fc1 ));
+    List fetchedColumns = new ArrayList( Arrays.asList( fc1 ) );
     List fetchedColumnsSpy = spy( fetchedColumns );
 
-    StatefulKnowledgeSession session = mock(StatefulKnowledgeSession.class);
-    doReturn( session ).when( data ).initNewKnowledgeSession() ;
+    StatefulKnowledgeSession session = mock( StatefulKnowledgeSession.class );
+    doReturn( session ).when( data ).initNewKnowledgeSession();
     doReturn( fetchedColumnsSpy ).when( data ).fetchColumns( session );
 
-    RowMetaInterface rowMeta = mock( RowMetaInterface.class);
-    when(rowMeta.getValueMetaList()).thenReturn( initColumns );
-    data.initializeColumns(rowMeta);
+    RowMetaInterface rowMeta = mock( RowMetaInterface.class );
+    when( rowMeta.getValueMetaList() ).thenReturn( initColumns );
+    data.initializeColumns( rowMeta );
   }
 
   @Test
   public void testLoadRow() throws Exception {
 
     // test
-    data.loadRow( new Object[]{"1", "2"} );
+    data.loadRow( new Object[] { "1", "2" } );
     data.execute();
-    data.loadRow( new Object[]{"3", "4"} );
+    data.loadRow( new Object[] { "3", "4" } );
 
     // verify
-    assertEquals( null,  data.fetchResult( "c1" ) );
-    assertEquals( null,  data.fetchResult( "c2" ) );
+    assertEquals( null, data.fetchResult( "c1" ) );
+    assertEquals( null, data.fetchResult( "c2" ) );
   }
 }

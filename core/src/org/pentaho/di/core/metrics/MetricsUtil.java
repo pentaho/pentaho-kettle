@@ -77,8 +77,8 @@ public class MetricsUtil {
     Map<String, MetricsDuration> map = new HashMap<String, MetricsDuration>();
     for ( MetricsDuration duration : durations ) {
       String key =
-          duration.getSubject() == null ? duration.getDescription() : duration.getDescription() + " / "
-              + duration.getSubject();
+          duration.getSubject() == null ? duration.getDescription() : duration.getDescription()
+              + " / " + duration.getSubject();
       MetricsDuration agg = map.get( key );
       if ( agg == null ) {
         map.put( key, duration );
@@ -146,8 +146,9 @@ public class MetricsUtil {
           MetricsDuration metricsDuration = map.get( key );
           if ( metricsDuration == null ) {
             metricsDuration =
-                new MetricsDuration( lastSnapshot.getDate(), metric.getDescription(), lastSnapshot.getSubject(),
-                    logChannelId, extraDuration );
+                new MetricsDuration(
+                    lastSnapshot.getDate(), metric.getDescription(), lastSnapshot.getSubject(), logChannelId,
+                    extraDuration );
           } else {
             metricsDuration.setDuration( metricsDuration.getDuration() + extraDuration );
             metricsDuration.incrementCount();

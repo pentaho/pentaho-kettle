@@ -546,9 +546,9 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "ExcelWriterDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "ExcelWriterDialog.SelectOutputFiles.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                  PKG, "ExcelWriterDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
+                  PKG, "ExcelWriterDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -1073,8 +1073,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
     // force formula recalculation?
     wlForceFormulaRecalculation = new Label( wContentGroup, SWT.RIGHT );
-    wlForceFormulaRecalculation.setText( BaseMessages.getString( PKG,
-        "ExcelWriterDialog.ForceFormulaRecalculation.Label" ) );
+    wlForceFormulaRecalculation.setText( BaseMessages.getString(
+        PKG, "ExcelWriterDialog.ForceFormulaRecalculation.Label" ) );
     props.setLook( wlForceFormulaRecalculation );
     fdlForceFormulaRecalculation = new FormData();
     fdlForceFormulaRecalculation.left = new FormAttachment( 0, 0 );
@@ -1083,8 +1083,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     wlForceFormulaRecalculation.setLayoutData( fdlForceFormulaRecalculation );
     wForceFormulaRecalculation = new Button( wContentGroup, SWT.CHECK );
     props.setLook( wForceFormulaRecalculation );
-    wForceFormulaRecalculation.setToolTipText( BaseMessages.getString( PKG,
-        "ExcelWriterDialog.ForceFormulaRecalculation.Tooltip" ) );
+    wForceFormulaRecalculation.setToolTipText( BaseMessages.getString(
+        PKG, "ExcelWriterDialog.ForceFormulaRecalculation.Tooltip" ) );
     fdForceFormulaRecalculation = new FormData();
     fdForceFormulaRecalculation.left = new FormAttachment( middle, 0 );
     fdForceFormulaRecalculation.top = new FormAttachment( wAutoSize, margin );
@@ -1098,8 +1098,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
     // leave existing styles alone?
     wlLeaveExistingStylesUnchanged = new Label( wContentGroup, SWT.RIGHT );
-    wlLeaveExistingStylesUnchanged.setText( BaseMessages.getString( PKG,
-        "ExcelWriterDialog.LeaveExistingStylesUnchanged.Label" ) );
+    wlLeaveExistingStylesUnchanged.setText( BaseMessages.getString(
+        PKG, "ExcelWriterDialog.LeaveExistingStylesUnchanged.Label" ) );
     props.setLook( wlLeaveExistingStylesUnchanged );
     fdlLeaveExistingStylesUnchanged = new FormData();
     fdlLeaveExistingStylesUnchanged.left = new FormAttachment( 0, 0 );
@@ -1108,8 +1108,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     wlLeaveExistingStylesUnchanged.setLayoutData( fdlLeaveExistingStylesUnchanged );
     wLeaveExistingStylesUnchanged = new Button( wContentGroup, SWT.CHECK );
     props.setLook( wLeaveExistingStylesUnchanged );
-    wLeaveExistingStylesUnchanged.setToolTipText( BaseMessages.getString( PKG,
-        "ExcelWriterDialog.LeaveExistingStylesUnchanged.Tooltip" ) );
+    wLeaveExistingStylesUnchanged.setToolTipText( BaseMessages.getString(
+        PKG, "ExcelWriterDialog.LeaveExistingStylesUnchanged.Tooltip" ) );
     fdLeaveExistingStylesUnchanged = new FormData();
     fdLeaveExistingStylesUnchanged.left = new FormAttachment( middle, 0 );
     fdLeaveExistingStylesUnchanged.top = new FormAttachment( wForceFormulaRecalculation, margin );
@@ -1274,30 +1274,38 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.NameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.TypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.FormatColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.UseStyleCell.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.TitleColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.UseTitleStyleCell.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.FormulaField.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "N", "Y" }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.HyperLinkField.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.CommentField.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ExcelWriterDialog.CommentAuthor.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.FormatColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                formats ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.UseStyleCell.Column" ), ColumnInfo.COLUMN_TYPE_TEXT ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.TitleColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.UseTitleStyleCell.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.FormulaField.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "N", "Y" }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.HyperLinkField.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.CommentField.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "ExcelWriterDialog.CommentAuthor.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ) };
 
     wFields =
-        new TableView( transMeta, fieldGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, fieldGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1414,8 +1422,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
     // Whenever something changes, set the tooltip to the expanded version:
     wFilename.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        wFilename.setToolTipText( transMeta.environmentSubstitute( wFilename.getText() ) + "\n\n"
-            + BaseMessages.getString( PKG, "ExcelWriterDialog.Filename.Tooltip" ) );
+        wFilename.setToolTipText( transMeta.environmentSubstitute( wFilename.getText() )
+            + "\n\n" + BaseMessages.getString( PKG, "ExcelWriterDialog.Filename.Tooltip" ) );
       }
     } );
     wTemplateFilename.addModifyListener( new ModifyListener() {
@@ -1426,8 +1434,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
     wSheetname.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        wSheetname.setToolTipText( transMeta.environmentSubstitute( wSheetname.getText() ) + "\n\n"
-            + BaseMessages.getString( PKG, "ExcelWriterDialog.Sheetname.Tooltip" ) );
+        wSheetname.setToolTipText( transMeta.environmentSubstitute( wSheetname.getText() )
+            + "\n\n" + BaseMessages.getString( PKG, "ExcelWriterDialog.Sheetname.Tooltip" ) );
       }
     } );
 
@@ -1439,22 +1447,22 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
     wStartingCell.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        wStartingCell.setToolTipText( transMeta.environmentSubstitute( wStartingCell.getText() ) + "\n\n"
-            + BaseMessages.getString( PKG, "ExcelWriterDialog.StartingCell.Tooltip" ) );
+        wStartingCell.setToolTipText( transMeta.environmentSubstitute( wStartingCell.getText() )
+            + "\n\n" + BaseMessages.getString( PKG, "ExcelWriterDialog.StartingCell.Tooltip" ) );
       }
     } );
 
     wPassword.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        wPassword.setToolTipText( transMeta.environmentSubstitute( wPassword.getText() ) + "\n\n"
-            + BaseMessages.getString( PKG, "ExcelWriterDialog.Password.Tooltip" ) );
+        wPassword.setToolTipText( transMeta.environmentSubstitute( wPassword.getText() )
+            + "\n\n" + BaseMessages.getString( PKG, "ExcelWriterDialog.Password.Tooltip" ) );
       }
     } );
 
     wProtectedBy.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        wProtectedBy.setToolTipText( transMeta.environmentSubstitute( wProtectedBy.getText() ) + "\n\n"
-            + BaseMessages.getString( PKG, "ExcelWriterDialog.ProtectedBy.Tooltip" ) );
+        wProtectedBy.setToolTipText( transMeta.environmentSubstitute( wProtectedBy.getText() )
+            + "\n\n" + BaseMessages.getString( PKG, "ExcelWriterDialog.ProtectedBy.Tooltip" ) );
       }
     } );
 
@@ -1465,9 +1473,10 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLS.Label" ),
-          BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLSX.Label" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLS.Label" ),
+            BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLSX.Label" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
@@ -1481,12 +1490,13 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
         if ( wTemplateFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wTemplateFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLS.Label" ),
-          BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLSX.Label" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+        dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLS.Label" ),
+            BaseMessages.getString( PKG, "ExcelWriterDialog.FormatXLSX.Label" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
-          wTemplateFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
-              + dialog.getFileName() );
+          wTemplateFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );

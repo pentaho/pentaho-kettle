@@ -125,8 +125,8 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
         replaceByFieldValue[i] = XMLHandler.getTagValue( fnode, "replaceby" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SetValueFieldMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SetValueFieldMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -169,8 +169,8 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
         replaceByFieldValue[i] = rep.getStepAttributeString( id_step, i, "replace_by" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SetValueFieldMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SetValueFieldMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -182,8 +182,8 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "replace_by", replaceByFieldValue[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SetValueFieldMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SetValueFieldMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
 
@@ -195,38 +195,38 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.NoReceivingFieldsError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "SetValueFieldMeta.CheckResult.NoReceivingFieldsError" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.StepReceivingFieldsOK", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SetValueFieldMeta.CheckResult.StepReceivingFieldsOK", prev.size() + "" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.StepRecevingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SetValueFieldMeta.CheckResult.StepRecevingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SetValueFieldMeta.CheckResult.NoInputReceivedError" ), stepMeta );
     }
     remarks.add( cr );
 
     if ( fieldName == null && fieldName.length == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.FieldsSelectionEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SetValueFieldMeta.CheckResult.FieldsSelectionEmpty" ), stepMeta );
       remarks.add( cr );
     } else {
       for ( int i = 0; i < fieldName.length; i++ ) {
         if ( Const.isEmpty( replaceByFieldValue[i] ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SetValueFieldMeta.CheckResult.ReplaceByValueMissing", fieldName[i], "" + i ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "SetValueFieldMeta.CheckResult.ReplaceByValueMissing", fieldName[i], "" + i ), stepMeta );
           remarks.add( cr );
         }
       }

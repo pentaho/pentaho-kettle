@@ -42,9 +42,6 @@ public class PGPEncryptStreamData extends BaseStepData implements StepDataInterf
   public String keyName;
   public int indexOfKeyName;
 
-  /**
-	 * 
-	 */
   public PGPEncryptStreamData() {
     super();
     this.indexOfField = -1;

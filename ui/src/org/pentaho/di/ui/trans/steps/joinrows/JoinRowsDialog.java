@@ -260,8 +260,9 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
       inputfields = transMeta.getPrevStepFields( stepname );
     } catch ( KettleException ke ) {
       inputfields = new RowMeta();
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JoinRowsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "JoinRowsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "JoinRowsDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+              PKG, "JoinRowsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
     wOK = new Button( shell, SWT.PUSH );

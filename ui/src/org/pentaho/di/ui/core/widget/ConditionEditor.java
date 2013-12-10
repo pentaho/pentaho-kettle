@@ -286,8 +286,8 @@ public class ConditionEditor extends Composite {
         // Point real = Screen2Real(screen);
         int area = getAreaCode( screen );
 
-        if ( e.button == 1 ) // Left click on widget...
-        {
+        if ( e.button == 1 ) { // Left click on widget...
+
           switch ( area ) {
             case AREA_NOT:
               active_condition.negate();
@@ -297,9 +297,9 @@ public class ConditionEditor extends Composite {
             case AREA_OPERATOR: {
               int operator = getNrOperator( screen );
               EnterSelectionDialog esd =
-                  new EnterSelectionDialog( shell, Condition.getRealOperators(), BaseMessages.getString( PKG,
-                      "ConditionEditor.Operator.Label" ), BaseMessages.getString( PKG,
-                      "ConditionEditor.SelectOperator.Label" ) );
+                  new EnterSelectionDialog( shell, Condition.getRealOperators(), BaseMessages.getString(
+                      PKG, "ConditionEditor.Operator.Label" ), BaseMessages.getString(
+                      PKG, "ConditionEditor.SelectOperator.Label" ) );
               esd.setAvoidQuickSearch();
               Condition selcond = active_condition.getCondition( operator );
               String def = selcond.getOperatorDesc();
@@ -326,9 +326,9 @@ public class ConditionEditor extends Composite {
             case AREA_FUNCTION:
               if ( active_condition.isAtomic() ) {
                 EnterSelectionDialog esd =
-                    new EnterSelectionDialog( shell, Condition.functions, BaseMessages.getString( PKG,
-                        "ConditionEditor.Functions.Label" ), BaseMessages.getString( PKG,
-                        "ConditionEditor.SelectFunction.Label" ) );
+                    new EnterSelectionDialog( shell, Condition.functions, BaseMessages.getString(
+                        PKG, "ConditionEditor.Functions.Label" ), BaseMessages.getString(
+                        PKG, "ConditionEditor.SelectFunction.Label" ) );
                 esd.setAvoidQuickSearch();
                 String def = active_condition.getFunctionDesc();
                 int defnr = esd.getSelectionNr( def );
@@ -345,8 +345,8 @@ public class ConditionEditor extends Composite {
               if ( active_condition.isAtomic() && fields != null ) {
                 EnterSelectionDialog esd =
                     new EnterSelectionDialog( shell, fields.getFieldNamesAndTypes( max_field_length ), BaseMessages
-                        .getString( PKG, "ConditionEditor.Fields" ), BaseMessages.getString( PKG,
-                        "ConditionEditor.SelectAField" ) );
+                        .getString( PKG, "ConditionEditor.Fields" ), BaseMessages.getString(
+                        PKG, "ConditionEditor.SelectAField" ) );
                 esd.setAvoidQuickSearch();
                 String def = active_condition.getLeftValuename();
                 int defnr = esd.getSelectionNr( def );
@@ -363,8 +363,8 @@ public class ConditionEditor extends Composite {
               if ( active_condition.isAtomic() && fields != null ) {
                 EnterSelectionDialog esd =
                     new EnterSelectionDialog( shell, fields.getFieldNamesAndTypes( max_field_length ), BaseMessages
-                        .getString( PKG, "ConditionEditor.Fields" ), BaseMessages.getString( PKG,
-                        "ConditionEditor.SelectAField" ) );
+                        .getString( PKG, "ConditionEditor.Fields" ), BaseMessages.getString(
+                        PKG, "ConditionEditor.SelectAField" ) );
                 esd.setAvoidQuickSearch();
                 String def = active_condition.getLeftValuename();
                 int defnr = esd.getSelectionNr( def );
@@ -597,8 +597,8 @@ public class ConditionEditor extends Composite {
                 widget.redraw();
               } else {
                 new ErrorDialog( shell, BaseMessages.getString( PKG, "ConditionEditor.Error" ), BaseMessages.getString(
-                    PKG, "ConditionEditor.NoConditionFoundXML" ), new KettleXMLException( BaseMessages.getString( PKG,
-                    "ConditionEditor.NoConditionFoundXML.Exception", Const.CR + Const.CR + xml ) ) );
+                    PKG, "ConditionEditor.NoConditionFoundXML" ), new KettleXMLException( BaseMessages.getString(
+                    PKG, "ConditionEditor.NoConditionFoundXML.Exception", Const.CR + Const.CR + xml ) ) );
               }
             } catch ( KettleXMLException ex ) {
               new ErrorDialog( shell, BaseMessages.getString( PKG, "ConditionEditor.Error" ), BaseMessages.getString(
@@ -623,8 +623,8 @@ public class ConditionEditor extends Composite {
                 widget.redraw();
               } else {
                 new ErrorDialog( shell, BaseMessages.getString( PKG, "ConditionEditor.Error" ), BaseMessages.getString(
-                    PKG, "ConditionEditor.NoConditionFoundXML" ), new KettleXMLException( BaseMessages.getString( PKG,
-                    "ConditionEditor.NoConditionFoundXML.Exception", Const.CR + Const.CR + xml ) ) );
+                    PKG, "ConditionEditor.NoConditionFoundXML" ), new KettleXMLException( BaseMessages.getString(
+                    PKG, "ConditionEditor.NoConditionFoundXML.Exception", Const.CR + Const.CR + xml ) ) );
               }
             } catch ( KettleXMLException ex ) {
               new ErrorDialog( shell, BaseMessages.getString( PKG, "ConditionEditor.Error" ), BaseMessages.getString(
@@ -900,8 +900,9 @@ public class ConditionEditor extends Composite {
         new Rectangle( size_fn.x + size_fn.width + 15, y + size_not.height + 5, ext_rval.x + 5, ext_rval.y + 5 );
 
     size_rightex =
-        new Rectangle( size_fn.x + size_fn.width + 15, y + size_not.height + 5 + size_rightval.height + 5,
-            ext_rex.x + 5, ext_rex.y + 5 );
+        new Rectangle(
+            size_fn.x + size_fn.width + 15, y + size_not.height + 5 + size_rightval.height + 5, ext_rex.x + 5,
+            ext_rex.y + 5 );
 
     if ( hover_left ) {
       gc.setBackground( gray );
@@ -969,7 +970,8 @@ public class ConditionEditor extends Composite {
         gc.setForeground( black );
       }
 
-      gc.drawText( stype, size_rightex.x + 1 + size_rightex.width + 10 + offsetx, size_rightex.y + 1 + offsety,
+      gc.drawText(
+          stype, size_rightex.x + 1 + size_rightex.width + 10 + offsetx, size_rightex.y + 1 + offsety,
           SWT.DRAW_TRANSPARENT );
     } else {
       gc.drawText( "-", size_rightval.x + 1 + offsetx, size_rightval.y + 1 + offsety, SWT.DRAW_TRANSPARENT );
@@ -1042,8 +1044,8 @@ public class ConditionEditor extends Composite {
 
   public void drawMessage( GC gc ) {
     gc.setForeground( blue );
-    gc.drawText( getMessageString(), size_up.x + size_up.width + offsetx + 40, size_up.y + 1 + offsety,
-        SWT.DRAW_TRANSPARENT );
+    gc.drawText(
+        getMessageString(), size_up.x + size_up.width + offsetx + 40, size_up.y + 1 + offsety, SWT.DRAW_TRANSPARENT );
     // widget.setToolTipText(getMessageString());
   }
 

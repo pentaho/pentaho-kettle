@@ -96,8 +96,8 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
   private CCombo wPassphraseFieldName;
   private FormData fdlPassphraseFieldName, fdPassphraseFieldName;
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "PGPDecryptStreamDialog.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+      PKG, "PGPDecryptStreamDialog.Filetype.All" ) };
 
   public PGPDecryptStreamDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -241,8 +241,8 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     wlPassphraseFromField.setLayoutData( fdlPassphraseFromField );
     wPassphraseFromField = new Button( wGPGGroup, SWT.CHECK );
     props.setLook( wPassphraseFromField );
-    wPassphraseFromField.setToolTipText( BaseMessages.getString( PKG,
-        "PGPDecryptStreamDialog.PassphraseFromField.Tooltip" ) );
+    wPassphraseFromField.setToolTipText( BaseMessages.getString(
+        PKG, "PGPDecryptStreamDialog.PassphraseFromField.Tooltip" ) );
     fdPassphraseFromField = new FormData();
     fdPassphraseFromField.left = new FormAttachment( middle, 0 );
     fdPassphraseFromField.top = new FormAttachment( wPassphrase, margin );
@@ -475,8 +475,9 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

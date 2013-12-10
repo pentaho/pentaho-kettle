@@ -92,8 +92,8 @@ public class TransLoadProgressDialog {
                 rep.loadTransformation( transname, repdir, new ProgressMonitorAdapter( monitor ), true, versionLabel );
           }
         } catch ( KettleException e ) {
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "TransLoadProgressDialog.Exception.ErrorLoadingTransformation" ) );
+          throw new InvocationTargetException( e, BaseMessages.getString(
+              PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation" ) );
         }
       }
     };
@@ -102,14 +102,14 @@ public class TransLoadProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( false, false, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString( PKG,
-          "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transInfo = null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString( PKG,
-          "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+          PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transInfo = null;
     }
 

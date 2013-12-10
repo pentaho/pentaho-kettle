@@ -304,12 +304,12 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetRepositoryNamesMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetRepositoryNamesMeta.CheckResult.NoInputError" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetRepositoryNamesMeta.CheckResult.NoInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetRepositoryNamesMeta.CheckResult.NoInputOk" ), stepMeta );
     }
     remarks.add( cr );
   }

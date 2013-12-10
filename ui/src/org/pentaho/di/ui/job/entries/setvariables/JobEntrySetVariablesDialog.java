@@ -263,12 +263,15 @@ public class JobEntrySetVariablesDialog extends JobEntryDialog implements JobEnt
 
     ColumnInfo[] colinf =
         {
-          new ColumnInfo( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableType" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableName" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableType" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntrySetVariables.getVariableTypeDescriptions(), false ), };
     colinf[0].setUsingVariables( true );
     colinf[1].setUsingVariables( true );
 

@@ -114,8 +114,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       }
     } else {
       out.println( "<HTML>" );
-      out.println( "<HEAD><TITLE>" + BaseMessages.getString( PKG, "GetStatusServlet.KettleSlaveServerStatus" )
-          + "</TITLE>" );
+      out.println( "<HEAD><TITLE>"
+          + BaseMessages.getString( PKG, "GetStatusServlet.KettleSlaveServerStatus" ) + "</TITLE>" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
@@ -123,7 +123,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
       try {
         out.println( "<table border=\"1\">" );
-        out.print( "<tr> <th>" + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th>"
+        out.print( "<tr> <th>"
+            + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th>"
             + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th>"
             + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th>"
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th>"
@@ -141,24 +142,27 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           //
           if ( trans.isFinished() || trans.isStopped() || ( !trans.isInitializing() && !trans.isRunning() ) ) {
             removeText =
-                "<a href=\"" + convertContextPath( RemoveTransServlet.CONTEXT_PATH ) + "?name="
+                "<a href=\""
+                    + convertContextPath( RemoveTransServlet.CONTEXT_PATH ) + "?name="
                     + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
           }
 
           out.print( "<tr>" );
-          out.print( "<td><a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
+          out.print( "<td><a href=\""
+              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( name, "UTF-8" )
+              + "&id=" + id + "\">" + name + "</a></td>" );
           out.print( "<td>" + id + "</td>" );
           out.print( "<td>" + status + "</td>" );
-          out.print( "<td>" + ( trans.getLogDate() == null ? "-" : XMLHandler.date2string( trans.getLogDate() ) )
-              + "</td>" );
+          out.print( "<td>"
+              + ( trans.getLogDate() == null ? "-" : XMLHandler.date2string( trans.getLogDate() ) ) + "</td>" );
           out.print( "<td>" + removeText + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table><p>" );
 
         out.println( "<table border=\"1\">" );
-        out.print( "<tr> <th>" + BaseMessages.getString( PKG, "GetStatusServlet.JobName" ) + "</th> <th>"
+        out.print( "<tr> <th>"
+            + BaseMessages.getString( PKG, "GetStatusServlet.JobName" ) + "</th> <th>"
             + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th>"
             + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th>"
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th>"
@@ -175,18 +179,22 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           String removeText;
           if ( job.isFinished() || job.isStopped() ) {
             removeText =
-                "<a href=\"" + convertContextPath( RemoveJobServlet.CONTEXT_PATH ) + "?name="
+                "<a href=\""
+                    + convertContextPath( RemoveJobServlet.CONTEXT_PATH ) + "?name="
                     + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
           } else {
             removeText = "";
           }
 
           out.print( "<tr>" );
-          out.print( "<td><a href=\"" + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
+          out.print( "<td><a href=\""
+              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( name, "UTF-8" )
+              + "&id=" + id + "\">" + name + "</a></td>" );
           out.print( "<td>" + id + "</td>" );
           out.print( "<td>" + status + "</td>" );
-          out.print( "<td>" + ( job.getLogDate() == null ? "-" : XMLHandler.date2string( job.getLogDate() ) ) + "</td>" );
+          out
+              .print( "<td>"
+                  + ( job.getLogDate() == null ? "-" : XMLHandler.date2string( job.getLogDate() ) ) + "</td>" );
           out.print( "<td>" + removeText + "</td>" );
           out.print( "</tr>" );
         }
@@ -202,7 +210,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "<p>" );
       out.println( "<H1>" + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Title" ) + "</H1><p>" );
       out.println( "<table border=\"1\">" );
-      out.print( "<tr> <th>" + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.Title" ) + "</th> <th>"
+      out.print( "<tr> <th>"
+          + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.Title" ) + "</th> <th>"
           + BaseMessages.getString( PKG, "GetStatusServlet.Value.Title" ) + "</th> </tr>" );
 
       // The max number of log lines in the back-end
@@ -213,8 +222,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         if ( serverConfig.getMaxLogLines() == 0 ) {
           maxLines += BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
         }
-        out.print( "<tr> <td>" + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLines" ) + "</td> <td>"
-            + maxLines + "</td> </tr>" );
+        out.print( "<tr> <td>"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLines" ) + "</td> <td>" + maxLines
+            + "</td> </tr>" );
 
         // The max age of log lines
         //
@@ -223,8 +233,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         if ( serverConfig.getMaxLogTimeoutMinutes() == 0 ) {
           maxAge += BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
         }
-        out.print( "<tr> <td>" + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLinesAge" )
-            + "</td> <td>" + maxAge + "</td> </tr>" );
+        out.print( "<tr> <td>"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLinesAge" ) + "</td> <td>" + maxAge
+            + "</td> </tr>" );
 
         // The max age of stale objects
         //
@@ -233,8 +244,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         if ( serverConfig.getObjectTimeoutMinutes() == 0 ) {
           maxObjAge += BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
         }
-        out.print( "<tr> <td>" + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxObjectsAge" )
-            + "</td> <td>" + maxObjAge + "</td> </tr>" );
+        out.print( "<tr> <td>"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxObjectsAge" ) + "</td> <td>" + maxObjAge
+            + "</td> </tr>" );
 
         // The name of the specified repository
         //
@@ -244,8 +256,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         } catch ( Exception e ) {
           repositoryName = Const.getStackTracker( e );
         }
-        out.print( "<tr> <td>" + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName" )
-            + "</td> <td>" + repositoryName + "</td> </tr>" );
+        out.print( "<tr> <td>"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName" ) + "</td> <td>"
+            + repositoryName + "</td> </tr>" );
 
         out.print( "</table>" );
 
@@ -253,8 +266,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         if ( filename == null ) {
           filename = BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.UsingDefaults" );
         }
-        out.println( "<i>" + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Advice", filename )
-            + "</i><br>" );
+        out.println( "<i>"
+            + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Advice", filename ) + "</i><br>" );
       }
       out.println( "</BODY>" );
       out.println( "</HTML>" );

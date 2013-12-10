@@ -351,11 +351,11 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     ColumnInfo[] colinfo = new ColumnInfo[2];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.Files.Filename.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "XMLInputDialog.Files.Filename.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.Files.Wildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "XMLInputDialog.Files.Wildcard.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setToolTip( BaseMessages.getString( PKG, "XMLInputDialog.Files.Wildcard.Tooltip" ) );
@@ -556,14 +556,15 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     wlPosition.setLayoutData( fdlPosition );
 
     ColumnInfo[] locationColumns =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.Position.Elements.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ) };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "XMLInputDialog.Position.Elements.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false ) };
 
     int nrElements = input.getInputPosition() != null ? input.getInputPosition().length : 0;
 
     wPosition =
-        new TableView( transMeta, wContentComp, SWT.FULL_SELECTION | SWT.MULTI, locationColumns, nrElements, lsMod,
-            props );
+        new TableView(
+            transMeta, wContentComp, SWT.FULL_SELECTION | SWT.MULTI, locationColumns, nrElements, lsMod, props );
     wPosition.addModifyListener( lsMod );
     fdPosition = new FormData();
     fdPosition.left = new FormAttachment( middle, 0 );
@@ -622,29 +623,42 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, XMLInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Repeat.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Position.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                ValueMeta.getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Format.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Precision.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Currency.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Decimal.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.TrimType.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, XMLInputField.trimTypeDesc, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Repeat.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "XMLInputDialog.FieldsTable.Position.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
@@ -772,9 +786,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "XMLInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                    "XMLInputDialog.FilesReadSelection.DialogMessage" ) );
+                new EnterSelectionDialog( shell, files, BaseMessages.getString(
+                    PKG, "XMLInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
+                    PKG, "XMLInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -784,8 +798,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ),
-              BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+                  .getString( PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -816,11 +831,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        if ( wFilemask.getText() != null && wFilemask.getText().length() > 0 ) // A
-        // mask:
-        // a
-        // directory!
-        {
+        if ( wFilemask.getText() != null && wFilemask.getText().length() > 0 ) { // A mask: a directory!
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
             String fpath = transMeta.environmentSubstitute( wFilename.getText() );
@@ -839,8 +850,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             dialog.setFileName( fname );
           }
 
-          dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+          dialog.setFilterNames( new String[] {
+              BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+              BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
           if ( dialog.open() != null ) {
             String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
@@ -948,8 +960,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+                PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1023,8 +1035,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
+              PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1111,8 +1124,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
       }
 
       EnterNumberDialog dialog =
-          new EnterNumberDialog( shell, 1000, "Number of elements to scan",
-              "Enter the number of elements to scan (0=all)" );
+          new EnterNumberDialog(
+              shell, 1000, "Number of elements to scan", "Enter the number of elements to scan (0=all)" );
       int maxElements = dialog.open();
 
       // OK, let's try to walk through the complete tree
@@ -1126,8 +1139,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
       for ( int f = 0; f < inputList.getFiles().size() && !finished; f++ ) {
         // Open the file...
         Node rootNode =
-            XMLHandler.loadXMLFile( inputList.getFile( f ), transMeta.environmentSubstitute( meta.getFileBaseURI() ),
-                meta.isIgnoreEntities(), meta.isNamespaceAware() );
+            XMLHandler.loadXMLFile(
+                inputList.getFile( f ), transMeta.environmentSubstitute( meta.getFileBaseURI() ), meta
+                    .isIgnoreEntities(), meta.isNamespaceAware() );
 
         // Position to the repeating item
         for ( int p = 0; rootNode != null && p < meta.getInputPosition().length - 1; p++ ) {
@@ -1181,8 +1195,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
       wFields.setRowNums();
       wFields.optWidth( true );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
+              PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
   }
 
@@ -1214,9 +1229,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         String root = StringUtil.initCap( new ValueMetaAndData( "a", node.getNodeName() ).toString() );
         String fieldName = baseName + root;
 
-        if ( row.searchValueMeta( fieldName ) == null ) // Not there yet:
-        // add it!
-        {
+        if ( row.searchValueMeta( fieldName ) == null ) {
+          // Not there yet: add it!
           // Add the fieldname...
           ValueMeta field = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
 
@@ -1277,9 +1291,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
           path.remove( path.size() - 1 ); // remove the last one again
         }
       }
-    } else
-    // No child nodes left: this is a value we want to grab
-    {
+    } else {
+      // No child nodes left: this is a value we want to grab
+
       if ( path.size() > 0 ) {
         int idxLast = path.size() - 1;
         XMLInputFieldPosition last = path.get( idxLast );
@@ -1316,14 +1330,14 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "XMLInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "XMLInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "XMLInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "XMLInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1332,22 +1346,24 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "XMLInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "XMLInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

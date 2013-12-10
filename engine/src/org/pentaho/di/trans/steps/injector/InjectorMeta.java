@@ -196,8 +196,8 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
         precision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "InjectorMeta.Exception.ErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "InjectorMeta.Exception.ErrorReadingStepInfoFromRepository" ), e );
     }
 
   }
@@ -239,13 +239,13 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "InjectorMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "InjectorMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "InjectorMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "InjectorMeta.CheckResult.NoInputReceivedError" ), stepMeta );
       remarks.add( cr );
     }
   }

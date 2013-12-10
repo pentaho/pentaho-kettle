@@ -269,9 +269,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
     // Webservice URL
     wURL =
-        new LabelTextVar( transMeta, wConnectionGroup,
-            BaseMessages.getString( PKG, "SalesforceUpsertDialog.URL.Label" ), BaseMessages.getString( PKG,
-                "SalesforceUpsertDialog.URL.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wConnectionGroup, BaseMessages.getString( PKG, "SalesforceUpsertDialog.URL.Label" ),
+            BaseMessages.getString( PKG, "SalesforceUpsertDialog.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -283,8 +283,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     // UserName line
     wUserName =
         new LabelTextVar( transMeta, wConnectionGroup, BaseMessages
-            .getString( PKG, "SalesforceUpsertDialog.User.Label" ), BaseMessages.getString( PKG,
-            "SalesforceUpsertDialog.User.Tooltip" ) );
+            .getString( PKG, "SalesforceUpsertDialog.User.Label" ), BaseMessages.getString(
+            PKG, "SalesforceUpsertDialog.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -295,9 +295,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
     // Password line
     wPassword =
-        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString( PKG,
-            "SalesforceUpsertDialog.Password.Label" ), BaseMessages.getString( PKG,
-            "SalesforceUpsertDialog.Password.Tooltip" ) );
+        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
+            PKG, "SalesforceUpsertDialog.Password.Label" ), BaseMessages.getString(
+            PKG, "SalesforceUpsertDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -385,8 +385,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
     // Rollback all changes on error?
     wlRollbackAllChangesOnError = new Label( wSettingsGroup, SWT.RIGHT );
-    wlRollbackAllChangesOnError.setText( BaseMessages.getString( PKG,
-        "SalesforceUpsertDialog.RollbackAllChangesOnError.Label" ) );
+    wlRollbackAllChangesOnError.setText( BaseMessages.getString(
+        PKG, "SalesforceUpsertDialog.RollbackAllChangesOnError.Label" ) );
     props.setLook( wlRollbackAllChangesOnError );
     fdlRollbackAllChangesOnError = new FormData();
     fdlRollbackAllChangesOnError.left = new FormAttachment( 0, 0 );
@@ -395,8 +395,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     wlRollbackAllChangesOnError.setLayoutData( fdlRollbackAllChangesOnError );
     wRollbackAllChangesOnError = new Button( wSettingsGroup, SWT.CHECK );
     props.setLook( wRollbackAllChangesOnError );
-    wRollbackAllChangesOnError.setToolTipText( BaseMessages.getString( PKG,
-        "SalesforceUpsertDialog.RollbackAllChangesOnError.Tooltip" ) );
+    wRollbackAllChangesOnError.setToolTipText( BaseMessages.getString(
+        PKG, "SalesforceUpsertDialog.RollbackAllChangesOnError.Tooltip" ) );
     fdRollbackAllChangesOnError = new FormData();
     fdRollbackAllChangesOnError.left = new FormAttachment( middle, 0 );
     fdRollbackAllChangesOnError.top = new FormAttachment( wUseCompression, margin );
@@ -446,8 +446,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
-        if ( Const.isEmpty( wURL.getText() ) || Const.isEmpty( wUserName.getText() )
-            || Const.isEmpty( wPassword.getText() ) || ( getModulesListError ) ) {
+        if ( Const.isEmpty( wURL.getText() )
+            || Const.isEmpty( wUserName.getText() ) || Const.isEmpty( wPassword.getText() ) || ( getModulesListError ) ) {
           return;
         }
 
@@ -521,8 +521,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     wlSalesforceIDFieldName.setLayoutData( fdlSalesforceIDFieldName );
     wSalesforceIDFieldName = new TextVar( transMeta, wOutFieldsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wSalesforceIDFieldName );
-    wSalesforceIDFieldName.setToolTipText( BaseMessages.getString( PKG,
-        "SalesforceUpsertDialog.SalesforceIDFieldName.Tooltip" ) );
+    wSalesforceIDFieldName.setToolTipText( BaseMessages.getString(
+        PKG, "SalesforceUpsertDialog.SalesforceIDFieldName.Tooltip" ) );
     wSalesforceIDFieldName.addModifyListener( lsMod );
     fdSalesforceIDFieldName = new FormData();
     fdSalesforceIDFieldName.left = new FormAttachment( middle, 0 );
@@ -554,19 +554,22 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SalesforceUpsertDialog.ColumnInfo.TableField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SalesforceUpsertDialog.ColumnInfo.TableField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SalesforceUpsertDialog.ColumnInfo.StreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SalesforceUpsertDialog.ColumnInfo.StreamField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SalesforceUpsertDialog.ColumnInfo.UseExternalId" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SalesforceUpsertDialog.ColumnInfo.UseExternalId" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
     ciReturn[2].setToolTip( BaseMessages.getString( PKG, "SalesforceUpdateDialog.ColumnInfo.UseExternalId.Tooltip" ) );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+        new TableView( transMeta, wGeneralComp, SWT.BORDER
+            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
 
     wGetLU = new Button( wGeneralComp, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "SalesforceUpsertDialog.GetAndUpdateFields.Label" ) );
@@ -732,8 +735,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceUpsertDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "SalesforceUpsertDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -787,9 +791,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       mb.setText( BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.Title.Ok" ) );
       mb.open();
     } else {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.Title.Error" ),
-          BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.NOK", wUserName.getText() ), new Exception(
-              msgError ) );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.Title.Error" ), BaseMessages.getString(
+              PKG, "SalesforceUpsertDialog.Connected.NOK", wUserName.getText() ), new Exception( msgError ) );
     }
 
   }
@@ -805,8 +809,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         wUpsertField.setText( selectedField );
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveModules.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveModules.DialogTitle" ), BaseMessages
+              .getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
     }
 
   }
@@ -868,8 +873,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorValidateData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorValidateData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorValidateData.DialogTitle" ), BaseMessages
+              .getString( PKG, "SalesforceUpsertDialog.ErrorValidateData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -973,9 +979,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SalesforceUpsertDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "SalesforceUpsertDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+          PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
 
@@ -986,9 +992,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         targetFields.addValueMeta( new ValueMeta( fields[i] ) );
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SalesforceUpsertDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "SalesforceUpsertDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+          PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -1033,14 +1039,14 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "SalesforceUpsertDialog.DoMapping.SomeSourceFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "SalesforceUpsertDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "SalesforceUpsertDialog.DoMapping.SomeTargetFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "SalesforceUpsertDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       message += Const.CR;
@@ -1048,8 +1054,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
           BaseMessages.getString( PKG, "SalesforceUpsertDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "SalesforceUpsertDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "SalesforceUpsertDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
@@ -1123,9 +1129,9 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         getModulesListError = false;
 
       } catch ( Exception e ) {
-        new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveModules.DialogTitle" ), BaseMessages
-                .getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveModules.DialogTitle" ),
+            BaseMessages.getString( PKG, "SalesforceUpsertDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
       } finally {
         if ( connection != null ) {

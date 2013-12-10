@@ -206,8 +206,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
       sqlfieldname = XMLHandler.getTagValue( stepnode, "sql_fieldname" );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "DynamicSQLRowMeta.Exception.UnableToLoadStepInfo" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "DynamicSQLRowMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -241,13 +241,12 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
     try {
       add = db.getQueryFields( realSQL, false );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "DynamicSQLRowMeta.Exception.UnableToDetermineQueryFields" )
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "DynamicSQLRowMeta.Exception.UnableToDetermineQueryFields" )
           + Const.CR + sql, dbe );
     }
 
-    if ( add != null ) // Cache hit, just return it this...
-    {
+    if ( add != null ) { // Cache hit, just return it this...
       for ( int i = 0; i < add.size(); i++ ) {
         ValueMetaInterface v = add.getValueMeta( i );
         v.setOrigin( name );
@@ -296,8 +295,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
       sqlfieldname = rep.getStepAttributeString( id_step, "sql_fieldname" );
       queryonlyonchange = rep.getStepAttributeBoolean( id_step, "query_only_on_change" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "DynamicSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "DynamicSQLRowMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -331,32 +330,32 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "DynamicSQLRowMeta.CheckResult.ReceivingInfo" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "DynamicSQLRowMeta.CheckResult.ReceivingInfo" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "DynamicSQLRowMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "DynamicSQLRowMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check for SQL field
     if ( Const.isEmpty( sqlfieldname ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "DynamicSQLRowMeta.CheckResult.SQLFieldNameMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldNameMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       ValueMetaInterface vfield = prev.searchValueMeta( sqlfieldname );
       if ( vfield == null ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "DynamicSQLRowMeta.CheckResult.SQLFieldNotFound", sqlfieldname ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldNotFound", sqlfieldname ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "DynamicSQLRowMeta.CheckResult.SQLFieldFound", sqlfieldname, vfield.getOrigin() ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "DynamicSQLRowMeta.CheckResult.SQLFieldFound", sqlfieldname, vfield.getOrigin() ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -374,8 +373,8 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
           RowMetaInterface r = db.getQueryFields( sql, true );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "DynamicSQLRowMeta.CheckResult.QueryOK" ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "DynamicSQLRowMeta.CheckResult.QueryOK" ), stepMeta );
             remarks.add( cr );
           } else {
             error_message = BaseMessages.getString( PKG, "DynamicSQLRowMeta.CheckResult.InvalidDBQuery" );

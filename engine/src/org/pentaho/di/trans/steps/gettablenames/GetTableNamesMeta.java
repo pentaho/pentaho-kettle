@@ -358,8 +358,8 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
       dynamicSchema = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamicSchema" ) );
       schenameNameField = XMLHandler.getTagValue( stepnode, "schenameNameField" );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "GetTableNamesMeta.Exception.UnableToReadStepInfo" ),
-          e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "GetTableNamesMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
@@ -383,8 +383,8 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
       dynamicSchema = rep.getStepAttributeBoolean( id_step, "dynamicSchema" );
       schenameNameField = rep.getStepAttributeString( id_step, "schenameNameField" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "GetTableNamesMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "GetTableNamesMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -441,12 +441,12 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 && !isDynamicSchema() ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetTableNamesMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetTableNamesMeta.CheckResult.NoInpuReceived" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetTableNamesMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetTableNamesMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
 

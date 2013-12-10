@@ -281,8 +281,9 @@ public class LDIFInput extends BaseStep implements StepInterface {
   private boolean openNextFile() {
     try {
       if ( !meta.isFileField() ) {
-        if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-        {
+        if ( data.filenr >= data.files.nrOfFiles() ) {
+          // finished processing!
+
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "LDIFInput.Log.FinishedProcessing" ) );
           }
@@ -328,18 +329,18 @@ public class LDIFInput extends BaseStep implements StepInterface {
             data.indexOfFilenameField = getInputRowMeta().indexOfValue( meta.getDynamicFilenameField() );
             if ( data.indexOfFilenameField < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "LDIFInput.Log.ErrorFindingField" ) + "["
-                  + meta.getDynamicFilenameField() + "]" );
+              logError( BaseMessages.getString( PKG, "LDIFInput.Log.ErrorFindingField" )
+                  + "[" + meta.getDynamicFilenameField() + "]" );
               throw new KettleException( BaseMessages.getString( PKG, "LDIFInput.Exception.CouldnotFindField", meta
                   .getDynamicFilenameField() ) );
             }
           }
 
-        }// End if first
+        } // End if first
         String filename = getInputRowMeta().getString( data.readrow, data.indexOfFilenameField );
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),
-              filename ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(), filename ) );
         }
 
         data.file = KettleVFS.getFileObject( filename, getTransMeta() );
@@ -394,8 +395,8 @@ public class LDIFInput extends BaseStep implements StepInterface {
       }
 
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "LDIFInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(),
-          e.toString() ) );
+      logError( BaseMessages.getString(
+          PKG, "LDIFInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;

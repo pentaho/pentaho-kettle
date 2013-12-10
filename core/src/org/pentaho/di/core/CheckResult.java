@@ -34,9 +34,9 @@ import org.pentaho.di.i18n.BaseMessages;
 public class CheckResult implements CheckResultInterface {
   private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] typeDesc = { "", BaseMessages.getString( PKG, "CheckResult.OK" ),
-    BaseMessages.getString( PKG, "CheckResult.Remark" ), BaseMessages.getString( PKG, "CheckResult.Warning" ),
-    BaseMessages.getString( PKG, "CheckResult.Error" ) };
+  public static final String[] typeDesc = {
+      "", BaseMessages.getString( PKG, "CheckResult.OK" ), BaseMessages.getString( PKG, "CheckResult.Remark" ),
+      BaseMessages.getString( PKG, "CheckResult.Warning" ), BaseMessages.getString( PKG, "CheckResult.Error" ) };
 
   private int type;
 

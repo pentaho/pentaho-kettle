@@ -68,9 +68,9 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
   private static Class<?> PKG = JobEntryDosToUnix.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   public static final String[] ConversionTypeDesc = new String[] {
-    BaseMessages.getString( PKG, "JobEntryDosToUnix.ConversionType.Guess.Label" ),
-    BaseMessages.getString( PKG, "JobEntryDosToUnix.ConversionType.DosToUnix.Label" ),
-    BaseMessages.getString( PKG, "JobEntryDosToUnix.ConversionType.UnixToDos.Label" ) };
+      BaseMessages.getString( PKG, "JobEntryDosToUnix.ConversionType.Guess.Label" ),
+      BaseMessages.getString( PKG, "JobEntryDosToUnix.ConversionType.DosToUnix.Label" ),
+      BaseMessages.getString( PKG, "JobEntryDosToUnix.ConversionType.UnixToDos.Label" ) };
   public static final String[] ConversionTypeCode = new String[] { "guess", "dostounix", "unixtodos" };
 
   public static final int CONVERTION_TYPE_GUESS = 0;
@@ -95,17 +95,17 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 
   public String[] source_filefolder;
   public String[] wildcard;
-  public int[] ConversionTypes;
+  public int[] conversionTypes;
 
   private String nr_errors_less_than;
   private String success_condition;
   private String resultfilenames;
 
-  int NrAllErrors = 0;
-  int NrErrorFiles = 0;
-  int NrProcessedFiles = 0;
+  int nrAllErrors = 0;
+  int nrErrorFiles = 0;
+  int nrProcessedFiles = 0;
   int limitFiles = 0;
-  int NrErrors = 0;
+  int nrErrors = 0;
 
   boolean successConditionBroken = false;
   boolean successConditionBrokenExit = false;
@@ -117,7 +117,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     resultfilenames = ADD_ALL_FILENAMES;
     arg_from_previous = false;
     source_filefolder = null;
-    ConversionTypes = null;
+    conversionTypes = null;
     wildcard = null;
     include_subfolders = false;
     nr_errors_less_than = "10";
@@ -151,7 +151,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
         retval.append( "          " ).append( XMLHandler.addTagValue( "source_filefolder", source_filefolder[i] ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcard[i] ) );
         retval.append( "          " ).append(
-            XMLHandler.addTagValue( "ConversionType", getConversionTypeCode( ConversionTypes[i] ) ) );
+            XMLHandler.addTagValue( "ConversionType", getConversionTypeCode( conversionTypes[i] ) ) );
         retval.append( "        </field>" ).append( Const.CR );
       }
     }
@@ -220,7 +220,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       int nrFields = XMLHandler.countNodes( fields, "field" );
       source_filefolder = new String[nrFields];
       wildcard = new String[nrFields];
-      ConversionTypes = new int[nrFields];
+      conversionTypes = new int[nrFields];
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -228,12 +228,10 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 
         source_filefolder[i] = XMLHandler.getTagValue( fnode, "source_filefolder" );
         wildcard[i] = XMLHandler.getTagValue( fnode, "wildcard" );
-        ConversionTypes[i] =
+        conversionTypes[i] =
             getConversionTypeByCode( Const.NVL( XMLHandler.getTagValue( fnode, "ConversionType" ), "" ) );
       }
-    }
-
-    catch ( KettleXMLException xe ) {
+    } catch ( KettleXMLException xe ) {
 
       throw new KettleXMLException( BaseMessages.getString( PKG, "JobDosToUnix.Error.Exception.UnableLoadXML" ), xe );
     }
@@ -253,12 +251,12 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
       source_filefolder = new String[argnr];
       wildcard = new String[argnr];
-      ConversionTypes = new int[argnr];
+      conversionTypes = new int[argnr];
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         source_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
         wildcard[a] = rep.getJobEntryAttributeString( id_jobentry, a, "wildcard" );
-        ConversionTypes[a] =
+        conversionTypes[a] =
             getConversionTypeByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "ConversionType" ), "" ) );
       }
     } catch ( KettleException dbe ) {
@@ -281,14 +279,14 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
         for ( int i = 0; i < source_filefolder.length; i++ ) {
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "source_filefolder", source_filefolder[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "wildcard", wildcard[i] );
-          rep.saveJobEntryAttribute( id_job, getObjectId(), "ConversionType",
-              getConversionTypeCode( ConversionTypes[i] ) );
+          rep.saveJobEntryAttribute(
+              id_job, getObjectId(), "ConversionType", getConversionTypeCode( conversionTypes[i] ) );
         }
       }
     } catch ( KettleDatabaseException dbe ) {
 
-      throw new KettleException( BaseMessages.getString( PKG, "JobDosToUnix.Error.Exception.UnableSaveRep" ) + id_job,
-          dbe );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "JobDosToUnix.Error.Exception.UnableSaveRep" ) + id_job, dbe );
     }
   }
 
@@ -300,9 +298,9 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     List<RowMetaAndData> rows = previousResult.getRows();
     RowMetaAndData resultRow = null;
 
-    NrErrors = 0;
-    NrProcessedFiles = 0;
-    NrErrorFiles = 0;
+    nrErrors = 0;
+    nrProcessedFiles = 0;
+    nrErrorFiles = 0;
     limitFiles = Const.toInt( environmentSubstitute( getNrErrorsLessThan() ), 10 );
     successConditionBroken = false;
     successConditionBrokenExit = false;
@@ -325,12 +323,12 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++ ) {
         if ( successConditionBroken ) {
           if ( !successConditionBrokenExit ) {
-            logError( BaseMessages.getString( PKG, "JobDosToUnix.Error.SuccessConditionbroken", "" + NrAllErrors ) );
+            logError( BaseMessages.getString( PKG, "JobDosToUnix.Error.SuccessConditionbroken", "" + nrAllErrors ) );
             successConditionBrokenExit = true;
           }
-          result.setEntryNr( NrAllErrors );
-          result.setNrLinesRejected( NrErrorFiles );
-          result.setNrLinesWritten( NrProcessedFiles );
+          result.setEntryNr( nrAllErrors );
+          result.setNrLinesRejected( nrErrorFiles );
+          result.setNrLinesWritten( nrProcessedFiles );
           return result;
         }
 
@@ -342,39 +340,39 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
         int convertion_type = JobEntryDosToUnix.getConversionTypeByCode( resultRow.getString( 2, null ) );
 
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.ProcessingRow", vsourcefilefolder_previous,
-              vwildcard_previous ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobDosToUnix.Log.ProcessingRow", vsourcefilefolder_previous, vwildcard_previous ) );
         }
 
-        ProcessFileFolder( vsourcefilefolder_previous, vwildcard_previous, convertion_type, parentJob, result );
+        processFileFolder( vsourcefilefolder_previous, vwildcard_previous, convertion_type, parentJob, result );
       }
     } else if ( vsourcefilefolder != null ) {
       for ( int i = 0; i < vsourcefilefolder.length && !parentJob.isStopped(); i++ ) {
         if ( successConditionBroken ) {
           if ( !successConditionBrokenExit ) {
-            logError( BaseMessages.getString( PKG, "JobDosToUnix.Error.SuccessConditionbroken", "" + NrAllErrors ) );
+            logError( BaseMessages.getString( PKG, "JobDosToUnix.Error.SuccessConditionbroken", "" + nrAllErrors ) );
             successConditionBrokenExit = true;
           }
-          result.setEntryNr( NrAllErrors );
-          result.setNrLinesRejected( NrErrorFiles );
-          result.setNrLinesWritten( NrProcessedFiles );
+          result.setEntryNr( nrAllErrors );
+          result.setNrLinesRejected( nrErrorFiles );
+          result.setNrLinesWritten( nrProcessedFiles );
           return result;
         }
 
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.ProcessingRow", vsourcefilefolder[i],
-              vwildcard[i] ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobDosToUnix.Log.ProcessingRow", vsourcefilefolder[i], vwildcard[i] ) );
         }
 
-        ProcessFileFolder( vsourcefilefolder[i], vwildcard[i], ConversionTypes[i], parentJob, result );
+        processFileFolder( vsourcefilefolder[i], vwildcard[i], conversionTypes[i], parentJob, result );
 
       }
     }
 
     // Success Condition
-    result.setNrErrors( NrAllErrors );
-    result.setNrLinesRejected( NrErrorFiles );
-    result.setNrLinesWritten( NrProcessedFiles );
+    result.setNrErrors( nrAllErrors );
+    result.setNrLinesRejected( nrErrorFiles );
+    result.setNrLinesWritten( nrProcessedFiles );
     if ( getSuccessStatus() ) {
       result.setNrErrors( 0 );
       result.setResult( true );
@@ -388,17 +386,17 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
   private void displayResults() {
     if ( isDetailed() ) {
       logDetailed( "=======================================" );
-      logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.Info.Errors", NrErrors ) );
-      logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.Info.ErrorFiles", NrErrorFiles ) );
-      logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.Info.FilesProcessed", NrProcessedFiles ) );
+      logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.Info.Errors", nrErrors ) );
+      logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.Info.ErrorFiles", nrErrorFiles ) );
+      logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Log.Info.FilesProcessed", nrProcessedFiles ) );
       logDetailed( "=======================================" );
     }
   }
 
   private boolean checkIfSuccessConditionBroken() {
     boolean retval = false;
-    if ( ( NrAllErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrErrorFiles >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERROR_FILES_LESS ) ) ) {
+    if ( ( nrAllErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
+        || ( nrErrorFiles >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERROR_FILES_LESS ) ) ) {
       retval = true;
     }
     return retval;
@@ -407,9 +405,9 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
   private boolean getSuccessStatus() {
     boolean retval = false;
 
-    if ( ( NrAllErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrProcessedFiles >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FILES_PROCESSED ) )
-        || ( NrErrorFiles < limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERROR_FILES_LESS ) ) ) {
+    if ( ( nrAllErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
+        || ( nrProcessedFiles >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FILES_PROCESSED ) )
+        || ( nrErrorFiles < limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERROR_FILES_LESS ) ) ) {
       retval = true;
     }
 
@@ -417,7 +415,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
   }
 
   private void updateErrors() {
-    NrErrors++;
+    nrErrors++;
     updateAllErrors();
     if ( checkIfSuccessConditionBroken() ) {
       // Success condition was broken
@@ -426,7 +424,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
   }
 
   private void updateAllErrors() {
-    NrAllErrors = NrErrors + NrErrorFiles;
+    nrAllErrors = nrErrors + nrErrorFiles;
   }
 
   private static int getFileType( FileObject file ) throws Exception {
@@ -535,7 +533,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     return retval;
   }
 
-  private boolean ProcessFileFolder( String sourcefilefoldername, String wildcard, int convertion, Job parentJob,
+  private boolean processFileFolder( String sourcefilefoldername, String wildcard, int convertion, Job parentJob,
       Result result ) {
     boolean entrystatus = false;
     FileObject sourcefilefolder = null;
@@ -581,9 +579,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
               } catch ( Exception ex ) {
                 // Upon error don't process the file.
                 return false;
-              }
-
-              finally {
+              } finally {
                 if ( fileObject != null ) {
                   try {
                     fileObject.close();
@@ -600,7 +596,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
             for ( int j = 0; j < fileObjects.length && !parentJob.isStopped(); j++ ) {
               if ( successConditionBroken ) {
                 if ( !successConditionBrokenExit ) {
-                  logError( BaseMessages.getString( PKG, "JobDosToUnix.Error.SuccessConditionbroken", "" + NrAllErrors ) );
+                  logError( BaseMessages.getString( PKG, "JobDosToUnix.Error.SuccessConditionbroken", "" + nrAllErrors ) );
                   successConditionBrokenExit = true;
                 }
                 return false;
@@ -634,9 +630,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
         // Update Errors
         updateErrors();
       }
-    } // end try
-
-    catch ( Exception e ) {
+    } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobDosToUnix.Error.Exception.Processing", realSourceFilefoldername
           .toString(), e.getMessage() ) );
       // Update Errors
@@ -645,7 +639,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       if ( sourcefilefolder != null ) {
         try {
           sourcefilefolder.close();
-        } catch ( IOException ex ) { /* Ignore */
+        } catch ( IOException ex ) {
+          /* Ignore */
         }
 
       }
@@ -659,7 +654,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     return entrystatus;
   }
 
-  private boolean convertOneFile( FileObject file, int convertion, Result result, Job parentJob ) {
+  private boolean convertOneFile( FileObject file, int convertion, Result result, Job parentJob )
+    throws KettleException {
     boolean retval = false;
     try {
       // We deal with a file..
@@ -696,8 +692,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       } else {
         if ( isDetailed() ) {
           logDetailed( "---------------------------" );
-          logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Error.FileConverted", file, convertToUnix ? "UNIX"
-              : "DOS" ) );
+          logDetailed( BaseMessages.getString( PKG, "JobDosToUnix.Error.FileConverted", file, convertToUnix
+              ? "UNIX" : "DOS" ) );
         }
         // Update processed files number
         updateProcessedFormed();
@@ -707,16 +703,17 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       }
 
     } catch ( Exception e ) {
+      throw new KettleException( "Unable to convert file '" + file.toString() + "'", e );
     }
     return retval;
   }
 
   private void updateProcessedFormed() {
-    NrProcessedFiles++;
+    nrProcessedFiles++;
   }
 
   private void updateBadFormed() {
-    NrErrorFiles++;
+    nrErrorFiles++;
     updateAllErrors();
   }
 

@@ -96,9 +96,6 @@ public class LDIFInputData extends BaseStepData implements StepDataInterface {
   public String rootUriName;
   public long size;
 
-  /**
-	 * 
-	 */
   public LDIFInputData() {
     super();
     nrInputFields = -1;

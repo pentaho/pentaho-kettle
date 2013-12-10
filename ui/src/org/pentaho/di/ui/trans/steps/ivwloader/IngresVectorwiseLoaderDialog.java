@@ -220,15 +220,18 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
 
     ColumnInfo[] ciFields = new ColumnInfo[tableCols];
     ciFields[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.ColumnInfo.TableField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.ColumnInfo.TableField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciFields[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.ColumnInfo.StreamField" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.ColumnInfo.StreamField" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     tableFieldColumns.add( ciFields[0] );
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciFields, UpInsRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciFields,
+            UpInsRows, lsMod, props );
 
     Button wGetFields = new Button( shell, SWT.PUSH );
     wGetFields.setText( BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.GetFields.Button" ) );
@@ -291,20 +294,20 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
    */
   protected Control addCustomInputs( Control prevControl ) {
     wTable =
-        addStandardTextVar( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.TargetTable.Label" ),
-            prevControl );
+        addStandardTextVar(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.TargetTable.Label" ), prevControl );
     wUseDynamicVNode =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseDynamicVNode.Label" ),
-            wTable );
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseDynamicVNode.Label" ), wTable );
     wUseDynamicVNode.addSelectionListener( lsSelMod );
     wFifoFile =
-        addStandardTextVar( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.FifoFile.Label" ),
-            wUseDynamicVNode );
+        addStandardTextVar(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.FifoFile.Label" ), wUseDynamicVNode );
     wSqlPath =
         addStandardTextVar( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.SqlPath.Label" ), wFifoFile );
     wUseSSV =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseSSVDelimiter.Label" ),
-            wSqlPath );
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseSSVDelimiter.Label" ), wSqlPath );
     wUseSSV.addSelectionListener( lsSelMod );
     wUseSSV.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent se ) {
@@ -316,36 +319,37 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
       }
     } );
     wEscapeSpecialChars =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.EscapeSpecialChars.Label" ),
-            wUseSSV );
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.EscapeSpecialChars.Label" ), wUseSSV );
     wUseVwload =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseVwload.Label" ),
-            wEscapeSpecialChars );
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseVwload.Label" ), wEscapeSpecialChars );
     wTruncateTable =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.TruncateTable.Label" ),
-            wUseVwload );
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.TruncateTable.Label" ), wUseVwload );
     wDelimiter =
-        addStandardTextVar( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label" ),
-            wTruncateTable );
+        addStandardTextVar(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label" ), wTruncateTable );
     wCharSet =
         addStandardTextVar( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.Charset.Label" ), wDelimiter );
     wBufferSize =
         addStandardTextVar( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.BufferSize.Label" ), wCharSet );
     wUseStandardConversion =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label" ),
-            wBufferSize );
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label" ), wBufferSize );
     wUseStandardConversion.addSelectionListener( lsSelMod );
     wUseAuthentication =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseAuthentication.Label" ),
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.UseAuthentication.Label" ),
             wUseStandardConversion );
     wUseAuthentication.addSelectionListener( lsSelMod );
     wContinueOnError =
-        addStandardCheckBox( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label" ),
-            wUseAuthentication );
+        addStandardCheckBox(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label" ), wUseAuthentication );
     wContinueOnError.addSelectionListener( lsSelMod );
     wErrorFile =
-        addStandardTextVar( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.ErrorFile.Label" ),
-            wContinueOnError );
+        addStandardTextVar(
+            BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.ErrorFile.Label" ), wContinueOnError );
     wErrorFile.addModifyListener( lsMod );
     wErrorFile.setEnabled( true ); // reset default to true
     wMaxErrors =
@@ -627,9 +631,9 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
+          PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
 
@@ -640,9 +644,9 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+          PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -687,14 +691,14 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.DoMapping.SomeSourceFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "IngresVectorWiseLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.DoMapping.SomeTargetFieldsNotFound",
-                missingSourceFields.toString() )
+            BaseMessages.getString(
+                PKG, "IngresVectorWiseLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
                 + Const.CR;
       }
       message += Const.CR;
@@ -702,8 +706,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
           BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "IngresVectorWiseLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString(
+              PKG, "IngresVectorWiseLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
@@ -749,8 +753,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
           insertValue.setName( info.getFieldDatabase()[i] );
           prevNew.addValueMeta( insertValue );
         } else {
-          throw new KettleStepException( BaseMessages.getString( PKG,
-              "IngresVectorWiseLoaderDialog.FailedToFindField.Message", info.getFieldStream()[i] ) );
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "IngresVectorWiseLoaderDialog.FailedToFindField.Message", info.getFieldStream()[i] ) );
         }
       }
       prev = prevNew;
@@ -774,8 +778,9 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogTitle" ),
-          BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogTitle" ), BaseMessages
+              .getString( PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogMessage" ), ke );
     }
   }
 
@@ -787,8 +792,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "IngresVectorWiseLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString( PKG,
-          "IngresVectorWiseLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+          .getString( PKG, "IngresVectorWiseLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+          PKG, "IngresVectorWiseLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }

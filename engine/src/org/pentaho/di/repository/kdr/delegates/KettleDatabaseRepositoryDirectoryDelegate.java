@@ -45,7 +45,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
   }
 
   public RowMetaAndData getDirectory( ObjectId id_directory ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ),
+    return repository.connectionDelegate.getOneRow(
+        quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ),
         quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ), id_directory );
   }
 
@@ -135,8 +136,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         }
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "Repository.LoadRepositoryDirectory.ErrorLoading.Exception" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "Repository.LoadRepositoryDirectory.ErrorLoading.Exception" ), e );
     }
   }
 
@@ -154,12 +155,13 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
     String tablename = KettleDatabaseRepository.TABLE_R_DIRECTORY;
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY,
-        ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT,
-        ValueMetaInterface.TYPE_INTEGER ), id_directory_parent );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME,
-        ValueMetaInterface.TYPE_STRING ), dir.getName() );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+        id_directory_parent );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), dir.getName() );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), tablename );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
@@ -248,8 +250,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
       if ( newName != null ) {
         additionalParameter = true;
         sql += quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ) + " = ?";
-        r.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME,
-            ValueMetaInterface.TYPE_STRING ), newName );
+        r.addValue( new ValueMeta(
+            KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), newName );
       }
       if ( id_directory_parent != null ) {
         // Add a parameter separator if the first parm was added
@@ -257,8 +259,10 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
           sql += ", ";
         }
         sql += quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ?";
-        r.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT,
-            ValueMetaInterface.TYPE_INTEGER ), id_directory_parent );
+        r.addValue(
+            new ValueMeta(
+                KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+            id_directory_parent );
       }
 
       sql += " WHERE " + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " = ? ";
@@ -274,7 +278,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
     RowMetaAndData dirParRow = repository.connectionDelegate.getParameterMetaData( id_directory );
     String sql =
-        "SELECT COUNT(*) FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
+        "SELECT COUNT(*) FROM "
+            + quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ) + " WHERE "
             + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ? ";
     RowMetaAndData r = repository.connectionDelegate.getOneRow( sql, dirParRow.getRowMeta(), dirParRow.getData() );
     if ( r != null ) {

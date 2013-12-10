@@ -92,9 +92,9 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
   @Deprecated
   public JobEntryResult( Result result, String comment, String reason, JobEntryCopy copy ) {
 
-    this( result, copy.getEntry().getLogChannel().getLogChannelId(), comment, reason, copy != null ? copy.getName()
-        : null, copy != null ? copy.getNr() : 0, copy == null ? null : ( copy.getEntry() != null ? copy.getEntry()
-        .getFilename() : null ) );
+    this( result, copy.getEntry().getLogChannel().getLogChannelId(), comment, reason, copy != null
+        ? copy.getName() : null, copy != null ? copy.getNr() : 0, copy == null ? null : ( copy.getEntry() != null
+        ? copy.getEntry().getFilename() : null ) );
   }
 
   public Object clone() {

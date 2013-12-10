@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Label;
  * 
  * @author Robert D. Rice
  */
-public class FormInput<C extends Control> extends Object /* implements ConstantsIF */{
+public class FormInput<C extends Control> extends Object {
   public static final String vc_id = "$Id: FormInput.java 1672 2009-05-20 20:12:26Z robert $";
 
   /** enumeration of available positioning elements */

@@ -267,8 +267,8 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wLimitFolders =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobDeleteFolders.LimitFolders.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobDeleteFolders.LimitFolders.Tooltip" ) );
     props.setLook( wLimitFolders );
     wLimitFolders.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();
@@ -381,8 +381,8 @@ public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEn
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "JobDeleteFolders.Fields.Argument.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "JobDeleteFolders.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobDeleteFolders.Fields.Column" ) );

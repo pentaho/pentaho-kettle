@@ -140,13 +140,13 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetSequenceMeta.CheckResult.StepIsReceving.Title" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetSequenceMeta.CheckResult.StepIsReceving.Title" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetSequenceMeta.CheckResult.NoInputReceived.Title" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetSequenceMeta.CheckResult.NoInputReceived.Title" ), stepMeta );
       remarks.add( cr );
     }
   }

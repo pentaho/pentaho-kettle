@@ -245,8 +245,9 @@ public class JobGridDelegate extends SpoonDelegate {
             }
             Result res = result.getResult();
             if ( res != null ) {
-              treeItem.setText( 2, res.getResult() ? BaseMessages.getString( PKG, "JobLog.Tree.Success" )
-                  : BaseMessages.getString( PKG, "JobLog.Tree.Failure" ) );
+              treeItem.setText( 2, res.getResult()
+                  ? BaseMessages.getString( PKG, "JobLog.Tree.Success" ) : BaseMessages.getString(
+                      PKG, "JobLog.Tree.Failure" ) );
               treeItem.setText( 5, Long.toString( res.getEntryNr() ) );
               if ( res.getResult() ) {
                 treeItem.setForeground( GUIResource.getInstance().getColorSuccessGreen() );

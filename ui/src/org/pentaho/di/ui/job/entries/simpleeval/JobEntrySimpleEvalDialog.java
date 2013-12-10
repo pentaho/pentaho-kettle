@@ -247,8 +247,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlFieldName.setLayoutData( fdlFieldName );
 
     wFieldName =
-        new TextVar( jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobSimpleEval.FieldName.Tooltip" ) );
+        new TextVar( jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobSimpleEval.FieldName.Tooltip" ) );
     props.setLook( wFieldName );
     wFieldName.addModifyListener( lsMod );
     fdFieldName = new FormData();
@@ -268,8 +268,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlVariableName.setLayoutData( fdlVariableName );
 
     wVariableName =
-        new TextVar( jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobSimpleEval.Variable.Tooltip" ) );
+        new TextVar( jobMeta, wSource, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobSimpleEval.Variable.Tooltip" ) );
     props.setLook( wVariableName );
     wVariableName.addModifyListener( lsMod );
     fdVariableName = new FormData();
@@ -467,8 +467,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlCompareValue.setLayoutData( fdlCompareValue );
 
     wCompareValue =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobSimpleEval.CompareValue.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobSimpleEval.CompareValue.Tooltip" ) );
     props.setLook( wCompareValue );
     wCompareValue.addModifyListener( lsMod );
     fdCompareValue = new FormData();
@@ -488,8 +488,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlMinValue.setLayoutData( fdlMinValue );
 
     wMinValue =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobSimpleEval.MinValue.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobSimpleEval.MinValue.Tooltip" ) );
     props.setLook( wMinValue );
     wMinValue.addModifyListener( lsMod );
     fdMinValue = new FormData();
@@ -509,8 +509,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlMaxValue.setLayoutData( fdlMaxValue );
 
     wMaxValue =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobSimpleEval.MaxValue.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobSimpleEval.MaxValue.Tooltip" ) );
     props.setLook( wMaxValue );
     wMaxValue.addModifyListener( lsMod );
     fdMaxValue = new FormData();

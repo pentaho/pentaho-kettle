@@ -76,8 +76,8 @@ import org.w3c.dom.Node;
  * @created 19-June-2003
  */
 public class BaseStepMeta implements Cloneable, StepAttributesInterface {
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Step metadata",
-      LoggingObjectType.STEPMETA, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Step metadata", LoggingObjectType.STEPMETA, null );
 
   public static final String STEP_ATTRIBUTES_FILE = "step-attributes.xml";
 
@@ -907,8 +907,8 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
           String parentId = XMLHandler.getTagValue( node, "parentid" );
 
           KettleAttribute attribute =
-              new KettleAttribute( key, xmlCode, repCode, description, tooltip, valueType, findParent( attributes,
-                  parentId ) );
+              new KettleAttribute( key, xmlCode, repCode, description, tooltip, valueType, findParent(
+                  attributes, parentId ) );
           attributes.add( attribute );
         }
       }

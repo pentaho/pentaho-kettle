@@ -77,8 +77,10 @@ import com.trilead.ssh2.SFTPv3FileAttributes;
 public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntrySSH2PUT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobSSH2PUT.Filetype.Pem" ),
-    BaseMessages.getString( PKG, "JobSSH2PUT.Filetype.All" ) };
+  private static final String[] FILETYPES =
+      new String[] {
+          BaseMessages.getString( PKG, "JobSSH2PUT.Filetype.Pem" ),
+          BaseMessages.getString( PKG, "JobSSH2PUT.Filetype.All" ) };
 
   private LabelText wName;
 
@@ -277,8 +279,8 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Job entry name line
     wName =
-        new LabelText( shell, BaseMessages.getString( PKG, "JobSSH2PUT.Name.Label" ), BaseMessages.getString( PKG,
-            "JobSSH2PUT.Name.Tooltip" ) );
+        new LabelText( shell, BaseMessages.getString( PKG, "JobSSH2PUT.Name.Label" ), BaseMessages.getString(
+            PKG, "JobSSH2PUT.Name.Tooltip" ) );
     wName.addModifyListener( lsMod );
     fdName = new FormData();
     fdName.top = new FormAttachment( 0, 0 );
@@ -476,8 +478,9 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
 
     // ProxyHost line
     wHTTPProxyHost =
-        new LabelTextVar( jobMeta, wHTTPProxyGroup, BaseMessages.getString( PKG, "JobSSH2PUT.ProxyHost.Label" ),
-            BaseMessages.getString( PKG, "JobSSH2PUT.Server.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wHTTPProxyGroup, BaseMessages.getString( PKG, "JobSSH2PUT.ProxyHost.Label" ), BaseMessages
+                .getString( PKG, "JobSSH2PUT.Server.Tooltip" ) );
     props.setLook( wHTTPProxyHost );
     wHTTPProxyHost.addModifyListener( lsMod );
     fdHTTPProxyHost = new FormData();
@@ -532,9 +535,9 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
 
     // ProxyUsername line
     wHTTPProxyUsername =
-        new LabelTextVar( jobMeta, wHTTPProxyGroup,
-            BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyUsername.Label" ), BaseMessages.getString( PKG,
-                "JobSSH2PUT.HttpProxyUsername.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wHTTPProxyGroup, BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyUsername.Label" ), BaseMessages
+                .getString( PKG, "JobSSH2PUT.HttpProxyUsername.Tooltip" ) );
     props.setLook( wHTTPProxyUsername );
     wHTTPProxyUsername.addModifyListener( lsMod );
     fdHTTPProxyUsername = new FormData();
@@ -545,9 +548,9 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
 
     // HttpProxyPassword line
     wHTTPProxyPassword =
-        new LabelTextVar( jobMeta, wHTTPProxyGroup,
-            BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyPassword.Label" ), BaseMessages.getString( PKG,
-                "JobSSH2PUT.HttpProxyPassword.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wHTTPProxyGroup, BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyPassword.Label" ), BaseMessages
+                .getString( PKG, "JobSSH2PUT.HttpProxyPassword.Tooltip" ) );
     props.setLook( wHTTPProxyPassword );
     wHTTPProxyPassword.setEchoChar( '*' );
     wHTTPProxyPassword.addModifyListener( lsMod );
@@ -663,8 +666,9 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
 
     // keyfilePass line
     wkeyfilePass =
-        new LabelTextVar( jobMeta, wPublicKey, BaseMessages.getString( PKG, "JobSSH2PUT.keyfilePass.Label" ),
-            BaseMessages.getString( PKG, "JobSSH2PUT.keyfilePass.Tooltip" ) );
+        new LabelTextVar(
+            jobMeta, wPublicKey, BaseMessages.getString( PKG, "JobSSH2PUT.keyfilePass.Label" ), BaseMessages.getString(
+                PKG, "JobSSH2PUT.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
     wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
@@ -822,8 +826,8 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
 
     // FtpDirectory line
     wFtpDirectory =
-        new TextVar( jobMeta, wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobSSH2PUT.RemoteDir.Label" ) );
+        new TextVar( jobMeta, wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobSSH2PUT.RemoteDir.Label" ) );
     props.setLook( wFtpDirectory );
     wFtpDirectory.setToolTipText( BaseMessages.getString( PKG, "JobSSH2PUT.RemoteDir.Tooltip" ) );
     wFtpDirectory.addModifyListener( lsMod );
@@ -950,8 +954,8 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
     } );
 
     wDestinationFolder =
-        new TextVar( jobMeta, wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobSSH2PUT.DestinationFolder.Tooltip" ) );
+        new TextVar( jobMeta, wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobSSH2PUT.DestinationFolder.Tooltip" ) );
     props.setLook( wDestinationFolder );
     wDestinationFolder.addModifyListener( lsMod );
     fdDestinationFolder = new FormData();
@@ -1143,8 +1147,8 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
         mb.open();
       } else {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobSSH2PUT.FolderExists.NOK", wFtpDirectory.getText() ) + Const.CR
-            + errmsg );
+        mb.setMessage( BaseMessages.getString( PKG, "JobSSH2PUT.FolderExists.NOK", wFtpDirectory.getText() )
+            + Const.CR + errmsg );
         mb.setText( BaseMessages.getString( PKG, "JobSSH2PUT.FolderExists.Title.Bad" ) );
         mb.open();
       }
@@ -1164,9 +1168,10 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
           /* Now connect */
           // if the proxy requires basic authentication:
           if ( wuseBasicAuthentication.getSelection() ) {
-            conn.setProxyData( new HTTPProxyData( jobMeta.environmentSubstitute( wHTTPProxyHost.getText() ), Const
-                .toInt( wHTTPProxyPort.getText(), 22 ), jobMeta.environmentSubstitute( wHTTPProxyUsername.getText() ),
-                jobMeta.environmentSubstitute( wHTTPProxyPassword.getText() ) ) );
+            conn.setProxyData( new HTTPProxyData(
+                jobMeta.environmentSubstitute( wHTTPProxyHost.getText() ), Const.toInt( wHTTPProxyPort.getText(), 22 ),
+                jobMeta.environmentSubstitute( wHTTPProxyUsername.getText() ), jobMeta
+                    .environmentSubstitute( wHTTPProxyPassword.getText() ) ) );
           } else {
             conn.setProxyData( new HTTPProxyData( jobMeta.environmentSubstitute( wHTTPProxyHost.getText() ), Const
                 .toInt( wHTTPProxyPort.getText(), 22 ) ) );

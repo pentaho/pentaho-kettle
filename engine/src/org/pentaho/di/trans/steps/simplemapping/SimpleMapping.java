@@ -208,8 +208,8 @@ public class SimpleMapping extends BaseStep implements StepInterface {
     try {
       data.mappingTrans.prepareExecution( getTrans().getArguments() );
     } catch ( KettleException e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SimpleMapping.Exception.UnableToPrepareExecutionOfMapping" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SimpleMapping.Exception.UnableToPrepareExecutionOfMapping" ), e );
     }
 
     // If there is no read/write logging step set, we can insert the data from
@@ -276,8 +276,7 @@ public class SimpleMapping extends BaseStep implements StepInterface {
 
         data.mappingTransMeta =
             SimpleMappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
-        if ( data.mappingTransMeta != null ) // Do we have a mapping at all?
-        {
+        if ( data.mappingTransMeta != null ) { // Do we have a mapping at all?
 
           // OK, now prepare the execution of the mapping.
           // This includes the allocation of RowSet buffers, the creation of the

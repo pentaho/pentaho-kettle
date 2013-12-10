@@ -195,8 +195,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       proxyUsername = rep.getJobEntryAttributeString( id_jobentry, "proxy_username" );
       proxyPassword = rep.getJobEntryAttributeString( id_jobentry, "proxy_password" );
       connectionType =
-          FTPSConnection.getConnectionTypeByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry,
-              "connection_type" ), "" ) );
+          FTPSConnection.getConnectionTypeByCode( Const.NVL( rep.getJobEntryAttributeString(
+              id_jobentry, "connection_type" ), "" ) );
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPSPUT.UnableToLoadFromRepo", String
           .valueOf( id_jobentry ) ), dbe );
@@ -208,7 +208,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "remoteDirectory", remoteDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localDirectory", localDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -588,8 +589,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       myFileList.toArray( filelist );
 
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory", filelist.length,
-            realLocalDirectory ) );
+        logDetailed( BaseMessages.getString(
+            PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory", filelist.length, realLocalDirectory ) );
       }
 
       Pattern pattern = null;
@@ -624,8 +625,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 
             String localFilename = realLocalDirectory + Const.FILE_SEPARATOR + filelist[i];
             if ( isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory", localFilename,
-                  realRemoteDirectory ) );
+              logDebug( BaseMessages.getString(
+                  PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory", localFilename, realRemoteDirectory ) );
             }
 
             connection.uploadFile( localFilename, filelist[i] );
@@ -684,8 +685,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+        this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );

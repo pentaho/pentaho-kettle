@@ -66,15 +66,15 @@ public class KettleTrustManager implements X509TrustManager {
         inputStream = KettleVFS.getInputStream( certFilename );
         keyStore.load( inputStream, Const.NVL( certPassword, "" ).toCharArray() );
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "KettleTrustManager.Exception.CouldNotOpenCertStore" ),
-            e );
+        throw new KettleException(
+            BaseMessages.getString( PKG, "KettleTrustManager.Exception.CouldNotOpenCertStore" ), e );
       } finally {
         if ( inputStream != null ) {
           try {
             inputStream.close();
           } catch ( Exception e ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "KettleTrustManager.Exception.CouldNotOpenCertStore" ), e );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "KettleTrustManager.Exception.CouldNotOpenCertStore" ), e );
           }
         }
       }
@@ -88,12 +88,12 @@ public class KettleTrustManager implements X509TrustManager {
         TrustManager[] tms = tmf.getTrustManagers();
         tm = (X509TrustManager) tms[0];
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "KettleTrustManager.Exception.CouldNotInitializeTrustManager" ), e );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "KettleTrustManager.Exception.CouldNotInitializeTrustManager" ), e );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "KettleTrustManager.Exception.CouldNotInitializeKettleTrustManager" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "KettleTrustManager.Exception.CouldNotInitializeKettleTrustManager" ), e );
     }
   }
 

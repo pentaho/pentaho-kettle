@@ -80,8 +80,8 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
   private static Class<?> PKG = org.pentaho.di.trans.steps.sftpput.SFTPPutMeta.class; // for i18n purposes, needed by
                                                                                       // Translator2!! $NON-NLS-1$
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "SFTPPUT.Filetype.Pem" ),
-    BaseMessages.getString( PKG, "SFTPPUT.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] {
+      BaseMessages.getString( PKG, "SFTPPUT.Filetype.Pem" ), BaseMessages.getString( PKG, "SFTPPUT.Filetype.All" ) };
 
   private SFTPPutMeta input;
 
@@ -425,8 +425,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // keyfilePass line
     wkeyfilePass =
-        new LabelTextVar( transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.keyfilePass.Label" ),
-            BaseMessages.getString( PKG, "SFTPPUT.keyfilePass.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.keyfilePass.Label" ), BaseMessages
+                .getString( PKG, "SFTPPUT.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
     wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
@@ -463,8 +464,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy host line
     wProxyHost =
-        new LabelTextVar( transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyHost.Label" ),
-            BaseMessages.getString( PKG, "SFTPPUT.ProxyHost.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyHost.Label" ), BaseMessages
+                .getString( PKG, "SFTPPUT.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -475,8 +477,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy port line
     wProxyPort =
-        new LabelTextVar( transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPort.Label" ),
-            BaseMessages.getString( PKG, "SFTPPUT.ProxyPort.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPort.Label" ), BaseMessages
+                .getString( PKG, "SFTPPUT.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -487,8 +490,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy username line
     wProxyUsername =
-        new LabelTextVar( transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "SFTPPUT.ProxyUsername.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyUsername.Label" ), BaseMessages
+                .getString( PKG, "SFTPPUT.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -499,8 +503,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
     // Proxy password line
     wProxyPassword =
-        new LabelTextVar( transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "SFTPPUT.ProxyPassword.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPassword.Label" ), BaseMessages
+                .getString( PKG, "SFTPPUT.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
@@ -1125,11 +1130,11 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
       if ( sftpclient == null ) {
         // Create sftp client to host ...
         sftpclient =
-            new SFTPClient( InetAddress.getByName( transMeta.environmentSubstitute( wServerName.getText() ) ), Const
-                .toInt( transMeta.environmentSubstitute( wServerPort.getText() ), 22 ), transMeta
-                .environmentSubstitute( wUserName.getText() ),
-                transMeta.environmentSubstitute( wKeyFilename.getText() ), transMeta
-                    .environmentSubstitute( wkeyfilePass.getText() ) );
+            new SFTPClient(
+                InetAddress.getByName( transMeta.environmentSubstitute( wServerName.getText() ) ), Const.toInt(
+                    transMeta.environmentSubstitute( wServerPort.getText() ), 22 ), transMeta
+                    .environmentSubstitute( wUserName.getText() ), transMeta.environmentSubstitute( wKeyFilename
+                    .getText() ), transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
         // Set proxy?
         String realProxyHost = transMeta.environmentSubstitute( wProxyHost.getText() );
         if ( !Const.isEmpty( realProxyHost ) ) {
@@ -1192,8 +1197,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
           }
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "SFTPPUTDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

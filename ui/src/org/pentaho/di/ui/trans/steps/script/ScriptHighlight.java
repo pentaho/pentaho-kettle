@@ -107,10 +107,10 @@ class ScriptHighlight implements LineStyleListener {
   void initializeColors() {
     // Display display = Display.getDefault();
     colors = new Color[] { GUIResource.getInstance().getColor( 0, 0, 0 ), // black
-      GUIResource.getInstance().getColor( 63, 127, 95 ), // red
-      GUIResource.getInstance().getColor( 0, 0, 192 ), // green
-      GUIResource.getInstance().getColor( 127, 0, 85 ), // blue
-      GUIResource.getInstance().getColor( 255, 102, 0 ) // Kettle Functions / Orange
+        GUIResource.getInstance().getColor( 63, 127, 95 ), // red
+        GUIResource.getInstance().getColor( 0, 0, 192 ), // green
+        GUIResource.getInstance().getColor( 127, 0, 85 ), // blue
+        GUIResource.getInstance().getColor( 255, 102, 0 ) // Kettle Functions / Orange
         };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
@@ -258,10 +258,11 @@ class ScriptHighlight implements LineStyleListener {
 
     private String[] kfKeywords = { "num2str" };
 
-    private String[] fgKeywords = { "array", "break", "case", "catch", "const", "continue", "Date", "default",
-      "delete", "do", "else", "eval", "escape", "false", "finally", "float", "for", "function", "if", "in",
-      "instanceof", "isFinite", "isNaN", "new", "Number", "null", "String", "switch", "this", "then", "throw", "to",
-      "true", "try", "typeof", "parseInt", "parseFloat", "return", "unescape", "var", "void", "with", "while" };
+    private String[] fgKeywords = {
+        "array", "break", "case", "catch", "const", "continue", "Date", "default", "delete", "do", "else", "eval",
+        "escape", "false", "finally", "float", "for", "function", "if", "in", "instanceof", "isFinite", "isNaN", "new",
+        "Number", "null", "String", "switch", "this", "then", "throw", "to", "true", "try", "typeof", "parseInt",
+        "parseFloat", "return", "unescape", "var", "void", "with", "while" };
 
     public JavaScanner() {
       initialize();

@@ -154,13 +154,15 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
 
     FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
 
-    TARGET_NAME( ValueMetaInterface.TYPE_STRING, "Target field name" ), NAME( ValueMetaInterface.TYPE_STRING,
-        "Value field name" ), KEY_VALUE( ValueMetaInterface.TYPE_STRING, "Key value" ), TARGET_TYPE(
-        ValueMetaInterface.TYPE_STRING, "Target field type" ), TARGET_LENGTH( ValueMetaInterface.TYPE_STRING,
-        "Target field length" ), TARGET_PRECISION( ValueMetaInterface.TYPE_STRING, "Target field precision" ), TARGET_CURRENCY(
+    TARGET_NAME( ValueMetaInterface.TYPE_STRING, "Target field name" ), NAME(
+        ValueMetaInterface.TYPE_STRING, "Value field name" ), KEY_VALUE( ValueMetaInterface.TYPE_STRING, "Key value" ),
+    TARGET_TYPE( ValueMetaInterface.TYPE_STRING, "Target field type" ), TARGET_LENGTH(
+        ValueMetaInterface.TYPE_STRING, "Target field length" ), TARGET_PRECISION(
+        ValueMetaInterface.TYPE_STRING, "Target field precision" ), TARGET_CURRENCY(
         ValueMetaInterface.TYPE_STRING, "Target field currency symbol" ), TARGET_DECIMAL(
-        ValueMetaInterface.TYPE_STRING, "Target field decimal symbol" ), TARGET_GROUP( ValueMetaInterface.TYPE_STRING,
-        "Target field group symbol" ), TARGET_FORMAT( ValueMetaInterface.TYPE_STRING, "Target field format" ), TARGET_AGGREGATION(
+        ValueMetaInterface.TYPE_STRING, "Target field decimal symbol" ), TARGET_GROUP(
+        ValueMetaInterface.TYPE_STRING, "Target field group symbol" ), TARGET_FORMAT(
+        ValueMetaInterface.TYPE_STRING, "Target field format" ), TARGET_AGGREGATION(
         ValueMetaInterface.TYPE_STRING, "Target aggregation (-, SUM, AVERAGE, MIN, MAX, COUNT_ALL, CONCAT_COMMA)" ), ;
 
     private int valueType;

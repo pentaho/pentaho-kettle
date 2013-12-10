@@ -85,10 +85,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
   private static final String[] variableTypeCode = { "JVM", "CURRENT_JOB", "PARENT_JOB", "ROOT_JOB" };
   private static final String[] variableTypeDesc = {
-    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.JVM" ),
-    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.CurrentJob" ),
-    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.ParentJob" ),
-    BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.RootJob" ), };
+      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.JVM" ),
+      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.CurrentJob" ),
+      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.ParentJob" ),
+      BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.RootJob" ), };
 
   public JobEntrySetVariables( String n ) {
     super( n, "" );
@@ -232,8 +232,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           }
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JobEntrySetVariables.Error.UnableReadPropertiesFile",
-            realFilename ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "JobEntrySetVariables.Error.UnableReadPropertiesFile", realFilename ) );
       }
 
       for ( int i = 0; i < variableName.length; i++ ) {
@@ -279,8 +279,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
             if ( parentJob != null ) {
               parentJob.setVariable( varname, value );
             } else {
-              throw new KettleJobException( BaseMessages.getString( PKG,
-                  "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
+              throw new KettleJobException( BaseMessages.getString(
+                  PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
             }
           }
             break;
@@ -293,12 +293,12 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
               if ( gpJob != null ) {
                 gpJob.setVariable( varname, value );
               } else {
-                throw new KettleJobException( BaseMessages.getString( PKG,
-                    "JobEntrySetVariables.Error.UnableSetVariableParentJob", varname ) );
+                throw new KettleJobException( BaseMessages.getString(
+                    PKG, "JobEntrySetVariables.Error.UnableSetVariableParentJob", varname ) );
               }
             } else {
-              throw new KettleJobException( BaseMessages.getString( PKG,
-                  "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
+              throw new KettleJobException( BaseMessages.getString(
+                  PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
             }
           }
             break;

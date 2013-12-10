@@ -168,14 +168,15 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "NormaliserDialog.ColumnInfo.Fieldname" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "NormaliserDialog.ColumnInfo.Fieldname" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "NormaliserDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "NormaliserDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "NormaliserDialog.ColumnInfo.NewField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "NormaliserDialog.ColumnInfo.NewField" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -340,8 +341,9 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "NormaliserDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "NormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "NormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "NormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

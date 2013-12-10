@@ -392,8 +392,9 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
           wNrCloneField.setText( field );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "CloneRowDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "CloneRowDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "CloneRowDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "CloneRowDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

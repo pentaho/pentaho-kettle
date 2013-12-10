@@ -358,8 +358,9 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     final int FieldsRows = input.getArguments().length;
 
     colinf =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "ExecSQLDialog.ColumnInfo.ArgumentFieldname" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "ExecSQLDialog.ColumnInfo.ArgumentFieldname" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false ), };
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -753,8 +754,9 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "ExecSQLDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "ExecSQLDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "ExecSQLDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
+              PKG, "ExecSQLDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }

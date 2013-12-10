@@ -46,8 +46,8 @@ public class RowDataUtilTest extends TestCase {
   public void testResizeArray() throws KettleValueException {
     Object[] arr1 = new Object[] { "test", Boolean.TRUE, new Long( 100 ), new Long( 101 ), new String( "test1" ) };
     Object[] nullArr =
-        new Object[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-          null };
+        new Object[] {
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
 
     // ------- Normal cases
 
@@ -70,7 +70,7 @@ public class RowDataUtilTest extends TestCase {
   }
 
   public void testRemoveItem() throws KettleValueException {
-    Object arr[] = new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ), new Long( 4L ), new Long( 5L ) };
+    Object[] arr = new Object[] { new Long( 1L ), new Long( 2L ), new Long( 3L ), new Long( 4L ), new Long( 5L ) };
 
     // Remove the first item
     Object[] comp1 = new Object[] { new Long( 2L ), new Long( 3L ), new Long( 4L ), new Long( 5L ) };

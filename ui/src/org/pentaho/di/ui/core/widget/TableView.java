@@ -325,8 +325,8 @@ public class TableView extends Composite {
     miCol1.setText( OsHelper.customizeMenuitemText( BaseMessages
         .getString( PKG, "TableView.menu.OptimalSizeWithHeader" ) ) );
     MenuItem miCol2 = new MenuItem( mRow, SWT.NONE );
-    miCol2.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG,
-        "TableView.menu.OptimalSizeWithoutHeader" ) ) );
+    miCol2.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+        PKG, "TableView.menu.OptimalSizeWithoutHeader" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     MenuItem miClear = new MenuItem( mRow, SWT.NONE );
     miClear.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.ClearAll" ) ) );
@@ -344,8 +344,8 @@ public class TableView extends Composite {
     miClipAll
         .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.CopyToClipboard" ) ) );
     MenuItem miPasteAll = new MenuItem( mRow, SWT.NONE );
-    miPasteAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG,
-        "TableView.menu.PasteFromClipboard" ) ) );
+    miPasteAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+        PKG, "TableView.menu.PasteFromClipboard" ) ) );
     MenuItem miCutAll = new MenuItem( mRow, SWT.NONE );
     miCutAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.CutSelected" ) ) );
     MenuItem miDelAll = new MenuItem( mRow, SWT.NONE );
@@ -354,8 +354,8 @@ public class TableView extends Composite {
     miKeep.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "TableView.menu.KeepSelected" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     MenuItem miCopyToAll = new MenuItem( mRow, SWT.NONE );
-    miCopyToAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG,
-        "TableView.menu.CopyFieldToAllRows" ) ) );
+    miCopyToAll.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+        PKG, "TableView.menu.CopyFieldToAllRows" ) ) );
     new MenuItem( mRow, SWT.SEPARATOR );
     miEditUndo = new MenuItem( mRow, SWT.NONE );
     miEditRedo = new MenuItem( mRow, SWT.NONE );
@@ -566,8 +566,8 @@ public class TableView extends Composite {
         // "ENTER": close the text editor and copy the data over
         // We edit the data after moving to another cell, only if editNextCell =
         // true;
-        if ( e.character == SWT.CR || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.TAB
-            || left || right ) {
+        if ( e.character == SWT.CR
+            || e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.TAB || left || right ) {
           if ( activeTableItem == null ) {
             return;
           }
@@ -596,15 +596,13 @@ public class TableView extends Composite {
             activeTableColumn--;
             editNextCell = true;
           }
-          if ( activeTableColumn < 1 ) // from SHIFT-TAB
-          {
+          if ( activeTableColumn < 1 ) { // from SHIFT-TAB
             activeTableColumn = maxcols - 1;
             if ( activeTableRow > 0 ) {
               activeTableRow--;
             }
           }
-          if ( activeTableColumn >= maxcols ) // from TAB
-          {
+          if ( activeTableColumn >= maxcols ) { // from TAB
             activeTableColumn = 1;
             activeTableRow++;
 
@@ -673,15 +671,13 @@ public class TableView extends Composite {
             sel = true;
           }
 
-          if ( activeTableColumn < 1 ) // from SHIFT-TAB
-          {
+          if ( activeTableColumn < 1 ) { // from SHIFT-TAB
             activeTableColumn = maxcols - 1;
             if ( activeTableRow > 0 ) {
               activeTableRow--;
             }
           }
-          if ( activeTableColumn >= maxcols ) // from TAB
-          {
+          if ( activeTableColumn >= maxcols ) { // from TAB
             activeTableColumn = 1;
             activeTableRow++;
 
@@ -800,8 +796,9 @@ public class TableView extends Composite {
         }
 
         // Move cursor: set selection on the row in question.
-        if ( ( e.keyCode == SWT.ARROW_DOWN && !shift ) || ( e.keyCode == SWT.ARROW_UP && !shift )
-            || ( e.keyCode == SWT.HOME && !shift ) || ( e.keyCode == SWT.END && !shift ) ) {
+        if ( ( e.keyCode == SWT.ARROW_DOWN && !shift )
+            || ( e.keyCode == SWT.ARROW_UP && !shift ) || ( e.keyCode == SWT.HOME && !shift )
+            || ( e.keyCode == SWT.END && !shift ) ) {
           switch ( e.keyCode ) {
             case SWT.ARROW_DOWN:
               activeTableRow++;
@@ -926,11 +923,11 @@ public class TableView extends Composite {
 
         if ( activeTableColumn > 0 ) {
           boolean text_char =
-              ( e.character >= 'a' && e.character <= 'z' ) || ( e.character >= 'A' && e.character <= 'Z' )
-                  || ( e.character >= '0' && e.character <= '9' ) || ( e.character == ' ' ) || ( e.character == '_' )
-                  || ( e.character == ',' ) || ( e.character == '.' ) || ( e.character == '+' )
-                  || ( e.character == '-' ) || ( e.character == '*' ) || ( e.character == '/' )
-                  || ( e.character == ';' );
+              ( e.character >= 'a' && e.character <= 'z' )
+                  || ( e.character >= 'A' && e.character <= 'Z' ) || ( e.character >= '0' && e.character <= '9' )
+                  || ( e.character == ' ' ) || ( e.character == '_' ) || ( e.character == ',' )
+                  || ( e.character == '.' ) || ( e.character == '+' ) || ( e.character == '-' )
+                  || ( e.character == '*' ) || ( e.character == '/' ) || ( e.character == ';' );
 
           // setSelection(row, rownr, colnr);
           // character a-z, A-Z, 0-9: start typing...
@@ -954,15 +951,13 @@ public class TableView extends Composite {
             if ( e.keyCode == SWT.TAB && ( ( e.stateMask & SWT.SHIFT ) != 0 ) ) {
               activeTableColumn--;
             }
-            if ( activeTableColumn < 1 ) // from SHIFT-TAB
-            {
+            if ( activeTableColumn < 1 ) { // from SHIFT-TAB
               activeTableColumn = maxcols - 1;
               if ( activeTableRow > 0 ) {
                 activeTableRow--;
               }
             }
-            if ( activeTableColumn >= maxcols ) // from TAB
-            {
+            if ( activeTableColumn >= maxcols ) { // from TAB
               activeTableColumn = 1;
               activeTableRow++;
 
@@ -1717,9 +1712,10 @@ public class TableView extends Composite {
         ta.setNew( grid, idx );
         addUndo( ta );
       }
-      if ( rownr == 0 && table.getItemCount() > rownr + 1 ) // Empty row at rownr?
-                                                            // Remove it!
-      {
+      if ( rownr == 0 && table.getItemCount() > rownr + 1 ) {
+        // Empty row at rownr?
+        // Remove it!
+
         if ( isEmpty( rownr, -1 ) ) {
           table.remove( rownr );
         }
@@ -2436,8 +2432,8 @@ public class TableView extends Composite {
         table.remove( i );
       }
     }
-    if ( table.getItemCount() == 0 ) // At least one empty row!
-    {
+    if ( table.getItemCount() == 0 ) { // At least one empty row!
+
       new TableItem( table, SWT.NONE );
     }
   }
@@ -2721,8 +2717,8 @@ public class TableView extends Composite {
           .toString() ) ) );
     } else {
       miEditUndo.setEnabled( false );
-      miEditUndo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG,
-          "TableView.menu.UndoNotAvailable" ) ) );
+      miEditUndo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+          PKG, "TableView.menu.UndoNotAvailable" ) ) );
     }
 
     if ( next != null ) {
@@ -2731,8 +2727,8 @@ public class TableView extends Composite {
           .toString() ) ) );
     } else {
       miEditRedo.setEnabled( false );
-      miEditRedo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG,
-          "TableView.menu.RedoNotAvailable" ) ) );
+      miEditRedo.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+          PKG, "TableView.menu.RedoNotAvailable" ) ) );
     }
 
   }
@@ -2995,8 +2991,8 @@ public class TableView extends Composite {
 
     boolean gotOne = false;
     for ( int colnr = 0; colnr < columns.length && !gotOne; colnr++ ) {
-      if ( !columns[colnr].isReadOnly() ) // edit this one...
-      {
+      if ( !columns[colnr].isReadOnly() ) {
+        // edit this one...
         gotOne = true;
         activeTableItem = table.getItem( rownr );
         activeTableColumn = colnr + 1;

@@ -114,7 +114,8 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
           out.println( new WebResult( WebResult.STRING_OK, message, id ).getXML() );
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+          out.println( "<a href=\""
+              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
         }
@@ -125,7 +126,8 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
           out.println( new WebResult( WebResult.STRING_ERROR, message, id ).getXML() );
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          out.println( "<a href=\""
+              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }

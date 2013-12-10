@@ -278,9 +278,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     // Webservice URL
     wURL =
-        new LabelTextVar( transMeta, wConnectionGroup,
-            BaseMessages.getString( PKG, "SalesforceInputDialog.URL.Label" ), BaseMessages.getString( PKG,
-                "SalesforceInputDialog.URL.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wConnectionGroup, BaseMessages.getString( PKG, "SalesforceInputDialog.URL.Label" ), BaseMessages
+                .getString( PKG, "SalesforceInputDialog.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -291,9 +291,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     // UserName line
     wUserName =
-        new LabelTextVar( transMeta, wConnectionGroup,
-            BaseMessages.getString( PKG, "SalesforceInputDialog.User.Label" ), BaseMessages.getString( PKG,
-                "SalesforceInputDialog.User.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wConnectionGroup, BaseMessages.getString( PKG, "SalesforceInputDialog.User.Label" ),
+            BaseMessages.getString( PKG, "SalesforceInputDialog.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -304,9 +304,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     // Password line
     wPassword =
-        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString( PKG,
-            "SalesforceInputDialog.Password.Label" ), BaseMessages.getString( PKG,
-            "SalesforceInputDialog.Password.Tooltip" ) );
+        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
+            PKG, "SalesforceInputDialog.Password.Label" ), BaseMessages.getString(
+            PKG, "SalesforceInputDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -400,8 +400,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
-        if ( Const.isEmpty( wURL.getText() ) || Const.isEmpty( wUserName.getText() )
-            || Const.isEmpty( wPassword.getText() ) || ( getModulesListError ) ) {
+        if ( Const.isEmpty( wURL.getText() )
+            || Const.isEmpty( wUserName.getText() ) || Const.isEmpty( wPassword.getText() ) || ( getModulesListError ) ) {
           return;
         }
 
@@ -428,8 +428,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlCondition.setLayoutData( fdlCondition );
 
     wCondition =
-        new StyledTextComp( transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL,
-            "" );
+        new StyledTextComp(
+            transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     wCondition.setToolTipText( BaseMessages.getString( PKG, "SalesforceInputDialog.Condition.Tooltip" ) );
     props.setLook( wCondition, Props.WIDGET_STYLE_FIXED );
     wCondition.addModifyListener( lsMod );
@@ -492,8 +492,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlQuery.setLayoutData( fdlQuery );
 
     wQuery =
-        new StyledTextComp( transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL,
-            "" );
+        new StyledTextComp(
+            transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wQuery, Props.WIDGET_STYLE_FIXED );
     wQuery.addModifyListener( lsMod );
     fdQuery = new FormData();
@@ -660,7 +660,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         ok.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, false, false ) );
         ok.addSelectionListener( new SelectionAdapter() {
           public void widgetSelected( SelectionEvent e ) {
-            wReadFrom.setText( calendar.getYear() + "-"
+            wReadFrom.setText( calendar.getYear()
+                + "-"
                 + ( ( calendar.getMonth() + 1 ) < 10 ? "0" + ( calendar.getMonth() + 1 ) : ( calendar.getMonth() + 1 ) )
                 + "-" + ( calendar.getDay() < 10 ? "0" + calendar.getDay() : calendar.getDay() ) + " "
                 + ( time.getHours() < 10 ? "0" + time.getHours() : time.getHours() ) + ":"
@@ -719,8 +720,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           public void widgetSelected( SelectionEvent e ) {
             wReadTo.setText( calendarto.getYear()
                 + "-"
-                + ( ( calendarto.getMonth() + 1 ) < 10 ? "0" + ( calendarto.getMonth() + 1 )
-                    : ( calendarto.getMonth() + 1 ) ) + "-"
+                + ( ( calendarto.getMonth() + 1 ) < 10
+                    ? "0" + ( calendarto.getMonth() + 1 ) : ( calendarto.getMonth() + 1 ) ) + "-"
                 + ( calendarto.getDay() < 10 ? "0" + calendarto.getDay() : calendarto.getDay() ) + " "
                 + ( timeto.getHours() < 10 ? "0" + timeto.getHours() : timeto.getHours() ) + ":"
                 + ( timeto.getMinutes() < 10 ? "0" + timeto.getMinutes() : timeto.getMinutes() ) + ":"
@@ -1108,32 +1109,48 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Field.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.IsIdLookup.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, SalesforceInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Repeat.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Name.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Field.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.IsIdLookup.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Type.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Format.Column" ),
+                ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Length.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Precision.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Currency.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Decimal.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Group.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.TrimType.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, SalesforceInputField.trimTypeDesc, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Repeat.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
 
         };
 
@@ -1361,9 +1378,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       mb.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Ok" ) );
       mb.open();
     } else {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Error" ),
-          BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.NOK", wUserName.getText() ), new Exception(
-              msgError ) );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Error" ), BaseMessages.getString(
+              PKG, "SalesforceInputDialog.Connected.NOK", wUserName.getText() ), new Exception( msgError ) );
     }
   }
 
@@ -1418,11 +1435,13 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       wFields.setRowNums();
       wFields.optWidth( true );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle" ), BaseMessages
+              .getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ), e );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogTitle" ), BaseMessages
+              .getString( PKG, "SalesforceInputMeta.ErrorRetrieveData.DialogMessage" ), e );
     } finally {
       if ( connection != null ) {
         try {
@@ -1457,8 +1476,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       fieldPrecision = Integer.toString( field.getPrecision() );
     }
 
-    addField( field.getLabel(), field.getName(), field.isIdLookup(), field.getType().getValue(), fieldLength,
-        fieldPrecision );
+    addField(
+        field.getLabel(), field.getName(), field.isIdLookup(), field.getType().getValue(), fieldLength, fieldPrecision );
   }
 
   private void addField( String fieldName, List<String> fieldNames, String firstValue ) {
@@ -1495,8 +1514,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     TableItem item = new TableItem( wFields.table, SWT.NONE );
     item.setText( 1, fieldLabel );
     item.setText( 2, fieldName );
-    item.setText( 3, fieldIdIsLookup ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-        "System.Combo.No" ) );
+    item.setText( 3, fieldIdIsLookup ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+        PKG, "System.Combo.No" ) );
 
     // Try to get the Type
     if ( fieldType.equals( "boolean" ) ) {
@@ -1600,8 +1619,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         String name = field.getName();
         String path = field.getField();
         String isidlookup =
-            field.isIdLookup() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+            field.isIdLookup() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+                PKG, "System.Combo.No" );
         String type = field.getTypeDesc();
         String format = field.getFormat();
         String length = "" + field.getLength();
@@ -1611,8 +1630,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+                PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1676,8 +1695,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorValidateData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorValidateData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorValidateData.DialogTitle" ), BaseMessages
+              .getString( PKG, "SalesforceInputDialog.ErrorValidateData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1751,14 +1771,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "SalesforceInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "SalesforceInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "SalesforceInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "SalesforceInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1767,22 +1787,24 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "SalesforceInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 
@@ -1814,9 +1836,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         gotModule = true;
         getModulesListError = false;
       } catch ( Exception e ) {
-        new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorRetrieveModules.DialogTitle" ), BaseMessages
-                .getString( PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorRetrieveModules.DialogTitle" ),
+            BaseMessages.getString( PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
       } finally {
         if ( !Const.isEmpty( selectedField ) ) {

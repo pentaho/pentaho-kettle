@@ -86,15 +86,16 @@ public class ScriptAddedFunctions {
   public static final int SPECIAL_FUNCTION = 4;
   public static final int FILE_FUNCTION = 5;
 
-  public static String[] jsFunctionList = { "appendToFile", "getTransformationName", "writeToLog", "getFiscalDate",
-    "getProcessCount", "ceil", "floor", "abs", "getDayNumber", "isWorkingDay", "fireToDB", "getNextWorkingDay",
-    "quarter", "dateDiff", "dateAdd", "fillString", "isCodepage", "ltrim", "rtrim", "lpad", "rpad", "week", "month",
-    "year", "str2RegExp", "fileExists", "touch", "isRegExp", "date2str", "str2date", "sendMail", "replace", "decode",
-    "isNum", "isDate", "lower", "upper", "str2num", "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar",
-    "LoadScriptFile", "LoadScriptFromTab", "print", "println", "resolveIP", "trim", "substr", "getVariable",
-    "setVariable", "LuhnCheck", "getDigitsOnly", "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy",
-    "putRow", "deleteFile", "createFolder", "copyFile", "getFileSize", "isFile", "isFolder", "getShortFilename",
-    "getFileExtension", "getParentFoldername", "getLastModifiedTime", "trunc", "truncDate", "moveFile", };
+  public static String[] jsFunctionList = {
+      "appendToFile", "getTransformationName", "writeToLog", "getFiscalDate", "getProcessCount", "ceil", "floor",
+      "abs", "getDayNumber", "isWorkingDay", "fireToDB", "getNextWorkingDay", "quarter", "dateDiff", "dateAdd",
+      "fillString", "isCodepage", "ltrim", "rtrim", "lpad", "rpad", "week", "month", "year", "str2RegExp",
+      "fileExists", "touch", "isRegExp", "date2str", "str2date", "sendMail", "replace", "decode", "isNum", "isDate",
+      "lower", "upper", "str2num", "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile",
+      "LoadScriptFromTab", "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable",
+      "LuhnCheck", "getDigitsOnly", "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow",
+      "deleteFile", "createFolder", "copyFile", "getFileSize", "isFile", "isFolder", "getShortFilename",
+      "getFileExtension", "getParentFoldername", "getLastModifiedTime", "trunc", "truncDate", "moveFile", };
 
   // This is only used for reading, so no concurrency problems.
   // todo: move in the real variables of the step.
@@ -108,7 +109,7 @@ public class ScriptAddedFunctions {
   public static String getDigitsOnly( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
       Object FunctionContext ) {
     if ( ArgList.length == 1 ) {
-      return Const.getDigitsOnly( (String) ArgList[0] );// TODO AKRETION ensure
+      return Const.getDigitsOnly( (String) ArgList[0] ); // TODO AKRETION ensure
     } else {
       throw new RuntimeException( "The function call getDigitsOnly requires 1 argument." );
 
@@ -1021,8 +1022,8 @@ public class ScriptAddedFunctions {
           Format dfFormatter = new SimpleDateFormat( sArg2 );
           oRC = dfFormatter.parseObject( sArg1 );
         } catch ( Exception e ) {
-          throw new RuntimeException( "Could not apply the given format " + sArg2 + " on the string for " + sArg1
-              + " : " + e.getMessage() );
+          throw new RuntimeException( "Could not apply the given format "
+              + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
         }
         break;
       case 3:
@@ -1044,8 +1045,8 @@ public class ScriptAddedFunctions {
             throw new RuntimeException( "Locale " + sArg3 + " is not 2 characters long." );
           }
         } catch ( Exception e ) {
-          throw new RuntimeException( "Could not apply the local format for locale " + sArg3
-              + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
+          throw new RuntimeException( "Could not apply the local format for locale "
+              + sArg3 + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
         }
         break;
       case 4:
@@ -1074,8 +1075,8 @@ public class ScriptAddedFunctions {
             throw new RuntimeException( "Locale " + sArg3 + " is not 2 characters long." );
           }
         } catch ( Exception e ) {
-          throw new RuntimeException( "Could not apply the local format for locale " + sArg3
-              + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
+          throw new RuntimeException( "Could not apply the local format for locale "
+              + sArg3 + " with the given format " + sArg2 + " on the string for " + sArg1 + " : " + e.getMessage() );
         }
         break;
       default:
@@ -1865,8 +1866,8 @@ public class ScriptAddedFunctions {
           return scm.getOutputRowMeta();
         }
       } catch ( Exception e ) {
-        throw new RuntimeException( "Unable to get the output row metadata because of an error: " + Const.CR
-            + e.toString() );
+        throw new RuntimeException( "Unable to get the output row metadata because of an error: "
+            + Const.CR + e.toString() );
       }
     } else {
       throw new RuntimeException( "The function call getOutputRowMeta doesn't require arguments." );
@@ -1887,8 +1888,8 @@ public class ScriptAddedFunctions {
           return scm.getInputRowMeta();
         }
       } catch ( Exception e ) {
-        throw new RuntimeException( "Unable to get the input row metadata because of an error: " + Const.CR
-            + e.toString() );
+        throw new RuntimeException( "Unable to get the input row metadata because of an error: "
+            + Const.CR + e.toString() );
       }
     } else {
       throw new RuntimeException( "The function call getInputRowMeta doesn't require arguments." );
@@ -1903,7 +1904,7 @@ public class ScriptAddedFunctions {
         int newSize = (int) Math.round( (Double) ArgList[0] );
 
         Object scmO = actualObject.get( "row" );
-        Object[] row = (Object[]) scmO;// TODO AKRETION ensure
+        Object[] row = (Object[]) scmO; // TODO AKRETION ensure
 
         return RowDataUtil.createResizedCopy( row, newSize );
       } catch ( Exception e ) {
@@ -1933,8 +1934,8 @@ public class ScriptAddedFunctions {
         }
 
       } catch ( Exception e ) {
-        throw new RuntimeException( "Unable to pass the new row to the next step(s) because of an error: " + Const.CR
-            + e.toString() );
+        throw new RuntimeException( "Unable to pass the new row to the next step(s) because of an error: "
+            + Const.CR + e.toString() );
       }
     } else {
       throw new RuntimeException( "The function call putRow requires 1 argument : the output row data (Object[])" );
@@ -2019,8 +2020,8 @@ public class ScriptAddedFunctions {
       Object FunctionContext ) {
 
     try {
-      if ( ArgList.length == 3 && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] )
-          && !isUndefined( ArgList[1] ) ) {
+      if ( ArgList.length == 3
+          && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] ) && !isUndefined( ArgList[1] ) ) {
         FileObject fileSource = null, fileDestination = null;
 
         try {
@@ -2447,8 +2448,8 @@ public class ScriptAddedFunctions {
       Object FunctionContext ) {
 
     try {
-      if ( ArgList.length == 3 && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] )
-          && !isUndefined( ArgList[1] ) ) {
+      if ( ArgList.length == 3
+          && !isNull( ArgList[0] ) && !isNull( ArgList[1] ) && !isUndefined( ArgList[0] ) && !isUndefined( ArgList[1] ) ) {
         FileObject fileSource = null, fileDestination = null;
 
         try {

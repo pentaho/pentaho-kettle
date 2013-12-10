@@ -96,13 +96,13 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
 
       data.inputFieldIndex = getInputRowMeta().indexOfValue( meta.getInputFileField() );
       if ( data.inputFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "PentahoReportingOutput.Exception.CanNotFindField",
-            meta.getInputFileField() ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getInputFileField() ) );
       }
       data.outputFieldIndex = getInputRowMeta().indexOfValue( meta.getOutputFileField() );
       if ( data.inputFieldIndex < 0 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "PentahoReportingOutput.Exception.CanNotFindField",
-            meta.getOutputFileField() ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "PentahoReportingOutput.Exception.CanNotFindField", meta.getOutputFileField() ) );
       }
 
       performPentahoReportingBoot( log, getClass() );
@@ -173,8 +173,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         if ( fieldName != null ) {
           int index = getInputRowMeta().indexOfValue( fieldName );
           if ( index < 0 ) {
-            throw new KettleException( BaseMessages.getString( PKG, "PentahoReportingOutput.Exception.CanNotFindField",
-                fieldName ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "PentahoReportingOutput.Exception.CanNotFindField", fieldName ) );
           }
 
           Class<?> clazz = findParameterClass( definition, parameterName );
@@ -215,8 +215,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           } else {
             // This parameter was not found, log this as a warning...
             //
-            logBasic( BaseMessages.getString( PKG, "PentahoReportingOutput.Log.ParameterNotFoundInReport",
-                parameterName, sourceFilename ) );
+            logBasic( BaseMessages.getString(
+                PKG, "PentahoReportingOutput.Log.ParameterNotFoundInReport", parameterName, sourceFilename ) );
           }
         }
       }
@@ -249,15 +249,16 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       }
 
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, getTransMeta() ),
-              getTransMeta().getName(), getStepname() );
+          new ResultFile(
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, getTransMeta() ), getTransMeta()
+                  .getName(), getStepname() );
       resultFile.setComment( "This file was created with a Pentaho Reporting Output step" );
       addResultFile( resultFile );
 
     } catch ( Exception e ) {
 
-      throw new KettleException( BaseMessages.getString( PKG,
-          "PentahoReportingOutput.Exception.UnexpectedErrorRenderingReport", sourceFilename, targetFilename,
+      throw new KettleException( BaseMessages.getString(
+          PKG, "PentahoReportingOutput.Exception.UnexpectedErrorRenderingReport", sourceFilename, targetFilename,
           outputProcessorType.getDescription() ), e );
     }
   }

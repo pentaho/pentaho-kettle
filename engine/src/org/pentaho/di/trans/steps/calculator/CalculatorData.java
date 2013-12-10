@@ -39,9 +39,6 @@ public class CalculatorData extends BaseStepData implements StepDataInterface {
 
   public int[] tempIndexes;
 
-  /**
-	 * 
-	 */
   public CalculatorData() {
     super();
   }

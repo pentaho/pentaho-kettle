@@ -58,7 +58,7 @@ public class OlapHelper {
   private OlapConnection olapConnection;
 
   public OlapHelper( String olap4jDriver, String olap4jUrl, String username, String password, String catalogName,
-      String mdx/* , VariableSpace space */) {
+      String mdx ) {
     this.olap4jDriver = olap4jDriver;
     this.olap4jUrl = "jdbc:xmla:Server=" + olap4jUrl;
     this.catalogName = catalogName;

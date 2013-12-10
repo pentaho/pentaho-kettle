@@ -96,12 +96,12 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Insert" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Upsert" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Update" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Add" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Delete" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Rename" ) };
+      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Insert" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Upsert" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Update" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Add" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Delete" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.operationType.Rename" ) };
 
   /**
    * The operations type codes
@@ -126,8 +126,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
    * The referrals description
    */
   public static final String[] referralTypeDesc = {
-    BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Follow" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Ignore" ) };
+      BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Follow" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.referralType.Ignore" ) };
 
   /**
    * The referrals type codes
@@ -144,10 +144,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
    * The derefAliasess description
    */
   public static final String[] derefAliasesTypeDesc = {
-    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Always" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Never" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Searching" ),
-    BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Finding" ) };
+      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Always" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Never" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Searching" ),
+      BaseMessages.getString( PKG, "LDAPOutputMeta.derefAliasesType.Finding" ) };
 
   /**
    * The derefAliasess type codes
@@ -813,7 +813,9 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
       rep.saveStepAttribute( id_transformation, id_step, "useauthentication", useAuthentication );
       rep.saveStepAttribute( id_transformation, id_step, "host", Host );
       rep.saveStepAttribute( id_transformation, id_step, "username", userName );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveStepAttribute( id_transformation, id_step, "password", Encr
+              .encryptPasswordIfNotUsingVariables( password ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "port", port );
       rep.saveStepAttribute( id_transformation, id_step, "dnFieldName", dnFieldName );
@@ -856,36 +858,36 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LDAPOutputMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "LDAPOutputMeta.CheckResult.NoInputExpected" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "LDAPOutputMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "LDAPOutputMeta.CheckResult.NoInput" ), stepMeta );
     }
     remarks.add( cr );
 
     // Check hostname
     if ( Const.isEmpty( Host ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LDAPOutputMeta.CheckResult.HostnameMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "LDAPOutputMeta.CheckResult.HostnameMissing" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "LDAPOutputMeta.CheckResult.HostnameOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "LDAPOutputMeta.CheckResult.HostnameOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check return fields
     if ( updateLookup.length == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LDAPOutputUpdateMeta.CheckResult.NoFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "LDAPOutputUpdateMeta.CheckResult.NoFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "LDAPOutputUpdateMeta.CheckResult.FieldsOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "LDAPOutputUpdateMeta.CheckResult.FieldsOk" ), stepMeta );
     }
 
   }

@@ -111,8 +111,8 @@ public class Calculator extends BaseStep implements StepInterface {
             data.fieldIndexes[i].indexA = data.calcRowMeta.indexOfValue( function.getFieldA() );
             if ( data.fieldIndexes[i].indexA < 0 ) {
               // Nope: throw an exception
-              throw new KettleStepException( "Unable to find the first argument field '" + function.getFieldName()
-                  + " for calculation #" + ( i + 1 ) );
+              throw new KettleStepException( "Unable to find the first argument field '"
+                  + function.getFieldName() + " for calculation #" + ( i + 1 ) );
             }
           } else {
             data.fieldIndexes[i].indexA = -1;
@@ -125,8 +125,8 @@ public class Calculator extends BaseStep implements StepInterface {
           data.fieldIndexes[i].indexB = data.calcRowMeta.indexOfValue( function.getFieldB() );
           if ( data.fieldIndexes[i].indexB < 0 ) {
             // Nope: throw an exception
-            throw new KettleStepException( "Unable to find the second argument field '" + function.getFieldName()
-                + " for calculation #" + ( i + 1 ) );
+            throw new KettleStepException( "Unable to find the second argument field '"
+                + function.getFieldName() + " for calculation #" + ( i + 1 ) );
           }
         }
         data.fieldIndexes[i].indexC = -1;
@@ -134,8 +134,8 @@ public class Calculator extends BaseStep implements StepInterface {
           data.fieldIndexes[i].indexC = data.calcRowMeta.indexOfValue( function.getFieldC() );
           if ( data.fieldIndexes[i].indexC < 0 ) {
             // Nope: throw an exception
-            throw new KettleStepException( "Unable to find the third argument field '" + function.getFieldName()
-                + " for calculation #" + ( i + 1 ) );
+            throw new KettleStepException( "Unable to find the third argument field '"
+                + function.getFieldName() + " for calculation #" + ( i + 1 ) );
           }
         }
 
@@ -152,8 +152,8 @@ public class Calculator extends BaseStep implements StepInterface {
     }
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "Calculator.Log.ReadRow" ) + getLinesRead() + " : "
-          + getInputRowMeta().getString( r ) );
+      logRowlevel( BaseMessages.getString( PKG, "Calculator.Log.ReadRow" )
+          + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
     }
     boolean sendToErrorRow = false;
     String errorMessage = null;
@@ -583,8 +583,8 @@ public class Calculator extends BaseStep implements StepInterface {
         // Otherwise the result is non-deterministic.
         //
         if ( targetMeta.getType() == ValueMetaInterface.TYPE_NONE ) {
-          throw new KettleValueException( BaseMessages.getString( PKG, "Calculator.Log.NoType" ) + ( i + 1 ) + " : "
-              + fn.getFieldName() + " = " + fn.getCalcTypeDesc() + " / " + fn.getCalcTypeLongDesc() );
+          throw new KettleValueException( BaseMessages.getString( PKG, "Calculator.Log.NoType" )
+              + ( i + 1 ) + " : " + fn.getFieldName() + " = " + fn.getCalcTypeDesc() + " / " + fn.getCalcTypeLongDesc() );
         }
 
         // Convert the data to the correct target data type.

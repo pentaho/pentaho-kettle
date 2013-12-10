@@ -234,8 +234,9 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
     array[index++] = Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY;
     array[index++] = Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
 
-    for ( String name : variableNames )
+    for ( String name : variableNames ) {
       array[index++] = name;
+    }
 
     return array;
   }

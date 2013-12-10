@@ -36,7 +36,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-
 public class ExcelWriterStepTest {
 
   private static final String SHEET_NAME = "Sheet1";
@@ -47,18 +46,19 @@ public class ExcelWriterStepTest {
     // populate
     File xlsFile = File.createTempFile( "testXLSProtect", ".xls" );
     HSSFWorkbook wb = createWorkbook( xlsFile );
-    StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> mockHelper = new StepMockHelper<ExcelWriterStepMeta,
-      ExcelWriterStepData>( "Excel Writer Test", ExcelWriterStepMeta.class, ExcelWriterStepData.class );
+    StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> mockHelper =
+        new StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData>(
+            "Excel Writer Test", ExcelWriterStepMeta.class, ExcelWriterStepData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-      mockHelper.logChannelInterface );
+        mockHelper.logChannelInterface );
     ExcelWriterStep step =
-      new ExcelWriterStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
-        mockHelper.trans );
+        new ExcelWriterStep(
+            mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
 
-    //test
+    // test
     step.protectSheet( wb.getSheet( SHEET_NAME ), "aa" );
 
-    //verify
+    // verify
     assertTrue( wb.getSheet( SHEET_NAME ).getProtect() );
 
   }

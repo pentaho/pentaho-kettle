@@ -308,29 +308,29 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
       int len = Const.toInt( transMeta.environmentSubstitute( getFieldCCLength()[i] ), -1 );
       if ( len < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RandomCCNumberGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RandomCCNumberGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
       int size = Const.toInt( transMeta.environmentSubstitute( getFieldCCSize()[i] ), -1 );
       if ( size < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RandomCCNumberGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RandomCCNumberGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RandomCCNumberGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "RandomCCNumberGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( Const.isEmpty( getCardNumberFieldName() ) ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RandomCCNumberGeneratorMeta.CheckResult.CardNumberFieldMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "RandomCCNumberGeneratorMeta.CheckResult.CardNumberFieldMissing" ), stepMeta );
       remarks.add( cr );
     }
   }

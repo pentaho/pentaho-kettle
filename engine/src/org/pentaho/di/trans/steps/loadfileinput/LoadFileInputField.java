@@ -46,10 +46,11 @@ public class LoadFileInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "LoadFileInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "LoadFileInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Both" ) };
 
   public static final int ELEMENT_TYPE_FILECONTENT = 0;
   public static final int ELEMENT_TYPE_FILESIZE = 1;
@@ -57,8 +58,8 @@ public class LoadFileInputField implements Cloneable {
   public static final String[] ElementTypeCode = { "content", "size" };
 
   public static final String[] ElementTypeDesc = {
-    BaseMessages.getString( PKG, "LoadFileInputField.ElementType.FileContent" ),
-    BaseMessages.getString( PKG, "LoadFileInputField.ElementType.FileSize" ), };
+      BaseMessages.getString( PKG, "LoadFileInputField.ElementType.FileContent" ),
+      BaseMessages.getString( PKG, "LoadFileInputField.ElementType.FileSize" ), };
 
   private String name;
   private int type;

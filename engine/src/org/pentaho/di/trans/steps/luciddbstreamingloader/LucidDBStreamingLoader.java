@@ -121,8 +121,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       Object[] r = getRow(); // Get row from input rowset & set row
       // busy!
 
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         if ( data.objOut != null ) {
 
           data.objOut.flush();
@@ -146,8 +146,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
             logDebug( "Connected to LucidDB" );
           }
           String qualifiedTableName =
-              meta.getDatabaseMeta().getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-                  environmentSubstitute( meta.getTableName() ) );
+              meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+                  environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
           if ( !data.db.checkTableExists( qualifiedTableName ) ) {
 
@@ -291,16 +291,16 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
           switch ( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_NUMBER:
               if ( log.isRowLevel() ) {
-                logRowlevel( valueMeta.getNumber( valueData ) + ":" + valueMeta.getLength() + ":"
-                    + valueMeta.getTypeDesc() );
+                logRowlevel( valueMeta.getNumber( valueData )
+                    + ":" + valueMeta.getLength() + ":" + valueMeta.getTypeDesc() );
               }
               entity.add( valueMeta.getNumber( valueData ) );
 
               break;
             case ValueMetaInterface.TYPE_STRING:
               if ( log.isRowLevel() ) {
-                logRowlevel( valueMeta.getString( valueData ) + ":" + valueMeta.getLength() + ":"
-                    + valueMeta.getTypeDesc() );
+                logRowlevel( valueMeta.getString( valueData )
+                    + ":" + valueMeta.getLength() + ":" + valueMeta.getTypeDesc() );
               }
               entity.add( valueMeta.getString( valueData ) );
 
@@ -325,24 +325,24 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
               break;
             case ValueMetaInterface.TYPE_INTEGER:
               if ( log.isRowLevel() ) {
-                logRowlevel( valueMeta.getInteger( valueData ) + ":" + valueMeta.getLength() + ":"
-                    + valueMeta.getTypeDesc() );
+                logRowlevel( valueMeta.getInteger( valueData )
+                    + ":" + valueMeta.getLength() + ":" + valueMeta.getTypeDesc() );
               }
               entity.add( valueMeta.getInteger( valueData ) );
 
               break;
             case ValueMetaInterface.TYPE_BIGNUMBER:
               if ( log.isRowLevel() ) {
-                logRowlevel( valueMeta.getBigNumber( valueData ) + ":" + valueMeta.getLength() + ":"
-                    + valueMeta.getTypeDesc() );
+                logRowlevel( valueMeta.getBigNumber( valueData )
+                    + ":" + valueMeta.getLength() + ":" + valueMeta.getTypeDesc() );
               }
               entity.add( valueMeta.getBigNumber( valueData ) );
 
               break;
             case ValueMetaInterface.TYPE_BINARY:
               if ( log.isRowLevel() ) {
-                logRowlevel( valueMeta.getBinary( valueData ) + ":" + valueMeta.getLength() + ":"
-                    + valueMeta.getTypeDesc() );
+                logRowlevel( valueMeta.getBinary( valueData )
+                    + ":" + valueMeta.getLength() + ":" + valueMeta.getTypeDesc() );
               }
               entity.add( valueMeta.getBinary( valueData ) );
               break;

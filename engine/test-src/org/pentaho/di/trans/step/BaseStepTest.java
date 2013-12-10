@@ -18,8 +18,8 @@ public class BaseStepTest {
   @Before
   public void setup() {
     mockHelper =
-        new StepMockHelper<StepMetaInterface, StepDataInterface>( "BASE STEP", StepMetaInterface.class,
-            StepDataInterface.class );
+        new StepMockHelper<StepMetaInterface, StepDataInterface>(
+            "BASE STEP", StepMetaInterface.class, StepDataInterface.class );
   }
 
   @After

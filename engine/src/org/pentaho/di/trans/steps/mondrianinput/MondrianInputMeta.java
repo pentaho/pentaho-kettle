@@ -140,7 +140,8 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
   public void setDefault() {
     databaseMeta = null;
     sql =
-        "select\n" + " {([Gender].[F], [Measures].[Unit Sales]),\n" + "  ([Gender].[M], [Measures].[Store Sales]),\n"
+        "select\n"
+            + " {([Gender].[F], [Measures].[Unit Sales]),\n" + "  ([Gender].[M], [Measures].[Store Sales]),\n"
             + "  ([Gender].[F], [Measures].[Unit Sales])} on columns,\n" + " CrossJoin([Marital Status].Members,\n"
             + "           [Product].Children) on rows\n" + "from [Sales]";
     variableReplacementActive = false;
@@ -236,8 +237,8 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
       // TODO: perform lookup to see if it all works fine.
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta );
       remarks.add( cr );
     }
   }

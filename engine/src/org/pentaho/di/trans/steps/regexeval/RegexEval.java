@@ -66,14 +66,14 @@ public class RegexEval extends BaseStep implements StepInterface {
 
     Object[] row = getRow();
 
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
 
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       first = false;
 
       // get the RowMeta
@@ -163,8 +163,8 @@ public class RegexEval extends BaseStep implements StepInterface {
           // regex doesn't match the number of fields.
           logError( BaseMessages.getString( PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf( m
               .groupCount() ), String.valueOf( data.positions.length ) ) );
-          throw new KettleStepException( BaseMessages.getString( PKG,
-              "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf( m.groupCount() ), String
+          throw new KettleStepException( BaseMessages.getString(
+              PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf( m.groupCount() ), String
                   .valueOf( data.positions.length ) ) );
         }
 

@@ -51,9 +51,6 @@ public class SecretKeyGeneratorData extends BaseStepData implements StepDataInte
   public boolean readsRows;
   public int prevNrField;
 
-  /**
-	 * 
-	 */
   public SecretKeyGeneratorData() {
     super();
     addAlgorithmOutput = false;

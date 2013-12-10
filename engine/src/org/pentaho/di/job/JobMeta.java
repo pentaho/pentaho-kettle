@@ -527,18 +527,24 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         jobMeta.namedParams = new NamedParamsDefault();
       }
 
-      for ( JobEntryCopy entry : jobcopies )
+      for ( JobEntryCopy entry : jobcopies ) {
         jobMeta.jobcopies.add( (JobEntryCopy) entry.clone_deep() );
-      for ( JobHopMeta entry : jobhops )
+      }
+      for ( JobHopMeta entry : jobhops ) {
         jobMeta.jobhops.add( (JobHopMeta) entry.clone() );
-      for ( NotePadMeta entry : notes )
+      }
+      for ( NotePadMeta entry : notes ) {
         jobMeta.notes.add( (NotePadMeta) entry.clone() );
-      for ( DatabaseMeta entry : databases )
+      }
+      for ( DatabaseMeta entry : databases ) {
         jobMeta.databases.add( (DatabaseMeta) entry.clone() );
-      for ( SlaveServer slave : slaveServers )
+      }
+      for ( SlaveServer slave : slaveServers ) {
         jobMeta.getSlaveServers().add( (SlaveServer) slave.clone() );
-      for ( String key : listParameters() )
+      }
+      for ( String key : listParameters() ) {
         jobMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
+      }
       return jobMeta;
     } catch ( Exception e ) {
       return null;
@@ -697,8 +703,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       JobEntryCopy entry = getJobEntry( i );
       entry.setChanged( false );
     }
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
       hi.setChanged( false );
     }
     for ( int i = 0; i < nrDatabases(); i++ ) {
@@ -897,8 +903,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     retval.append( "  </entries>" ).append( Const.CR );
 
     retval.append( "  <hops>" ).append( Const.CR );
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
       retval.append( hi.getXML() );
     }
     retval.append( "  </hops>" ).append( Const.CR );
@@ -1287,16 +1293,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         if ( exist == null ) {
           addDatabase( dbcon );
         } else {
-          if ( !exist.isShared() ) // skip shared connections
-          {
+          if ( !exist.isShared() ) {
+            // skip shared connections
+
             boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
             boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
             if ( askOverwrite && prompter != null ) {
               overwrite =
-                  prompter.overwritePrompt( BaseMessages.getString( PKG,
-                      "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName() ), BaseMessages.getString(
-                      PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
-                      Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
+                  prompter
+                      .overwritePrompt(
+                          BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon
+                              .getName() ), BaseMessages.getString(
+                              PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
+                          Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
             }
 
             if ( overwrite ) {
@@ -1322,9 +1331,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         // The stored XML is only for backup purposes.
         SlaveServer check = findSlaveServer( slaveServer.getName() );
         if ( check != null ) {
-          if ( !check.isShared() ) // we don't overwrite shared
-          // objects.
-          {
+          if ( !check.isShared() ) {
+            // we don't overwrite shared objects.
             addOrReplaceSlaveServer( slaveServer );
           }
         } else {
@@ -1531,9 +1539,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public JobEntryCopy getJobEntryCopy( int x, int y, int iconsize ) {
     int i, s;
     s = nrJobEntries();
-    for ( i = s - 1; i >= 0; i-- ) // Back to front because drawing goes
-    // from start to end
-    {
+    for ( i = s - 1; i >= 0; i-- ) {
+      // Back to front because drawing goes from start to end
+
       JobEntryCopy je = getJobEntry( i );
       Point p = je.getLocation();
       if ( p != null ) {
@@ -1928,8 +1936,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    * @return the job hop meta
    */
   public JobHopMeta findJobHop( String name ) {
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
+
       if ( hi.toString().equalsIgnoreCase( name ) ) {
         return hi;
       }
@@ -1985,7 +1994,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public JobHopMeta findJobHop( JobEntryCopy from, JobEntryCopy to, boolean includeDisabled ) {
     for ( JobHopMeta hi : jobhops ) {
       if ( hi.isEnabled() || includeDisabled ) {
-        if ( hi != null && hi.getFromEntry() != null && hi.getToEntry() != null && hi.getFromEntry().equals( from )
+        if ( hi != null
+            && hi.getFromEntry() != null && hi.getToEntry() != null && hi.getFromEntry().equals( from )
             && hi.getToEntry().equals( to ) ) {
           return hi;
         }
@@ -2003,10 +2013,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    */
   public JobHopMeta findJobHopTo( JobEntryCopy jge ) {
     for ( JobHopMeta hi : jobhops ) {
-      if ( hi != null && hi.getToEntry() != null && hi.getToEntry().equals( jge ) ) // Return
-      // the
-      // first!
-      {
+      if ( hi != null && hi.getToEntry() != null && hi.getToEntry().equals( jge ) ) {
+        // Return the first!
         return hi;
       }
     }
@@ -2049,8 +2057,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public int findNrPrevJobEntries( JobEntryCopy to, boolean info ) {
     int count = 0;
 
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
+
       if ( hi.isEnabled() && hi.getToEntry().equals( to ) ) {
         count++;
       }
@@ -2072,8 +2081,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public JobEntryCopy findPrevJobEntry( JobEntryCopy to, int nr, boolean info ) {
     int count = 0;
 
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
+
       if ( hi.isEnabled() && hi.getToEntry().equals( to ) ) {
         if ( count == nr ) {
           return hi.getFromEntry();
@@ -2093,8 +2103,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    */
   public int findNrNextJobEntries( JobEntryCopy from ) {
     int count = 0;
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
+
       if ( hi.isEnabled() && ( hi.getFromEntry() != null ) && hi.getFromEntry().equals( from ) ) {
         count++;
       }
@@ -2114,8 +2125,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public JobEntryCopy findNextJobEntry( JobEntryCopy from, int cnt ) {
     int count = 0;
 
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
+
       if ( hi.isEnabled() && ( hi.getFromEntry() != null ) && hi.getFromEntry().equals( from ) ) {
         if ( count == cnt ) {
           return hi.getToEntry();
@@ -2176,8 +2188,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public int countEntries( String name ) {
     int count = 0;
     int i;
-    for ( i = 0; i < nrJobEntries(); i++ ) // Look at all the hops;
-    {
+    for ( i = 0; i < nrJobEntries(); i++ ) {
+      // Look at all the hops;
+
       JobEntryCopy je = getJobEntry( i );
       if ( je.getName().equalsIgnoreCase( name ) ) {
         count++;
@@ -2282,8 +2295,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public JobHopMeta[] getAllJobHopsUsing( String name ) {
     List<JobHopMeta> hops = new ArrayList<JobHopMeta>();
 
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
+
       if ( hi.getFromEntry() != null && hi.getToEntry() != null ) {
         if ( hi.getFromEntry().getName().equalsIgnoreCase( name ) || hi.getToEntry().getName().equalsIgnoreCase( name ) ) {
           hops.add( hi );
@@ -2305,14 +2319,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public NotePadMeta getNote( int x, int y ) {
     int i, s;
     s = notes.size();
-    for ( i = s - 1; i >= 0; i-- ) // Back to front because drawing goes
-    // from start to end
-    {
+    for ( i = s - 1; i >= 0; i-- ) {
+      // Back to front because drawing goes from start to end
+
       NotePadMeta ni = notes.get( i );
       Point loc = ni.getLocation();
       Point p = new Point( loc.x, loc.y );
-      if ( x >= p.x && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y
-          && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
+      if ( x >= p.x
+          && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
         return ni;
       }
     }
@@ -2769,8 +2783,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore,
       ProgressMonitorListener monitor ) throws KettleException {
     if ( monitor != null ) {
-      monitor.beginTask( BaseMessages.getString( PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob" ),
-          nrJobEntries() + 1 );
+      monitor.beginTask(
+          BaseMessages.getString( PKG, "JobMeta.Monitor.GettingSQLNeededForThisJob" ), nrJobEntries() + 1 );
     }
     List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
@@ -2872,8 +2886,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       // vars are...
       for ( int i = 0; i < nrJobEntries(); i++ ) {
         JobEntryCopy entryMeta = getJobEntry( i );
-        stringList.add( new StringSearchResult( entryMeta.getName(), entryMeta, this, BaseMessages.getString( PKG,
-            "JobMeta.SearchMetadata.JobEntryName" ) ) );
+        stringList.add( new StringSearchResult( entryMeta.getName(), entryMeta, this, BaseMessages.getString(
+            PKG, "JobMeta.SearchMetadata.JobEntryName" ) ) );
         if ( entryMeta.getDescription() != null ) {
           stringList.add( new StringSearchResult( entryMeta.getDescription(), entryMeta, this, BaseMessages.getString(
               PKG, "JobMeta.SearchMetadata.JobEntryDescription" ) ) );
@@ -2888,37 +2902,37 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     if ( searchDatabases ) {
       for ( int i = 0; i < nrDatabases(); i++ ) {
         DatabaseMeta meta = getDatabase( i );
-        stringList.add( new StringSearchResult( meta.getName(), meta, this, BaseMessages.getString( PKG,
-            "JobMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+        stringList.add( new StringSearchResult( meta.getName(), meta, this, BaseMessages.getString(
+            PKG, "JobMeta.SearchMetadata.DatabaseConnectionName" ) ) );
         if ( meta.getHostname() != null ) {
-          stringList.add( new StringSearchResult( meta.getHostname(), meta, this, BaseMessages.getString( PKG,
-              "JobMeta.SearchMetadata.DatabaseHostName" ) ) );
+          stringList.add( new StringSearchResult( meta.getHostname(), meta, this, BaseMessages.getString(
+              PKG, "JobMeta.SearchMetadata.DatabaseHostName" ) ) );
         }
         if ( meta.getDatabaseName() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this, BaseMessages.getString( PKG,
-              "JobMeta.SearchMetadata.DatabaseName" ) ) );
+          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this, BaseMessages.getString(
+              PKG, "JobMeta.SearchMetadata.DatabaseName" ) ) );
         }
         if ( meta.getUsername() != null ) {
-          stringList.add( new StringSearchResult( meta.getUsername(), meta, this, BaseMessages.getString( PKG,
-              "JobMeta.SearchMetadata.DatabaseUsername" ) ) );
+          stringList.add( new StringSearchResult( meta.getUsername(), meta, this, BaseMessages.getString(
+              PKG, "JobMeta.SearchMetadata.DatabaseUsername" ) ) );
         }
         if ( meta.getPluginId() != null ) {
-          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this, BaseMessages.getString( PKG,
-              "JobMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this, BaseMessages.getString(
+              PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
         }
         if ( meta.getDatabasePortNumberString() != null ) {
           stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this, BaseMessages
               .getString( PKG, "JobMeta.SearchMetadata.DatabasePort" ) ) );
         }
         if ( meta.getServername() != null ) {
-          stringList.add( new StringSearchResult( meta.getServername(), meta, this, BaseMessages.getString( PKG,
-              "JobMeta.SearchMetadata.DatabaseServer" ) ) );
+          stringList.add( new StringSearchResult( meta.getServername(), meta, this, BaseMessages.getString(
+              PKG, "JobMeta.SearchMetadata.DatabaseServer" ) ) );
         }
         // if ( includePasswords )
         // {
         if ( meta.getPassword() != null ) {
-          stringList.add( new StringSearchResult( meta.getPassword(), meta, this, BaseMessages.getString( PKG,
-              "JobMeta.SearchMetadata.DatabasePassword" ) ) );
+          stringList.add( new StringSearchResult( meta.getPassword(), meta, this, BaseMessages.getString(
+              PKG, "JobMeta.SearchMetadata.DatabasePassword" ) ) );
           // }
         }
       }
@@ -2930,8 +2944,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       for ( int i = 0; i < nrNotes(); i++ ) {
         NotePadMeta meta = getNote( i );
         if ( meta.getNote() != null ) {
-          stringList.add( new StringSearchResult( meta.getNote(), meta, this, BaseMessages.getString( PKG,
-              "JobMeta.SearchMetadata.NotepadText" ) ) );
+          stringList.add( new StringSearchResult( meta.getNote(), meta, this, BaseMessages.getString(
+              PKG, "JobMeta.SearchMetadata.NotepadText" ) ) );
         }
       }
     }
@@ -3006,8 +3020,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       return true;
     }
 
-    for ( JobHopMeta hi : jobhops ) // Look at all the hops
-    {
+    for ( JobHopMeta hi : jobhops ) {
+      // Look at all the hops
+
       if ( hi.hasChanged() ) {
         return true;
       }
@@ -3291,8 +3306,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    *          the new internal filename kettle variables
    */
   private void setInternalFilenameKettleVariables( VariableSpace var ) {
-    if ( filename != null ) // we have a filename that's defined.
-    {
+    if ( filename != null ) {
+      // we have a filename that's defined.
+
       try {
         FileObject fileObject = KettleVFS.getFileObject( filename, var );
         FileName fileName = fileObject.getName();
@@ -3534,8 +3550,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         baseName = getName();
         fullname =
             directory.getPath()
-                + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ? ""
-                    : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; // $NON-NLS-1$ //
+                + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
+                    ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; // $NON-NLS-1$ //
       } else {
         // Assume file
         //
@@ -3597,11 +3613,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         definitions.put( fullname, definition );
       }
     } catch ( FileSystemException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobMeta.Exception.AnErrorOccuredReadingJob",
-          getFilename() ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename() ), e );
     } catch ( KettleFileException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobMeta.Exception.AnErrorOccuredReadingJob",
-          getFilename() ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename() ), e );
     }
 
     return resourceName;

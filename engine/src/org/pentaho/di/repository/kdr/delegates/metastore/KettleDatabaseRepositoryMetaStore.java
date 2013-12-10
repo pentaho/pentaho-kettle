@@ -109,8 +109,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
         for ( IMetaStoreElementType elementType : elementTypes ) {
           dependencies.add( elementType.getId() );
         }
-        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '" + namespace
-            + "' is not empty" );
+        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '"
+            + namespace + "' is not empty" );
       }
 
       // Now delete the namespace
@@ -149,8 +149,9 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       //
       IMetaStoreElementType existingType = getElementTypeByName( namespace, elementType.getName() );
       if ( existingType != null ) {
-        throw new MetaStoreElementTypeExistsException( Arrays.asList( existingType ),
-            "Can not create element type with id '" + elementType.getId() + "' because it already exists" );
+        throw new MetaStoreElementTypeExistsException(
+            Arrays.asList( existingType ), "Can not create element type with id '"
+                + elementType.getId() + "' because it already exists" );
       }
 
       KDBRMetaStoreElementType newElementType =
@@ -216,8 +217,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
 
       return delegate.parseElementType( namespace, namespaceId, elementTypeRow );
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get element type with id '" + elementTypeId + "' in namespace '"
-          + namespace + "'", e );
+      throw new MetaStoreException( "Unable to get element type with id '"
+          + elementTypeId + "' in namespace '" + namespace + "'", e );
     }
   }
 
@@ -237,8 +238,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
 
       return delegate.parseElementType( namespace, namespaceId, elementTypeRow );
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get element type with name '" + elementTypeName + "' in namespace '"
-          + namespace + "'", e );
+      throw new MetaStoreException( "Unable to get element type with name '"
+          + elementTypeName + "' in namespace '" + namespace + "'", e );
     }
   }
 
@@ -255,8 +256,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       }
 
       if ( elementTypeId != null ) {
-        delegate.updateElementType( namespaceId, new LongObjectId( new StringObjectId( elementType.getId() ) ),
-            elementType );
+        delegate.updateElementType(
+            namespaceId, new LongObjectId( new StringObjectId( elementType.getId() ) ), elementType );
         repository.commit();
       } else {
         throw new MetaStoreException( "Unable to update element type: no id was provided and the name '"
@@ -282,8 +283,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
           Long elementTypeId = elementTypeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE );
           dependencies.add( Long.toString( elementTypeId ) );
         }
-        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '" + namespace
-            + "' is not empty" );
+        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '"
+            + namespace + "' is not empty" );
       }
 
       delegate.deleteElementType( new LongObjectId( new StringObjectId( elementType.getId() ) ) );
@@ -313,8 +314,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       }
       return elements;
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get list of elements from namespace '" + namespace
-          + "' and for element type '" + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to get list of elements from namespace '"
+          + namespace + "' and for element type '" + elementType.getName() + "'", e );
     }
   }
 
@@ -365,8 +366,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
 
       return delegate.parseElement( elementType, elementRow );
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get element by name '" + name + "' from namespace '" + namespace + "'",
-          e );
+      throw new MetaStoreException(
+          "Unable to get element by name '" + name + "' from namespace '" + namespace + "'", e );
     }
   }
 
@@ -376,8 +377,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
     try {
       IMetaStoreElement found = getElementByName( namespace, elementType, element.getName() );
       if ( found != null ) {
-        throw new MetaStoreElementExistException( Arrays.asList( found ), "The element with name '" + element.getName()
-            + "' already exists" );
+        throw new MetaStoreElementExistException( Arrays.asList( found ), "The element with name '"
+            + element.getName() + "' already exists" );
       }
 
       delegate.insertElement( elementType, element );
@@ -386,8 +387,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       throw e;
     } catch ( Exception e ) {
       repository.rollback();
-      throw new MetaStoreException( "Unable to create element with name '" + element.getName() + "' of type '"
-          + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to create element with name '"
+          + element.getName() + "' of type '" + elementType.getName() + "'", e );
     }
   }
 
@@ -404,8 +405,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       repository.commit();
     } catch ( Exception e ) {
       repository.rollback();
-      throw new MetaStoreException( "Unable to delete element with id '" + elementId + "' of type '"
-          + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to delete element with id '"
+          + elementId + "' of type '" + elementType.getName() + "'", e );
     }
   }
 
@@ -420,8 +421,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       repository.commit();
     } catch ( Exception e ) {
       repository.rollback();
-      throw new MetaStoreException( "Unable to update element with id '" + elementId + "' called '" + element.getName()
-          + "' in type '" + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to update element with id '"
+          + elementId + "' called '" + element.getName() + "' in type '" + elementType.getName() + "'", e );
     }
   }
 

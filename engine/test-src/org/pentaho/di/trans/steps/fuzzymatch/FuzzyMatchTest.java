@@ -94,8 +94,8 @@ public class FuzzyMatchTest {
   @Test
   public void testProcessRow() throws Exception {
     fuzzyMatch =
-        new FuzzyMatchHandler( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
-            mockHelper.trans );
+        new FuzzyMatchHandler(
+            mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
     fuzzyMatch.init( mockHelper.initStepMetaInterface, mockHelper.initStepDataInterface );
     fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( rows ) );
     fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( lookupRows ) );

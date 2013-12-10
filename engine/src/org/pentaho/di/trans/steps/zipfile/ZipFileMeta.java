@@ -74,9 +74,9 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
    * The operations description
    */
   public static final String[] operationTypeDesc = {
-    BaseMessages.getString( PKG, "ZipFileMeta.operationType.DoNothing" ),
-    BaseMessages.getString( PKG, "ZipFileMeta.operationType.Move" ),
-    BaseMessages.getString( PKG, "ZipFileMeta.operationType.Delete" ) };
+      BaseMessages.getString( PKG, "ZipFileMeta.operationType.DoNothing" ),
+      BaseMessages.getString( PKG, "ZipFileMeta.operationType.Move" ),
+      BaseMessages.getString( PKG, "ZipFileMeta.operationType.Delete" ) };
 
   /**
    * The operations type codes
@@ -257,8 +257,8 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
       movetofolderfield = rep.getStepAttributeString( id_step, "movetofolderfield" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ZipFileMeta.Exception.UnexpectedErrorReadingStepInfo" ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ZipFileMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -276,8 +276,8 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "movetofolderfield", movetofolderfield );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ZipFileMeta.Exception.UnableToSaveStepInfo" ) + id_step,
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ZipFileMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
     }
   }
 
@@ -301,13 +301,13 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ZipFileMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ZipFileMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ZipFileMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ZipFileMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

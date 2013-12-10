@@ -54,12 +54,14 @@ public class GlobalMessages extends AbstractMessageHandler {
 
   protected static final LogChannelInterface log = new LogChannel( "i18n" );
 
-  public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR", "pt_PT",
-    "es_AR", "no_NO", "it_IT", "ja_JP", "ko_KR" };
+  public static final String[] localeCodes = {
+      "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR", "pt_PT", "es_AR", "no_NO", "it_IT", "ja_JP",
+      "ko_KR" };
 
-  public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese",
-    "Espa\u00F1ol (Spain)", "Fran\u00E7ais", "Deutsch", "Portuguese (Brazil)", "Portuguese (Portugal)",
-    "Espa\u00F1ol (Argentina)", "Norwegian (Norway)", "Italian (Italy)", "Japanese (Japan)", "Korean (Korea)", };
+  public static final String[] localeDescr = {
+      "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol (Spain)", "Fran\u00E7ais", "Deutsch",
+      "Portuguese (Brazil)", "Portuguese (Portugal)", "Espa\u00F1ol (Argentina)", "Norwegian (Norway)",
+      "Italian (Italy)", "Japanese (Japan)", "Korean (Korea)", };
 
   protected static GlobalMessages GMinstance = null;
 
@@ -183,8 +185,8 @@ public class GlobalMessages extends AbstractMessageHandler {
           bundle = new PropertyResourceBundle( inputStream );
           locales.put( filename, bundle );
         } else {
-          throw new MissingResourceException( "Unable to find properties file [" + filename + "]", locale.toString(),
-              packageName );
+          throw new MissingResourceException(
+              "Unable to find properties file [" + filename + "]", locale.toString(), packageName );
         }
       }
       return bundle;
@@ -216,8 +218,8 @@ public class GlobalMessages extends AbstractMessageHandler {
       return string;
     } catch ( IllegalArgumentException e ) {
       String message =
-          "Format problem with key=[" + key + "], locale=[" + locale + "], package=" + packageName + " : "
-              + e.toString();
+          "Format problem with key=["
+              + key + "], locale=[" + locale + "], package=" + packageName + " : " + e.toString();
       log.logError( message );
       log.logError( Const.getStackTracker( e ) );
       throw new MissingResourceException( message, packageName, key );

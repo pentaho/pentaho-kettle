@@ -74,8 +74,8 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
   private static Class<?> PKG = JobEntryMysqlBulkFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final String[] FILETYPES = new String[] {
-    BaseMessages.getString( PKG, "JobMysqlBulkFile.Filetype.Text" ),
-    BaseMessages.getString( PKG, "JobMysqlBulkFile.Filetype.All" ) };
+      BaseMessages.getString( PKG, "JobMysqlBulkFile.Filetype.Text" ),
+      BaseMessages.getString( PKG, "JobMysqlBulkFile.Filetype.All" ) };
 
   private Label wlName;
 
@@ -827,9 +827,9 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
           }
           int[] idxSource = Const.indexsOfStrings( source, available );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, available, BaseMessages.getString( PKG,
-                  "JobMysqlBulkFile.SelectColumns.Title" ), BaseMessages.getString( PKG,
-                  "JobMysqlBulkFile.SelectColumns.Message" ) );
+              new EnterSelectionDialog( shell, available, BaseMessages.getString(
+                  PKG, "JobMysqlBulkFile.SelectColumns.Title" ), BaseMessages.getString(
+                  PKG, "JobMysqlBulkFile.SelectColumns.Message" ) );
           dialog.setMulti( true );
           dialog.setAvoidQuickSearch();
           dialog.setSelectedNrs( idxSource );

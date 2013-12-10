@@ -49,8 +49,10 @@ public class Injector extends BaseStep implements StepInterface {
     // Get a row from the previous step OR from an extra RowSet
     //
     Object[] row = getRow();
-    if ( row == null ) // Nothing more to be had from any input rowset
-    {
+
+    // Nothing more to be had from any input rowset
+    //
+    if ( row == null ) {
       setOutputDone();
       return false;
     }

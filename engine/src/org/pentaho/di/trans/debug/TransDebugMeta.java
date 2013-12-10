@@ -209,8 +209,8 @@ public class TransDebugMeta {
     for ( StepDebugMeta stepDebugMeta : stepDebugMetaMap.values() ) {
       if ( stepDebugMeta.isReadingFirstRows() && stepDebugMeta.getRowCount() > 0 ) {
         nr++;
-      } else if ( stepDebugMeta.isPausingOnBreakPoint() && stepDebugMeta.getCondition() != null
-          && !stepDebugMeta.getCondition().isEmpty() ) {
+      } else if ( stepDebugMeta.isPausingOnBreakPoint()
+          && stepDebugMeta.getCondition() != null && !stepDebugMeta.getCondition().isEmpty() ) {
         nr++;
       }
     }

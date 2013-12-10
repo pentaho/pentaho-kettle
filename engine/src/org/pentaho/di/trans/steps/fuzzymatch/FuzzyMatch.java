@@ -76,8 +76,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
     }
 
     if ( isDetailed() ) {
-      logDetailed( BaseMessages.getString( PKG, "FuzzyMatch.Log.ReadingFromStream" ) + data.infoStream.getStepname()
-          + "]" );
+      logDetailed( BaseMessages.getString( PKG, "FuzzyMatch.Log.ReadingFromStream" )
+          + data.infoStream.getStepname() + "]" );
     }
 
     boolean firstRun = true;
@@ -108,8 +108,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
             data.indexOfCachedFields[fi] = data.infoMeta.indexOfValue( meta.getValue()[i] );
             if ( data.indexOfCachedFields[fi] < 0 ) {
               // The field is unreachable !
-              throw new KettleException( BaseMessages.getString( PKG, "FuzzyMatch.Exception.CouldnotFindLookField",
-                  meta.getValue()[i] ) );
+              throw new KettleException( BaseMessages.getString(
+                  PKG, "FuzzyMatch.Exception.CouldnotFindLookField", meta.getValue()[i] ) );
             }
             data.infoCache.addValueMeta( data.infoMeta.getValueMeta( data.indexOfCachedFields[fi] ) );
           }
@@ -154,8 +154,9 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this,
-          repository, metaStore );
+      meta.getFields(
+          data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository,
+          metaStore );
 
       // Check lookup field
       data.indexOfMainField = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getMainStreamField() ) );
@@ -535,7 +536,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
       if ( meta.getValue() != null && meta.getValue().length > 0 ) {
 
-        if ( meta.isGetCloserValue() || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
+        if ( meta.isGetCloserValue()
+            || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
             || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX )
             || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX )
             || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_METAPHONE ) ) {

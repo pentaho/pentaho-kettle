@@ -95,8 +95,8 @@ public class TransPreviewProgressDialog {
             }
           }
 
-          if ( monitor.isCanceled() ) // Disconnect and see what happens!
-          {
+          if ( monitor.isCanceled() ) { // Disconnect and see what happens!
+
             try {
               trans.stopAll();
             } catch ( Exception e ) { /* Ignore */
@@ -110,14 +110,14 @@ public class TransPreviewProgressDialog {
 
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString( PKG,
-          "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transMeta = null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString( PKG,
-          "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
+          PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transMeta = null;
     }
 
@@ -192,8 +192,8 @@ public class TransPreviewProgressDialog {
             RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
           String stepName = stepDebugMeta.getStepMeta().getName();
           previewComplete.add( stepName );
-          progressMonitor.subTask( BaseMessages.getString( PKG,
-              "TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName ) );
+          progressMonitor.subTask( BaseMessages.getString(
+              PKG, "TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName ) );
         }
       } );
 

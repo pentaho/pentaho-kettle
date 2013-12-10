@@ -61,8 +61,8 @@ public class IfNull extends BaseStep implements StepInterface {
     data = (IfNullData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -92,8 +92,8 @@ public class IfNull extends BaseStep implements StepInterface {
             data.fieldnrs[i] = data.outputRowMeta.indexOfValue( meta.getFieldName()[i] );
             if ( data.fieldnrs[i] < 0 ) {
               logError( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField", meta.getFieldName()[i] ) );
-              throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField",
-                  meta.getFieldName()[i] ) );
+              throw new KettleException( BaseMessages.getString(
+                  PKG, "IfNull.Log.CanNotFindField", meta.getFieldName()[i] ) );
             }
             data.defaultValues[i] = environmentSubstitute( meta.getReplaceValue()[i] );
             data.defaultMasks[i] = environmentSubstitute( meta.getReplaceMask()[i] );
@@ -196,11 +196,12 @@ public class IfNull extends BaseStep implements StepInterface {
           ValueMetaInterface fieldMeta = data.outputRowMeta.getValueMeta( data.fieldnrs[i] );
           int pos = data.ListTypes.get( fieldMeta.getTypeDesc() );
 
-          replaceNull( r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[pos], data.defaultMasks[pos],
+          replaceNull(
+              r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[pos], data.defaultMasks[pos],
               data.setEmptyString[pos] );
         } else if ( meta.isSelectFields() ) {
-          replaceNull( r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[i], data.defaultMasks[i],
-              data.setEmptyString[i] );
+          replaceNull(
+              r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[i], data.defaultMasks[i], data.setEmptyString[i] );
         } else { // all
           if ( data.outputRowMeta.getValueMeta( data.fieldnrs[i] ).isDate() ) {
             replaceNull( r, sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, data.realconversionMask, false );

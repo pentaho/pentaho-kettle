@@ -635,18 +635,20 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0 ? 0
-            : jobEntry.source_filefolder.length );
+        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+            ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobMoveFiles.Fields.SourceFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobMoveFiles.Fields.DestinationFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobMoveFiles.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobMoveFiles.Fields.SourceFileFolder.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobMoveFiles.Fields.DestinationFileFolder.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobMoveFiles.Fields.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobMoveFiles.Fields.SourceFileFolder.Tooltip" ) );
@@ -656,8 +658,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     colinf[2].setToolTip( BaseMessages.getString( PKG, "JobMoveFiles.Fields.Wildcard.Tooltip" ) );
 
     wFields =
-        new TableView( jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -765,8 +767,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     wlCreateDestinationFolder.setLayoutData( fdlCreateDestinationFolder );
     wCreateDestinationFolder = new Button( wDestinationFile, SWT.CHECK );
     props.setLook( wCreateDestinationFolder );
-    wCreateDestinationFolder.setToolTipText( BaseMessages.getString( PKG,
-        "JobMoveFiles.CreateDestinationFolder.Tooltip" ) );
+    wCreateDestinationFolder.setToolTipText( BaseMessages.getString(
+        PKG, "JobMoveFiles.CreateDestinationFolder.Tooltip" ) );
     fdCreateDestinationFolder = new FormData();
     fdCreateDestinationFolder.left = new FormAttachment( middle, 0 );
     fdCreateDestinationFolder.top = new FormAttachment( 0, margin );
@@ -813,8 +815,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     wlDoNotKeepFolderStructure.setLayoutData( fdlDoNotKeepFolderStructure );
     wDoNotKeepFolderStructure = new Button( wDestinationFile, SWT.CHECK );
     props.setLook( wDoNotKeepFolderStructure );
-    wDoNotKeepFolderStructure.setToolTipText( BaseMessages.getString( PKG,
-        "JobMoveFiles.DoNotKeepFolderStructure.Tooltip" ) );
+    wDoNotKeepFolderStructure.setToolTipText( BaseMessages.getString(
+        PKG, "JobMoveFiles.DoNotKeepFolderStructure.Tooltip" ) );
     fdDoNotKeepFolderStructure = new FormData();
     fdDoNotKeepFolderStructure.left = new FormAttachment( middle, 0 );
     fdDoNotKeepFolderStructure.top = new FormAttachment( wDestinationIsAFile, margin );
@@ -1180,8 +1182,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
     // Add Date before extension?
     wlAddMovedDateBeforeExtension = new Label( wMoveToGroup, SWT.RIGHT );
-    wlAddMovedDateBeforeExtension.setText( BaseMessages.getString( PKG,
-        "JobMoveFiles.AddMovedDateBeforeExtension.Label" ) );
+    wlAddMovedDateBeforeExtension.setText( BaseMessages.getString(
+        PKG, "JobMoveFiles.AddMovedDateBeforeExtension.Label" ) );
     props.setLook( wlAddMovedDateBeforeExtension );
     fdlAddMovedDateBeforeExtension = new FormData();
     fdlAddMovedDateBeforeExtension.left = new FormAttachment( 0, 0 );
@@ -1190,8 +1192,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     wlAddMovedDateBeforeExtension.setLayoutData( fdlAddMovedDateBeforeExtension );
     wAddMovedDateBeforeExtension = new Button( wMoveToGroup, SWT.CHECK );
     props.setLook( wAddMovedDateBeforeExtension );
-    wAddMovedDateBeforeExtension.setToolTipText( BaseMessages.getString( PKG,
-        "JobMoveFiles.AddMovedDateBeforeExtension.Tooltip" ) );
+    wAddMovedDateBeforeExtension.setToolTipText( BaseMessages.getString(
+        PKG, "JobMoveFiles.AddMovedDateBeforeExtension.Tooltip" ) );
     fdAddMovedDateBeforeExtension = new FormData();
     fdAddMovedDateBeforeExtension.left = new FormAttachment( middle, 0 );
     fdAddMovedDateBeforeExtension.top = new FormAttachment( wMovedDateTimeFormat, margin );
@@ -1325,8 +1327,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wNrErrorsLessThan =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobMoveFiles.NrErrorsLessThan.Tooltip" ) );
+        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "JobMoveFiles.NrErrorsLessThan.Tooltip" ) );
     props.setLook( wNrErrorsLessThan );
     wNrErrorsLessThan.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();
@@ -1498,20 +1500,20 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
   }
 
   private void setAddDateBeforeExtension() {
-    wlAddDateBeforeExtension.setEnabled( wAddDate.getSelection() || wAddTime.getSelection()
-        || wSpecifyFormat.getSelection() );
-    wAddDateBeforeExtension.setEnabled( wAddDate.getSelection() || wAddTime.getSelection()
-        || wSpecifyFormat.getSelection() );
+    wlAddDateBeforeExtension.setEnabled( wAddDate.getSelection()
+        || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
+    wAddDateBeforeExtension.setEnabled( wAddDate.getSelection()
+        || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
     if ( !wAddDate.getSelection() && !wAddTime.getSelection() && !wSpecifyFormat.getSelection() ) {
       wAddDateBeforeExtension.setSelection( false );
     }
   }
 
   private void setAddMovedDateBeforeExtension() {
-    wlAddMovedDateBeforeExtension.setEnabled( wAddMovedDate.getSelection() || wAddMovedTime.getSelection()
-        || wSpecifyMoveFormat.getSelection() );
-    wAddMovedDateBeforeExtension.setEnabled( wAddMovedDate.getSelection() || wAddMovedTime.getSelection()
-        || wSpecifyMoveFormat.getSelection() );
+    wlAddMovedDateBeforeExtension.setEnabled( wAddMovedDate.getSelection()
+        || wAddMovedTime.getSelection() || wSpecifyMoveFormat.getSelection() );
+    wAddMovedDateBeforeExtension.setEnabled( wAddMovedDate.getSelection()
+        || wAddMovedTime.getSelection() || wSpecifyMoveFormat.getSelection() );
     if ( !wAddMovedDate.getSelection() && !wAddMovedTime.getSelection() && !wSpecifyMoveFormat.getSelection() ) {
       wAddMovedDateBeforeExtension.setSelection( false );
     }

@@ -437,8 +437,8 @@ public class EnterPrintDialog extends Dialog {
     double percentScreenX = actualSizeX / ( page.x * nrcols );
     double percentScreenY = actualSizeY / ( page.y * nrrows );
 
-    gc.drawImage( image, 0, 0, imd.width, imd.height, 0, 0, (int) ( width * percentScreenX ),
-        (int) ( height * percentScreenY ) );
+    gc.drawImage(
+        image, 0, 0, imd.width, imd.height, 0, 0, (int) ( width * percentScreenX ), (int) ( height * percentScreenY ) );
 
     StringBuffer text = new StringBuffer();
     text.append( nrcols ).append( "x" ).append( nrrows ).append( " @ " ).append( scale ).append( "%" );

@@ -210,7 +210,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
     retval.append( stepPartitioningMeta.getXML() );
     if ( targetStepPartitioningMeta != null ) {
-      retval.append( XMLHandler.openTag( "target_step_partitioning" ) ).append( targetStepPartitioningMeta.getXML() )
+      retval
+          .append( XMLHandler.openTag( "target_step_partitioning" ) ).append( targetStepPartitioningMeta.getXML() )
           .append( XMLHandler.closeTag( "target_step_partitioning" ) );
     }
 
@@ -296,8 +297,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
         stepid = sp.getIds()[0]; // revert to the default in case we loaded an alternate version
       } else {
-        throw new KettlePluginLoaderException( stepid, BaseMessages.getString( PKG,
-            "StepMeta.Exception.UnableToLoadClass", stepid ) );
+        throw new KettlePluginLoaderException( stepid, BaseMessages.getString(
+            PKG, "StepMeta.Exception.UnableToLoadClass", stepid ) );
       }
 
       // Load the specifics from XML...
@@ -323,8 +324,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       //
       String rowDistributionCode = XMLHandler.getTagValue( stepnode, "custom_distribution" );
       rowDistribution =
-          PluginRegistry.getInstance().loadClass( RowDistributionPluginType.class, rowDistributionCode,
-              RowDistributionInterface.class );
+          PluginRegistry.getInstance().loadClass(
+              RowDistributionPluginType.class, rowDistributionCode, RowDistributionInterface.class );
 
       // Handle GUI information: location & drawstep?
       String xloc, yloc;
@@ -596,11 +597,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     // Also replace the remote steps with cloned versions...
     //
     this.remoteInputSteps = new ArrayList<RemoteStep>();
-    for ( RemoteStep remoteStep : stepMeta.remoteInputSteps )
+    for ( RemoteStep remoteStep : stepMeta.remoteInputSteps ) {
       this.remoteInputSteps.add( (RemoteStep) remoteStep.clone() );
+    }
     this.remoteOutputSteps = new ArrayList<RemoteStep>();
-    for ( RemoteStep remoteStep : stepMeta.remoteOutputSteps )
+    for ( RemoteStep remoteStep : stepMeta.remoteOutputSteps ) {
       this.remoteOutputSteps.add( (RemoteStep) remoteStep.clone() );
+    }
 
     // The error handling needs to be done too...
     //
@@ -845,8 +848,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    * @return if error handling is supported for this step, if error handling is defined and a target step is set
    */
   public boolean isDoingErrorHandling() {
-    return stepMetaInterface.supportsErrorHandling() && stepErrorMeta != null && stepErrorMeta.getTargetStep() != null
-        && stepErrorMeta.isEnabled();
+    return stepMetaInterface.supportsErrorHandling()
+        && stepErrorMeta != null && stepErrorMeta.getTargetStep() != null && stepErrorMeta.isEnabled();
   }
 
   public boolean isSendingErrorRowsToStep( StepMeta targetStep ) {

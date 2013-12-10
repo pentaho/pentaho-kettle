@@ -111,8 +111,8 @@ public class SortedMerge extends BaseStep implements StepInterface {
             for ( int f = 0; f < data.fieldIndices.length; f++ ) {
               data.fieldIndices[f] = data.rowMeta.indexOfValue( meta.getFieldName()[f] );
               if ( data.fieldIndices[f] < 0 ) {
-                throw new KettleStepException( "Unable to find fieldname [" + meta.getFieldName()[f] + "] in row : "
-                    + data.rowMeta );
+                throw new KettleStepException( "Unable to find fieldname ["
+                    + meta.getFieldName()[f] + "] in row : " + data.rowMeta );
               }
 
               data.rowMeta.getValueMeta( data.fieldIndices[f] ).setSortedDescending( !meta.getAscending()[f] );
@@ -188,8 +188,8 @@ public class SortedMerge extends BaseStep implements StepInterface {
     data = (SortedMergeData) sdi;
 
     Object[] row = getRowSorted(); // get row, sorted
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }

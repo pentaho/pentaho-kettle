@@ -81,8 +81,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
 
       try {
         FileObject fileObject =
-            KettleVFS.createTempFile( meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ),
-                getTransMeta() );
+            KettleVFS.createTempFile(
+                meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ), getTransMeta() );
 
         data.files.add( fileObject ); // Remember the files!
         OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
@@ -131,8 +131,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
         FileObject fileObject = data.files.get( 0 );
         String filename = KettleVFS.getFilename( fileObject );
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename1" ) + filename
-              + BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename2" ) );
+          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename1" )
+              + filename + BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename2" ) );
         }
         InputStream fi = KettleVFS.getInputStream( fileObject );
         DataInputStream di;
@@ -150,8 +150,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
         int buffersize = di.readInt();
 
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize1" ) + filename
-              + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize2" ) + buffersize + " "
+          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize1" )
+              + filename + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize2" ) + buffersize + " "
               + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize3" ) );
         }
 

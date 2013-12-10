@@ -344,8 +344,9 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
           int alt1 = 6;
           int LA1_0 = input.LA( 1 );
 
-          if ( ( ( LA1_0 >= '\u0000' && LA1_0 <= '&' ) || ( LA1_0 >= '(' && LA1_0 <= '*' )
-              || ( LA1_0 >= ',' && LA1_0 <= '9' ) || ( LA1_0 >= ';' && LA1_0 <= '>' ) || ( LA1_0 >= '@' && LA1_0 <= '\uFFFF' ) ) ) {
+          if ( ( ( LA1_0 >= '\u0000' && LA1_0 <= '&' )
+              || ( LA1_0 >= '(' && LA1_0 <= '*' ) || ( LA1_0 >= ',' && LA1_0 <= '9' )
+              || ( LA1_0 >= ';' && LA1_0 <= '>' ) || ( LA1_0 >= '@' && LA1_0 <= '\uFFFF' ) ) ) {
             alt1 = 1;
           } else if ( ( LA1_0 == '?' ) ) {
             switch ( input.LA( 2 ) ) {
@@ -503,8 +504,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     if ( ( LA2_0 == ' ' ) ) {
       int LA2_1 = input.LA( 2 );
 
-      if ( ( ( LA2_1 >= '\u0000' && LA2_1 <= '&' ) || ( LA2_1 >= '(' && LA2_1 <= '*' )
-          || ( LA2_1 >= ',' && LA2_1 <= '9' ) || ( LA2_1 >= ';' && LA2_1 <= '\uFFFF' ) ) ) {
+      if ( ( ( LA2_1 >= '\u0000' && LA2_1 <= '&' )
+          || ( LA2_1 >= '(' && LA2_1 <= '*' ) || ( LA2_1 >= ',' && LA2_1 <= '9' ) || ( LA2_1 >= ';' && LA2_1 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 1;
@@ -552,8 +553,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     } else if ( ( LA2_0 == '\n' ) ) {
       int LA2_3 = input.LA( 2 );
 
-      if ( ( ( LA2_3 >= '\u0000' && LA2_3 <= '&' ) || ( LA2_3 >= '(' && LA2_3 <= '*' )
-          || ( LA2_3 >= ',' && LA2_3 <= '9' ) || ( LA2_3 >= ';' && LA2_3 <= '\uFFFF' ) ) ) {
+      if ( ( ( LA2_3 >= '\u0000' && LA2_3 <= '&' )
+          || ( LA2_3 >= '(' && LA2_3 <= '*' ) || ( LA2_3 >= ',' && LA2_3 <= '9' ) || ( LA2_3 >= ';' && LA2_3 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 4;
@@ -561,8 +562,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     } else if ( ( LA2_0 == '\r' ) ) {
       int LA2_4 = input.LA( 2 );
 
-      if ( ( ( LA2_4 >= '\u0000' && LA2_4 <= '&' ) || ( LA2_4 >= '(' && LA2_4 <= '*' )
-          || ( LA2_4 >= ',' && LA2_4 <= '9' ) || ( LA2_4 >= ';' && LA2_4 <= '\uFFFF' ) ) ) {
+      if ( ( ( LA2_4 >= '\u0000' && LA2_4 <= '&' )
+          || ( LA2_4 >= '(' && LA2_4 <= '*' ) || ( LA2_4 >= ',' && LA2_4 <= '9' ) || ( LA2_4 >= ';' && LA2_4 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 5;
@@ -570,8 +571,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
     } else if ( ( LA2_0 == '\t' ) ) {
       int LA2_5 = input.LA( 2 );
 
-      if ( ( ( LA2_5 >= '\u0000' && LA2_5 <= '&' ) || ( LA2_5 >= '(' && LA2_5 <= '*' )
-          || ( LA2_5 >= ',' && LA2_5 <= '9' ) || ( LA2_5 >= ';' && LA2_5 <= '\uFFFF' ) ) ) {
+      if ( ( ( LA2_5 >= '\u0000' && LA2_5 <= '&' )
+          || ( LA2_5 >= '(' && LA2_5 <= '*' ) || ( LA2_5 >= ',' && LA2_5 <= '9' ) || ( LA2_5 >= ';' && LA2_5 <= '\uFFFF' ) ) ) {
         alt2 = 11;
       } else {
         alt2 = 6;
@@ -590,10 +591,10 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
       alt2 = 9;
     } else if ( ( LA2_0 == ':' ) ) {
       alt2 = 10;
-    } else if ( ( ( LA2_0 >= '\u0000' && LA2_0 <= '\b' ) || ( LA2_0 >= '\u000B' && LA2_0 <= '\f' )
-        || ( LA2_0 >= '\u000E' && LA2_0 <= '\u001F' ) || ( LA2_0 >= '!' && LA2_0 <= '&' )
-        || ( LA2_0 >= '(' && LA2_0 <= '*' ) || ( LA2_0 >= ',' && LA2_0 <= '9' ) || ( LA2_0 >= ';' && LA2_0 <= '>' )
-        || ( LA2_0 >= '@' && LA2_0 <= 'T' ) || ( LA2_0 >= 'V' && LA2_0 <= '\uFFFF' ) ) ) {
+    } else if ( ( ( LA2_0 >= '\u0000' && LA2_0 <= '\b' )
+        || ( LA2_0 >= '\u000B' && LA2_0 <= '\f' ) || ( LA2_0 >= '\u000E' && LA2_0 <= '\u001F' )
+        || ( LA2_0 >= '!' && LA2_0 <= '&' ) || ( LA2_0 >= '(' && LA2_0 <= '*' ) || ( LA2_0 >= ',' && LA2_0 <= '9' )
+        || ( LA2_0 >= ';' && LA2_0 <= '>' ) || ( LA2_0 >= '@' && LA2_0 <= 'T' ) || ( LA2_0 >= 'V' && LA2_0 <= '\uFFFF' ) ) ) {
       alt2 = 11;
     } else {
       NoViableAltException nvae = new NoViableAltException( "", 2, 0, input );

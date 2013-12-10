@@ -187,8 +187,8 @@ public class RandomValue extends BaseStep implements StepInterface {
 
     putRow( data.outputRowMeta, row );
 
-    if ( !data.readsRows ) // Just one row and then stop!
-    {
+    if ( !data.readsRows ) { // Just one row and then stop!
+
       setOutputDone();
       return false;
     }

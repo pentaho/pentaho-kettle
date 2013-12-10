@@ -74,8 +74,9 @@ public class Condition implements Cloneable, XMLInterface {
   public static final int OPERATOR_AND_NOT = 5;
   public static final int OPERATOR_XOR = 6;
 
-  public static final String[] functions = new String[] { "=", "<>", "<", "<=", ">", ">=", "REGEXP", "IS NULL",
-    "IS NOT NULL", "IN LIST", "CONTAINS", "STARTS WITH", "ENDS WITH", "LIKE", "TRUE", };
+  public static final String[] functions = new String[] {
+      "=", "<>", "<", "<=", ">", ">=", "REGEXP", "IS NULL", "IS NOT NULL", "IN LIST", "CONTAINS", "STARTS WITH",
+      "ENDS WITH", "LIKE", "TRUE", };
 
   public static final int FUNC_EQUAL = 0;
   public static final int FUNC_NOT_EQUAL = 1;

@@ -154,23 +154,23 @@ public class BasePainter {
     }
 
     int[] noteshape = new int[] { note.x, note.y, // Top left
-      note.x + width + 2 * margin, note.y, // Top right
-      note.x + width + 2 * margin, note.y + height, // bottom right 1
-      note.x + width, note.y + height + 2 * margin, // bottom right 2
-      note.x + width, note.y + height, // bottom right 3
-      note.x + width + 2 * margin, note.y + height, // bottom right 1
-      note.x + width, note.y + height + 2 * margin, // bottom right 2
-      note.x, note.y + height + 2 * margin // bottom left
+    note.x + width + 2 * margin, note.y, // Top right
+        note.x + width + 2 * margin, note.y + height, // bottom right 1
+        note.x + width, note.y + height + 2 * margin, // bottom right 2
+        note.x + width, note.y + height, // bottom right 3
+        note.x + width + 2 * margin, note.y + height, // bottom right 1
+        note.x + width, note.y + height + 2 * margin, // bottom right 2
+        note.x, note.y + height + 2 * margin // bottom left
     };
 
     // Draw shadow around note?
     if ( notePadMeta.isDrawShadow() ) {
       int s = shadowSize;
       int[] shadowa = new int[] { note.x + s, note.y + s, // Top left
-        note.x + width + 2 * margin + s, note.y + s, // Top right
-        note.x + width + 2 * margin + s, note.y + height + s, // bottom right 1
-        note.x + width + s, note.y + height + 2 * margin + s, // bottom right 2
-        note.x + s, note.y + height + 2 * margin + s // bottom left
+      note.x + width + 2 * margin + s, note.y + s, // Top right
+          note.x + width + 2 * margin + s, note.y + height + s, // bottom right 1
+          note.x + width + s, note.y + height + 2 * margin + s, // bottom right 2
+          note.x + s, note.y + height + 2 * margin + s // bottom left
       };
       gc.setBackground( EColor.LIGHTGRAY );
       gc.fillPolygon( shadowa );

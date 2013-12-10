@@ -66,7 +66,8 @@ public class JobResource {
     int lastLineNr = KettleLogStore.getLastBufferLineNr();
     Job job = CarteResource.getJob( id );
     String logText =
-        KettleLogStore.getAppender().getBuffer( job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr )
+        KettleLogStore
+            .getAppender().getBuffer( job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr )
             .toString();
     return logText;
   }

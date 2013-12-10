@@ -107,11 +107,11 @@ public class CarteSingleton {
           try {
             SlaveServerDetection slaveServerDetection = new SlaveServerDetection( client );
             master.sendXML( slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH + "/" );
-            log.logBasic( "Registered this slave server to master slave server [" + master.toString()
-                + "] on address [" + master.getServerAndPort() + "]" );
+            log.logBasic( "Registered this slave server to master slave server ["
+                + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
           } catch ( Exception e ) {
-            log.logError( "Unable to register to master slave server [" + master.toString() + "] on address ["
-                + master.getServerAndPort() + "]" );
+            log.logError( "Unable to register to master slave server ["
+                + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
           }
         }
       }
@@ -174,8 +174,9 @@ public class CarteSingleton {
 
                     // transformationMap.deallocateServerSocketPorts(entry);
 
-                    log.logMinimal( "Cleaned up transformation " + entry.getName() + " with id " + entry.getId()
-                        + " from " + trans.getLogDate() + ", diff=" + diffInMinutes );
+                    log.logMinimal( "Cleaned up transformation "
+                        + entry.getName() + " with id " + entry.getId() + " from " + trans.getLogDate() + ", diff="
+                        + diffInMinutes );
                   }
                 }
               }
@@ -196,8 +197,8 @@ public class CarteSingleton {
                     // Let's remove this from the job map...
                     //
                     jobMap.removeJob( entry );
-                    log.logMinimal( "Cleaned up job " + entry.getName() + " with id " + entry.getId() + " from "
-                        + job.getLogDate() );
+                    log.logMinimal( "Cleaned up job "
+                        + entry.getName() + " with id " + entry.getId() + " from " + job.getLogDate() );
                   }
                 }
               }
@@ -234,7 +235,8 @@ public class CarteSingleton {
         servletLoggingObject.setContainerObjectId( carteObjectId );
         servletLoggingObject.setLogLevel( LogLevel.BASIC );
 
-        carte.getTransformationMap().addTransformation( trans.getName(), carteObjectId, trans,
+        carte.getTransformationMap().addTransformation(
+            trans.getName(), carteObjectId, trans,
             new TransConfiguration( trans.getTransMeta(), new TransExecutionConfiguration() ) );
 
         return carte;

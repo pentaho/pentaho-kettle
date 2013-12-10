@@ -300,13 +300,12 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     try {
       add = db.getQueryFields( space.environmentSubstitute( sql ), true, param, new Object[param.size()] );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "DatabaseJoinMeta.Exception.UnableToDetermineQueryFields" )
+      throw new KettleStepException( BaseMessages.getString(
+          PKG, "DatabaseJoinMeta.Exception.UnableToDetermineQueryFields" )
           + Const.CR + sql, dbe );
     }
 
-    if ( add != null ) // Cache hit, just return it this...
-    {
+    if ( add != null ) { // Cache hit, just return it this...
       for ( int i = 0; i < add.size(); i++ ) {
         ValueMetaInterface v = add.getValueMeta( i );
         v.setOrigin( name );
@@ -371,8 +370,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
         parameterType[i] = ValueMeta.getType( stype );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "DatabaseJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "DatabaseJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -423,8 +422,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
               db.getQueryFields( transMeta.environmentSubstitute( sql ), true, param, new Object[param.size()] );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "DatabaseJoinMeta.CheckResult.QueryOK" ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "DatabaseJoinMeta.CheckResult.QueryOK" ), stepMeta );
             remarks.add( cr );
           } else {
             error_message = BaseMessages.getString( PKG, "DatabaseJoinMeta.CheckResult.InvalidDBQuery" );
@@ -438,8 +437,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
                 BaseMessages.getString( PKG, "DatabaseJoinMeta.CheckResult.DismatchBetweenParametersAndQuestion" )
                     + Const.CR;
             error_message +=
-                BaseMessages.getString( PKG, "DatabaseJoinMeta.CheckResult.DismatchBetweenParametersAndQuestion2" ) + q
-                    + Const.CR;
+                BaseMessages.getString( PKG, "DatabaseJoinMeta.CheckResult.DismatchBetweenParametersAndQuestion2" )
+                    + q + Const.CR;
             error_message +=
                 BaseMessages.getString( PKG, "DatabaseJoinMeta.CheckResult.DismatchBetweenParametersAndQuestion3" )
                     + parameterField.length;
@@ -448,8 +447,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
             remarks.add( cr );
           } else {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "DatabaseJoinMeta.CheckResult.NumberOfParamCorrect" )
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "DatabaseJoinMeta.CheckResult.NumberOfParamCorrect" )
                     + q + ")", stepMeta );
             remarks.add( cr );
           }
@@ -476,8 +475,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
             cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "DatabaseJoinMeta.CheckResult.AllFieldsFound" ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "DatabaseJoinMeta.CheckResult.AllFieldsFound" ), stepMeta );
           }
           remarks.add( cr );
         } else {
@@ -501,13 +500,13 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "DatabaseJoinMeta.CheckResult.ReceivingInfo" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "DatabaseJoinMeta.CheckResult.ReceivingInfo" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "DatabaseJoinMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "DatabaseJoinMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
 

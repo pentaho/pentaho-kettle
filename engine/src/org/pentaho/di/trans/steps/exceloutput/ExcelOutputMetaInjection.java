@@ -200,8 +200,9 @@ public class ExcelOutputMetaInjection implements StepMetaInjectionInterface {
 
     FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
 
-    NAME( ValueMetaInterface.TYPE_STRING, "Input field name" ), TYPE( ValueMetaInterface.TYPE_STRING,
-        "Type field value" ), FORMAT( ValueMetaInterface.TYPE_STRING, "Format field name" ), ;
+    NAME( ValueMetaInterface.TYPE_STRING, "Input field name" ), TYPE(
+        ValueMetaInterface.TYPE_STRING, "Type field value" ), FORMAT(
+        ValueMetaInterface.TYPE_STRING, "Format field name" ), ;
 
     private int valueType;
     private String description;

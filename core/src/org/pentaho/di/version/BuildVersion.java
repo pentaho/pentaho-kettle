@@ -40,19 +40,19 @@ import org.pentaho.di.core.xml.XMLHandler;
  */
 public class BuildVersion {
   public static final String REFERENCE_FILE = "/kettle-steps.xml";
-  
+
   public static final String JAR_BUILD_DATE_FORMAT = "yyyy-MM-dd HH.mm.ss";
-  
+
   public static final String KETTLE_BUILD_VERSION = "KETTLE_BUILD_VERSION";
-  
+
   public static final String KETTLE_BUILD_REVISION = "KETTLE_BUILD_REVISION";
-  
+
   public static final String KETTLE_BUILD_DATE = "KETTLE_BUILD_DATE";
-  
+
   public static final String KETTLE_BUILD_USER = "KETTLE_BUILD_USER";
-  
+
   protected static ManifestGetter manifestGetter = new ManifestGetter();
-  
+
   protected static EnvironmentVariableGetter environmentVariableGetter = new EnvironmentVariableGetter();
 
   private static BuildVersion buildVersion = new BuildVersion();
@@ -63,7 +63,7 @@ public class BuildVersion {
   public static final BuildVersion getInstance() {
     return buildVersion;
   }
-  
+
   protected static void refreshInstance() {
     buildVersion = new BuildVersion();
   }
@@ -72,7 +72,7 @@ public class BuildVersion {
   private String revision;
   private String buildDate;
   private String buildUser;
-  
+
   private void loadBuildInfoFromManifest() throws Exception {
     Manifest manifest = manifestGetter.getManifest();
 

@@ -128,8 +128,8 @@ public class UIObjectRegistry {
       Repository rep ) throws UIObjectCreationException {
     try {
       Constructor<?> constructor =
-          transClass.getConstructor( RepositoryElementMetaInterface.class, UIRepositoryDirectory.class,
-              Repository.class );
+          transClass.getConstructor(
+              RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class );
       if ( constructor != null ) {
         return (UITransformation) constructor.newInstance( rc, parent, rep );
       } else {

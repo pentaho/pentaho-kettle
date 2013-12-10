@@ -831,8 +831,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
     // different folder for attachment?
     wlDifferentFolderForAttachment = new Label( wTargetFolder, SWT.RIGHT );
-    wlDifferentFolderForAttachment.setText( BaseMessages.getString( PKG,
-        "JobGetPOP.DifferentFolderForAttachmentMails.Label" ) );
+    wlDifferentFolderForAttachment.setText( BaseMessages.getString(
+        PKG, "JobGetPOP.DifferentFolderForAttachmentMails.Label" ) );
     props.setLook( wlDifferentFolderForAttachment );
     fdlDifferentFolderForAttachment = new FormData();
     fdlDifferentFolderForAttachment.left = new FormAttachment( 0, 0 );
@@ -842,8 +842,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wDifferentFolderForAttachment = new Button( wTargetFolder, SWT.CHECK );
     props.setLook( wDifferentFolderForAttachment );
     fdDifferentFolderForAttachment = new FormData();
-    wDifferentFolderForAttachment.setToolTipText( BaseMessages.getString( PKG,
-        "JobGetPOP.DifferentFolderForAttachmentMails.Tooltip" ) );
+    wDifferentFolderForAttachment.setToolTipText( BaseMessages.getString(
+        PKG, "JobGetPOP.DifferentFolderForAttachmentMails.Tooltip" ) );
     fdDifferentFolderForAttachment.left = new FormAttachment( middle, 0 );
     fdDifferentFolderForAttachment.top = new FormAttachment( wGetAttachment, margin );
     fdDifferentFolderForAttachment.right = new FormAttachment( 100, 0 );
@@ -1025,8 +1025,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wlListmails.setLayoutData( fdlListmails );
     wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveAllMails.Label" ) );
-    //PDI-7241 POP3 does not support retrive unread
-    //wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
+    // PDI-7241 POP3 does not support retrive unread
+    // wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveFirstMails.Label" ) );
     wListmails.select( 0 ); // +1: starts at -1
 
@@ -1787,9 +1787,10 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       String realproxyuser = jobMeta.environmentSubstitute( wProxyUsername.getText() );
       try {
         mailConn =
-            new MailConnection( LogChannel.UI, MailConnectionMeta.getProtocolFromString( wProtocol.getText(),
-                MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser, realpass, wUseSSL.getSelection(),
-                wUseProxy.getSelection(), realproxyuser );
+            new MailConnection(
+                LogChannel.UI, MailConnectionMeta.getProtocolFromString(
+                    wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser, realpass,
+                wUseSSL.getSelection(), wUseProxy.getSelection(), realproxyuser );
         mailConn.connect();
 
         retval = true;
@@ -1968,8 +1969,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 )
         && MailConnectionMeta.getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_MOVE ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( "This action is not available for POP3!" + Const.CR
-          + "Only one Folder (INBOX) is available in POP3." + Const.CR
+      mb.setMessage( "This action is not available for POP3!"
+          + Const.CR + "Only one Folder (INBOX) is available in POP3." + Const.CR
           + "If you want to move messages to another folder," + Const.CR + "please use IMAP protocol." );
       mb.setText( "ERROR" );
       mb.open();
@@ -2084,14 +2085,14 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( jobEntry.getAttachmentWildcard() != null ) {
       wAttachmentWildcard.setText( jobEntry.getAttachmentWildcard() );
     }
-    
+
     String protocol = jobEntry.getProtocol();
     boolean isPop3 = StringUtils.equals( protocol, MailConnectionMeta.PROTOCOL_STRING_POP3 );
     wProtocol.setText( protocol );
     int i = jobEntry.getRetrievemails();
 
-    if ( i > 0 ) {      
-      if ( isPop3 ) {     
+    if ( i > 0 ) {
+      if ( isPop3 ) {
         wListmails.select( i - 1 );
       } else {
         wListmails.select( i );
@@ -2180,12 +2181,12 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     jobEntry.setPort( wPort.getText() );
     jobEntry.setOutputDirectory( wOutputDirectory.getText() );
     jobEntry.setFilenamePattern( wFilenamePattern.getText() );
-    
-    //[PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
-    //for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
+
+    // [PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
+    // for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
     int actualIndex = wListmails.getSelectionIndex();
     jobEntry.setRetrievemails( actualIndex > 0 ? 2 : 0 );
-    
+
     jobEntry.setFirstMails( wFirstmails.getText() );
     jobEntry.setDelete( wDelete.getSelection() );
     jobEntry.setProtocol( wProtocol.getText() );

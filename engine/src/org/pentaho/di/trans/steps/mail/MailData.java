@@ -86,9 +86,6 @@ public class MailData extends BaseStepData implements StepDataInterface {
   public int indexOfAttachedContent;
   public int IndexOfAttachedFilename;
 
-  /**
-	 * 
-	 */
   public MailData() {
     super();
     indexOfDestination = -1;

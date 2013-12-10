@@ -64,8 +64,8 @@ public class YamlInput extends BaseStep implements StepInterface {
     List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
-      logError( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "YamlInput.Log.RequiredFiles", message ) );
+      logError( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "YamlInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesMissing", message ) );
     }
@@ -73,11 +73,11 @@ public class YamlInput extends BaseStep implements StepInterface {
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
-      logError( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "YamlInput.Log.RequiredNotAccessibleFiles", message ) );
+      logError( BaseMessages.getString( PKG, "YamlInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+          PKG, "YamlInput.Log.RequiredNotAccessibleFiles", message ) );
 
-      throw new KettleException( BaseMessages.getString( PKG, "YamlInput.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "YamlInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
@@ -201,8 +201,8 @@ public class YamlInput extends BaseStep implements StepInterface {
         }
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "YamlInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(),
-          e.toString() ) );
+      logError( BaseMessages.getString(
+          PKG, "YamlInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       logError( Const.getStackTracker( e ) );

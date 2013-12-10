@@ -781,8 +781,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlFilterString.setLayoutData( fdlFilterString );
 
     wFilterString =
-        new StyledTextComp( transMeta, wSearchGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL,
-            "" );
+        new StyledTextComp(
+            transMeta, wSearchGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     wFilterString.setToolTipText( BaseMessages.getString( PKG, "LDAPInputDialog.FilterString.Tooltip" ) );
     props.setLook( wFilterString );
     wFilterString.addModifyListener( lsMod );
@@ -1045,34 +1045,51 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Attribute.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.FetchAttributeAs.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, LDAPInputField.FetchAttributeAsDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.IsSortedKey.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, LDAPInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Repeat.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Attribute.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.FetchAttributeAs.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, LDAPInputField.FetchAttributeAsDesc, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.IsSortedKey.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Type.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Format.Column" ),
+                ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Length.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Precision.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Currency.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Decimal.Column" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.TrimType.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO, LDAPInputField.trimTypeDesc, true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Repeat.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
 
         };
 
@@ -1286,11 +1303,13 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
       wFields.optWidth( true );
 
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogTitle" ), BaseMessages
+              .getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogMessage" ), e );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogTitle" ), BaseMessages
+              .getString( PKG, "LDAPInputDialog.ErrorGettingColums.DialogMessage" ), e );
 
     } finally {
       if ( connection != null ) {
@@ -1386,8 +1405,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         String name = field.getName();
         String path = field.getAttribute();
         String issortedkey =
-            field.isSortedKey() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+            field.isSortedKey() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+                PKG, "System.Combo.No" );
         String returntype = field.getFetchAttributeAsDesc();
         String type = field.getTypeDesc();
         String format = field.getFormat();
@@ -1398,8 +1417,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+                PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1468,8 +1487,9 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDAPInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages.getString(
+              PKG, "LDAPInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1548,14 +1568,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "LDAPInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "LDAPInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+              PKG, "LDAPInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
+              PKG, "LDAPInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+            new TransPreviewProgressDialog(
+                shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1564,23 +1584,25 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+                new EnterTextDialog(
+                    shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                        PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+              new PreviewRowsDialog(
+                  shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                      .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDAPInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDAPInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+              .getString( PKG, "LDAPInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 
@@ -1629,8 +1651,9 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         }
 
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "LDAPInputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "LDAPInputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "LDAPInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "LDAPInputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1652,8 +1675,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   private void trustAll() {
     boolean enable =
-        wsetTrustStore.getSelection() && !LdapProtocol.getName().equals( wProtocol.getText() )
-            && !wTrustAll.getSelection();
+        wsetTrustStore.getSelection()
+            && !LdapProtocol.getName().equals( wProtocol.getText() ) && !wTrustAll.getSelection();
     wlTrustStorePath.setEnabled( enable );
     wTrustStorePath.setEnabled( enable );
     wlTrustStorePassword.setEnabled( enable );

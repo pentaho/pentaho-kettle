@@ -210,11 +210,13 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.SourceValue" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.SourceValue" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.TargetValue" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "ValueMapperDialog.Fields.Column.TargetValue" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -294,8 +296,9 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
           }
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "ValueMapperDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

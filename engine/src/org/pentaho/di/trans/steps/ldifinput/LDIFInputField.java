@@ -48,10 +48,11 @@ public class LDIFInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "LDIFInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "LDIFInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "LDIFInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "LDIFInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "LDIFInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "LDIFInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "LDIFInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "LDIFInputField.TrimType.Both" ) };
 
   public static final String POSITION_MARKER = ",";
 

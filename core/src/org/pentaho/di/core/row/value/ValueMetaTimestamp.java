@@ -233,8 +233,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     try {
       return Timestamp.valueOf( string );
     } catch ( IllegalArgumentException e ) {
-      throw new KettleValueException( toString() + " : couldn't convert string [" + string
-          + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
+      throw new KettleValueException(
+          toString()
+              + " : couldn't convert string [" + string
+              + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
     }
   }
 
@@ -467,8 +469,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       preparedStatement.setTimestamp( index, getTimestamp( data ) );
 
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( toStringMeta() + " : Unable to set value on prepared statement on index "
-          + index, e );
+      throw new KettleDatabaseException( toStringMeta()
+          + " : Unable to set value on prepared statement on index " + index, e );
     }
 
   }
@@ -541,9 +543,9 @@ public class ValueMetaTimestamp extends ValueMetaDate {
         }
       }
     } catch ( ClassCastException e ) {
-      throw new RuntimeException( toString() + " : There was a data type error: the data type of "
-          + object.getClass().getName() + " object [" + object + "] does not correspond to value meta ["
-          + toStringMeta() + "]" );
+      throw new RuntimeException( toString()
+          + " : There was a data type error: the data type of " + object.getClass().getName() + " object [" + object
+          + "] does not correspond to value meta [" + toStringMeta() + "]" );
     } catch ( IOException e ) {
       throw new KettleFileException( toString() + " : Unable to write value timestamp data to output stream", e );
     }

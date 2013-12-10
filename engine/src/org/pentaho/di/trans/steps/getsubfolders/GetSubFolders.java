@@ -103,10 +103,10 @@ public class GetSubFolders extends BaseStep implements StepInterface {
           data.indexOfFoldernameField = data.inputRowMeta.indexOfValue( realDynamicFoldername );
           if ( data.indexOfFoldernameField < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "GetSubFolders.Log.ErrorFindingField" ) + "["
-                + realDynamicFoldername + "]" );
-            throw new KettleException( BaseMessages.getString( PKG, "GetSubFolders.Exception.CouldnotFindField",
-                realDynamicFoldername ) );
+            logError( BaseMessages.getString( PKG, "GetSubFolders.Log.ErrorFindingField" )
+                + "[" + realDynamicFoldername + "]" );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "GetSubFolders.Exception.CouldnotFindField", realDynamicFoldername ) );
           }
         }
       } else {
@@ -124,7 +124,7 @@ public class GetSubFolders extends BaseStep implements StepInterface {
       }
       data.nrStepFields = data.outputRowMeta.size();
 
-    }// end if first
+    } // end if first
     if ( meta.isFoldernameDynamic() ) {
       if ( data.readrow == null ) {
         setOutputDone();

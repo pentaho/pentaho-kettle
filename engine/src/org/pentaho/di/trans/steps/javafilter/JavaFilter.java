@@ -64,8 +64,8 @@ public class JavaFilter extends BaseStep implements StepInterface {
     data = (JavaFilterData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -183,8 +183,9 @@ public class JavaFilter extends BaseStep implements StepInterface {
         // Create the expression evaluator: is relatively slow so we do it only for the first row...
         //
         data.expressionEvaluator = new ExpressionEvaluator();
-        data.expressionEvaluator.setParameters( parameterNames.toArray( new String[parameterNames.size()] ),
-            parameterTypes.toArray( new Class<?>[parameterTypes.size()] ) );
+        data.expressionEvaluator.setParameters(
+            parameterNames.toArray( new String[parameterNames.size()] ), parameterTypes
+                .toArray( new Class<?>[parameterTypes.size()] ) );
         data.expressionEvaluator.setReturnType( Object.class );
         data.expressionEvaluator.setThrownExceptions( new Class<?>[] { Exception.class } );
         data.expressionEvaluator.cook( meta.getCondition() );

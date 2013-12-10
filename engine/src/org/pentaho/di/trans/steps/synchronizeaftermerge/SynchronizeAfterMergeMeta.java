@@ -430,8 +430,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -550,8 +550,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         update[i] = Boolean.valueOf( rep.getStepAttributeBoolean( id_step, i, "value_update", true ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -591,8 +591,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeMeta.Exception.UnableToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeMeta.Exception.UnableToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -611,8 +611,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 
         if ( !Const.isEmpty( tableName ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "SynchronizeAfterMergeMeta.CheckResult.TableNameOK" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "SynchronizeAfterMergeMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -624,8 +624,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "SynchronizeAfterMergeMeta.CheckResult.TableExists" ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "SynchronizeAfterMergeMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             for ( int i = 0; i < keyLookup.length; i++ ) {
@@ -635,8 +635,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
                 if ( first ) {
                   first = false;
                   error_message +=
-                      BaseMessages.getString( PKG,
-                          "SynchronizeAfterMergeMeta.CheckResult.MissingCompareFieldsInTargetTable" )
+                      BaseMessages.getString(
+                          PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingCompareFieldsInTargetTable" )
                           + Const.CR;
                 }
                 error_found = true;
@@ -647,8 +647,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
               cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "SynchronizeAfterMergeMeta.CheckResult.AllLookupFieldsFound" ), stepMeta );
+                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "SynchronizeAfterMergeMeta.CheckResult.AllLookupFieldsFound" ), stepMeta );
             }
             remarks.add( cr );
 
@@ -664,8 +664,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
                 if ( first ) {
                   first = false;
                   error_message +=
-                      BaseMessages.getString( PKG,
-                          "SynchronizeAfterMergeMeta.CheckResult.MissingFieldsToUpdateInTargetTable" )
+                      BaseMessages.getString(
+                          PKG, "SynchronizeAfterMergeMeta.CheckResult.MissingFieldsToUpdateInTargetTable" )
                           + Const.CR;
                 }
                 error_found = true;
@@ -676,8 +676,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
               cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "SynchronizeAfterMergeMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable" ), stepMeta );
+                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "SynchronizeAfterMergeMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
@@ -690,8 +690,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "SynchronizeAfterMergeMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "SynchronizeAfterMergeMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -730,8 +730,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
             cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
 
@@ -759,8 +759,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
             cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput2" ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "SynchronizeAfterMergeMeta.CheckResult.AllFieldsFoundInInput2" ), stepMeta );
             remarks.add( cr );
           }
 
@@ -785,7 +785,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
               if ( vs != null && vt != null ) {
                 if ( !vs.getTypeDesc().equalsIgnoreCase( vt.getTypeDesc() ) ) {
                   errorMsgDiffField +=
-                      Const.CR + "The input field [" + vs.getName() + "] ( Type=" + vs.getTypeDesc()
+                      Const.CR
+                          + "The input field [" + vs.getName() + "] ( Type=" + vs.getTypeDesc()
                           + ") is not the same as the type in the target table (Type=" + vt.getTypeDesc() + ")"
                           + Const.CR;
                   errorDiffField = true;
@@ -793,7 +794,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
                   // check Length
                   if ( ( vt.getLength() < vs.getLength() || vs.getLength() == -1 ) && vt.getLength() != -1 ) {
                     errorMsgDiffLenField +=
-                        Const.CR + "The input field [" + vs.getName() + "] " + "(" + vs.getTypeDesc() + ")"
+                        Const.CR
+                            + "The input field [" + vs.getName() + "] " + "(" + vs.getTypeDesc() + ")"
                             + " has a length (" + vs.getLength() + ")"
                             + " that is higher than that in the target table (" + vt.getLength() + ")." + Const.CR;
                     errorDiffLenField = true;
@@ -804,14 +806,14 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
             // add error/Warning
             if ( errorDiffField ) {
               errorMsgDiffField =
-                  BaseMessages.getString( PKG, "SynchronizeAfterMergeMeta.CheckResult.FieldsTypeDifferent" ) + Const.CR
-                      + errorMsgDiffField;
+                  BaseMessages.getString( PKG, "SynchronizeAfterMergeMeta.CheckResult.FieldsTypeDifferent" )
+                      + Const.CR + errorMsgDiffField;
               cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, errorMsgDiffField, stepMeta );
             }
             if ( errorDiffLenField ) {
               errorMsgDiffLenField =
-                  BaseMessages.getString( PKG, "SynchronizeAfterMergeMeta.CheckResult.FieldsLenDifferent" ) + Const.CR
-                      + errorMsgDiffLenField;
+                  BaseMessages.getString( PKG, "SynchronizeAfterMergeMeta.CheckResult.FieldsLenDifferent" )
+                      + Const.CR + errorMsgDiffLenField;
               cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, errorMsgDiffLenField, stepMeta );
             }
             remarks.add( cr );
@@ -841,13 +843,13 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SynchronizeAfterMergeMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SynchronizeAfterMergeMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SynchronizeAfterMergeMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SynchronizeAfterMergeMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -911,8 +913,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
             }
 
             // Key lookup dimensions...
-            if ( idx_fields != null && idx_fields.length > 0
-                && !db.checkIndexExists( schemaName, tableName, idx_fields ) ) {
+            if ( idx_fields != null
+                && idx_fields.length > 0 && !db.checkIndexExists( schemaName, tableName, idx_fields ) ) {
               String indexname = "idx_" + tableName + "_lookup";
               cr_index = db.getCreateIndexStatement( schemaTable, indexname, idx_fields, false, false, false, true );
             }
@@ -928,8 +930,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
                 + e.getMessage() );
           }
         } else {
-          retval.setError( BaseMessages.getString( PKG,
-              "SynchronizeAfterMergeMeta.ReturnValue.NoTableDefinedOnConnection" ) );
+          retval.setError( BaseMessages.getString(
+              PKG, "SynchronizeAfterMergeMeta.ReturnValue.NoTableDefinedOnConnection" ) );
         }
       } else {
         retval.setError( BaseMessages.getString( PKG, "SynchronizeAfterMergeMeta.ReturnValue.NotReceivingAnyFields" ) );
@@ -950,8 +952,9 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         ValueMetaInterface v = prev.searchValueMeta( keyStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-                .getDatabaseName(), tableName, keyLookup[i], keyStream[i],
+            new DatabaseImpact(
+                DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
+                    .getDatabaseName(), tableName, keyLookup[i], keyStream[i],
                 v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
         impact.add( ii );
       }
@@ -961,9 +964,10 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         ValueMetaInterface v = prev.searchValueMeta( updateStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-                databaseMeta.getDatabaseName(), tableName, updateLookup[i], updateStream[i], v != null ? v.getOrigin()
-                    : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
+            new DatabaseImpact(
+                DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                    .getDatabaseName(), tableName, updateLookup[i], updateStream[i],
+                v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
         impact.add( ii );
       }
     }
@@ -1006,18 +1010,18 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
                 .getString( PKG, "SynchronizeAfterMergeMeta.Exception.TableNotFound" ) );
           }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "SynchronizeAfterMergeMeta.Exception.TableNotSpecified" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "SynchronizeAfterMergeMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "SynchronizeAfterMergeMeta.Exception.ErrorGettingFields" ), e );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "SynchronizeAfterMergeMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }
     } else {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SynchronizeAfterMergeMeta.Exception.ConnectionNotDefined" ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SynchronizeAfterMergeMeta.Exception.ConnectionNotDefined" ) );
     }
 
   }

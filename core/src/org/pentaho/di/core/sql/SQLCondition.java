@@ -359,13 +359,15 @@ public class SQLCondition {
     List<String> strings = new ArrayList<String>();
 
     String[] operators =
-        new String[] { "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL",
-          " LIKE", "CONTAINS " };
+        new String[] {
+            "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL", " LIKE",
+            "CONTAINS " };
     int[] functions =
-        new int[] { Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
-          Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER, Condition.FUNC_LARGER,
-          Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST, Condition.FUNC_NOT_NULL,
-          Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
+        new int[] {
+            Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
+            Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER, Condition.FUNC_LARGER,
+            Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST, Condition.FUNC_NOT_NULL,
+            Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
     int index = 0;
     while ( index < clause.length() ) {
       index = ThinUtil.skipChars( clause, index, '\'', '"' );

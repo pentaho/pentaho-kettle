@@ -96,8 +96,8 @@ public class CloneRow extends BaseStep implements StepInterface {
           if ( data.indexOfNrCloneField < 0 ) {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "CloneRow.Log.ErrorFindingField" ) + "[" + cloneinfieldname + "]" );
-            throw new KettleException( BaseMessages.getString( PKG, "CloneRow.Exception.CouldnotFindField",
-                cloneinfieldname ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "CloneRow.Exception.CouldnotFindField", cloneinfieldname ) );
           }
         }
       } else {

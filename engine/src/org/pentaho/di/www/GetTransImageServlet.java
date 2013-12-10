@@ -119,7 +119,8 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
 
     SwingGC gc = new SwingGC( null, maximum, 32, 0, 0 );
     TransPainter transPainter =
-        new TransPainter( gc, transMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
+        new TransPainter(
+            gc, transMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
             new ArrayList<StepMeta>(), 32, 1, 0, 0, true, "Arial", 10 );
     transPainter.setMagnification( magnification );
     transPainter.buildTransformationImage();

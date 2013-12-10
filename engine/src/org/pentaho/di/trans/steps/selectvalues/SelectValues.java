@@ -335,8 +335,8 @@ public class SelectValues extends BaseStep implements StepInterface {
     data = (SelectValuesData) sdi;
 
     Object[] rowData = getRow(); // get row from rowset, wait for our turn, indicate busy!
-    if ( rowData == null ) // no more input to be expected...
-    {
+    if ( rowData == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }

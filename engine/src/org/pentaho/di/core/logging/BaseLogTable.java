@@ -123,8 +123,9 @@ public abstract class BaseLogTable {
       attributeInterface.setAttribute( getLogTableCode() + PROP_LOG_TABLE_FIELD_ENABLED + i, field.isEnabled() );
 
       if ( field.isSubjectAllowed() ) {
-        attributeInterface.setAttribute( getLogTableCode() + PROP_LOG_TABLE_FIELD_SUBJECT + i,
-            field.getSubject() == null ? null : field.getSubject().toString() );
+        attributeInterface.setAttribute(
+            getLogTableCode() + PROP_LOG_TABLE_FIELD_SUBJECT + i, field.getSubject() == null ? null : field
+                .getSubject().toString() );
       }
     }
   }
@@ -156,11 +157,11 @@ public abstract class BaseLogTable {
         if ( field != null ) {
           field
               .setFieldName( attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_FIELD_NAME + i ) );
-          field.setEnabled( attributeInterface.getAttributeBoolean( getLogTableCode() + PROP_LOG_TABLE_FIELD_ENABLED
-              + i ) );
+          field.setEnabled( attributeInterface.getAttributeBoolean( getLogTableCode()
+              + PROP_LOG_TABLE_FIELD_ENABLED + i ) );
           if ( field.isSubjectAllowed() ) {
-            field.setSubject( attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_FIELD_SUBJECT
-                + i ) );
+            field.setSubject( attributeInterface.getAttributeString( getLogTableCode()
+                + PROP_LOG_TABLE_FIELD_SUBJECT + i ) );
           }
         }
       }
@@ -420,8 +421,8 @@ public abstract class BaseLogTable {
       retval.append( XMLHandler.addTagValue( "enabled", field.isEnabled(), false ) );
       retval.append( XMLHandler.addTagValue( "name", field.getFieldName(), false ) );
       if ( field.isSubjectAllowed() ) {
-        retval.append( XMLHandler.addTagValue( "subject", field.getSubject() == null ? null : field.getSubject()
-            .toString(), false ) );
+        retval.append( XMLHandler.addTagValue( "subject", field.getSubject() == null ? null : field
+            .getSubject().toString(), false ) );
       }
 
       retval.append( XMLHandler.closeTag( XML_TAG ) );

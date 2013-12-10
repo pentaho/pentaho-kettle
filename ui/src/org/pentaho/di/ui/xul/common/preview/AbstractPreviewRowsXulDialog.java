@@ -178,6 +178,7 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
         try {
           Thread.sleep( 500 );
         } catch ( InterruptedException e ) {
+          // Ignore sleep interruption exception
         }
 
       }
@@ -265,7 +266,7 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
 
   protected abstract Class<?> getClassForMessages();
 
-  abstract public void dispose();
+  public abstract void dispose();
 
   public boolean isBasic() {
     return log.isBasic();

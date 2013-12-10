@@ -153,10 +153,10 @@ public class MappingIODefinition implements Cloneable {
 
     rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "nr_renames", valueRenames.size() );
     for ( int i = 0; i < valueRenames.size(); i++ ) {
-      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_parent_" + i, valueRenames.get( i )
-          .getSourceValueName() );
-      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_child_" + i, valueRenames.get( i )
-          .getTargetValueName() );
+      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_parent_" + i, valueRenames
+          .get( i ).getSourceValueName() );
+      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_child_" + i, valueRenames
+          .get( i ).getTargetValueName() );
     }
 
   }

@@ -60,8 +60,8 @@ import org.w3c.dom.Node;
 public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] APPLICATION_TYPES = new String[] { "TEXT PLAIN", "XML", "JSON", "OCTET STREAM", "XHTML",
-    "FORM URLENCODED", "ATOM XML", "SVG XML", "TEXT XML" };
+  public static final String[] APPLICATION_TYPES = new String[] {
+      "TEXT PLAIN", "XML", "JSON", "OCTET STREAM", "XHTML", "FORM URLENCODED", "ATOM XML", "SVG XML", "TEXT XML" };
   public static final String APPLICATION_TYPE_TEXT_PLAIN = "TEXT PLAIN";
   public static final String APPLICATION_TYPE_XML = "XML";
   public static final String APPLICATION_TYPE_JSON = "JSON";
@@ -581,12 +581,12 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RestMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "RestMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RestMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "RestMeta.CheckResult.NoInpuReceived" ), stepMeta );
     }
     remarks.add( cr );
 
@@ -594,23 +594,23 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     if ( urlInField ) {
       if ( Const.isEmpty( urlField ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.UrlfieldMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RestMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.UrlfieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RestMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( url ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.UrlMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RestMeta.CheckResult.UrlMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "RestMeta.CheckResult.UrlOk" ),
-                stepMeta );
+            new CheckResult(
+                CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "RestMeta.CheckResult.UrlOk" ), stepMeta );
       }
     }
     remarks.add( cr );
@@ -619,23 +619,23 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     if ( dynamicMethod ) {
       if ( Const.isEmpty( methodFieldName ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.MethodFieldMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RestMeta.CheckResult.MethodFieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.MethodFieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RestMeta.CheckResult.MethodFieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( method ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.MethodMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RestMeta.CheckResult.MethodMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK,
-                BaseMessages.getString( PKG, "RestMeta.CheckResult.MethodOk" ), stepMeta );
+            new CheckResult(
+                CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "RestMeta.CheckResult.MethodOk" ), stepMeta );
       }
     }
     remarks.add( cr );

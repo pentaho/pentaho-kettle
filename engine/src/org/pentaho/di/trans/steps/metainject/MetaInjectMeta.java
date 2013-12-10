@@ -191,10 +191,10 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null ? null
-          : specificationMethod.getCode() );
-      rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null ? null
-          : transObjectId.toString() );
+      rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null
+          ? null : specificationMethod.getCode() );
+      rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null
+          ? null : transObjectId.toString() );
       rep.saveStepAttribute( id_transformation, id_step, "filename", fileName );
       rep.saveStepAttribute( id_transformation, id_step, "trans_name", transName );
       rep.saveStepAttribute( id_transformation, id_step, "directory_path", directoryPath );
@@ -317,7 +317,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Deprecated
-  public synchronized static final TransMeta loadTransformationMeta( MetaInjectMeta mappingMeta, Repository rep,
+  public static final synchronized TransMeta loadTransformationMeta( MetaInjectMeta mappingMeta, Repository rep,
       VariableSpace space ) throws KettleException {
     return loadTransformationMeta( mappingMeta, rep, null, space );
   }
@@ -335,11 +335,12 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
           // Don't set internal variables: they belong to the parent thread!
           //
           mappingTransMeta = new TransMeta( realFilename, metaStore, rep, false, space, null );
-          mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+          mappingTransMeta.getLogChannel().logDetailed(
+              "Loading Mapping from repository",
               "Mapping transformation was loaded from XML file [" + realFilename + "]" );
         } catch ( Exception e ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "MetaInjectMeta.Exception.UnableToLoadTransformationFromFile", realFilename ), e );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromFile", realFilename ), e );
         }
         break;
 
@@ -360,14 +361,15 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
                                                                                                     // references to the
                                                                                                     // repository?
 
-              mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+              mappingTransMeta.getLogChannel().logDetailed(
+                  "Loading Mapping from repository",
                   "Mapping transformation [" + realTransname + "] was loaded from the repository" );
             } catch ( Exception e ) {
               throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
             }
           } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory ) );
           }
         }
         break;
@@ -452,8 +454,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   private boolean isTransformationDefined() {
-    return !Const.isEmpty( fileName ) || transObjectId != null
-        || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
+    return !Const.isEmpty( fileName )
+        || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {

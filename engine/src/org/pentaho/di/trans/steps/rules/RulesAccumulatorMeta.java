@@ -189,10 +189,10 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
     throws KettleException {
 
     for ( int i = 0; i < ruleResultColumns.size(); i++ ) {
-      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_NAME.toString(), ruleResultColumns.get( i )
-          .getName() );
-      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns.get( i )
-          .getTypeDesc() );
+      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_NAME.toString(), ruleResultColumns
+          .get( i ).getName() );
+      rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_TYPE.toString(), ruleResultColumns
+          .get( i ).getTypeDesc() );
     }
 
     rep.saveStepAttribute( idTransformation, idStep, StorageKeys.RULE_FILE.toString(), getRuleFile() );

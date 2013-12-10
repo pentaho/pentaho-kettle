@@ -35,9 +35,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class IfNullData extends BaseStepData implements StepDataInterface {
 
-  /**
-	 * 
-	 */
   public RowMetaInterface outputRowMeta;
   public RowMetaInterface convertRowMeta;
 

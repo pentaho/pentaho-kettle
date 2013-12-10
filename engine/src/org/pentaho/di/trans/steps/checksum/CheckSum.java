@@ -82,8 +82,8 @@ public class CheckSum extends BaseStep implements StepInterface {
           data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getFieldName()[i] );
           if ( data.fieldnrs[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "CheckSum.Log.CanNotFindField", meta.getFieldName()[i] ) );
-            throw new KettleException( BaseMessages.getString( PKG, "CheckSum.Log.CanNotFindField",
-                meta.getFieldName()[i] ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "CheckSum.Log.CanNotFindField", meta.getFieldName()[i] ) );
           }
         }
       } else {

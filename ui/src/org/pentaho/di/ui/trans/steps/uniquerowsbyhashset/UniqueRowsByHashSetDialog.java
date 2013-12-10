@@ -187,8 +187,8 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 
     wRejectDuplicateRow = new Button( wSettings, SWT.CHECK );
     props.setLook( wRejectDuplicateRow );
-    wRejectDuplicateRow.setToolTipText( BaseMessages.getString( PKG,
-        "UniqueRowsByHashSetDialog.RejectDuplicateRow.ToolTip", Const.CR ) );
+    wRejectDuplicateRow.setToolTipText( BaseMessages.getString(
+        PKG, "UniqueRowsByHashSetDialog.RejectDuplicateRow.ToolTip", Const.CR ) );
     fdRejectDuplicateRow = new FormData();
     fdRejectDuplicateRow.left = new FormAttachment( middle, 0 );
     fdRejectDuplicateRow.top = new FormAttachment( wStoreValues, margin );
@@ -248,9 +248,9 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
     final int FieldsRows = input.getCompareFields() == null ? 0 : input.getCompareFields().length;
 
     colinf =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG,
-            "UniqueRowsByHashSetDialog.ColumnInfo.Fieldname" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" },
-            false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.ColumnInfo.Fieldname" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -414,8 +414,9 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "UniqueRowsByHashSetDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 

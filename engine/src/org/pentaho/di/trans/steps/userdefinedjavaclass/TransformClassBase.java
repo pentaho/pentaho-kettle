@@ -555,12 +555,12 @@ public abstract class TransformClassBase {
     StepIOMetaInterface ioMeta = new StepIOMeta( true, true, true, false, true, true );
 
     for ( StepDefinition stepDefinition : meta.getInfoStepDefinitions() ) {
-      ioMeta.addStream( new Stream( StreamType.INFO, stepDefinition.stepMeta, stepDefinition.description,
-          StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream(
+          StreamType.INFO, stepDefinition.stepMeta, stepDefinition.description, StreamIcon.INFO, null ) );
     }
     for ( StepDefinition stepDefinition : meta.getTargetStepDefinitions() ) {
-      ioMeta.addStream( new Stream( StreamType.TARGET, stepDefinition.stepMeta, stepDefinition.description,
-          StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream(
+          StreamType.TARGET, stepDefinition.stepMeta, stepDefinition.description, StreamIcon.TARGET, null ) );
     }
 
     return ioMeta;
@@ -579,13 +579,13 @@ public abstract class TransformClassBase {
     }
     String stepname = data.infoMap.get( tag );
     if ( Const.isEmpty( stepname ) ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "TransformClassBase.Exception.UnableToFindInfoStepNameForTag", tag ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "TransformClassBase.Exception.UnableToFindInfoStepNameForTag", tag ) );
     }
     RowSet rowSet = findInputRowSet( stepname );
     if ( rowSet == null ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "TransformClassBase.Exception.UnableToFindInfoRowSetForStep", stepname ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "TransformClassBase.Exception.UnableToFindInfoRowSetForStep", stepname ) );
     }
     return rowSet;
   }
@@ -596,13 +596,13 @@ public abstract class TransformClassBase {
     }
     String stepname = data.targetMap.get( tag );
     if ( Const.isEmpty( stepname ) ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "TransformClassBase.Exception.UnableToFindTargetStepNameForTag", tag ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "TransformClassBase.Exception.UnableToFindTargetStepNameForTag", tag ) );
     }
     RowSet rowSet = findOutputRowSet( stepname );
     if ( rowSet == null ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "TransformClassBase.Exception.UnableToFindTargetRowSetForStep", stepname ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "TransformClassBase.Exception.UnableToFindTargetRowSetForStep", stepname ) );
     }
     return rowSet;
   }
@@ -624,8 +624,8 @@ public abstract class TransformClassBase {
           try {
             fh = new FieldHelper( data.inputRowMeta, name );
           } catch ( IllegalArgumentException e ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name ) );
           }
           inFieldHelpers.put( name, fh );
         }
@@ -636,8 +636,8 @@ public abstract class TransformClassBase {
           try {
             fh = new FieldHelper( data.outputRowMeta, name );
           } catch ( IllegalArgumentException e ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name ) );
           }
           outFieldHelpers.put( name, fh );
         }
@@ -649,15 +649,15 @@ public abstract class TransformClassBase {
           try {
             fh = new FieldHelper( rmi, name );
           } catch ( IllegalArgumentException e ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name ) );
+            throw new KettleStepException( BaseMessages.getString(
+                PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name ) );
           }
           infoFieldHelpers.put( name, fh );
         }
         break;
       default:
-        throw new KettleStepException( BaseMessages.getString( PKG, "TransformClassBase.Exception.InvalidFieldsType",
-            type.name(), name ) );
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "TransformClassBase.Exception.InvalidFieldsType", type.name(), name ) );
     }
     return fh;
   }

@@ -93,8 +93,9 @@ public class CubeInput extends BaseStep implements StepInterface {
         // Add filename to result filenames ?
         if ( meta.isAddResultFile() ) {
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
-                  getTransMeta().getName(), toString() );
+              new ResultFile(
+                  ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
+                      .getName(), toString() );
           resultFile.setComment( "File was read by a Cube Input step" );
           addResultFile( resultFile );
         }

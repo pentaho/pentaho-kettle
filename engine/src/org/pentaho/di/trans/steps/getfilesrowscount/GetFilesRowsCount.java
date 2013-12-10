@@ -191,8 +191,9 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
 
     try {
       if ( !meta.isFileField() ) {
-        if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-        {
+        if ( data.filenr >= data.files.nrOfFiles() ) {
+          // finished processing!
+
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.FinishedProcessing" ) );
           }
@@ -235,8 +236,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
               // The field is unreachable !
               logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.ErrorFindingField", meta
                   .setOutputFilenameField() ) );
-              throw new KettleException( BaseMessages.getString( PKG, "GetFilesRowsCount.Exception.CouldnotFindField",
-                  meta.setOutputFilenameField() ) );
+              throw new KettleException( BaseMessages.getString(
+                  PKG, "GetFilesRowsCount.Exception.CouldnotFindField", meta.setOutputFilenameField() ) );
             }
           }
 
@@ -304,9 +305,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
                 .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
                 + " \\n" );
           }
-        }
-        // Checking for 'CR' for backwards compatibility.
-        else if ( meta.getRowSeparatorFormat().equals( "LINEFEED" ) || meta.getRowSeparatorFormat().equals( "CR" ) ) {
+        } else if ( meta.getRowSeparatorFormat().equals( "LINEFEED" ) || meta.getRowSeparatorFormat().equals( "CR" ) ) {
+          // Checking for 'CR' for backwards compatibility.
           data.separator = '\n';
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.Separator.Title" ), BaseMessages
@@ -374,6 +374,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
+        log.logError( "Error closing file", e );
       }
     }
     if ( data.fr != null ) {

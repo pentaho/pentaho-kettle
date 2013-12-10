@@ -101,9 +101,9 @@ public class Value implements Cloneable, XMLInterface, Serializable {
    * The descriptions of the value types.
    */
   private static final String[] valueTypeCode = { "-", // $NON-NLS-1$
-    "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary" // $NON-NLS-1$ $NON-NLS-3$
-                                                                                            // $NON-NLS-4$ $NON-NLS-5$
-                                                                                            // $NON-NLS-6$ $NON-NLS-7$
+      "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary" // $NON-NLS-1$ $NON-NLS-3$
+                                                                                              // $NON-NLS-4$ $NON-NLS-5$
+                                                                                              // $NON-NLS-6$ $NON-NLS-7$
   };
 
   private ValueInterface value;
@@ -1775,10 +1775,12 @@ public class Value implements Cloneable, XMLInterface, Serializable {
    */
   public int compare( Value v, boolean caseInsensitive ) {
     boolean n1 =
-        isNull() || ( isString() && ( getString() == null || getString().length() == 0 ) )
+        isNull()
+            || ( isString() && ( getString() == null || getString().length() == 0 ) )
             || ( isDate() && getDate() == null ) || ( isBigNumber() && getBigNumber() == null );
     boolean n2 =
-        v.isNull() || ( v.isString() && ( v.getString() == null || v.getString().length() == 0 ) )
+        v.isNull()
+            || ( v.isString() && ( v.getString() == null || v.getString().length() == 0 ) )
             || ( v.isDate() && v.getDate() == null ) || ( v.isBigNumber() && v.getBigNumber() == null );
 
     // null is always smaller!
@@ -3836,8 +3838,8 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       return false;
     }
     if ( !checkTypeOnly ) {
-      if ( ( getName() == null && v.getName() != null ) || ( getName() != null && v.getName() == null )
-          || !( getName().equals( v.getName() ) ) ) {
+      if ( ( getName() == null && v.getName() != null )
+          || ( getName() != null && v.getName() == null ) || !( getName().equals( v.getName() ) ) ) {
         return false;
       }
       if ( getLength() != v.getLength() ) {

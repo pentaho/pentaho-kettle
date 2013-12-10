@@ -143,8 +143,8 @@ public class StringSearcher {
       String[] array = (String[]) obj;
       for ( int x = 0; x < array.length; x++ ) {
         if ( array[x] != null ) {
-          stringList.add( new StringSearchResult( array[x], parentObject, grandParentObject, field.getName() + " #"
-              + ( x + 1 ) ) );
+          stringList.add( new StringSearchResult( array[x], parentObject, grandParentObject, field.getName()
+              + " #" + ( x + 1 ) ) );
         }
       }
     } else if ( obj instanceof Boolean ) {

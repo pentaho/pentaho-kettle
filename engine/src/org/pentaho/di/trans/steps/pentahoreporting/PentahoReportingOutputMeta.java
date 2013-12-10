@@ -60,15 +60,16 @@ import org.w3c.dom.Node;
 /**
  * 
  */
-@Step( id = "PentahoReportingOutput", image = "org/pentaho/reporting/images/JFR.png",
+@Step(
+    id = "PentahoReportingOutput", image = "org/pentaho/reporting/images/JFR.png",
     description = "PentahoReportingOutput.Description", name = "PentahoReportingOutput.Name",
     categoryDescription = "PentahoReportingOutput.Category", i18nPackageName = "org.pentaho.reporting.plugin" )
 public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   public enum ProcessorType {
-    PDF( "PDF", "PDF" ), PagedHTML( "PagedHtml", "Paged HTML" ), StreamingHTML( "StreamingHtml", "Streaming HTML" ), CSV(
-        "CSV", "CSV" ), Excel( "Excel", "Excel" ), Excel_2007( "Excel 2007", "Excel 2007" ), RTF( "RTF", "RTF" ), ;
+    PDF( "PDF", "PDF" ), PagedHTML( "PagedHtml", "Paged HTML" ), StreamingHTML( "StreamingHtml", "Streaming HTML" ),
+    CSV( "CSV", "CSV" ), Excel( "Excel", "Excel" ), Excel_2007( "Excel 2007", "Excel 2007" ), RTF( "RTF", "RTF" ), ;
 
     private String code;
     private String description;
@@ -145,8 +146,8 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
       outputProcessorType = ProcessorType.getProcessorTypeByCode( XMLHandler.getTagValue( stepnode, "processor_type" ) );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "PentahoReportingOutputMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -197,8 +198,8 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
       outputProcessorType =
           ProcessorType.getProcessorTypeByCode( rep.getStepAttributeString( idStep, "processor_type" ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "PentahoReportingOutputMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -220,8 +221,8 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
       rep.saveStepAttribute( idTransformation, idStep, "processor_type", outputProcessorType.getCode() );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "PentahoReportingOutputMeta.Exception.UnableToSaveStepInfo" )
           + idStep, e );
     }
   }
@@ -234,14 +235,14 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "PentahoReportingOutputMeta.CheckResult.ReceivingFields", String.valueOf( prev.size() ) ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+            PKG, "PentahoReportingOutputMeta.CheckResult.FileSpecificationsNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 

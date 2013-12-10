@@ -143,8 +143,8 @@ public class UnivariateStats extends BaseStep implements StepInterface {
           int fieldIndex = m_data.getInputRowMeta().indexOfValue( usmf.getSourceFieldName() );
 
           if ( fieldIndex < 0 ) {
-            throw new KettleStepException( "Unable to find the specified fieldname '" + usmf.getSourceFieldName()
-                + "' for stats calc #" + ( i + 1 ) );
+            throw new KettleStepException( "Unable to find the specified fieldname '"
+                + usmf.getSourceFieldName() + "' for stats calc #" + ( i + 1 ) );
           }
 
           UnivariateStatsData.FieldIndex tempData = m_data.getFieldIndexes()[i];

@@ -235,8 +235,8 @@ public class KettleFileRepository extends AbstractRepository {
   }
 
   private String calcFilename( RepositoryElementInterface element ) {
-    return calcFilename( element.getRepositoryDirectory(), element.getName(), element.getRepositoryElementType()
-        .getExtension() );
+    return calcFilename( element.getRepositoryDirectory(), element.getName(), element
+        .getRepositoryElementType().getExtension() );
   }
 
   private String calcFilename( RepositoryDirectoryInterface dir, String name, String extension ) {
@@ -293,7 +293,8 @@ public class KettleFileRepository extends AbstractRepository {
       ProgressMonitorListener monitor, ObjectId parentId, boolean used ) throws KettleException {
     try {
       if ( !( repositoryElement instanceof XMLInterface ) && !( repositoryElement instanceof SharedObjectInterface ) ) {
-        throw new KettleException( "Class [" + repositoryElement.getClass().getName()
+        throw new KettleException( "Class ["
+            + repositoryElement.getClass().getName()
             + "] needs to implement the XML Interface in order to save it to disk" );
       }
 
@@ -335,8 +336,8 @@ public class KettleFileRepository extends AbstractRepository {
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to save repository element [" + repositoryElement + "] to XML file : "
-          + calcFilename( repositoryElement ), e );
+      throw new KettleException( "Unable to save repository element ["
+          + repositoryElement + "] to XML file : " + calcFilename( repositoryElement ), e );
     }
   }
 
@@ -956,8 +957,8 @@ public class KettleFileRepository extends AbstractRepository {
 
               ObjectId id = new StringObjectId( calcObjectId( directory, transName, EXT_TRANSFORMATION ) );
               Date date = new Date( child.getContent().getLastModifiedTime() );
-              list.add( new RepositoryObject( id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION,
-                  "", false ) );
+              list.add( new RepositoryObject(
+                  id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", false ) );
             }
           }
         }

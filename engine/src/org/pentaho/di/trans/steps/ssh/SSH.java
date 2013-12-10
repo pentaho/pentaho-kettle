@@ -144,8 +144,8 @@ public class SSH extends BaseStep implements StepInterface {
       // Read Stdout, Sterr and exitStatus
       SessionResult sessionresult = new SessionResult( session );
       if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SSH.Log.CommandRunnedCommand", data.commands,
-            sessionresult.getStdOut(), sessionresult.getStdErr() ) );
+        logDebug( BaseMessages.getString(
+            PKG, "SSH.Log.CommandRunnedCommand", data.commands, sessionresult.getStdOut(), sessionresult.getStdErr() ) );
       }
 
       // Add stdout to output
@@ -237,8 +237,9 @@ public class SSH extends BaseStep implements StepInterface {
       try {
         // Open connection
         data.conn =
-            SSHMeta.OpenConnection( servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename,
-                passphrase, timeOut, this, proxyhost, proxyport, proxyusername, proxypassword );
+            SSHMeta.OpenConnection(
+                servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename, passphrase, timeOut, this,
+                proxyhost, proxyport, proxyusername, proxypassword );
 
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "SSH.Log.ConnectionOpened" ) );

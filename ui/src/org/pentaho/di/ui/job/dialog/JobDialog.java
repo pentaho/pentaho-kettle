@@ -689,18 +689,18 @@ public class JobDialog extends Dialog {
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Parameter.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Parameter.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Default.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Default.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Description.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Description.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wParamFields =
-        new TableView( jobMeta, wParamComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            jobMeta, wParamComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1050,10 +1050,12 @@ public class JobDialog extends Dialog {
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     wOptionFields =
         new TableView( jobMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a
@@ -1068,11 +1070,12 @@ public class JobDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item.setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item
+          .setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
-    wOptionFields.table.getColumn( 0 )
-        .setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
+    wOptionFields.table
+        .getColumn( 0 ).setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1145,10 +1148,12 @@ public class JobDialog extends Dialog {
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1177,11 +1182,12 @@ public class JobDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item.setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item
+          .setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
-    wOptionFields.table.getColumn( 0 )
-        .setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
+    wOptionFields.table
+        .getColumn( 0 ).setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1254,10 +1260,12 @@ public class JobDialog extends Dialog {
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1286,11 +1294,12 @@ public class JobDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item.setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item
+          .setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
-    wOptionFields.table.getColumn( 0 )
-        .setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
+    wOptionFields.table
+        .getColumn( 0 ).setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1524,8 +1533,9 @@ public class JobDialog extends Dialog {
         } catch ( KettleException dbe ) {
           jobMeta.setRepositoryDirectory( dirFrom );
 
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Title" ),
-              BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Message" ), dbe );
+          new ErrorDialog(
+              shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Title" ), BaseMessages
+                  .getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Message" ), dbe );
         }
       } else {
         // Just update to the new selected directory...
@@ -1596,8 +1606,8 @@ public class JobDialog extends Dialog {
             } else {
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
               mb.setText( BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogTitle" ) );
-              mb.setMessage( logTable.getLogTableType() + Const.CR + Const.CR
-                  + BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogMessage" ) );
+              mb.setMessage( logTable.getLogTableType()
+                  + Const.CR + Const.CR + BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogMessage" ) );
               mb.open();
             }
 

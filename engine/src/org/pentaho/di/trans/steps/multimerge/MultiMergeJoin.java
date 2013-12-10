@@ -94,8 +94,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
         data.results.add( new ArrayList<Object[]>() );
         data.rowSets[i] = findInputRowSet( infoStreams.get( i ).getStepname() );
         if ( data.rowSets[i] == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MultiMergeJoin.Exception.UnableToFindSpecifiedStep",
-              infoStreams.get( 0 ).getStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MultiMergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 0 ).getStepname() ) );
         }
         data.rows[i] = getRowFrom( data.rowSets[i] );
         if ( data.rows[i] == null ) {
@@ -185,8 +185,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
         index = data.drainIndices[i];
         data.results.get( index ).add( data.rows[index] );
         while ( !isStopped()
-            && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare( data.rows[index],
-                row, data.keyNrs[index] ) == 0 ) ) {
+            && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare(
+                data.rows[index], row, data.keyNrs[index] ) == 0 ) ) {
           data.results.get( index ).add( row );
         }
         if ( isStopped() ) {
@@ -256,8 +256,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
         for ( int i = 0; i < streamSize; i++ ) {
           data.results.get( i ).add( data.rows[i] );
           while ( !isStopped()
-              && ( ( row = getRowFrom( data.rowSets[i] ) ) != null && data.metas[i].compare( data.rows[i], row,
-                  data.keyNrs[i] ) == 0 ) ) {
+              && ( ( row = getRowFrom( data.rowSets[i] ) ) != null && data.metas[i].compare(
+                  data.rows[i], row, data.keyNrs[i] ) == 0 ) ) {
             data.results.get( i ).add( row );
           }
           if ( isStopped() ) {
@@ -300,8 +300,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
         for ( int i = 0; i < drainSize; i++ ) {
           int index = data.drainIndices[i];
           while ( !isStopped()
-              && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare( data.rows[index],
-                  row, data.keyNrs[index] ) == 0 ) ) {
+              && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare(
+                  data.rows[index], row, data.keyNrs[index] ) == 0 ) ) {
           }
           if ( isStopped() || row == null ) {
             break;

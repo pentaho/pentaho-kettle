@@ -66,10 +66,10 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   public DatabaseMeta[] connections;
 
   public static final String[] unitTimeDesc = new String[] {
-    BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeMilliSecond.Label" ),
-    BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeSecond.Label" ),
-    BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeMinute.Label" ),
-    BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeHour.Label" ), };
+      BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeMilliSecond.Label" ),
+      BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeSecond.Label" ),
+      BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeMinute.Label" ),
+      BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeHour.Label" ), };
   public static final String[] unitTimeCode = new String[] { "millisecond", "second", "minute", "hour" };
 
   public static final int UNIT_TIME_MILLI_SECOND = 0;
@@ -191,8 +191,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
         waittimes[i] = getWaitByCode( Const.NVL( XMLHandler.getTagValue( fnode, "waittime" ), "" ) );
       }
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryCheckDbConnections.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node", xe.getMessage() ) );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryCheckDbConnections.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node", xe.getMessage() ) );
     }
   }
 
@@ -212,8 +212,9 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
         waittimes[a] = getWaitByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, a, "waittime" ), "" ) );
       }
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryCheckDbConnections.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry, dbe.getMessage() ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryCheckDbConnections.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry, dbe
+              .getMessage() ) );
     }
   }
 
@@ -229,8 +230,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryCheckDbConnections.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job, dbe.getMessage() ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryCheckDbConnections.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job, dbe.getMessage() ) );
     }
   }
 
@@ -276,8 +277,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
                 break;
             }
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.Wait", "" + iMaximumTimeout,
-                  waitTimeMessage ) );
+              logDetailed( BaseMessages.getString(
+                  PKG, "JobEntryCheckDbConnections.Wait", "" + iMaximumTimeout, waitTimeMessage ) );
             }
 
             // starttime (in seconds ,Minutes or Hours)
@@ -291,8 +292,9 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
               if ( ( now >= ( timeStart + iMaximumTimeout ) ) ) {
                 // We have reached the time limit
                 if ( isDetailed() ) {
-                  logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label",
-                      connections[i].getDatabaseName(), connections[i].getName() ) );
+                  logDetailed( BaseMessages.getString(
+                      PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label", connections[i].getDatabaseName(),
+                      connections[i].getName() ) );
                 }
 
                 continueLoop = false;

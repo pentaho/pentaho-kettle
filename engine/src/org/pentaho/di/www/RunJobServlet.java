@@ -167,8 +167,8 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       }
     } catch ( Exception ex ) {
 
-      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-          "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
   }
 

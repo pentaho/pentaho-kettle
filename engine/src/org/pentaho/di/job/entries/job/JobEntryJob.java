@@ -460,8 +460,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   //
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "specification_method", specificationMethod == null ? null
-          : specificationMethod.getCode() );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "specification_method", specificationMethod == null
+          ? null : specificationMethod.getCode() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "job_object_id", jobObjectId == null ? null : jobObjectId
           .toString() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "name", getJobName() );
@@ -476,8 +476,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logfile", logfile );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logext", logext );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "set_append_logfile", setAppendLogfile );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel != null ? logFileLevel.getCode()
-          : JobEntryJob.DEFAULT_LOG_LEVEL.getCode() );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel != null
+          ? logFileLevel.getCode() : JobEntryJob.DEFAULT_LOG_LEVEL.getCode() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "slave_server_name", remoteSlaveServerName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "pass_export", passingExport );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wait_until_finished", waitingToFinish );
@@ -534,8 +534,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       }
       try {
         logChannelFileWriter =
-            new LogChannelFileWriter( this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ),
-                setAppendLogfile );
+            new LogChannelFileWriter(
+                this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ), setAppendLogfile );
         logChannelFileWriter.startLogging();
       } catch ( KettleException e ) {
         logError( "Unable to open file appender for file [" + getLogFilename() + "] : " + e.toString() );
@@ -554,8 +554,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
       remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
       if ( remoteSlaveServer == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JobJob.Exception.UnableToFindRemoteSlaveServer",
-            realRemoteSlaveServerName ) );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "JobJob.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
       }
     }
     try {
@@ -700,11 +700,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
         List<RowMetaAndData> sourceRows = null;
 
-        if ( execPerRow ) // Execute for each input row
-        {
-          if ( argFromPrevious ) // Copy the input row to the (command line)
-                                 // arguments
-          {
+        if ( execPerRow ) {
+          // Execute for each input row
+
+          if ( argFromPrevious ) {
+            // Copy the input row to the (command line) arguments
+
             args = null;
             if ( resultRow != null ) {
               args = new String[resultRow.size()];
@@ -863,8 +864,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           // added UUID to thread name, otherwise threads do share names if jobs entries are executed in parallel in a
           // parent job
           // if that happens, contained transformations start closing each other's connections
-          jobRunnerThread.setName( Const.NVL( job.getJobMeta().getName(), job.getJobMeta().getFilename() ) + " UUID: "
-              + UUID.randomUUID().toString() );
+          jobRunnerThread.setName( Const.NVL( job.getJobMeta().getName(), job.getJobMeta().getFilename() )
+              + " UUID: " + UUID.randomUUID().toString() );
           jobRunnerThread.start();
 
           // Keep running until we're done.
@@ -873,6 +874,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             try {
               Thread.sleep( 0, 1 );
             } catch ( InterruptedException e ) {
+              // Ignore
             }
           }
 
@@ -941,8 +943,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 break;
               }
             } catch ( Exception e1 ) {
-              logError( "Unable to contact slave server [" + remoteSlaveServer + "] to verify the status of job ["
-                  + jobMeta.getName() + "]", e1 );
+              logError( "Unable to contact slave server ["
+                  + remoteSlaveServer + "] to verify the status of job [" + jobMeta.getName() + "]", e1 );
               oneResult.setNrErrors( 1L );
               break; // Stop looking too, chances are too low the server will
                      // come back on-line
@@ -974,8 +976,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 remoteSlaveServer.stopJob( jobMeta.getName(), carteObjectId );
               }
             } catch ( Exception e1 ) {
-              logError( "Unable to contact slave server [" + remoteSlaveServer + "] to stop job [" + jobMeta.getName()
-                  + "]", e1 );
+              logError( "Unable to contact slave server ["
+                  + remoteSlaveServer + "] to stop job [" + jobMeta.getName() + "]", e1 );
               oneResult.setNrErrors( 1L );
               break; // Stop looking too, chances are too low the server will
                      // come back on-line
@@ -1011,8 +1013,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         logChannelFileWriter.stopLogging();
 
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(),
-                getName() );
+            new ResultFile(
+                ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(), getName() );
         result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
         // See if anything went wrong during file writing...
@@ -1046,23 +1048,23 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       if ( !parentfolder.exists() ) {
         if ( createParentFolder ) {
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder.getName()
-                .toString() ) );
+            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder
+                .getName().toString() ) );
           }
           parentfolder.createFolder();
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderCreated", parentfolder.getName()
-                .toString() ) );
+            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderCreated", parentfolder
+                .getName().toString() ) );
           }
         } else {
-          log.logError( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder.getName()
-              .toString() ) );
+          log.logError( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder
+              .getName().toString() ) );
           resultat = false;
         }
       } else {
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderExists", parentfolder.getName()
-              .toString() ) );
+          log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderExists", parentfolder
+              .getName().toString() ) );
         }
       }
     } catch ( Exception e ) {
@@ -1195,7 +1197,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
               throw new KettleException( "Unable to find repository directory [" + Const.NVL( realDirectory, "" ) + "]" );
             }
             jobMeta =
-                rep.loadJob( ( space != null ? space.environmentSubstitute( getJobName() ) : getJobName() ),
+                rep.loadJob(
+                    ( space != null ? space.environmentSubstitute( getJobName() ) : getJobName() ),
                     repositoryDirectory, null, null ); // reads
             break;
           } else {
@@ -1213,8 +1216,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 "Could not execute job specified in a repository since we're not connected to one" );
           }
         default:
-          throw new KettleException( "The specified object location specification method '" + specificationMethod
-              + "' is not yet supported in this job entry." );
+          throw new KettleException( "The specified object location specification method '"
+              + specificationMethod + "' is not yet supported in this job entry." );
       }
 
       if ( jobMeta != null ) {
@@ -1459,8 +1462,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   private boolean isJobDefined() {
-    return !Const.isEmpty( filename ) || jobObjectId != null
-        || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( jobname ) );
+    return !Const.isEmpty( filename )
+        || jobObjectId != null || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( jobname ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {

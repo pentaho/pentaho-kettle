@@ -27,7 +27,9 @@ import static org.mockito.Mockito.when;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import junit.framework.TestCase;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
@@ -45,10 +47,10 @@ import org.pentaho.di.trans.TransMeta;
  * @author Sven Boden
  */
 public class DatabaseTest extends TestCase {
-  public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<connection>"
-      + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>" + "<access>Native</access>"
-      + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>" + "<password></password>"
-      + "</connection>", };
+  public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+      + "<password></password>" + "</connection>", };
 
   public Database setupDatabase() throws Exception {
     Database database = null;
@@ -81,7 +83,7 @@ public class DatabaseTest extends TestCase {
 
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface valuesMeta[] =
+    ValueMetaInterface[] valuesMeta =
         { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
@@ -161,7 +163,7 @@ public class DatabaseTest extends TestCase {
 
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface valuesMeta[] =
+    ValueMetaInterface[] valuesMeta =
         { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "VALUE", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {

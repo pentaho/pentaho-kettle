@@ -139,9 +139,9 @@ public class ShowMessageDialog extends Dialog {
 
     int margin = Const.MARGIN;
     boolean hasIcon =
-        ( flags & SWT.ICON_WARNING ) != 0 || ( flags & SWT.ICON_INFORMATION ) != 0
-            || ( flags & SWT.ICON_QUESTION ) != 0 || ( flags & SWT.ICON_ERROR ) != 0
-            || ( flags & SWT.ICON_WORKING ) != 0;
+        ( flags & SWT.ICON_WARNING ) != 0
+            || ( flags & SWT.ICON_INFORMATION ) != 0 || ( flags & SWT.ICON_QUESTION ) != 0
+            || ( flags & SWT.ICON_ERROR ) != 0 || ( flags & SWT.ICON_WORKING ) != 0;
 
     Image image = null;
     if ( ( flags & SWT.ICON_WARNING ) != 0 ) {

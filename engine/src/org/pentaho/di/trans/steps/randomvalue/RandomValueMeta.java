@@ -73,21 +73,21 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int TYPE_RANDOM_MAC_HMACSHA1 = 7;
 
   public static final RandomValueMetaFunction[] functions = new RandomValueMetaFunction[] {
-    null,
-    new RandomValueMetaFunction( TYPE_RANDOM_NUMBER, "random number", BaseMessages.getString( PKG,
-        "RandomValueMeta.TypeDesc.RandomNumber" ) ),
-    new RandomValueMetaFunction( TYPE_RANDOM_INTEGER, "random integer", BaseMessages.getString( PKG,
-        "RandomValueMeta.TypeDesc.RandomInteger" ) ),
-    new RandomValueMetaFunction( TYPE_RANDOM_STRING, "random string", BaseMessages.getString( PKG,
-        "RandomValueMeta.TypeDesc.RandomString" ) ),
-    new RandomValueMetaFunction( TYPE_RANDOM_UUID, "random uuid", BaseMessages.getString( PKG,
-        "RandomValueMeta.TypeDesc.RandomUUID" ) ),
-    new RandomValueMetaFunction( TYPE_RANDOM_UUID4, "random uuid4", BaseMessages.getString( PKG,
-        "RandomValueMeta.TypeDesc.RandomUUID4" ) ),
-    new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACMD5, "random machmacmd5", BaseMessages.getString( PKG,
-        "RandomValueMeta.TypeDesc.RandomHMACMD5" ) ),
-    new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACSHA1, "random machmacsha1", BaseMessages.getString( PKG,
-        "RandomValueMeta.TypeDesc.RandomHMACSHA1" ) ) };
+      null,
+      new RandomValueMetaFunction( TYPE_RANDOM_NUMBER, "random number", BaseMessages.getString(
+          PKG, "RandomValueMeta.TypeDesc.RandomNumber" ) ),
+      new RandomValueMetaFunction( TYPE_RANDOM_INTEGER, "random integer", BaseMessages.getString(
+          PKG, "RandomValueMeta.TypeDesc.RandomInteger" ) ),
+      new RandomValueMetaFunction( TYPE_RANDOM_STRING, "random string", BaseMessages.getString(
+          PKG, "RandomValueMeta.TypeDesc.RandomString" ) ),
+      new RandomValueMetaFunction( TYPE_RANDOM_UUID, "random uuid", BaseMessages.getString(
+          PKG, "RandomValueMeta.TypeDesc.RandomUUID" ) ),
+      new RandomValueMetaFunction( TYPE_RANDOM_UUID4, "random uuid4", BaseMessages.getString(
+          PKG, "RandomValueMeta.TypeDesc.RandomUUID4" ) ),
+      new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACMD5, "random machmacmd5", BaseMessages.getString(
+          PKG, "RandomValueMeta.TypeDesc.RandomHMACMD5" ) ),
+      new RandomValueMetaFunction( TYPE_RANDOM_MAC_HMACSHA1, "random machmacsha1", BaseMessages.getString(
+          PKG, "RandomValueMeta.TypeDesc.RandomHMACSHA1" ) ) };
 
   private String[] fieldName;
 
@@ -295,15 +295,15 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < fieldName.length; i++ ) {
       if ( fieldType[i] <= TYPE_RANDOM_NONE ) {
         CheckResult cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RandomValueMeta.CheckResult.FieldHasNoType", fieldName[i] ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "RandomValueMeta.CheckResult.FieldHasNoType", fieldName[i] ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RandomValueMeta.CheckResult.AllTypesSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "RandomValueMeta.CheckResult.AllTypesSpecified" ), stepMeta );
       remarks.add( cr );
     }
   }

@@ -158,8 +158,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
           // store it all in the map...
           //
           synchronized ( getJobMap() ) {
-            getJobMap().addJob( job.getJobname(), carteObjectId, job,
-                new JobConfiguration( jobMeta, jobExecutionConfiguration ) );
+            getJobMap().addJob(
+                job.getJobname(), carteObjectId, job, new JobConfiguration( jobMeta, jobExecutionConfiguration ) );
           }
 
           // Apply the execution configuration...
@@ -195,8 +195,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
 
           // store it all in the map...
           //
-          getTransformationMap().addTransformation( trans.getName(), carteObjectId, trans,
-              new TransConfiguration( transMeta, executionConfiguration ) );
+          getTransformationMap().addTransformation(
+              trans.getName(), carteObjectId, trans, new TransConfiguration( transMeta, executionConfiguration ) );
         }
       } else {
         fileUrl = archiveUrl;

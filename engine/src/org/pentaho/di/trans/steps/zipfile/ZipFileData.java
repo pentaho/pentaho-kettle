@@ -45,9 +45,6 @@ public class ZipFileData extends BaseStepData implements StepDataInterface {
 
   public int indexOfMoveToFolder;
 
-  /**
-	 * 
-	 */
   public ZipFileData() {
     super();
     indexOfSourceFilename = -1;

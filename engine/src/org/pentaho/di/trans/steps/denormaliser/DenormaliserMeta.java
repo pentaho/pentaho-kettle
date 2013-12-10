@@ -167,8 +167,8 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface 
     if ( keyField != null && keyField.length() > 0 ) {
       int idx = row.indexOfValue( keyField );
       if ( idx < 0 ) {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "DenormaliserMeta.Exception.UnableToLocateKeyField", keyField ) );
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "DenormaliserMeta.Exception.UnableToLocateKeyField", keyField ) );
       }
       row.removeValueMeta( idx );
     } else {
@@ -185,8 +185,8 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface 
           row.removeValueMeta( idx );
         }
       } else {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "DenormaliserMeta.Exception.RequiredTargetFieldName", ( i + 1 ) + "" ) );
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "DenormaliserMeta.Exception.RequiredTargetFieldName", ( i + 1 ) + "" ) );
       }
     }
 
@@ -241,8 +241,8 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface 
             .setTargetAggregationType( XMLHandler.getTagValue( fnode, "target_aggregation_type" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "DenormaliserMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "DenormaliserMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -308,17 +308,17 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface 
         denormaliserTargetField[i].setTargetType( rep.getStepAttributeString( id_step, i, "target_type" ) );
         denormaliserTargetField[i].setTargetFormat( rep.getStepAttributeString( id_step, i, "target_format" ) );
         denormaliserTargetField[i].setTargetLength( (int) rep.getStepAttributeInteger( id_step, i, "target_length" ) );
-        denormaliserTargetField[i].setTargetPrecision( (int) rep.getStepAttributeInteger( id_step, i,
-            "target_precision" ) );
-        denormaliserTargetField[i].setTargetDecimalSymbol( rep.getStepAttributeString( id_step, i,
-            "target_decimal_symbol" ) );
-        denormaliserTargetField[i].setTargetGroupingSymbol( rep.getStepAttributeString( id_step, i,
-            "target_grouping_symbol" ) );
-        denormaliserTargetField[i].setTargetCurrencySymbol( rep.getStepAttributeString( id_step, i,
-            "target_currency_symbol" ) );
+        denormaliserTargetField[i].setTargetPrecision( (int) rep.getStepAttributeInteger(
+            id_step, i, "target_precision" ) );
+        denormaliserTargetField[i].setTargetDecimalSymbol( rep.getStepAttributeString(
+            id_step, i, "target_decimal_symbol" ) );
+        denormaliserTargetField[i].setTargetGroupingSymbol( rep.getStepAttributeString(
+            id_step, i, "target_grouping_symbol" ) );
+        denormaliserTargetField[i].setTargetCurrencySymbol( rep.getStepAttributeString(
+            id_step, i, "target_currency_symbol" ) );
         denormaliserTargetField[i].setTargetNullString( rep.getStepAttributeString( id_step, i, "target_null_string" ) );
-        denormaliserTargetField[i].setTargetAggregationType( rep.getStepAttributeString( id_step, i,
-            "target_aggregation_type" ) );
+        denormaliserTargetField[i].setTargetAggregationType( rep.getStepAttributeString(
+            id_step, i, "target_aggregation_type" ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -345,8 +345,12 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface 
         rep.saveStepAttribute( id_transformation, id_step, i, "target_length", field.getTargetLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, "target_precision", field.getTargetPrecision() );
         rep.saveStepAttribute( id_transformation, id_step, i, "target_decimal_symbol", field.getTargetDecimalSymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "target_grouping_symbol", field.getTargetGroupingSymbol() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "target_currency_symbol", field.getTargetCurrencySymbol() );
+        rep
+            .saveStepAttribute( id_transformation, id_step, i, "target_grouping_symbol", field
+                .getTargetGroupingSymbol() );
+        rep
+            .saveStepAttribute( id_transformation, id_step, i, "target_currency_symbol", field
+                .getTargetCurrencySymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "target_null_string", field.getTargetNullString() );
         rep.saveStepAttribute( id_transformation, id_step, i, "target_aggregation_type", field
             .getTargetAggregationTypeDesc() );
@@ -364,13 +368,13 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface 
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "DenormaliserMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "DenormaliserMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "DenormaliserMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "DenormaliserMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
   }

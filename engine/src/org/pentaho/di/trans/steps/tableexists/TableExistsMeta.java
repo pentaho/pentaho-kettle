@@ -185,8 +185,8 @@ public class TableExistsMeta extends BaseStepMeta implements StepMetaInterface {
 
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "TableExistsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "TableExistsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -241,13 +241,13 @@ public class TableExistsMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "TableExistsMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "TableExistsMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "TableExistsMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "TableExistsMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 

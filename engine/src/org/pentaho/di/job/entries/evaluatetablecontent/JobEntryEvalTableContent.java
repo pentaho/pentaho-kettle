@@ -84,16 +84,17 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   private static final String selectCount = "SELECT count(*) FROM ";
 
   public static final String[] successConditionsDesc = new String[] {
-    BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountEqual.Label" ),
-    BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountDifferent.Label" ),
-    BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountSmallerThan.Label" ),
-    BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountSmallerOrEqualThan.Label" ),
-    BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountGreaterThan.Label" ),
-    BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountGreaterOrEqual.Label" )
+      BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountEqual.Label" ),
+      BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountDifferent.Label" ),
+      BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountSmallerThan.Label" ),
+      BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountSmallerOrEqualThan.Label" ),
+      BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountGreaterThan.Label" ),
+      BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountGreaterOrEqual.Label" )
 
   };
-  public static final String[] successConditionsCode = new String[] { "rows_count_equal", "rows_count_different",
-    "rows_count_smaller", "rows_count_smaller_equal", "rows_count_greater", "rows_count_greater_equal" };
+  public static final String[] successConditionsCode = new String[] {
+      "rows_count_equal", "rows_count_different", "rows_count_smaller", "rows_count_smaller_equal",
+      "rows_count_greater", "rows_count_greater_equal" };
 
   public static final int SUCCESS_CONDITION_ROWS_COUNT_EQUAL = 0;
   public static final int SUCCESS_CONDITION_ROWS_COUNT_DIFFERENT = 1;
@@ -258,7 +259,9 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "schemaname", schemaname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "tablename", tablename );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
+      rep
+          .saveJobEntryAttribute(
+              id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "limit", limit );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "custom_sql", customSQL );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "is_custom_sql", iscustomSQL );
@@ -266,8 +269,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
       rep.saveJobEntryAttribute( id_job, getObjectId(), "add_rows_result", isAddRowsResult );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "clear_result_rows", isClearResultList );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryEvalTableContent.UnableSaveRep", "" + id_job ),
-          dbe );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "JobEntryEvalTableContent.UnableSaveRep", "" + id_job ), dbe );
     }
   }
 
@@ -374,8 +377,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
               }
             } else {
               if ( log.isDebug() ) {
-                logDebug( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Log.customSQLreturnedNothing",
-                    countSQLStatement ) );
+                logDebug( BaseMessages.getString(
+                    PKG, "JobEntryEvalTableContent.Log.customSQLreturnedNothing", countSQLStatement ) );
               }
             }
 

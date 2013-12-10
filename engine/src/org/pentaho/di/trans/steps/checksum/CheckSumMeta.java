@@ -79,9 +79,10 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The result type description
    */
-  public static final String[] resultTypeDesc = { BaseMessages.getString( PKG, "CheckSumDialog.ResultType.String" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Hexadecimal" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Binary" ) };
+  public static final String[] resultTypeDesc = {
+      BaseMessages.getString( PKG, "CheckSumDialog.ResultType.String" ),
+      BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Hexadecimal" ),
+      BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Binary" ) };
 
   /**
    * The result type codes
@@ -357,13 +358,13 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "CheckSumMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CheckSumMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       boolean error_found = false;
@@ -385,13 +386,13 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "CheckSumMeta.CheckResult.AllFieldsFound" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "CheckSumMeta.CheckResult.AllFieldsFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "CheckSumMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+                  PKG, "CheckSumMeta.CheckResult.NoFieldsEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -401,13 +402,13 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CheckSumMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

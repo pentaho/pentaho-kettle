@@ -46,10 +46,11 @@ public class JsonInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "JsonInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "JsonInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "JsonInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "JsonInputField.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "JsonInputField.TrimType.None" ),
+      BaseMessages.getString( PKG, "JsonInputField.TrimType.Left" ),
+      BaseMessages.getString( PKG, "JsonInputField.TrimType.Right" ),
+      BaseMessages.getString( PKG, "JsonInputField.TrimType.Both" ) };
 
   private String name;
   private String path;

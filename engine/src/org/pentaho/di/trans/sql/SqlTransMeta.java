@@ -122,8 +122,8 @@ public class SqlTransMeta {
     List<SQLField> aggFields = sql.getSelectFields().getAggregateFields();
     if ( sql.getHavingCondition() != null ) {
       List<SQLField> havingFields =
-          sql.getHavingCondition().extractHavingFields( sql.getSelectFields().getFields(), aggFields,
-              transMeta.getStepFields( lastStep ) );
+          sql.getHavingCondition().extractHavingFields(
+              sql.getSelectFields().getFields(), aggFields, transMeta.getStepFields( lastStep ) );
       aggFields.addAll( havingFields );
     }
     List<SQLField> groupFields = sql.getGroupFields().getFields();
@@ -514,8 +514,8 @@ public class SqlTransMeta {
 
       }
       if ( valueMeta == null ) {
-        throw new KettleException( "Unable to find field to sort on: " + sqlField.getField() + " nor the alias: "
-            + sqlField.getAlias() );
+        throw new KettleException( "Unable to find field to sort on: "
+            + sqlField.getField() + " nor the alias: " + sqlField.getAlias() );
       }
 
       meta.getFieldName()[i] = valueMeta.getName();

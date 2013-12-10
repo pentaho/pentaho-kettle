@@ -331,8 +331,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta );
       remarks.add( cr );
     }
 
@@ -361,8 +361,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       int count = 0;
       for ( int i = 0; i < sql.length(); i++ ) {
         char c = sql.charAt( i );
-        if ( c == '\'' ) // skip to next quote!
-        {
+        if ( c == '\'' ) { // skip to next quote!
           do {
             i++;
             c = sql.charAt( i );
@@ -381,8 +380,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "This step is receiving " + info.size()
-                  + " but not the expected " + count + " fields of input from the previous step.", stepMeta );
+              new CheckResult(
+                  CheckResultInterface.TYPE_RESULT_ERROR, "This step is receiving "
+                      + info.size() + " but not the expected " + count + " fields of input from the previous step.",
+                  stepMeta );
           remarks.add( cr );
         }
       } else {
@@ -392,8 +393,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     } else {
       if ( input.length > 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Step is not expecting info from input steps.",
-                stepMeta );
+            new CheckResult(
+                CheckResultInterface.TYPE_RESULT_ERROR, "Step is not expecting info from input steps.", stepMeta );
         remarks.add( cr );
       } else {
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "No input expected, no input provided.", stepMeta );
@@ -440,8 +441,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < out.size(); i++ ) {
         ValueMetaInterface outvalue = out.getValueMeta( i );
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-                .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
+            new DatabaseImpact(
+                DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
+                    .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
                 "read from one or more database tables via SQL statement" );
         impact.add( ii );
 
@@ -496,7 +498,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
       StreamInterface stream =
-          new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "TableInputMeta.InfoStream.Description" ),
+          new Stream(
+              StreamType.INFO, null, BaseMessages.getString( PKG, "TableInputMeta.InfoStream.Description" ),
               StreamIcon.INFO, null );
       ioMeta.addStream( stream );
     }

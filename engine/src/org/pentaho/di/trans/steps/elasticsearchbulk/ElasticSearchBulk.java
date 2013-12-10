@@ -263,7 +263,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     XContentBuilder jsonBuilder = XContentFactory.jsonBuilder().startObject();
 
     for ( int i = 0; i < rowMeta.size(); i++ ) {
-      if ( idFieldIndex != null && i == idFieldIndex ) {// skip id
+      if ( idFieldIndex != null && i == idFieldIndex ) { // skip id
         continue;
       }
 

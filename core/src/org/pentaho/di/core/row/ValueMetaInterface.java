@@ -169,8 +169,9 @@ public interface ValueMetaInterface extends Cloneable {
   public static final int TYPE_INET = 10;
 
   /** The Constant typeCodes. */
-  public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer",
-    "BigNumber", "Serializable", "Binary", "Timestamp", "Internet Address", };
+  public static final String[] typeCodes = new String[] {
+      "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp",
+      "Internet Address", };
 
   /** The storage type is the same as the indicated value type */
   public static final int STORAGE_TYPE_NORMAL = 0;
@@ -211,8 +212,9 @@ public interface ValueMetaInterface extends Cloneable {
   /** Indicating that the string content should be RIGHT trimmed if conversion is to occur to another data type */
   public static final int TRIM_TYPE_RIGHT = 2;
 
-  /** Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to 
-   * another data type */
+  /**
+   * Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to another data type
+   */
   public static final int TRIM_TYPE_BOTH = 3;
 
   /** Default integer length for hardcoded metadata integers */

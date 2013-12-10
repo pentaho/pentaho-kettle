@@ -438,8 +438,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
         System.out.println( "Show ODBC warning..." );
 
         MessageBox qmb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
-        qmb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR,
-            Const.CR ) );
+        qmb.setMessage( BaseMessages.getString(
+            PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR, Const.CR ) );
         qmb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.ODBCIsNotSafe.Title" ) );
         int answer = qmb.open();
         if ( answer != SWT.YES ) {
@@ -452,8 +452,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
         System.out.println( "Allocating repository..." );
 
         KettleDatabaseRepository rep =
-            (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass( RepositoryPluginType.class,
-                repositoryMeta, Repository.class );
+            (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(
+                RepositoryPluginType.class, repositoryMeta, Repository.class );
         rep.init( repositoryMeta );
 
         System.out.println( "Connecting to database for repository creation..." );
@@ -477,8 +477,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
         }
 
         MessageBox qmb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
-        qmb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message1" ) + cu
-            + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message2" ) );
+        qmb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message1" )
+            + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Message2" ) );
         qmb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.CreateUpgrade.Title" ) );
         int answer = qmb.open();
 
@@ -502,15 +502,15 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                 goAhead = true;
               } catch ( KettleException e ) {
                 new ErrorDialog( shell, BaseMessages
-                    .getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ), BaseMessages.getString( PKG,
-                    "RepositoryDialog.Dialog.UnableToVerifyUser.Message" ), e );
+                    .getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ), BaseMessages.getString(
+                    PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message" ), e );
               }
             }
           }
 
           if ( goAhead ) {
-            System.out.println( BaseMessages.getString( PKG,
-                "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message1" )
+            System.out.println( BaseMessages.getString(
+                PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message1" )
                 + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.TryingToUpgradeRepository.Message2" ) );
             UpgradeRepositoryProgressDialog urpd = new UpgradeRepositoryProgressDialog( shell, rep, upgrade );
             if ( urpd.open() ) {
@@ -518,11 +518,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                 StringBuffer sql = new StringBuffer();
                 sql.append( "-- Repository creation/upgrade DDL: " ).append( Const.CR );
                 sql.append( "--" ).append( Const.CR );
-                sql.append( "-- Nothing was created nor modified in the target repository database." )
+                sql
+                    .append( "-- Nothing was created nor modified in the target repository database." ).append(
+                        Const.CR );
+                sql
+                    .append( "-- Hit the OK button to execute the generated SQL or Close to reject the changes." )
                     .append( Const.CR );
-                sql.append( "-- Hit the OK button to execute the generated SQL or Close to reject the changes." )
-                    .append( Const.CR );
-                sql.append( "-- Please note that it is possible to change/edit the generated SQL before execution." )
+                sql
+                    .append( "-- Please note that it is possible to change/edit the generated SQL before execution." )
                     .append( Const.CR );
                 sql.append( "--" ).append( Const.CR );
                 for ( String statement : urpd.getGeneratedStatements() ) {
@@ -533,14 +536,15 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                   }
                 }
                 SQLEditor editor =
-                    new SQLEditor( rep.getDatabaseMeta(), shell, SWT.NONE, rep.getDatabaseMeta(),
-                        DBCache.getInstance(), sql.toString() );
+                    new SQLEditor(
+                        rep.getDatabaseMeta(), shell, SWT.NONE, rep.getDatabaseMeta(), DBCache.getInstance(), sql
+                            .toString() );
                 editor.open();
 
               } else {
                 MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );
-                mb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message1" ) + cu
-                    + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message2" ) );
+                mb.setMessage( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message1" )
+                    + cu + BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Message2" ) );
                 mb.setText( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UpgradeFinished.Title" ) );
                 mb.open();
               }
@@ -568,8 +572,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
     try {
       KettleDatabaseRepository rep =
-          (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass( RepositoryPluginType.class,
-              repositoryMeta, Repository.class );
+          (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(
+              RepositoryPluginType.class, repositoryMeta, Repository.class );
       rep.init( repositoryMeta );
 
       MessageBox qmb = new MessageBox( shell, SWT.ICON_WARNING | SWT.YES | SWT.NO );
@@ -602,9 +606,9 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
               mb.open();
             }
           } catch ( KettleException e ) {
-            new ErrorDialog( shell, BaseMessages.getString( PKG,
-                "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title" ), BaseMessages.getString( PKG,
-                "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message" ), e );
+            new ErrorDialog( shell, BaseMessages.getString(
+                PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title" ), BaseMessages.getString(
+                PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message" ), e );
           } finally {
             rep.disconnect();
           }

@@ -83,10 +83,11 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "MailDialog.Filetype.All" ) };
 
   private static final String[] IMAGES_FILE_TYPES =
-      new String[] { BaseMessages.getString( PKG, "MailDialog.Filetype.Png" ),
-        BaseMessages.getString( PKG, "MailDialog.Filetype.Jpeg" ),
-        BaseMessages.getString( PKG, "MailDialog.Filetype.Gif" ),
-        BaseMessages.getString( PKG, "MailDialog.Filetype.All" ) };
+      new String[] {
+          BaseMessages.getString( PKG, "MailDialog.Filetype.Png" ),
+          BaseMessages.getString( PKG, "MailDialog.Filetype.Jpeg" ),
+          BaseMessages.getString( PKG, "MailDialog.Filetype.Gif" ),
+          BaseMessages.getString( PKG, "MailDialog.Filetype.All" ) };
 
   private boolean gotEncodings = false;
 
@@ -1763,8 +1764,9 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
 
     // ZipFilename line
     wZipFilename =
-        new LabelTextVar( transMeta, wZipGroup, BaseMessages.getString( PKG, "MailDialog.ZipFilename.Label" ),
-            BaseMessages.getString( PKG, "MailDialog.ZipFilename.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wZipGroup, BaseMessages.getString( PKG, "MailDialog.ZipFilename.Label" ), BaseMessages
+                .getString( PKG, "MailDialog.ZipFilename.Tooltip" ) );
     wZipFilename.addModifyListener( lsMod );
     fdZipFilename = new FormData();
     fdZipFilename.left = new FormAttachment( 0, -margin );
@@ -1774,8 +1776,9 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Zip files on condition?
     wZipSizeCondition =
-        new LabelTextVar( transMeta, wZipGroup, BaseMessages.getString( PKG, "MailDialog.ZipSizeCondition.Label" ),
-            BaseMessages.getString( PKG, "MailDialog.ZipSizeCondition.Tooltip" ) );
+        new LabelTextVar(
+            transMeta, wZipGroup, BaseMessages.getString( PKG, "MailDialog.ZipSizeCondition.Label" ), BaseMessages
+                .getString( PKG, "MailDialog.ZipSizeCondition.Tooltip" ) );
     wZipSizeCondition.addModifyListener( lsMod );
     fdZipSizeCondition = new FormData();
     fdZipSizeCondition.left = new FormAttachment( 0, -margin );
@@ -1893,8 +1896,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     fdlContentID.right = new FormAttachment( middle, -margin );
     wlContentID.setLayoutData( fdlContentID );
     wContentID =
-        new TextVar( transMeta, wembeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "MailDialog.ContentID.Tooltip" ) );
+        new TextVar( transMeta, wembeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+            PKG, "MailDialog.ContentID.Tooltip" ) );
     props.setLook( wContentID );
     wContentID.addModifyListener( lsMod );
     fdContentID = new FormData();
@@ -1933,16 +1936,16 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        input.getEmbeddedImages() == null ? 1 : ( input.getEmbeddedImages().length == 0 ? 0
-            : input.getEmbeddedImages().length );
+        input.getEmbeddedImages() == null ? 1 : ( input.getEmbeddedImages().length == 0
+            ? 0 : input.getEmbeddedImages().length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "MailDialog.Fields.Image.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "MailDialog.Fields.ContentID.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MailDialog.Fields.Image.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "MailDialog.Fields.ContentID.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "MailDialog.Fields.Image.Tooltip" ) );
@@ -1950,8 +1953,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     colinf[1].setToolTip( BaseMessages.getString( PKG, "MailDialog.Fields.ContentID.Tooltip" ) );
 
     wFields =
-        new TableView( transMeta, wembeddedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
-            lsMod, props );
+        new TableView(
+            transMeta, wembeddedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

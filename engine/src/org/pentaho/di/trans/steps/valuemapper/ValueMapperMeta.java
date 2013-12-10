@@ -139,8 +139,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
         targetValue[i] = XMLHandler.getTagValue( fnode, "target_value" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004" ), e );
     }
   }
 
@@ -228,8 +228,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
         targetValue[i] = rep.getStepAttributeString( id_step, i, "target_value" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005" ), e );
     }
   }
 
@@ -245,8 +245,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "target_value", targetValue[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", "" + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", "" + id_step ), e );
     }
 
   }
@@ -257,26 +257,26 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }

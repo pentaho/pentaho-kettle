@@ -174,8 +174,8 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
         throw new KettleException( "Error executing Transformation: " + logging, executionException );
       }
     } catch ( Exception ex ) {
-      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-          "RunTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+      out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RunTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
   }
 

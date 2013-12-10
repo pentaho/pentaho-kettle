@@ -40,9 +40,6 @@ public class WebServiceAvailableData extends BaseStepData implements StepDataInt
   public RowMetaInterface outputRowMeta;
   public int NrPrevFields;
 
-  /**
-	 * 
-	 */
   public WebServiceAvailableData() {
     super();
     indexOfURL = -1;

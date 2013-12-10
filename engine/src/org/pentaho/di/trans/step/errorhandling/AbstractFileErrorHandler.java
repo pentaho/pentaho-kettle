@@ -97,8 +97,8 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 
   public static FileObject getReplayFilename( String destinationDirectory, String processingFilename, Date date,
       String extension, Object source ) throws KettleFileException {
-    return getReplayFilename( destinationDirectory, processingFilename, createDateFormat().format( date ), extension,
-        source );
+    return getReplayFilename(
+        destinationDirectory, processingFilename, createDateFormat().format( date ), extension, source );
   }
 
   /**
@@ -124,15 +124,15 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
           outputStreamWriter = new OutputStreamWriter( KettleVFS.getOutputStream( file, false ), encoding );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile" )
+        throw new KettleException( BaseMessages.getString(
+            PKG, "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile" )
             + file.getName().getURI(), e );
       }
       writers.put( source, outputStreamWriter );
       return outputStreamWriter;
     } catch ( KettleFileException e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile" ), e );
     }
   }
 
@@ -149,8 +149,9 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
       try {
         outputStreamWriter.flush();
       } catch ( IOException exception ) {
-        baseStep.logError( BaseMessages.getString( PKG, "AbstractFileErrorHandler.Log.CouldNotFlushContentToFile" ),
-            exception.getLocalizedMessage() );
+        baseStep.logError(
+            BaseMessages.getString( PKG, "AbstractFileErrorHandler.Log.CouldNotFlushContentToFile" ), exception
+                .getLocalizedMessage() );
       }
       try {
         outputStreamWriter.close();

@@ -327,8 +327,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wlCreateDestinationFolder.setLayoutData( fdlCreateDestinationFolder );
     wCreateDestinationFolder = new Button( wSettings, SWT.CHECK );
     props.setLook( wCreateDestinationFolder );
-    wCreateDestinationFolder.setToolTipText( BaseMessages.getString( PKG,
-        "JobCopyFiles.CreateDestinationFolder.Tooltip" ) );
+    wCreateDestinationFolder.setToolTipText( BaseMessages.getString(
+        PKG, "JobCopyFiles.CreateDestinationFolder.Tooltip" ) );
     fdCreateDestinationFolder = new FormData();
     fdCreateDestinationFolder.left = new FormAttachment( middle, 0 );
     fdCreateDestinationFolder.top = new FormAttachment( wCopyEmptyFolders, margin );
@@ -629,18 +629,20 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0 ? 0
-            : jobEntry.source_filefolder.length );
+        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+            ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Label" ),
+                ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Tooltip" ) );
@@ -650,8 +652,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     colinf[2].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Tooltip" ) );
 
     wFields =
-        new TableView( jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

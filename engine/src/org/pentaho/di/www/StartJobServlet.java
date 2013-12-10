@@ -86,8 +86,9 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
       out.println( "<TITLE>Start job</TITLE>" );
-      out.println( "<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath( GetStatusServlet.CONTEXT_PATH )
-          + "?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "\">" );
+      out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name=" + URLEncoder.encode( jobName, "UTF-8" )
+          + "\">" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
@@ -163,7 +164,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         } else {
 
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+          out.println( "<a href=\""
+              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
               + BaseMessages.getString( PKG, "JobStatusServlet.BackToJobStatusPage" ) + "</a><p>" );
         }
@@ -173,14 +175,15 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           out.println( new WebResult( WebResult.STRING_ERROR, message ) );
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          out.println( "<a href=\""
+              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
     } catch ( Exception ex ) {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-            "StartJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+            PKG, "StartJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );

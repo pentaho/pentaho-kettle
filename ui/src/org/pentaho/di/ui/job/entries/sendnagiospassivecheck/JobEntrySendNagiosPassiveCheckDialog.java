@@ -227,9 +227,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // ServerName line
     wServerName =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.Server.Label" ), BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.Server.Tooltip" ) );
+        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.Server.Label" ), BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -241,8 +241,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     // Server port line
     wPort =
         new LabelTextVar( jobMeta, wServerSettings, BaseMessages
-            .getString( PKG, "JobSendNagiosPassiveCheck.Port.Label" ), BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.Port.Tooltip" ) );
+            .getString( PKG, "JobSendNagiosPassiveCheck.Port.Label" ), BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -253,8 +253,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // Password String line
     wPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.Password.Label" ), BaseMessages
+        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.Password.Label" ), BaseMessages
             .getString( "JobSendNagiosPassiveCheck.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
@@ -268,9 +268,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // Server wConnectionTimeOut line
     wConnectionTimeOut =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.ConnectionTimeOut.Label" ), BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.ConnectionTimeOut.Tooltip" ) );
+        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.ConnectionTimeOut.Label" ), BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.ConnectionTimeOut.Tooltip" ) );
     props.setLook( wConnectionTimeOut );
     wConnectionTimeOut.addModifyListener( lsMod );
     fdwConnectionTimeOut = new FormData();
@@ -281,9 +281,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // ResponseTimeOut line
     wResponseTimeOut =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.ResponseTimeOut.Label" ), BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.ResponseTimeOut.Tooltip" ) );
+        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.ResponseTimeOut.Label" ), BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.ResponseTimeOut.Tooltip" ) );
     props.setLook( wResponseTimeOut );
     wResponseTimeOut.addModifyListener( lsMod );
     fdResponseTimeOut = new FormData();
@@ -324,9 +324,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // SenderServerName line
     wSenderServerName =
-        new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.SenderServerName.Label" ), BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.SenderServerName.Tooltip" ) );
+        new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.SenderServerName.Label" ), BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.SenderServerName.Tooltip" ) );
     props.setLook( wSenderServerName );
     wSenderServerName.addModifyListener( lsMod );
     fdSenderServerName = new FormData();
@@ -337,9 +337,9 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     // SenderServiceName line
     wSenderServiceName =
-        new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.SenderServiceName.Label" ), BaseMessages.getString( PKG,
-            "JobSendNagiosPassiveCheck.SenderServiceName.Tooltip" ) );
+        new LabelTextVar( jobMeta, wSenderSettings, BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.SenderServiceName.Label" ), BaseMessages.getString(
+            PKG, "JobSendNagiosPassiveCheck.SenderServiceName.Tooltip" ) );
     props.setLook( wSenderServiceName );
     wSenderServiceName.addModifyListener( lsMod );
     fdSenderServiceName = new FormData();

@@ -120,7 +120,8 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<H3>"
             + encoder.encodeForHTML( BaseMessages.getString( PKG, "RemoveJobServlet.TheJobWasRemoved", jobName, id ) )
             + "</H3>" );
-        out.print( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+        out.print( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
         out.println( "<p>" );
         out.println( "</BODY>" );
@@ -128,13 +129,14 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
       }
     } else {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-            "RemoveJobServlet.Log.CoundNotFindSpecJob", jobName ) ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+            PKG, "RemoveJobServlet.Log.CoundNotFindSpecJob", jobName ) ) );
       } else {
         out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString( PKG, "RemoveJobServlet.JobRemoved.Log.CoundNotFindJob",
-                jobName, id ) ) + "</H1>" );
-        out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + encoder.encodeForHTML( BaseMessages.getString(
+                PKG, "RemoveJobServlet.JobRemoved.Log.CoundNotFindJob", jobName, id ) ) + "</H1>" );
+        out.println( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }

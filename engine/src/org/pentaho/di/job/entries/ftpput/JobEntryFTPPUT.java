@@ -243,7 +243,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       socksProxyPort = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_port" );
       socksProxyUsername = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_username" );
       socksProxyPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "socksproxy_password" ) );
+          Encr
+              .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "socksproxy_password" ) );
 
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPPUT.UnableToLoadFromRepo", String
@@ -256,7 +257,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep
+          .saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "remoteDirectory", remoteDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localDirectory", localDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -680,15 +682,16 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         if ( !Const.isEmpty( socksProxyPort ) ) {
           FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
         } else { // looks like we have a host and no port
-          throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.SocksProxy.PortMissingException",
-              environmentSubstitute( socksProxyHost ) ) );
+          throw new FTPException( BaseMessages.getString(
+              PKG, "JobFTPPUT.SocksProxy.PortMissingException", environmentSubstitute( socksProxyHost ) ) );
         }
         // now if we have authentication information
-        if ( !Const.isEmpty( socksProxyUsername ) && Const.isEmpty( socksProxyPassword )
-            || Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
+        if ( !Const.isEmpty( socksProxyUsername )
+            && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
+            && !Const.isEmpty( socksProxyPassword ) ) {
           // we have a username without a password or vica versa
-          throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials",
-              environmentSubstitute( socksProxyHost ), getName() ) );
+          throw new FTPException( BaseMessages.getString(
+              PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ), getName() ) );
         }
       }
 
@@ -746,8 +749,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       myFileList.toArray( filelist );
 
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.FoundFileLocalDirectory", "" + filelist.length,
-            realLocalDirectory ) );
+        logDetailed( BaseMessages.getString(
+            PKG, "JobFTPPUT.Log.FoundFileLocalDirectory", "" + filelist.length, realLocalDirectory ) );
       }
 
       Pattern pattern = null;
@@ -787,8 +790,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
           if ( !fileExist || ( !onlyPuttingNewFiles && fileExist ) ) {
             if ( log.isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "JobFTPPUT.Log.PuttingFileToRemoteDirectory", filelist[i],
-                  realRemoteDirectory ) );
+              logDebug( BaseMessages.getString(
+                  PKG, "JobFTPPUT.Log.PuttingFileToRemoteDirectory", filelist[i], realRemoteDirectory ) );
             }
 
             String localFilename = realLocalDirectory + Const.FILE_SEPARATOR + filelist[i];
@@ -849,8 +852,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+        this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );

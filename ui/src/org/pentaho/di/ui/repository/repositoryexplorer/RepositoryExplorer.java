@@ -107,8 +107,8 @@ public class RepositoryExplorer {
       }
     } catch ( Exception e ) {
       log.error( resourceBundle.getString( "RepositoryExplorer.ErrorStartingXulApplication" ), e );
-      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString( Spoon.class,
-          "Spoon.Error" ), e.getMessage(), e );
+      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+          Spoon.class, "Spoon.Error" ), e.getMessage(), e );
     }
     // Call the init method for all the Active UISupportController
     for ( IRepositoryExplorerUISupport uiSupport : uiSupportList ) {
@@ -116,8 +116,8 @@ public class RepositoryExplorer {
         uiSupport.initControllers( rep );
       } catch ( ControllerInitializationException e ) {
         log.error( resourceBundle.getString( "RepositoryExplorer.ErrorStartingXulApplication" ), e );
-        new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString( Spoon.class,
-            "Spoon.Error" ), e.getMessage(), e );
+        new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+            Spoon.class, "Spoon.Error" ), e.getMessage(), e );
       }
     }
 
@@ -125,8 +125,8 @@ public class RepositoryExplorer {
       runner.initialize();
     } catch ( XulException e ) {
       log.error( resourceBundle.getString( "RepositoryExplorer.ErrorStartingXulApplication" ), e );
-      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString( Spoon.class,
-          "Spoon.Error" ), e.getMessage(), e );
+      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+          Spoon.class, "Spoon.Error" ), e.getMessage(), e );
     }
   }
 

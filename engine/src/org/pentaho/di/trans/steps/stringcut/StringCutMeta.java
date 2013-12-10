@@ -206,8 +206,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         cutTo[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "cut_to" ), "" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "StringCutMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "StringCutMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -272,8 +272,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "StringCutMeta.CheckResult.FoundInStreamFields" ), stepinfo );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "StringCutMeta.CheckResult.FoundInStreamFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -300,8 +300,8 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "StringCutMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "StringCutMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -309,8 +309,10 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
           if ( Const.isEmpty( fieldInStream[idx] ) ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "StringCutMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 ).toString() ), stepinfo );
+                new CheckResult(
+                    CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                        PKG, "StringCutMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 ).toString() ),
+                    stepinfo );
             remarks.add( cr );
 
           }

@@ -556,8 +556,8 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input", stepMeta );
       remarks.add( cr );
     } else {
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepMeta );
@@ -570,14 +570,15 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "This step is reading " + files.length + " files.",
-              stepMeta );
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_OK, "This step is reading " + files.length + " files.", stepMeta );
       remarks.add( cr );
     }
 
     if ( getInputPosition().length == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR,
               "No location elements given. Please specify the location of the repeating node in the XML document.",
               stepMeta );
       remarks.add( cr );
@@ -588,7 +589,8 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( getInputFields().length == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
+          new CheckResult(
+              CheckResultInterface.TYPE_RESULT_ERROR,
               "No field elements given. Please specify the fields you wish to extract from the XML document.", stepMeta );
       remarks.add( cr );
     } else {

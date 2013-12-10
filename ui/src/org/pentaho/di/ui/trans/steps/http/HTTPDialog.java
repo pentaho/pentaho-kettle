@@ -390,8 +390,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
     wlCloseIdleConnectionsTime.setLayoutData( fdlCloseIdleConnectionsTime );
     wCloseIdleConnectionsTime = new TextVar( transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wCloseIdleConnectionsTime.addModifyListener( lsMod );
-    wCloseIdleConnectionsTime.setToolTipText( BaseMessages.getString( PKG,
-        "HTTPDialog.CloseIdleConnectionsTime.Tooltip" ) );
+    wCloseIdleConnectionsTime.setToolTipText( BaseMessages.getString(
+        PKG, "HTTPDialog.CloseIdleConnectionsTime.Tooltip" ) );
     props.setLook( wCloseIdleConnectionsTime );
     FormData fdCloseIdleConnectionsTime = new FormData();
     fdCloseIdleConnectionsTime.top = new FormAttachment( wSocketTimeOut, margin );
@@ -651,14 +651,15 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Parameter" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wFields =
-        new TableView( transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
-            lsMod, props );
+        new TableView(
+            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -679,14 +680,16 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface {
 
     colinfHeaders =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Header" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ), };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "HTTPDialog.ColumnInfo.Header" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinfHeaders[1].setUsingVariables( true );
     wHeaders =
-        new TableView( transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfHeaders,
-            HeadersRows, lsMod, props );
+        new TableView(
+            transMeta, wAdditionalComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinfHeaders, HeadersRows, lsMod,
+            props );
 
     wGetHeaders = new Button( wAdditionalComp, SWT.PUSH );
     wGetHeaders.setText( BaseMessages.getString( PKG, "HTTPDialog.GetHeaders.Button" ) );

@@ -473,8 +473,9 @@ public class GUIResource {
 
     disposeColors( colorMap.values() );
 
-    if ( !reload ) // display shutdown, clean up our mess
-    {
+    if ( !reload ) {
+      // display shutdown, clean up our mess
+
       // Fonts
       fontGraph.dispose();
       fontNote.dispose();
@@ -694,20 +695,20 @@ public class GUIResource {
 
     // Create a large version of the graph font
     FontData largeFontData =
-        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props.getGraphFont()
-            .getStyle() );
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props
+            .getGraphFont().getStyle() );
     fontLarge = new ManagedFont( display, largeFontData );
 
     // Create a tiny version of the graph font
     FontData tinyFontData =
-        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props.getGraphFont()
-            .getStyle() );
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props
+            .getGraphFont().getStyle() );
     fontTiny = new ManagedFont( display, tinyFontData );
 
     // Create a small version of the graph font
     FontData smallFontData =
-        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props.getGraphFont()
-            .getStyle() );
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props
+            .getGraphFont().getStyle() );
     fontSmall = new ManagedFont( display, smallFontData );
 
     // Create a bold version of the default font to display shared objects
@@ -1009,8 +1010,8 @@ public class GUIResource {
         ClassLoader classLoader = registry.getClassLoader( plugin );
         image = ImageUtil.getImage( display, classLoader, filename );
       } catch ( Exception e ) {
-        log.logError( "Unable to find required job entry image file [" + filename + "] for id [" + plugin.getIds()[0]
-            + "] : " + e.toString() );
+        log.logError( "Unable to find required job entry image file ["
+            + filename + "] for id [" + plugin.getIds()[0] + "] : " + e.toString() );
         image = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         GC gc = new GC( image );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
@@ -1687,8 +1688,8 @@ public class GUIResource {
     }
 
     MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, dialogTitle, image, message, imageType, buttonLabels, defaultIndex,
-            toggleMessage, toggleState );
+        new MessageDialogWithToggle(
+            shell, dialogTitle, image, message, imageType, buttonLabels, defaultIndex, toggleMessage, toggleState );
     int idx = md.open();
     return new Object[] { Integer.valueOf( idx ), Boolean.valueOf( md.getToggleState() ) };
   }

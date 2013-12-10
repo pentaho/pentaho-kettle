@@ -62,8 +62,8 @@ public class XMLInput extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       first = false;
       data.outputRowMeta = new RowMeta();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -139,9 +139,8 @@ public class XMLInput extends BaseStep implements StepInterface {
             if ( pos.getElementNr() <= 1 ) {
               Node subNode = XMLHandler.getSubNode( node, pos.getName() );
               if ( subNode != null ) {
-                if ( p == xmlInputField.getFieldPosition().length - 1 ) // last
-                // level
-                {
+                if ( p == xmlInputField.getFieldPosition().length - 1 ) { // last level
+
                   value = XMLHandler.getNodeValue( subNode );
                 }
               } else {
@@ -151,15 +150,13 @@ public class XMLInput extends BaseStep implements StepInterface {
                 }
               }
               node = subNode;
-            } else
-            // Multiple possible values: get number
-            // pos.getElementNr()!
-            {
+            } else {
+              // Multiple possible values: get number
+              // pos.getElementNr()!
+
               Node subNode = XMLHandler.getSubNodeByNr( node, pos.getName(), pos.getElementNr() - 1, false );
               if ( subNode != null ) {
-                if ( p == xmlInputField.getFieldPosition().length - 1 ) // last
-                // level
-                {
+                if ( p == xmlInputField.getFieldPosition().length - 1 ) { // last level
                   value = XMLHandler.getNodeValue( subNode );
                 }
               } else {
@@ -259,8 +256,7 @@ public class XMLInput extends BaseStep implements StepInterface {
 
   private boolean openNextFile() {
     try {
-      if ( data.filenr >= data.files.size() ) // finished processing!
-      {
+      if ( data.filenr >= data.files.size() ) { // finished processing!
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "XMLInput.Log.FinishedProcessing" ) );
         }

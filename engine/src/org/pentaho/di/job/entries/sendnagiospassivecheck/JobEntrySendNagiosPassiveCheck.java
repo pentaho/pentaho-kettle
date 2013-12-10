@@ -99,9 +99,9 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
   public static int DEFAULT_PORT = 5667;
 
   public static final String[] encryption_mode_Desc = new String[] {
-    BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.None" ),
-    BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.TripleDES" ),
-    BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.XOR" ) };
+      BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.None" ),
+      BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.TripleDES" ),
+      BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.XOR" ) };
   public static final String[] encryption_mode_Code = new String[] { "none", "tripledes", "xor" };
 
   public static final int ENCRYPTION_MODE_NONE = 0;
@@ -109,10 +109,10 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
   public static final int ENCRYPTION_MODE_XOR = 2;
 
   public static final String[] level_type_Desc = new String[] {
-    BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.LevelType.Unknown" ),
-    BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.OK" ),
-    BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.Warning" ),
-    BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.Critical" ) };
+      BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.LevelType.Unknown" ),
+      BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.OK" ),
+      BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.Warning" ),
+      BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.EncryptionMode.Critical" ) };
   public static final String[] level_type_Code = new String[] { "unknown", "ok", "warning", "critical" };
 
   public static final int LEVEL_TYPE_UNKNOWN = 0;

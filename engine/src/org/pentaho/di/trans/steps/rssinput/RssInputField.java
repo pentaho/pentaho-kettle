@@ -54,20 +54,21 @@ public class RssInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "RssInput.Field.TrimType.None" ),
-    BaseMessages.getString( PKG, "RssInput.Field.TrimType.Left" ),
-    BaseMessages.getString( PKG, "RssInput.Field.TrimType.Right" ),
-    BaseMessages.getString( PKG, "RssInput.Field.TrimType.Both" ) };
+  public static final String[] trimTypeDesc = {
+      BaseMessages.getString( PKG, "RssInput.Field.TrimType.None" ),
+      BaseMessages.getString( PKG, "RssInput.Field.TrimType.Left" ),
+      BaseMessages.getString( PKG, "RssInput.Field.TrimType.Right" ),
+      BaseMessages.getString( PKG, "RssInput.Field.TrimType.Both" ) };
 
-  public static final String[] ColumnCode = { "title", "link", "descriptiontext", "descriptionhtml", "comments",
-    "guid", "pubdate" };
+  public static final String[] ColumnCode = {
+      "title", "link", "descriptiontext", "descriptionhtml", "comments", "guid", "pubdate" };
 
-  public static final String[] ColumnDesc = { BaseMessages.getString( PKG, "RssInput.Column.Title" ),
-    BaseMessages.getString( PKG, "RssInput.Column.Link" ),
-    BaseMessages.getString( PKG, "RssInput.Column.DescriptionAsText" ),
-    BaseMessages.getString( PKG, "RssInput.Column.DescriptionAsHtml" ),
-    BaseMessages.getString( PKG, "RssInput.Column.Comments" ), BaseMessages.getString( PKG, "RssInput.Column.Guid" ),
-    BaseMessages.getString( PKG, "RssInput.Column.PubDate" ) };
+  public static final String[] ColumnDesc = {
+      BaseMessages.getString( PKG, "RssInput.Column.Title" ), BaseMessages.getString( PKG, "RssInput.Column.Link" ),
+      BaseMessages.getString( PKG, "RssInput.Column.DescriptionAsText" ),
+      BaseMessages.getString( PKG, "RssInput.Column.DescriptionAsHtml" ),
+      BaseMessages.getString( PKG, "RssInput.Column.Comments" ), BaseMessages.getString( PKG, "RssInput.Column.Guid" ),
+      BaseMessages.getString( PKG, "RssInput.Column.PubDate" ) };
 
   private String name;
   private int column;

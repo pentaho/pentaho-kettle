@@ -265,9 +265,9 @@ public class TransformationMap {
               if ( spa.getSourceSlaveName().equalsIgnoreCase( sourceSlaveName )
                   && spa.getTargetSlaveName().equalsIgnoreCase( targetSlaveName ) ) {
                 socketPortAllocation =
-                    new SocketPortAllocation( spa.getPort(), new Date(), clusteredRunId, transformationName,
-                        sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName,
-                        targetStepCopy );
+                    new SocketPortAllocation(
+                        spa.getPort(), new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName,
+                        sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
                 serverSocketPortsMap.set( index, socketPortAllocation );
                 break;
               }
@@ -280,8 +280,9 @@ public class TransformationMap {
           // Normally this list should stay sorted on port number this way
           //
           socketPortAllocation =
-              new SocketPortAllocation( maxPort + 1, new Date(), clusteredRunId, transformationName, sourceSlaveName,
-                  sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
+              new SocketPortAllocation(
+                  maxPort + 1, new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName,
+                  sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
           serverSocketPortsMap.add( socketPortAllocation );
         }
 

@@ -162,13 +162,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           data.replaceIndex[i] = rowMeta.indexOfValue( meta.getFieldname()[i] );
           if ( data.replaceIndex[i] < 0 ) {
             if ( Const.isEmpty( meta.getFieldname()[i] ) ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
+              throw new KettleStepException( BaseMessages.getString(
+                  PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
             }
             data.replaceIndex[i] = rowMeta.indexOfValue( meta.getRename()[i] );
             if ( data.replaceIndex[i] < 0 ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
+              throw new KettleStepException( BaseMessages.getString(
+                  PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
             }
           }
         } else {
@@ -187,12 +187,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
               .getOptimizationLevel() ) ) );
         } else {
           data.cx.setOptimizationLevel( Integer.parseInt( ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT ) );
-          logBasic( BaseMessages.getString( PKG, "ScriptValuesMod.Optimization.UsingDefault",
-              ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT ) );
+          logBasic( BaseMessages.getString(
+              PKG, "ScriptValuesMod.Optimization.UsingDefault", ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT ) );
         }
       } catch ( NumberFormatException nfe ) {
-        throw new KettleStepException( BaseMessages
-            .getString( PKG, "ScriptValuesMetaMod.Exception.NumberFormatException", environmentSubstitute( meta
+        throw new KettleStepException( BaseMessages.getString(
+            PKG, "ScriptValuesMetaMod.Exception.NumberFormatException", environmentSubstitute( meta
                 .getOptimizationLevel() ) ) );
       } catch ( IllegalArgumentException iae ) {
         throw new KettleException( iae.getMessage() );
@@ -267,19 +267,19 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
             }
           }
         } catch ( Exception e ) {
-          throw new KettleValueException( BaseMessages.getString( PKG,
-              "ScriptValuesMod.Log.CouldNotAttachAdditionalScripts" ), e );
+          throw new KettleValueException( BaseMessages.getString(
+              PKG, "ScriptValuesMod.Log.CouldNotAttachAdditionalScripts" ), e );
         }
 
         // Adding some default JavaScriptFunctions to the System
         try {
           Context.javaToJS( ScriptValuesAddedFunctions.class, data.scope );
-          ( (ScriptableObject) data.scope ).defineFunctionProperties( ScriptValuesAddedFunctions.jsFunctionList,
-              ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM );
+          ( (ScriptableObject) data.scope ).defineFunctionProperties(
+              ScriptValuesAddedFunctions.jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM );
         } catch ( Exception ex ) {
           // System.out.println(ex.toString());
-          throw new KettleValueException( BaseMessages.getString( PKG,
-              "ScriptValuesMod.Log.CouldNotAddDefaultFunctions" ), ex );
+          throw new KettleValueException( BaseMessages.getString(
+              PKG, "ScriptValuesMod.Log.CouldNotAddDefaultFunctions" ), ex );
         }
 
         // Adding some Constants to the JavaScript
@@ -292,8 +292,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
         } catch ( Exception ex ) {
           // System.out.println("Exception Adding the Constants " + ex.toString());
-          throw new KettleValueException( BaseMessages.getString( PKG,
-              "ScriptValuesMod.Log.CouldNotAddDefaultConstants" ), ex );
+          throw new KettleValueException( BaseMessages.getString(
+              PKG, "ScriptValuesMod.Log.CouldNotAddDefaultConstants" ), ex );
         }
 
         try {
@@ -318,8 +318,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         // Now Compile our Script
         data.script = data.cx.compileString( strTransformScript, "script", 1, null );
       } catch ( Exception e ) {
-        throw new KettleValueException( BaseMessages.getString( PKG, "ScriptValuesMod.Log.CouldNotCompileJavascript" ),
-            e );
+        throw new KettleValueException(
+            BaseMessages.getString( PKG, "ScriptValuesMod.Log.CouldNotCompileJavascript" ), e );
       }
     }
 
@@ -695,8 +695,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         }
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.UnexpectedeError" ) + " : " + e.toString() );
-        logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.ErrorStackTrace" ) + Const.CR
-            + Const.getStackTracker( e ) );
+        logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.ErrorStackTrace" )
+            + Const.CR + Const.getStackTracker( e ) );
         setErrors( 1 );
         stopAll();
       }

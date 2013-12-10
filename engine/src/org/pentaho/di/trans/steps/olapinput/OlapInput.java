@@ -50,8 +50,8 @@ public class OlapInput extends BaseStep implements StepInterface {
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     try {
 
-      if ( first ) // we just got started
-      {
+      if ( first ) { // we just got started
+
         first = false;
         meta.initData( this );
 

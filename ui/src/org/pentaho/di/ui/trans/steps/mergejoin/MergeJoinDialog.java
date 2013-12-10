@@ -221,12 +221,13 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     int nrKeyRows1 = ( input.getKeyFields1() != null ? input.getKeyFields1().length : 1 );
 
     ColumnInfo[] ciKeys1 =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField1" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField1" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wKeys1 =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys1, nrKeyRows1, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys1,
+            nrKeyRows1, lsMod, props );
 
     fdKeys1 = new FormData();
     fdKeys1.top = new FormAttachment( wlKeys1, margin );
@@ -261,12 +262,13 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     int nrKeyRows2 = ( input.getKeyFields2() != null ? input.getKeyFields2().length : 1 );
 
     ColumnInfo[] ciKeys2 =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField2" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+        new ColumnInfo[] { new ColumnInfo(
+            BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField2" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wKeys2 =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys2, nrKeyRows2, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys2,
+            nrKeyRows2, lsMod, props );
 
     fdKeys2 = new FormData();
     fdKeys2.top = new FormAttachment( wlKeys2, margin );
@@ -414,12 +416,12 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     //
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell,
-              BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
-                  PKG, "MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
-                  + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-                  "MergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-                  "MergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
+          new MessageDialogWithToggle(
+              shell, BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages
+                  .getString( PKG, "MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
+                  + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+                  PKG, "MergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
+                  PKG, "MergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
                   STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
@@ -447,8 +449,9 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
     }
   }
 
@@ -467,8 +470,9 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
     }
   }
 

@@ -78,8 +78,9 @@ public class RepositoryDirectoryUI {
       RepositoryDirectory subdir = dir.getSubdirectory( i );
       TreeItem subti = new TreeItem( ti, SWT.NONE );
       subti.setImage( GUIResource.getInstance().getImageArrow() );
-      getTreeWithNames( subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs,
-          subdir, filterString, pattern );
+      getTreeWithNames(
+          subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir,
+          filterString, pattern );
     }
 
     try {

@@ -81,8 +81,8 @@ public class SocketReader extends BaseStep implements StepInterface {
         KettleException lastException = null;
 
         // // timeout with retry until connected
-        while ( !connected && ( TIMEOUT_IN_SECONDS > ( System.currentTimeMillis() - startTime ) / 1000 )
-            && !isStopped() ) {
+        while ( !connected
+            && ( TIMEOUT_IN_SECONDS > ( System.currentTimeMillis() - startTime ) / 1000 ) && !isStopped() ) {
           try {
             int port = Integer.parseInt( environmentSubstitute( meta.getPort() ) );
             int bufferSize = Integer.parseInt( environmentSubstitute( meta.getBufferSize() ) );
@@ -95,8 +95,8 @@ public class SocketReader extends BaseStep implements StepInterface {
                   new DataOutputStream( new BufferedOutputStream(
                       new GZIPOutputStream( data.socket.getOutputStream() ), bufferSize ) );
               data.inputStream =
-                  new DataInputStream( new BufferedInputStream( new GZIPInputStream( data.socket.getInputStream() ),
-                      bufferSize ) );
+                  new DataInputStream( new BufferedInputStream(
+                      new GZIPInputStream( data.socket.getInputStream() ), bufferSize ) );
             } else {
               data.outputStream =
                   new DataOutputStream( new BufferedOutputStream( data.socket.getOutputStream(), bufferSize ) );
@@ -106,12 +106,14 @@ public class SocketReader extends BaseStep implements StepInterface {
             lastException = null;
           } catch ( Exception e ) {
             lastException =
-                new KettleException( "Unable to open socket to server " + environmentSubstitute( meta.getHostname() )
-                    + " port " + environmentSubstitute( meta.getPort() ), e );
+                new KettleException(
+                    "Unable to open socket to server "
+                        + environmentSubstitute( meta.getHostname() ) + " port "
+                        + environmentSubstitute( meta.getPort() ), e );
           }
 
-          if ( lastException != null ) // Sleep for a second
-          {
+          if ( lastException != null ) { // Sleep for a second
+
             Thread.sleep( 1000 );
           }
         }
@@ -123,15 +125,15 @@ public class SocketReader extends BaseStep implements StepInterface {
             data.socket.shutdownInput();
             data.socket.shutdownOutput();
             data.socket.close();
-            logError( "Closed connection to data socket to " + environmentSubstitute( meta.getHostname() ) + " port "
-                + environmentSubstitute( meta.getPort() ) );
+            logError( "Closed connection to data socket to "
+                + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
           }
 
           throw lastException;
         } else {
           if ( data.inputStream == null ) {
-            throw new KettleException( "Unable to connect to the SocketWriter in the " + TIMEOUT_IN_SECONDS
-                + "s timeout period." );
+            throw new KettleException( "Unable to connect to the SocketWriter in the "
+                + TIMEOUT_IN_SECONDS + "s timeout period." );
           }
         }
 
@@ -156,11 +158,11 @@ public class SocketReader extends BaseStep implements StepInterface {
           data.socket.shutdownInput();
           data.socket.shutdownOutput();
           data.socket.close();
-          logError( "Closed connection to data socket to " + environmentSubstitute( meta.getHostname() ) + " port "
-              + environmentSubstitute( meta.getPort() ) );
+          logError( "Closed connection to data socket to "
+              + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
         } catch ( IOException e1 ) {
-          logError( "Failed to close connection to data socket to " + environmentSubstitute( meta.getHostname() )
-              + " port " + environmentSubstitute( meta.getPort() ) );
+          logError( "Failed to close connection to data socket to "
+              + environmentSubstitute( meta.getHostname() ) + " port " + environmentSubstitute( meta.getPort() ) );
         }
       }
       throw new KettleException( e );
@@ -187,16 +189,19 @@ public class SocketReader extends BaseStep implements StepInterface {
     try {
       data.inputStream.close();
     } catch ( Exception e ) {
+      // Ignore nested exception
     }
     try {
       data.outputStream.close();
     } catch ( Exception e ) {
+      // Ignore nested exception
     }
     try {
       data.socket.shutdownInput();
       data.socket.shutdownOutput();
       data.socket.close();
     } catch ( Exception e ) {
+      // Ignore nested exception
     }
 
     super.dispose( smi, sdi );

@@ -165,17 +165,21 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
     final int FieldsRows = input.getFieldName().length;
     colinf = new ColumnInfo[4];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.FieldName" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.FieldName" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableName" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableType" ),
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.VariableType" ),
             ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.DefaultValue" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.DefaultValue" ), ColumnInfo.COLUMN_TYPE_TEXT,
+            false );
     colinf[3].setUsingVariables( true );
     colinf[3].setToolTip( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Column.DefaultValue.Tooltip" ) );
 
@@ -357,11 +361,11 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_USAGE_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
           new MessageDialogWithToggle( shell, BaseMessages
-              .getString( PKG, "SetVariableDialog.UsageWarning.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "SetVariableDialog.UsageWarning.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "SetVariableDialog.UsageWarning.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "SetVariableDialog.UsageWarning.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
+              .getString( PKG, "SetVariableDialog.UsageWarning.DialogTitle" ), null, BaseMessages.getString(
+              PKG, "SetVariableDialog.UsageWarning.DialogMessage", Const.CR )
+              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+              PKG, "SetVariableDialog.UsageWarning.Option1" ) }, 0, BaseMessages.getString(
+              PKG, "SetVariableDialog.UsageWarning.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
               STRING_USAGE_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
@@ -376,8 +380,8 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1,
-            new TableItemInsertListener() {
+        BaseStepDialog.getFieldsFromPrevious(
+            r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, new TableItemInsertListener() {
               public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
                 tableItem.setText( 2, v.getName().toUpperCase() );
                 tableItem.setText( 3, SetVariableMeta
@@ -387,8 +391,9 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
             } );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SetVariableDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "Set.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SetVariableDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "Set.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

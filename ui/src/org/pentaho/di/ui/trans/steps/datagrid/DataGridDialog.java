@@ -153,31 +153,35 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              Const.getDateFormats() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "DataGridDialog.Value.SetEmptyString" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                    .getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, Const
+                    .getDateFormats() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "DataGridDialog.Value.SetEmptyString" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } ),
 
         };
 
     wFields =
-        new TableView( transMeta, wMetaComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wMetaComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -318,8 +322,9 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 
       // Clear out the data composite and redraw it completely...
       //
-      for ( Control control : wDataComp.getChildren() )
+      for ( Control control : wDataComp.getChildren() ) {
         control.dispose();
+      }
     }
 
     ColumnInfo[] columns = new ColumnInfo[dataGridMeta.getFieldName().length];
@@ -387,8 +392,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         item.setText( col++, Const.NVL( curr, "" ) );
         item.setText( col++, Const.NVL( decim, "" ) );
         item.setText( col++, Const.NVL( group, "" ) );
-        item.setText( col++, input.isSetEmptyString()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" )
-            : BaseMessages.getString( PKG, "System.Combo.No" ) );
+        item.setText( col++, input.isSetEmptyString()[i]
+            ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
 
       }
     }
@@ -489,14 +494,14 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "DataGridDialog.EnterPreviewSize.Title" ), BaseMessages.getString( PKG,
-            "DataGridDialog.EnterPreviewSize.Message" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+            PKG, "DataGridDialog.EnterPreviewSize.Title" ), BaseMessages.getString(
+            PKG, "DataGridDialog.EnterPreviewSize.Message" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+              shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -505,17 +510,19 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                  shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages.getString(
+                      PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-              loggingText );
+          new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(),
+              progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname
+                  .getText() ), loggingText );
       prd.open();
     }
   }

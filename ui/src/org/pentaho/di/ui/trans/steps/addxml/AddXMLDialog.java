@@ -344,33 +344,40 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
 
     colinf =
         new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Fieldname.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.ElementName.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              formats ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Null.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Attribute.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.AttributeParentName.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ) };
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] { "" }, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.ElementName.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+                    .getTypes() ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, formats ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Null.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.Attribute.Column" ),
+                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                new String[] {
+                    BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) },
+                true ),
+            new ColumnInfo(
+                BaseMessages.getString( PKG, "AddXMLDialog.AttributeParentName.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+                false ) };
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+        new TableView(
+            transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -663,8 +670,8 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6,
-            new TableItemInsertListener() {
+        BaseStepDialog.getFieldsFromPrevious(
+            r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6, new TableItemInsertListener() {
               public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
                 if ( v.isNumber() ) {
                   if ( v.getLength() > 0 ) {

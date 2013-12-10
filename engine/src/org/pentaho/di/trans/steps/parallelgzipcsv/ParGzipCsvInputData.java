@@ -75,9 +75,6 @@ public class ParGzipCsvInputData extends BaseStepData implements StepDataInterfa
   public long fileReadPosition;
   public int blockNr;
 
-  /**
-	 * 
-	 */
   public ParGzipCsvInputData() {
     super();
     startBuffer = 0;

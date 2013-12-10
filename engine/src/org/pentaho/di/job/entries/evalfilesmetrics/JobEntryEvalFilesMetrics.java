@@ -77,17 +77,17 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 
   public static final BigDecimal ONE = new BigDecimal( 1 );
 
-  public static final String[] IncludeSubFoldersDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] IncludeSubFoldersDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] IncludeSubFoldersCodes = new String[] { "N", "Y" };
   private static final String YES = "Y";
   private static final String NO = "N";
 
   public static final String[] scaleDesc = new String[] {
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.Bytes.Label" ),
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.KBytes.Label" ),
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.MBytes.Label" ),
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.GBytes.Label" ) };
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.Bytes.Label" ),
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.KBytes.Label" ),
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.MBytes.Label" ),
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.GBytes.Label" ) };
   public static final String[] scaleCodes = new String[] { "bytes", "kbytes", "mbytes", "gbytes" };
   public static final int SCALE_BYTES = 0;
   public static final int SCALE_KBYTES = 1;
@@ -97,9 +97,9 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
   public int scale;
 
   public static final String[] SourceFilesDesc = new String[] {
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFiles.Files.Label" ),
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFiles.FilenamesResult.Label" ),
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFiles.PreviousResult.Label" ), };
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFiles.Files.Label" ),
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFiles.FilenamesResult.Label" ),
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFiles.PreviousResult.Label" ), };
   public static final String[] SourceFilesCodes = new String[] { "files", "filenamesresult", "previousresult" };
   public static final int SOURCE_FILES_FILES = 0;
   public static final int SOURCE_FILES_FILENAMES_RESULT = 1;
@@ -108,8 +108,8 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
   public int sourceFiles;
 
   public static final String[] EvaluationTypeDesc = new String[] {
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.EvaluationType.Size.Label" ),
-    BaseMessages.getString( PKG, "JobEvalFilesMetrics.EvaluationType.Count.Label" ), };
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.EvaluationType.Size.Label" ),
+      BaseMessages.getString( PKG, "JobEvalFilesMetrics.EvaluationType.Count.Label" ), };
   public static final String[] EvaluationTypeCodes = new String[] { "size", "count", };
   public static final int EVALUATE_TYPE_SIZE = 0;
   public static final int EVALUATE_TYPE_COUNT = 1;
@@ -251,15 +251,15 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
       minvalue = XMLHandler.getTagValue( entrynode, "minvalue" );
       maxvalue = XMLHandler.getTagValue( entrynode, "maxvalue" );
       successnumbercondition =
-          JobEntrySimpleEval.getSuccessNumberConditionByCode( Const.NVL( XMLHandler.getTagValue( entrynode,
-              "successnumbercondition" ), "" ) );
+          JobEntrySimpleEval.getSuccessNumberConditionByCode( Const.NVL( XMLHandler.getTagValue(
+              entrynode, "successnumbercondition" ), "" ) );
       sourceFiles = getSourceFilesByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "source_files" ), "" ) );
       evaluationType =
           getEvaluationTypeByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "evaluation_type" ), "" ) );
       scale = getScaleByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "scale" ), "" ) );
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Error.Exception.UnableLoadXML" ),
-          xe );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "JobEvalFilesMetrics.Error.Exception.UnableLoadXML" ), xe );
     }
   }
 
@@ -286,8 +286,8 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
       minvalue = rep.getJobEntryAttributeString( id_jobentry, "minvalue" );
       maxvalue = rep.getJobEntryAttributeString( id_jobentry, "maxvalue" );
       successnumbercondition =
-          JobEntrySimpleEval.getSuccessNumberConditionByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry,
-              "successnumbercondition" ), "" ) );
+          JobEntrySimpleEval.getSuccessNumberConditionByCode( Const.NVL( rep.getJobEntryAttributeString(
+              id_jobentry, "successnumbercondition" ), "" ) );
       sourceFiles =
           getSourceFilesByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "source_files" ), "" ) );
       evaluationType =
@@ -385,16 +385,16 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
           if ( !Const.isEmpty( realResultFieldWildcard ) ) {
             indexOfResultFieldWildcard = firstRow.getRowMeta().indexOfValue( realResultFieldWildcard );
             if ( indexOfResultFieldWildcard == -1 ) {
-              logError( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Error.CanNotFindField",
-                  realResultFieldWildcard ) );
+              logError( BaseMessages.getString(
+                  PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldWildcard ) );
               return result;
             }
           }
           if ( !Const.isEmpty( realResultFieldIncluseSubfolders ) ) {
             indexOfResultFieldIncludeSubfolders = firstRow.getRowMeta().indexOfValue( realResultFieldIncluseSubfolders );
             if ( indexOfResultFieldIncludeSubfolders == -1 ) {
-              logError( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Error.CanNotFindField",
-                  realResultFieldIncluseSubfolders ) );
+              logError( BaseMessages.getString(
+                  PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldIncluseSubfolders ) );
               return result;
             }
           }
@@ -415,12 +415,12 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
             }
 
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Log.ProcessingRow",
-                  vsourcefilefolder_previous, vwildcard_previous ) );
+              logDetailed( BaseMessages.getString(
+                  PKG, "JobEvalFilesMetrics.Log.ProcessingRow", vsourcefilefolder_previous, vwildcard_previous ) );
             }
 
-            ProcessFileFolder( vsourcefilefolder_previous, vwildcard_previous, vincludeSubFolders_previous, parentJob,
-                result );
+            ProcessFileFolder(
+                vsourcefilefolder_previous, vwildcard_previous, vincludeSubFolders_previous, parentJob, result );
           }
         }
 
@@ -428,8 +428,9 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
       case SOURCE_FILES_FILENAMES_RESULT:
         List<ResultFile> resultFiles = result.getResultFilesList();
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Log.ResultFilenames.Found",
-              ( resultFiles != null ? resultFiles.size() : 0 ) + "" ) );
+          logDetailed( BaseMessages.getString(
+              PKG, "JobEvalFilesMetrics.Log.ResultFilenames.Found", ( resultFiles != null ? resultFiles.size() : 0 )
+                  + "" ) );
         }
 
         if ( resultFiles != null && resultFiles.size() > 0 ) {
@@ -476,8 +477,8 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
           for ( int i = 0; i < vsourcefilefolder.length && !parentJob.isStopped(); i++ ) {
 
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Log.ProcessingRow", vsourcefilefolder[i],
-                  vwildcard[i] ) );
+              logDetailed( BaseMessages.getString(
+                  PKG, "JobEvalFilesMetrics.Log.ProcessingRow", vsourcefilefolder[i], vwildcard[i] ) );
             }
 
             ProcessFileFolder( vsourcefilefolder[i], vwildcard[i], vincludeSubFolders[i], parentJob, result );
@@ -747,8 +748,8 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
         }
       } else {
         incrementErrors();
-        logError( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Error.SourceFileNotExists",
-            realSourceFilefoldername ) );
+        logError( BaseMessages.getString(
+            PKG, "JobEvalFilesMetrics.Error.SourceFileNotExists", realSourceFilefoldername ) );
       }
     } catch ( Exception e ) {
       incrementErrors();
@@ -785,8 +786,8 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
           BigDecimal fileSize = BigDecimal.valueOf( file.getContent().getSize() );
           evaluationValue = evaluationValue.add( fileSize );
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Log.AddedFileSize", String.valueOf( fileSize ),
-                file.toString() ) );
+            logDebug( BaseMessages.getString(
+                PKG, "JobEvalFilesMetrics.Log.AddedFileSize", String.valueOf( fileSize ), file.toString() ) );
           }
           break;
         default:

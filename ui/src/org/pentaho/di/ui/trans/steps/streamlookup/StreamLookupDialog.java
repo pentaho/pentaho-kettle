@@ -196,15 +196,18 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Field" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.LookupField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.LookupField" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
 
     wKey =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+            nrKeyRows, lsMod, props );
 
     fdKey = new FormData();
     fdKey.left = new FormAttachment( 0, 0 );
@@ -227,21 +230,24 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.FieldReturn" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.FieldReturn" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.NewName" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.NewName" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Default" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Default" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Type" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            ValueMeta.getTypes() );
 
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+        new TableView(
+            transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+            UpInsRows, lsMod, props );
 
     fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
@@ -609,8 +615,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -634,8 +641,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+              .getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

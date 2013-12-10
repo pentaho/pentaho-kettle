@@ -365,8 +365,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         fieldTrimType[i] = ValueMeta.getTrimTypeByCode( trim );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "FieldSplitterMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "FieldSplitterMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -381,8 +381,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Remove the field to split
     int idx = r.indexOfValue( splitField );
-    if ( idx < 0 ) // not found
-    {
+    if ( idx < 0 ) { // not found
       throw new RuntimeException( BaseMessages
           .getString( PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit", splitField ) );
     }
@@ -474,8 +473,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         fieldTrimType[i] = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FieldSplitterMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FieldSplitterMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
@@ -502,8 +501,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
             .getTrimTypeCode( fieldTrimType[i] ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FieldSplitterMeta.Exception.UnalbeToSaveStepInfoToRepository" )
+      throw new KettleException( BaseMessages.getString(
+          PKG, "FieldSplitterMeta.Exception.UnalbeToSaveStepInfoToRepository" )
           + id_step, e );
     }
   }
@@ -517,8 +516,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     // Look up fields in the input stream <prev>
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FieldSplitterMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FieldSplitterMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       error_message = "";
@@ -526,14 +525,14 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
       int i = prev.indexOfValue( splitField );
       if ( i < 0 ) {
         error_message =
-            BaseMessages.getString( PKG, "FieldSplitterMeta.CheckResult.SplitedFieldNotPresentInInputStream",
-                splitField );
+            BaseMessages.getString(
+                PKG, "FieldSplitterMeta.CheckResult.SplitedFieldNotPresentInInputStream", splitField );
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "FieldSplitterMeta.CheckResult.SplitedFieldFoundInInputStream", splitField ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "FieldSplitterMeta.CheckResult.SplitedFieldFoundInInputStream", splitField ), stepMeta );
         remarks.add( cr );
       }
     } else {
@@ -546,13 +545,13 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FieldSplitterMeta.CheckResult.StepReceivingInfoFromOtherStep" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FieldSplitterMeta.CheckResult.StepReceivingInfoFromOtherStep" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FieldSplitterMeta.CheckResult.NoInputReceivedFromOtherStep" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FieldSplitterMeta.CheckResult.NoInputReceivedFromOtherStep" ), stepMeta );
       remarks.add( cr );
     }
   }

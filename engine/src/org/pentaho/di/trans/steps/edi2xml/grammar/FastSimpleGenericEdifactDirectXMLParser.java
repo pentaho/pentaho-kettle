@@ -47,9 +47,10 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 @SuppressWarnings( { "all", "warnings", "unchecked" } )
 public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
-  public static final String[] tokenNames = new String[] { "<invalid>", "<EOR>", "<DOWN>", "<UP>",
-    "COMPLEX_ELEMENT_ITEM_SEPARATOR", "ELEMENT_SEPARATOR", "RELEASE_CHARACTER", "SEGMENT_TERMINATOR", "TEXT_DATA",
-    "' '", "'UNA:+,? \\''", "'UNA:+.? \\''", "'\\n'", "'\\r'", "'\\t'" };
+  public static final String[] tokenNames = new String[] {
+      "<invalid>", "<EOR>", "<DOWN>", "<UP>", "COMPLEX_ELEMENT_ITEM_SEPARATOR", "ELEMENT_SEPARATOR",
+      "RELEASE_CHARACTER", "SEGMENT_TERMINATOR", "TEXT_DATA", "' '", "'UNA:+,? \\''", "'UNA:+.? \\''", "'\\n'",
+      "'\\r'", "'\\t'" };
 
   public static final int EOF = -1;
   public static final int T__9 = 9;
@@ -261,14 +262,10 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
 
       // System.out.println(buf.toString());
 
-    }
-
-    // do not try to recover from parse errors, propagate the error instead
-    catch ( RecognitionException e ) {
+    } catch ( RecognitionException e ) {
+      // do not try to recover from parse errors, propagate the error instead
       throw e;
-    }
-
-    finally {
+    } finally {
       // do for sure before leaving
     }
     return retval;
@@ -651,8 +648,8 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
         state._fsp--;
 
         buf.append( TAG_VALUE );
-        buf.append( sanitizeText( ( composite_data_item_val2 != null ? input.toString( composite_data_item_val2.start,
-            composite_data_item_val2.stop ) : null ) ) );
+        buf.append( sanitizeText( ( composite_data_item_val2 != null ? input.toString(
+            composite_data_item_val2.start, composite_data_item_val2.stop ) : null ) ) );
         buf.append( TAG_VALUE_END );
 
       }
@@ -943,8 +940,8 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
 
         state._fsp--;
 
-        tagIndexes.add( ( tag_index_id_val4 != null ? input.toString( tag_index_id_val4.start, tag_index_id_val4.stop )
-            : null ) );
+        tagIndexes.add( ( tag_index_id_val4 != null
+            ? input.toString( tag_index_id_val4.start, tag_index_id_val4.stop ) : null ) );
 
       }
 

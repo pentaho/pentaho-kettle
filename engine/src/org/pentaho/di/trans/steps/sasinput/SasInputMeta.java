@@ -84,8 +84,8 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields.add( new SasInputField( fieldNode ) );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SASInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "SASInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
     }
   }
 
@@ -142,8 +142,8 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields.add( new SasInputField( rep, stepId, i ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SASInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "SASInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
     }
   }
 
@@ -169,8 +169,8 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( Const.isEmpty( getAcceptingField() ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SASInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SASInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
       remarks.add( cr );
     }
   }

@@ -154,12 +154,14 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SortedMergeDialog.Fieldname.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SortedMergeDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SortedMergeDialog.Ascending.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-              BaseMessages.getString( PKG, "System.Combo.No" ) } );
+        new ColumnInfo(
+            BaseMessages.getString( PKG, "SortedMergeDialog.Ascending.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {
+                BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     wFields =
         new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -308,12 +310,12 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
     //
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "SortedMergeDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "SortedMergeDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "SortedMergeDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
+          new MessageDialogWithToggle( shell, BaseMessages.getString(
+              PKG, "SortedMergeDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
+              PKG, "SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )
+              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
+              PKG, "SortedMergeDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
+              PKG, "SortedMergeDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
               STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
@@ -328,8 +330,8 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null && !r.isEmpty() ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1,
-            new TableItemInsertListener() {
+        BaseStepDialog.getFieldsFromPrevious(
+            r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, new TableItemInsertListener() {
               public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
                 tableItem.setText( 2, "Y" );
                 return true;
@@ -337,8 +339,9 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
             } );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogTitle" ),
-          BaseMessages.getString( PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogMessage" ), ke );
+      new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages
+              .getString( PKG, "SortedMergeDialog.UnableToGetFieldsError.DialogMessage" ), ke );
     }
   }
 }

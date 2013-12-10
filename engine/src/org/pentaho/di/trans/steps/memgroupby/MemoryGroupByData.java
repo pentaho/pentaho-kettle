@@ -90,9 +90,6 @@ public class MemoryGroupByData extends BaseStepData implements StepDataInterface
 
   public boolean newBatch;
 
-  /**
-	 * 
-	 */
   public MemoryGroupByData() {
     super();
 

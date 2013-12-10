@@ -54,8 +54,8 @@ public class Flattener extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // get row!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       // Don't forget the last set of rows...
       if ( data.processed > 0 ) {
         Object[] outputRowData = createOutputRow( data.previousRow );

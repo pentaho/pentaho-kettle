@@ -33,9 +33,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class WriteToLogData extends BaseStepData implements StepDataInterface {
 
-  /**
-	 * 
-	 */
   public int[] fieldnrs;
   public int fieldnr;
   public LogLevel loglevel;

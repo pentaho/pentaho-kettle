@@ -101,8 +101,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
       }
     }
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -131,8 +131,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           data.fieldnrs[i] = data.formatRowMeta.indexOfValue( meta.getOutputFields()[i].getFieldName() );
           if ( data.fieldnrs[i] < 0 ) {
-            throw new KettleException( "Field [" + meta.getOutputFields()[i].getFieldName()
-                + "] couldn't be found in the input stream!" );
+            throw new KettleException( "Field ["
+                + meta.getOutputFields()[i].getFieldName() + "] couldn't be found in the input stream!" );
           }
 
           // Apply the formatting settings to the valueMeta object...
@@ -220,8 +220,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
       data.writer.write( ( " </" + meta.getRepeatElement() + ">" ).toCharArray() );
       data.writer.write( Const.CR.toCharArray() );
     } catch ( Exception e ) {
-      throw new KettleException( "Error writing XML row :" + e.toString() + Const.CR + "Row: "
-          + getInputRowMeta().getString( r ), e );
+      throw new KettleException( "Error writing XML row :"
+          + e.toString() + Const.CR + "Row: " + getInputRowMeta().getString( r ), e );
     }
 
     incrementLinesOutput();

@@ -90,8 +90,8 @@ public class PGPEncryptStreamDialog extends BaseStepDialog implements StepDialog
   private Group wGPGGroup;
   private FormData fdGPGGroup;
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "PGPEncryptStreamDialog.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+      PKG, "PGPEncryptStreamDialog.Filetype.All" ) };
 
   public PGPEncryptStreamDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -461,8 +461,9 @@ public class PGPEncryptStreamDialog extends BaseStepDialog implements StepDialog
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

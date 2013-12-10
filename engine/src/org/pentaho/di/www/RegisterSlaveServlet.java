@@ -95,8 +95,8 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
       if ( index < 0 ) {
         getDetections().add( slaveServerDetection );
         message =
-            "Slave server detection '" + slaveServerDetection.getSlaveServer().getName()
-                + "' was replaced in the list.";
+            "Slave server detection '"
+                + slaveServerDetection.getSlaveServer().getName() + "' was replaced in the list.";
       } else {
         // replace the data in the old one...
         //

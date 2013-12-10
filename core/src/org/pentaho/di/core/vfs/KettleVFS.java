@@ -152,8 +152,8 @@ public class KettleVFS {
 
       return fileObject;
     } catch ( IOException e ) {
-      throw new KettleFileException( "Unable to get VFS File object for filename '" + vfsFilename + "' : "
-          + e.getMessage() );
+      throw new KettleFileException( "Unable to get VFS File object for filename '"
+          + vfsFilename + "' : " + e.getMessage() );
     }
   }
 
@@ -267,8 +267,8 @@ public class KettleVFS {
     FileObject parent = fileObject.getParent();
     if ( parent != null ) {
       if ( !parent.exists() ) {
-        throw new IOException( BaseMessages.getString( PKG, "KettleVFS.Exception.ParentDirectoryDoesNotExist",
-            getFilename( parent ) ) );
+        throw new IOException( BaseMessages.getString(
+            PKG, "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename( parent ) ) );
       }
     }
     try {
@@ -306,7 +306,8 @@ public class KettleVFS {
     }
   }
 
-  public static OutputStream getOutputStream( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions,  boolean append ) throws KettleFileException {
+  public static OutputStream getOutputStream( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions,
+      boolean append ) throws KettleFileException {
     try {
       FileObject fileObject = getFileObject( vfsFilename, space, fsOptions );
       return getOutputStream( fileObject, append );

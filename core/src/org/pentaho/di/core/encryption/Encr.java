@@ -209,8 +209,8 @@ public class Encr {
     System.err
         .println( "    -carte: generate an obfuscated password to include in the carte password file 'pwd/kettle.pwd'" );
     System.err.println( "\nThis command line tool obfuscates a plain text password for use in XML and password files." );
-    System.err.println( "Make sure to also copy the '" + PASSWORD_ENCRYPTED_PREFIX
-        + "' prefix to indicate the obfuscated nature of the password." );
+    System.err.println( "Make sure to also copy the '"
+        + PASSWORD_ENCRYPTED_PREFIX + "' prefix to indicate the obfuscated nature of the password." );
     System.err
         .println( "Kettle will then be able to make the distinction between regular plain text passwords and obfuscated ones." );
     System.err.println();

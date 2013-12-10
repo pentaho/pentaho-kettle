@@ -47,9 +47,6 @@ public class ScriptData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
   public int[] replaceIndex;
 
-  /**
-	 * 
-	 */
   public ScriptData() {
     super();
     cx = null;

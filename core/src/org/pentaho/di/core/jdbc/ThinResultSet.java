@@ -129,19 +129,19 @@ public class ThinResultSet implements ResultSet {
 
         if ( result == 500 ) {
           String response = getErrorString( method.getResponseBodyAsStream() );
-          throw new KettleException( "Error 500 reading data from slave server, url='" + urlString + "', response: "
-              + response );
+          throw new KettleException( "Error 500 reading data from slave server, url='"
+              + urlString + "', response: " + response );
         }
         if ( result == 401 ) {
           String response = getErrorString( method.getResponseBodyAsStream() );
           throw new KettleException(
-              "Access denied error 401 received while attempting to read data from server, url='" + urlString
-                  + "', response: " + response );
+              "Access denied error 401 received while attempting to read data from server, url='"
+                  + urlString + "', response: " + response );
         }
         if ( result != 200 ) {
           String response = getErrorString( method.getResponseBodyAsStream() );
-          throw new KettleException( "Error received while attempting to read data from server, url='" + urlString
-              + "', response: " + response );
+          throw new KettleException( "Error received while attempting to read data from server, url='"
+              + urlString + "', response: " + response );
         }
 
         dataInputStream = new DataInputStream( method.getResponseBodyAsStream() );
@@ -177,12 +177,15 @@ public class ThinResultSet implements ResultSet {
       stopped.set( true );
       try {
         String reply =
-            HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
-                .getWebAppName(),
-                connection.getService() + "/stopTrans" + "/?name=" + URLEncoder.encode( serviceTransName, "UTF-8" )
-                    + "&id=" + Const.NVL( serviceObjectId, "" ) + "&xml=Y", connection.getUsername(), connection
-                    .getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection
-                    .getNonProxyHosts() );
+            HttpUtil.execService(
+                new Variables(), connection.getHostname(), connection.getPort(), connection.getWebAppName(), connection
+                    .getService()
+                    + "/stopTrans"
+                    + "/?name="
+                    + URLEncoder.encode( serviceTransName, "UTF-8" )
+                    + "&id="
+                    + Const.NVL( serviceObjectId, "" ) + "&xml=Y", connection.getUsername(), connection.getPassword(),
+                connection.getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts() );
 
         WebResult webResult = new WebResult( XMLHandler.loadXMLString( reply, WebResult.XML_TAG ) );
         if ( !"OK".equals( webResult.getResult() ) ) {
@@ -235,11 +238,15 @@ public class ThinResultSet implements ResultSet {
   private void checkTransStatus( String transformationName, String transformationObjectId ) throws SQLException {
     try {
       String xml =
-          HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
-              .getWebAppName(), connection.getService() + "/transStatus/?name="
-              + URLEncoder.encode( transformationName, "UTF-8" ) + "&id=" + Const.NVL( transformationObjectId, "" )
-              + "&xml=Y", connection.getUsername(), connection.getPassword(), connection.getProxyHostname(), connection
-              .getProxyPort(), connection.getNonProxyHosts() );
+          HttpUtil.execService(
+              new Variables(), connection.getHostname(), connection.getPort(), connection.getWebAppName(), connection
+                  .getService()
+                  + "/transStatus/?name="
+                  + URLEncoder.encode( transformationName, "UTF-8" )
+                  + "&id="
+                  + Const.NVL( transformationObjectId, "" ) + "&xml=Y", connection.getUsername(), connection
+                  .getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection
+                  .getNonProxyHosts() );
       Document doc = XMLHandler.loadXMLString( xml );
       Node resultNode = XMLHandler.getSubNode( doc, "transstatus", "result" );
       Result result = new Result( resultNode );

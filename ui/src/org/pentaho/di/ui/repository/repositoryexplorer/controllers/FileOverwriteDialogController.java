@@ -81,8 +81,8 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
       swtLoader.setOuterContext( shell );
       swtLoader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
       XulDomContainer container =
-          swtLoader.loadXul( "org/pentaho/di/ui/repository/repositoryexplorer/xul/file-overwrite-dialog.xul",
-              resourceBundle );
+          swtLoader.loadXul(
+              "org/pentaho/di/ui/repository/repositoryexplorer/xul/file-overwrite-dialog.xul", resourceBundle );
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer( container );
 
@@ -112,9 +112,9 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
       bf.setBindingType( Binding.Type.ONE_WAY );
       bf.createBinding( objects, "children", "file-list", "elements" ).fireSourceChanged(); //$NON-NLS-3$
     } catch ( Exception e ) {
-      new ErrorDialog( (Shell) container.getOuterContext(), BaseMessages.getString( PKG,
-          "FileOverwriteDialog.ErrorDialog.Title" ), BaseMessages.getString( PKG,
-          "FileOverwriteDialog.ErrorDialog.Message" ), e );
+      new ErrorDialog( (Shell) container.getOuterContext(), BaseMessages.getString(
+          PKG, "FileOverwriteDialog.ErrorDialog.Title" ), BaseMessages.getString(
+          PKG, "FileOverwriteDialog.ErrorDialog.Message" ), e );
     }
   }
 

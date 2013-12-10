@@ -40,9 +40,6 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface 
   public int flushInterval;
   public ServerSocket serverSocket;
 
-  /**
-	 * 
-	 */
   public SocketWriterData() {
     super();
   }

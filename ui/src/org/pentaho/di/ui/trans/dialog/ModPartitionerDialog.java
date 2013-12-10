@@ -67,8 +67,8 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
 
   public ModPartitionerDialog( Shell parent, StepMeta stepMeta, StepPartitioningMeta partitioningMeta,
       TransMeta transMeta ) {
-    super( parent, (BaseStepMeta) stepMeta.getStepMetaInterface(), transMeta, partitioningMeta.getPartitioner()
-        .getDescription() );
+    super( parent, (BaseStepMeta) stepMeta.getStepMetaInterface(), transMeta, partitioningMeta
+        .getPartitioner().getDescription() );
     this.stepMeta = stepMeta;
     this.partitioningMeta = partitioningMeta;
     partitioner = (ModPartitioner) partitioningMeta.getPartitioner();

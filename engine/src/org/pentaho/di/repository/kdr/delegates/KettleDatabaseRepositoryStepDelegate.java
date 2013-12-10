@@ -62,35 +62,41 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
   }
 
   public synchronized ObjectId getStepTypeID( String code ) throws KettleException {
-    return repository.connectionDelegate.getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
+    return repository.connectionDelegate.getIDWithValue(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
         quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ),
         quote( KettleDatabaseRepository.FIELD_STEP_TYPE_CODE ), code );
   }
 
   public synchronized ObjectId getStepID( String name, ObjectId id_transformation ) throws KettleException {
-    return repository.connectionDelegate.getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_STEP ),
-        quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ), quote( KettleDatabaseRepository.FIELD_STEP_NAME ), name,
+    return repository.connectionDelegate.getIDWithValue(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP ), quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ),
+        quote( KettleDatabaseRepository.FIELD_STEP_NAME ), name,
         quote( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION ), id_transformation );
   }
 
   public synchronized String getStepTypeCode( ObjectId id_database_type ) throws KettleException {
-    return repository.connectionDelegate.getStringWithID( quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
+    return repository.connectionDelegate.getStringWithID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
         quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ), id_database_type,
         quote( KettleDatabaseRepository.FIELD_STEP_TYPE_CODE ) );
   }
 
   public RowMetaAndData getStep( ObjectId id_step ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_STEP ),
-        quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ), id_step );
+    return repository.connectionDelegate.getOneRow(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP ), quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ),
+        id_step );
   }
 
   public RowMetaAndData getStepType( ObjectId id_step_type ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
+    return repository.connectionDelegate.getOneRow(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
         quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ), id_step_type );
   }
 
   public RowMetaAndData getStepAttribute( ObjectId id_step_attribute ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ),
+    return repository.connectionDelegate.getOneRow(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ),
         quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE ), id_step_attribute );
   }
 
@@ -140,8 +146,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         if ( sp != null ) {
           stepMeta.setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
         } else {
-          throw new KettlePluginLoaderException( stepMeta.getStepID(), BaseMessages.getString( PKG,
-              "StepMeta.Exception.UnableToLoadClass", stepMeta.getStepID() + Const.CR ) ); //$NON-NLS-3$
+          throw new KettlePluginLoaderException( stepMeta.getStepID(), BaseMessages.getString(
+              PKG, "StepMeta.Exception.UnableToLoadClass", stepMeta.getStepID() + Const.CR ) ); //$NON-NLS-3$
         }
 
         if ( stepMeta.getStepMetaInterface() != null ) {
@@ -163,8 +169,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         //
         String rowDistributionCode = repository.getStepAttributeString( stepId, 0, "row_distribution_code" );
         RowDistributionInterface rowDistribution =
-            PluginRegistry.getInstance().loadClass( RowDistributionPluginType.class, rowDistributionCode,
-                RowDistributionInterface.class );
+            PluginRegistry.getInstance().loadClass(
+                RowDistributionPluginType.class, rowDistributionCode, RowDistributionInterface.class );
         stepMeta.setRowDistribution( rowDistribution );
 
         // Load the attribute groups map
@@ -203,10 +209,11 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     try {
       log.logDebug( BaseMessages.getString( PKG, "StepMeta.Log.SaveNewStep" ) );
       // Insert new Step in repository
-      stepMeta.setObjectId( insertStep( transformationId, stepMeta.getName(), stepMeta.getDescription(), stepMeta
-          .getStepID(), stepMeta.isDistributes(), stepMeta.getCopies(), stepMeta.getLocation() == null ? -1 : stepMeta
-          .getLocation().x, stepMeta.getLocation() == null ? -1 : stepMeta.getLocation().y, stepMeta.isDrawn(),
-          stepMeta.getCopiesString() ) );
+      stepMeta.setObjectId( insertStep(
+          transformationId, stepMeta.getName(), stepMeta.getDescription(), stepMeta.getStepID(), stepMeta
+              .isDistributes(), stepMeta.getCopies(), stepMeta.getLocation() == null ? -1 : stepMeta.getLocation().x,
+          stepMeta.getLocation() == null ? -1 : stepMeta.getLocation().y, stepMeta.isDrawn(), stepMeta
+              .getCopiesString() ) );
 
       // Save partitioning selection for the step
       //
@@ -218,8 +225,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
       //
       log.logDebug( BaseMessages.getString( PKG, "StepMeta.Log.SaveStepDetails" ) );
       compatibleSaveRep( stepMeta.getStepMetaInterface(), repository, transformationId, stepMeta.getObjectId() );
-      stepMeta.getStepMetaInterface().saveRep( repository, repository.metaStore, transformationId,
-          stepMeta.getObjectId() );
+      stepMeta.getStepMetaInterface().saveRep(
+          repository, repository.metaStore, transformationId, stepMeta.getObjectId() );
 
       // Save the name of the clustering schema that was chosen.
       //
@@ -248,10 +255,12 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
   public void saveStepErrorMeta( StepErrorMeta meta, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
-    repository.saveStepAttribute( id_transformation, id_step, "step_error_handling_source_step",
-        meta.getSourceStep() != null ? meta.getSourceStep().getName() : "" );
-    repository.saveStepAttribute( id_transformation, id_step, "step_error_handling_target_step",
-        meta.getTargetStep() != null ? meta.getTargetStep().getName() : "" );
+    repository.saveStepAttribute(
+        id_transformation, id_step, "step_error_handling_source_step", meta.getSourceStep() != null ? meta
+            .getSourceStep().getName() : "" );
+    repository.saveStepAttribute(
+        id_transformation, id_step, "step_error_handling_target_step", meta.getTargetStep() != null ? meta
+            .getTargetStep().getName() : "" );
     repository.saveStepAttribute( id_transformation, id_step, "step_error_handling_is_enabled", meta.isEnabled() );
     repository.saveStepAttribute( id_transformation, id_step, "step_error_handling_nr_valuename", meta
         .getNrErrorsValuename() );
@@ -272,22 +281,22 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     throws KettleException {
     StepErrorMeta meta = new StepErrorMeta( variables, stepMeta );
 
-    meta.setTargetStep( StepMeta.findStep( steps, repository.getStepAttributeString( stepMeta.getObjectId(),
-        "step_error_handling_target_step" ) ) );
+    meta.setTargetStep( StepMeta.findStep( steps, repository.getStepAttributeString(
+        stepMeta.getObjectId(), "step_error_handling_target_step" ) ) );
     meta.setEnabled( repository.getStepAttributeBoolean( stepMeta.getObjectId(), "step_error_handling_is_enabled" ) );
-    meta.setNrErrorsValuename( repository.getStepAttributeString( stepMeta.getObjectId(),
-        "step_error_handling_nr_valuename" ) );
-    meta.setErrorDescriptionsValuename( repository.getStepAttributeString( stepMeta.getObjectId(),
-        "step_error_handling_descriptions_valuename" ) );
-    meta.setErrorFieldsValuename( repository.getStepAttributeString( stepMeta.getObjectId(),
-        "step_error_handling_fields_valuename" ) );
-    meta.setErrorCodesValuename( repository.getStepAttributeString( stepMeta.getObjectId(),
-        "step_error_handling_codes_valuename" ) );
+    meta.setNrErrorsValuename( repository.getStepAttributeString(
+        stepMeta.getObjectId(), "step_error_handling_nr_valuename" ) );
+    meta.setErrorDescriptionsValuename( repository.getStepAttributeString(
+        stepMeta.getObjectId(), "step_error_handling_descriptions_valuename" ) );
+    meta.setErrorFieldsValuename( repository.getStepAttributeString(
+        stepMeta.getObjectId(), "step_error_handling_fields_valuename" ) );
+    meta.setErrorCodesValuename( repository.getStepAttributeString(
+        stepMeta.getObjectId(), "step_error_handling_codes_valuename" ) );
     meta.setMaxErrors( repository.getStepAttributeString( stepMeta.getObjectId(), "step_error_handling_max_errors" ) );
-    meta.setMaxPercentErrors( repository.getStepAttributeString( stepMeta.getObjectId(),
-        "step_error_handling_max_pct_errors" ) );
-    meta.setMinPercentRows( repository.getStepAttributeString( stepMeta.getObjectId(),
-        "step_error_handling_min_pct_rows" ) );
+    meta.setMaxPercentErrors( repository.getStepAttributeString(
+        stepMeta.getObjectId(), "step_error_handling_max_pct_errors" ) );
+    meta.setMinPercentRows( repository.getStepAttributeString(
+        stepMeta.getObjectId(), "step_error_handling_min_pct_rows" ) );
 
     return meta;
   }
@@ -341,30 +350,36 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), id_transformation );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ), id_transformation );
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING ), name );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING ),
-        description );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER ),
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), description );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER ),
         id_step_type );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN ),
-        Boolean.valueOf( distribute ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER ),
-        new Long( copies ) );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+            .valueOf( distribute ) );
+    table
+        .addValue(
+            new ValueMeta( KettleDatabaseRepository.FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER ), new Long(
+                copies ) );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER ), new Long(
             gui_location_x ) );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER ), new Long(
             gui_location_y ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN ),
-        Boolean.valueOf( gui_draw ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_COPIES_STRING, ValueMetaInterface.TYPE_STRING ),
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+            .valueOf( gui_draw ) );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_COPIES_STRING, ValueMetaInterface.TYPE_STRING ),
         copiesString );
 
-    repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(),
-        KettleDatabaseRepository.TABLE_R_STEP );
+    repository.connectionDelegate.getDatabase().prepareInsert(
+        table.getRowMeta(), KettleDatabaseRepository.TABLE_R_STEP );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();
@@ -377,7 +392,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
     RowMetaAndData par = repository.connectionDelegate.getParameterMetaData( id_transformation );
     String sql =
-        "SELECT COUNT(*) FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_STEP ) + " WHERE "
+        "SELECT COUNT(*) FROM "
+            + quoteTable( KettleDatabaseRepository.TABLE_R_STEP ) + " WHERE "
             + quote( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION ) + " = ? ";
     RowMetaAndData r = repository.connectionDelegate.getOneRow( sql, par.getRowMeta(), par.getData() );
     if ( r != null ) {
@@ -392,7 +408,8 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
     RowMetaAndData par = repository.connectionDelegate.getParameterMetaData( id_step );
     String sql =
-        "SELECT COUNT(*) FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ) + " WHERE "
+        "SELECT COUNT(*) FROM "
+            + quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ) + " WHERE "
             + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP ) + " = ? ";
     RowMetaAndData r = repository.connectionDelegate.getOneRow( sql, par.getRowMeta(), par.getData() );
     if ( r != null ) {

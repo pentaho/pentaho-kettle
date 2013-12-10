@@ -87,8 +87,8 @@ public class MappingOutput extends BaseStep implements StepInterface {
             stopAll();
           }
           if ( totalsleep > 60000 ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "MappingOutput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "MappingOutput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
           }
         }
       }

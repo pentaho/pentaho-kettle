@@ -343,8 +343,8 @@ public class Mapping extends BaseStep implements StepInterface {
     try {
       data.mappingTrans.prepareExecution( getTrans().getArguments() );
     } catch ( KettleException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping" ),
-          e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping" ), e );
     }
 
     // Extra optional work to do for alternative execution engines...
@@ -357,8 +357,8 @@ public class Mapping extends BaseStep implements StepInterface {
       case SingleThreaded:
         data.singleThreadedTransExcecutor = new SingleThreadedTransExecutor( data.mappingTrans );
         if ( !data.singleThreadedTransExcecutor.init() ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "Mapping.Exception.UnableToInitSingleThreadedTransformation" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "Mapping.Exception.UnableToInitSingleThreadedTransformation" ) );
         }
         break;
       default:
@@ -398,8 +398,8 @@ public class Mapping extends BaseStep implements StepInterface {
       if ( !Const.isEmpty( inputDefinition.getInputStepname() ) ) {
         StepInterface sourceStep = getTrans().findRunThread( inputDefinition.getInputStepname() );
         if ( sourceStep == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.StepNameNotFound",
-              inputDefinition.getInputStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname() ) );
         }
         sourceSteps = new StepInterface[] { sourceStep, };
       } else {
@@ -434,8 +434,8 @@ public class Mapping extends BaseStep implements StepInterface {
               .getString( PKG, "MappingDialog.Exception.OneMappingInputStepRequired" ) );
         }
         if ( mappingInputSteps.length > 1 ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + mappingInputSteps.length ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + mappingInputSteps.length ) );
         }
 
         mappingInputTarget = mappingInputSteps[0];
@@ -448,8 +448,8 @@ public class Mapping extends BaseStep implements StepInterface {
         }
         // If we still didn't find it it's a drag.
         if ( mappingInputTarget == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.StepNameNotFound",
-              inputDefinition.getOutputStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getOutputStepname() ) );
         }
       }
 
@@ -487,12 +487,12 @@ public class Mapping extends BaseStep implements StepInterface {
         MappingOutput[] mappingOutputSteps = data.mappingTrans.findMappingOutput();
 
         if ( mappingOutputSteps.length == 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "MappingDialog.Exception.OneMappingOutputStepRequired" ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MappingDialog.Exception.OneMappingOutputStepRequired" ) );
         }
         if ( mappingOutputSteps.length > 1 ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", "" + mappingOutputSteps.length ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", "" + mappingOutputSteps.length ) );
         }
 
         mappingOutputSource = mappingOutputSteps[0];
@@ -507,8 +507,8 @@ public class Mapping extends BaseStep implements StepInterface {
         //
         StepInterface target = getTrans().findRunThread( outputDefinition.getOutputStepname() );
         if ( target == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.StepNameNotFound",
-              outputDefinition.getOutputStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+              PKG, "MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname() ) );
         }
         targetSteps = new StepInterface[] { target, };
       } else {
@@ -564,8 +564,8 @@ public class Mapping extends BaseStep implements StepInterface {
         meta.setRepository( getTransMeta().getRepository() );
 
         data.mappingTransMeta = MappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
-        if ( data.mappingTransMeta != null ) // Do we have a mapping at all?
-        {
+        if ( data.mappingTransMeta != null ) {
+          // Do we have a mapping at all?
 
           // OK, now prepare the execution of the mapping.
           // This includes the allocation of RowSet buffers, the creation of the

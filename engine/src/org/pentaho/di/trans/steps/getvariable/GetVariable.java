@@ -113,8 +113,8 @@ public class GetVariable extends BaseStep implements StepInterface {
 
     putRow( data.outputRowMeta, rowData );
 
-    if ( !data.readsRows ) // Just one row and then stop!
-    {
+    if ( !data.readsRows ) { // Just one row and then stop!
+
       setOutputDone();
       return false;
     }

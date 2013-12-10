@@ -63,8 +63,8 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -92,8 +92,8 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
           data.indexOfPassphraseField = data.previousRowMeta.indexOfValue( fieldname );
           if ( data.indexOfPassphraseField < 0 ) {
             // The field is unreachable !
-            throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Exception.CouldnotFindField",
-                fieldname ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "PGPDecryptStream.Exception.CouldnotFindField", fieldname ) );
           }
         } else {
           // Check is passphrase is provided
@@ -108,11 +108,11 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
           data.indexOfField = data.previousRowMeta.indexOfValue( meta.getStreamField() );
           if ( data.indexOfField < 0 ) {
             // The field is unreachable !
-            throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Exception.CouldnotFindField",
-                meta.getStreamField() ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "PGPDecryptStream.Exception.CouldnotFindField", meta.getStreamField() ) );
           }
         }
-      }// End If first
+      } // End If first
 
       // allocate output row
       Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
@@ -144,8 +144,8 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "PGPDecryptStream.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "PGPDecryptStream.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

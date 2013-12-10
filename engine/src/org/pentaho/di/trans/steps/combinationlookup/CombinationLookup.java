@@ -444,8 +444,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         comma = true;
       }
       sql +=
-          databaseMeta.quoteField( meta.getKeyLookup()[i] ) + " = ? ) OR ( "
-              + databaseMeta.quoteField( meta.getKeyLookup()[i] );
+          databaseMeta.quoteField( meta.getKeyLookup()[i] )
+              + " = ? ) OR ( " + databaseMeta.quoteField( meta.getKeyLookup()[i] );
       data.lookupRowMeta.addValueMeta( inputRowMeta.getValueMeta( data.keynrs[i] ) );
 
       sql += " IS NULL AND ";
@@ -579,18 +579,18 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           if ( isAutoIncrement() ) {
             logDetailed( "SQL with return keys: " + sqlStatement );
             data.prepStatementInsert =
-                data.db.getConnection().prepareStatement( databaseMeta.stripCR( sqlStatement ),
-                    Statement.RETURN_GENERATED_KEYS );
+                data.db.getConnection().prepareStatement(
+                    databaseMeta.stripCR( sqlStatement ), Statement.RETURN_GENERATED_KEYS );
           } else {
             logDetailed( "SQL without return keys: " + sqlStatement );
             data.prepStatementInsert = data.db.getConnection().prepareStatement( databaseMeta.stripCR( sqlStatement ) );
           }
         } catch ( SQLException ex ) {
-          throw new KettleDatabaseException( "Unable to prepare combi insert statement : " + Const.CR + sqlStatement,
-              ex );
+          throw new KettleDatabaseException(
+              "Unable to prepare combi insert statement : " + Const.CR + sqlStatement, ex );
         } catch ( Exception ex ) {
-          throw new KettleDatabaseException( "Unable to prepare combi insert statement : " + Const.CR + sqlStatement,
-              ex );
+          throw new KettleDatabaseException(
+              "Unable to prepare combi insert statement : " + Const.CR + sqlStatement, ex );
         }
       }
 
@@ -653,8 +653,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       }
     } catch ( Exception e ) {
       logError( Const.getStackTracker( e ) );
-      throw new KettleDatabaseException( "Unexpected error in combination insert in part [" + debug + "] : "
-          + e.toString(), e );
+      throw new KettleDatabaseException( "Unexpected error in combination insert in part ["
+          + debug + "] : " + e.toString(), e );
     }
 
     return val_key;

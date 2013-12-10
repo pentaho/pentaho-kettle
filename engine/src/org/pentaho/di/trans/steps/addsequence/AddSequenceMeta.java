@@ -373,17 +373,17 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
         if ( db.checkSequenceExists( transMeta.environmentSubstitute( schemaName ), transMeta
             .environmentSubstitute( sequenceName ) ) ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "AddSequenceMeta.CheckResult.SequenceExists.Title" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "AddSequenceMeta.CheckResult.SequenceExists.Title" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title", sequenceName ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title", sequenceName ), stepMeta );
         }
       } catch ( KettleException e ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "AddSequenceMeta.CheckResult.UnableToConnectDB.Title" )
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "AddSequenceMeta.CheckResult.UnableToConnectDB.Title" )
                 + Const.CR + e.getMessage(), stepMeta );
       } finally {
         db.disconnect();
@@ -393,13 +393,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AddSequenceMeta.CheckResult.StepIsReceving.Title" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "AddSequenceMeta.CheckResult.StepIsReceving.Title" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AddSequenceMeta.CheckResult.NoInputReceived.Title" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "AddSequenceMeta.CheckResult.NoInputReceived.Title" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -422,8 +422,8 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
             retval.setSQL( null ); // Empty string means: nothing to do: set it to null...
           }
         } catch ( KettleException e ) {
-          retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB" ) + Const.CR
-              + e.getMessage() );
+          retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB" )
+              + Const.CR + e.getMessage() );
         } finally {
           db.disconnect();
         }

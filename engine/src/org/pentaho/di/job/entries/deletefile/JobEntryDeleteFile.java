@@ -105,8 +105,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       failIfFileNotExists = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "fail_if_file_not_exists" ) );
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryDeleteFile.Error_0001_Unable_To_Load_Job_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+          PKG, "JobEntryDeleteFile.Error_0001_Unable_To_Load_Job_From_Xml_Node" ), xe );
     }
   }
 
@@ -116,8 +116,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       failIfFileNotExists = rep.getJobEntryAttributeBoolean( id_jobentry, "fail_if_file_not_exists" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryDeleteFile.ERROR_0002_Unable_To_Load_From_Repository", id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryDeleteFile.ERROR_0002_Unable_To_Load_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -126,8 +126,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "filename", filename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "fail_if_file_not_exists", failIfFileNotExists );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryDeleteFile.ERROR_0003_Unable_To_Save_Job_To_Repository", id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "JobEntryDeleteFile.ERROR_0003_Unable_To_Save_Job_To_Repository", id_job ), dbe );
     }
   }
 

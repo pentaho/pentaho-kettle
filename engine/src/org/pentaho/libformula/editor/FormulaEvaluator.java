@@ -94,10 +94,12 @@ public class FormulaEvaluator {
         String problem = token.toString();
         if ( problem != null ) {
           FormulaMessage message =
-              new FormulaMessage( FormulaMessage.TYPE_ERROR, new ParsePosition( token.beginLine, token.beginColumn,
-                  token.endLine, token.endColumn ), "Parse Exception", "Parse exception near '" + problem
-                  + "' on line " + token.beginLine + ", column " + token.beginColumn + "\n\n"
-                  + parseException.getMessage() );
+              new FormulaMessage(
+                  FormulaMessage.TYPE_ERROR, new ParsePosition(
+                      token.beginLine, token.beginColumn, token.endLine, token.endColumn ), "Parse Exception",
+                  "Parse exception near '"
+                      + problem + "' on line " + token.beginLine + ", column " + token.beginColumn + "\n\n"
+                      + parseException.getMessage() );
           messages.put( message.toString(), message );
           handled = true;
         }
@@ -139,13 +141,13 @@ public class FormulaEvaluator {
       String functionName = formulaFunction.getFunctionName();
       if ( Const.indexOfString( functionName, keyWords ) < 0 ) {
         FormulaMessage formulaMessage =
-            new FormulaMessage( FormulaMessage.TYPE_ERROR, formulaFunction.getParsePosition(), functionName,
-                "Unknown function" );
+            new FormulaMessage(
+                FormulaMessage.TYPE_ERROR, formulaFunction.getParsePosition(), functionName, "Unknown function" );
         messages.put( formulaMessage.toString(), formulaMessage );
       } else {
         FormulaMessage formulaMessage =
-            new FormulaMessage( FormulaMessage.TYPE_FUNCTION, formulaFunction.getParsePosition(), functionName,
-                "Function" );
+            new FormulaMessage(
+                FormulaMessage.TYPE_FUNCTION, formulaFunction.getParsePosition(), functionName, "Function" );
         messages.put( formulaMessage.toString(), formulaMessage );
       }
       LValue[] arguments = formulaFunction.getChildValues();
@@ -187,8 +189,9 @@ public class FormulaEvaluator {
         messages.put( formulaMessage.toString(), formulaMessage );
       } else if ( staticValue.getValueType() instanceof DateTimeType ) {
         FormulaMessage formulaMessage =
-            new FormulaMessage( FormulaMessage.TYPE_STATIC_DATE, staticValue.getParsePosition(),
-                staticValue.toString(), "Static date/time" );
+            new FormulaMessage(
+                FormulaMessage.TYPE_STATIC_DATE, staticValue.getParsePosition(), staticValue.toString(),
+                "Static date/time" );
         messages.put( formulaMessage.toString(), formulaMessage );
       } else if ( staticValue.getValueType() instanceof LogicalType ) {
         FormulaMessage formulaMessage =
@@ -204,8 +207,8 @@ public class FormulaEvaluator {
       ContextLookup contextLookup = (ContextLookup) lvalue;
 
       FormulaMessage fieldMessage =
-          new FormulaMessage( FormulaMessage.TYPE_FIELD, contextLookup.getParsePosition(), contextLookup.getName(),
-              "Field" );
+          new FormulaMessage(
+              FormulaMessage.TYPE_FIELD, contextLookup.getParsePosition(), contextLookup.getName(), "Field" );
       messages.put( fieldMessage.toString(), fieldMessage );
 
       String name = contextLookup.getName();

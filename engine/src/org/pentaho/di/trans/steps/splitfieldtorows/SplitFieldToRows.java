@@ -121,8 +121,8 @@ public class SplitFieldToRows extends BaseStep implements StepInterface {
     data = (SplitFieldToRowsData) sdi;
 
     Object[] r = getRow(); // get row from rowset, wait for our turn, indicate busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }

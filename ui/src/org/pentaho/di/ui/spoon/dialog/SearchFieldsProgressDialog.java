@@ -75,8 +75,8 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress {
         fields = transMeta.getStepFields( stepInfo, new ProgressMonitorAdapter( monitor ) );
       }
     } catch ( KettleStepException kse ) {
-      throw new InvocationTargetException( kse, BaseMessages.getString( PKG,
-          "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage() ) ); // "Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
+      throw new InvocationTargetException( kse, BaseMessages.getString(
+          PKG, "SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage() ) ); // "Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
     }
 
     monitor.done();

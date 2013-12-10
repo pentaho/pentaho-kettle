@@ -46,8 +46,8 @@ public class AgileMartUtil {
     if ( registry == null ) {
       try {
         registry = new OrderedFileRegistry();
-        ( (OrderedFileRegistry) registry ).setFilePath( org.pentaho.di.core.Const.getKettleDirectory() + File.separator
-            + "registry.xml" );
+        ( (OrderedFileRegistry) registry ).setFilePath( org.pentaho.di.core.Const.getKettleDirectory()
+            + File.separator + "registry.xml" );
         factory.setMetadataRegistry( registry );
         registry.init();
       } catch ( Exception e ) {
@@ -60,8 +60,9 @@ public class AgileMartUtil {
     String schemaName = dpci.getSchemaName();
     String tableName = dpci.getTableName();
     Entity entity =
-        util.getTableEntity( databaseName.toLowerCase(), ( schemaName == null ) ? null : schemaName.toLowerCase(),
-            tableName.toLowerCase(), false );
+        util.getTableEntity(
+            databaseName.toLowerCase(), ( schemaName == null ) ? null : schemaName.toLowerCase(), tableName
+                .toLowerCase(), false );
     if ( entity != null ) {
       System.out.println( "Util.updateMetadata writing "
           + util.generateTableId( dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName() )

@@ -377,8 +377,9 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "FileExistsDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "FileExistsDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "FileExistsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+                .getString( PKG, "FileExistsDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

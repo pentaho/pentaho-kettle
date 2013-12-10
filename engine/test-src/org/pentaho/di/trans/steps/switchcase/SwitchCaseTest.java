@@ -89,8 +89,7 @@ public class SwitchCaseTest {
   }
 
   /**
-   * PDI 6900. Test that process row works correctly. 
-   * Simulate step workload when input and output row sets already 
+   * PDI 6900. Test that process row works correctly. Simulate step workload when input and output row sets already
    * created and mapped to specified case values.
    * 
    * @throws KettleException
@@ -139,18 +138,18 @@ public class SwitchCaseTest {
     Assert.assertEquals( "Default row set collects the rest of rows", 8, def.size() );
 
     // now - check the data is correct in every row set:
-    Assert.assertEquals( "First row set contains only 3: ", true, isRowSetContainsValue( rowSetOne, new Object[] { 3 },
-        new Object[] {} ) );
-    Assert.assertEquals( "Second row set contains only 3: ", true, isRowSetContainsValue( rowSetTwo,
-        new Object[] { 3 }, new Object[] {} ) );
+    Assert.assertEquals( "First row set contains only 3: ", true, isRowSetContainsValue(
+        rowSetOne, new Object[] { 3 }, new Object[] {} ) );
+    Assert.assertEquals( "Second row set contains only 3: ", true, isRowSetContainsValue(
+        rowSetTwo, new Object[] { 3 }, new Object[] {} ) );
 
-    Assert.assertEquals( "First null row set contains only null: ", true, isRowSetContainsValue( rowSetNullOne,
-        new Object[] { null }, new Object[] {} ) );
-    Assert.assertEquals( "Second null row set contains only null: ", true, isRowSetContainsValue( rowSetNullTwo,
-        new Object[] { null }, new Object[] {} ) );
+    Assert.assertEquals( "First null row set contains only null: ", true, isRowSetContainsValue(
+        rowSetNullOne, new Object[] { null }, new Object[] {} ) );
+    Assert.assertEquals( "Second null row set contains only null: ", true, isRowSetContainsValue(
+        rowSetNullTwo, new Object[] { null }, new Object[] {} ) );
 
-    Assert.assertEquals( "Default row set do not contains null or 3, but other", true, isRowSetContainsValue( def,
-        new Object[] { 1, 2, 4, 5 }, new Object[] { 3, null } ) );
+    Assert.assertEquals( "Default row set do not contains null or 3, but other", true, isRowSetContainsValue(
+        def, new Object[] { 1, 2, 4, 5 }, new Object[] { 3, null } ) );
   }
 
   private boolean isRowSetContainsValue( RowSet rowSet, Object[] allowed, Object[] illegal ) {
@@ -187,7 +186,7 @@ public class SwitchCaseTest {
     SAXException, IOException {
     SwitchCaseCustom krasavez = new SwitchCaseCustom( mockHelper );
 
-    //load step info value-case mapping from xml.  
+    // load step info value-case mapping from xml.
     krasavez.meta.loadXML( loadStepXmlMetadata(), Collections.<DatabaseMeta> emptyList(), mock( IMetaStore.class ) );
 
     KeyToRowSetMap expectedNN = new KeyToRowSetMap();
@@ -250,7 +249,8 @@ public class SwitchCaseTest {
   }
 
   /**
-   * Load local xml data for case-value mapping, step info. 
+   * Load local xml data for case-value mapping, step info.
+   * 
    * @return
    * @throws URISyntaxException
    * @throws ParserConfigurationException

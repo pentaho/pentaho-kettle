@@ -50,11 +50,12 @@ public class ResultFile implements Cloneable {
 
   public static final String[] fileTypeCode = { "GENERAL", "LOG", "ERRORLINE", "ERROR", "WARNING" };
 
-  public static final String[] fileTypeDesc = { BaseMessages.getString( PKG, "ResultFile.FileType.General" ),
-    BaseMessages.getString( PKG, "ResultFile.FileType.Log" ),
-    BaseMessages.getString( PKG, "ResultFile.FileType.ErrorLine" ),
-    BaseMessages.getString( PKG, "ResultFile.FileType.Error" ),
-    BaseMessages.getString( PKG, "ResultFile.FileType.Warning" ) };
+  public static final String[] fileTypeDesc = {
+      BaseMessages.getString( PKG, "ResultFile.FileType.General" ),
+      BaseMessages.getString( PKG, "ResultFile.FileType.Log" ),
+      BaseMessages.getString( PKG, "ResultFile.FileType.ErrorLine" ),
+      BaseMessages.getString( PKG, "ResultFile.FileType.Error" ),
+      BaseMessages.getString( PKG, "ResultFile.FileType.Warning" ) };
   private static final String XML_TAG = "result-file";
 
   private int type;
@@ -86,8 +87,9 @@ public class ResultFile implements Cloneable {
 
   @Override
   public String toString() {
-    return file.toString() + " - " + getTypeDesc() + " - " + XMLHandler.date2string( timestamp )
-        + ( origin == null ? "" : " - " + origin ) + ( originParent == null ? "" : " - " + originParent );
+    return file.toString()
+        + " - " + getTypeDesc() + " - " + XMLHandler.date2string( timestamp ) + ( origin == null ? "" : " - " + origin )
+        + ( originParent == null ? "" : " - " + originParent );
 
   }
 

@@ -56,9 +56,9 @@ public class DragAndDropContainer implements XMLInterface {
   public static final int TYPE_RELATIONSHIP = 13;
   public static final int TYPE_BUSINESS_MODEL = 14;
 
-  private static final String[] typeCodes = { "", "Step", "BaseStep", "DatabaseConnection", "TransHop", "Text",
-    "Jobentry", "BaseJobentry", "PhysicalTable", "PhysicalColumn", "BusinessView", "BusinessTable", "BusinessColumn",
-    "Relationship", "Business Model" };
+  private static final String[] typeCodes = {
+      "", "Step", "BaseStep", "DatabaseConnection", "TransHop", "Text", "Jobentry", "BaseJobentry", "PhysicalTable",
+      "PhysicalColumn", "BusinessView", "BusinessTable", "BusinessColumn", "Relationship", "Business Model" };
   private static final String XML_TAG = "DragAndDrop";
 
   private int type;

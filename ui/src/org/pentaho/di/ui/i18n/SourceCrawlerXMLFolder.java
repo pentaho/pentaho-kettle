@@ -59,7 +59,8 @@ public class SourceCrawlerXMLFolder {
    * @param wildcard
    */
   public SourceCrawlerXMLFolder( String folder, String wildcard, String keyPrefix ) {
-    this( folder, wildcard, keyPrefix, new ArrayList<SourceCrawlerXMLElement>(),
+    this(
+        folder, wildcard, keyPrefix, new ArrayList<SourceCrawlerXMLElement>(),
         new ArrayList<SourceCrawlerPackageException>() );
   }
 

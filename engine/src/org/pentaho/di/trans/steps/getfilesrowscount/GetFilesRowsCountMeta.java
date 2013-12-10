@@ -58,8 +58,8 @@ import org.w3c.dom.Node;
 public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+      BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
   private static final String NO = "N";
   private static final String YES = "Y";
@@ -558,14 +558,14 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "GetFilesRowsCountMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "GetFilesRowsCountMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
   public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFileList(
+        space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -586,13 +586,13 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetFilesRowsCountMeta.CheckResult.NoInputExpected" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetFilesRowsCountMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetFilesRowsCountMeta.CheckResult.NoInput" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetFilesRowsCountMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -600,25 +600,25 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
     if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetFilesRowsCountMeta.CheckResult.NoFiles" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetFilesRowsCountMeta.CheckResult.NoFiles" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetFilesRowsCountMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetFilesRowsCountMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
       remarks.add( cr );
     }
 
     if ( ( RowSeparator_format.equals( "CUSTOM" ) ) && ( RowSeparator == null ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GetFilesRowsCountMeta.CheckResult.NoSeparator" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "GetFilesRowsCountMeta.CheckResult.NoSeparator" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GetFilesRowsCountMeta.CheckResult.SeparatorOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "GetFilesRowsCountMeta.CheckResult.SeparatorOk" ), stepMeta );
       remarks.add( cr );
     }
 

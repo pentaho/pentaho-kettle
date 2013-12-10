@@ -136,16 +136,18 @@ public class KettleClientEnvironment {
         out = new FileOutputStream( file );
         out.write( Const.getKettlePropertiesFileHeader().getBytes() );
       } catch ( IOException e ) {
-        System.err.println( BaseMessages.getString( PKG,
-            "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile ) );
+        System.err.println( BaseMessages.getString(
+            PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile ) );
         System.err.println( e.getStackTrace() );
       } finally {
         if ( out != null ) {
           try {
             out.close();
           } catch ( IOException e ) {
-            System.err.println( BaseMessages.getString( PKG,
-                "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile ) );
+            System.err
+                .println( BaseMessages.getString(
+                    PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES,
+                    kpFile ) );
             System.err.println( e.getStackTrace() );
           }
         }

@@ -493,8 +493,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
       techKeyCreation = rep.getStepAttributeString( id_step, "creation_method" );
       lastUpdateField = rep.getStepAttributeString( id_step, "last_update_field" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "CombinationLookupMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "CombinationLookupMeta.Exception.UnexpectedErrorWhileReadingStepInfo" ), e );
     }
   }
 
@@ -573,16 +573,16 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "CombinationLookupMeta.CheckResult.AllFieldsFound" ), stepMeta );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "CombinationLookupMeta.CheckResult.AllFieldsFound" ), stepMeta );
             }
             remarks.add( cr );
 
             /* Also, check the fields: tk, version, from-to, ... */
             if ( r.indexOfValue( technicalKeyField ) < 0 ) {
               error_message =
-                  BaseMessages.getString( PKG, "CombinationLookupMeta.CheckResult.TechnicalKeyNotFound",
-                      technicalKeyField )
+                  BaseMessages.getString(
+                      PKG, "CombinationLookupMeta.CheckResult.TechnicalKeyNotFound", technicalKeyField )
                       + Const.CR;
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
@@ -622,8 +622,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "CombinationLookupMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "CombinationLookupMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
           }
           remarks.add( cr );
         } else {
@@ -664,8 +664,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
               || CREATION_METHOD_SEQUENCE.equals( techKeyCreation ) || CREATION_METHOD_TABLEMAX
                 .equals( techKeyCreation ) ) ) {
             error_message +=
-                BaseMessages.getString( PKG, "CombinationLookupMeta.CheckResult.ErrorTechKeyCreation" ) + ": "
-                    + techKeyCreation + "!";
+                BaseMessages.getString( PKG, "CombinationLookupMeta.CheckResult.ErrorTechKeyCreation" )
+                    + ": " + techKeyCreation + "!";
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             remarks.add( cr );
           }
@@ -688,13 +688,13 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CombinationLookupMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CombinationLookupMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CombinationLookupMeta.CheckResult.NoInputReceived" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "CombinationLookupMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -760,8 +760,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
                       error_field += name;
                     }
                     if ( error_field.length() > 0 ) {
-                      retval.setError( BaseMessages.getString( PKG, "CombinationLookupMeta.ReturnValue.NameCollision",
-                          error_field ) );
+                      retval.setError( BaseMessages.getString(
+                          PKG, "CombinationLookupMeta.ReturnValue.NameCollision", error_field ) );
                     } else {
                       fields.addValueMeta( newValue );
                     }
@@ -829,8 +829,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             }
 
             cr_table =
-                db.getDDL( schemaTable, fields, ( CREATION_METHOD_SEQUENCE.equals( getTechKeyCreation() )
-                    && sequenceFrom != null && sequenceFrom.length() != 0 ) ? null : technicalKeyField,
+                db.getDDL(
+                    schemaTable, fields, ( CREATION_METHOD_SEQUENCE.equals( getTechKeyCreation() )
+                        && sequenceFrom != null && sequenceFrom.length() != 0 ) ? null : technicalKeyField,
                     CREATION_METHOD_AUTOINC.equals( getTechKeyCreation() ), null, true );
 
             //
@@ -930,9 +931,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     for ( int i = 0; i < keyField.length; i++ ) {
       ValueMetaInterface v = prev.searchValueMeta( keyField[i] );
       DatabaseImpact ii =
-          new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-              databaseMeta.getDatabaseName(), tablename, keyLookup[i], keyField[i], v != null ? v.getOrigin() : "?",
-              "", useHash ? BaseMessages.getString( PKG, "CombinationLookupMeta.ReadAndInsert.Label" ) : BaseMessages
+          new DatabaseImpact(
+              DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                  .getDatabaseName(), tablename, keyLookup[i], keyField[i], v != null ? v.getOrigin() : "?", "",
+              useHash ? BaseMessages.getString( PKG, "CombinationLookupMeta.ReadAndInsert.Label" ) : BaseMessages
                   .getString( PKG, "CombinationLookupMeta.LookupAndInsert.Label" ) );
       impact.add( ii );
     }
@@ -940,9 +942,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     // Do we lookup-on the hash-field?
     if ( useHash ) {
       DatabaseImpact ii =
-          new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-              databaseMeta.getDatabaseName(), tablename, hashField, "", "", "", BaseMessages.getString( PKG,
-                  "CombinationLookupMeta.KeyLookup.Label" ) );
+          new DatabaseImpact(
+              DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                  .getDatabaseName(), tablename, hashField, "", "", "", BaseMessages.getString(
+                  PKG, "CombinationLookupMeta.KeyLookup.Label" ) );
       impact.add( ii );
     }
   }

@@ -88,8 +88,8 @@ public class RulesAccumulator extends BaseStep implements StepInterface {
 
       Object[] r = getRow(); // get row, set busy!
 
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         data.execute();
 
         Object[] outputRow;

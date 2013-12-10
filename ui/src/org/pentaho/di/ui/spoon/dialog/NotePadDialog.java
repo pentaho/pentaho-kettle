@@ -217,8 +217,8 @@ public class NotePadDialog extends Dialog {
     fdlDesc.top = new FormAttachment( 0, margin );
     wlDesc.setLayoutData( fdlDesc );
     wDesc =
-        new StyledTextComp( variables, wNoteContentComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL
-            | SWT.V_SCROLL, "" );
+        new StyledTextComp( variables, wNoteContentComp, SWT.MULTI
+            | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
 
     wDesc.setText( "" );
     // props.setLook(wDesc, PropsUI.WIDGET_STYLE_FIXED);
@@ -405,8 +405,8 @@ public class NotePadDialog extends Dialog {
     // Change Background color
     wbBackGroundColorChange = new Button( wNoteFontComp, SWT.PUSH );
     wbBackGroundColorChange.setImage( guiresource.getImageColor() );
-    wbBackGroundColorChange.setToolTipText( BaseMessages.getString( PKG,
-        "NotePadDialog.Font.BackGroundColor.Change.Tooltip" ) );
+    wbBackGroundColorChange.setToolTipText( BaseMessages.getString(
+        PKG, "NotePadDialog.Font.BackGroundColor.Change.Tooltip" ) );
     props.setLook( wbBackGroundColorChange );
     fdBackGroundColorChange = new FormData();
     fdBackGroundColorChange.top = new FormAttachment( wFontColor, 2 * margin );
@@ -587,14 +587,14 @@ public class NotePadDialog extends Dialog {
       wFontBold.setSelection( notePadMeta.isFontBold() );
       wFontItalic.setSelection( notePadMeta.isFontItalic() );
       fontColor =
-          new Color( shell.getDisplay(), new RGB( notePadMeta.getFontColorRed(), notePadMeta.getFontColorGreen(),
-              notePadMeta.getFontColorBlue() ) );
+          new Color( shell.getDisplay(), new RGB(
+              notePadMeta.getFontColorRed(), notePadMeta.getFontColorGreen(), notePadMeta.getFontColorBlue() ) );
       bgColor =
           new Color( shell.getDisplay(), new RGB( notePadMeta.getBackGroundColorRed(), notePadMeta
               .getBackGroundColorGreen(), notePadMeta.getBackGroundColorBlue() ) );
       borderColor =
-          new Color( shell.getDisplay(), new RGB( notePadMeta.getBorderColorRed(), notePadMeta.getBorderColorGreen(),
-              notePadMeta.getBorderColorBlue() ) );
+          new Color( shell.getDisplay(), new RGB(
+              notePadMeta.getBorderColorRed(), notePadMeta.getBorderColorGreen(), notePadMeta.getBorderColorBlue() ) );
       wDrawShadow.setSelection( notePadMeta.isDrawShadow() );
     } else {
       wFontName.setText( props.getNoteFont().getName() );
@@ -602,14 +602,16 @@ public class NotePadDialog extends Dialog {
       wFontBold.setSelection( false );
       wFontItalic.setSelection( false );
       fontColor =
-          new Color( shell.getDisplay(), new RGB( NotePadMeta.COLOR_RGB_BLACK_RED, NotePadMeta.COLOR_RGB_BLACK_GREEN,
-              NotePadMeta.COLOR_RGB_BLACK_BLUE ) );
+          new Color( shell.getDisplay(), new RGB(
+              NotePadMeta.COLOR_RGB_BLACK_RED, NotePadMeta.COLOR_RGB_BLACK_GREEN, NotePadMeta.COLOR_RGB_BLACK_BLUE ) );
       bgColor =
-          new Color( shell.getDisplay(), new RGB( NotePadMeta.COLOR_RGB_DEFAULT_BG_RED,
-              NotePadMeta.COLOR_RGB_DEFAULT_BG_GREEN, NotePadMeta.COLOR_RGB_DEFAULT_BG_BLUE ) );
+          new Color( shell.getDisplay(), new RGB(
+              NotePadMeta.COLOR_RGB_DEFAULT_BG_RED, NotePadMeta.COLOR_RGB_DEFAULT_BG_GREEN,
+              NotePadMeta.COLOR_RGB_DEFAULT_BG_BLUE ) );
       borderColor =
-          new Color( shell.getDisplay(), new RGB( NotePadMeta.COLOR_RGB_DEFAULT_BORDER_RED,
-              NotePadMeta.COLOR_RGB_DEFAULT_BORDER_GREEN, NotePadMeta.COLOR_RGB_DEFAULT_BORDER_BLUE ) );
+          new Color( shell.getDisplay(), new RGB(
+              NotePadMeta.COLOR_RGB_DEFAULT_BORDER_RED, NotePadMeta.COLOR_RGB_DEFAULT_BORDER_GREEN,
+              NotePadMeta.COLOR_RGB_DEFAULT_BORDER_BLUE ) );
       wDrawShadow.setSelection( true );
     }
 

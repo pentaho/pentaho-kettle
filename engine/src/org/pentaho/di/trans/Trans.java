@@ -478,8 +478,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.TransformationIsPreloaded" ) );
     }
     if ( log.isDebug() ) {
-      log.logDebug( BaseMessages.getString( PKG, "Trans.Log.NumberOfStepsToRun", String.valueOf( transMeta.nrSteps() ),
-          String.valueOf( transMeta.nrTransHops() ) ) );
+      log.logDebug( BaseMessages.getString(
+          PKG, "Trans.Log.NumberOfStepsToRun", String.valueOf( transMeta.nrSteps() ), String.valueOf( transMeta
+              .nrTransHops() ) ) );
     }
 
   }
@@ -561,8 +562,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if ( repdir != null ) {
           this.transMeta = rep.loadTransformation( name, repdir, null, false, null ); // reads last version
         } else {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "Trans.Exception.UnableToLoadTransformation", name, dirname ) ); //$NON-NLS-3$
+          throw new KettleException( BaseMessages.getString(
+              PKG, "Trans.Exception.UnableToLoadTransformation", name, dirname ) ); //$NON-NLS-3$
         }
       } else {
         transMeta = new TransMeta( filename, false );
@@ -630,10 +631,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     if ( transMeta.getName() == null ) {
       if ( transMeta.getFilename() != null ) {
-        log.logBasic( BaseMessages.getString( PKG, "Trans.Log.DispacthingStartedForFilename", transMeta.getFilename() ) );
+        log
+            .logBasic( BaseMessages.getString( PKG, "Trans.Log.DispacthingStartedForFilename", transMeta.getFilename() ) );
       }
     } else {
-      log.logBasic( BaseMessages.getString( PKG, "Trans.Log.DispacthingStartedForTransformation", transMeta.getName() ) );
+      log
+          .logBasic( BaseMessages.getString( PKG, "Trans.Log.DispacthingStartedForTransformation", transMeta.getName() ) );
     }
 
     if ( getArguments() != null ) {
@@ -677,7 +680,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     List<StepMeta> hopsteps = transMeta.getTransHopSteps( false );
 
     if ( log.isDetailed() ) {
-      log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.FoundDefferentSteps", String.valueOf( hopsteps.size() ) ) );
+      log
+          .logDetailed( BaseMessages
+              .getString( PKG, "Trans.Log.FoundDefferentSteps", String.valueOf( hopsteps.size() ) ) );
       log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.AllocatingRowsets" ) );
     }
     // First allocate all the rowsets required!
@@ -690,8 +695,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
       if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.AllocateingRowsetsForStep", String.valueOf( i ),
-            thisStep.getName() ) );
+        log.logDetailed( BaseMessages.getString(
+            PKG, "Trans.Log.AllocateingRowsetsForStep", String.valueOf( i ), thisStep.getName() ) );
       }
 
       List<StepMeta> nextSteps = transMeta.findNextSteps( thisStep );
@@ -818,8 +823,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           }
         }
       }
-      log.logDetailed( BaseMessages.getString( PKG,
-          "Trans.Log.AllocatedRowsets", String.valueOf( rowsets.size() ), String.valueOf( i ), thisStep.getName() ) + " " ); //$NON-NLS-3$ //$NON-NLS-4$
+      log
+          .logDetailed( BaseMessages.getString(
+              PKG,
+              "Trans.Log.AllocatedRowsets", String.valueOf( rowsets.size() ), String.valueOf( i ), thisStep.getName() ) + " " ); //$NON-NLS-3$ //$NON-NLS-4$
     }
 
     if ( log.isDetailed() ) {
@@ -833,8 +840,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       String stepid = stepMeta.getStepID();
 
       if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG,
-            "Trans.Log.TransformationIsToAllocateStep", stepMeta.getName(), stepid ) ); //$NON-NLS-3$
+        log.logDetailed( BaseMessages.getString(
+            PKG, "Trans.Log.TransformationIsToAllocateStep", stepMeta.getName(), stepid ) ); //$NON-NLS-3$
       }
 
       // How many copies are launched of this step?
@@ -1061,7 +1068,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       } else {
         combi.data.setStatus( StepExecutionStatus.STATUS_IDLE );
         if ( log.isDetailed() ) {
-          log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.StepInitialized", combi.stepname + "." + combi.copy ) );
+          log
+              .logDetailed( BaseMessages
+                  .getString( PKG, "Trans.Log.StepInitialized", combi.stepname + "." + combi.copy ) );
         }
       }
     }
@@ -1180,8 +1189,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 fireTransFinishedListeners();
               } catch ( Exception e ) {
                 step.setErrors( step.getErrors() + 1L );
-                log.logError( getName() + " : "
-                    + BaseMessages.getString( PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd" ), e );
+                log.logError( getName()
+                    + " : " + BaseMessages.getString( PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd" ), e );
               }
             }
 
@@ -1191,7 +1200,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if ( step.getErrors() > 0 ) {
 
               log.logMinimal( getName(), BaseMessages.getString( PKG, "Trans.Log.TransformationDetectedErrors" ) );
-              log.logMinimal( getName(), BaseMessages.getString( PKG, "Trans.Log.TransformationIsKillingTheOtherSteps" ) );
+              log
+                  .logMinimal( getName(), BaseMessages
+                      .getString( PKG, "Trans.Log.TransformationIsKillingTheOtherSteps" ) );
 
               killAllNoWait();
             }
@@ -1396,8 +1407,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStarted.id, this );
 
     if ( log.isDetailed() ) {
-      log.logDetailed( BaseMessages.getString( PKG,
-          "Trans.Log.TransformationHasAllocated", String.valueOf( steps.size() ), String.valueOf( rowsets.size() ) ) ); //$NON-NLS-3$
+      log
+          .logDetailed( BaseMessages.getString(
+              PKG,
+              "Trans.Log.TransformationHasAllocated", String.valueOf( steps.size() ), String.valueOf( rowsets.size() ) ) ); //$NON-NLS-3$
     }
   }
 
@@ -1449,9 +1462,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         StepInterface step = steps.get( i ).step;
 
         StepPerformanceSnapShot snapShot =
-            new StepPerformanceSnapShot( seqNr, getBatchId(), new Date(), getName(), stepMeta.getName(),
-                step.getCopy(), step.getLinesRead(), step.getLinesWritten(), step.getLinesInput(), step
-                    .getLinesOutput(), step.getLinesUpdated(), step.getLinesRejected(), step.getErrors() );
+            new StepPerformanceSnapShot(
+                seqNr, getBatchId(), new Date(), getName(), stepMeta.getName(), step.getCopy(), step.getLinesRead(),
+                step.getLinesWritten(), step.getLinesInput(), step.getLinesOutput(), step.getLinesUpdated(), step
+                    .getLinesRejected(), step.getErrors() );
         List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get( step.toString() );
         StepPerformanceSnapShot previous;
         if ( snapShotList == null ) {
@@ -1501,12 +1515,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the step interface
    */
   public void logSummary( StepInterface si ) {
-    log.logBasic(
-        si.getStepname(),
-        BaseMessages
-            .getString(
-                PKG,
-                "Trans.Log.FinishedProcessing", String.valueOf( si.getLinesInput() ), String.valueOf( si.getLinesOutput() ), String.valueOf( si.getLinesRead() ) ) + BaseMessages.getString( PKG, "Trans.Log.FinishedProcessing2", String.valueOf( si.getLinesWritten() ), String.valueOf( si.getLinesUpdated() ), String.valueOf( si.getErrors() ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+    log
+        .logBasic(
+            si.getStepname(),
+            BaseMessages
+                .getString(
+                    PKG,
+                    "Trans.Log.FinishedProcessing", String.valueOf( si.getLinesInput() ), String.valueOf( si.getLinesOutput() ), String.valueOf( si.getLinesRead() ) ) + BaseMessages.getString( PKG, "Trans.Log.FinishedProcessing2", String.valueOf( si.getLinesWritten() ), String.valueOf( si.getLinesUpdated() ), String.valueOf( si.getErrors() ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
   }
 
   /**
@@ -1671,27 +1686,31 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       long proc = step.getProcessed();
       if ( seconds != 0 ) {
         if ( step.getErrors() == 0 ) {
-          log.logBasic( BaseMessages
-              .getString(
-                  PKG,
-                  "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf( proc ), String.valueOf( ( proc / seconds ) ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+          log
+              .logBasic( BaseMessages
+                  .getString(
+                      PKG,
+                      "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf( proc ), String.valueOf( ( proc / seconds ) ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         } else {
-          log.logError( BaseMessages
-              .getString(
-                  PKG,
-                  "Trans.Log.ProcessErrorInfo", step.getStepname(), "." + step.getCopy(), String.valueOf( step.getErrors() ), String.valueOf( proc ), String.valueOf( proc / seconds ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+          log
+              .logError( BaseMessages
+                  .getString(
+                      PKG,
+                      "Trans.Log.ProcessErrorInfo", step.getStepname(), "." + step.getCopy(), String.valueOf( step.getErrors() ), String.valueOf( proc ), String.valueOf( proc / seconds ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
       } else {
         if ( step.getErrors() == 0 ) {
-          log.logBasic( BaseMessages
-              .getString(
-                  PKG,
-                  "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf( proc ), seconds != 0 ? String.valueOf( ( proc / seconds ) ) : "-" ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+          log
+              .logBasic( BaseMessages
+                  .getString(
+                      PKG,
+                      "Trans.Log.ProcessSuccessfullyInfo", step.getStepname(), "." + step.getCopy(), String.valueOf( proc ), seconds != 0 ? String.valueOf( ( proc / seconds ) ) : "-" ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         } else {
-          log.logError( BaseMessages
-              .getString(
-                  PKG,
-                  "Trans.Log.ProcessErrorInfo2", step.getStepname(), "." + step.getCopy(), String.valueOf( step.getErrors() ), String.valueOf( proc ), String.valueOf( seconds ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+          log
+              .logError( BaseMessages
+                  .getString(
+                      PKG,
+                      "Trans.Log.ProcessErrorInfo2", step.getStepname(), "." + step.getCopy(), String.valueOf( step.getErrors() ), String.valueOf( proc ), String.valueOf( seconds ) ) ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
       }
     }
@@ -1747,8 +1766,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // Start with the transformation.
     for ( int i = 0; i < rowsets.size(); i++ ) {
       RowSet rs = rowsets.get( i );
-      if ( rs.getOriginStepName().equalsIgnoreCase( from ) && rs.getDestinationStepName().equalsIgnoreCase( to )
-          && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy ) {
+      if ( rs.getOriginStepName().equalsIgnoreCase( from )
+          && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
+          && rs.getDestinationStepCopy() == tocopy ) {
         return rs;
       }
     }
@@ -1984,8 +2004,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Get the date range from the logging table: from the last end_date to now. (currentDate)
         //
         Object[] lastr =
-            transLogTableDatabaseConnection.getLastLogDate( logSchemaAndTable, transMeta.getName(), false,
-                LogStatus.END );
+            transLogTableDatabaseConnection.getLastLogDate(
+                logSchemaAndTable, transMeta.getName(), false, LogStatus.END );
         if ( lastr != null && lastr.length > 0 ) {
           startDate = (Date) lastr[0];
           if ( log.isDetailed() ) {
@@ -1997,9 +2017,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // OK, we have a date-range.
         // However, perhaps we need to look at a table before we make a final judgment?
         //
-        if ( transMeta.getMaxDateConnection() != null && transMeta.getMaxDateTable() != null
-            && transMeta.getMaxDateTable().length() > 0 && transMeta.getMaxDateField() != null
-            && transMeta.getMaxDateField().length() > 0 ) {
+        if ( transMeta.getMaxDateConnection() != null
+            && transMeta.getMaxDateTable() != null && transMeta.getMaxDateTable().length() > 0
+            && transMeta.getMaxDateField() != null && transMeta.getMaxDateField().length() > 0 ) {
           if ( log.isDetailed() ) {
             log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.LookingForMaxdateConnection", ""
                 + transMeta.getMaxDateConnection() ) );
@@ -2036,14 +2056,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 }
               }
             } catch ( KettleException e ) {
-              throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ErrorConnectingToDatabase",
-                  "" + transMeta.getMaxDateConnection() ), e );
+              throw new KettleTransException( BaseMessages.getString(
+                  PKG, "Trans.Exception.ErrorConnectingToDatabase", "" + transMeta.getMaxDateConnection() ), e );
             } finally {
               maxdb.disconnect();
             }
           } else {
-            throw new KettleTransException( BaseMessages.getString( PKG,
-                "Trans.Exception.MaximumDateConnectionCouldNotBeFound", "" + transMeta.getMaxDateConnection() ) );
+            throw new KettleTransException( BaseMessages.getString(
+                PKG, "Trans.Exception.MaximumDateConnectionCouldNotBeFound", "" + transMeta.getMaxDateConnection() ) );
           }
         }
 
@@ -2083,10 +2103,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                   Date maxvalue = (Date) r1.getData()[0];
                   if ( maxvalue != null ) {
                     if ( log.isDetailed() ) {
-                      log.logDetailed( BaseMessages
-                          .getString(
-                              PKG,
-                              "Trans.Log.FoundDateFromTable", td.getTablename(), "." + td.getFieldname(), " = " + maxvalue.toString() ) ); //$NON-NLS-3$
+                      log
+                          .logDetailed( BaseMessages
+                              .getString(
+                                  PKG,
+                                  "Trans.Log.FoundDateFromTable", td.getTablename(), "." + td.getFieldname(), " = " + maxvalue.toString() ) ); //$NON-NLS-3$
                     }
                     if ( maxvalue.getTime() > maxdepdate.getTime() ) {
                       maxdepdate = maxvalue;
@@ -2112,8 +2133,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 depdb.disconnect();
               }
             } else {
-              throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ConnectionCouldNotBeFound",
-                  "" + td.getDatabase() ) );
+              throw new KettleTransException( BaseMessages.getString(
+                  PKG, "Trans.Exception.ConnectionCouldNotBeFound", "" + td.getDatabase() ) );
             }
             if ( log.isDetailed() ) {
               log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.Maxdepdate" )
@@ -2150,8 +2171,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
     } catch ( KettleException e ) {
-      throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ErrorCalculatingDateRange",
-          logTable ), e );
+      throw new KettleTransException( BaseMessages.getString(
+          PKG, "Trans.Exception.ErrorCalculatingDateRange", logTable ), e );
     } finally {
       // Be careful, We DO NOT close the trans log table database connection!!!
       // It's closed later in beginProcessing() to prevent excessive connect/disconnect repetitions.
@@ -2173,11 +2194,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       String logTable = transLogTable.getActualTableName();
 
       SimpleDateFormat df = new SimpleDateFormat( REPLAY_DATE_FORMAT );
-      log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.TransformationCanBeReplayed" ) + df.format( currentDate ) );
+      log
+          .logDetailed( BaseMessages.getString( PKG, "Trans.Log.TransformationCanBeReplayed" )
+              + df.format( currentDate ) );
 
       try {
-        if ( transLogTableDatabaseConnection != null && !Const.isEmpty( logTable )
-            && !Const.isEmpty( transMeta.getName() ) ) {
+        if ( transLogTableDatabaseConnection != null
+            && !Const.isEmpty( logTable ) && !Const.isEmpty( transMeta.getName() ) ) {
           transLogTableDatabaseConnection.writeLogRecord( transLogTable, LogStatus.START, this, null );
 
           // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
@@ -2223,8 +2246,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     writeStepPerformanceLogRecords( lastWrittenStepPerformanceSequenceNr, LogStatus.END );
 
               } catch ( KettleException e ) {
-                throw new KettleException( BaseMessages.getString( PKG,
-                    "Trans.Exception.UnableToPerformLoggingAtTransEnd" ), e );
+                throw new KettleException( BaseMessages.getString(
+                    PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd" ), e );
               }
             }
           } );
@@ -2240,8 +2263,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               try {
                 writeStepLogInformation();
               } catch ( KettleException e ) {
-                throw new KettleException( BaseMessages.getString( PKG,
-                    "Trans.Exception.UnableToPerformLoggingAtTransEnd" ), e );
+                throw new KettleException( BaseMessages.getString(
+                    PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd" ), e );
               }
             }
           } );
@@ -2256,8 +2279,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               try {
                 writeLogChannelInformation();
               } catch ( KettleException e ) {
-                throw new KettleException( BaseMessages.getString( PKG,
-                    "Trans.Exception.UnableToPerformLoggingAtTransEnd" ), e );
+                throw new KettleException( BaseMessages.getString(
+                    PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd" ), e );
               }
             }
           } );
@@ -2293,8 +2316,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           } );
         }
       } catch ( KettleException e ) {
-        throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.ErrorWritingLogRecordToTable",
-            logTable ), e );
+        throw new KettleTransException( BaseMessages.getString(
+            PKG, "Trans.Exception.ErrorWritingLogRecordToTable", logTable ), e );
       } finally {
         // If we use interval logging, we keep the connection open for performance reasons...
         //
@@ -2304,8 +2327,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
       }
     } catch ( KettleException e ) {
-      throw new KettleTransException( BaseMessages.getString( PKG,
-          "Trans.Exception.UnableToBeginProcessingTransformation" ), e );
+      throw new KettleTransException( BaseMessages.getString(
+          PKG, "Trans.Exception.UnableToBeginProcessingTransformation" ), e );
     }
   }
 
@@ -2351,8 +2374,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       //
       db.cleanupLogRecords( channelLogTable );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commit( true );
@@ -2453,8 +2476,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       //
       db.cleanupLogRecords( metricsLogTable );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "Trans.Exception.UnableToWriteMetricsInformationToLogTable" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "Trans.Exception.UnableToWriteMetricsInformationToLogTable" ), e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commit( true );
@@ -2584,8 +2607,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           ldb.commit( true );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "Trans.Exception.ErrorWritingLogRecordToTable",
-            transMeta.getTransLogTable().getActualTableName() ), e );
+        throw new KettleException( BaseMessages.getString(
+            PKG, "Trans.Exception.ErrorWritingLogRecordToTable", transMeta.getTransLogTable().getActualTableName() ), e );
       } finally {
         if ( intervalInSeconds <= 0 || ( status.equals( LogStatus.END ) || status.equals( LogStatus.STOP ) ) ) {
           ldb.disconnect();
@@ -2612,8 +2635,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     Database ldb = null;
     PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
 
-    if ( !performanceLogTable.isDefined() || !transMeta.isCapturingStepPerformanceSnapShots()
-        || stepPerformanceSnapShots == null || stepPerformanceSnapShots.isEmpty() ) {
+    if ( !performanceLogTable.isDefined()
+        || !transMeta.isCapturingStepPerformanceSnapShots() || stepPerformanceSnapShots == null
+        || stepPerformanceSnapShots.isEmpty() ) {
       return 0; // nothing to do here!
     }
 
@@ -2659,8 +2683,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "Trans.Exception.ErrorWritingStepPerformanceLogRecordToTable" ), e );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "Trans.Exception.ErrorWritingStepPerformanceLogRecordToTable" ), e );
     } finally {
       if ( ldb != null ) {
         ldb.disconnect();
@@ -2680,14 +2704,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Don't close any connections if the parent job is using the same transaction
     //
-    if ( parentJob != null && transactionId != null && parentJob.getTransactionId() != null
+    if ( parentJob != null
+        && transactionId != null && parentJob.getTransactionId() != null
         && transactionId.equals( parentJob.getTransactionId() ) ) {
       return;
     }
 
     // Don't close any connections if the parent transformation is using the same transaction
     //
-    if ( parentTrans != null && parentTrans.getTransMeta().isUsingUniqueConnections() && transactionId != null
+    if ( parentTrans != null
+        && parentTrans.getTransMeta().isUsingUniqueConnections() && transactionId != null
         && parentTrans.getTransactionId() != null && transactionId.equals( parentTrans.getTransactionId() ) ) {
       return;
     }
@@ -2706,33 +2732,33 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if ( result.getNrErrors() > 0 ) {
               try {
                 database.rollback( true );
-                log.logBasic( BaseMessages.getString( PKG, "Trans.Exception.TransactionsRolledBackOnConnection",
-                    database.toString() ) );
+                log.logBasic( BaseMessages.getString(
+                    PKG, "Trans.Exception.TransactionsRolledBackOnConnection", database.toString() ) );
               } catch ( Exception e ) {
-                throw new KettleDatabaseException( BaseMessages.getString( PKG,
-                    "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString() ), e );
+                throw new KettleDatabaseException( BaseMessages.getString(
+                    PKG, "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString() ), e );
               }
             } else {
               try {
                 database.commit( true );
-                log.logBasic( BaseMessages.getString( PKG, "Trans.Exception.TransactionsCommittedOnConnection",
-                    database.toString() ) );
+                log.logBasic( BaseMessages.getString(
+                    PKG, "Trans.Exception.TransactionsCommittedOnConnection", database.toString() ) );
               } catch ( Exception e ) {
-                throw new KettleDatabaseException( BaseMessages.getString( PKG,
-                    "Trans.Exception.ErrorCommittingUniqueConnection", database.toString() ), e );
+                throw new KettleDatabaseException( BaseMessages.getString(
+                    PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString() ), e );
               }
             }
           } catch ( Exception e ) {
-            log.logError( BaseMessages.getString( PKG, "Trans.Exception.ErrorHandlingTransformationTransaction",
-                database.toString() ), e );
+            log.logError( BaseMessages.getString(
+                PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString() ), e );
             result.setNrErrors( result.getNrErrors() + 1 );
           } finally {
             try {
               // This database connection belongs to this transformation.
               database.closeConnectionOnly();
             } catch ( Exception e ) {
-              log.logError( BaseMessages.getString( PKG, "Trans.Exception.ErrorHandlingTransformationTransaction",
-                  database.toString() ), e );
+              log.logError( BaseMessages.getString(
+                  PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString() ), e );
               result.setNrErrors( result.getNrErrors() + 1 );
             } finally {
               // Remove the database from the list...
@@ -3461,8 +3487,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Pass the clustered run ID to allow for parallel execution of clustered transformations
     //
-    executionConfiguration.getVariables().put( Const.INTERNAL_VARIABLE_CLUSTER_RUN_ID,
-        transSplitter.getClusteredRunId() );
+    executionConfiguration.getVariables().put(
+        Const.INTERNAL_VARIABLE_CLUSTER_RUN_ID, transSplitter.getClusteredRunId() );
 
     executeClustered( transSplitter, executionConfiguration );
     return transSplitter;
@@ -3610,8 +3636,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           {
             String carteObjectId = carteObjectMap.get( master );
             String masterReply =
-                masterServer.execService( PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
-                    + URLEncoder.encode( master.getName(), "UTF-8" ) + "&id="
+                masterServer.execService( PrepareExecutionTransServlet.CONTEXT_PATH
+                    + "/?name=" + URLEncoder.encode( master.getName(), "UTF-8" ) + "&id="
                     + URLEncoder.encode( carteObjectId, "UTF-8" ) + "&xml=Y" );
             WebResult webResult = WebResult.fromXMLString( masterReply );
             if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
@@ -3627,8 +3653,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             TransMeta slaveTrans = transSplitter.getSlaveTransMap().get( slaves[i] );
             String carteObjectId = carteObjectMap.get( slaveTrans );
             String slaveReply =
-                slaves[i].execService( PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
-                    + URLEncoder.encode( slaveTrans.getName(), "UTF-8" ) + "&id="
+                slaves[i].execService( PrepareExecutionTransServlet.CONTEXT_PATH
+                    + "/?name=" + URLEncoder.encode( slaveTrans.getName(), "UTF-8" ) + "&id="
                     + URLEncoder.encode( carteObjectId, "UTF-8" ) + "&xml=Y" );
             WebResult webResult = WebResult.fromXMLString( slaveReply );
             if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
@@ -3644,8 +3670,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           {
             String carteObjectId = carteObjectMap.get( master );
             String masterReply =
-                masterServer.execService( StartExecutionTransServlet.CONTEXT_PATH + "/?name="
-                    + URLEncoder.encode( master.getName(), "UTF-8" ) + "&id="
+                masterServer.execService( StartExecutionTransServlet.CONTEXT_PATH
+                    + "/?name=" + URLEncoder.encode( master.getName(), "UTF-8" ) + "&id="
                     + URLEncoder.encode( carteObjectId, "UTF-8" ) + "&xml=Y" );
             WebResult webResult = WebResult.fromXMLString( masterReply );
             if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
@@ -3661,8 +3687,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             TransMeta slaveTrans = transSplitter.getSlaveTransMap().get( slaves[i] );
             String carteObjectId = carteObjectMap.get( slaveTrans );
             String slaveReply =
-                slaves[i].execService( StartExecutionTransServlet.CONTEXT_PATH + "/?name="
-                    + URLEncoder.encode( slaveTrans.getName(), "UTF-8" ) + "&id="
+                slaves[i].execService( StartExecutionTransServlet.CONTEXT_PATH
+                    + "/?name=" + URLEncoder.encode( slaveTrans.getName(), "UTF-8" ) + "&id="
                     + URLEncoder.encode( carteObjectId, "UTF-8" ) + "&xml=Y" );
             WebResult webResult = WebResult.fromXMLString( slaveReply );
             if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
@@ -3768,8 +3794,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           errors += transStatus.getNrStepErrors();
         } catch ( Exception e ) {
           errors += 1;
-          log.logError( "Unable to contact slave server '" + slaveServers[s].getName()
-              + "' to check slave transformation : " + e.toString() );
+          log.logError( "Unable to contact slave server '"
+              + slaveServers[s].getName() + "' to check slave transformation : " + e.toString() );
         }
       }
 
@@ -3793,8 +3819,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           errors += result.getNrErrors();
         } catch ( Exception e ) {
           errors += 1;
-          log.logError( "Unable to contact master server '" + masterServer.getName()
-              + "' to check master transformation : " + e.toString() );
+          log.logError( "Unable to contact master server '"
+              + masterServer.getName() + "' to check master transformation : " + e.toString() );
         }
       }
 
@@ -3807,13 +3833,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             String carteObjectId = carteObjectMap.get( slaves[s] );
             WebResult webResult = slaveServers[s].stopTransformation( slaves[s].getName(), carteObjectId );
             if ( !WebResult.STRING_OK.equals( webResult.getResult() ) ) {
-              log.logError( "Unable to stop slave transformation '" + slaves[s].getName() + "' : "
-                  + webResult.getMessage() );
+              log.logError( "Unable to stop slave transformation '"
+                  + slaves[s].getName() + "' : " + webResult.getMessage() );
             }
           } catch ( Exception e ) {
             errors += 1;
-            log.logError( "Unable to contact slave server '" + slaveServers[s].getName()
-                + "' to stop transformation : " + e.toString() );
+            log.logError( "Unable to contact slave server '"
+                + slaveServers[s].getName() + "' to stop transformation : " + e.toString() );
           }
         }
 
@@ -3821,13 +3847,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           String carteObjectId = carteObjectMap.get( masterTransMeta );
           WebResult webResult = masterServer.stopTransformation( masterTransMeta.getName(), carteObjectId );
           if ( !WebResult.STRING_OK.equals( webResult.getResult() ) ) {
-            log.logError( "Unable to stop master transformation '" + masterServer.getName() + "' : "
-                + webResult.getMessage() );
+            log.logError( "Unable to stop master transformation '"
+                + masterServer.getName() + "' : " + webResult.getMessage() );
           }
         } catch ( Exception e ) {
           errors += 1;
-          log.logError( "Unable to contact master server '" + masterServer.getName() + "' to stop the master : "
-              + e.toString() );
+          log.logError( "Unable to contact master server '"
+              + masterServer.getName() + "' to stop the master : " + e.toString() );
         }
       }
 
@@ -3887,8 +3913,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         cleanupSlaveServer( transSplitter, slaveServers[s], slaves[s] );
       } catch ( Exception e ) {
         errors++;
-        log.logError( "Unable to contact slave server '" + slaveServers[s].getName()
-            + "' to clean up slave transformation", e );
+        log.logError( "Unable to contact slave server '"
+            + slaveServers[s].getName() + "' to clean up slave transformation", e );
       }
     }
 
@@ -3899,8 +3925,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         cleanupSlaveServer( transSplitter, masterServer, masterTransMeta );
       } catch ( Exception e ) {
         errors++;
-        log.logError( "Unable to contact master server '" + masterServer.getName()
-            + "' to clean up master transformation", e );
+        log.logError( "Unable to contact master server '"
+            + masterServer.getName() + "' to clean up master transformation", e );
       }
 
       // Also de-allocate all ports used for this clustered transformation on the master.
@@ -3912,9 +3938,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             .getClusteredRunId() );
       } catch ( Exception e ) {
         errors++;
-        log.logError( "Unable to contact master server '" + masterServer.getName()
-            + "' to clean up port sockets for transformation'" + transSplitter.getOriginalTransformation().getName()
-            + "'", e );
+        log.logError( "Unable to contact master server '"
+            + masterServer.getName() + "' to clean up port sockets for transformation'"
+            + transSplitter.getOriginalTransformation().getName() + "'", e );
       }
     }
 
@@ -3941,12 +3967,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       String carteObjectId = transSplitter.getCarteObjectMap().get( slaveTransMeta );
       WebResult webResult = slaveServer.cleanupTransformation( transName, carteObjectId );
       if ( !WebResult.STRING_OK.equals( webResult.getResult() ) ) {
-        throw new KettleException( "Unable to run clean-up on slave server '" + slaveServer + "' for transformation '"
-            + transName + "' : " + webResult.getMessage() );
+        throw new KettleException( "Unable to run clean-up on slave server '"
+            + slaveServer + "' for transformation '" + transName + "' : " + webResult.getMessage() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( "Unexpected error contacting slave server '" + slaveServer
-          + "' to clear up transformation '" + transName + "'", e );
+      throw new KettleException( "Unexpected error contacting slave server '"
+          + slaveServer + "' to clear up transformation '" + transName + "'", e );
     }
   }
 
@@ -4016,8 +4042,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
       } catch ( Exception e ) {
         result.setNrErrors( result.getNrErrors() + 1 );
-        log.logError( "Unable to contact slave server '" + slaveServers[s].getName()
-            + "' to get result of slave transformation : " + e.toString() );
+        log.logError( "Unable to contact slave server '"
+            + slaveServers[s].getName() + "' to get result of slave transformation : " + e.toString() );
       }
     }
 
@@ -4038,8 +4064,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
       } catch ( Exception e ) {
         result.setNrErrors( result.getNrErrors() + 1 );
-        log.logError( "Unable to contact master server '" + masterServer.getName()
-            + "' to get result of master transformation : " + e.toString() );
+        log.logError( "Unable to contact master server '"
+            + masterServer.getName() + "' to get result of master transformation : " + e.toString() );
       }
     }
 
@@ -4076,10 +4102,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       //
       Map<String, String> vars = new HashMap<String, String>();
 
-      for ( String var : Const.INTERNAL_TRANS_VARIABLES )
+      for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
         vars.put( var, transMeta.getVariable( var ) );
-      for ( String var : Const.INTERNAL_JOB_VARIABLES )
+      }
+      for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
         vars.put( var, transMeta.getVariable( var ) );
+      }
 
       executionConfiguration.getVariables().putAll( vars );
       slaveServer.injectVariables( executionConfiguration.getVariables() );
@@ -4094,8 +4122,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             KettleVFS.createTempFile( "transExport", ".zip", System.getProperty( "java.io.tmpdir" ), transMeta );
 
         TopLevelResource topLevelResource =
-            ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), transMeta, transMeta,
-                repository, metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+            ResourceUtil.serializeResourceExportInterface(
+                tempFile.getName().toString(), transMeta, transMeta, repository, metaStore, executionConfiguration
+                    .getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
         //
@@ -4116,8 +4145,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         String reply = slaveServer.sendXML( xml, AddTransServlet.CONTEXT_PATH + "/?xml=Y" );
         WebResult webResult = WebResult.fromXMLString( reply );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error posting the transformation on the remote server: " + Const.CR
-              + webResult.getMessage() );
+          throw new KettleException( "There was an error posting the transformation on the remote server: "
+              + Const.CR + webResult.getMessage() );
         }
         carteObjectId = webResult.getId();
       }
@@ -4125,25 +4154,25 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // Prepare the transformation
       //
       String reply =
-          slaveServer.execService( PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
-              + URLEncoder.encode( transMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
+          slaveServer.execService( PrepareExecutionTransServlet.CONTEXT_PATH
+              + "/?name=" + URLEncoder.encode( transMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
       WebResult webResult = WebResult.fromXMLString( reply );
       if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
         throw new KettleException(
-            "There was an error preparing the transformation for excution on the remote server: " + Const.CR
-                + webResult.getMessage() );
+            "There was an error preparing the transformation for excution on the remote server: "
+                + Const.CR + webResult.getMessage() );
       }
 
       // Start the transformation
       //
       reply =
-          slaveServer.execService( StartExecutionTransServlet.CONTEXT_PATH + "/?name="
-              + URLEncoder.encode( transMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
+          slaveServer.execService( StartExecutionTransServlet.CONTEXT_PATH
+              + "/?name=" + URLEncoder.encode( transMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
       webResult = WebResult.fromXMLString( reply );
 
       if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-        throw new KettleException( "There was an error starting the transformation on the remote server: " + Const.CR
-            + webResult.getMessage() );
+        throw new KettleException( "There was an error starting the transformation on the remote server: "
+            + Const.CR + webResult.getMessage() );
       }
 
       return carteObjectId;
@@ -4588,8 +4617,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           errors += result.getNrErrors();
         } catch ( Exception e ) {
           errors += 1;
-          log.logError( transName, "Unable to contact remote slave server '" + remoteSlaveServer.getName()
-              + "' to check transformation status : " + e.toString() );
+          log.logError( transName, "Unable to contact remote slave server '"
+              + remoteSlaveServer.getName() + "' to check transformation status : " + e.toString() );
         }
       }
 
@@ -4616,14 +4645,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     try {
       WebResult webResult = remoteSlaveServer.cleanupTransformation( transName, carteObjectId );
       if ( !WebResult.STRING_OK.equals( webResult.getResult() ) ) {
-        log.logError( transName, "Unable to run clean-up on remote transformation '" + transName + "' : "
-            + webResult.getMessage() );
+        log.logError( transName, "Unable to run clean-up on remote transformation '"
+            + transName + "' : " + webResult.getMessage() );
         errors += 1;
       }
     } catch ( Exception e ) {
       errors += 1;
-      log.logError( transName, "Unable to contact slave server '" + remoteSlaveServer.getName()
-          + "' to clean up transformation : " + e.toString() );
+      log.logError( transName, "Unable to contact slave server '"
+          + remoteSlaveServer.getName() + "' to clean up transformation : " + e.toString() );
     }
   }
 
@@ -5374,7 +5403,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       forwardChange = false;
       backwardChange = false;
 
-    }// finished sorting
+    } // finished sorting
   }
 
   @Override

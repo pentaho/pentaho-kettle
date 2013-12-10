@@ -277,8 +277,8 @@ public class SalesforceConnection {
         // unless all records are processed successfully.
         AllOrNoneHeader allOrNoneHeader = new AllOrNoneHeader();
         allOrNoneHeader.setAllOrNone( true );
-        this.binding.setHeader( new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader",
-            allOrNoneHeader );
+        this.binding.setHeader(
+            new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader", allOrNoneHeader );
       }
       // Attempt the login giving the user feedback
       if ( log.isDetailed() ) {
@@ -299,10 +299,10 @@ public class SalesforceConnection {
       this.loginResult = getBinding().login( getUsername(), getPassword() );
 
       if ( log.isDebug() ) {
-        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SessionId" ) + " : "
-            + this.loginResult.getSessionId() );
-        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.NewServerURL" ) + " : "
-            + this.loginResult.getServerUrl() );
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SessionId" )
+            + " : " + this.loginResult.getSessionId() );
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.NewServerURL" )
+            + " : " + this.loginResult.getServerUrl() );
       }
 
       // set the session header for subsequent call authentication
@@ -317,17 +317,17 @@ public class SalesforceConnection {
       // Return the user Infos
       this.userInfo = this.binding.getUserInfo();
       if ( log.isDebug() ) {
-        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserInfos" ) + " : "
-            + this.userInfo.getUserFullName() );
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserInfos" )
+            + " : " + this.userInfo.getUserFullName() );
         log.logDebug( "----------------------------------------->" );
-        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserName" ) + " : "
-            + this.userInfo.getUserFullName() );
-        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserEmail" ) + " : "
-            + this.userInfo.getUserEmail() );
-        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserLanguage" ) + " : "
-            + this.userInfo.getUserLanguage() );
-        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserOrganization" ) + " : "
-            + this.userInfo.getOrganizationName() );
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserName" )
+            + " : " + this.userInfo.getUserFullName() );
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserEmail" )
+            + " : " + this.userInfo.getUserEmail() );
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserLanguage" )
+            + " : " + this.userInfo.getUserLanguage() );
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserOrganization" )
+            + " : " + this.userInfo.getOrganizationName() );
         log.logDebug( "<-----------------------------------------" );
       }
 
@@ -343,8 +343,9 @@ public class SalesforceConnection {
     } catch ( LoginFault ex ) {
       // The LoginFault derives from AxisFault
       ExceptionCode exCode = ex.getExceptionCode();
-      if ( exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED || exCode == ExceptionCode.INVALID_CLIENT
-          || exCode == ExceptionCode.INVALID_LOGIN || exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN
+      if ( exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED
+          || exCode == ExceptionCode.INVALID_CLIENT || exCode == ExceptionCode.INVALID_LOGIN
+          || exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN
           || exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME || exCode == ExceptionCode.ORG_LOCKED
           || exCode == ExceptionCode.PASSWORD_LOCKOUT || exCode == ExceptionCode.SERVER_UNAVAILABLE
           || exCode == ExceptionCode.TRIAL_EXPIRED || exCode == ExceptionCode.UNSUPPORTED_CLIENT ) {
@@ -376,8 +377,8 @@ public class SalesforceConnection {
             || this.recordsFilter == SalesforceConnectionUtils.RECORDS_FILTER_DELETED ) {
           // The object must be replicateable
           if ( !describeSObjectResult.isReplicateable() ) {
-            throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.Error.ObjectNotReplicateable",
-                getModule() ) );
+            throw new KettleException( BaseMessages.getString(
+                PKG, "SalesforceInput.Error.ObjectNotReplicateable", getModule() ) );
           }
         }
       }

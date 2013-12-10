@@ -96,8 +96,10 @@ public class TransProfileFactory {
     // For now, just do : min, max, sum, count, avg, std dev. (7)
     //
     int[] numericCalculations =
-        new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_SUM,
-          GroupByMeta.TYPE_GROUP_COUNT_ALL, GroupByMeta.TYPE_GROUP_AVERAGE, GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION, };
+        new int[] {
+            GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_SUM,
+            GroupByMeta.TYPE_GROUP_COUNT_ALL, GroupByMeta.TYPE_GROUP_AVERAGE,
+            GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION, };
 
     int[] stringCalculations =
         new int[] { GroupByMeta.TYPE_GROUP_MIN, GroupByMeta.TYPE_GROUP_MAX, GroupByMeta.TYPE_GROUP_COUNT_ALL, };
@@ -131,8 +133,9 @@ public class TransProfileFactory {
       }
     }
     int nrCalculations =
-        nrNumeric * numericCalculations.length + nrDates * dateCalculations.length + nrStrings
-            * stringCalculations.length + nrBooleans * booleanCalculations.length;
+        nrNumeric
+            * numericCalculations.length + nrDates * dateCalculations.length + nrStrings * stringCalculations.length
+            + nrBooleans * booleanCalculations.length;
 
     statsMeta.allocate( 0, nrCalculations );
     int calcIndex = 0;

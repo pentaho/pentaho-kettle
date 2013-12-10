@@ -63,8 +63,8 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRepositoryBaseDelegate {
   private static Class<?> PKG = Repository.class; // $NON-NLS-1$
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Database repository",
-      LoggingObjectType.REPOSITORY, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+      "Database repository", LoggingObjectType.REPOSITORY, null );
 
   public static final int REQUIRED_MAJOR_VERSION = 5;
   public static final int REQUIRED_MINOR_VERSION = 0;
@@ -175,7 +175,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     String versionTable = databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_VERSION );
     try {
       lastUpgrade =
-          database.getOneRow( "SELECT " + quote( KettleDatabaseRepository.FIELD_VERSION_MAJOR_VERSION ) + ", "
+          database.getOneRow( "SELECT "
+              + quote( KettleDatabaseRepository.FIELD_VERSION_MAJOR_VERSION ) + ", "
               + quote( KettleDatabaseRepository.FIELD_VERSION_MINOR_VERSION ) + ", "
               + quote( KettleDatabaseRepository.FIELD_VERSION_UPGRADE_DATE ) + " FROM " + versionTable + " ORDER BY "
               + quote( KettleDatabaseRepository.FIELD_VERSION_UPGRADE_DATE ) + " DESC" );
@@ -213,8 +214,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     if ( majorVersion < REQUIRED_MAJOR_VERSION
         || ( majorVersion == REQUIRED_MAJOR_VERSION && minorVersion < REQUIRED_MINOR_VERSION ) ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Repository.UpgradeRequired.Message", getVersion(),
-          getRequiredVersion() ) );
+      throw new KettleException( BaseMessages.getString(
+          PKG, "Repository.UpgradeRequired.Message", getVersion(), getRequiredVersion() ) );
     }
 
     if ( majorVersion == 3 && minorVersion == 0 ) {
@@ -370,7 +371,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public synchronized void fillStepAttributesBuffer( ObjectId id_transformation ) throws KettleException {
     String sql =
-        "SELECT " + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP ) + ", "
+        "SELECT "
+            + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP ) + ", "
             + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE ) + ", "
             + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR ) + ", "
             + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_NUM ) + ", "
@@ -434,8 +436,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   private synchronized int searchStepAttributeIndexInBuffer( ObjectId id_step, String code, long nr )
     throws KettleValueException {
     Object[] key = new Object[] { new LongObjectId( id_step ).longValue(), // ID_STEP
-      code, // CODE
-      new Long( nr ), // NR
+        code, // CODE
+        new Long( nr ), // NR
     };
 
     int index = Collections.binarySearch( stepAttributesBuffer, key, new StepAttributeComparator() );
@@ -500,7 +502,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public synchronized void setLookupStepAttribute() throws KettleException {
     String sql =
-        "SELECT " + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR ) + ", "
+        "SELECT "
+            + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR ) + ", "
             + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_NUM ) + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP ) + " = ?  AND "
@@ -512,7 +515,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public synchronized void setLookupTransAttribute() throws KettleException {
     String sql =
-        "SELECT " + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_STR ) + ", "
+        "SELECT "
+            + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_STR ) + ", "
             + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_NUM ) + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION ) + " = ?  AND "
@@ -529,7 +533,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public synchronized void setLookupJobAttribute() throws KettleException {
     String sql =
-        "SELECT " + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR ) + ", "
+        "SELECT "
+            + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR ) + ", "
             + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_NUM ) + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB ) + " = ?  AND "
@@ -578,10 +583,11 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     par.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER ),
         id_step );
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ),
-        code );
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
-        new Long( nr ) );
+    par.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
+    par.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ), new Long(
+            nr ) );
 
     if ( psStepAttributesLookup == null ) {
       setLookupStepAttribute();
@@ -594,12 +600,15 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public RowMetaAndData getTransAttributeRow( ObjectId id_transformation, int nr, String code ) throws KettleException {
     RowMetaAndData par = new RowMetaAndData();
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), id_transformation );
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ),
-        code );
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
-        new Long( nr ) );
+    par.addValue(
+        new ValueMeta(
+            KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+        id_transformation );
+    par.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
+    par.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ), new Long(
+            nr ) );
 
     if ( psTransAttributesLookup == null ) {
       setLookupTransAttribute();
@@ -616,9 +625,10 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     RowMetaAndData par = new RowMetaAndData();
     par.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ),
-        code );
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
+    par.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
+    par.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
         new Long( nr ) );
 
     if ( psJobAttributesLookup == null ) {
@@ -718,8 +728,9 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   }
 
   public synchronized int countNrStepAttributes( ObjectId id_step, String code ) throws KettleException {
-    if ( stepAttributesBuffer != null ) // see if we can do this in memory...
-    {
+    if ( stepAttributesBuffer != null ) {
+      // see if we can do this in memory...
+
       int nr = searchNrStepAttributes( id_step, code );
       return nr;
     } else {
@@ -729,8 +740,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
               + " WHERE " + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP ) + " = ? AND "
               + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE ) + " = ?";
       RowMetaAndData table = new RowMetaAndData();
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP,
-          ValueMetaInterface.TYPE_INTEGER ), id_step );
+      table.addValue( new ValueMeta(
+          KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
       table.addValue(
           new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
       RowMetaAndData r = database.getOneRow( sql, table.getRowMeta(), table.getData() );
@@ -790,8 +801,10 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION ) + " = ? AND "
             + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE ) + " = ?";
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), id_transformation );
+    table.addValue(
+        new ValueMeta(
+            KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+        id_transformation );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
     RowMetaAndData r = database.getOneRow( sql, table.getRowMeta(), table.getData() );
@@ -805,7 +818,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized List<Object[]> getTransAttributes( ObjectId id_transformation, String code, long nr )
     throws KettleException {
     String sql =
-        "SELECT *" + " FROM "
+        "SELECT *"
+            + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION ) + " = ? AND "
             + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE ) + " = ? AND "
@@ -813,8 +827,10 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
             + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_NUM );
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), new LongObjectId( id_transformation ) );
+    table.addValue(
+        new ValueMeta(
+            KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+        new LongObjectId( id_transformation ) );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
     table.addValue(
@@ -827,14 +843,17 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized List<Object[]> getTransAttributesWithPrefix( ObjectId id_transformation, String codePrefix )
     throws KettleException {
     String sql =
-        "SELECT *" + " FROM "
+        "SELECT *"
+            + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION ) + " = ?" + " AND "
             + quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE ) + " LIKE '" + codePrefix + "%'";
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), new LongObjectId( id_transformation ) );
+    table.addValue(
+        new ValueMeta(
+            KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+        new LongObjectId( id_transformation ) );
     return database.getRows( sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null );
   }
 
@@ -885,8 +904,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     RowMetaAndData table = new RowMetaAndData();
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ),
-        code );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
     RowMetaAndData r = database.getOneRow( sql, table.getRowMeta(), table.getData() );
     if ( r == null || r.getData() == null ) {
       return 0;
@@ -897,7 +916,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public synchronized List<Object[]> getJobAttributes( ObjectId id_job, String code, long nr ) throws KettleException {
     String sql =
-        "SELECT *" + " FROM "
+        "SELECT *"
+            + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB ) + " = ? AND "
             + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE ) + " = ? AND "
@@ -907,9 +927,10 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     RowMetaAndData table = new RowMetaAndData();
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ),
-        code );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
         new Long( nr ) );
 
     return database.getRows( sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null );
@@ -918,7 +939,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized List<Object[]> getJobAttributesWithPrefix( ObjectId jobId, String codePrefix )
     throws KettleException {
     String sql =
-        "SELECT *" + " FROM "
+        "SELECT *"
+            + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB ) + " = ?" + " AND "
             + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE ) + " LIKE '" + codePrefix + "%'";
@@ -963,20 +985,21 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE,
-        ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB,
-        ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY,
-        ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_NR,
-        ValueMetaInterface.TYPE_INTEGER ), new Long( nr ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE,
-        ValueMetaInterface.TYPE_STRING ), code );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM,
-        ValueMetaInterface.TYPE_NUMBER ), new Double( value_num ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR,
-        ValueMetaInterface.TYPE_STRING ), value_str );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ), new Long( nr ) );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER ), new Double(
+        value_num ) );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), value_str );
 
     database.prepareInsert( table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE );
     database.setValuesInsert( table );
@@ -987,8 +1010,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   }
 
   public synchronized LongObjectId getNextJobEntryAttributeID() throws KettleException {
-    return getNextID( databaseMeta.getQuotedSchemaTableCombination( null,
-        KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE ),
+    return getNextID(
+        databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE ),
         quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE ) );
   }
 
@@ -1031,7 +1054,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public synchronized void setLookupJobEntryAttribute() throws KettleException {
     String sql =
-        "SELECT " + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR ) + ", "
+        "SELECT "
+            + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR ) + ", "
             + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM ) + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY ) + " = ? AND "
@@ -1048,8 +1072,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   private RowMetaAndData getJobEntryAttributeRow( ObjectId id_jobentry, int nr, String code ) throws KettleException {
     RowMetaAndData par = new RowMetaAndData();
-    par.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY,
-        ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
+    par.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
     par.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
     par.addValue(
@@ -1111,10 +1135,10 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY ) + " = ? AND "
             + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE ) + " = ?";
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY,
-        ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE,
-        ValueMetaInterface.TYPE_STRING ), code );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
     RowMetaAndData r = database.getOneRow( sql, table.getRowMeta(), table.getData() );
     if ( r == null || r.getData() == null ) {
       return 0;
@@ -1125,17 +1149,22 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public synchronized List<Object[]> getJobEntryAttributesWithPrefix( ObjectId jobId, ObjectId jobEntryId,
       String codePrefix ) throws KettleException {
     String sql =
-        "SELECT *" + " FROM "
+        "SELECT *"
+            + " FROM "
             + databaseMeta.getQuotedSchemaTableCombination( null, KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE )
             + " WHERE " + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB ) + " = ?" + " AND "
             + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY ) + " = ?" + " AND "
             + quote( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE ) + " LIKE '" + codePrefix + "%'";
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB,
-        ValueMetaInterface.TYPE_INTEGER ), new LongObjectId( jobId ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY,
-        ValueMetaInterface.TYPE_INTEGER ), new LongObjectId( jobEntryId ) );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), new LongObjectId(
+        jobId ) );
+    table
+        .addValue(
+            new ValueMeta(
+                KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ),
+            new LongObjectId( jobEntryId ) );
 
     return database.getRows( sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null );
   }
@@ -1145,158 +1174,183 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   // ///////////////////////////////////////////////////////////////////////////////////
 
   public synchronized ObjectId getNextTransformationID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ),
         quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION ) );
   }
 
   public synchronized ObjectId getNextJobID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_JOB ),
-        quote( KettleDatabaseRepository.FIELD_JOB_ID_JOB ) );
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_JOB ), quote( KettleDatabaseRepository.FIELD_JOB_ID_JOB ) );
   }
 
   public synchronized ObjectId getNextNoteID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_NOTE ),
-        quote( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE ) );
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_NOTE ), quote( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE ) );
   }
 
   public synchronized ObjectId getNextLogID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG ),
         quote( KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG ) );
   }
 
   public synchronized ObjectId getNextDatabaseID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE ),
         quote( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE ) );
   }
 
   public synchronized ObjectId getNextDatabaseTypeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_TYPE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_TYPE ),
         quote( KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE ) );
   }
 
   public synchronized ObjectId getNextDatabaseConnectionTypeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_CONTYPE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_CONTYPE ),
         quote( KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE ) );
   }
 
   public synchronized ObjectId getNextLoglevelID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_LOGLEVEL ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_LOGLEVEL ),
         quote( KettleDatabaseRepository.FIELD_LOGLEVEL_ID_LOGLEVEL ) );
   }
 
   public synchronized ObjectId getNextStepTypeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
         quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ) );
   }
 
   public synchronized ObjectId getNextStepID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_STEP ),
-        quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ) );
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP ), quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ) );
   }
 
   public synchronized ObjectId getNextJobEntryID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY ),
         quote( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY ) );
   }
 
   public synchronized ObjectId getNextJobEntryTypeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_TYPE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_TYPE ),
         quote( KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE ) );
   }
 
   public synchronized LongObjectId getNextJobEntryCopyID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY ),
         quote( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY ) );
   }
 
   public synchronized LongObjectId getNextStepAttributeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE ),
         quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE ) );
   }
 
   public synchronized LongObjectId getNextTransAttributeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE ),
         quote( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE ) );
   }
 
   public synchronized LongObjectId getNextJobAttributeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE ),
         quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE ) );
   }
 
   public synchronized LongObjectId getNextDatabaseAttributeID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE ),
         quote( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE ) );
   }
 
   public synchronized ObjectId getNextTransHopID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_HOP ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_HOP ),
         quote( KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP ) );
   }
 
   public synchronized ObjectId getNextJobHopID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_JOB_HOP ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_JOB_HOP ),
         quote( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP ) );
   }
 
   public synchronized ObjectId getNextDepencencyID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_DEPENDENCY ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_DEPENDENCY ),
         quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DEPENDENCY ) );
   }
 
   public synchronized ObjectId getNextPartitionSchemaID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA ),
         quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) );
   }
 
   public synchronized ObjectId getNextPartitionID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_PARTITION ),
         quote( KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION ) );
   }
 
   public synchronized ObjectId getNextTransformationPartitionSchemaID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA ),
         quote( KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA ) );
   }
 
   public synchronized ObjectId getNextClusterID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ),
         quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ) );
   }
 
   public synchronized ObjectId getNextSlaveServerID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ),
-        quote( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE ) );
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_SLAVE ), quote( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE ) );
   }
 
   public synchronized ObjectId getNextClusterSlaveID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE ),
         quote( KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE ) );
   }
 
   public synchronized ObjectId getNextTransformationSlaveID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE ),
         quote( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE ) );
   }
 
   public synchronized ObjectId getNextTransformationClusterID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER ),
         quote( KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER ) );
   }
 
   public synchronized ObjectId getNextConditionID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ),
         quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ) );
   }
 
   public synchronized ObjectId getNextValueID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ),
-        quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ) );
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ), quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ) );
   }
 
   public synchronized ObjectId getNextUserID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_USER ),
-        quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) );
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_USER ), quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) );
   }
 
   public synchronized void clearNextIDCounters() {
@@ -1304,7 +1358,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   }
 
   public synchronized ObjectId getNextDirectoryID() throws KettleException {
-    return getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ),
+    return getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_DIRECTORY ),
         quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) );
   }
 
@@ -1314,20 +1369,25 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE,
-        ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), id_transformation );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP,
-        ValueMetaInterface.TYPE_INTEGER ), id_step );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
-        new Long( nr ) );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER ), id );
+    table
+        .addValue(
+            new ValueMeta(
+                KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+            id_transformation );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ), new Long(
+            nr ) );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_NUM,
-        ValueMetaInterface.TYPE_NUMBER ), new Double( value_num ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR,
-        ValueMetaInterface.TYPE_STRING ), value_str );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER ), new Double(
+        value_num ) );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), value_str );
 
     /*
      * If we have prepared the insert, we don't do it again. We assume that all the step insert statements come one
@@ -1354,19 +1414,22 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE,
-        ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), id_transformation );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue(
+        new ValueMeta(
+            KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+        id_transformation );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ), new Long(
             nr ) );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_NUM,
-        ValueMetaInterface.TYPE_INTEGER ), new Long( value_num ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_STR,
-        ValueMetaInterface.TYPE_STRING ), value_str );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER ), new Long(
+        value_num ) );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), value_str );
 
     /*
      * If we have prepared the insert, we don't do it again. We asume that all the step insert statements come one after
@@ -1395,18 +1458,21 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE,
-        ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER ),
         new Long( nr ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ),
-        code );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_NUM,
-        ValueMetaInterface.TYPE_INTEGER ), new Long( value_num ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR,
-        ValueMetaInterface.TYPE_STRING ), value_str );
+    table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
+    table
+        .addValue( new ValueMeta(
+            KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER ), new Long(
+            value_num ) );
+    table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), value_str );
 
     /*
      * If we have prepared the insert, we don't do it again. We asume that all the step insert statements come one after
@@ -1489,7 +1555,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       // repository.loadRepositoryDirectoryTree().findDirectory(id_directory);
 
       String sql =
-          "SELECT " + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME ) + ", "
+          "SELECT "
+              + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME ) + ", "
               + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER ) + ", "
               + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE ) + ", "
               + quote( KettleDatabaseRepository.FIELD_TRANSFORMATION_DESCRIPTION ) + ", " + quote( idField ) + " "
@@ -1666,8 +1733,9 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     par.addValue( new ValueMeta( "value", ValueMetaInterface.TYPE_STRING ), value );
     par.addValue( new ValueMeta( "key", ValueMetaInterface.TYPE_INTEGER ), new LongObjectId( key ) );
     RowMetaAndData result =
-        getOneRow( "SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? AND " + lookupkey
-            + " = ?", par.getRowMeta(), par.getData() );
+        getOneRow( "SELECT "
+            + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? AND " + lookupkey + " = ?", par
+            .getRowMeta(), par.getData() );
 
     if ( result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric( 0 ) ) {
       return new LongObjectId( result.getInteger( 0, 0 ) );
@@ -1795,7 +1863,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     KettleValueException {
 
     String sql =
-        "SELECT * FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE ) + " WHERE "
+        "SELECT * FROM "
+            + quoteTable( KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE ) + " WHERE "
             + quote( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE ) + " = ?";
 
     // Get the prepared statement

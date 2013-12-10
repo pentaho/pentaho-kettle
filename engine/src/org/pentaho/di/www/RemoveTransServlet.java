@@ -120,9 +120,10 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( "<H3>"
-            + encoder.encodeForHTML( BaseMessages.getString( PKG, "RemoveTransServlet.TheTransWasRemoved", transName,
-                id ) ) + "</H3>" );
-        out.print( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + encoder.encodeForHTML( BaseMessages.getString(
+                PKG, "RemoveTransServlet.TheTransWasRemoved", transName, id ) ) + "</H3>" );
+        out.print( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
         out.println( "<p>" );
         out.println( "</BODY>" );
@@ -130,13 +131,14 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
       }
     } else {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-            "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+            PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
       } else {
         out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString( PKG,
-                "RemoveTransServlet.TransRemoved.Log.CoundNotFindTrans", transName, id ) ) + "</H1>" );
-        out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + encoder.encodeForHTML( BaseMessages.getString(
+                PKG, "RemoveTransServlet.TransRemoved.Log.CoundNotFindTrans", transName, id ) ) + "</H1>" );
+        out.println( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }

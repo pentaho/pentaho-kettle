@@ -38,9 +38,6 @@ public class TableExistsData extends BaseStepData implements StepDataInterface {
   public String realSchemaname;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public TableExistsData() {
     super();
     indexOfTablename = -1;

@@ -337,8 +337,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
 
             // Not in the Base Folder..Only if include sub folders
-            if ( includeSubfolders && ( info.getFile().getType() == FileType.FILE )
-                && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( includeSubfolders
+                && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages
                     .getString( PKG, "JobEntryDeleteFiles.DeletingFile", info.getFile().toString() ) );
@@ -366,8 +366,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       } catch ( Exception e ) {
 
-        log.logError( BaseMessages.getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcessError" ), BaseMessages
-            .getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcess", info.getFile().toString(), e.getMessage() ) );
+        log
+            .logError( BaseMessages.getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcessError" ), BaseMessages
+                .getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcess", info.getFile().toString(), e
+                    .getMessage() ) );
 
         returncode = false;
       } finally {

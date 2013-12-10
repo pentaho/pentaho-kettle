@@ -54,9 +54,9 @@ public class MailConnectionMeta {
   public static final int DEFAULT_SSL_IMAP_PORT = 993;
 
   public static final String[] actionTypeDesc = new String[] {
-    BaseMessages.getString( PKG, "JobGetPOP.ActionType.GetMessages.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.ActionType.MoveMessages.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.ActionType.DeleteMessages.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.ActionType.GetMessages.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.ActionType.MoveMessages.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.ActionType.DeleteMessages.Label" ),
 
   };
   public static final String[] actionTypeCode = new String[] { "get", "move", "delete" };
@@ -65,11 +65,11 @@ public class MailConnectionMeta {
   public static final int ACTION_TYPE_DELETE = 2;
 
   public static final String[] conditionDateDesc = new String[] {
-    BaseMessages.getString( PKG, "JobGetPOP.ConditionIgnore.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.ConditionEqual.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.ConditionSmaller.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.ConditionGreater.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.ConditionBetween.Label" )
+      BaseMessages.getString( PKG, "JobGetPOP.ConditionIgnore.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.ConditionEqual.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.ConditionSmaller.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.ConditionGreater.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.ConditionBetween.Label" )
 
   };
   public static final String[] conditionDateCode = new String[] { "ignore", "equal", "smaller", "greater", "between" };
@@ -80,22 +80,22 @@ public class MailConnectionMeta {
   public static final int CONDITION_DATE_BETWEEN = 4;
 
   public static final String[] valueIMAPListDesc = new String[] {
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetAll.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetNew.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetOld.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetRead.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetUnread.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetFlagged.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetUnFlagged.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetDraft.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetNotDraft.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetAnswered.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetNotAnswered.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetAll.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetNew.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetOld.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetRead.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetUnread.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetFlagged.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetUnFlagged.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetDraft.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetNotDraft.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetAnswered.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetNotAnswered.Label" ),
 
   };
-  public static final String[] valueIMAPListCode = new String[] { "imaplistall", "imaplistnew", "imaplistold",
-    "imaplistread", "imaplistunread", "imaplistflagged", "imaplistnotflagged", "imaplistdraft", "imaplistnotdraft",
-    "imaplistanswered", "imaplistnotanswered" };
+  public static final String[] valueIMAPListCode = new String[] {
+      "imaplistall", "imaplistnew", "imaplistold", "imaplistread", "imaplistunread", "imaplistflagged",
+      "imaplistnotflagged", "imaplistdraft", "imaplistnotdraft", "imaplistanswered", "imaplistnotanswered" };
   public static final int VALUE_IMAP_LIST_ALL = 0;
   public static final int VALUE_IMAP_LIST_NEW = 1;
   public static final int VALUE_IMAP_LIST_OLD = 2;
@@ -109,9 +109,9 @@ public class MailConnectionMeta {
   public static final int VALUE_IMAP_LIST_NOT_ANSWERED = 10;
 
   public static final String[] afterGetIMAPDesc = new String[] {
-    BaseMessages.getString( PKG, "JobGetPOP.afterGetIMAP.Nothing.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.afterGetIMAP.Delete.Label" ),
-    BaseMessages.getString( PKG, "JobGetPOP.afterGetIMAP.MoveTo.Label" )
+      BaseMessages.getString( PKG, "JobGetPOP.afterGetIMAP.Nothing.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.afterGetIMAP.Delete.Label" ),
+      BaseMessages.getString( PKG, "JobGetPOP.afterGetIMAP.MoveTo.Label" )
 
   };
   public static final String[] afterGetIMAPCode = new String[] { "nothing", "delete", "move" };

@@ -92,7 +92,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   };
 
   private DatabaseInterface databaseInterface;
-  
+
   private static final ReadWriteLock databaseInterfacesMapLock = new ReentrantReadWriteLock();
 
   private static Map<String, DatabaseInterface> allDatabaseInterfaces;
@@ -440,8 +440,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   /**
    * Longer description for user interactions.
    */
-  public static final String[] dbAccessTypeDesc = { "Native (JDBC)", "ODBC", "OCI", "Plugin specific access method",
-    "JNDI", "Custom", };
+  public static final String[] dbAccessTypeDesc = {
+      "Native (JDBC)", "ODBC", "OCI", "Plugin specific access method", "JNDI", "Custom", };
 
   /**
    * Use this length in a String value to indicate that you want to use a CLOB in stead of a normal text field.
@@ -550,8 +550,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final DatabaseInterface getDatabaseInterface( String databaseType ) throws KettleDatabaseException {
     DatabaseInterface di = findDatabaseInterface( databaseType );
     if ( di == null ) {
-      throw new KettleDatabaseException( BaseMessages.getString( PKG, "DatabaseMeta.Error.DatabaseInterfaceNotFound",
-          databaseType ) );
+      throw new KettleDatabaseException( BaseMessages.getString(
+          PKG, "DatabaseMeta.Error.DatabaseInterfaceNotFound", databaseType ) );
     }
     return (DatabaseInterface) di.clone();
   }
@@ -1028,8 +1028,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       String code = iter.next();
       String attribute = getAttributes().getProperty( code );
       if ( !Const.isEmpty( attribute ) ) {
-        retval.append( "      <attribute>" + XMLHandler.addTagValue( "code", code, false )
-            + XMLHandler.addTagValue( "attribute", attribute, false ) + "</attribute>" + Const.CR );
+        retval.append( "      <attribute>"
+            + XMLHandler.addTagValue( "code", code, false ) + XMLHandler.addTagValue( "attribute", attribute, false )
+            + "</attribute>" + Const.CR );
       }
     }
     retval.append( "    </attributes>" ).append( Const.CR );
@@ -1328,10 +1329,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         databaseInterface.setPluginName( plugin.getName() );
         tmpAllDatabaseInterfaces.put( plugin.getIds()[0], databaseInterface );
       } catch ( KettlePluginException cnfe ) {
-        System.out.println( "Could not create connection entry for " + plugin.getName() + ".  "
-            + cnfe.getCause().getClass().getName() );
-        log.logError( "Could not create connection entry for " + plugin.getName() + ".  "
-            + cnfe.getCause().getClass().getName() );
+        System.out.println( "Could not create connection entry for "
+            + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+        log.logError( "Could not create connection entry for "
+            + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
         if ( log.isDebug() ) {
           log.logDebug( "Debug-Error loading plugin: " + plugin, cnfe );
         }
@@ -1516,8 +1517,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             quoteField( environmentSubstitute( tableName ) ) );
       }
     } else {
-      return databaseInterface.getSchemaTableCombination( quoteField( environmentSubstitute( schemaName ) ),
-          quoteField( environmentSubstitute( tableName ) ) );
+      return databaseInterface.getSchemaTableCombination(
+          quoteField( environmentSubstitute( schemaName ) ), quoteField( environmentSubstitute( tableName ) ) );
     }
   }
 
@@ -1646,8 +1647,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     if ( isReservedWord( field ) && quoteReservedWords() ) {
       return handleCase( getStartQuote() + field + getEndQuote() );
     } else {
-      if ( databaseInterface.isQuoteAllFields() || hasSpacesInField( field ) || hasSpecialCharInField( field )
-          || hasDotInField( field ) ) {
+      if ( databaseInterface.isQuoteAllFields()
+          || hasSpacesInField( field ) || hasSpecialCharInField( field ) || hasDotInField( field ) ) {
         return getStartQuote() + field + getEndQuote();
       } else {
         return field;
@@ -2034,20 +2035,20 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       // add column statement
       r = new RowMetaAndData();
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "Add column statement" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getAddColumnStatement( "TABLE", testValue, null, false, null,
-          false ) );
+      r.addValue( val, ValueMetaInterface.TYPE_STRING, getAddColumnStatement(
+          "TABLE", testValue, null, false, null, false ) );
       list.add( r );
       // drop column statement
       r = new RowMetaAndData();
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "Drop column statement" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getDropColumnStatement( "TABLE", testValue, null, false, null,
-          false ) );
+      r.addValue( val, ValueMetaInterface.TYPE_STRING, getDropColumnStatement(
+          "TABLE", testValue, null, false, null, false ) );
       list.add( r );
       // Modify column statement
       r = new RowMetaAndData();
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "Modify column statement" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getModifyColumnStatement( "TABLE", testValue, null, false, null,
-          false ) );
+      r.addValue( val, ValueMetaInterface.TYPE_STRING, getModifyColumnStatement(
+          "TABLE", testValue, null, false, null, false ) );
       list.add( r );
 
       // List of reserved words
@@ -2141,8 +2142,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       r = new RowMetaAndData();
       r.addValue( par, ValueMetaInterface.TYPE_STRING, "SQL: truncate table" );
       String truncateStatement = getTruncateTableStatement( null, "TABLE" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, truncateStatement != null ? truncateStatement
-          : "Not supported by this database type" );
+      r.addValue( val, ValueMetaInterface.TYPE_STRING, truncateStatement != null
+          ? truncateStatement : "Not supported by this database type" );
       list.add( r );
       // supports float rounding on update?
       r = new RowMetaAndData();
@@ -2666,14 +2667,15 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       DatabaseFactoryInterface factory = getDatabaseFactory();
       return factory.getConnectionTestReport( this );
     } catch ( ClassNotFoundException e ) {
-      report.append( BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" ) )
+      report
+          .append( BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" ) )
           .append( Const.CR ); // $NON-NLS-1
-      report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() ) + e.toString()
-          + Const.CR );
+      report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() )
+          + e.toString() + Const.CR );
       report.append( Const.getStackTracker( e ) + Const.CR );
     } catch ( Exception e ) {
-      report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() ) + e.toString()
-          + Const.CR );
+      report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() )
+          + e.toString() + Const.CR );
       report.append( Const.getStackTracker( e ) + Const.CR );
     }
     return report.toString();
@@ -2683,8 +2685,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface plugin = registry.getPlugin( DatabasePluginType.class, databaseInterface.getPluginId() );
     if ( plugin == null ) {
-      throw new KettleDatabaseException( "database type with plugin id [" + databaseInterface.getPluginId()
-          + "] couldn't be found!" );
+      throw new KettleDatabaseException( "database type with plugin id ["
+          + databaseInterface.getPluginId() + "] couldn't be found!" );
     }
 
     ClassLoader loader = registry.getClassLoader( plugin );

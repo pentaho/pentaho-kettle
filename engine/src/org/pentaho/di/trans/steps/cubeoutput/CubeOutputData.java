@@ -41,9 +41,6 @@ public class CubeOutputData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputMeta;
   public boolean oneFileOpened;
 
-  /**
-	 * 
-	 */
   public CubeOutputData() {
     super();
     oneFileOpened = false;
