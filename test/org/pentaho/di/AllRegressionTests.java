@@ -22,6 +22,7 @@
 
 package org.pentaho.di;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.pentaho.di.compatibility.ValueBigNumberTest;
@@ -68,71 +69,69 @@ import org.pentaho.di.ui.dialog.TipsDialogTest;
 
 /**
  * Regression tests for the PDI framework.
- * 
+ *
  * @author sboden
  */
-public class AllRegressionTests
-{   
-    public static Test suite() throws Exception
-    {
-        TestSuite suite = new TestSuite("Run regression tests");
+public class AllRegressionTests {
+  public static Test suite() throws Exception {
+    TestSuite suite = new TestSuite( "Run regression tests" );
 
-        // The testcases should be executed from easy to hard. It
-        // actually defines the debugging sequence if ever required.
-        // If some of the suites fail you should start checking/debugging
-        // the suites from the first that failed onwards.
-        //
-        // So adding testcases in the right order is important.
-        //
-        
-        suite.addTestSuite(ValueStringTest.class);
-        suite.addTestSuite(ValueIntegerTest.class);
-        suite.addTestSuite(ValueNumberTest.class);
-        suite.addTestSuite(ValueBigNumberTest.class);
-        suite.addTestSuite(ValueDateTest.class);
-        suite.addTestSuite(ValueBooleanTest.class);
-        suite.addTestSuite(ValueTest.class);
-        suite.addTestSuite(ConstTest.class);
-        suite.addTestSuite(StringUtilTest.class);
-        suite.addTestSuite(EncrTest.class);
-        suite.addTestSuite(ParameterSimpleTransTest.class);
-        
-        suite.addTestSuite(ValueMetaTest.class);
-        suite.addTestSuite(RowDataUtilTest.class);
-        suite.addTestSuite(ValueDataUtilTest.class);
-        suite.addTestSuite(DatabaseTest.class);
-        suite.addTestSuite(RowTest.class);
-        suite.addTestSuite(RowSetTest.class);
-        suite.addTestSuite(HopTest.class);        
-        suite.addTestSuite(CounterTest.class);
-        suite.addTestSuite(CountersTest.class);
-        
-        suite.addTestSuite(InjectorTest.class);
-        suite.addTestSuite(RowGeneratorTest.class);
-        suite.addTestSuite(ConstantTest.class);
-        suite.addTestSuite(AppendTest.class);   
-        suite.addTestSuite(DetectLastRowStepTest.class);        
-        suite.addTestSuite(BlockingStepTest.class);
-        suite.addTestSuite(SortRowsTest.class);
-        suite.addTestSuite(ValueMapperTest.class);
-        suite.addTestSuite(NullIfTest.class);
-        suite.addTestSuite(RegexEvalTest.class);
-        suite.addTestSuite(AddSequenceTest.class);  
-        suite.addTestSuite(TableInputTest.class);        
-        suite.addTestSuite(TableOutputTest.class);
-//        suite.addTestSuite(DatabaseLookupTest.class);    Now a JUnit 4 testcase
-        suite.addTestSuite(CombinationLookupTest.class);
-        suite.addTestSuite(JavaScriptStringTest.class);
-        suite.addTestSuite(JavaScriptSpecialTest.class);
-        suite.addTestSuite(GetXMLDataTest.class);
-        suite.addTestSuite(CsvInput1Test.class);
-        suite.addTestSuite(CsvInput2Test.class);
-        suite.addTestSuite(TipsDialogTest.class);
+    // The testcases should be executed from easy to hard. It
+    // actually defines the debugging sequence if ever required.
+    // If some of the suites fail you should start checking/debugging
+    // the suites from the first that failed onwards.
+    //
+    // So adding testcases in the right order is important.
+    //
 
-        // Temporarily disable this test, it never worked on Windows or Unix so
-        // it doesn't make sense executing it for the moment.
-        // suite.addTestSuite( BlackBoxTests.class );
-        
-        return suite;
-    }
+    suite.addTestSuite( ValueStringTest.class );
+    suite.addTestSuite( ValueIntegerTest.class );
+    suite.addTestSuite( ValueNumberTest.class );
+    suite.addTestSuite( ValueBigNumberTest.class );
+    suite.addTestSuite( ValueDateTest.class );
+    suite.addTestSuite( ValueBooleanTest.class );
+    suite.addTestSuite( ValueTest.class );
+    suite.addTestSuite( ConstTest.class );
+    suite.addTestSuite( StringUtilTest.class );
+    suite.addTestSuite( EncrTest.class );
+    suite.addTestSuite( ParameterSimpleTransTest.class );
+
+    suite.addTestSuite( ValueMetaTest.class );
+    suite.addTestSuite( RowDataUtilTest.class );
+    suite.addTestSuite( ValueDataUtilTest.class );
+    suite.addTestSuite( DatabaseTest.class );
+    suite.addTestSuite( RowTest.class );
+    suite.addTestSuite( RowSetTest.class );
+    suite.addTestSuite( HopTest.class );
+    suite.addTestSuite( CounterTest.class );
+    suite.addTestSuite( CountersTest.class );
+
+    suite.addTestSuite( InjectorTest.class );
+    suite.addTestSuite( RowGeneratorTest.class );
+    suite.addTestSuite( ConstantTest.class );
+    suite.addTestSuite( AppendTest.class );
+    suite.addTestSuite( DetectLastRowStepTest.class );
+    suite.addTestSuite( BlockingStepTest.class );
+    suite.addTest( new JUnit4TestAdapter( SortRowsTest.class ) );
+    suite.addTestSuite( ValueMapperTest.class );
+    suite.addTestSuite( NullIfTest.class );
+    suite.addTestSuite( RegexEvalTest.class );
+    suite.addTestSuite( AddSequenceTest.class );
+    suite.addTestSuite( TableInputTest.class );
+    suite.addTestSuite( TableOutputTest.class );
+    //        suite.addTestSuite(DatabaseLookupTest.class);    Now a JUnit 4 testcase
+    suite.addTestSuite( CombinationLookupTest.class );
+    suite.addTestSuite( JavaScriptStringTest.class );
+    suite.addTestSuite( JavaScriptSpecialTest.class );
+    suite.addTestSuite( GetXMLDataTest.class );
+    suite.addTestSuite( CsvInput1Test.class );
+    suite.addTestSuite( CsvInput2Test.class );
+    suite.addTestSuite( TipsDialogTest.class );
+
+    // Temporarily disable this test, it never worked on Windows or Unix so
+    // it doesn't make sense executing it for the moment.
+    // suite.addTestSuite( BlackBoxTests.class );
+
+    return suite;
+  }
 }
