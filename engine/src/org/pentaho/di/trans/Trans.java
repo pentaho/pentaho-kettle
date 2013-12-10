@@ -25,6 +25,7 @@ package org.pentaho.di.trans;
 
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -670,7 +671,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // folks want to test it locally...
     //
     if ( servletPrintWriter == null ) {
-      servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+      String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+      if ( encoding == null ){
+        servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+      }
+      else{
+        try{
+          servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out, encoding ) );
+        }
+        catch( UnsupportedEncodingException ex ){
+          servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+        }
+      }
     }
 
     // Keep track of all the row sets and allocated steps
@@ -5321,6 +5333,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   public void setServletReponse( HttpServletResponse response ) {
+    try{
+      String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+      if( encoding != null  && !Const.isEmpty( encoding.trim() ) ){
+        response.setCharacterEncoding( encoding );
+        response.setContentType( "text/html; charset=" + encoding );
+      }
+    } catch( Exception ex ){      
+    }
     this.servletresponse = response;
   }
 
