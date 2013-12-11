@@ -441,9 +441,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
       }
 
-    }
-
-      );
+    } );
 
     // TabFolder
     wTabFolder = new CTabFolder( shell, SWT.BORDER );
@@ -876,9 +874,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -888,9 +886,9 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-        PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ),
+        BaseMessages.getString( PKG, "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -993,6 +991,7 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
     int nrKeyMapping = wKeysTb.nrNonEmpty();
     int nrFieldMappping = wFieldsTb.nrNonEmpty();
     inf.allocate( nrKeyMapping, nrFieldMappping, 3 );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrKeyMapping; i++ ) {
       TableItem item = wKeysTb.getNonEmpty( i );
       inf.getFieldTableForKeys()[i] = item.getText( 1 );
@@ -1000,12 +999,14 @@ public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements Step
 
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrFieldMappping; i++ ) {
       TableItem item = wFieldsTb.getNonEmpty( i );
       inf.getFieldTableForFields()[i] = item.getText( 1 );
       inf.getFieldStreamForFields()[i] = item.getText( 2 );
       inf.getInsOrUptFlag()[i] = "Y".equalsIgnoreCase( item.getText( 3 ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     inf.getTabIsEnable()[0] = wKeysTab.getControl().getEnabled();
     inf.getTabIsEnable()[1] = wFieldsTab.getControl().getEnabled();
     inf.getTabIsEnable()[2] = wCustomTab.getControl().getEnabled();

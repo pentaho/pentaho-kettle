@@ -101,8 +101,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
   private Label wlSuccessCondition, wlValueType, wlFieldType, wlMask;
   private CCombo wSuccessCondition, wValueType, wFieldType;
   private ComboVar wMask;
-  private FormData fdlSuccessCondition, fdSuccessCondition, fdlValueType, fdValueType, fdFieldType, fdlFieldType,
-      fdMask, fdlMask;
+  private FormData fdlSuccessCondition, fdSuccessCondition, fdlValueType, fdValueType, fdFieldType, fdlFieldType, fdMask, fdlMask;
 
   private Label wlSuccessNumberCondition;
   private CCombo wSuccessNumberCondition;

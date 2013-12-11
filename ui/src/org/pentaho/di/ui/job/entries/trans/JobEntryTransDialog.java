@@ -1228,9 +1228,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       wParameters.setRowNums();
       wParameters.optWidth( true );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Title" ), BaseMessages.getString(
-        PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Title" ),
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Message" ), e );
     }
 
   }
@@ -1493,9 +1493,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-        PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 

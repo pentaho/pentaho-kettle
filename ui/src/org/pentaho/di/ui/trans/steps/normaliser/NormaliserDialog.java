@@ -326,6 +326,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
     int nrfields = wFields.nrNonEmpty();
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );

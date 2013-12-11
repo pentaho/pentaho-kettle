@@ -156,8 +156,7 @@ public class LoggingBuffer {
     return getLogBufferFromTo( childIds, includeGeneral, from, to );
   }
 
-  public StringBuffer
-    getBuffer( String parentLogChannelId, boolean includeGeneral, int startLineNr, int endLineNr ) {
+  public StringBuffer getBuffer( String parentLogChannelId, boolean includeGeneral, int startLineNr, int endLineNr ) {
     StringBuffer stringBuffer = new StringBuffer( 10000 );
 
     List<KettleLoggingEvent> events =

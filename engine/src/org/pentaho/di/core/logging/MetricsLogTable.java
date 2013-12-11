@@ -126,34 +126,15 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
   public static MetricsLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     MetricsLogTable table = new MetricsLogTable( space, databasesInterface );
 
-    table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldName.IdBatch" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.IdBatch" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
-    table.fields.add( new LogTableField( ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldName.ChannelId" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.ChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.LOG_DATE.id, true, false, "LOG_DATE", BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldName.LogDate" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
-    table.fields.add( new LogTableField( ID.METRICS_DATE.id, true, false, "METRICS_DATE", BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldName.MetricsDate" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.MetricsDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
-    table.fields.add( new LogTableField( ID.METRICS_CODE.id, true, false, "METRICS_CODE", BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldName.MetricsDescription" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.MetricsCode" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField(
-      ID.METRICS_DESCRIPTION.id, true, false, "METRICS_DESCRIPTION", BaseMessages.getString(
-        PKG, "MetricsLogTable.FieldName.MetricsDescription" ), BaseMessages.getString(
-        PKG, "MetricsLogTable.FieldDescription.MetricsDescription" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.METRICS_SUBJECT.id, true, false, "METRICS_SUBJECT", BaseMessages
-      .getString( PKG, "MetricsLogTable.FieldName.MetricsSubject" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.MetricsSubject" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.METRICS_TYPE.id, true, false, "METRICS_TYPE", BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldName.MetricsType" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.MetricsType" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.METRICS_VALUE.id, true, false, "METRICS_VALUE", BaseMessages
-      .getString( PKG, "MetricsLogTable.FieldName.MetricsValue" ), BaseMessages.getString(
-      PKG, "MetricsLogTable.FieldDescription.MetricsValue" ), ValueMetaInterface.TYPE_INTEGER, 12 ) );
+    table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.IdBatch" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.IdBatch" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
+    table.fields.add( new LogTableField( ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.ChannelId" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.ChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.LOG_DATE.id, true, false, "LOG_DATE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.LogDate" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+    table.fields.add( new LogTableField( ID.METRICS_DATE.id, true, false, "METRICS_DATE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsDate" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+    table.fields.add( new LogTableField( ID.METRICS_CODE.id, true, false, "METRICS_CODE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsDescription" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsCode" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.METRICS_DESCRIPTION.id, true, false, "METRICS_DESCRIPTION", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsDescription" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsDescription" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.METRICS_SUBJECT.id, true, false, "METRICS_SUBJECT", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsSubject" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsSubject" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.METRICS_TYPE.id, true, false, "METRICS_TYPE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsType" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsType" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.METRICS_VALUE.id, true, false, "METRICS_VALUE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.MetricsValue" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.MetricsValue" ), ValueMetaInterface.TYPE_INTEGER, 12 ) );
 
     table.findField( ID.LOG_DATE.id ).setLogDateField( true );
     table.findField( ID.ID_BATCH.id ).setKey( true );

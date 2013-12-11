@@ -96,8 +96,10 @@ public class LdapProtocolFactory {
         if ( getName( protocol ).equals( connectionType ) ) {
           try {
             return protocol.getConstructor(
-              LogChannelInterface.class, VariableSpace.class, LdapMeta.class, Collection.class ).newInstance(
-              log, variableSpace, meta, binaryAttributes );
+              LogChannelInterface.class,
+              VariableSpace.class,
+              LdapMeta.class,
+              Collection.class ).newInstance( log, variableSpace, meta, binaryAttributes );
           } catch ( Exception e ) {
             throw new KettleException( e );
           }

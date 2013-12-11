@@ -478,9 +478,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-        PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -490,9 +490,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-        PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ),
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -595,6 +595,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     inf.setMaxErrors( Const.toInt( wMaxErrors.getText(), 0 ) );
 
     logDebug( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       inf.getFieldTable()[i] = item.getText( 1 );
@@ -673,9 +674,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-        PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 

@@ -396,11 +396,13 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
     meta.allocate( nrKeys1, nrKeys2 );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrKeys1; i++ ) {
       TableItem item = wKeys1.getNonEmpty( i );
       meta.getKeyFields1()[i] = item.getText( 1 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrKeys2; i++ ) {
       TableItem item = wKeys2.getNonEmpty( i );
       meta.getKeyFields2()[i] = item.getText( 1 );
@@ -418,13 +420,15 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     //
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString(
-          PKG, "MergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
-          PKG, "MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
-          + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
-          PKG, "MergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
-          PKG, "MergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-          STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase(
+            props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

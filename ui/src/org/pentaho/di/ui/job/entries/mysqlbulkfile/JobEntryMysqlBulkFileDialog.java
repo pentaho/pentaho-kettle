@@ -826,10 +826,9 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
             source[i] = Const.trim( source[i] );
           }
           int[] idxSource = Const.indexsOfStrings( source, available );
-          EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, available, BaseMessages.getString(
-              PKG, "JobMysqlBulkFile.SelectColumns.Title" ), BaseMessages.getString(
-              PKG, "JobMysqlBulkFile.SelectColumns.Message" ) );
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, available,
+            BaseMessages.getString( PKG, "JobMysqlBulkFile.SelectColumns.Title" ),
+            BaseMessages.getString( PKG, "JobMysqlBulkFile.SelectColumns.Message" ) );
           dialog.setMulti( true );
           dialog.setAvoidQuickSearch();
           dialog.setSelectedNrs( idxSource );

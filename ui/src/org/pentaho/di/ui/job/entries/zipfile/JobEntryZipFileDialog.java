@@ -647,10 +647,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
               wZipFilename.getText(), wAddDate.getSelection(), wAddTime.getSelection(), wSpecifyFormat
                 .getSelection(), wDateTimeFormat.getText() );
           if ( filename != null && filename.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, filename, BaseMessages.getString(
-                PKG, "JobZipFiles.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-                PKG, "JobZipFiles.SelectOutputFiles.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, filename,
+              BaseMessages.getString( PKG, "JobZipFiles.SelectOutputFiles.DialogTitle" ),
+              BaseMessages.getString( PKG, "JobZipFiles.SelectOutputFiles.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {

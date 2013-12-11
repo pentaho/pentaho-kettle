@@ -409,10 +409,9 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
       try {
         database.connect();
         String[] Tablenames = database.getTablenames();
-        EnterSelectionDialog dialog =
-          new EnterSelectionDialog( shell, Tablenames, BaseMessages.getString(
-            PKG, "JobTruncateTables.SelectTables.Title" ), BaseMessages.getString(
-            PKG, "JobTruncateTables.SelectTables.Message" ) );
+        EnterSelectionDialog dialog = new EnterSelectionDialog( shell, Tablenames,
+          BaseMessages.getString( PKG, "JobTruncateTables.SelectTables.Title" ),
+          BaseMessages.getString( PKG, "JobTruncateTables.SelectTables.Message" ) );
         dialog.setMulti( true );
         dialog.setAvoidQuickSearch();
         if ( dialog.open() != null ) {
@@ -423,8 +422,9 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
           }
         }
       } catch ( KettleDatabaseException e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-          .getString( PKG, "JobEntryTruncateTables.ConnectionError.DialogMessage" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+          BaseMessages.getString( PKG, "JobEntryTruncateTables.ConnectionError.DialogMessage" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();

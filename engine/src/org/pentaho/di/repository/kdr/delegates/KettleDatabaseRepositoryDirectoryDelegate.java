@@ -349,9 +349,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  public ObjectId
-    renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-      throws KettleException {
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException {
     ObjectId parentId = null;
     if ( newParentDir != null ) {
       parentId = newParentDir.getObjectId();

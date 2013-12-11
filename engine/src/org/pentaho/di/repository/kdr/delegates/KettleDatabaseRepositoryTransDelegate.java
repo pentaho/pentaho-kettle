@@ -122,8 +122,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       quote( KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP ), lookupkey, key );
   }
 
-  public synchronized ObjectId
-    getDependencyID( ObjectId id_transformation, ObjectId id_database, String tablename ) throws KettleException {
+  public synchronized ObjectId getDependencyID( ObjectId id_transformation, ObjectId id_database, String tablename ) throws KettleException {
     String[] lookupkey =
       new String[] {
         quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION ),
@@ -1296,109 +1295,43 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
   private synchronized void insertTransformation( TransMeta transMeta ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
-      new LongObjectId( transMeta.getObjectId() ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME, ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), transMeta
-      .getDescription() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING ),
-      transMeta.getExtendedDescription() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_VERSION, ValueMetaInterface.TYPE_STRING ), transMeta
-      .getTransversion() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_STATUS, ValueMetaInterface.TYPE_INTEGER ), new Long(
-      transMeta.getTransstatus() < 0 ? -1L : transMeta.getTransstatus() ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ), new LongObjectId( transMeta.getObjectId() ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME, ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), transMeta.getDescription() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), transMeta.getExtendedDescription() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_VERSION, ValueMetaInterface.TYPE_STRING ), transMeta.getTransversion() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_TRANS_STATUS, ValueMetaInterface.TYPE_INTEGER ), new Long( transMeta.getTransstatus() < 0 ? -1L : transMeta.getTransstatus() ) );
     TransLogTable logTable = transMeta.getTransLogTable();
     StepMeta step = (StepMeta) logTable.getSubject( TransLogTable.ID.LINES_READ );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_READ, ValueMetaInterface.TYPE_INTEGER ),
-        step == null ? null : step.getObjectId() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_READ, ValueMetaInterface.TYPE_INTEGER ), step == null ? null : step.getObjectId() );
     step = (StepMeta) logTable.getSubject( TransLogTable.ID.LINES_WRITTEN );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_WRITE, ValueMetaInterface.TYPE_INTEGER ),
-      step == null ? null : step.getObjectId() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_WRITE, ValueMetaInterface.TYPE_INTEGER ), step == null ? null : step.getObjectId() );
     step = (StepMeta) logTable.getSubject( TransLogTable.ID.LINES_INPUT );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_INPUT, ValueMetaInterface.TYPE_INTEGER ),
-      step == null ? null : step.getObjectId() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_INPUT, ValueMetaInterface.TYPE_INTEGER ), step == null ? null : step.getObjectId() );
     step = (StepMeta) logTable.getSubject( TransLogTable.ID.LINES_OUTPUT );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, ValueMetaInterface.TYPE_INTEGER ),
-      step == null ? null : step.getObjectId() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_OUTPUT, ValueMetaInterface.TYPE_INTEGER ), step == null ? null : step.getObjectId() );
     step = (StepMeta) logTable.getSubject( TransLogTable.ID.LINES_UPDATED );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER ),
-      step == null ? null : step.getObjectId() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER ), step == null ? null : step.getObjectId() );
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER ), logTable
-      .getDatabaseMeta() == null ? new LongObjectId( -1L ).longValue() : new LongObjectId( logTable
-      .getDatabaseMeta().getObjectId() ).longValue() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING ), logTable
-      .getDatabaseMeta() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( logTable.isBatchIdUsed() ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( logTable.isLogFieldUsed() ) );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, ValueMetaInterface.TYPE_INTEGER ),
-      transMeta.getMaxDateConnection() == null ? new LongObjectId( -1L ).longValue() : new LongObjectId(
-        transMeta.getMaxDateConnection().getObjectId() ).longValue() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING ),
-      transMeta.getMaxDateTable() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING ),
-      transMeta.getMaxDateField() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANSFORMATION_OFFSET_MAXDATE, ValueMetaInterface.TYPE_NUMBER ),
-      new Double( transMeta.getMaxDateOffset() ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_DIFF_MAXDATE, ValueMetaInterface.TYPE_NUMBER ), new Double(
-      transMeta.getMaxDateDifference() ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER ), logTable.getDatabaseMeta() == null ? new LongObjectId( -1L ).longValue() : new LongObjectId( logTable.getDatabaseMeta().getObjectId() ).longValue() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING ), logTable.getDatabaseMeta() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( logTable.isBatchIdUsed() ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( logTable.isLogFieldUsed() ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, ValueMetaInterface.TYPE_INTEGER ), transMeta.getMaxDateConnection() == null ? new LongObjectId( -1L ).longValue() : new LongObjectId( transMeta.getMaxDateConnection().getObjectId() ).longValue() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING ), transMeta.getMaxDateTable() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING ), transMeta.getMaxDateField() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_OFFSET_MAXDATE, ValueMetaInterface.TYPE_NUMBER ), new Double( transMeta.getMaxDateOffset() ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_DIFF_MAXDATE, ValueMetaInterface.TYPE_NUMBER ), new Double( transMeta.getMaxDateDifference() ) );
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_CREATED_USER, ValueMetaInterface.TYPE_STRING ), transMeta
-      .getCreatedUser() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_CREATED_DATE, ValueMetaInterface.TYPE_DATE ), transMeta
-      .getCreatedDate() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_CREATED_USER, ValueMetaInterface.TYPE_STRING ), transMeta.getCreatedUser() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_CREATED_DATE, ValueMetaInterface.TYPE_DATE ), transMeta.getCreatedDate() );
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING ), transMeta
-      .getModifiedUser() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE ), transMeta
-      .getModifiedDate() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_SIZE_ROWSET, ValueMetaInterface.TYPE_INTEGER ), new Long(
-      transMeta.getSizeRowset() ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), transMeta
-      .getRepositoryDirectory().getObjectId() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING ), transMeta.getModifiedUser() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE ), transMeta.getModifiedDate() );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_SIZE_ROWSET, ValueMetaInterface.TYPE_INTEGER ), new Long( transMeta.getSizeRowset() ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), transMeta.getRepositoryDirectory().getObjectId() );
 
-    repository.connectionDelegate.getDatabase().prepareInsert(
-      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_TRANSFORMATION );
+    repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), KettleDatabaseRepository.TABLE_R_TRANSFORMATION );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();

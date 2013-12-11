@@ -1205,9 +1205,7 @@ public class KettleFileRepository extends AbstractRepository {
 
   }
 
-  public ObjectId
-    renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-      throws KettleException {
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException {
     if ( newParentDir != null || newName != null ) {
       try {
         // In case of a root object, the ID is the same as the relative filename...

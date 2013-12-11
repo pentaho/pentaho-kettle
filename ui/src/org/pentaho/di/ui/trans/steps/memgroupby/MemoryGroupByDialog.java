@@ -410,11 +410,13 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 
     input.allocate( sizegroup, nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < sizegroup; i++ ) {
       TableItem item = wGroup.getNonEmpty( i );
       input.getGroupField()[i] = item.getText( 1 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wAgg.getNonEmpty( i );
       input.getAggregateField()[i] = item.getText( 1 );

@@ -7,6 +7,5 @@ public interface LogChannelInterfaceFactory {
 
   public LogChannelInterface create( Object subject, LoggingObjectInterface parentObject );
 
-  public LogChannelInterface
-    create( Object subject, LoggingObjectInterface parentObject, boolean gatheringMetrics );
+  public LogChannelInterface create( Object subject, LoggingObjectInterface parentObject, boolean gatheringMetrics );
 }

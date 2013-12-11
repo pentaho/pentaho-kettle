@@ -620,13 +620,13 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
           setRadioButtons();
         }
       } catch ( IOException e ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ),
+          BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       } catch ( KettleException e ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-          PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogTitle" ),
+          BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       }
     }
 
@@ -761,9 +761,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
             getByReferenceData( transInf );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog( shell, BaseMessages.getString(
-            PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-            PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+          new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Title" ),
+            BaseMessages.getString( PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Message" ), e );
         }
         break;
       default:
@@ -1010,9 +1010,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     try {
       loadTransformation();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Title" ), BaseMessages.getString(
-        PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Title" ),
+        BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
     }
 
     metaInjectMeta.setSpecificationMethod( specificationMethod );
@@ -1116,9 +1116,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-        PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 }

@@ -215,9 +215,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( jobHistoryComposite.getShell(), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( jobHistoryComposite.getShell(),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
     }
   }
 
@@ -241,10 +241,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
 
       MessageBox mb = new MessageBox( jobGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-      mb.setMessage( BaseMessages.getString(
-        PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) ); // Nothing found that
-                                                                                                // matches your
-                                                                                                // criteria, sorry
+      mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) );
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) );
       if ( mb.open() == SWT.YES ) {
         Database database = new Database( loggingObject, databaseMeta );
@@ -252,9 +249,9 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           database.connect();
           database.truncateTable( schemaTable );
         } catch ( Exception e ) {
-          new ErrorDialog( jobGraph.getShell(), BaseMessages.getString(
-            PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ), BaseMessages.getString(
-            PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
+          new ErrorDialog( jobGraph.getShell(),
+            BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorClearningLoggingTable.Title" ),
+            BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message" ), e );
         } finally {
           database.disconnect();
 
@@ -890,10 +887,11 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         }
       }
 
-      TableView tableView =
-        new TableView( jobMeta, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, columnList
-          .toArray( new ColumnInfo[columnList.size()] ), 1, true, // readonly!
-        null, spoon.props );
+      TableView tableView = new TableView( jobMeta, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE,
+        columnList.toArray( new ColumnInfo[columnList.size()] ), 1,
+        true, // readonly!
+        null,
+        spoon.props );
 
       tableView.table.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent arg0 ) {

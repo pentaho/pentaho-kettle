@@ -298,33 +298,17 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER ),
-      id_jobentry_type );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER ), new Long( nr ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER ), new Long(
-      gui_location_x ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER ), new Long(
-      gui_location_y ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( gui_draw ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( parallel ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER ), id_jobentry_type );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER ), new Long( nr ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_x ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_y ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( gui_draw ) );
+    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( parallel ) );
 
-    repository.connectionDelegate.getDatabase().prepareInsert(
-      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY );
+    repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();
@@ -368,9 +352,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
     }
   }
 
-  private void
-    saveAttributesMap( ObjectId jobId, ObjectId entryId, Map<String, Map<String, String>> attributesMap )
-      throws KettleException {
+  private void saveAttributesMap( ObjectId jobId, ObjectId entryId, Map<String, Map<String, String>> attributesMap ) throws KettleException {
     for ( final String groupName : attributesMap.keySet() ) {
       Map<String, String> attributes = attributesMap.get( groupName );
       for ( final String key : attributes.keySet() ) {

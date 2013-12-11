@@ -468,10 +468,9 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
     TransMeta previewMeta =
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-    EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "MondrianInputDialog.EnterPreviewSize" ), BaseMessages.getString(
-        PKG, "MondrianInputDialog.NumberOfRowsToPreview" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "MondrianInputDialog.EnterPreviewSize" ),
+      BaseMessages.getString( PKG, "MondrianInputDialog.NumberOfRowsToPreview" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =

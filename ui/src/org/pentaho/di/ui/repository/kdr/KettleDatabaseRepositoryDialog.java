@@ -503,9 +503,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                 rep.connect( "admin", pwd, true );
                 goAhead = true;
               } catch ( KettleException e ) {
-                new ErrorDialog( shell, BaseMessages.getString(
-                  PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ), BaseMessages.getString(
-                  PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message" ), e );
+                new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ),
+                  BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message" ), e );
               }
             }
           }
@@ -614,19 +613,18 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
               mb.open();
             }
           } catch ( KettleException e ) {
-            new ErrorDialog( shell, BaseMessages.getString(
-              PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title" ), BaseMessages.getString(
-              PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message" ), e );
+            new ErrorDialog( shell,
+              BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title" ),
+              BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message" ), e );
           } finally {
             rep.disconnect();
           }
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-        shell,
-        BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title" ), BaseMessages
-          .getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message" ), ke );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title" ),
+        BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message" ), ke );
     }
   }
 

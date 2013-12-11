@@ -338,9 +338,8 @@ public class Kitchen {
                 }
 
                 job = new Job( repository, jobMeta );
-              } else
-              // List the jobs in the repository
-              if ( "Y".equalsIgnoreCase( optionListjobs.toString() ) ) {
+              } else if ( "Y".equalsIgnoreCase( optionListjobs.toString() ) ) {
+                // List the jobs in the repository
                 if ( log.isDebug() ) {
                   log.logDebug( BaseMessages.getString( PKG, "Kitchen.Log.GettingLostJobsInDirectory", ""
                     + directory ) );
@@ -350,9 +349,8 @@ public class Kitchen {
                 for ( int i = 0; i < jobnames.length; i++ ) {
                   System.out.println( jobnames[i] );
                 }
-              } else
-              // List the directories in the repository
-              if ( "Y".equalsIgnoreCase( optionListdir.toString() ) ) {
+              } else if ( "Y".equalsIgnoreCase( optionListdir.toString() ) ) {
+                // List the directories in the repository
                 String[] dirnames = repository.getDirectoryNames( directory.getObjectId() );
                 for ( int i = 0; i < dirnames.length; i++ ) {
                   System.out.println( dirnames[i] );

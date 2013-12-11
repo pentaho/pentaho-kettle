@@ -501,10 +501,8 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     } );
 
     // Proxy host line
-    wProxyHost =
-      new LabelTextVar(
-        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Label" ), BaseMessages
-          .getString( PKG, "JobSFTPPUT.ProxyHost.Tooltip" ) );
+    wProxyHost = new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Label" ),
+      BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -1130,18 +1128,22 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     try {
       if ( sftpclient == null ) {
         // Create sftp client to host ...
-        sftpclient =
-          new SFTPClient( InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ), Const
-            .toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 22 ), jobMeta
-            .environmentSubstitute( wUserName.getText() ), jobMeta.environmentSubstitute( wKeyFilename
-            .getText() ), jobMeta.environmentSubstitute( wkeyfilePass.getText() ) );
+        sftpclient = new SFTPClient(
+          InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ),
+          Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 22 ),
+          jobMeta.environmentSubstitute( wUserName.getText() ),
+          jobMeta.environmentSubstitute( wKeyFilename.getText() ),
+          jobMeta.environmentSubstitute( wkeyfilePass.getText() ) );
         // Set proxy?
         String realProxyHost = jobMeta.environmentSubstitute( wProxyHost.getText() );
         if ( !Const.isEmpty( realProxyHost ) ) {
           // Set proxy
-          sftpclient.setProxy( realProxyHost, jobMeta.environmentSubstitute( wProxyPort.getText() ), jobMeta
-            .environmentSubstitute( wProxyUsername.getText() ), jobMeta.environmentSubstitute( wProxyPassword
-            .getText() ), wProxyType.getText() );
+          sftpclient.setProxy(
+            realProxyHost,
+            jobMeta.environmentSubstitute( wProxyPort.getText() ),
+            jobMeta.environmentSubstitute( wProxyUsername.getText() ),
+            jobMeta.environmentSubstitute( wProxyPassword.getText() ),
+            wProxyType.getText() );
         }
         // login to ftp host ...
         sftpclient.login( jobMeta.environmentSubstitute( wPassword.getText() ) );

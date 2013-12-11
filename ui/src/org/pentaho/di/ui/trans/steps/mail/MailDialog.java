@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -93,20 +94,16 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
 
   private Group wOriginFiles, wZipGroup, wAttachedContent;
 
-  private FormData fdOriginFiles, fdZipGroup, fdFilenameField, fdlFilenameField, fdAttachedContent,
-      fdisattachContentField;
+  private FormData fdOriginFiles, fdZipGroup, fdFilenameField, fdlFilenameField, fdAttachedContent, fdisattachContentField;
   private Button wisFileDynamic, wisattachContentField;
 
-  private Label wlisFileDynamic, wlDynamicFilenameField, wlisattachContentField, wlattachContentField,
-      wlattachContentFileNameField;
+  private Label wlisFileDynamic, wlDynamicFilenameField, wlisattachContentField, wlattachContentField, wlattachContentFileNameField;
   private CCombo wDynamicFilenameField, wattachContentField, wattachContentFileNameField;
-  private FormData fdlisFileDynamic, fdisFileDynamic, fdlisattachContentField, fdattachContentField,
-      fdattachContentFileNameField;
+  private FormData fdlisFileDynamic, fdisFileDynamic, fdlisattachContentField, fdattachContentField, fdattachContentFileNameField;
 
   private Label wlDynamicWildcardField;
   private CCombo wDynamicWildcardField;
-  private FormData fdlDynamicWildcardField, fdDynamicWildcardField, fdlattachContentField,
-      fdlattachContentFileNameField;
+  private FormData fdlDynamicWildcardField, fdDynamicWildcardField, fdlattachContentField, fdlattachContentFileNameField;
 
   private CTabFolder wTabFolder;
   private Composite wGeneralComp, wContentComp, wAttachedComp, wMessageComp, wembeddedComp;
@@ -121,10 +118,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   private CCombo wReplyToAddresses;
   private FormData fdlReplyToAddresses;
 
-  private Group wDestinationGroup, wReplyGroup, wServerGroup, wAuthentificationGroup, wMessageSettingsGroup,
-      wMessageGroup;
-  private FormData fdDestinationGroup, fdReplyGroup, fdServerGroup, fdAuthentificationGroup,
-      fdMessageSettingsGroup, fdMessageGroup;
+  private Group wDestinationGroup, wReplyGroup, wServerGroup, wAuthentificationGroup, wMessageSettingsGroup, wMessageGroup;
+  private FormData fdDestinationGroup, fdReplyGroup, fdServerGroup, fdAuthentificationGroup, fdMessageSettingsGroup, fdMessageGroup;
 
   private LabelText wName;
 
@@ -304,8 +299,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
   private Label wlImageFilename, wlContentID, wlFields;
   private Button wbImageFilename, wbaImageFilename, wbdImageFilename, wbeImageFilename;
   private TextVar wImageFilename, wContentID;
-  private FormData fdlImageFilename, fdbImageFilename, fdImageFilename, fdlContentID, fdContentID,
-      fdbaImageFilename, fdbdImageFilename, fdbeImageFilename, fdlFields, fdFields;
+  private FormData fdlImageFilename, fdbImageFilename, fdImageFilename, fdlContentID, fdContentID, fdbaImageFilename, fdbdImageFilename, fdbeImageFilename, fdlFields, fdFields;
   private TableView wFields;
 
   private boolean getpreviousFields = false;

@@ -260,9 +260,9 @@ public class KettlePropertiesFileDialog extends Dialog {
       wFields.setRowNums();
       wFields.optWidth( true );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Title" ), BaseMessages.getString(
-        PKG, "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Title" ),
+        BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Message" ), e );
     }
   }
 
@@ -299,9 +299,9 @@ public class KettlePropertiesFileDialog extends Dialog {
       out = new FileOutputStream( getKettlePropertiesFilename() );
       properties.store( out, Const.getKettlePropertiesFileHeader() );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Title" ), BaseMessages.getString(
-        PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Title" ),
+        BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message" ), e );
     } finally {
       try {
         out.close();

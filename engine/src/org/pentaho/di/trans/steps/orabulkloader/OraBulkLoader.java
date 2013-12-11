@@ -623,8 +623,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
       FileObject fileObject = null;
 
       String method = meta.getLoadMethod();
-      if ( // OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
-      OraBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
+      // OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
+      if ( OraBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
         if ( meta.getControlFile() != null ) {
           try {
             fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );

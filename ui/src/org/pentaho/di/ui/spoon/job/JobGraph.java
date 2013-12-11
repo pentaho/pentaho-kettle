@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -862,8 +863,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                     MessageDialog.QUESTION,
                     new String[] {
                       BaseMessages.getString( PKG, "System.Button.Yes" ),
-                      BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString(
-                      PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ), spoon.props.getAutoSplit() );
+                      BaseMessages.getString( PKG, "System.Button.No" ) },
+                    0,
+                    BaseMessages.getString( PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ), spoon.props.getAutoSplit() );
                 MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
                 id = md.open();
                 spoon.props.setAutoSplit( md.getToggleState() );
@@ -1355,10 +1357,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       swtToolbar.pack();
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages
-          .getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_GRAPH ), new Exception(
-          t ) );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_GRAPH ),
+        new Exception( t ) );
     }
   }
 
@@ -1694,13 +1696,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       //
       if ( "Y".equalsIgnoreCase( spoon.props.getCustomParameter( STRING_PARALLEL_WARNING_PARAMETER, "Y" ) ) ) {
         MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString(
-            PKG, "JobGraph.ParallelJobEntriesWarning.DialogTitle" ), null, BaseMessages.getString(
-            PKG, "JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR )
-            + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
-            PKG, "JobGraph.ParallelJobEntriesWarning.Option1" ) }, 0, BaseMessages.getString(
-            PKG, "JobGraph.ParallelJobEntriesWarning.Option2" ), "N".equalsIgnoreCase( spoon.props
-            .getCustomParameter( STRING_PARALLEL_WARNING_PARAMETER, "Y" ) ) );
+          new MessageDialogWithToggle( shell,
+            BaseMessages.getString( PKG, "JobGraph.ParallelJobEntriesWarning.DialogTitle" ),
+            null,
+            BaseMessages.getString( PKG, "JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR ) + Const.CR,
+            MessageDialog.WARNING,
+            new String[] { BaseMessages.getString( PKG, "JobGraph.ParallelJobEntriesWarning.Option1" ) },
+            0,
+            BaseMessages.getString( PKG, "JobGraph.ParallelJobEntriesWarning.Option2" ),
+            "N".equalsIgnoreCase( spoon.props.getCustomParameter( STRING_PARALLEL_WARNING_PARAMETER, "Y" ) ) );
         MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
         md.open();
         spoon.props.setCustomParameter( STRING_PARALLEL_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
@@ -2412,9 +2416,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         spoon.applyVariables();
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ), BaseMessages.getString(
-        PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ),
+        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), e );
     }
   }
 
@@ -2520,9 +2524,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       spoon.applyVariables();
 
     } catch ( Throwable e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ), BaseMessages.getString(
-        PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), (Exception) e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ),
+        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), (Exception) e );
     }
   }
 
@@ -2617,9 +2621,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       spoon.applyVariables();
 
     } catch ( Throwable e ) {
-      new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title" ), BaseMessages.getString(
-        PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title" ),
+        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message" ), e );
     }
   }
 
@@ -2873,8 +2877,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     int y2 = line[3];
 
     // Not in the square formed by these 2 points: ignore!
-    if ( !( ( ( x >= x1 && x <= x2 ) || ( x >= x2 && x <= x1 ) )
-    && ( ( y >= y1 && y <= y2 ) || ( y >= y2 && y <= y1 ) ) ) ) {
+    if ( !( ( ( x >= x1 && x <= x2 ) || ( x >= x2 && x <= x1 ) ) && ( ( y >= y1 && y <= y2 ) || ( y >= y2 && y <= y1 ) ) ) ) {
       return false;
     }
 
@@ -3029,8 +3032,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     return mb.open();
   }
 
-  public static boolean
-    editProperties( JobMeta jobMeta, Spoon spoon, Repository rep, boolean allowDirectoryChange ) {
+  public static boolean editProperties( JobMeta jobMeta, Spoon spoon, Repository rep, boolean allowDirectoryChange ) {
     if ( jobMeta == null ) {
       return false;
     }
@@ -3047,10 +3049,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           rep != null ? rep.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
         spoon.sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
       } catch ( Exception e ) {
-        new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-          PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages.getString(
-          PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs
-            .makeTabName( jobMeta, true ) ), e );
+        new ErrorDialog( spoon.getShell(),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs.makeTabName( jobMeta, true ) ), e );
       }
     }
 
@@ -3308,10 +3309,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                 .getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" )
                 + Const.CR
                 + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" )
-                + Const.CR, MessageDialog.QUESTION, new String[] {
-                BaseMessages.getString( PKG, "System.Button.Yes" ),
-                BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString(
-                PKG, "JobLog.Dialog.SaveChangedFile.Toggle" ), spoon.props.getAutoSave() );
+                + Const.CR, MessageDialog.QUESTION, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) },
+              0, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Toggle" ), spoon.props.getAutoSave() );
           int answer = md.open();
           if ( ( answer & 0xFF ) == 0 ) {
             spoon.saveToFile( jobMeta );

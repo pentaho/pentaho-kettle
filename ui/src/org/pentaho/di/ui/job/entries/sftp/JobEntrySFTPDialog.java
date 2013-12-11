@@ -978,18 +978,23 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     try {
       if ( sftpclient == null ) {
         // Create sftp client to host ...
-        sftpclient =
-          new SFTPClient( InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ), Const
-            .toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 22 ), jobMeta
-            .environmentSubstitute( wUserName.getText() ), jobMeta.environmentSubstitute( wKeyFilename
-            .getText() ), jobMeta.environmentSubstitute( wkeyfilePass.getText() ) );
-        // Set proxy?
+        sftpclient = new SFTPClient(
+          InetAddress.getByName( jobMeta.environmentSubstitute( wServerName.getText() ) ),
+          Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 22 ),
+          jobMeta.environmentSubstitute( wUserName.getText() ),
+          jobMeta.environmentSubstitute( wKeyFilename.getText() ),
+          jobMeta.environmentSubstitute( wkeyfilePass.getText() ) );
+
+        // Set proxy? 
         String realProxyHost = jobMeta.environmentSubstitute( wProxyHost.getText() );
         if ( !Const.isEmpty( realProxyHost ) ) {
           // Set proxy
-          sftpclient.setProxy( realProxyHost, jobMeta.environmentSubstitute( wProxyPort.getText() ), jobMeta
-            .environmentSubstitute( wProxyUsername.getText() ), jobMeta.environmentSubstitute( wProxyPassword
-            .getText() ), wProxyType.getText() );
+          sftpclient.setProxy(
+            realProxyHost,
+            jobMeta.environmentSubstitute( wProxyPort.getText() ),
+            jobMeta.environmentSubstitute( wProxyUsername.getText() ),
+            jobMeta.environmentSubstitute( wProxyPassword.getText() ),
+            wProxyType.getText() );
         }
         // login to ftp host ...
         sftpclient.login( jobMeta.environmentSubstitute( wPassword.getText() ) );

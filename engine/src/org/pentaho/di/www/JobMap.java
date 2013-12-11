@@ -50,8 +50,7 @@ public class JobMap {
     configurationMap = new Hashtable<CarteObjectEntry, JobConfiguration>();
   }
 
-  public synchronized void
-    addJob( String jobName, String carteObjectId, Job job, JobConfiguration jobConfiguration ) {
+  public synchronized void addJob( String jobName, String carteObjectId, Job job, JobConfiguration jobConfiguration ) {
     CarteObjectEntry entry = new CarteObjectEntry( jobName, carteObjectId );
     jobMap.put( entry, job );
     configurationMap.put( entry, jobConfiguration );

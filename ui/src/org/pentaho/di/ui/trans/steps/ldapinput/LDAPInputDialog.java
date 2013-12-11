@@ -1547,6 +1547,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setTrimType( LDAPInputField.getTrimTypeByDesc( item.getText( 12 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 13 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setSearchScope( LDAPInputMeta.getSearchScopeByDesc( wsearchScope.getText() ) );
@@ -1569,10 +1570,9 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "LDAPInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "LDAPInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "LDAPInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "LDAPInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =

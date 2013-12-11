@@ -636,10 +636,9 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
         getInfo( tfoi );
         String[] files = tfoi.getFiles( transMeta.environmentSubstitute( wFilename.getText() ) );
         if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, files, BaseMessages.getString(
-              PKG, "JsonOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-              PKG, "JsonOutputDialog.SelectOutputFiles.DialogMessage" ) );
+          EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+            BaseMessages.getString( PKG, "JsonOutputDialog.SelectOutputFiles.DialogTitle" ),
+            BaseMessages.getString( PKG, "JsonOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -991,6 +990,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
       TableItem item = wFields.getNonEmpty( i );
       field.setFieldName( item.getText( 1 ) );
       field.setElementName( item.getText( 2 ) );
+      //CHECKSTYLE:Indentation:OFF
       jsometa.getOutputFields()[i] = field;
     }
   }

@@ -981,9 +981,9 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "LDIFInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "LDIFInputDialog.FilesReadSelection.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files,
+                BaseMessages.getString( PKG, "LDIFInputDialog.FilesReadSelection.DialogTitle" ),
+                BaseMessages.getString( PKG, "LDIFInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -993,9 +993,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogTitle" ),
+            BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1172,8 +1171,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
         HashSet<String> attributeSet = new HashSet<String>();
 
-        for ( LDIFRecord recordLDIF = InputLDIF.nextRecord(); recordLDIF != null; recordLDIF =
-          InputLDIF.nextRecord() ) {
+        for ( LDIFRecord recordLDIF = InputLDIF.nextRecord(); recordLDIF != null; recordLDIF = InputLDIF.nextRecord() ) {
           // Get LDIF Content
           LDIFContent contentLDIF = recordLDIF.getContent();
 
@@ -1499,6 +1497,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setTrimType( LDIFInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1521,10 +1520,9 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "LDIFInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "LDIFInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "LDIFInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "LDIFInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =

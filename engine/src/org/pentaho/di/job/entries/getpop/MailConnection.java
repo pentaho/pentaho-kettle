@@ -413,18 +413,15 @@ public class MailConnection {
       if ( log.isDebug() ) {
         // display some infos on folder
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder
-          .getFullName() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder
-          .getURLName().toString() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", ""
-          + this.folder.isSubscribed() ) );
+        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder.getFullName() ) );
+        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName().toString() ) );
+        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", "" + this.folder.isSubscribed() ) );
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( defaultFolder ? BaseMessages.getString(
-        PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages.getString(
-        PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
+      throw new KettleException(
+        defaultFolder ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder",
+          foldername ), e );
     }
   }
 

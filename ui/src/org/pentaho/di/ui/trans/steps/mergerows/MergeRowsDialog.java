@@ -388,11 +388,13 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
     input.allocate( nrKeys, nrValues );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrKeys; i++ ) {
       TableItem item = wKeys.getNonEmpty( i );
       input.getKeyFields()[i] = item.getText( 1 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrValues; i++ ) {
       TableItem item = wValues.getNonEmpty( i );
       input.getValueFields()[i] = item.getText( 1 );

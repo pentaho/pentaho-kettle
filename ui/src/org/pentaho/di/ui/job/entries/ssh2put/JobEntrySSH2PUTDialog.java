@@ -534,10 +534,9 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
     } );
 
     // ProxyUsername line
-    wHTTPProxyUsername =
-      new LabelTextVar( jobMeta, wHTTPProxyGroup, BaseMessages.getString(
-        PKG, "JobSSH2PUT.HttpProxyUsername.Label" ), BaseMessages.getString(
-        PKG, "JobSSH2PUT.HttpProxyUsername.Tooltip" ) );
+    wHTTPProxyUsername = new LabelTextVar( jobMeta, wHTTPProxyGroup,
+      BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyUsername.Label" ),
+      BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyUsername.Tooltip" ) );
     props.setLook( wHTTPProxyUsername );
     wHTTPProxyUsername.addModifyListener( lsMod );
     fdHTTPProxyUsername = new FormData();
@@ -547,10 +546,9 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
     wHTTPProxyUsername.setLayoutData( fdHTTPProxyUsername );
 
     // HttpProxyPassword line
-    wHTTPProxyPassword =
-      new LabelTextVar( jobMeta, wHTTPProxyGroup, BaseMessages.getString(
-        PKG, "JobSSH2PUT.HttpProxyPassword.Label" ), BaseMessages.getString(
-        PKG, "JobSSH2PUT.HttpProxyPassword.Tooltip" ) );
+    wHTTPProxyPassword = new LabelTextVar( jobMeta, wHTTPProxyGroup,
+      BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyPassword.Label" ),
+      BaseMessages.getString( PKG, "JobSSH2PUT.HttpProxyPassword.Tooltip" ) );
     props.setLook( wHTTPProxyPassword );
     wHTTPProxyPassword.setEchoChar( '*' );
     wHTTPProxyPassword.addModifyListener( lsMod );
@@ -1170,12 +1168,15 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
           /* Now connect */
           // if the proxy requires basic authentication:
           if ( wuseBasicAuthentication.getSelection() ) {
-            conn.setProxyData( new HTTPProxyData( jobMeta.environmentSubstitute( wHTTPProxyHost.getText() ), Const
-              .toInt( wHTTPProxyPort.getText(), 22 ), jobMeta.environmentSubstitute( wHTTPProxyUsername
-              .getText() ), jobMeta.environmentSubstitute( wHTTPProxyPassword.getText() ) ) );
+            conn.setProxyData( new HTTPProxyData(
+              jobMeta.environmentSubstitute( wHTTPProxyHost.getText() ),
+              Const.toInt( wHTTPProxyPort.getText(), 22 ),
+              jobMeta.environmentSubstitute( wHTTPProxyUsername.getText() ),
+              jobMeta.environmentSubstitute( wHTTPProxyPassword.getText() ) ) );
           } else {
-            conn.setProxyData( new HTTPProxyData( jobMeta.environmentSubstitute( wHTTPProxyHost.getText() ), Const
-              .toInt( wHTTPProxyPort.getText(), 22 ) ) );
+            conn.setProxyData( new HTTPProxyData(
+              jobMeta.environmentSubstitute( wHTTPProxyHost.getText() ),
+              Const.toInt( wHTTPProxyPort.getText(), 22 ) ) );
           }
         }
 

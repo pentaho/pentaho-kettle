@@ -1340,6 +1340,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 
     in.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       in.getUpdateLookup()[i] = item.getText( 1 );

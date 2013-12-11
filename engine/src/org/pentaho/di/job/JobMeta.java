@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -2883,8 +2884,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    *
    * @return A list of StringSearchResult with strings used in the job
    */
-  public List<StringSearchResult>
-    getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes ) {
+  public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes ) {
     List<StringSearchResult> stringList = new ArrayList<StringSearchResult>();
 
     if ( searchSteps ) {
@@ -3635,10 +3635,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   }
 
   @SuppressWarnings( "deprecation" )
-  private void
-    compatibleJobEntryExportResources( JobEntryInterface entry, JobMeta jobMeta,
-      Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
-      Repository repository2 ) throws KettleException {
+  private void compatibleJobEntryExportResources( JobEntryInterface entry, JobMeta jobMeta,
+    Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface,
+    Repository repository2 ) throws KettleException {
     entry.exportResources( jobMeta, definitions, namingInterface, repository );
   }
 

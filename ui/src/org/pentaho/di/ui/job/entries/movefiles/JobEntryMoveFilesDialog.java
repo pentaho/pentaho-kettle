@@ -85,8 +85,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
   private Button wbSourceFileFolder, wbDestinationFileFolder, wbSourceDirectory, wbDestinationDirectory;
 
   private TextVar wSourceFileFolder;
-  private FormData fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder, fdbDestinationFileFolder,
-      fdbSourceDirectory, fdbDestinationDirectory;
+  private FormData fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder, fdbDestinationFileFolder, fdbSourceDirectory, fdbDestinationDirectory;
 
   private Label wlMoveEmptyFolders;
   private Button wMoveEmptyFolders;

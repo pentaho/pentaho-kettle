@@ -267,6 +267,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );

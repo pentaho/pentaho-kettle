@@ -1000,10 +1000,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
           FileInputList fileInputList = tfii.getFiles( transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "JsonInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "JsonInputDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "JsonInputDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "JsonInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1013,9 +1012,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "JsonInputDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogTitle" ),
+            BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1369,6 +1367,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setTrimType( JsonInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1390,10 +1389,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "JsonInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "JsonInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "JsonInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "JsonInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {

@@ -491,10 +491,9 @@ public class OlapInputDialog extends BaseStepDialog implements StepDialogInterfa
     TransMeta previewMeta =
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-    EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "OlapInputDialog.EnterPreviewSize" ), BaseMessages.getString(
-        PKG, "OlapDialog.NumberOfRowsToPreview" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "OlapInputDialog.EnterPreviewSize" ),
+      BaseMessages.getString( PKG, "OlapDialog.NumberOfRowsToPreview" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =

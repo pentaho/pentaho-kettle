@@ -833,9 +833,9 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-        PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
 
   }
@@ -1662,6 +1662,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     jobExecutorMeta.setResultRowsLength( new int[nrFields] );
     jobExecutorMeta.setResultRowsPrecision( new int[nrFields] );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrFields; i++ ) {
       TableItem item = wResultRowsFields.getNonEmpty( i );
       jobExecutorMeta.getResultRowsField()[i] = item.getText( 1 );

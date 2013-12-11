@@ -549,9 +549,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     commit();
   }
 
-  public ObjectId
-    renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-      throws KettleException {
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
+    throws KettleException {
     ObjectId result = null;
     securityProvider.validateAction( RepositoryOperation.RENAME_DIRECTORY );
     result = directoryDelegate.renameRepositoryDirectory( id, newParentDir, newName );
@@ -1776,9 +1775,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     return jobEntryDelegate.insertJobEntry( id_job, jobEntryBase );
   }
 
-  public DatabaseMeta
-    loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases )
-      throws KettleException {
+  public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases ) throws KettleException {
     long id_database = getStepAttributeInteger( idStep, code );
     if ( id_database <= 0 ) {
       return null;

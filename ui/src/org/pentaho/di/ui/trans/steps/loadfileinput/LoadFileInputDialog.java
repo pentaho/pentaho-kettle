@@ -955,10 +955,9 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
           FileInputList fileInputList = tfii.getFiles( transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "LoadFileInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "LoadFileInputDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "LoadFileInputDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "LoadFileInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1383,6 +1382,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       field.setTrimType( LoadFileInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1404,10 +1404,9 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "LoadFileInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "LoadFileInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "LoadFileInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "LoadFileInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {

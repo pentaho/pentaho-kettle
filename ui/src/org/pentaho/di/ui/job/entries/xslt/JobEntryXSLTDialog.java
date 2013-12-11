@@ -796,6 +796,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     int nroutputprops = wOutputProperties.nrNonEmpty();
     jobEntry.allocate( nrparams, nroutputprops );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrparams; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       jobEntry.getParameterField()[i] = item.getText( 1 );

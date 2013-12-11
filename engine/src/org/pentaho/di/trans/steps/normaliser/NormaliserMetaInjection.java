@@ -115,6 +115,7 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
 
     // Pass the grid to the step metadata
     //
+    //CHECKSTYLE:Indentation:OFF
     meta.allocate( normaliserFields.size() );
     for ( int i = 0; i < normaliserFields.size(); i++ ) {
       meta.getFieldName()[i] = normaliserFields.get( i ).getName();

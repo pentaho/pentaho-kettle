@@ -234,8 +234,7 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
       new String[] { ".*\\.jar$", }, // Include mask: only jar files
       new String[] { ".*classpath\\.jar$", }, // Exclude mask: only jar files
       new String[] { "Y", }, // File required
-      new boolean[] { true, } // Search sub-directories
-      );
+      new boolean[] { true, } ); // Search sub-directories
 
     List<URL> files = new ArrayList<URL>();
 

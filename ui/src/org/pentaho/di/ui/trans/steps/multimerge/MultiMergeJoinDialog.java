@@ -531,6 +531,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     meta.allocateInputSteps( streamCount );
     meta.allocateKeys( streamCount );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < streamCount; i++ ) {
       meta.getInputSteps()[i] = wInputStepArray[i].getText();
       infoStreams.get( i ).setStepMeta( transMeta.findStep( wInputStepArray[i].getText() ) );
@@ -547,13 +548,15 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     // Show a warning (optional)
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString(
-          PKG, "MultiMergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
-          PKG, "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
-          + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
-          PKG, "MultiMergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
-          PKG, "MultiMergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-          STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.Option2" ),
+          "N".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

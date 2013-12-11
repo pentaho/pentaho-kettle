@@ -1489,9 +1489,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setNotTermRecipientSearch( wNegateReceipient.getSelection() );
     in.setSubjectSearch( wSubject.getText() );
     in.setNotTermSubjectSearch( wNegateSubject.getSelection() );
-    in
-      .setConditionOnReceivedDate( MailConnectionMeta
-        .getConditionDateByDesc( wConditionOnReceivedDate.getText() ) );
+    in.setConditionOnReceivedDate( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) );
     in.setNotTermReceivedDateSearch( wNegateReceivedDate.getSelection() );
     in.setReceivedDate1( wReadFrom.getText() );
     in.setReceivedDate2( wReadTo.getText() );
@@ -1510,6 +1508,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       field.setName( item.getText( 1 ) );
       field.setColumn( MailInputField.getColumnByDesc( item.getText( 2 ) ) );
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
 
@@ -1776,10 +1775,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "MailInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "MailInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "MailInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "MailInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
@@ -1793,10 +1791,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
           String loggingText = progressDialog.getLoggingText();
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
-            EnterTextDialog etd =
-              new EnterTextDialog(
-                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
-                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+            EnterTextDialog etd = new EnterTextDialog( shell,
+              BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
+              BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
