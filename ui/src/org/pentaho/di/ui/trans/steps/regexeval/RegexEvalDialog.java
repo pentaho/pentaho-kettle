@@ -82,13 +82,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
   private Group wStepSettings, wRegexSettings;
   private FormData fdStepSettings, fdRegexSettings;
 
-  private Label wlCanonEq, wlCaseInsensitive, wlComment, wlDotAll, wlMultiline, wlUnicode, wlUnix, wlUseVar,
-      wlAllowCaptureGroups, wlReplaceFields;
-  private Button wCanonEq, wCaseInsensitive, wComment, wDotAll, wMultiline, wUnicode, wUnix, wUseVar,
-      wAllowCaptureGroups, wReplaceFields;
-  private FormData fdlCanonEq, fdCanonEq, fdlCaseInsensitive, fdCaseInsensitive, fdComment, fdlComment, fdDotAll,
-      fdlDotAll, fdMultiline, fdlMultiline, fdUnicode, fdlUnicode, fdUnix, fdlUnix, fdUseVar, fdlUseVar,
-      fdAllowCaptureGroups, fdlAllowCaptureGroups, fdReplaceFields, fdlReplaceFields;
+  private Label wlCanonEq, wlCaseInsensitive, wlComment, wlDotAll, wlMultiline, wlUnicode, wlUnix, wlUseVar, wlAllowCaptureGroups, wlReplaceFields;
+  private Button wCanonEq, wCaseInsensitive, wComment, wDotAll, wMultiline, wUnicode, wUnix, wUseVar, wAllowCaptureGroups, wReplaceFields;
+  private FormData fdlCanonEq, fdCanonEq, fdlCaseInsensitive, fdCaseInsensitive, fdComment, fdlComment, fdDotAll, fdlDotAll, fdMultiline, fdlMultiline, fdUnicode, fdlUnicode, fdUnix, fdlUnix, fdUseVar, fdlUseVar, fdAllowCaptureGroups, fdlAllowCaptureGroups, fdReplaceFields, fdlReplaceFields;
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -233,10 +229,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Output Fieldame
 
-    wResultField =
-      new LabelTextVar( transMeta, wStepSettings, BaseMessages.getString(
-        PKG, "RegexEvalDialog.ResultField.Label" ), BaseMessages.getString(
-        PKG, "RegexEvalDialog.ResultField.Tooltip" ) );
+    wResultField = new LabelTextVar( transMeta, wStepSettings,
+      BaseMessages.getString( PKG, "RegexEvalDialog.ResultField.Label" ),
+      BaseMessages.getString( PKG, "RegexEvalDialog.ResultField.Tooltip" ) );
 
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
@@ -808,6 +803,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < input.getFieldName().length; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );

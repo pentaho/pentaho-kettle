@@ -74,6 +74,7 @@ public class RegexEvalMetaTest {
     String name = "TEST_NAME";
     regexEvalMeta.allocate( 1 );
     String fieldName = "fieldname";
+    //CHECKSTYLE:Indentation:OFF
     regexEvalMeta.getFieldName()[0] = fieldName;
     when( mockInputRowMeta.indexOfValue( fieldName ) ).thenReturn( 0 );
     ValueMetaInterface mockValueMeta = mock( ValueMetaInterface.class );

@@ -288,10 +288,9 @@ public class PreviewRowsDialog {
     if ( !dynamic ) {
       // Mmm, if we don't get any rows in the buffer: show a dialog box.
       if ( buffer == null || buffer.size() == 0 ) {
-        ShowMessageDialog dialog =
-          new ShowMessageDialog( shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString(
-            PKG, "PreviewRowsDialog.NoRows.Text" ), BaseMessages.getString(
-            PKG, "PreviewRowsDialog.NoRows.Message" ) );
+        ShowMessageDialog dialog = new ShowMessageDialog( shell, SWT.OK | SWT.ICON_WARNING,
+          BaseMessages.getString( PKG, "PreviewRowsDialog.NoRows.Text" ),
+          BaseMessages.getString( PKG, "PreviewRowsDialog.NoRows.Message" ) );
         dialog.open();
         shell.dispose();
         return true;

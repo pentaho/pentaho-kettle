@@ -125,9 +125,7 @@ public class PluginRegistry {
     }
   }
 
-  public synchronized void
-    registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
-      throws KettlePluginException {
+  public synchronized void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin ) throws KettlePluginException {
 
     boolean changed = false; // Is this an add or an update?
 
@@ -987,8 +985,7 @@ public class PluginRegistry {
    * @param <T>
    *          extension of PluginTypeInterface
    */
-  public <T extends PluginTypeInterface> void
-    addPluginListener( Class<T> typeToTrack, PluginTypeListener listener ) {
+  public <T extends PluginTypeInterface> void addPluginListener( Class<T> typeToTrack, PluginTypeListener listener ) {
     List<PluginTypeListener> list = listeners.get( typeToTrack );
     if ( list == null ) {
       list = new ArrayList<PluginTypeListener>();

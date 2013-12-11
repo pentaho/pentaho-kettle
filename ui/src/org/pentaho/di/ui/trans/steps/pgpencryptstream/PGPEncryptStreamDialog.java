@@ -462,9 +462,9 @@ public class PGPEncryptStreamDialog extends BaseStepDialog implements StepDialog
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-          PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "PGPEncryptStreamDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

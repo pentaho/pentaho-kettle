@@ -140,10 +140,9 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
         false );
     colinf[1].setSelectionAdapter( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        EnterSelectionDialog esd =
-          new EnterSelectionDialog( shell, functionDesc, BaseMessages.getString(
-            PKG, "RandomValueDialog.SelectInfoType.DialogTitle" ), BaseMessages.getString(
-            PKG, "RandomValueDialog.SelectInfoType.DialogMessage" ) );
+        EnterSelectionDialog esd = new EnterSelectionDialog( shell, functionDesc,
+          BaseMessages.getString( PKG, "RandomValueDialog.SelectInfoType.DialogTitle" ),
+          BaseMessages.getString( PKG, "RandomValueDialog.SelectInfoType.DialogMessage" ) );
         String string = esd.open();
         if ( string != null ) {
           TableView tv = (TableView) e.widget;
@@ -258,6 +257,7 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
     int count = wFields.nrNonEmpty();
     input.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );

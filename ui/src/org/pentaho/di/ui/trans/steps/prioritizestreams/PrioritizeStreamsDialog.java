@@ -260,6 +260,7 @@ public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialo
       TableItem ti = wFields.getNonEmpty( i );
       StepMeta tm = transMeta.findStep( ti.getText( 1 ) );
       if ( tm != null ) {
+        //CHECKSTYLE:Indentation:OFF
         input.getStepName()[i] = tm.getName();
       }
 

@@ -563,10 +563,9 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
         getInfo( tfoi );
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, files, BaseMessages.getString(
-              PKG, "PropertyOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-              PKG, "PropertyOutputDialog.SelectOutputFiles.DialogMessage" ) );
+          EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+            BaseMessages.getString( PKG, "PropertyOutputDialog.SelectOutputFiles.DialogTitle" ),
+            BaseMessages.getString( PKG, "PropertyOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {

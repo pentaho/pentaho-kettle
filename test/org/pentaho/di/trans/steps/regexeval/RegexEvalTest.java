@@ -64,10 +64,13 @@ public class RegexEvalTest extends TransformationTestCase {
   }
 
   public RowMetaInterface createResultRowMetaInterface3() {
-    return createRowMetaInterface( new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta(
-      "res", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "cap", ValueMeta.TYPE_STRING ), new ValueMeta(
-      "capIfNull", ValueMeta.TYPE_STRING ), new ValueMeta( "capNullIf", ValueMeta.TYPE_STRING ), new ValueMeta(
-      "capIfNullNullIf", ValueMeta.TYPE_INTEGER ) );
+    return createRowMetaInterface(
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "res", ValueMeta.TYPE_BOOLEAN ),
+      new ValueMeta( "cap", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "capIfNull", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "capNullIf", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "capIfNullNullIf", ValueMeta.TYPE_INTEGER ) );
   }
 
   public List<RowMetaAndData> createSourceData() {
@@ -127,6 +130,7 @@ public class RegexEvalTest extends TransformationTestCase {
     regexEvalMeta.setResultFieldName( "res" );
     regexEvalMeta.setAllowCaptureGroupsFlag( true );
     regexEvalMeta.allocate( 1 );
+    //CHECKSTYLE:Indentation:OFF
     regexEvalMeta.getFieldName()[0] = "cap";
     regexEvalMeta.getFieldType()[0] = ValueMeta.TYPE_INTEGER;
 

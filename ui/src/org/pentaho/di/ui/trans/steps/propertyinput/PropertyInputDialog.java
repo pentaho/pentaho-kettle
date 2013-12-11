@@ -1086,10 +1086,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
           String[] files = fileInputList.getFileStrings();
 
           if ( files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "PropertyInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "PropertyInputDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "PropertyInputDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "PropertyInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1570,6 +1569,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
       field.setTrimType( PropertyInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1592,10 +1592,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "PropertyInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "PropertyInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "PropertyInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "PropertyInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
@@ -1654,10 +1653,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
             i++;
           }
           Const.sortStrings( sectionsList );
-          EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, sectionsList, BaseMessages.getString(
-              PKG, "PropertyInputDialog.Dialog.SelectASection.Title" ), BaseMessages.getString(
-              PKG, "PropertyInputDialog.Dialog.SelectASection.Message" ) );
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, sectionsList,
+            BaseMessages.getString( PKG, "PropertyInputDialog.Dialog.SelectASection.Title" ),
+            BaseMessages.getString( PKG, "PropertyInputDialog.Dialog.SelectASection.Message" ) );
           String sectionname = dialog.open();
           if ( sectionname != null ) {
             wSection.setText( sectionname );

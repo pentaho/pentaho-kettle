@@ -215,14 +215,15 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   }
 
   public boolean transOverwritePrompt( TransMeta transMeta ) {
-    MessageDialogWithToggle md =
-      new MessageDialogWithToggle(
-        shell, BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Title" ), null,
-        BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Message", transMeta.getName() ),
-        MessageDialog.QUESTION, new String[] {
-          BaseMessages.getString( PKG, "System.Button.Yes" ),
-          BaseMessages.getString( PKG, "System.Button.No" ) }, 1, BaseMessages.getString(
-          PKG, "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
+    MessageDialogWithToggle md = new MessageDialogWithToggle( shell,
+      BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Title" ),
+      null,
+      BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Message", transMeta.getName() ),
+      MessageDialog.QUESTION, new String[] {
+        BaseMessages.getString( PKG, "System.Button.Yes" ),
+        BaseMessages.getString( PKG, "System.Button.No" ) },
+      1,
+      BaseMessages.getString( PKG, "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
     MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
     int answer = md.open();
 
@@ -238,8 +239,10 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
           .getString( PKG, "RepositoryImportDialog.OverwriteJob.Message", jobMeta.getName() ),
         MessageDialog.QUESTION, new String[] {
           BaseMessages.getString( PKG, "System.Button.Yes" ),
-          BaseMessages.getString( PKG, "System.Button.No" ) }, 1, BaseMessages.getString(
-          PKG, "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
+          BaseMessages.getString( PKG, "System.Button.No" ) },
+        1,
+        BaseMessages.getString( PKG, "RepositoryImportDialog.DontAskAgain.Label" ),
+        !askOverwrite );
     MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
     int answer = md.open();
     askOverwrite = !md.getToggleState();

@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -1594,9 +1595,9 @@ public class RepositoryExplorerDialog extends Dialog {
       TreeMemory.setExpandedFromMemory( wTree, STRING_REPOSITORY_EXPLORER_TREE_NAME );
 
     } catch ( KettleException dbe ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Message" ), dbe );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Message" ), dbe );
     }
   }
 
@@ -1824,9 +1825,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( Exception dbe ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
     }
 
     return retval;
@@ -1873,9 +1874,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( Exception dbe ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Job.Move.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message" ), dbe );
     }
 
     return retval;
@@ -2076,9 +2077,9 @@ public class RepositoryExplorerDialog extends Dialog {
       }
 
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Edit.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2106,9 +2107,9 @@ public class RepositoryExplorerDialog extends Dialog {
         securityManager.delUser( idUser );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.User.Delete.UnexpectedError.Message" ), e );
     }
 
     refreshTree();
@@ -2260,9 +2261,9 @@ public class RepositoryExplorerDialog extends Dialog {
         refreshTree();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2272,9 +2273,9 @@ public class RepositoryExplorerDialog extends Dialog {
 
       refreshTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2364,9 +2365,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Message" ), e );
     }
 
     return retval;
@@ -2446,21 +2447,19 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message" ), e );
     }
 
     return retval;
   }
 
   public void createDirectory( TreeItem ti, RepositoryDirectoryInterface repdir ) {
-    EnterStringDialog esd =
-      new EnterStringDialog(
-        shell,
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Default" ), BaseMessages
-          .getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Message" ) );
+    EnterStringDialog esd = new EnterStringDialog( shell,
+      BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Default" ),
+      BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Title" ),
+      BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Message" ) );
     String newdir = esd.open();
     if ( newdir != null ) {
       RepositoryDirectoryInterface rd = new RepositoryDirectory( repdir, newdir );
@@ -2502,9 +2501,9 @@ public class RepositoryExplorerDialog extends Dialog {
       rep.deleteRepositoryDirectory( repdir );
       refreshTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1" ), e );
     }
   }
 
@@ -2549,9 +2548,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.ExportTrans.UnexpectedError.Message" ), e );
     }
 
   }
@@ -2602,9 +2601,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.ExportJobs.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2755,9 +2754,9 @@ public class RepositoryExplorerDialog extends Dialog {
         refreshTree();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2792,9 +2791,9 @@ public class RepositoryExplorerDialog extends Dialog {
 
       refreshTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2821,9 +2820,9 @@ public class RepositoryExplorerDialog extends Dialog {
         refreshTree();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2859,9 +2858,9 @@ public class RepositoryExplorerDialog extends Dialog {
 
       refreshTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2888,9 +2887,9 @@ public class RepositoryExplorerDialog extends Dialog {
         refreshTree();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
     }
   }
 
@@ -2908,9 +2907,9 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message" ) + clusterName + "]", e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message" ) + clusterName + "]", e );
     }
   }
 
@@ -2923,9 +2922,9 @@ public class RepositoryExplorerDialog extends Dialog {
 
       refreshTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message" ), e );
     }
   }
 

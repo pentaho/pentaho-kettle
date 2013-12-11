@@ -367,6 +367,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "ReplaceStringDialog.Log.FoundFields", String.valueOf( nrkeys ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       inf.getFieldInStream()[i] = item.getText( 1 );

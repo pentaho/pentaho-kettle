@@ -314,9 +314,8 @@ public class Pan {
 
                 trans = new Trans( transMeta );
                 trans.setRepository( rep );
-              } else
-              // List the transformations in the repository
-              if ( "Y".equalsIgnoreCase( optionListtrans.toString() ) ) {
+              } else if ( "Y".equalsIgnoreCase( optionListtrans.toString() ) ) {
+                // List the transformations in the repository
                 if ( log.isDebug() ) {
                   log
                     .logDebug( BaseMessages.getString( PKG, "Pan.Log.GettingListTransDirectory", "" + directory ) );
@@ -326,16 +325,14 @@ public class Pan {
                 for ( int i = 0; i < transnames.length; i++ ) {
                   System.out.println( transnames[i] );
                 }
-              } else
-              // List the directories in the repository
-              if ( "Y".equalsIgnoreCase( optionListdir.toString() ) ) {
+              } else if ( "Y".equalsIgnoreCase( optionListdir.toString() ) ) {
+                // List the directories in the repository
                 String[] dirnames = rep.getDirectoryNames( directory.getObjectId() );
                 for ( int i = 0; i < dirnames.length; i++ ) {
                   System.out.println( dirnames[i] );
                 }
-              } else
-              // Export the repository
-              if ( !Const.isEmpty( optionExprep ) ) {
+              } else if ( !Const.isEmpty( optionExprep ) ) {
+                // Export the repository
                 System.out.println( BaseMessages.getString( PKG, "Pan.Log.ExportingObjectsRepToFile", ""
                   + optionExprep ) );
 

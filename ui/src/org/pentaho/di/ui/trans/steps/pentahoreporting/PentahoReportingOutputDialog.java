@@ -408,9 +408,9 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
     } catch ( Exception e ) {
       shell.setCursor( null );
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Title" ), BaseMessages.getString(
-        PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Title" ),
+        BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ErrorReadingParameters.Message" ), e );
     } finally {
       shell.setCursor( null );
       busy.dispose();

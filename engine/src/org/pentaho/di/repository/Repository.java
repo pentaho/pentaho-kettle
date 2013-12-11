@@ -399,9 +399,7 @@ public interface Repository {
    * @return The ObjectId of the repository directory that was moved
    * @throws KettleException
    */
-  public ObjectId
-    renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-      throws KettleException;
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException;
 
   /**
    * Create a new directory, possibly by creating several sub-directies of / at the same time.

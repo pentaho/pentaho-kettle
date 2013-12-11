@@ -174,9 +174,9 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       try {
         previousFields = transMeta.getPrevStepFields( stepMeta );
       } catch ( KettleStepException e ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages.getString(
-          PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ),
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
         previousFields = new RowMeta();
       }
 
@@ -725,6 +725,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 
     for ( int i = 0; i < nrNonEmptyFields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       inputMeta.getInputFields()[i] = new TextFileInputField();
 
       int colnr = 1;
@@ -845,10 +846,9 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
           wFields.setRowNums();
           wFields.optWidth( true );
 
-          EnterTextDialog etd =
-            new EnterTextDialog( shell, BaseMessages.getString(
-              PKG, "ParGzipCsvInputDialog.ScanResults.DialogTitle" ), BaseMessages.getString(
-              PKG, "ParGzipCsvInputDialog.ScanResults.DialogMessage" ), message, true );
+          EnterTextDialog etd = new EnterTextDialog( shell,
+            BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ScanResults.DialogTitle" ),
+            BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ScanResults.DialogMessage" ), message, true );
           etd.setReadOnly();
           etd.open();
         }

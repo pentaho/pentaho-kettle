@@ -187,9 +187,9 @@ public class PartitionsController extends LazilyInitializedController implements
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message" ), e );
     } finally {
       refreshPartitions();
     }

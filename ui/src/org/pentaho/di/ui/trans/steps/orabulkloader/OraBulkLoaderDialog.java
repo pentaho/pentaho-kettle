@@ -1345,6 +1345,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "OraBulkLoaderDialog.Log.FoundFields", "" + nrfields ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       inf.getFieldTable()[i] = item.getText( 1 );
@@ -1574,9 +1575,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-        PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data

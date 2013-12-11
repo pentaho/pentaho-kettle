@@ -384,6 +384,7 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
     int count = wFields.nrNonEmpty();
     in.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       in.getFieldCCType()[i] = item.getText( 1 );
@@ -404,10 +405,9 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
 
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
@@ -438,9 +438,9 @@ public class RandomCCNumberGeneratorDialog extends BaseStepDialog implements Ste
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages.getString(
-        PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogTitle" ),
+        BaseMessages.getString( PKG, "RandomCCNumberGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }
