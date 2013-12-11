@@ -59,8 +59,7 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
       METRICS_DESCRIPTION( "METRICS_DESCRIPTION" ), // The description of the metric
       METRICS_SUBJECT( "METRICS_SUBJECT" ), // The subject of the metric
       METRICS_TYPE( "METRICS_TYPE" ), // For snapshots: START or STOP, for metrics: MAX, MIN, SUM
-      METRICS_VALUE( "METRICS_VALUE" ), // For metrics: the value measured (max, min, sum)
-    ;
+      METRICS_VALUE( "METRICS_VALUE" ); // For metrics: the value measured (max, min, sum)
 
     private String id;
 

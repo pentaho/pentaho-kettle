@@ -867,6 +867,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     logDebug( BaseMessages.getString( PKG, "CombinationLookupDialog.Log.SomeKeysFound", String.valueOf( nrkeys ) ) );
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       in.getKeyLookup()[i] = item.getText( 1 );
       in.getKeyField()[i] = item.getText( 2 );
     }

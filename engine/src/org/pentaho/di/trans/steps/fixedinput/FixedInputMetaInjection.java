@@ -211,7 +211,7 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
         ValueMetaInterface.TYPE_STRING, "Line feed present? (Y/N)" ), RUNNING_IN_PARALLEL(
         ValueMetaInterface.TYPE_STRING, "Running in parallel? (Y/N)" ), FILE_TYPE_CODE(
         ValueMetaInterface.TYPE_STRING, "File type code (NONE, UNIX, DOS)" ), ADD_TO_RESULT(
-        ValueMetaInterface.TYPE_STRING, "Add filename to result? (Y/N)" ), ;
+        ValueMetaInterface.TYPE_STRING, "Add filename to result? (Y/N)" );
 
     private int valueType;
     private String description;

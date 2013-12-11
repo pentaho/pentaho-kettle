@@ -958,6 +958,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
       field.setGroupingSymbol( item.getText( 8 ) );
       field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( 9 ) ) );
       field.setNullString( item.getText( 10 ) );
+      //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
     }
   }

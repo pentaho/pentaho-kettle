@@ -69,10 +69,11 @@ public class DatabaseLookupTest {
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
     "Database Lookup test", LoggingObjectType.GENERAL, null );
 
-  public static final String[] databasesXML = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-    + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
-    + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
-    + "<password></password>" + "</connection>", };
+  public static final String[] databasesXML = {
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
+      + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
+      + "<password></password>" + "</connection>", };
 
   private static String lookup_table = "lookup_table1";
 

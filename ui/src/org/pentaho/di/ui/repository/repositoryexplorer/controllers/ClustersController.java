@@ -170,9 +170,9 @@ public class ClustersController extends LazilyInitializedController implements I
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
     } finally {
       refreshClusters();
     }

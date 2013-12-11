@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -3880,9 +3881,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
           Spoon.class, "Spoon.Dialog.ErrorOpeningById.Message", objectId ), e.getMessage(), e );
       }
-    } else
-    // Try to open the selected job.
-    if ( objectType.equals( RepositoryObjectType.JOB ) ) {
+    } else if ( objectType.equals( RepositoryObjectType.JOB ) ) {
       try {
         JobLoadProgressDialog progressDialog = new JobLoadProgressDialog( shell, rep, objectId, revision );
         JobMeta jobMeta = progressDialog.open();
@@ -3931,9 +3930,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ) );
         mb.open();
       }
-    } else
-    // Try to open the selected job.
-    if ( objectType.equals( RepositoryObjectType.JOB ) ) {
+    } else if ( objectType.equals( RepositoryObjectType.JOB ) ) {
+      // Try to open the selected job.
       try {
         JobLoadProgressDialog progressDialog =
           new JobLoadProgressDialog( shell, rep, objname, repdir, versionLabel );
@@ -4079,9 +4077,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
           refreshGraph();
           refreshTree();
-        } else
-        // Load a job
-        if ( RepositoryObjectType.JOB.equals( type ) ) {
+        } else if ( RepositoryObjectType.JOB.equals( type ) ) {
+          // Load a job
           JobLoadProgressDialog jlpd = new JobLoadProgressDialog( shell, rep, name, repdir, null ); // Loads
           // the
           // last
@@ -4657,9 +4654,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Display message: are you sure you want to exit?
       //
       MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString( PKG, "System.Warning" ), // "Warning!"
-        null, BaseMessages.getString( PKG, "Spoon.Message.Warning.PromptExit" ),
-
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "System.Warning" ), // "Warning!"
+          null,
+          BaseMessages.getString( PKG, "Spoon.Message.Warning.PromptExit" ),
           MessageDialog.WARNING, new String[] {
             // "Yes",
             BaseMessages.getString( PKG, "Spoon.Message.Warning.Yes" ),
@@ -4977,9 +4975,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                     new MessageDialogWithToggle(
                       shell, BaseMessages.getString( PKG, "Spoon.Message.Warning.SaveOK" ), null, BaseMessages
                         .getString( PKG, "Spoon.Message.Warning.TransformationWasStored" ),
-                      MessageDialog.QUESTION, new String[] { BaseMessages.getString(
-                        PKG, "Spoon.Message.Warning.OK" ) }, 0, BaseMessages.getString(
-                        PKG, "Spoon.Message.Warning.NotShowThisMessage" ), props.getSaveConfirmation() );
+                      MessageDialog.QUESTION, new String[] {
+                        BaseMessages.getString( PKG, "Spoon.Message.Warning.OK" ) },
+                      0,
+                      BaseMessages.getString( PKG, "Spoon.Message.Warning.NotShowThisMessage" ),
+                      props.getSaveConfirmation() );
                   MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
                   md.open();
                   props.setSaveConfirmation( md.getToggleState() );

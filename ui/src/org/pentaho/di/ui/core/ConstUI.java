@@ -227,8 +227,7 @@ public class ConstUI {
     return findTreeItem( null, parent, parentName, name );
   }
 
-  private static final TreeItem
-    findTreeItem( TreeItem grandParent, TreeItem parent, String parentName, String name ) {
+  private static final TreeItem findTreeItem( TreeItem grandParent, TreeItem parent, String parentName, String name ) {
     if ( Const.isEmpty( parentName ) ) {
       if ( parent.getText().equalsIgnoreCase( name ) ) {
         return parent;

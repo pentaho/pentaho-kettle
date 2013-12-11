@@ -121,44 +121,43 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
   public static ChannelLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     ChannelLogTable table = new ChannelLogTable( space, databasesInterface );
 
-    table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldName.IdBatch" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.IdBatch" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
-    table.fields.add( new LogTableField( ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldName.ChannelId" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.ChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.LOG_DATE.id, true, false, "LOG_DATE", BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldName.LogDate" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
-    table.fields.add( new LogTableField(
-      ID.LOGGING_OBJECT_TYPE.id, true, false, "LOGGING_OBJECT_TYPE", BaseMessages.getString(
-        PKG, "ChannelLogTable.FieldName.ObjectType" ), BaseMessages.getString(
-        PKG, "ChannelLogTable.FieldDescription.ObjectType" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.OBJECT_NAME.id, true, false, "OBJECT_NAME", BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldName.ObjectName" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.ObjectName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.IdBatch" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.IdBatch" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
+    table.fields.add( new LogTableField( ID.CHANNEL_ID.id, true, false, "CHANNEL_ID",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.ChannelId" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.ChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.LOG_DATE.id, true, false, "LOG_DATE",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.LogDate" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );
+    table.fields.add( new LogTableField( ID.LOGGING_OBJECT_TYPE.id, true, false, "LOGGING_OBJECT_TYPE",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.ObjectType" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.ObjectType" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.OBJECT_NAME.id, true, false, "OBJECT_NAME",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.ObjectName" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.ObjectName" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField( ID.OBJECT_COPY.id, true, false, "OBJECT_COPY", BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldName.ObjectCopy" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.ObjectCopy" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+      PKG, "ChannelLogTable.FieldName.ObjectCopy" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.ObjectCopy" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField(
-      ID.REPOSITORY_DIRECTORY.id, true, false, "REPOSITORY_DIRECTORY", BaseMessages.getString(
-        PKG, "ChannelLogTable.FieldName.RepositoryDirectory" ), BaseMessages.getString(
-        PKG, "ChannelLogTable.FieldDescription.RepositoryDirectory" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.FILENAME.id, true, false, "FILENAME", BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldName.Filename" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.Filename" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.OBJECT_ID.id, true, false, "OBJECT_ID", BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldName.ObjectId" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.ObjectId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.OBJECT_REVISION.id, true, false, "OBJECT_REVISION", BaseMessages
-      .getString( PKG, "ChannelLogTable.FieldName.ObjectRevision" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.ObjectRevision" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.PARENT_CHANNEL_ID.id, true, false, "PARENT_CHANNEL_ID", BaseMessages
-      .getString( PKG, "ChannelLogTable.FieldName.ParentChannelId" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.ParentChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
-    table.fields.add( new LogTableField( ID.ROOT_CHANNEL_ID.id, true, false, "ROOT_CHANNEL_ID", BaseMessages
-      .getString( PKG, "ChannelLogTable.FieldName.RootChannelId" ), BaseMessages.getString(
-      PKG, "ChannelLogTable.FieldDescription.RootChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+      ID.REPOSITORY_DIRECTORY.id, true, false, "REPOSITORY_DIRECTORY",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.RepositoryDirectory" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.RepositoryDirectory" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.FILENAME.id, true, false, "FILENAME",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.Filename" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.Filename" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.OBJECT_ID.id, true, false, "OBJECT_ID",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.ObjectId" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.ObjectId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.OBJECT_REVISION.id, true, false, "OBJECT_REVISION",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.ObjectRevision" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.ObjectRevision" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.PARENT_CHANNEL_ID.id, true, false, "PARENT_CHANNEL_ID",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.ParentChannelId" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.ParentChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
+    table.fields.add( new LogTableField( ID.ROOT_CHANNEL_ID.id, true, false, "ROOT_CHANNEL_ID",
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldName.RootChannelId" ),
+      BaseMessages.getString( PKG, "ChannelLogTable.FieldDescription.RootChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
 
     table.findField( ID.LOG_DATE.id ).setLogDateField( true );
     table.findField( ID.ID_BATCH.id ).setKey( true );

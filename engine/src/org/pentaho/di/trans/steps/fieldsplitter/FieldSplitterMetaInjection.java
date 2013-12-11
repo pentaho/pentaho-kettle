@@ -57,7 +57,7 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
         ValueMetaInterface.TYPE_STRING, "The currency symbol" ), NULL_IF(
         ValueMetaInterface.TYPE_STRING, "Value to convert to null" ), DEFAULT(
         ValueMetaInterface.TYPE_STRING, "The default value in case of null" ), TRIM_TYPE(
-        ValueMetaInterface.TYPE_STRING, "The trim type (none, left, right, both)" ), ;
+        ValueMetaInterface.TYPE_STRING, "The trim type (none, left, right, both)" );
 
     private int valueType;
     private String description;

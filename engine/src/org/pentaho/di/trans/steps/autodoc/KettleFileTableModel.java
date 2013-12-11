@@ -50,7 +50,7 @@ public class KettleFileTableModel implements TableModel {
   public enum Field {
     location( ReportSubjectLocation.class ), filename( String.class ), name( String.class ), description(
       String.class ), extended_description( String.class ), logging( String.class ), creation( String.class ),
-      modification( String.class ), last_exec_result( String.class ), image( Drawable.class ), ;
+      modification( String.class ), last_exec_result( String.class ), image( Drawable.class );
 
     private Class<?> clazz;
 

@@ -294,9 +294,10 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       //
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
-        new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-        null, BaseMessages.getString(
-          PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
+        new MessageDialog( shell,
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+          null,
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
           MessageDialog.WARNING, new String[] {
             BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
             BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
@@ -395,9 +396,9 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( comboVar.getShell(), BaseMessages.getString(
-        PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString(
-        PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
+      new ErrorDialog( comboVar.getShell(),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
     }
   }
 
@@ -453,9 +454,10 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       //
       Shell shell = ( (TableViewer) tableView.getManagedObject() ).getTable().getShell();
       MessageDialog md =
-        new MessageDialog( shell, BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-        null, BaseMessages.getString(
-          PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
+        new MessageDialog( shell,
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+          null,
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
           MessageDialog.WARNING, new String[] {
             BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
             BaseMessages.getString( PKG, "BaseStepDialog.Add" ),

@@ -573,9 +573,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         if ( null != sequences && sequences.length > 0 ) {
           sequences = Const.sortStrings( sequences );
           EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, sequences, BaseMessages.getString(
-              PKG, "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ), BaseMessages.getString(
-              PKG, "AddSequenceDialog.SelectSequence.Message" ) );
+            new EnterSelectionDialog( shell, sequences,
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ),
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Message" ) );
 
           String d = dialog.open();
           if ( d != null ) {
@@ -614,9 +614,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-              PKG, "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ), BaseMessages.getString(
-              PKG, "AddSequenceDialog.SelectSequence.Message" ) );
+            new EnterSelectionDialog( shell, schemas,
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ),
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d.toString(), "" ) );

@@ -298,11 +298,11 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );
-      input.isSetEmptyString()[i] =
-        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 10 ) );
+      input.isSetEmptyString()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 10 ) );
 
       input.getFieldType()[i] = input.isSetEmptyString()[i] ? "String" : item.getText( 2 );
       input.getFieldFormat()[i] = item.getText( 3 );

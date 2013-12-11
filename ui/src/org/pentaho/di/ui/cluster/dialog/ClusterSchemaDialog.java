@@ -380,9 +380,9 @@ public class ClusterSchemaDialog extends Dialog {
     int[] idx = Const.indexsOfFoundStrings( wServers.getItems( 0 ), names );
 
     EnterSelectionDialog dialog =
-      new EnterSelectionDialog( shell, names, BaseMessages.getString(
-        PKG, "ClusterSchemaDialog.SelectServers.Label" ), BaseMessages.getString(
-        PKG, "ClusterSchemaDialog.SelectServersCluster.Label" ) );
+      new EnterSelectionDialog( shell, names,
+        BaseMessages.getString( PKG, "ClusterSchemaDialog.SelectServers.Label" ),
+        BaseMessages.getString( PKG, "ClusterSchemaDialog.SelectServersCluster.Label" ) );
     dialog.setAvoidQuickSearch();
     dialog.setSelectedNrs( idx );
     dialog.setMulti( true );

@@ -664,9 +664,8 @@ public class BaseStepDialog extends Dialog {
    *          the "edit connection" button
    * @return the Combo Box component for the given parameters
    */
-  public CCombo
-    addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-      final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
+  public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
+    final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
     return addConnectionLine(
       parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection, wbeConnection, null );
   }
@@ -1020,9 +1019,9 @@ public class BaseStepDialog extends Dialog {
           row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( tableView.getShell(), BaseMessages
-        .getString( PKG, "BaseStepDialog.FailedToGetFields.Title" ), BaseMessages.getString(
-        PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName() ), ke );
+      new ErrorDialog( tableView.getShell(),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Title" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName() ), ke );
     }
   }
 
@@ -1073,10 +1072,10 @@ public class BaseStepDialog extends Dialog {
       // Ask what we should do with the existing data in the step.
       //
       MessageDialog md =
-        new MessageDialog( tableView.getShell(), BaseMessages.getString(
-          PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-        null, BaseMessages.getString(
-          PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
+        new MessageDialog( tableView.getShell(),
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+          null,
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
           MessageDialog.WARNING, new String[] {
             BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
             BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
@@ -1173,9 +1172,9 @@ public class BaseStepDialog extends Dialog {
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( comboVar.getShell(), BaseMessages.getString(
-        PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString(
-        PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
+      new ErrorDialog( comboVar.getShell(),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
     }
   }
 

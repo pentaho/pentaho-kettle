@@ -130,9 +130,9 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     try {
       previousFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleStepException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages.getString(
-        PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Title" ),
+        BaseMessages.getString( PKG, "AutoDocDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
       previousFields = new RowMeta();
     }
 
@@ -140,8 +140,9 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     //
     wFilenameField =
       new LabelComboVar(
-        transMeta, shell, BaseMessages.getString( PKG, "AutoDocDialog.FilenameField.Label" ), BaseMessages
-          .getString( PKG, "AutoDocDialog.FilenameField.Tooltip" ) );
+        transMeta, shell,
+        BaseMessages.getString( PKG, "AutoDocDialog.FilenameField.Label" ),
+        BaseMessages.getString( PKG, "AutoDocDialog.FilenameField.Tooltip" ) );
     wFilenameField.setItems( previousFields.getFieldNames() );
     props.setLook( wFilenameField );
     wFilenameField.addModifyListener( lsMod );

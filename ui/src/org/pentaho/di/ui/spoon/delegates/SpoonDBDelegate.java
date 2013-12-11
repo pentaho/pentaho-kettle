@@ -151,15 +151,15 @@ public class SpoonDBDelegate extends SpoonDelegate {
           rep.deleteDatabaseMeta( db.getName() );
           worked = true;
         } catch ( KettleException dbe ) {
-          new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-            PKG, "Spoon.Dialog.ErrorDeletingConnection.Title" ), BaseMessages.getString(
-            PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName() ), dbe );
+          new ErrorDialog( spoon.getShell(),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Title" ),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName() ), dbe );
         }
       } else {
-        new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-          PKG, "Spoon.Dialog.ErrorDeletingConnection.Title" ), BaseMessages.getString(
-          PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName() ), new KettleException( BaseMessages
-          .getString( PKG, "Spoon.Dialog.Exception.ReadOnlyUser" ) ) );
+        new ErrorDialog( spoon.getShell(),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Title" ),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingConnection.Message", db.getName() ),
+          new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyUser" ) ) );
       }
     }
 
@@ -427,9 +427,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
 
           db.setChanged( false );
         } catch ( KettleException ke ) {
-          new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-            PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ), BaseMessages.getString(
-            PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName() ), ke );
+          new ErrorDialog( spoon.getShell(),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName() ), ke );
         }
       } else {
         // This repository user is read-only!
@@ -477,9 +477,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
               PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-            PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ), BaseMessages.getString(
-            PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
+          new ErrorDialog( spoon.getShell(),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
         }
       }
       spoon.refreshTree();

@@ -194,7 +194,7 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
 
       NAME( ValueMetaInterface.TYPE_STRING, "Input field name" ), VALUE(
         ValueMetaInterface.TYPE_STRING, "Type field value" ), NORMALISED(
-        ValueMetaInterface.TYPE_STRING, "Normalised field name" ), ;
+        ValueMetaInterface.TYPE_STRING, "Normalised field name" );
 
     private int valueType;
     private String description;

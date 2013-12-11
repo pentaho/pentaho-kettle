@@ -333,7 +333,7 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
 
       SHEET_NAME( SHEET, ValueMetaInterface.TYPE_STRING, "Sheet name" ), SHEET_START_ROW(
         SHEET, ValueMetaInterface.TYPE_STRING, "Sheet start row" ), SHEET_START_COL(
-        SHEET, ValueMetaInterface.TYPE_STRING, "Sheet start col" ), ;
+        SHEET, ValueMetaInterface.TYPE_STRING, "Sheet start col" );
 
     private int valueType;
     private String description;

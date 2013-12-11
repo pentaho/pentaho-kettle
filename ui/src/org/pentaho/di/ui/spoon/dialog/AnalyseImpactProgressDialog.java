@@ -81,13 +81,13 @@ public class AnalyseImpactProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ), BaseMessages.getString(
-        PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ),
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e );
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ), BaseMessages.getString(
-        PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ),
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e );
     }
 
     return impactHasRun;

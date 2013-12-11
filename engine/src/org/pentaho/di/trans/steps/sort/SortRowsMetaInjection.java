@@ -52,7 +52,7 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
       NAME( ValueMetaInterface.TYPE_STRING, "Field name" ), SORT_ASCENDING(
         ValueMetaInterface.TYPE_STRING, "Sort ascending? (Y/N)" ), IGNORE_CASE(
         ValueMetaInterface.TYPE_STRING, "Ignore case? (Y/N)" ), PRESORTED(
-        ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)" ), ;
+        ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)" );
 
     private int valueType;
     private String description;

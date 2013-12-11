@@ -60,7 +60,7 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
       PARAMETERS( ValueMetaInterface.TYPE_NONE, "All the parameters for the report" ), PARAMETER(
         ValueMetaInterface.TYPE_NONE, "One parameter" ), PARAMETER_NAME(
         PARAMETER, ValueMetaInterface.TYPE_STRING, "The name of the report parameter" ), FIELDNAME(
-        PARAMETER, ValueMetaInterface.TYPE_STRING, "The field name providing the source data" ), ;
+        PARAMETER, ValueMetaInterface.TYPE_STRING, "The field name providing the source data" );
 
     private int valueType;
     private String description;

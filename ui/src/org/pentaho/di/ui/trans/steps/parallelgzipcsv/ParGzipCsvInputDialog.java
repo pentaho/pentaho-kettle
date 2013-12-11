@@ -591,8 +591,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
           }
 
           dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" )
-              + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
             BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );

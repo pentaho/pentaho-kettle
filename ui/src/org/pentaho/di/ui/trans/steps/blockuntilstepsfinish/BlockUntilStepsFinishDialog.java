@@ -288,6 +288,7 @@ public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepD
       TableItem ti = wFields.getNonEmpty( i );
       StepMeta tm = transMeta.findStep( ti.getText( 1 ) );
       if ( tm != null ) {
+        //CHECKSTYLE:Indentation:OFF
         input.getStepName()[i] = tm.getName();
         input.getStepCopyNr()[i] = String.valueOf( Const.toInt( ti.getText( 2 ), 0 ) );
       }

@@ -70,7 +70,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public enum ProcessorType {
     PDF( "PDF", "PDF" ), PagedHTML( "PagedHtml", "Paged HTML" ),
       StreamingHTML( "StreamingHtml", "Streaming HTML" ), CSV( "CSV", "CSV" ), Excel( "Excel", "Excel" ),
-      Excel_2007( "Excel 2007", "Excel 2007" ), RTF( "RTF", "RTF" ), ;
+      Excel_2007( "Excel 2007", "Excel 2007" ), RTF( "RTF", "RTF" );
 
     private String code;
     private String description;

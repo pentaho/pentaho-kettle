@@ -125,13 +125,14 @@ public class CheckTransProgressDialog {
 
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ), BaseMessages.getString(
-        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ),
+        BaseMessages.getString(
+          PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e );
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ), BaseMessages.getString(
-        PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title" ),
+        BaseMessages.getString( PKG, "CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message" ), e );
     }
   }
 }

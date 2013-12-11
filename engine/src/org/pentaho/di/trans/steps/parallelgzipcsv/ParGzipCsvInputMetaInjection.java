@@ -69,7 +69,7 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
         ValueMetaInterface.TYPE_STRING, "Currency symbol" ), FIELD_REPEAT(
         ValueMetaInterface.TYPE_STRING, "Repeat values? (Y/N)" ), FIELD_NULL_STRING(
         ValueMetaInterface.TYPE_STRING, "The null string" ), FIELD_IF_NULL(
-        ValueMetaInterface.TYPE_STRING, "The default value if null" ), ;
+        ValueMetaInterface.TYPE_STRING, "The default value if null" );
 
     private int valueType;
     private String description;

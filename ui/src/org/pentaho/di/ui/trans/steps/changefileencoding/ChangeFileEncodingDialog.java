@@ -486,9 +486,9 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
           wTargetFileName.setText( targetfilefield );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-          PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

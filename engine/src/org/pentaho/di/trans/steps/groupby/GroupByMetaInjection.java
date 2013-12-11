@@ -56,7 +56,7 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
         ValueMetaInterface.TYPE_STRING, "Aggregation subject field name" ), AGG_TYPE(
         ValueMetaInterface.TYPE_STRING,
         "Aggregation type (for allowed values see: http://wiki.pentaho.com/display/EAI/Group+By)" ), AGG_VALUE(
-        ValueMetaInterface.TYPE_STRING, "Value (field separator, ...)" ), ;
+        ValueMetaInterface.TYPE_STRING, "Value (field separator, ...)" );
 
     private int valueType;
     private String description;

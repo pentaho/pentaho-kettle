@@ -33,7 +33,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 public enum SelectValuesAttr implements KettleAttributeInterface {
 
-  FOO( "fields", "CsvInputDialog.Fields.Label", null, ValueMetaInterface.TYPE_NONE, null ),
+  FOO( "fields", "CsvInputDialog.Fields.Label", null, ValueMetaInterface.TYPE_NONE, null );
 
   /*
    * FIELDS("fields", "CsvInputDialog.Fields.Label", null, ValueMetaInterface.TYPE_NONE, null), FIELD("field",
@@ -69,7 +69,6 @@ public enum SelectValuesAttr implements KettleAttributeInterface {
    * META_CURRENCY("currency_symbol", "meta_currency_symbol", "SelectValuesDialog.ColumnInfo.Currency", null,
    * ValueMetaInterface.TYPE_STRING, META),
    */
-  ;
 
   private String xmlCode;
   private String repCode;

@@ -980,9 +980,9 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
           if ( files.length > 0 ) {
             EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "AccessInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "AccessInputDialog.FilesReadSelection.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files,
+                BaseMessages.getString( PKG, "AccessInputDialog.FilesReadSelection.DialogTitle" ),
+                BaseMessages.getString( PKG, "AccessInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1428,6 +1428,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
       field.setTrimType( AccessInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1456,9 +1457,9 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "AccessInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "AccessInputDialog.NumberRows.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+          BaseMessages.getString( PKG, "AccessInputDialog.NumberRows.DialogTitle" ),
+          BaseMessages.getString( PKG, "AccessInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
@@ -1541,9 +1542,9 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
           String[] tablenames = settables.toArray( new String[settables.size()] );
           Const.sortStrings( tablenames );
           EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, tablenames, BaseMessages.getString(
-              PKG, "AccessInputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString(
-              PKG, "AccessInputDialog.Dialog.SelectATable.Message" ) );
+            new EnterSelectionDialog( shell, tablenames,
+              BaseMessages.getString( PKG, "AccessInputDialog.Dialog.SelectATable.Title" ),
+              BaseMessages.getString( PKG, "AccessInputDialog.Dialog.SelectATable.Message" ) );
           String tablename = dialog.open();
           if ( tablename != null ) {
             wTable.setText( tablename );

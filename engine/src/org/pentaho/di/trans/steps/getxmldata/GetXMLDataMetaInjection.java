@@ -111,7 +111,7 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
         FILENAME, ValueMetaInterface.TYPE_STRING, "Flag to indicate that this file is required or not (Y/N)" ),
       FILE_INCLUDE_SUBFOLDERS(
         FILENAME, ValueMetaInterface.TYPE_STRING,
-        "Flag to indicate that subfolders should be included or not (Y/N)" ), ;
+        "Flag to indicate that subfolders should be included or not (Y/N)" );
 
     private int valueType;
     private String description;

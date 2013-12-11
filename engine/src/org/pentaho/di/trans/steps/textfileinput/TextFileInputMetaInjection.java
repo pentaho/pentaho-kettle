@@ -124,7 +124,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
         ValueMetaInterface.TYPE_STRING, "Position" ), FILTER_STRING(
         ValueMetaInterface.TYPE_STRING, "Filter string" ), FILTER_LAST_LINE(
         ValueMetaInterface.TYPE_STRING, "Stop reading when filter found? (Y/N)" ), FILTER_POSITIVE(
-        ValueMetaInterface.TYPE_STRING, "Only match the filter lines? (Y/N)" ), ;
+        ValueMetaInterface.TYPE_STRING, "Only match the filter lines? (Y/N)" );
 
     private int valueType;
     private String description;

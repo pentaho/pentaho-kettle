@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -1972,9 +1973,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   }
 
   @Override
-  public Long
-    getNextBatchId( DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName )
-      throws KettleDatabaseException {
+  public Long getNextBatchId( DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName ) throws KettleDatabaseException {
     // Always take off autocommit.
     ldb.setCommit( 10 );
 

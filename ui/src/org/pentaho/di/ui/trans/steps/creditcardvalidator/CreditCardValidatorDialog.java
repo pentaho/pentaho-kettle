@@ -374,9 +374,9 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
         wFieldName.setText( columnName );
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-          PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

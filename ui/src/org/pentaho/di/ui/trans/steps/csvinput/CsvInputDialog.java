@@ -200,9 +200,9 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       try {
         previousFields = transMeta.getPrevStepFields( stepMeta );
       } catch ( KettleStepException e ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages.getString(
-          PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ),
+          BaseMessages.getString( PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
         previousFields = new RowMeta();
       }
 
@@ -659,8 +659,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
           }
 
           dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" )
-              + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
             BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
@@ -817,6 +816,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
     for ( int i = 0; i < nrNonEmptyFields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       inputMeta.getInputFields()[i] = new TextFileInputField();
 
       int colnr = 1;

@@ -319,6 +319,7 @@ public class CarteTest {
     }
   }
 
+  //CHECKSTYLE:Indentation:OFF
   public static Trans generateTestTransformation() {
     RowGeneratorMeta A = new RowGeneratorMeta();
     A.allocate( 3 );

@@ -297,9 +297,9 @@ public class ConditionEditor extends Composite {
             case AREA_OPERATOR:
               int operator = getNrOperator( screen );
               EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, Condition.getRealOperators(), BaseMessages.getString(
-                  PKG, "ConditionEditor.Operator.Label" ), BaseMessages.getString(
-                  PKG, "ConditionEditor.SelectOperator.Label" ) );
+                new EnterSelectionDialog( shell, Condition.getRealOperators(),
+                  BaseMessages.getString( PKG, "ConditionEditor.Operator.Label" ),
+                  BaseMessages.getString( PKG, "ConditionEditor.SelectOperator.Label" ) );
               esd.setAvoidQuickSearch();
               Condition selcond = active_condition.getCondition( operator );
               String def = selcond.getOperatorDesc();
@@ -326,9 +326,9 @@ public class ConditionEditor extends Composite {
             case AREA_FUNCTION:
               if ( active_condition.isAtomic() ) {
                 esd =
-                  new EnterSelectionDialog( shell, Condition.functions, BaseMessages.getString(
-                    PKG, "ConditionEditor.Functions.Label" ), BaseMessages.getString(
-                    PKG, "ConditionEditor.SelectFunction.Label" ) );
+                  new EnterSelectionDialog( shell, Condition.functions,
+                    BaseMessages.getString( PKG, "ConditionEditor.Functions.Label" ),
+                    BaseMessages.getString( PKG, "ConditionEditor.SelectFunction.Label" ) );
                 esd.setAvoidQuickSearch();
                 def = active_condition.getFunctionDesc();
                 defnr = esd.getSelectionNr( def );
@@ -345,9 +345,9 @@ public class ConditionEditor extends Composite {
               if ( active_condition.isAtomic() && fields != null ) {
                 esd =
                   new EnterSelectionDialog(
-                    shell, fields.getFieldNamesAndTypes( max_field_length ), BaseMessages.getString(
-                      PKG, "ConditionEditor.Fields" ), BaseMessages.getString(
-                      PKG, "ConditionEditor.SelectAField" ) );
+                    shell, fields.getFieldNamesAndTypes( max_field_length ),
+                    BaseMessages.getString( PKG, "ConditionEditor.Fields" ),
+                    BaseMessages.getString( PKG, "ConditionEditor.SelectAField" ) );
                 esd.setAvoidQuickSearch();
                 def = active_condition.getLeftValuename();
                 defnr = esd.getSelectionNr( def );
@@ -364,9 +364,9 @@ public class ConditionEditor extends Composite {
               if ( active_condition.isAtomic() && fields != null ) {
                 esd =
                   new EnterSelectionDialog(
-                    shell, fields.getFieldNamesAndTypes( max_field_length ), BaseMessages.getString(
-                      PKG, "ConditionEditor.Fields" ), BaseMessages.getString(
-                      PKG, "ConditionEditor.SelectAField" ) );
+                    shell, fields.getFieldNamesAndTypes( max_field_length ),
+                    BaseMessages.getString( PKG, "ConditionEditor.Fields" ),
+                    BaseMessages.getString( PKG, "ConditionEditor.SelectAField" ) );
                 esd.setAvoidQuickSearch();
                 def = active_condition.getLeftValuename();
                 defnr = esd.getSelectionNr( def );

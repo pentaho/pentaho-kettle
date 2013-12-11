@@ -28,7 +28,7 @@ public enum ObjectTypeSelection {
 
   Transformations( BaseMessages.getString( "System.ObjectTypeSelection.Description.Transformations" ) ), Jobs(
     BaseMessages.getString( "System.ObjectTypeSelection.Description.Jobs" ) ), All( BaseMessages
-    .getString( "System.ObjectTypeSelection.Description.All" ) ), ;
+    .getString( "System.ObjectTypeSelection.Description.All" ) );
 
   private String description;
 

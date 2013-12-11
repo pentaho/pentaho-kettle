@@ -470,9 +470,9 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
       Set<String> set = database.getTableNames();
       String[] tablenames = set.toArray( new String[set.size()] );
       EnterSelectionDialog dialog =
-        new EnterSelectionDialog( shell, tablenames, BaseMessages.getString(
-          PKG, "AccessOutputDialog.Dialog.SelectATable.Title" ), BaseMessages.getString(
-          PKG, "AccessOutputDialog.Dialog.SelectATable.Message" ) );
+        new EnterSelectionDialog( shell, tablenames,
+          BaseMessages.getString( PKG, "AccessOutputDialog.Dialog.SelectATable.Title" ),
+          BaseMessages.getString( PKG, "AccessOutputDialog.Dialog.SelectATable.Message" ) );
       String tablename = dialog.open();
       if ( tablename != null ) {
         wTablename.setText( tablename );

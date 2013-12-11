@@ -89,8 +89,9 @@ public class RegexEvalTest extends TransformationTestCase {
   }
 
   public List<RowMetaAndData> createResultData3() {
-    return createData( createResultRowMetaInterface3(), new Object[][] { // ((a)|([A1]))([B2]?).*
-    new Object[] { "abc", Boolean.valueOf( true ), "a", "a", null, Long.valueOf( 0 ) },
+    return createData( createResultRowMetaInterface3(), new Object[][] {
+      // ((a)|([A1]))([B2]?).*
+      new Object[] { "abc", Boolean.valueOf( true ), "a", "a", null, Long.valueOf( 0 ) },
       new Object[] { "ABC", Boolean.valueOf( true ), "A", "x", "A", Long.valueOf( 0 ) },
       new Object[] { "123", Boolean.valueOf( true ), "1", "x", null, Long.valueOf( 2 ) },
       new Object[] { "abc", Boolean.valueOf( true ), "a", "a", null, Long.valueOf( 0 ) } } );

@@ -189,9 +189,9 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     colinf[1].setSelectionAdapter( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         EnterSelectionDialog esd =
-          new EnterSelectionDialog( shell, CalculatorMetaFunction.calcLongDesc, BaseMessages.getString(
-            PKG, "CalculatorDialog.SelectCalculationType.Title" ), BaseMessages.getString(
-            PKG, "CalculatorDialog.SelectCalculationType.Message" ) );
+          new EnterSelectionDialog( shell, CalculatorMetaFunction.calcLongDesc,
+            BaseMessages.getString( PKG, "CalculatorDialog.SelectCalculationType.Title" ),
+            BaseMessages.getString( PKG, "CalculatorDialog.SelectCalculationType.Message" ) );
         String string = esd.open();
         if ( string != null ) {
           TableView tv = (TableView) e.widget;
@@ -405,10 +405,10 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
       String groupingSymbol = item.getText( 12 );
       String currencySymbol = item.getText( 13 );
 
-      currentMeta.getCalculation()[i] =
-        new CalculatorMetaFunction(
-          fieldName, calcType, fieldA, fieldB, fieldC, valueType, valueLength, valuePrecision, removed,
-          conversionMask, decimalSymbol, groupingSymbol, currencySymbol );
+      //CHECKSTYLE:Indentation:OFF
+      currentMeta.getCalculation()[i] = new CalculatorMetaFunction(
+        fieldName, calcType, fieldA, fieldB, fieldC, valueType, valueLength, valuePrecision, removed,
+        conversionMask, decimalSymbol, groupingSymbol, currencySymbol );
     }
 
     if ( !originalMeta.equals( currentMeta ) ) {

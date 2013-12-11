@@ -952,9 +952,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     if ( useHash ) {
       DatabaseImpact ii =
         new DatabaseImpact(
-          DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-            .getDatabaseName(), tablename, hashField, "", "", "", BaseMessages.getString(
-            PKG, "CombinationLookupMeta.KeyLookup.Label" ) );
+          DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
+          databaseMeta.getDatabaseName(), tablename, hashField, "", "", "",
+          BaseMessages.getString( PKG, "CombinationLookupMeta.KeyLookup.Label" ) );
       impact.add( ii );
     }
   }

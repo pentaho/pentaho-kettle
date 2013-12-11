@@ -1,4 +1,3 @@
-//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -397,7 +396,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
       /** A single-threaded transformation. */
       SingleThreaded( "SingleThreaded", BaseMessages
-        .getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) ), ;
+        .getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) );
 
     /** The code corresponding to the transformation type. */
     private String code;

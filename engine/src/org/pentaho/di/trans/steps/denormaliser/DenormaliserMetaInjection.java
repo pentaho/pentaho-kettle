@@ -166,7 +166,7 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
       TARGET_GROUP( ValueMetaInterface.TYPE_STRING, "Target field group symbol" ),
       TARGET_FORMAT( ValueMetaInterface.TYPE_STRING, "Target field format" ),
       TARGET_AGGREGATION(
-        ValueMetaInterface.TYPE_STRING, "Target aggregation (-, SUM, AVERAGE, MIN, MAX, COUNT_ALL, CONCAT_COMMA)" ), ;
+        ValueMetaInterface.TYPE_STRING, "Target aggregation (-, SUM, AVERAGE, MIN, MAX, COUNT_ALL, CONCAT_COMMA)" );
 
     private int valueType;
     private String description;

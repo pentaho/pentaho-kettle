@@ -651,6 +651,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
       field.setAttribute( BaseMessages.getString( PKG, "System.Combo.Yes" ).equals( item.getText( 11 ) ) );
       field.setAttributeParentName( item.getText( 12 ) );
 
+      //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
     }
   }

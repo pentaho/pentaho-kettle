@@ -188,9 +188,9 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
             String[] procs = db.getProcedures();
             if ( procs != null && procs.length > 0 ) {
               EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, procs, BaseMessages.getString(
-                  PKG, "DBProcDialog.EnterSelection.DialogTitle" ), BaseMessages.getString(
-                  PKG, "DBProcDialog.EnterSelection.DialogMessage" ) );
+                new EnterSelectionDialog( shell, procs,
+                  BaseMessages.getString( PKG, "DBProcDialog.EnterSelection.DialogTitle" ),
+                  BaseMessages.getString( PKG, "DBProcDialog.EnterSelection.DialogMessage" ) );
               String proc = esd.open();
               if ( proc != null ) {
                 wProcName.setText( proc );
@@ -202,9 +202,9 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
               mb.open();
             }
           } catch ( KettleDatabaseException dbe ) {
-            new ErrorDialog( shell, BaseMessages.getString(
-              PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle" ), BaseMessages.getString(
-              PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage" ), dbe );
+            new ErrorDialog( shell,
+              BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle" ),
+              BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage" ), dbe );
           } finally {
             db.disconnect();
           }
@@ -498,6 +498,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
     input.allocate( nrargs );
 
     logDebug( BaseMessages.getString( PKG, "DBProcDialog.Log.FoundArguments", String.valueOf( nrargs ) ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( i = 0; i < nrargs; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getArgument()[i] = item.getText( 1 );

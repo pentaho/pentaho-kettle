@@ -110,12 +110,9 @@ public class ConnectionsController extends LazilyInitializedController implement
 
     try {
       bf.createBinding( dbConnectionList, "children", connectionsTable, "elements" ).fireSourceChanged();
-      ( bindButtonNew = bf.createBinding( this, "repReadOnly", "connections-new", "disabled" ) )
-        .fireSourceChanged();
-      ( bindButtonEdit = bf.createBinding( this, "repReadOnly", "connections-edit", "disabled" ) )
-        .fireSourceChanged();
-      ( bindButtonRemove =
-        bf.createBinding( this, "repReadOnly", "connections-remove", "disabled" ) ).fireSourceChanged();
+      ( bindButtonNew = bf.createBinding( this, "repReadOnly", "connections-new", "disabled" ) ).fireSourceChanged();
+      ( bindButtonEdit = bf.createBinding( this, "repReadOnly", "connections-edit", "disabled" ) ).fireSourceChanged();
+      ( bindButtonRemove = bf.createBinding( this, "repReadOnly", "connections-remove", "disabled" ) ).fireSourceChanged();
 
       if ( repository != null ) {
         bf.createBinding( connectionsTable, "selectedItems", this, "selectedConnections" );
@@ -224,9 +221,9 @@ public class ConnectionsController extends LazilyInitializedController implement
       // mb.open();
       // }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message" ), e );
     } finally {
       refreshConnectionList();
     }
@@ -331,9 +328,9 @@ public class ConnectionsController extends LazilyInitializedController implement
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message" ), e );
     } finally {
       refreshConnectionList();
     }
@@ -373,9 +370,9 @@ public class ConnectionsController extends LazilyInitializedController implement
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ), BaseMessages.getString(
-        PKG, "RepositoryExplorerDialog.Connection.Remove.UnexpectedError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title" ),
+        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Remove.UnexpectedError.Message" ), e );
     } finally {
       refreshConnectionList();
     }

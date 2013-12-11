@@ -40,10 +40,8 @@ public enum RepositoryOperation {
 
     MODIFY_PARTITION_SCHEMA( "Modify partition schema" ), DELETE_PARTITION_SCHEMA( "Delete partition schema" ),
 
-    CREATE_DIRECTORY( "Create directory" ), RENAME_DIRECTORY( "Rename directory" ), DELETE_DIRECTORY(
-      "Delete directory" ),
-
-  ;
+    CREATE_DIRECTORY( "Create directory" ), RENAME_DIRECTORY( "Rename directory" ),
+    DELETE_DIRECTORY( "Delete directory" );
 
   private final String description;
 
