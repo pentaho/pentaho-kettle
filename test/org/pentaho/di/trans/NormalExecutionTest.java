@@ -34,7 +34,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.RowAdapter;
-import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepInterface;
 
 public class NormalExecutionTest extends TestCase {
@@ -51,7 +50,8 @@ public class NormalExecutionTest extends TestCase {
   }
 
   /**
-   * Mock {@link RowListener} that totals the number of events. Can be stopped with {@code close()}.
+   * Mock {@link org.pentaho.di.trans.step.RowListener} that totals the number of events. 
+   * Can be stopped with {@code close()}.
    */
   protected class CountingRowListener extends RowAdapter {
     private Long error;
@@ -155,7 +155,8 @@ public class NormalExecutionTest extends TestCase {
   }
 
   /**
-   * Tests that all rows are written out to {@link RowListener}s before {@link Trans#waitUntilFinished} returns.
+   * Tests that all rows are written out to {@link org.pentaho.di.trans.step.RowListener}s 
+   * before {@link Trans#waitUntilFinished} returns.
    */
   public void testWaitUntilFinished() throws Exception {
     // The number of rows we'll pump through our RowProducer.

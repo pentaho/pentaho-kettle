@@ -40,13 +40,13 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.rowgenerator.RowGenerator;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 public class MappingTest extends TestCase {
 
   /**
-   * Builds a {@link RowGenerator} Step with a single String field.
+   * Builds a {@link org.pentaho.di.trans.steps.rowgenerator.RowGenerator} Step 
+   * with a single String field.
    *
    * @param registry
    *          Plugin Registry.
