@@ -309,9 +309,7 @@ public interface JobEntryInterface {
    *           if any errors occur during the loading of the XML
    */
   @Deprecated
-  public void
-    loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep )
-      throws KettleXMLException;
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep ) throws KettleXMLException;
 
   /**
    * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing the

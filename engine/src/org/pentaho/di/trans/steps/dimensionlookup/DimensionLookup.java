@@ -713,9 +713,8 @@ public class DimensionLookup extends BaseStep implements StepInterface {
           // First try to use an AUTOINCREMENT field
           if ( meta.getDatabaseMeta().supportsAutoinc() && isAutoIncrement() ) {
             technicalKey = null; // value to accept new key...
-          } else
-          // Try to get the value by looking at a SEQUENCE (oracle mostly)
-          if ( meta.getDatabaseMeta().supportsSequences()
+          } else if ( meta.getDatabaseMeta().supportsSequences()
+            // Try to get the value by looking at a SEQUENCE (oracle mostly)
             && meta.getSequenceName() != null && meta.getSequenceName().length() > 0 ) {
             technicalKey =
               data.db.getNextSequenceValue( data.realSchemaName, meta.getSequenceName(), meta.getKeyField() );

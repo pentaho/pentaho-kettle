@@ -510,6 +510,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
     input.setOuterJoin( wOuter.getSelection() );
     input.setVariableReplace( wuseVars.getSelection() );
     logDebug( BaseMessages.getString( PKG, "DatabaseJoinDialog.Log.ParametersFound" ) + nrparam + " parameters" );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrparam; i++ ) {
       TableItem item = wParam.getNonEmpty( i );
       input.getParameterField()[i] = item.getText( 1 );

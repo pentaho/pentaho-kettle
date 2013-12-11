@@ -1430,6 +1430,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     in.allocate( nrkeys, nrfields );
 
     logDebug( BaseMessages.getString( PKG, "DimensionLookupDialog.Log.FoundKeys", String.valueOf( nrkeys ) ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
       in.getKeyLookup()[i] = item.getText( 1 );
@@ -1439,6 +1440,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "DimensionLookupDialog.Log.FoundFields", String.valueOf( nrfields ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wUpIns.getNonEmpty( i );
       in.getFieldLookup()[i] = item.getText( 1 );

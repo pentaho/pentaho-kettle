@@ -1483,9 +1483,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
         getByReferenceData( jobInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-        PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 

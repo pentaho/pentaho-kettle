@@ -536,8 +536,10 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
       FileObject fileObject = null;
 
       String method = meta.getLoadMethod();
-      if ( // GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
-      GPBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
+
+      // GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
+      if ( GPBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
+
         if ( meta.getControlFile() != null ) {
           try {
             fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );

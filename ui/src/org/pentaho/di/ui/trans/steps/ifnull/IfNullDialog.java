@@ -642,6 +642,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     int nrfields = wFields.nrNonEmpty();
     input.allocate( nrtypes, nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrtypes; i++ ) {
       TableItem ti = wValueTypes.getNonEmpty( i );
       input.getTypeName()[i] = ti.getText( 1 );
@@ -657,6 +658,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
 
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );

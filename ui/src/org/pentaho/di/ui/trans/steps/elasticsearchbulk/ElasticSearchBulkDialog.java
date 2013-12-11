@@ -336,16 +336,16 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // Index
     wIndex =
-      new LabelTextVar( transMeta, wIndexGroup, BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.Index.Label" ), BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.Index.Tooltip" ) );
+      new LabelTextVar( transMeta, wIndexGroup,
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Index.Label" ),
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Index.Tooltip" ) );
     wIndex.addModifyListener( lsMod );
 
     // Type
     wType =
-      new LabelTextVar( transMeta, wIndexGroup, BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.Type.Label" ), BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.Type.Tooltip" ) );
+      new LabelTextVar( transMeta, wIndexGroup,
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Type.Label" ),
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Type.Tooltip" ) );
     wType.addModifyListener( lsMod );
 
     // Test button
@@ -548,9 +548,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // Timeout
     wTimeOut =
-      new LabelTimeComposite( wSettingsGroup, BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.TimeOut.Label" ), BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.TimeOut.Tooltip" ) );
+      new LabelTimeComposite( wSettingsGroup,
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TimeOut.Label" ),
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TimeOut.Tooltip" ) );
     props.setLook( wTimeOut );
     wTimeOut.addModifyListener( lsMod );
 
@@ -573,9 +573,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // ID input
     wIdInField =
-      new LabelComboVar( transMeta, wSettingsGroup, BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.IdField.Label" ), BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.IdField.Tooltip" ) );
+      new LabelComboVar( transMeta, wSettingsGroup,
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdField.Label" ),
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdField.Tooltip" ) );
     props.setLook( wIdInField );
     wIdInField.getComboWidget().setEditable( true );
     wIdInField.addModifyListener( lsMod );
@@ -616,9 +616,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // ID out field
     wIdOutField =
-      new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.IdOutField.Label" ), BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.IdOutField.Tooltip" ) );
+      new LabelTextVar( transMeta, wSettingsGroup,
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdOutField.Label" ),
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdOutField.Tooltip" ) );
     props.setLook( wIdOutField );
     wIdOutField.setEnabled( wUseOutput.getSelection() );
     wIdOutField.addModifyListener( lsMod );
@@ -645,9 +645,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // Json field
     wJsonField =
-      new LabelComboVar( transMeta, wSettingsGroup, BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.JsonField.Label" ), BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.JsonField.Tooltip" ) );
+      new LabelComboVar( transMeta, wSettingsGroup,
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.JsonField.Label" ),
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.JsonField.Tooltip" ) );
     wJsonField.getComboWidget().setEditable( true );
     props.setLook( wJsonField );
     wJsonField.addModifyListener( lsMod );
@@ -692,9 +692,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
           fieldNames = r.getFieldNames();
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-          PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogMessage" ), ke );
         return new String[0];
       }
     }
@@ -817,9 +817,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     try {
       toModel( model );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogTitle" ), BaseMessages.getString(
-        PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogTitle" ),
+        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogMessage" ), e );
     }
     dispose();
   }

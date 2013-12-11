@@ -231,6 +231,7 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
     //
     if ( splits.size() > 0 ) {
       meta.allocate( splits.size() );
+      //CHECKSTYLE:Indentation:OFF
       for ( int i = 0; i < splits.size(); i++ ) {
         Split split = splits.get( i );
 

@@ -582,9 +582,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     try {
       previousFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleStepException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "ExcelInputDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages.getString(
-        PKG, "ExcelInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "ExcelInputDialog.ErrorDialog.UnableToGetInputFields.Title" ),
+        BaseMessages.getString( PKG, "ExcelInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
       previousFields = new RowMeta();
     }
     wAccField.setItems( previousFields.getFieldNames() );
@@ -1474,6 +1474,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     meta.setFileRequired( wFilenameList.getItems( 3 ) );
     meta.setIncludeSubFolders( wFilenameList.getItems( 4 ) );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrsheets; i++ ) {
       TableItem item = wSheetnameList.getNonEmpty( i );
       meta.getSheetName()[i] = item.getText( 1 );
@@ -1481,6 +1482,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       meta.getStartColumn()[i] = Const.toInt( item.getText( 3 ), 0 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       meta.getField()[i] = new ExcelInputField();
@@ -2062,9 +2064,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     String[] files = eii.getFilePaths( transMeta );
     if ( files.length > 0 ) {
       EnterSelectionDialog esd =
-        new EnterSelectionDialog( shell, files, BaseMessages.getString(
-          PKG, "ExcelInputDialog.FilesRead.DialogTitle" ), BaseMessages.getString(
-          PKG, "ExcelInputDialog.FilesRead.DialogMessage" ) );
+        new EnterSelectionDialog( shell, files,
+          BaseMessages.getString( PKG, "ExcelInputDialog.FilesRead.DialogTitle" ),
+          BaseMessages.getString( PKG, "ExcelInputDialog.FilesRead.DialogMessage" ) );
       esd.setViewOnly();
       esd.open();
     } else {

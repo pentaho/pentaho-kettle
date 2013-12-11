@@ -113,6 +113,7 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
     if ( formula != null ) {
       retval.allocate( formula.length );
       for ( int i = 0; i < formula.length; i++ ) {
+        //CHECKSTYLE:Indentation:OFF
         retval.getFormula()[i] = (JaninoMetaFunction) formula[i].clone();
       }
     } else {

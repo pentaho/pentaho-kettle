@@ -161,10 +161,8 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
     wName.setLayoutData( fdName );
 
     // eMail address
-    wMailAddress =
-      new LabelTextVar( jobMeta, shell, BaseMessages.getString(
-        PKG, "JobEntryMailValidatorDialog.MailAddress.Label" ), BaseMessages.getString(
-        PKG, "JobEntryMailValidatorDialog.MailAddress.Tooltip" ) );
+    wMailAddress = new LabelTextVar( jobMeta, shell, BaseMessages.getString( PKG, "JobEntryMailValidatorDialog.MailAddress.Label" ),
+      BaseMessages.getString( PKG, "JobEntryMailValidatorDialog.MailAddress.Tooltip" ) );
     wMailAddress.addModifyListener( lsMod );
     fdMailAddress = new FormData();
     fdMailAddress.left = new FormAttachment( 0, 0 );

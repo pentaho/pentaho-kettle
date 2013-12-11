@@ -230,6 +230,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
     stepname = wStepname.getText(); // return value
     int nrfields = wFields.nrNonEmpty();
     input.allocate( nrfields );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldname()[i] = item.getText( 1 );

@@ -602,6 +602,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
 
     int nrRows = wFields.nrNonEmpty();
     input.allocate( nrRows );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrRows; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldDatabase()[i] = Const.NVL( item.getText( 1 ), "" );

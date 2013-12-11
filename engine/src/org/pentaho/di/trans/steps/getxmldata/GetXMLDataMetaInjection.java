@@ -398,6 +398,7 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
     }
     if ( filenameLines.size() > 0 ) {
       meta.allocateFiles( filenameLines.size() );
+      //CHECKSTYLE:Indentation:OFF
       for ( int i = 0; i < filenameLines.size(); i++ ) {
         FilenameLine line = filenameLines.get( i );
         meta.getFileName()[i] = line.fileName;

@@ -812,9 +812,9 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     for ( int i = 0; i < returnValueField.length; i++ ) {
       DatabaseImpact ii =
         new DatabaseImpact(
-          DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepinfo.getName(), databaseMeta
-            .getDatabaseName(), tablename, returnValueField[i], "", "", "", BaseMessages.getString(
-            PKG, "DatabaseLookupMeta.Impact.ReturnValue" ) );
+          DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepinfo.getName(),
+          databaseMeta.getDatabaseName(), tablename, returnValueField[i], "", "", "",
+          BaseMessages.getString( PKG, "DatabaseLookupMeta.Impact.ReturnValue" ) );
       impact.add( ii );
     }
   }

@@ -1056,9 +1056,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "GetFileNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-        PKG, "GetFileNamesDialog.PreviewSize.DialogMessage" ) );
+      new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "GetFileNamesDialog.PreviewSize.DialogTitle" ),
+        BaseMessages.getString( PKG, "GetFileNamesDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =

@@ -569,10 +569,9 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
         ValueMetaInterface outvalue = out.getValueMeta( i );
         DatabaseImpact di =
           new DatabaseImpact(
-            DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-              .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), transMeta
-              .environmentSubstitute( sql ), BaseMessages.getString(
-              PKG, "DatabaseJoinMeta.DatabaseImpact.Title" ) );
+            DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(),
+            databaseMeta.getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(),
+            transMeta.environmentSubstitute( sql ), BaseMessages.getString( PKG, "DatabaseJoinMeta.DatabaseImpact.Title" ) );
         impact.add( di );
 
       }

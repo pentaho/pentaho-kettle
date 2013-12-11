@@ -83,8 +83,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
   private Label WSourceFileFoldername;
   private Button wbFileFoldername, wbaEntry, wbSourceFolder;
   private TextVar wSourceFileFoldername;
-  private FormData fdlSourceFileFoldername, fdbSourceFileFoldername, fdbaEntry, fdSourceFileFoldername,
-      fdbSourceFolder;
+  private FormData fdlSourceFileFoldername, fdbSourceFileFoldername, fdbaEntry, fdSourceFileFoldername, fdbSourceFolder;
 
   private Label wlTargetDbname;
   private Button wbTargetDbname;

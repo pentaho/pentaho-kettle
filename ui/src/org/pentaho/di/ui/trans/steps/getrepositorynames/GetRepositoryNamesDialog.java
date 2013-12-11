@@ -559,6 +559,7 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
     int nrfiles = wDirectoryList.nrNonEmpty();
     meta.allocate( nrfiles );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfiles; i++ ) {
       TableItem item = wDirectoryList.getNonEmpty( i );
       int col = 1;

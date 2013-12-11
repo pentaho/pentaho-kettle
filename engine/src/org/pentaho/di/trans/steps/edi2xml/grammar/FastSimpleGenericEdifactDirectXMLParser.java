@@ -1,3 +1,4 @@
+//CHECKSTYLE:Indentation:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration

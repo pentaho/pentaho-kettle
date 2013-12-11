@@ -89,8 +89,7 @@ public class FieldnameLineage {
    * @return The first encountered field name lineage object where the input field name matches. If nothing is found
    *         null is returned.
    */
-  public static final FieldnameLineage
-    findFieldnameLineageWithInput( List<FieldnameLineage> lineages, String input ) {
+  public static final FieldnameLineage findFieldnameLineageWithInput( List<FieldnameLineage> lineages, String input ) {
     for ( FieldnameLineage lineage : lineages ) {
       if ( lineage.getInputFieldname().equalsIgnoreCase( input ) ) {
         return lineage;

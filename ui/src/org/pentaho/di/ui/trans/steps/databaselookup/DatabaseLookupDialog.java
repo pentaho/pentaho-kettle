@@ -730,6 +730,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     input.setLoadingAllDataInCache( wCacheLoadAll.getSelection() );
 
     logDebug( BaseMessages.getString( PKG, "DatabaseLookupDialog.Log.FoundKeys", String.valueOf( nrkeys ) ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
       input.getTableKeyField()[i] = item.getText( 1 );
@@ -739,6 +740,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     }
 
     logDebug( BaseMessages.getString( PKG, "DatabaseLookupDialog.Log.FoundFields", String.valueOf( nrfields ) ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       input.getReturnValueField()[i] = item.getText( 1 );

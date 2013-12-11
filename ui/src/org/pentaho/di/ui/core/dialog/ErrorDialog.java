@@ -155,9 +155,8 @@ public class ErrorDialog extends Dialog {
           text.append( ke.getMessage() );
         }
 
-      } else
-      // Error from somewhere else, what is the cause?
-      if ( exception instanceof InvocationTargetException ) {
+      } else if ( exception instanceof InvocationTargetException ) {
+        // Error from somewhere else, what is the cause?
         Throwable cause = exception.getCause();
         if ( cause instanceof KettleException ) {
           KettleException ke = (KettleException) cause;

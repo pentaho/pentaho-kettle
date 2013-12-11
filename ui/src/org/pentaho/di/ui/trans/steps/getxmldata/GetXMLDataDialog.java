@@ -1198,9 +1198,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "GetXMLDataDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "GetXMLDataDialog.FilesReadSelection.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files,
+                BaseMessages.getString( PKG, "GetXMLDataDialog.FilesReadSelection.DialogTitle" ),
+                BaseMessages.getString( PKG, "GetXMLDataDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1210,9 +1210,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "GetXMLDataDialog.ErrorParsingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "GetXMLDataDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "GetXMLDataDialog.ErrorParsingData.DialogTitle" ),
+            BaseMessages.getString( PKG, "GetXMLDataDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1818,6 +1817,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
       field.setTrimType( GetXMLDataField.getTrimTypeByDesc( item.getText( 12 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 13 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1858,9 +1858,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "GetXMLDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "GetXMLDataDialog.NumberRows.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+          BaseMessages.getString( PKG, "GetXMLDataDialog.NumberRows.DialogTitle" ),
+          BaseMessages.getString( PKG, "GetXMLDataDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
@@ -2095,9 +2095,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
       list_xpath = pd.open();
       if ( list_xpath != null ) {
         EnterSelectionDialog s =
-          new EnterSelectionDialog( shell, list_xpath, BaseMessages.getString(
-            PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Title" ), BaseMessages.getString(
-            PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Message" ) );
+          new EnterSelectionDialog( shell, list_xpath,
+            BaseMessages.getString( PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Title" ),
+            BaseMessages.getString( PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Message" ) );
         String listxpaths = s.open();
         if ( listxpaths != null ) {
           wLoopXPath.setText( listxpaths );

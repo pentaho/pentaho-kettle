@@ -716,10 +716,9 @@ public class GetSubFoldersDialog extends BaseStepDialog implements StepDialogInt
     TransMeta previewMeta =
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-    EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "GetSubFoldersDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-        PKG, "GetSubFoldersDialog.PreviewSize.DialogMessage" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "GetSubFoldersDialog.PreviewSize.DialogTitle" ),
+      BaseMessages.getString( PKG, "GetSubFoldersDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =

@@ -408,6 +408,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < input.getFieldName().length; i++ ) {
       final TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );

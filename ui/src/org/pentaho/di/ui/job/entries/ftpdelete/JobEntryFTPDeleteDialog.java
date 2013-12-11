@@ -166,8 +166,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
   private FormData fdTabFolder;
   private Group wSocksProxy;
   private LabelTextVar wSocksProxyHost, wSocksProxyPort, wSocksProxyUsername, wSocksProxyPassword;
-  private FormData fdSocksProxyComp, fdSocksProxyHost, fdSocksProxyPort, fdSocksProxyUsername,
-      fdSocksProxyPassword;
+  private FormData fdSocksProxyComp, fdSocksProxyHost, fdSocksProxyPort, fdSocksProxyUsername, fdSocksProxyPassword;
 
   private LabelTextVar wPort;
 
@@ -483,9 +482,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Proxy username line
     wProxyUsername =
-      new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
-        PKG, "JobFTPDelete.ProxyUsername.Label" ), BaseMessages.getString(
-        PKG, "JobFTPDelete.ProxyUsername.Tooltip" ) );
+      new LabelTextVar( jobMeta, wServerSettings,
+        BaseMessages.getString( PKG, "JobFTPDelete.ProxyUsername.Label" ),
+        BaseMessages.getString( PKG, "JobFTPDelete.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -496,9 +495,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // Proxy password line
     wProxyPassword =
-      new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
-        PKG, "JobFTPDelete.ProxyPassword.Label" ), BaseMessages.getString(
-        PKG, "JobFTPDelete.ProxyPassword.Tooltip" ) );
+      new LabelTextVar( jobMeta, wServerSettings,
+        BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Label" ),
+        BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
@@ -943,9 +942,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // username line
     wSocksProxyUsername =
-      new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString(
-        PKG, "JobFTPDelete.SocksProxyUsername.Label" ), BaseMessages.getString(
-        PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
+      new LabelTextVar( jobMeta, wSocksProxy,
+        BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyUsername.Label" ),
+        BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
     props.setLook( wSocksProxyUsername );
     wSocksProxyUsername.addModifyListener( lsMod );
     fdSocksProxyUsername = new FormData();
@@ -956,9 +955,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     // password line
     wSocksProxyPassword =
-      new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString(
-        PKG, "JobFTPDelete.SocksProxyPassword.Label" ), BaseMessages.getString(
-        PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
+      new LabelTextVar( jobMeta, wSocksProxy,
+        BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Label" ),
+        BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
     props.setLook( wSocksProxyPort );
     wSocksProxyPassword.setEchoChar( '*' );
     wSocksProxyPassword.addModifyListener( lsMod );

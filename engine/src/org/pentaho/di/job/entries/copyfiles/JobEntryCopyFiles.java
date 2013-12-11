@@ -79,7 +79,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   public boolean include_subfolders;
   public boolean add_result_filesname;
   public boolean remove_source_files;
-  public boolean destinationIsFile;
+  public boolean destination_is_a_file;
   public boolean create_destination_folder;
   public String[] source_filefolder;
   public String[] destination_filefolder;
@@ -99,7 +99,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     overwrite_files = false;
     include_subfolders = false;
     add_result_filesname = false;
-    destinationIsFile = false;
+    destination_is_a_file = false;
     create_destination_folder = false;
     setID( -1L );
   }
@@ -123,7 +123,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", include_subfolders ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "remove_source_files", remove_source_files ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_result_filesname", add_result_filesname ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "destination_is_a_file", destinationIsFile ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "destination_is_a_file", destination_is_a_file ) );
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "create_destination_folder", create_destination_folder ) );
 
@@ -153,7 +153,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       include_subfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "include_subfolders" ) );
       remove_source_files = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "remove_source_files" ) );
       add_result_filesname = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "add_result_filesname" ) );
-      destinationIsFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "destination_is_a_file" ) );
+      destination_is_a_file = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "destination_is_a_file" ) );
       create_destination_folder =
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_destination_folder" ) );
 
@@ -190,7 +190,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       remove_source_files = rep.getJobEntryAttributeBoolean( id_jobentry, "remove_source_files" );
 
       add_result_filesname = rep.getJobEntryAttributeBoolean( id_jobentry, "add_result_filesname" );
-      destinationIsFile = rep.getJobEntryAttributeBoolean( id_jobentry, "destination_is_a_file" );
+      destination_is_a_file = rep.getJobEntryAttributeBoolean( id_jobentry, "destination_is_a_file" );
       create_destination_folder = rep.getJobEntryAttributeBoolean( id_jobentry, "create_destination_folder" );
 
       // How many arguments?
@@ -220,7 +220,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "include_subfolders", include_subfolders );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "remove_source_files", remove_source_files );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "add_result_filesname", add_result_filesname );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "destination_is_a_file", destinationIsFile );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "destination_is_a_file", destination_is_a_file );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_destination_folder", create_destination_folder );
 
       // save the arguments...
@@ -371,7 +371,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         if ( CreateDestinationFolder( destinationfilefolder ) ) {
 
           // Basic Tests
-          if ( sourcefilefolder.getType().equals( FileType.FOLDER ) && destinationIsFile )
+          if ( sourcefilefolder.getType().equals( FileType.FOLDER ) && destination_is_a_file )
           {
             // Source is a folder, destination is a file
             // WARNING !!! CAN NOT COPY FOLDER TO FILE !!!
@@ -397,7 +397,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
                   .getName().toString(), destinationfilefolder.getName().toString() ) );
               }
 
-            } else if ( sourcefilefolder.getType().equals( FileType.FILE ) && destinationIsFile ) {
+            } else if ( sourcefilefolder.getType().equals( FileType.FILE ) && destination_is_a_file ) {
               // Source is a file, destination is a file
 
               destinationfilefolder.copyFrom( sourcefilefolder, new TextOneToOneFileSelector(
@@ -610,7 +610,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   private boolean CreateDestinationFolder( FileObject filefolder ) {
     FileObject folder = null;
     try {
-      if ( destinationIsFile ) {
+      if ( destination_is_a_file ) {
         folder = filefolder.getParent();
       } else {
         folder = filefolder;
@@ -1007,7 +1007,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   }
 
   public void setDestinationIsAFile( boolean destination_is_a_file ) {
-    this.destinationIsFile = destination_is_a_file;
+    this.destination_is_a_file = destination_is_a_file;
   }
 
   public void setCreateDestinationFolder( boolean create_destination_folder ) {

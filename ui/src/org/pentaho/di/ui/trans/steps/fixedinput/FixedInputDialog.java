@@ -670,6 +670,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
       field.setGrouping( item.getText( colnr++ ) );
       field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( colnr++ ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       fixedInputMeta.getFieldDefinition()[i] = field;
     }
     wFields.removeEmptyRows();
@@ -855,6 +856,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     field.setName( "Field1" );
     field.setType( ValueMetaInterface.TYPE_STRING );
     field.setWidth( lineWidth );
+    //CHECKSTYLE:Indentation:OFF
     oneMeta.getFieldDefinition()[0] = field;
 
     TransMeta previewMeta =

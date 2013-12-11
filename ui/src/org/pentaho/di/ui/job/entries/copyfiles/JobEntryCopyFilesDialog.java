@@ -83,8 +83,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
   private Label wlSourceFileFolder;
   private Button wbSourceFileFolder, wbDestinationFileFolder, wbSourceDirectory, wbDestinationDirectory;
   private TextVar wSourceFileFolder;
-  private FormData fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder, fdbDestinationFileFolder,
-      fdbSourceDirectory, fdbDestinationDirectory;
+  private FormData fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder, fdbDestinationFileFolder, fdbSourceDirectory, fdbDestinationDirectory;
 
   private Label wlCopyEmptyFolders;
   private Button wCopyEmptyFolders;
@@ -920,7 +919,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wOverwriteFiles.setSelection( jobEntry.overwrite_files );
     wIncludeSubfolders.setSelection( jobEntry.include_subfolders );
     wRemoveSourceFiles.setSelection( jobEntry.remove_source_files );
-    wDestinationIsAFile.setSelection( jobEntry.destinationIsFile );
+    wDestinationIsAFile.setSelection( jobEntry.destination_is_a_file );
     wCreateDestinationFolder.setSelection( jobEntry.create_destination_folder );
 
     wAddFileToResult.setSelection( jobEntry.add_result_filesname );

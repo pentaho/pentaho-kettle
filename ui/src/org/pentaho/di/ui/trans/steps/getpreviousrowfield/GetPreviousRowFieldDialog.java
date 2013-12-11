@@ -316,6 +316,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
       logDebug( BaseMessages
         .getString( PKG, "GetPreviousRowFieldDialog.Log.FoundFields", String.valueOf( nrkeys ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       inf.getFieldInStream()[i] = item.getText( 1 );

@@ -617,11 +617,13 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
     input.allocate( sizegroup, nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < sizegroup; i++ ) {
       TableItem item = wGroup.getNonEmpty( i );
       input.getGroupField()[i] = item.getText( 1 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wAgg.getNonEmpty( i );
       input.getAggregateField()[i] = item.getText( 1 );
@@ -634,13 +636,13 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
     if ( sizegroup > 0 && "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString(
-          PKG, "GroupByDialog.GroupByWarningDialog.DialogTitle" ), null, BaseMessages.getString(
-          PKG, "GroupByDialog.GroupByWarningDialog.DialogMessage", Const.CR )
-          + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
-          PKG, "GroupByDialog.GroupByWarningDialog.Option1" ) }, 0, BaseMessages.getString(
-          PKG, "GroupByDialog.GroupByWarningDialog.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-          STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.DialogTitle" ), null,
+          BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.Option2" ), "N".equalsIgnoreCase(
+            props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

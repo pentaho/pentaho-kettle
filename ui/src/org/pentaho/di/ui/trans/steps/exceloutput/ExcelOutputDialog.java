@@ -572,9 +572,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, files, BaseMessages.getString(
-              PKG, "ExcelOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-              PKG, "ExcelOutputDialog.SelectOutputFiles.DialogMessage" ) );
+            new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "ExcelOutputDialog.SelectOutputFiles.DialogTitle" ),
+              BaseMessages.getString( PKG, "ExcelOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -1848,6 +1848,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       field.setType( item.getText( 2 ) );
       field.setFormat( item.getText( 3 ) );
 
+      //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
     }
     // Header font

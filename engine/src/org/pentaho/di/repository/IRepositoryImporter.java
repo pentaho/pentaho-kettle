@@ -53,10 +53,9 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
    * @param versionComment
    *          Comment to use when saving imported objects.
    */
-  public void
-    importAll( RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames,
-      RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError,
-      String versionComment );
+  public void importAll( RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames,
+    RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError,
+    String versionComment );
 
   /**
    * Set the list of rules that need to be applied to every imported object.

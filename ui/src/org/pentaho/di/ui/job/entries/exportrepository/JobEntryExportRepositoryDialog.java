@@ -316,9 +316,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
     // UserName line
     wUserName =
-      new LabelTextVar( jobMeta, wRepositoryInfos, BaseMessages
-        .getString( PKG, "JobExportRepository.User.Label" ), BaseMessages.getString(
-        PKG, "JobExportRepository.User.Tooltip" ) );
+      new LabelTextVar( jobMeta, wRepositoryInfos,
+        BaseMessages.getString( PKG, "JobExportRepository.User.Label" ),
+        BaseMessages.getString( PKG, "JobExportRepository.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -329,9 +329,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
     // Password line
     wPassword =
-      new LabelTextVar( jobMeta, wRepositoryInfos, BaseMessages.getString(
-        PKG, "JobExportRepository.Password.Label" ), BaseMessages.getString(
-        PKG, "JobExportRepository.Password.Tooltip" ) );
+      new LabelTextVar( jobMeta, wRepositoryInfos,
+        BaseMessages.getString( PKG, "JobExportRepository.Password.Label" ),
+        BaseMessages.getString( PKG, "JobExportRepository.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -1222,9 +1222,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
         source[0] = wRepositoryname.getText();
         int[] idxSource = Const.indexsOfStrings( source, available );
         EnterSelectionDialog dialog =
-          new EnterSelectionDialog( shell, available, BaseMessages.getString(
-            PKG, "JobExportRepository.SelectRepository.Title" ), BaseMessages.getString(
-            PKG, "JobExportRepository.SelectRepository.Message" ) );
+          new EnterSelectionDialog( shell, available,
+            BaseMessages.getString( PKG, "JobExportRepository.SelectRepository.Title" ),
+            BaseMessages.getString( PKG, "JobExportRepository.SelectRepository.Message" ) );
         dialog.setMulti( false );
         dialog.setAvoidQuickSearch();
         dialog.setSelectedNrs( idxSource );
@@ -1235,9 +1235,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
       }
 
     } catch ( Exception e ) {
-      displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-        PKG, "JobExportRepository.ErrorGettingRepositories.DialogMessage" )
-        + Const.CR + ":" + e.getMessage(), true );
+      displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+        BaseMessages.getString( PKG, "JobExportRepository.ErrorGettingRepositories.DialogMessage" ) + Const.CR + ":" + e.getMessage(), true );
     } finally {
       reps_info.clear();
     }

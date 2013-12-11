@@ -814,9 +814,9 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
         }
 
         EnterSelectionDialog esd =
-          new EnterSelectionDialog( shell, conn, BaseMessages.getString(
-            PKG, "DatabaseExplorerDialog.TargetDatabase.Title" ), BaseMessages.getString(
-            PKG, "DatabaseExplorerDialog.TargetDatabase.Message" ) );
+          new EnterSelectionDialog( shell, conn,
+            BaseMessages.getString( PKG, "DatabaseExplorerDialog.TargetDatabase.Title" ),
+            BaseMessages.getString( PKG, "DatabaseExplorerDialog.TargetDatabase.Message" ) );
         String target = esd.open();
         if ( target != null ) {
           DatabaseMeta targetdbi = DatabaseMeta.findDatabase( dbs, target );
@@ -883,9 +883,9 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
       }
 
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Title" ), BaseMessages.getString(
-        PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Title" ),
+        BaseMessages.getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Message" ), e );
     }
 
   }

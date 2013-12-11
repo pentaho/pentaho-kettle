@@ -127,14 +127,10 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
       .environmentSubstitute( databaseMeta.getDatabaseName() ) );
   }
 
-  private StringBuffer
-    appendConnectionInfo( StringBuffer report, String hostName, String portNumber, String dbName ) {
-    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Hostname" ) ).append( hostName ).append(
-      Const.CR );
-    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Port" ) ).append( portNumber ).append(
-      Const.CR );
-    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.DatabaseName" ) ).append( dbName ).append(
-      Const.CR );
+  private StringBuffer appendConnectionInfo( StringBuffer report, String hostName, String portNumber, String dbName ) {
+    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Hostname" ) ).append( hostName ).append( Const.CR );
+    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Port" ) ).append( portNumber ).append( Const.CR );
+    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.DatabaseName" ) ).append( dbName ).append( Const.CR );
     return report;
   }
 }

@@ -640,10 +640,10 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     this.proxyUsername = proxyUsername;
   }
 
+  /** Needed for the Vector coming from sshclient.ls() *
+   */
   @SuppressWarnings( "unchecked" )
-  // Needed for the Vector coming from sshclient.ls()
-    public
-    Result execute( Result previousResult, int nr ) {
+  public Result execute( Result previousResult, int nr ) {
     log.logBasic( BaseMessages.getString( PKG, "JobEntryFTPDelete.Started", serverName ) );
     RowMetaAndData resultRow = null;
     Result result = previousResult;

@@ -298,6 +298,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 
     for ( int i = 0; i < nrTargets; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getTargetField()[i] = item.getText( 1 );
     }
     stepname = wStepname.getText();

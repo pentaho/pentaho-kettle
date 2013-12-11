@@ -803,6 +803,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "FuzzyMatchDialog.Log.FoundFields", nrvalues + "" ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrvalues; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       input.getValue()[i] = item.getText( 1 );
@@ -866,9 +867,9 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
           wLookupField.setItems( r.getFieldNames() );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogTitle" ), BaseMessages.getString(
-          PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogMessage" ), ke );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "FuzzyMatchDialog.FailedToGetLookupFields.DialogMessage" ), ke );
       }
       if ( field != null ) {
         wLookupField.setText( field );

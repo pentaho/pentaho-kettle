@@ -1048,6 +1048,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "HTTPPOSTDialog.Log.FoundArguments", String.valueOf( nrargs ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrargs; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getArgumentField()[i] = item.getText( 1 );
@@ -1062,6 +1063,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
       logDebug( BaseMessages.getString( PKG, "HTTPPOSTDialog.Log.FoundQueryParameters", String
         .valueOf( nrqueryparams ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrqueryparams; i++ ) {
       TableItem item = wQuery.getNonEmpty( i );
       input.getQueryField()[i] = item.getText( 1 );

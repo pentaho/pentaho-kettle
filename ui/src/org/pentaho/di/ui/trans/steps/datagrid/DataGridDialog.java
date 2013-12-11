@@ -437,6 +437,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 
     meta.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       int col = 1;

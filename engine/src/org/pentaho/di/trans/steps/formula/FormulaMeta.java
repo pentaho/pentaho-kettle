@@ -113,6 +113,7 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface {
     if ( formula != null ) {
       retval.allocate( formula.length );
       for ( int i = 0; i < formula.length; i++ ) {
+        //CHECKSTYLE:Indentation:OFF
         retval.getFormula()[i] = (FormulaMetaFunction) formula[i].clone();
       }
     } else {

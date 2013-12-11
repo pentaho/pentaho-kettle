@@ -737,6 +737,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     }
     for ( int i = 0; i < nrargs; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getArguments()[i] = item.getText( 1 );
     }
 

@@ -1151,12 +1151,16 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         transport = session.getTransport( protocol );
         if ( usingAuthentication ) {
           if ( !Const.isEmpty( port ) ) {
-            transport.connect( environmentSubstitute( Const.NVL( server, "" ) ), Integer
-              .parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ), environmentSubstitute( Const.NVL(
-              authenticationUser, "" ) ), environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
+            transport.connect(
+              environmentSubstitute( Const.NVL( server, "" ) ),
+              Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),
+              environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+              environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
           } else {
-            transport.connect( environmentSubstitute( Const.NVL( server, "" ) ), environmentSubstitute( Const.NVL(
-              authenticationUser, "" ) ), environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
+            transport.connect(
+              environmentSubstitute( Const.NVL( server, "" ) ),
+              environmentSubstitute( Const.NVL( authenticationUser, "" ) ),
+              environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
           }
         } else {
           transport.connect();

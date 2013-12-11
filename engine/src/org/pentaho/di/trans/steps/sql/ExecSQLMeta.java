@@ -459,11 +459,12 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
     String[] input, String[] output, RowMeta info ) throws KettleStepException {
     DatabaseImpact ii =
       new DatabaseImpact(
-        DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-          .getDatabaseName(), BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown.Label" ),
-        BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown2.Label" ), BaseMessages.getString(
-          PKG, "ExecSQLMeta.DatabaseMeta.Unknown3.Label" ), stepMeta.getName(), sql, BaseMessages.getString(
-          PKG, "ExecSQLMeta.DatabaseMeta.Title" ) );
+        DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
+        databaseMeta.getDatabaseName(),
+        BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown.Label" ),
+        BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown2.Label" ),
+        BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Unknown3.Label" ), stepMeta.getName(), sql,
+        BaseMessages.getString( PKG, "ExecSQLMeta.DatabaseMeta.Title" ) );
     impact.add( ii );
   }
 

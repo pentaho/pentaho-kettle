@@ -127,6 +127,7 @@ public class ExcelOutputMetaInjection implements StepMetaInjectionInterface {
       outputField.setType( excelOutputFields.get( i ).getTypeDesc() );
       outputField.setFormat( excelOutputFields.get( i ).getFormat() );
 
+      //CHECKSTYLE:Indentation:OFF
       meta.getOutputFields()[i] = outputField;
     }
 

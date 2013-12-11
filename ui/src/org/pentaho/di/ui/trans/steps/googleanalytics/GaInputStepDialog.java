@@ -1212,6 +1212,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     meta.allocate( nrFields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrFields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       meta.getFeedFieldType()[i] = item.getText( 1 );

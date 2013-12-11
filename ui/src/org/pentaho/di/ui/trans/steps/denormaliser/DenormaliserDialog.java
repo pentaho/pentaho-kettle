@@ -433,6 +433,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
     for ( int i = 0; i < sizegroup; i++ ) {
       TableItem item = wGroup.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getGroupField()[i] = item.getText( 1 );
     }
 
@@ -453,6 +454,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
       field.setTargetNullString( item.getText( 11 ) );
       field.setTargetAggregationType( item.getText( 12 ) );
 
+      //CHECKSTYLE:Indentation:OFF
       input.getDenormaliserTargetField()[i] = field;
     }
 
@@ -461,12 +463,13 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
         new MessageDialogWithToggle(
-          shell, BaseMessages.getString( PKG, "DenormaliserDialog.Unpivot.DialogTitle" ), null, BaseMessages
-            .getString( PKG, "DenormaliserDialog.Unpivot.DialogMessage", Const.CR, Const.CR ),
-          MessageDialog.WARNING, new String[] { BaseMessages.getString(
-            PKG, "DenormaliserDialog.WarningMessage.Option.1" ) }, 0, BaseMessages.getString(
-            PKG, "DenormaliserDialog.WarningMessage.Option.2" ), "N".equalsIgnoreCase( props
-            .getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+          shell,
+          BaseMessages.getString( PKG, "DenormaliserDialog.Unpivot.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "DenormaliserDialog.Unpivot.DialogMessage", Const.CR, Const.CR ),
+          MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "DenormaliserDialog.WarningMessage.Option.1" ) },
+          0,
+          BaseMessages.getString( PKG, "DenormaliserDialog.WarningMessage.Option.2" ), "N".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

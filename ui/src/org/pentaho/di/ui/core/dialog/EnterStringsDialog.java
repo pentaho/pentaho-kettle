@@ -240,6 +240,7 @@ public class EnterStringsDialog extends Dialog {
 
           if ( valueMeta.getName().equalsIgnoreCase( name ) ) {
             String stringValue = item.getText( 2 );
+            //CHECKSTYLE:Indentation:OFF
             strings.getData()[j] = stringValue;
           }
         }

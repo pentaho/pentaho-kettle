@@ -229,9 +229,9 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
       swtToolbar.layout( true, true );
     } catch ( Throwable t ) {
       LogChannel.GENERAL.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-        PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ), new Exception( t ) );
     }
   }
 

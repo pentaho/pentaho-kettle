@@ -523,6 +523,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "DeleteDialog.Log.FoundKeys", String.valueOf( nrkeys ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
       inf.getKeyLookup()[i] = item.getText( 1 );
@@ -568,9 +569,9 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-              PKG, "DeleteDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
-              PKG, "DeleteDialog.AvailableSchemas.Message", wConnection.getText() ) );
+            new EnterSelectionDialog( shell, schemas,
+              BaseMessages.getString( PKG, "DeleteDialog.AvailableSchemas.Title", wConnection.getText() ),
+              BaseMessages.getString( PKG, "DeleteDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );

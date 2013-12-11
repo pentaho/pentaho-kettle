@@ -165,9 +165,8 @@ public class JobEntryDialog extends Dialog {
    *          the "edit connection" button
    * @return the combo box UI component
    */
-  public CCombo
-    addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-      final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
+  public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
+    final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection, fdbwConnection;
 

@@ -798,10 +798,9 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     TransMeta previewMeta =
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-    EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "GetTableNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-        PKG, "GetTableNamesDialog.PreviewSize.DialogMessage" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "GetTableNamesDialog.PreviewSize.DialogTitle" ),
+      BaseMessages.getString( PKG, "GetTableNamesDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
