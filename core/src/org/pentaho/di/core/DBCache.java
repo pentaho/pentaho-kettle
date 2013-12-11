@@ -37,6 +37,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.version.BuildVersion;
 
 /**
  * This class caches database queries so that the same query doesn't get called
@@ -132,7 +133,7 @@ public class DBCache {
   }
 
   public String getFilename() {
-    return Const.getKettleDirectory() + Const.FILE_SEPARATOR + "db.cache-" + Const.VERSION;
+    return Const.getKettleDirectory() + Const.FILE_SEPARATOR + "db.cache-" + BuildVersion.getInstance().getVersion();
   }
 
   private DBCache() throws KettleFileException {

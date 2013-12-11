@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.version.BuildVersion;
 
 public class ConnectionJDBC3 implements java.sql.Connection {
 	private String url=null;
@@ -243,7 +243,7 @@ public class ConnectionJDBC3 implements java.sql.Connection {
 	}
 
 	public String getDatabaseProductVersion() {
-		return Const.VERSION;
+		return BuildVersion.getInstance().getVersion();
 	}
 
   public boolean isWrapperFor(Class<?> arg0) throws SQLException {

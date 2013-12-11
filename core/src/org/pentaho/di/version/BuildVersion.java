@@ -22,15 +22,12 @@
 
 package org.pentaho.di.version;
 
-import java.net.JarURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 
@@ -46,47 +43,54 @@ public class BuildVersion
 	public static final String REFERENCE_FILE = "/kettle-steps.xml";
 	private static final String JAR_BUILD_DATE_FORMAT = "yyyy-MM-dd HH.mm.ss";
 	
-	private static BuildVersion buildVersion;
+  protected static ManifestGetter manifestGetter = new ManifestGetter();
+  
+  protected static EnvironmentVariableGetter environmentVariableGetter = new EnvironmentVariableGetter();
+	
+	private static final BuildVersion buildVersion = new BuildVersion();
     
-    /**
-     * @return the instance of the BuildVersion singleton
-     */
-    public static final BuildVersion getInstance()
-    {
-        if (buildVersion!=null) return buildVersion;
-        
-        buildVersion = new BuildVersion();
-        
-        return buildVersion;
-    }
+  /**
+   * @return the instance of the BuildVersion singleton
+   */
+  public static final BuildVersion getInstance() {
+    return buildVersion;
+  }
     
-    private String version;
-    private String revision;
-    private String buildDate;
-    private String buildUser;
-    
-    private BuildVersion()
-    {
-        try
-        {
-        	URL url = this.getClass().getResource(REFERENCE_FILE);
-        	JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
-        	Manifest manifest = jarConnection.getManifest();
+  private String version;
+  private String revision;
+  private String buildDate;
+  private String buildUser;
 
-        	version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-        	revision = manifest.getMainAttributes().getValue(Attributes.Name.SPECIFICATION_VERSION);
-        	buildDate = manifest.getMainAttributes().getValue("Compile-Timestamp");
-        	buildUser = manifest.getMainAttributes().getValue("Compile-User");
-        }
-        catch(Throwable e) {
-          // System.out.println("Unable to read version information from manifest : not running from jar files (Igored)");
-          
-          version = Const.VERSION;
-          revision = "";
-          buildDate = XMLHandler.date2string(new Date());
-          buildUser = "";
-        }
+  private void loadBuildInfoFromManifest() throws Exception {
+    Manifest manifest = manifestGetter.getManifest();
+
+    version = manifest.getMainAttributes().getValue( Attributes.Name.IMPLEMENTATION_VERSION );
+    revision = manifest.getMainAttributes().getValue( Attributes.Name.SPECIFICATION_VERSION );
+    buildDate = manifest.getMainAttributes().getValue( "Compile-Timestamp" );
+    buildUser = manifest.getMainAttributes().getValue( "Compile-User" );
+  }
+
+  private void loadBuildInfoFromEnvironmentVariables() throws Exception {
+    version = environmentVariableGetter.getEnvVarible( "KETTLE_BUILD_VERSION" );
+    revision = environmentVariableGetter.getEnvVarible( "KETTLE_BUILD_REVISION" );
+    buildDate = environmentVariableGetter.getEnvVarible( "KETTLE_BUILD_DATE" );
+    buildUser = environmentVariableGetter.getEnvVarible( "KETTLE_BUILD_USER" );
+  }
+
+  private BuildVersion() {
+    try {
+      loadBuildInfoFromManifest();
+    } catch ( Throwable e ) {
+      try {
+        loadBuildInfoFromEnvironmentVariables();
+      } catch ( Throwable e2 ) {
+        version = "Unknown";
+        revision = "0";
+        buildDate = XMLHandler.date2string( new Date() );
+        buildUser = System.getProperty( "user.name" );
+      }
     }
+  }
 
     /**
      * @return the buildDate
