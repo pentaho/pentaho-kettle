@@ -205,12 +205,17 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
       FileObject folderObject = null;
       try {
         folderObject = KettleVFS.getFileObject( realFoldername, this );
-
         if ( folderObject.exists() ) {
           // Check if it's a folder
           if ( folderObject.getType() == FileType.FOLDER ) {
             // File provided is a folder, so we can process ...
-            folderObject.findFiles( new TextFileSelector( folderObject.toString() ) );
+            try {
+              folderObject.findFiles( new TextFileSelector( folderObject.toString() ) );
+            } catch ( Exception ex ) {
+              if ( !( ex.getCause() instanceof ExpectedException ) ) {
+                throw ex;
+              }
+            }
             if ( log.isBasic() ) {
               log.logBasic( "Total files", "We found : " + filescount + " file(s)" );
             }
@@ -251,6 +256,10 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     return result;
   }
 
+  private class ExpectedException extends Exception {
+
+  }
+
   private class TextFileSelector implements FileSelector {
     String root_folder = null;
 
@@ -260,10 +269,10 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
       }
     }
 
-    public boolean includeFile( FileSelectInfo info ) {
+    public boolean includeFile( FileSelectInfo info ) throws ExpectedException {
       boolean returncode = false;
       FileObject file_name = null;
-
+      boolean rethrow = false;
       try {
         if ( !info.getFile().toString().equals( root_folder ) ) {
           // Pass over the Base folder itself
@@ -294,12 +303,20 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
             folderscount++;
           }
         }
+        if ( filescount > 0 ) {
+          rethrow = true;
+          throw new ExpectedException(  );
+        }
         return true;
 
       } catch ( Exception e ) {
-        log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString(
-          PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
-        returncode = false;
+        if ( !rethrow ) {
+          log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString(
+              PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
+          returncode = false;
+        } else {
+          throw (ExpectedException) e;
+        }
       } finally {
         if ( file_name != null ) {
           try {
