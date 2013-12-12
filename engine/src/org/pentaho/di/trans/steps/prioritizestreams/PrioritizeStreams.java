@@ -58,8 +58,7 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
     data = (PrioritizeStreamsData) sdi;
 
     if ( first ) {
-      first = false;
-      if ( meta.getStepName() == null || meta.getStepName().length > 0 ) {
+      if ( meta.getStepName() != null || meta.getStepName().length > 0 ) {
         data.stepnrs = meta.getStepName().length;
         data.rowSets = new RowSet[data.stepnrs];
 
@@ -75,9 +74,7 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "PrioritizeStreams.Error.NotInputSteps" ) );
       }
       data.currentRowSet = data.rowSets[0];
-      // Take the row Meta from the first stream
-      data.outputRowMeta = data.currentRowSet.getRowMeta();
-    } // end if first
+    } // end if first, part 1
 
     Object[] input = getOneRow();
 
@@ -89,6 +86,12 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
       // no more input to be expected...
       setOutputDone();
       return false;
+    }
+
+    if ( first ) {
+      // Take the row Meta from the first rowset read
+      data.outputRowMeta = data.currentRowSet.getRowMeta();
+      first = false;
     }
 
     putRow( data.outputRowMeta, input );
