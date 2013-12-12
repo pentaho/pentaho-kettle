@@ -373,11 +373,10 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
         int nrScripts = rep.countNrStepAttributes( id_step, JSSCRIPT_TAG_NAME );
         jsScripts = new ScriptValuesScript[nrScripts];
         for ( int i = 0; i < nrScripts; i++ ) {
-          jsScripts[i] =
-            new ScriptValuesScript( (int) rep.getStepAttributeInteger( id_step, i, JSSCRIPT_TAG_TYPE ), rep
-              .getStepAttributeString( id_step, i, JSSCRIPT_TAG_NAME ), rep.getStepAttributeString(
-              id_step, i, JSSCRIPT_TAG_SCRIPT ) );
-
+          jsScripts[i] = new ScriptValuesScript(
+            (int) rep.getStepAttributeInteger( id_step, i, JSSCRIPT_TAG_TYPE ),
+            rep.getStepAttributeString( id_step, i, JSSCRIPT_TAG_NAME ),
+            rep.getStepAttributeString( id_step, i, JSSCRIPT_TAG_SCRIPT ) );
         }
       }
 

@@ -788,10 +788,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
           FileInputList fileInputList = tfii.getFiles( transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "XMLInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "XMLInputDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "XMLInputDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "XMLInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -801,9 +800,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
-              .getString( PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogTitle" ),
+            BaseMessages.getString( PKG, "XMLInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1087,14 +1086,14 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 10 ) ) );
       field.setFieldPosition( item.getText( 11 ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
 
     for ( int i = 0; i < nrPositions; i++ ) {
       TableItem item = wPosition.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       in.getInputPosition()[i] = item.getText( 1 );
-      // System.out.println("Input Position #"+i+" :
-      // "+input.getInputPosition());
     }
   }
 
@@ -1333,10 +1332,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "XMLInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "XMLInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "XMLInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "XMLInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =

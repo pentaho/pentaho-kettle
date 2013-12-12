@@ -533,8 +533,7 @@ public class TransPerfDelegate extends SpoonDelegate {
         PlotOrientation.VERTICAL, // orientation
         true, // include legend
         true, // tooltips
-        false // urls
-        );
+        false ); // urls       
     chart.setBackgroundPaint( Color.white );
     TextTitle title = new TextTitle( chartTitle );
     // title.setExpandToFitSpace(true);

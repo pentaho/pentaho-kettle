@@ -436,6 +436,7 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
     int count = wFields.nrNonEmpty();
     in.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       in.getAlgorithm()[i] = item.getText( 1 );
@@ -458,10 +459,9 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
 
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "SecretKeyGeneratorDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "SecretKeyGeneratorDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
@@ -492,9 +492,9 @@ public class SecretKeyGeneratorDialog extends BaseStepDialog implements StepDial
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages.getString(
-        PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogTitle" ),
+        BaseMessages.getString( PKG, "SecretKeyGeneratorDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

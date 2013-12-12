@@ -1043,6 +1043,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     meta.setOptimizationLevel( wOptimizationLevel.getText() );
     int nrfields = wFields.nrNonEmpty();
     meta.allocate( nrfields );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       meta.getFieldname()[i] = item.getText( 1 );
@@ -1157,6 +1158,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
           genMeta = new RowGeneratorMeta();
           genMeta.setRowLimit( "10" );
           genMeta.allocate( rowMeta.size() );
+          //CHECKSTYLE:Indentation:OFF
           for ( int i = 0; i < rowMeta.size(); i++ ) {
             ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
             if ( valueMeta.isStorageBinaryString() ) {

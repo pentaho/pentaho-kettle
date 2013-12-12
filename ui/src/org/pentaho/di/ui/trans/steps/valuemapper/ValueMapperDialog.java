@@ -360,6 +360,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
     int count = wFields.nrNonEmpty();
     input.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getSourceValue()[i] = Const.isEmpty( item.getText( 1 ) ) ? null : item.getText( 1 );

@@ -457,6 +457,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 
     meta.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
 

@@ -80,14 +80,14 @@ public class SaveProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
       retval = false;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
       retval = false;
     }
 

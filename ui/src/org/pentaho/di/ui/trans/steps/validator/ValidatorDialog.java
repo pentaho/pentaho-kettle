@@ -383,9 +383,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
       inputFields = transMeta.getPrevStepFields( stepMeta );
       wFieldName.setItems( inputFields.getFieldNames() );
     } catch ( KettleStepException ex ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString(
-        PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ),
+        BaseMessages.getString( PKG, "ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
     }
 
     // ErrorCode
@@ -968,18 +968,15 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
       public void widgetSelected( SelectionEvent e ) {
         // Create a new validation rule page ...
         //
-        EnterStringDialog enterStringDialog =
-          new EnterStringDialog( shell, "", BaseMessages.getString(
-            PKG, "ValidatorDialog.EnterValidationRuleName.Title" ), BaseMessages.getString(
-            PKG, "ValidatorDialog.EnterValidationRuleName.Message" ) );
+        EnterStringDialog enterStringDialog = new EnterStringDialog( shell, "",
+          BaseMessages.getString( PKG, "ValidatorDialog.EnterValidationRuleName.Title" ),
+          BaseMessages.getString( PKG, "ValidatorDialog.EnterValidationRuleName.Message" ) );
         String description = enterStringDialog.open();
         if ( description != null ) {
           if ( Validation.findValidation( selectionList, description ) != null ) {
             MessageBox messageBox = new MessageBox( shell, SWT.ICON_ERROR );
-            messageBox.setText( BaseMessages.getString(
-              PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Title" ) );
-            messageBox.setMessage( BaseMessages.getString(
-              PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Message" ) );
+            messageBox.setText( BaseMessages.getString( PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Title" ) );
+            messageBox.setMessage( BaseMessages.getString( PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Message" ) );
             messageBox.open();
             return;
           }
@@ -1072,9 +1069,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
    */
   protected void addAllowedValue() {
     EnterStringDialog dialog =
-      new EnterStringDialog( shell, "", BaseMessages.getString(
-        PKG, "ValidatorDialog.Dialog.AddAllowedValue.Title" ), BaseMessages.getString(
-        PKG, "ValidatorDialog.Dialog.AddAllowedValue.Message" ), true, transMeta );
+      new EnterStringDialog( shell, "",
+        BaseMessages.getString( PKG, "ValidatorDialog.Dialog.AddAllowedValue.Title" ),
+        BaseMessages.getString( PKG, "ValidatorDialog.Dialog.AddAllowedValue.Message" ), true, transMeta );
     String value = dialog.open();
     if ( !Const.isEmpty( value ) ) {
       wAllowedValues.add( value );

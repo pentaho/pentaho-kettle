@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -6000,8 +6001,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *          true if notes should be searched, false otherwise
    * @return a list of search results for strings used in the transformation.
    */
-  public List<StringSearchResult>
-    getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes ) {
+  public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes ) {
     return getStringList( searchSteps, searchDatabases, searchNotes, false );
   }
 

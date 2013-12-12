@@ -650,10 +650,9 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     TransMeta previewMeta =
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-    EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "TableInputDialog.EnterPreviewSize" ), BaseMessages.getString(
-        PKG, "TableInputDialog.NumberOfRowsToPreview" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "TableInputDialog.EnterPreviewSize" ),
+      BaseMessages.getString( PKG, "TableInputDialog.NumberOfRowsToPreview" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =

@@ -117,9 +117,9 @@ public class SelectDirectoryDialog extends Dialog {
     try {
       repositoryTree = rep.loadRepositoryDirectoryTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ), BaseMessages.getString(
-        PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
+        BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
       return null;
     }
 
@@ -245,11 +245,10 @@ public class SelectDirectoryDialog extends Dialog {
               //
               // What's the name of the new directory?
               //
-              EnterStringDialog etd =
-                new EnterStringDialog( shell, BaseMessages.getString(
-                  PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Title" ), BaseMessages.getString(
-                  PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Message" ), BaseMessages.getString(
-                  PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Default" ) );
+              EnterStringDialog etd = new EnterStringDialog( shell,
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Title" ),
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Message" ),
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Default" ) );
               String newdir = etd.open();
               if ( newdir != null ) {
                 RepositoryDirectory subdir = new RepositoryDirectory( dir, newdir );

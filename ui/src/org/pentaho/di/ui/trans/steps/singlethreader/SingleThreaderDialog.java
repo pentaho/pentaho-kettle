@@ -418,17 +418,16 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
           String stepname = mappingTransMeta == null ? "" : Const.NVL( getInjectorStep( mappingTransMeta ), "" );
           wInjectStep.setText( stepname );
         } catch ( Exception e ) {
-          new ErrorDialog( shell, BaseMessages.getString(
-            PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-            PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+          new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ),
+            BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
         }
       }
     } );
 
-    wInjectStep =
-      new LabelTextVar(
-        transMeta, shell, BaseMessages.getString( PKG, "SingleThreaderDialog.InjectStep.Label" ), BaseMessages
-          .getString( PKG, "SingleThreaderDialog.InjectStep.Tooltip" ) );
+    wInjectStep = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "SingleThreaderDialog.InjectStep.Label" ),
+      BaseMessages.getString( PKG, "SingleThreaderDialog.InjectStep.Tooltip" ) );
     wInjectStep.addModifyListener( lsMod );
     FormData fdInjectStep = new FormData();
     fdInjectStep.left = new FormAttachment( 0, 0 );
@@ -451,27 +450,25 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
           loadTransformation();
           if ( mappingTransMeta != null ) {
             String[] stepNames = mappingTransMeta.getStepNames();
-            EnterSelectionDialog d =
-              new EnterSelectionDialog( shell, stepNames, BaseMessages.getString(
-                PKG, "SingleThreaderDialog.SelectStep.Title" ), BaseMessages.getString(
-                PKG, "SingleThreaderDialog.SelectStep.Message" ) );
+            EnterSelectionDialog d = new EnterSelectionDialog( shell, stepNames,
+              BaseMessages.getString( PKG, "SingleThreaderDialog.SelectStep.Title" ),
+              BaseMessages.getString( PKG, "SingleThreaderDialog.SelectStep.Message" ) );
             String step = d.open();
             if ( step != null ) {
               wRetrieveStep.setText( step );
             }
           }
         } catch ( Exception e ) {
-          new ErrorDialog( shell, BaseMessages.getString(
-            PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-            PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+          new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ),
+            BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
         }
       }
     } );
 
-    wRetrieveStep =
-      new LabelTextVar( transMeta, shell, BaseMessages
-        .getString( PKG, "SingleThreaderDialog.RetrieveStep.Label" ), BaseMessages.getString(
-        PKG, "SingleThreaderDialog.RetrieveStep.Tooltip" ) );
+    wRetrieveStep = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "SingleThreaderDialog.RetrieveStep.Label" ),
+      BaseMessages.getString( PKG, "SingleThreaderDialog.RetrieveStep.Tooltip" ) );
     wRetrieveStep.addModifyListener( lsMod );
     FormData fdRetrieveStep = new FormData();
     fdRetrieveStep.left = new FormAttachment( 0, 0 );
@@ -668,9 +665,9 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         setRadioButtons();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogTitle" ), BaseMessages.getString(
-        PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogMessage" ), ke );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogTitle" ),
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
   }
 
@@ -711,13 +708,13 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         setRadioButtons();
       }
     } catch ( IOException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     }
   }
 
@@ -741,9 +738,9 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         spoon.addTransGraph( mappingTransMeta );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages
-        .getString( PKG, "SingleThreaderDialog.ErrorShowingTransformation.Title" ), BaseMessages.getString(
-        PKG, "SingleThreaderDialog.ErrorShowingTransformation.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorShowingTransformation.Title" ),
+        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorShowingTransformation.Message" ), e );
     }
   }
 
@@ -757,8 +754,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
         if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "SingleThreaderDialog.Exception.NoValidMappingDetailsFound" ) );
+          throw new KettleException(
+            BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.NoValidMappingDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
@@ -868,18 +865,17 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
   private void getByReferenceData( ObjectId referenceObjectId ) {
     try {
       if ( repository == null ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "SingleThreaderDialog.Exception.NotConnectedToRepository.Message" ) );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.NotConnectedToRepository.Message" ) );
       }
-      RepositoryObject transInf =
-        repository.getObjectInformation( referenceObjectId, RepositoryObjectType.TRANSFORMATION );
+      RepositoryObject transInf = repository.getObjectInformation( referenceObjectId, RepositoryObjectType.TRANSFORMATION );
       if ( transInf != null ) {
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-        PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 
@@ -944,6 +940,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     meta.setParameters( new String[nr] );
     meta.setParameterValues( new String[nr] );
     nr = 0;
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nritems; i++ ) {
       String param = wParameters.getNonEmpty( i ).getText( 1 );
       String value = wParameters.getNonEmpty( i ).getText( 2 );

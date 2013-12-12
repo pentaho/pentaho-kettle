@@ -927,9 +927,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TableOutputDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-        PKG, "TableOutputDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
 
@@ -940,9 +940,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TableOutputDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-        PKG, "TableOutputDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.UnableToFindTargetFields.Title" ),
+        BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -986,16 +986,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
-        message +=
-          BaseMessages.getString(
-            PKG, "TableOutputDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
-            + Const.CR;
+        message += BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() ) + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
-        message +=
-          BaseMessages.getString(
-            PKG, "TableOutputDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
-            + Const.CR;
+        message += BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() ) + Const.CR;
       }
       message += Const.CR;
       message +=
@@ -1283,6 +1277,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
     int nrRows = wFields.nrNonEmpty();
     info.allocate( nrRows );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrRows; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       info.getFieldDatabase()[i] = Const.NVL( item.getText( 1 ), "" );

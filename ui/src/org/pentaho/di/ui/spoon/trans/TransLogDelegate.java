@@ -161,9 +161,10 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( transLogComposite.getShell(), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( transLogComposite.getShell(),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 
@@ -245,10 +246,9 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
         err_lines[i] = err.get( i );
       }
 
-      EnterSelectionDialog esd =
-        new EnterSelectionDialog( transGraph.getShell(), err_lines, BaseMessages.getString(
-          PKG, "TransLog.Dialog.ErrorLines.Title" ), BaseMessages.getString(
-          PKG, "TransLog.Dialog.ErrorLines.Message" ) );
+      EnterSelectionDialog esd = new EnterSelectionDialog( transGraph.getShell(), err_lines,
+        BaseMessages.getString( PKG, "TransLog.Dialog.ErrorLines.Title" ),
+        BaseMessages.getString( PKG, "TransLog.Dialog.ErrorLines.Message" ) );
       line = esd.open();
       if ( line != null ) {
         TransMeta transMeta = transGraph.getManagedObject();

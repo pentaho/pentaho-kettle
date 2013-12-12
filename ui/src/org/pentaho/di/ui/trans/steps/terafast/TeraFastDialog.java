@@ -422,9 +422,9 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     try {
       sourceFields = this.transMeta.getPrevStepFields( this.stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( this.shell, BaseMessages.getString(
-        PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-        PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( this.shell,
+        BaseMessages.getString( PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "TeraFastDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh fields
@@ -432,9 +432,9 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
     try {
       targetFields = this.meta.getRequiredFields( this.transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( this.shell, BaseMessages.getString(
-        PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-        PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( this.shell,
+        BaseMessages.getString( PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Title" ),
+        BaseMessages.getString( PKG, "TeraFastDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 

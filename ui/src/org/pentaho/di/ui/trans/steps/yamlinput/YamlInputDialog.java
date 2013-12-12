@@ -886,10 +886,9 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
           FileInputList fileInputList = tfii.getFiles( transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "YamlInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString(
-                PKG, "YamlInputDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "YamlInputDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "YamlInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1267,6 +1266,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setGroupSymbol( item.getText( 9 ) );
       field.setTrimType( YamlInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
   }
@@ -1278,13 +1278,11 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
       YamlInputMeta oneMeta = new YamlInputMeta();
       getInfo( oneMeta );
 
-      TransMeta previewMeta =
-        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "YamlInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "YamlInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "YamlInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "YamlInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {

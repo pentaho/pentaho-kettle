@@ -144,20 +144,19 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
-    colinf[0] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "SystemDataDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-        false );
-    colinf[1] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "SystemDataDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-        false );
+    colinf[0] = new ColumnInfo(
+      BaseMessages.getString( PKG, "SystemDataDialog.NameColumn.Column" ),
+      ColumnInfo.COLUMN_TYPE_TEXT,
+      false );
+    colinf[1] = new ColumnInfo(
+      BaseMessages.getString( PKG, "SystemDataDialog.TypeColumn.Column" ),
+      ColumnInfo.COLUMN_TYPE_TEXT,
+      false );
     colinf[1].setSelectionAdapter( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        EnterSelectionDialog esd =
-          new EnterSelectionDialog( shell, functionDesc, BaseMessages.getString(
-            PKG, "SystemDataDialog.SelectInfoType.DialogTitle" ), BaseMessages.getString(
-            PKG, "SystemDataDialog.SelectInfoType.DialogMessage" ) );
+        EnterSelectionDialog esd = new EnterSelectionDialog( shell, functionDesc,
+          BaseMessages.getString( PKG, "SystemDataDialog.SelectInfoType.DialogTitle" ),
+          BaseMessages.getString( PKG, "SystemDataDialog.SelectInfoType.DialogMessage" ) );
         String string = esd.open();
         if ( string != null ) {
           TableView tv = (TableView) e.widget;
@@ -166,9 +165,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
       }
     } );
 
-    wFields =
-      new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields = new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -292,6 +289,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     int count = wFields.nrNonEmpty();
     in.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       in.getFieldName()[i] = item.getText( 1 );
@@ -305,13 +303,11 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
       SystemDataMeta oneMeta = new SystemDataMeta();
       getInfo( oneMeta );
 
-      TransMeta previewMeta =
-        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "SystemDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "SystemDataDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "SystemDataDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "SystemDataDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
@@ -326,9 +322,9 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-              new EnterTextDialog(
-                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
-                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog( shell,
+                BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
+                BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }

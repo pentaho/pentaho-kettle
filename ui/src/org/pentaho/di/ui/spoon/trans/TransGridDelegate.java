@@ -196,11 +196,11 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     colinf[11].setAllignement( SWT.RIGHT );
     colinf[12].setAllignement( SWT.RIGHT );
 
-    transGridView =
-      new TableView( transGraph.getManagedObject(), transGridComposite, SWT.BORDER
-        | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
+    transGridView = new TableView( transGraph.getManagedObject(), transGridComposite, SWT.BORDER
+      | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1,
+      true, // readonly!
       null, // Listener
-        spoon.props );
+      spoon.props );
     FormData fdView = new FormData();
     fdView.left = new FormAttachment( 0, 0 );
     fdView.right = new FormAttachment( 100, 0 );
@@ -256,9 +256,10 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
-      new ErrorDialog( transGridComposite.getShell(), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( transGridComposite.getShell(),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 

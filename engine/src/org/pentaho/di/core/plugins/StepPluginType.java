@@ -46,15 +46,33 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
-@PluginTypeCategoriesOrder( getNaturalCategoriesOrder = {
-  "BaseStep.Category.Input", "BaseStep.Category.Output", "BaseStep.Category.Transform",
-  "BaseStep.Category.Utility", "BaseStep.Category.Flow", "BaseStep.Category.Scripting",
-  "BaseStep.Category.Lookup", "BaseStep.Category.Joins", "BaseStep.Category.DataWarehouse",
-  "BaseStep.Category.Validation", "BaseStep.Category.Statistics", "BaseStep.Category.DataMining",
-  "BaseStep.Category.BigData", "BaseStep.Category.Agile", "BaseStep.Category.DataQuality",
-  "BaseStep.Category.Cryptography", "BaseStep.Category.Palo", "BaseStep.Category.OpenERP",
-  "BaseStep.Category.Job", "BaseStep.Category.Mapping", "BaseStep.Category.Bulk", "BaseStep.Category.Inline",
-  "BaseStep.Category.Experimental", "BaseStep.Category.Deprecated" }, i18nPackageClass = StepInterface.class )
+@PluginTypeCategoriesOrder(
+  getNaturalCategoriesOrder = {
+    "BaseStep.Category.Input",
+    "BaseStep.Category.Output",
+    "BaseStep.Category.Transform",
+    "BaseStep.Category.Utility",
+    "BaseStep.Category.Flow",
+    "BaseStep.Category.Scripting",
+    "BaseStep.Category.Lookup",
+    "BaseStep.Category.Joins",
+    "BaseStep.Category.DataWarehouse",
+    "BaseStep.Category.Validation",
+    "BaseStep.Category.Statistics",
+    "BaseStep.Category.DataMining",
+    "BaseStep.Category.BigData",
+    "BaseStep.Category.Agile",
+    "BaseStep.Category.DataQuality",
+    "BaseStep.Category.Cryptography",
+    "BaseStep.Category.Palo",
+    "BaseStep.Category.OpenERP",
+    "BaseStep.Category.Job",
+    "BaseStep.Category.Mapping",
+    "BaseStep.Category.Bulk",
+    "BaseStep.Category.Inline",
+    "BaseStep.Category.Experimental",
+    "BaseStep.Category.Deprecated" },
+  i18nPackageClass = StepInterface.class )
 @PluginMainClassType( StepMetaInterface.class )
 @PluginAnnotationType( Step.class )
 public class StepPluginType extends BasePluginType implements PluginTypeInterface {

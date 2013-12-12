@@ -717,10 +717,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
           getInfo( tfii );
           String[] files = tfii.getFilePaths( transMeta );
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "XMLInputSaxDialog.Dialog.FilesRead.Title" ), BaseMessages.getString(
-                PKG, "XMLInputSaxDialog.Dialog.FilesRead.Message" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.FilesRead.Title" ),
+              BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.FilesRead.Message" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -730,9 +729,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog( shell, BaseMessages.getString(
-            PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ), BaseMessages.getString(
-            PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), ex );
+          new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Title" ),
+            BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.ErrorParsingInputData.Message" ), ex );
         }
       }
     } );
@@ -1010,15 +1009,15 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
       field.setRepeated( "Y".equalsIgnoreCase( item.getText( 10 ) ) );
       field.setFieldPosition( item.getText( 11 ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
 
     for ( int i = 0; i < nrPositions; i++ ) {
       TableItem item = wPosition.getNonEmpty( i );
       String encode = item.getText( 1 );
+      //CHECKSTYLE:Indentation:OFF
       in.getInputPosition()[i] = new XMLInputSaxFieldPosition( encode );
-      // System.out.println("Input Position #"+i+" :
-      // "+input.getInputPosition());
     }
   }
 
@@ -1079,10 +1078,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Title" ), BaseMessages.getString(
-          PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Message" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Title" ),
+        BaseMessages.getString( PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Message" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
@@ -1091,9 +1089,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
-          PreviewRowsDialog prd =
-            new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ) );
+          PreviewRowsDialog prd = new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(),
+            progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ) );
           prd.open();
         }
       }

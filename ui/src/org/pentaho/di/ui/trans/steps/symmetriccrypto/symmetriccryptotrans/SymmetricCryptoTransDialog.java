@@ -71,8 +71,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
   private Button wReadKeyAsBinary;
   private FormData fdlReadKeyAsBinary, fdReadKeyAsBinary;
 
-  private FormData fdResultField, fdlMessage, fdField, fdTabFolder, fdlSecretKey, fdSecretKey, fdSecretKeyField,
-      fdlSecretKeyField;
+  private FormData fdResultField, fdlMessage, fdField, fdTabFolder, fdlSecretKey, fdSecretKey, fdSecretKeyField, fdlSecretKeyField;
   private LabelTextVar wResultField;
   private CCombo wMessage, wSecretKeyField;
   private FormData fdlSecretKeyInField, fdSecretKeyInField;
@@ -438,10 +437,9 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wOutputField.setLayout( outputfieldgroupLayout );
 
     // Output Fieldame
-    wResultField =
-      new LabelTextVar( transMeta, wOutputField, BaseMessages.getString(
-        PKG, "SymmetricCryptoTransDialog.ResultField.Label" ), BaseMessages.getString(
-        PKG, "SymmetricCryptoTransDialog.ResultField.Tooltip" ) );
+    wResultField = new LabelTextVar( transMeta, wOutputField,
+      BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.ResultField.Label" ),
+      BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.ResultField.Tooltip" ) );
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
     fdResultField = new FormData();
@@ -590,9 +588,9 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-        PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ),
+        BaseMessages.getString( PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -608,9 +606,9 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-        PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.FailedToGetFields.DialogTitle" ),
+        BaseMessages.getString( PKG, "SymmetricCryptoTransDialogMod.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 

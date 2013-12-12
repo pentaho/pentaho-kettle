@@ -461,10 +461,9 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
         getInfo( tfoi );
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, files, BaseMessages.getString(
-              PKG, "XMLOutputDialog.OutputFiles.DialogTitle" ), BaseMessages.getString(
-              PKG, "XMLOutputDialog.OutputFiles.DialogMessage" ) );
+          EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+            BaseMessages.getString( PKG, "XMLOutputDialog.OutputFiles.DialogTitle" ),
+            BaseMessages.getString( PKG, "XMLOutputDialog.OutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -1138,6 +1137,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setGroupingSymbol( item.getText( index++ ) );
       field.setNullString( item.getText( index++ ) );
 
+      //CHECKSTYLE:Indentation:OFF
       xmlOutputMeta.getOutputFields()[i] = field;
     }
   }

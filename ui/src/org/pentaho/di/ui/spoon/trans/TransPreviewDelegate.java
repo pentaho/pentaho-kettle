@@ -213,9 +213,10 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
-      new ErrorDialog( transPreviewComposite.getShell(), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString(
-        PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( transPreviewComposite.getShell(),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_PREVIEW_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 

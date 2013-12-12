@@ -746,6 +746,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "UpdateDialog.Log.FoundKeys", nrkeys + "" ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
       inf.getKeyLookup()[i] = item.getText( 1 );
@@ -757,6 +758,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
     // Table ftable = wReturn.table;
 
     logDebug( BaseMessages.getString( PKG, "UpdateDialog.Log.FoundFields", nrfields + "" ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       inf.getUpdateLookup()[i] = item.getText( 1 );
@@ -901,10 +903,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
 
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
-          EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
-              PKG, "UpdateDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString(
-              PKG, "UpdateDialog.AvailableSchemas.Message", wConnection.getText() ) );
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, schemas,
+            BaseMessages.getString( PKG, "UpdateDialog.AvailableSchemas.Title", wConnection.getText() ),
+            BaseMessages.getString( PKG, "UpdateDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -918,8 +919,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-          .getString( PKG, "UpdateDialog.ErrorGettingSchemas" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+          BaseMessages.getString( PKG, "UpdateDialog.ErrorGettingSchemas" ), e );
       } finally {
         database.disconnect();
       }

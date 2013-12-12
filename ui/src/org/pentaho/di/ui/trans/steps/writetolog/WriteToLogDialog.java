@@ -461,6 +461,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
     input.allocate( nrfields );
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getFieldName()[i] = ti.getText( 1 );
     }
     dispose();

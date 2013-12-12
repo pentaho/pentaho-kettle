@@ -1387,10 +1387,9 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         try {
           String[] files = tfoi.getFiles( transMeta );
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString(
-                PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-                PKG, "RssOutputDialog.SelectOutputFiles.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle" ),
+              BaseMessages.getString( PKG, "RssOutputDialog.SelectOutputFiles.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1946,6 +1945,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     int nrchannelfields = wChannelCustom.nrNonEmpty();
     info.allocate( nrchannelfields );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrchannelfields; i++ ) {
       TableItem item = wChannelCustom.getNonEmpty( i );
       info.getChannelCustomTags()[i] = item.getText( 1 );
@@ -1955,6 +1955,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     // Custom item fields
     int nritemfields = wItemCustom.nrNonEmpty();
     info.allocateitem( nritemfields );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nritemfields; i++ ) {
       TableItem item = wItemCustom.getNonEmpty( i );
       info.getItemCustomTags()[i] = item.getText( 1 );
@@ -1964,6 +1965,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     // Add Namespaces ?
     int nrnamespaces = wNameSpaceCustom.nrNonEmpty();
     info.allocatenamespace( nrnamespaces );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrnamespaces; i++ ) {
       TableItem item = wNameSpaceCustom.getNonEmpty( i );
       info.getNameSpacesTitle()[i] = item.getText( 1 );

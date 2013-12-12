@@ -394,8 +394,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       String script = rep.getStepAttributeString( id_step, "script" );
       compatible = rep.getStepAttributeBoolean( id_step, 0, "compatible", true );
@@ -410,11 +409,10 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
         int nrScripts = rep.countNrStepAttributes( id_step, JSSCRIPT_TAG_NAME );
         jsScripts = new ScriptValuesScript[nrScripts];
         for ( int i = 0; i < nrScripts; i++ ) {
-          jsScripts[i] =
-            new ScriptValuesScript( (int) rep.getStepAttributeInteger( id_step, i, JSSCRIPT_TAG_TYPE ), rep
-              .getStepAttributeString( id_step, i, JSSCRIPT_TAG_NAME ), rep.getStepAttributeString(
-              id_step, i, JSSCRIPT_TAG_SCRIPT ) );
-
+          jsScripts[i] = new ScriptValuesScript(
+            (int) rep.getStepAttributeInteger( id_step, i, JSSCRIPT_TAG_TYPE ),
+            rep.getStepAttributeString( id_step, i, JSSCRIPT_TAG_NAME ),
+            rep.getStepAttributeString( id_step, i, JSSCRIPT_TAG_SCRIPT ) );
         }
       }
 

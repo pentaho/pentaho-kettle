@@ -1250,11 +1250,13 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "RestDialog.Log.FoundArguments", String.valueOf( nrheaders ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrheaders; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getHeaderField()[i] = item.getText( 1 );
       input.getHeaderName()[i] = item.getText( 2 );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrparams; i++ ) {
       TableItem item = wParameters.getNonEmpty( i );
       input.getParameterField()[i] = item.getText( 1 );

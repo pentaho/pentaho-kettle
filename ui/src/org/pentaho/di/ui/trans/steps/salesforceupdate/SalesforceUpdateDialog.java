@@ -256,10 +256,9 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
     wConnectionGroup.setLayout( connectionGroupLayout );
 
     // Webservice URL
-    wURL =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceUpdateDialog.URL.Label" ), BaseMessages.getString(
-        PKG, "SalesforceUpdateDialog.URL.Tooltip" ) );
+    wURL = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceUpdateDialog.URL.Label" ),
+      BaseMessages.getString( PKG, "SalesforceUpdateDialog.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -269,10 +268,9 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
     wURL.setLayoutData( fdURL );
 
     // UserName line
-    wUserName =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceUpdateDialog.User.Label" ), BaseMessages.getString(
-        PKG, "SalesforceUpdateDialog.User.Tooltip" ) );
+    wUserName = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceUpdateDialog.User.Label" ),
+      BaseMessages.getString( PKG, "SalesforceUpdateDialog.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -282,10 +280,9 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
     wUserName.setLayoutData( fdUserName );
 
     // Password line
-    wPassword =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceUpdateDialog.Password.Label" ), BaseMessages.getString(
-        PKG, "SalesforceUpdateDialog.Password.Tooltip" ) );
+    wPassword = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceUpdateDialog.Password.Label" ),
+      BaseMessages.getString( PKG, "SalesforceUpdateDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -712,9 +709,10 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
       mb.open();
     } else {
       new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.Title.Error" ), BaseMessages
-          .getString( PKG, "SalesforceUpdateDialog.Connected.NOK", wUserName.getText() ), new Exception(
-          msgError ) );
+        shell,
+        BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.Title.Error" ),
+        BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.NOK", wUserName.getText() ),
+        new Exception( msgError ) );
     }
 
   }
@@ -796,6 +794,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 
     in.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       in.getUpdateLookup()[i] = item.getText( 1 );
@@ -1032,9 +1031,9 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
         getModulesListError = false;
 
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "SalesforceUpdateDialog.ErrorRetrieveModules.DialogTitle" ), BaseMessages.getString(
-          PKG, "SalesforceUpdateDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "SalesforceUpdateDialog.ErrorRetrieveModules.DialogTitle" ),
+          BaseMessages.getString( PKG, "SalesforceUpdateDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
       } finally {
         if ( connection != null ) {

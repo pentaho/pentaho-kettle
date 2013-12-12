@@ -575,18 +575,14 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         return;
       }
 
-      TransMeta previewMeta =
-        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "XBaseInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-          PKG, "XBaseInputDialog.PreviewSize.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "XBaseInputDialog.PreviewSize.DialogTitle" ),
+        BaseMessages.getString( PKG, "XBaseInputDialog.PreviewSize.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
-        TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog(
-            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+        TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         Trans trans = progressDialog.getTrans();

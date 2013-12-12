@@ -110,14 +110,14 @@ public class TransPreviewProgressDialog {
 
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transMeta = null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       transMeta = null;
     }
 
@@ -125,8 +125,7 @@ public class TransPreviewProgressDialog {
   }
 
   private void doPreview( final IProgressMonitor progressMonitor ) {
-    progressMonitor.beginTask(
-      BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
+    progressMonitor.beginTask( BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
 
     // This transformation is ready to run in preview!
     trans = new Trans( transMeta );
@@ -138,8 +137,9 @@ public class TransPreviewProgressDialog {
     } catch ( final KettleException e ) {
       shell.getDisplay().asyncExec( new Runnable() {
         public void run() {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-            .getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
+          new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+            BaseMessages.getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
         }
       } );
 

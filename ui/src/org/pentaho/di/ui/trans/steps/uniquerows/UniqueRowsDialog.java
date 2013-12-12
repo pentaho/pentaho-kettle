@@ -437,6 +437,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
     int nrfields = wFields.nrNonEmpty();
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getCompareFields()[i] = item.getText( 1 );
@@ -450,14 +451,15 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
     stepname = wStepname.getText(); // return value
 
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
-      MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString(
-          PKG, "UniqueRowsDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
-          PKG, "UniqueRowsDialog.InputNeedSort.DialogMessage", Const.CR )
-          + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
-          PKG, "UniqueRowsDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
-          PKG, "UniqueRowsDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-          STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+      MessageDialogWithToggle md = new MessageDialogWithToggle( shell,
+        BaseMessages.getString( PKG, "UniqueRowsDialog.InputNeedSort.DialogTitle" ),
+        null,
+        BaseMessages.getString( PKG, "UniqueRowsDialog.InputNeedSort.DialogMessage", Const.CR ) + Const.CR,
+        MessageDialog.WARNING,
+        new String[] { BaseMessages.getString( PKG, "UniqueRowsDialog.InputNeedSort.Option1" ) },
+        0,
+        BaseMessages.getString( PKG, "UniqueRowsDialog.InputNeedSort.Option2" ),
+        "N".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

@@ -642,10 +642,9 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         getInfo( tfoi );
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, files, BaseMessages.getString(
-              PKG, "TextFileOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-              PKG, "TextFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
+          EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+            BaseMessages.getString( PKG, "TextFileOutputDialog.SelectOutputFiles.DialogTitle" ),
+            BaseMessages.getString( PKG, "TextFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -1593,6 +1592,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
       field.setGroupingSymbol( item.getText( 8 ) );
       field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( 9 ) ) );
       field.setNullString( item.getText( 10 ) );
+      //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
     }
   }

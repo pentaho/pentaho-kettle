@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -2609,12 +2610,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( 12 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 13 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       meta.getInputFields()[i] = field;
     }
 
     for ( int i = 0; i < nrfilters; i++ ) {
       TableItem item = wFilter.getNonEmpty( i );
       TextFileFilter filter = new TextFileFilter();
+      //CHECKSTYLE:Indentation:OFF
       meta.getFilter()[i] = filter;
 
       filter.setFilterString( item.getText( 1 ) );
@@ -2800,10 +2803,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
               wFields.setRowNums();
               wFields.optWidth( true );
 
-              EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString(
-                  PKG, "TextFileInputDialog.ScanResults.DialogTitle" ), BaseMessages.getString(
-                  PKG, "TextFileInputDialog.ScanResults.DialogMessage" ), message, true );
+              EnterTextDialog etd = new EnterTextDialog( shell,
+                BaseMessages.getString( PKG, "TextFileInputDialog.ScanResults.DialogTitle" ),
+                BaseMessages.getString( PKG, "TextFileInputDialog.ScanResults.DialogMessage" ), message, true );
               etd.setReadOnly();
               etd.open();
             }
@@ -2903,18 +2905,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
 
-    TransMeta previewMeta =
-      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-    EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "TextFileInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-        PKG, "TextFileInputDialog.PreviewSize.DialogMessage" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "TextFileInputDialog.PreviewSize.DialogTitle" ),
+      BaseMessages.getString( PKG, "TextFileInputDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
-      TransPreviewProgressDialog progressDialog =
-        new TransPreviewProgressDialog(
-          shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+      TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -2922,19 +2920,21 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
-          EnterTextDialog etd =
-            new EnterTextDialog(
-              shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
-                .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+          EnterTextDialog etd = new EnterTextDialog( shell,
+            BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
+            BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ),
+            loggingText,
+            true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
-      PreviewRowsDialog prd =
-        new PreviewRowsDialog(
-          shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
-            .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
+      PreviewRowsDialog prd = new PreviewRowsDialog(
+        shell, transMeta, SWT.NONE, wStepname.getText(),
+        progressDialog.getPreviewRowsMeta( wStepname.getText() ),
+        progressDialog.getPreviewRows( wStepname.getText() ),
+        loggingText );
       prd.open();
     }
   }

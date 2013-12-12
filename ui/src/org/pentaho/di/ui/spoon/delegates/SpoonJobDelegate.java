@@ -184,9 +184,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
         return null;
       }
     } catch ( Throwable e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title" ), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message" ), new Exception( e ) );
+      new ErrorDialog( spoon.getShell(),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message" ),
+        new Exception( e ) );
       return null;
     }
   }
@@ -273,9 +274,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
     } catch ( Exception e ) {
       if ( !spoon.getShell().isDisposed() ) {
-        new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-          PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Title" ), BaseMessages.getString(
-          PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Message" ), e );
+        new ErrorDialog( spoon.getShell(),
+          BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Title" ),
+          BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Message" ), e );
       }
     }
   }
@@ -433,9 +434,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
         spoon.refreshGraph();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Title" ), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Message" ), e );
+      new ErrorDialog( spoon.getShell(),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Message" ), e );
     }
   }
 
@@ -678,9 +679,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
               ok = spoon.saveToFile( transMeta );
             }
             if ( !ok ) {
-              throw new InvocationTargetException( new Exception( BaseMessages.getString(
-                PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) ), BaseMessages.getString(
-                PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) );
+              throw new InvocationTargetException( new Exception(
+                BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) ),
+                BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) );
             }
 
             // We can now continue with the population of the job...
@@ -767,14 +768,14 @@ public class SpoonJobDelegate extends SpoonDelegate {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( spoon.getShell() );
       pmd.run( false, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
+      new ErrorDialog( spoon.getShell(),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
       return null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ), BaseMessages.getString(
-        PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
+      new ErrorDialog( spoon.getShell(),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
       return null;
     } finally {
       spoon.refreshGraph();

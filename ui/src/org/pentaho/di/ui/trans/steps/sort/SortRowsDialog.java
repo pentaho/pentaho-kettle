@@ -521,16 +521,13 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );
-      input.getAscending()[i] =
-        Const.isEmpty( ti.getText( 2 ) )
-          || BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 2 ) );
-      input.getCaseSensitive()[i] =
-        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 3 ) );
-      input.getPreSortedField()[i] =
-        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+      input.getAscending()[i] = Const.isEmpty( ti.getText( 2 ) ) || BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 2 ) );
+      input.getCaseSensitive()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 3 ) );
+      input.getPreSortedField()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
     }
 
     dispose();

@@ -302,6 +302,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );
@@ -313,13 +314,15 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
     //
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString(
-          PKG, "SortedMergeDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
-          PKG, "SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )
-          + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
-          PKG, "SortedMergeDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString(
-          PKG, "SortedMergeDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-          STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "SortedMergeDialog.InputNeedSort.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "SortedMergeDialog.InputNeedSort.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "SortedMergeDialog.InputNeedSort.Option2" ),
+          "N".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

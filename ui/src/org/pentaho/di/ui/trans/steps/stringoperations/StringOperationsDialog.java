@@ -383,6 +383,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "StringOperationsDialog.Log.FoundFields", String.valueOf( nrkeys ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       inf.getFieldInStream()[i] = item.getText( 1 );
@@ -395,8 +396,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
       inf.getInitCap()[i] = StringOperationsMeta.getInitCapByDesc( item.getText( 8 ) );
       inf.getMaskXML()[i] = StringOperationsMeta.getMaskXMLByDesc( item.getText( 9 ) );
       inf.getDigits()[i] = StringOperationsMeta.getDigitsByDesc( item.getText( 10 ) );
-      inf.getRemoveSpecialCharacters()[i] =
-        StringOperationsMeta.getRemoveSpecialCharactersByDesc( item.getText( 11 ) );
+      inf.getRemoveSpecialCharacters()[i] = StringOperationsMeta.getRemoveSpecialCharactersByDesc( item.getText( 11 ) );
     }
 
     stepname = wStepname.getText(); // return value

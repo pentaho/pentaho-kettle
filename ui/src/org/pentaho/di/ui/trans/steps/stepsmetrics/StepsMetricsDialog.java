@@ -611,6 +611,7 @@ public class StepsMetricsDialog extends BaseStepDialog implements StepDialogInte
     for ( int i = 0; i < nrsteps; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       StepMeta tm = transMeta.findStep( ti.getText( 1 ) );
+      //CHECKSTYLE:Indentation:OFF
       if ( tm != null ) {
         in.getStepName()[i] = tm.getName();
         in.getStepCopyNr()[i] = "" + Const.toInt( ti.getText( 2 ), 0 );

@@ -248,11 +248,13 @@ public class SqlTransMeta {
       function.setValuePrecision( valueMeta.getPrecision() );
       function.setFieldA( iif.getTrueValueString() );
       function.setConversionMask( valueMeta.getConversionMask() );
+      //CHECKSTYLE:Indentation:OFF
       trueMeta.getCalculation()[0] = function;
     } else {
       ConstantMeta trueMeta = new ConstantMeta();
       trueMetaInterface = trueMeta;
       trueMeta.allocate( 1 );
+      //CHECKSTYLE:Indentation:OFF
       trueMeta.getFieldName()[0] = Const.NVL( iifField.getAlias(), iifField.getField() );
       trueMeta.getFieldType()[0] = iif.getTrueValue().getValueMeta().getTypeDesc();
       trueMeta.getValue()[0] = iif.getTrueValue().toString();

@@ -1138,17 +1138,22 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
         // Create sftp client to host ...
         sftpclient =
           new SFTPClient(
-            InetAddress.getByName( transMeta.environmentSubstitute( wServerName.getText() ) ), Const.toInt(
-              transMeta.environmentSubstitute( wServerPort.getText() ), 22 ), transMeta
-              .environmentSubstitute( wUserName.getText() ), transMeta.environmentSubstitute( wKeyFilename
-              .getText() ), transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
+            InetAddress.getByName(
+              transMeta.environmentSubstitute( wServerName.getText() ) ),
+            Const.toInt( transMeta.environmentSubstitute( wServerPort.getText() ), 22 ),
+            transMeta.environmentSubstitute( wUserName.getText() ),
+            transMeta.environmentSubstitute( wKeyFilename.getText() ),
+            transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
         // Set proxy?
         String realProxyHost = transMeta.environmentSubstitute( wProxyHost.getText() );
         if ( !Const.isEmpty( realProxyHost ) ) {
           // Set proxy
-          sftpclient.setProxy( realProxyHost, transMeta.environmentSubstitute( wProxyPort.getText() ), transMeta
-            .environmentSubstitute( wProxyUsername.getText() ), transMeta.environmentSubstitute( wProxyPassword
-            .getText() ), wProxyType.getText() );
+          sftpclient.setProxy(
+            realProxyHost,
+            transMeta.environmentSubstitute( wProxyPort.getText() ),
+            transMeta.environmentSubstitute( wProxyUsername.getText() ),
+            transMeta.environmentSubstitute( wProxyPassword.getText() ),
+            wProxyType.getText() );
         }
         // login to ftp host ...
         sftpclient.login( transMeta.environmentSubstitute( wPassword.getText() ) );

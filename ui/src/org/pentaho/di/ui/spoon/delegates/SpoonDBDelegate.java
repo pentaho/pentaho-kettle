@@ -331,6 +331,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
         SelectValuesMeta svi = new SelectValuesMeta();
         svi.allocate( 0, 0, nrReserved );
         int nr = 0;
+        //CHECKSTYLE:Indentation:OFF
         for ( int i = 0; i < fields.size(); i++ ) {
           ValueMetaInterface v = fields.getValueMeta( i );
           if ( targetDBInfo.isReservedWord( v.getName() ) ) {

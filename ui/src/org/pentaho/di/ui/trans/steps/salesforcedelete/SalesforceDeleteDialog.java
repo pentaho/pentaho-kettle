@@ -220,10 +220,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
     wConnectionGroup.setLayout( connectionGroupLayout );
 
     // Webservice URL
-    wURL =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceDeleteDialog.URL.Label" ), BaseMessages.getString(
-        PKG, "SalesforceDeleteDialog.URL.Tooltip" ) );
+    wURL = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceDeleteDialog.URL.Label" ),
+      BaseMessages.getString( PKG, "SalesforceDeleteDialog.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -233,10 +232,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
     wURL.setLayoutData( fdURL );
 
     // UserName line
-    wUserName =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceDeleteDialog.User.Label" ), BaseMessages.getString(
-        PKG, "SalesforceDeleteDialog.User.Tooltip" ) );
+    wUserName = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceDeleteDialog.User.Label" ),
+      BaseMessages.getString( PKG, "SalesforceDeleteDialog.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -246,10 +244,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
     wUserName.setLayoutData( fdUserName );
 
     // Password line
-    wPassword =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceDeleteDialog.Password.Label" ), BaseMessages.getString(
-        PKG, "SalesforceDeleteDialog.Password.Tooltip" ) );
+    wPassword = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceDeleteDialog.Password.Label" ),
+      BaseMessages.getString( PKG, "SalesforceDeleteDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -539,9 +536,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
           }
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-          PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPrevious = true;
     }
@@ -600,10 +597,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
       mb.setText( BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.Title.Ok" ) );
       mb.open();
     } else {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.Title.Error" ), BaseMessages
-          .getString( PKG, "SalesforceDeleteDialog.Connected.NOK", wUserName.getText() ), new Exception(
-          msgError ) );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.Title.Error" ),
+        BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.NOK", wUserName.getText() ), new Exception( msgError ) );
     }
 
   }
@@ -721,9 +717,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
         getModulesListError = false;
 
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "SalesforceDeleteDialog.ErrorRetrieveModules.DialogTitle" ), BaseMessages.getString(
-          PKG, "SalesforceDeleteDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "SalesforceDeleteDialog.ErrorRetrieveModules.DialogTitle" ),
+          BaseMessages.getString( PKG, "SalesforceDeleteDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
       } finally {
         if ( connection != null ) {

@@ -921,6 +921,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
       field.setTrimType( RssInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
   }
@@ -952,10 +953,9 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "getXMLDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "getXMLDataDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "getXMLDataDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "getXMLDataDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {

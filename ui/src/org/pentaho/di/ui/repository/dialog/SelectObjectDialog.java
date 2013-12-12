@@ -340,9 +340,9 @@ public class SelectObjectDialog extends Dialog {
     try {
       directoryTree = rep.loadRepositoryDirectoryTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ), BaseMessages.getString(
-        PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
+        BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
     }
 
     getData();

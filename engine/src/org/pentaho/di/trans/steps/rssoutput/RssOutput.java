@@ -640,9 +640,8 @@ public class RssOutput extends BaseStep implements StepInterface {
     return retval;
   }
 
-  private boolean
-    WriteToFile( String title, String link, String description, Date Pubdate, String copyright, String imageTitle,
-      String imageDescription, String imageLink, String imageUrl, String language, String author ) {
+  private boolean WriteToFile( String title, String link, String description, Date Pubdate, String copyright, String imageTitle,
+    String imageDescription, String imageLink, String imageUrl, String language, String author ) {
     boolean retval = false;
     try {
       // Specify Filename

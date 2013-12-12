@@ -81,8 +81,7 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
     return drillDown( theNodes, aSchema, aTable );
   }
 
-  private DatabaseExplorerNode
-    drillDown( ListIterator<DatabaseExplorerNode> aNodes, String aSchema, String aTable ) {
+  private DatabaseExplorerNode drillDown( ListIterator<DatabaseExplorerNode> aNodes, String aSchema, String aTable ) {
     boolean lookingForSchema = aTable == null || Const.isEmpty( aTable );
     DatabaseExplorerNode theNode = null;
     while ( aNodes.hasNext() ) {

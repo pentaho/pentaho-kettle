@@ -132,6 +132,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
     retval.allocate( nrfields );
 
     for ( int i = 0; i < nrfields; i++ ) {
+      //CHECKSTYLE:Indentation:OFF
       retval.getCompareFields()[i] = compareFields[i];
     }
 

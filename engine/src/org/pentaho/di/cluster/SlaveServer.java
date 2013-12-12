@@ -500,11 +500,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public String sendExport( String filename, String type, String load ) throws Exception {
     String serviceUrl = AddExportServlet.CONTEXT_PATH;
     if ( type != null && load != null ) {
-      serviceUrl =
-        serviceUrl +=
-          "/?"
-            + AddExportServlet.PARAMETER_TYPE + "=" + type + "&" + AddExportServlet.PARAMETER_LOAD + "="
-            + URLEncoder.encode( load, "UTF-8" );
+      serviceUrl += "/?"
+        + AddExportServlet.PARAMETER_TYPE + "=" + type
+        + "&" + AddExportServlet.PARAMETER_LOAD + "=" + URLEncoder.encode( load, "UTF-8" );
     }
 
     String urlString = constructUrl( serviceUrl );

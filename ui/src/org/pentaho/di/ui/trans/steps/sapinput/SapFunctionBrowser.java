@@ -246,9 +246,9 @@ public class SapFunctionBrowser extends Dialog {
       sc.open( sapConnection );
       functionList = new ArrayList<SAPFunction>( sc.getFunctions( searchString ) );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Title" ), BaseMessages.getString(
-        PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Title" ),
+        BaseMessages.getString( PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Message" ), e );
     } finally {
       if ( sc != null ) {
         sc.close();

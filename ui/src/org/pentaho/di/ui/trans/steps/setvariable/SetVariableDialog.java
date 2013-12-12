@@ -347,6 +347,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
     int count = wFields.nrNonEmpty();
     input.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );
@@ -361,13 +362,14 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
     //
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_USAGE_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString(
-          PKG, "SetVariableDialog.UsageWarning.DialogTitle" ), null, BaseMessages.getString(
-          PKG, "SetVariableDialog.UsageWarning.DialogMessage", Const.CR )
-          + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString(
-          PKG, "SetVariableDialog.UsageWarning.Option1" ) }, 0, BaseMessages.getString(
-          PKG, "SetVariableDialog.UsageWarning.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-          STRING_USAGE_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.Option2" ),
+          "N".equalsIgnoreCase( props.getCustomParameter( STRING_USAGE_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_USAGE_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

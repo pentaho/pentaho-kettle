@@ -839,9 +839,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString(
-        PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
 
@@ -852,9 +852,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
-        PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Title" ),
+        BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -1038,9 +1038,9 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
           wOperationField.setText( fieldoperation );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString(
-          PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ), BaseMessages.getString(
-          PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1157,6 +1157,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.Log.FoundKeys", nrkeys + "" ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
       inf.getKeyLookup()[i] = item.getText( 1 );

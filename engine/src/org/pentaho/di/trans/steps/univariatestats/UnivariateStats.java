@@ -135,6 +135,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
       // in the step meta
       for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
         UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
+        //CHECKSTYLE:Indentation:OFF
         m_data.getFieldIndexes()[i] = new UnivariateStatsData.FieldIndex();
 
         // check that this univariate stats computation has been

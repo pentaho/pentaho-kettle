@@ -399,6 +399,7 @@ public class UniqueRowsByHashSetDialog extends BaseStepDialog implements StepDia
 
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getCompareFields()[i] = item.getText( 1 );
     }
 

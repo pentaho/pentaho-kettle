@@ -219,6 +219,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
     }
 
     for ( int i = 0; i < nrmeta; i++ ) {
+      //CHECKSTYLE:Indentation:OFF
       retval.getMeta()[i] = meta[i].clone();
     }
 
@@ -861,6 +862,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
             StepInjectionMetaEntry selectField = selectFields.get( row );
 
             List<StepInjectionMetaEntry> fieldAttributes = selectField.getDetails();
+            //CHECKSTYLE:Indentation:OFF
             for ( int i = 0; i < fieldAttributes.size(); i++ ) {
               StepInjectionMetaEntry fieldAttribute = fieldAttributes.get( i );
               KettleAttributeInterface fieldAttr = findAttribute( fieldAttribute.getKey() );

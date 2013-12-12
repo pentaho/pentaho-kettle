@@ -114,8 +114,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
   private FormData fdlTimeOut, fdTimeOut, fdFields, fdUserName, fdURL, fdPassword, fdCondition;
 
-  private FormData fdlCondition, fdlInclRownum, fdRownum, fdInclRownumField, fdUseCompression, fdlUseCompression,
-      fdQueryAll, fdlQueryAll;
+  private FormData fdlCondition, fdlInclRownum, fdRownum, fdInclRownumField, fdUseCompression, fdlUseCompression, fdQueryAll, fdlQueryAll;
 
   private Button wInclURL, wInclModule, wInclRownum, wUseCompression, wQueryAll;
 
@@ -129,13 +128,11 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
   private Group wConnectionGroup, wSettingsGroup;
 
-  private Label wlInclTimestampField, wlInclTimestamp, wlUseCompression, wlQueryAll, wlInclDeletionDateField,
-      wlInclDeletionDate;
+  private Label wlInclTimestampField, wlInclTimestamp, wlUseCompression, wlQueryAll, wlInclDeletionDateField, wlInclDeletionDate;
 
   private FormData fdlInclSQL, fdInclSQL, fdlInclSQLField, fdlInclDeletionDateField, fdlInclDeletionDate;
 
-  private FormData fdlInclTimestamp, fdInclTimestamp, fdlInclTimestampField, fdInclDeletionDateField,
-      fdDeletionDate;
+  private FormData fdlInclTimestamp, fdInclTimestamp, fdlInclTimestampField, fdInclDeletionDateField, fdDeletionDate;
 
   private Button wInclSQL;
 
@@ -278,10 +275,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     props.setLook( wConnectionGroup );
 
     // Webservice URL
-    wURL =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceInputDialog.URL.Label" ), BaseMessages.getString(
-        PKG, "SalesforceInputDialog.URL.Tooltip" ) );
+    wURL = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceInputDialog.URL.Label" ),
+      BaseMessages.getString( PKG, "SalesforceInputDialog.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -291,10 +287,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wURL.setLayoutData( fdURL );
 
     // UserName line
-    wUserName =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceInputDialog.User.Label" ), BaseMessages.getString(
-        PKG, "SalesforceInputDialog.User.Tooltip" ) );
+    wUserName = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceInputDialog.User.Label" ),
+      BaseMessages.getString( PKG, "SalesforceInputDialog.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -304,10 +299,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wUserName.setLayoutData( fdUserName );
 
     // Password line
-    wPassword =
-      new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString(
-        PKG, "SalesforceInputDialog.Password.Label" ), BaseMessages.getString(
-        PKG, "SalesforceInputDialog.Password.Tooltip" ) );
+    wPassword = new LabelTextVar( transMeta, wConnectionGroup,
+      BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Label" ),
+      BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -1382,9 +1376,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       mb.open();
     } else {
       new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Error" ), BaseMessages
-          .getString( PKG, "SalesforceInputDialog.Connected.NOK", wUserName.getText() ), new Exception(
-          msgError ) );
+        shell,
+        BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Error" ),
+        BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.NOK", wUserName.getText() ),
+        new Exception( msgError ) );
     }
   }
 
@@ -1763,6 +1758,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       field.setTrimType( SalesforceInputField.getTrimTypeByDesc( item.getText( 11 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 12 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
   }
@@ -1778,10 +1774,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       TransMeta previewMeta =
         TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-          PKG, "SalesforceInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString(
-          PKG, "SalesforceInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =

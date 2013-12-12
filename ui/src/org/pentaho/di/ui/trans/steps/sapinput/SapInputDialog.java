@@ -574,10 +574,9 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
     transMeta.getVariable( "Internal.Transformation.Filename.Directory" );
     previewMeta.getVariable( "Internal.Transformation.Filename.Directory" );
 
-    EnterNumberDialog numberDialog =
-      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
-        PKG, "CsvInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
-        PKG, "CsvInputDialog.PreviewSize.DialogMessage" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "CsvInputDialog.PreviewSize.DialogTitle" ),
+      BaseMessages.getString( PKG, "CsvInputDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =

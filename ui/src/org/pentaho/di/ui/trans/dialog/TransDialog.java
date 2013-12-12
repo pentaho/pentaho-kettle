@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -2331,9 +2332,9 @@ public class TransDialog extends Dialog {
         } catch ( KettleException ke ) {
           transMeta.setRepositoryDirectory( dirFrom );
           OK = false;
-          new ErrorDialog( shell, BaseMessages
-            .getString( PKG, "TransDialog.ErrorMovingTransformation.DialogTitle" ), BaseMessages.getString(
-            PKG, "TransDialog.ErrorMovingTransformation.DialogMessage" ), ke );
+          new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "TransDialog.ErrorMovingTransformation.DialogTitle" ),
+            BaseMessages.getString( PKG, "TransDialog.ErrorMovingTransformation.DialogMessage" ), ke );
         }
       }
     } else {

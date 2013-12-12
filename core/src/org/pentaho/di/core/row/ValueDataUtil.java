@@ -773,9 +773,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object
-    combination2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-      throws KettleValueException {
+  public static Object combination2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }

@@ -84,10 +84,9 @@ public class VariableButtonListenerFactory {
       str[i] = key[i] + "  [" + val[i] + "]";
     }
 
-    EnterSelectionDialog esd =
-      new EnterSelectionDialog( shell, str, BaseMessages.getString(
-        PKG, "System.Dialog.SelectEnvironmentVar.Title" ), BaseMessages.getString(
-        PKG, "System.Dialog.SelectEnvironmentVar.Message" ) );
+    EnterSelectionDialog esd = new EnterSelectionDialog( shell, str,
+      BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Title" ),
+      BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Message" ) );
     esd.clearModal();
     if ( esd.open() != null ) {
       int nr = esd.getSelectionNr();

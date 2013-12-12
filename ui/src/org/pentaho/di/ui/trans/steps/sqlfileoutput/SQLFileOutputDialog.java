@@ -610,10 +610,9 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
         getInfo( tfoi );
         String[] files = tfoi.getFiles( transMeta.environmentSubstitute( wFilename.getText() ) );
         if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, files, BaseMessages.getString(
-              PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString(
-              PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
+          EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+            BaseMessages.getString( PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogTitle" ),
+            BaseMessages.getString( PKG, "SQLFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {

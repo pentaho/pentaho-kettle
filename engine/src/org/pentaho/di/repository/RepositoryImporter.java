@@ -551,9 +551,9 @@ public class RepositoryImporter implements IRepositoryImporter {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer
           .toString( transformationNumber ), transMeta.getName(), Const.getStackTracker( e ) ) );
 
-        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        if ( !feedback.askContinueOnErrorQuestion(
+          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
+          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
@@ -635,9 +635,9 @@ public class RepositoryImporter implements IRepositoryImporter {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingJob.Log", Integer
           .toString( jobNumber ), jobMeta.getName(), Const.getStackTracker( e ) ) );
 
-        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-          PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        if ( !feedback.askContinueOnErrorQuestion(
+          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
+          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
@@ -663,13 +663,13 @@ public class RepositoryImporter implements IRepositoryImporter {
       // This is usually a problem with a missing plugin or something
       // like that...
       //
-      feedback.showError( BaseMessages.getString(
-        PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ), BaseMessages.getString(
-        PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
+      feedback.showError(
+        BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ),
+        BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
 
-      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-        PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-        PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+      if ( !feedback.askContinueOnErrorQuestion(
+        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
+        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }
@@ -695,9 +695,9 @@ public class RepositoryImporter implements IRepositoryImporter {
         BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Title" ), BaseMessages
           .getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Message" ), e );
 
-      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString(
-        PKG, "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString(
-        PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+      if ( !feedback.askContinueOnErrorQuestion(
+        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
+        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }

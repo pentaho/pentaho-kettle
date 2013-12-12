@@ -166,6 +166,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
       String[] inputFields = new String[nrLines];
       parameters.setVariable( variables );
       parameters.setInputField( inputFields );
+      //CHECKSTYLE:Indentation:OFF
       for ( int i = 0; i < nrLines; i++ ) {
         TableItem item = wMappingParameters.getNonEmpty( i );
         parameters.getVariable()[i] = item.getText( 1 );
@@ -620,13 +621,13 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
         setRadioButtons();
       }
     } catch ( IOException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ), BaseMessages.getString(
-        PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "SimpleMappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     }
   }
 
@@ -740,6 +741,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     String INPUTSTEP_NAME = "Mapping Input";
     MappingInputMeta inputMeta = new MappingInputMeta();
     inputMeta.allocate( inFields.size() );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < inFields.size(); i++ ) {
       ValueMetaInterface valueMeta = inFields.getValueMeta( i );
       inputMeta.getFieldName()[i] = valueMeta.getName();

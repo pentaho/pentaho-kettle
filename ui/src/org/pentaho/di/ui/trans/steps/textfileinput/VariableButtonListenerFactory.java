@@ -70,10 +70,9 @@ public class VariableButtonListenerFactory {
           position = getCaretPositionInterface.getCaretPosition();
         }
 
-        EnterSelectionDialog esd =
-          new EnterSelectionDialog( composite.getShell(), str, BaseMessages.getString(
-            PKG, "System.Dialog.SelectEnvironmentVar.Title" ), BaseMessages.getString(
-            PKG, "System.Dialog.SelectEnvironmentVar.Message" ) );
+        EnterSelectionDialog esd = new EnterSelectionDialog( composite.getShell(), str,
+          BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Title" ),
+          BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Message" ) );
         if ( esd.open() != null ) {
           int nr = esd.getSelectionNr();
           String var = "${" + key[nr] + "}";

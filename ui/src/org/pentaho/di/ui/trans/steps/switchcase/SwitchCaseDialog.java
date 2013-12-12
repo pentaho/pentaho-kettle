@@ -160,9 +160,9 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
       inputFields = transMeta.getPrevStepFields( stepMeta );
       wFieldName.setItems( inputFields.getFieldNames() );
     } catch ( KettleStepException ex ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ), BaseMessages.getString(
-        PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ),
+        BaseMessages.getString( PKG, "SwitchCaseDialog.Exception.CantGetFieldsFromPreviousSteps.Message" ), ex );
     }
 
     wlContains = new Label( shell, SWT.RIGHT );

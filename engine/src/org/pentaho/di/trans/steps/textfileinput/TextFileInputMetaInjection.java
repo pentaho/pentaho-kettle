@@ -554,6 +554,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     }
     if ( fileLines.size() > 0 ) {
       meta.allocateFiles( fileLines.size() );
+      //CHECKSTYLE:Indentation:OFF
       for ( int i = 0; i < fileLines.size(); i++ ) {
         FileLine fileLine = fileLines.get( i );
         meta.getFileName()[i] = fileLine.filename;

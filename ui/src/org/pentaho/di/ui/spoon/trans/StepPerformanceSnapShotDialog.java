@@ -366,8 +366,7 @@ public class StepPerformanceSnapShotDialog extends Dialog {
         PlotOrientation.VERTICAL, // orientation
         true, // include legend
         true, // tooltips
-        false // urls
-        );
+        false ); // urls       
     chart.setBackgroundPaint( Color.white );
     CategoryPlot plot = (CategoryPlot) chart.getPlot();
     plot.setBackgroundPaint( Color.white );

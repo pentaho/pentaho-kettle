@@ -172,6 +172,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
     if ( m_stats != null ) {
       retval.allocate( m_stats.length );
       for ( int i = 0; i < m_stats.length; i++ ) {
+        //CHECKSTYLE:Indentation:OFF
         retval.getInputFieldMetaFunctions()[i] = (UnivariateStatsMetaFunction) m_stats[i].clone();
       }
     } else {

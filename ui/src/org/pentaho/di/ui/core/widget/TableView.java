@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -149,8 +150,7 @@ public class TableView extends Composite {
   private boolean field_changed;
 
   private Menu mRow;
-  private SelectionAdapter lsRowInsBef, lsRowInsAft, lsClipAll, lsCol1, lsCol2, lsRowUp, lsRowDown, lsClear,
-      lsCopyToAll, lsSelAll, lsUnselAll, lsPasteAll, lsCutAll, lsDelAll, lsKeep, lsFilter, lsEditUndo, lsEditRedo;
+  private SelectionAdapter lsRowInsBef, lsRowInsAft, lsClipAll, lsCol1, lsCol2, lsRowUp, lsRowDown, lsClear, lsCopyToAll, lsSelAll, lsUnselAll, lsPasteAll, lsCutAll, lsDelAll, lsKeep, lsFilter, lsEditUndo, lsEditRedo;
 
   private ModifyListener lsMod, lsUndo, lsContent;
   private Clipboard clipboard;

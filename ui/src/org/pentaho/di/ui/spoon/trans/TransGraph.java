@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -1878,6 +1879,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     endHopLocation = null;
     mouseOverSteps.clear();
     for ( int i = 0; i < transMeta.nrTransHops(); i++ ) {
+      //CHECKSTYLE:Indentation:OFF
       transMeta.getTransHop( i ).split = false;
     }
 
@@ -3054,8 +3056,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     int y2 = line[3];
 
     // Not in the square formed by these 2 points: ignore!
-    if ( !( ( ( x >= x1 && x <= x2 ) || ( x >= x2 && x <= x1 ) )
-    && ( ( y >= y1 && y <= y2 ) || ( y >= y2 && y <= y1 ) ) ) ) {
+    if ( !( ( ( x >= x1 && x <= x2 ) || ( x >= x2 && x <= x1 ) ) && ( ( y >= y1 && y <= y2 ) || ( y >= y2 && y <= y1 ) ) ) ) {
       return false;
     }
 
@@ -3242,9 +3243,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
         spoon.sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
       } catch ( KettleException e ) {
-        new ErrorDialog( spoon.getShell(), BaseMessages.getString(
-          PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages.getString(
-          PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTabName( transMeta, true ) ), e );
+        new ErrorDialog( spoon.getShell(),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ),
+          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTabName( transMeta, true ) ), e );
       }
 
       // If we added properties, add them to the variables too, so that they appear in the CTRL-SPACE variable
@@ -3660,8 +3661,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     toolItem.setImage( GUIResource.getInstance().getImageHideResults() );
   }
 
-  public synchronized void
-    debug( TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta ) {
+  public synchronized void debug( TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta ) {
     if ( !running ) {
       try {
         this.lastTransDebugMeta = transDebugMeta;
@@ -3883,9 +3883,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           if ( pauseButton.isDisabled() ^ !running ) {
             pauseButton.setDisabled( !running );
             pauseButton.setLabel( pausing ? RESUME_TEXT : PAUSE_TEXT );
-            pauseButton.setTooltiptext( pausing ? BaseMessages
-              .getString( PKG, "Spoon.Tooltip.ResumeTranformation" ) : BaseMessages.getString(
-              PKG, "Spoon.Tooltip.PauseTranformation" ) );
+            pauseButton.setTooltiptext( pausing
+              ? BaseMessages.getString( PKG, "Spoon.Tooltip.ResumeTranformation" )
+              : BaseMessages.getString( PKG, "Spoon.Tooltip.PauseTranformation" ) );
           }
         }
 
@@ -4626,14 +4626,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       } else {
         MessageDialogWithToggle md =
           new MessageDialogWithToggle(
-            shell, BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged.Title" ), null, BaseMessages
-              .getString( PKG, "TransLog.Dialog.FileHasChanged1.Message" )
-              + Const.CR
-              + BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged2.Message" )
-              + Const.CR, MessageDialog.QUESTION, new String[] {
-              BaseMessages.getString( PKG, "System.Button.Yes" ),
-              BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString(
-              PKG, "TransLog.Dialog.Option.AutoSaveTransformation" ), spoon.props.getAutoSave() );
+            shell,
+            BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged.Title" ),
+            null,
+            BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged1.Message" ) + Const.CR + BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged2.Message" ) + Const.CR,
+            MessageDialog.QUESTION,
+            new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) },
+            0,
+            BaseMessages.getString( PKG, "TransLog.Dialog.Option.AutoSaveTransformation" ), spoon.props.getAutoSave() );
         int answer = md.open();
         if ( ( answer & 0xFF ) == 0 ) {
           spoon.saveToFile( transMeta );

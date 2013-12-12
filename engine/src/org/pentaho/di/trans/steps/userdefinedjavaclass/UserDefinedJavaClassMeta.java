@@ -266,9 +266,10 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
       for ( int i = 0; i < nrDefinitions; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( definitionsNode, ElementNames.definition.name(), i );
-        definitions.add( new UserDefinedJavaClassDef( ClassType.valueOf( XMLHandler.getTagValue(
-          fnode, ElementNames.class_type.name() ) ), XMLHandler.getTagValue( fnode, ElementNames.class_name
-          .name() ), XMLHandler.getTagValue( fnode, ElementNames.class_source.name() ) ) );
+        definitions.add( new UserDefinedJavaClassDef(
+          ClassType.valueOf( XMLHandler.getTagValue( fnode, ElementNames.class_type.name() ) ),
+          XMLHandler.getTagValue( fnode, ElementNames.class_name.name() ),
+          XMLHandler.getTagValue( fnode, ElementNames.class_source.name() ) ) );
       }
 
       Node fieldsNode = XMLHandler.getSubNode( stepnode, ElementNames.fields.name() );
@@ -276,10 +277,11 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fieldsNode, ElementNames.field.name(), i );
-        fields.add( new FieldInfo( XMLHandler.getTagValue( fnode, ElementNames.field_name.name() ), ValueMeta
-          .getType( XMLHandler.getTagValue( fnode, ElementNames.field_type.name() ) ), Const.toInt( XMLHandler
-          .getTagValue( fnode, ElementNames.field_length.name() ), -1 ), Const.toInt( XMLHandler.getTagValue(
-          fnode, ElementNames.field_precision.name() ), -1 ) ) );
+        fields.add( new FieldInfo(
+          XMLHandler.getTagValue( fnode, ElementNames.field_name.name() ),
+          ValueMeta.getType( XMLHandler.getTagValue( fnode, ElementNames.field_type.name() ) ),
+          Const.toInt( XMLHandler.getTagValue( fnode, ElementNames.field_length.name() ), -1 ),
+          Const.toInt( XMLHandler.getTagValue( fnode, ElementNames.field_precision.name() ), -1 ) ) );
       }
 
       setClearingResultFields( !"N".equals( XMLHandler.getTagValue( stepnode, ElementNames.clear_result_fields
@@ -482,10 +484,10 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     try {
       int nrScripts = rep.countNrStepAttributes( id_step, ElementNames.class_name.name() );
       for ( int i = 0; i < nrScripts; i++ ) {
-        definitions.add( new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.valueOf( rep
-          .getStepAttributeString( id_step, i, ElementNames.class_type.name() ) ), rep.getStepAttributeString(
-          id_step, i, ElementNames.class_name.name() ), rep.getStepAttributeString(
-          id_step, i, ElementNames.class_source.name() ) ) );
+        definitions.add( new UserDefinedJavaClassDef(
+          UserDefinedJavaClassDef.ClassType.valueOf( rep.getStepAttributeString( id_step, i, ElementNames.class_type.name() ) ),
+          rep.getStepAttributeString( id_step, i, ElementNames.class_name.name() ),
+          rep.getStepAttributeString( id_step, i, ElementNames.class_source.name() ) ) );
 
       }
 

@@ -303,15 +303,15 @@ public class SwitchCaseTest {
           }
         } );
       // same when call to convertDataFromString
-      when(
-        data.valueMeta.convertDataFromString( Mockito.anyString(), any( ValueMetaInterface.class ), Mockito
-          .anyString(), Mockito.anyString(), Mockito.anyInt() ) ).thenAnswer( new Answer<Object>() {
-        @Override
-        public Object answer( InvocationOnMock invocation ) throws Throwable {
-          Object[] objArr = invocation.getArguments();
-          return ( objArr != null && objArr.length > 1 ) ? objArr[0] : null;
-        }
-      } );
+      when( data.valueMeta.convertDataFromString( Mockito.anyString(), any( ValueMetaInterface.class ),
+        Mockito.anyString(), Mockito.anyString(), Mockito.anyInt() ) ).thenAnswer(
+        //CHECKSTYLE:Indentation:OFF
+        new Answer<Object>() {
+          public Object answer( InvocationOnMock invocation ) throws Throwable {
+            Object[] objArr = invocation.getArguments();
+            return ( objArr != null && objArr.length > 1 ) ? objArr[0] : null;
+          }
+        } );
       // null-check
       when( data.valueMeta.isNull( any() ) ).thenAnswer( new Answer<Object>() {
         @Override

@@ -1647,6 +1647,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     transExecutorMeta.setOutputRowsLength( new int[nrFields] );
     transExecutorMeta.setOutputRowsPrecision( new int[nrFields] );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrFields; i++ ) {
       TableItem item = wOutputFields.getNonEmpty( i );
       transExecutorMeta.getOutputRowsField()[i] = item.getText( 1 );

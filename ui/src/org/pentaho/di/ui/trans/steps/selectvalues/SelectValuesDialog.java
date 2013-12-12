@@ -708,6 +708,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 
     input.allocate( nrfields, nrremove, nrmeta );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getSelectName()[i] = item.getText( 1 );
@@ -899,9 +900,9 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     if ( missingFields.length() > 0 ) {
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-        MessageDialog.openConfirm( shell, BaseMessages.getString(
-          PKG, "SelectValuesDialog.DoMapping.SomeFieldsNotFoundTitle" ), BaseMessages.getString(
-          PKG, "SelectValuesDialog.DoMapping.SomeFieldsNotFound", missingFields.toString() ) );
+        MessageDialog.openConfirm( shell,
+          BaseMessages.getString( PKG, "SelectValuesDialog.DoMapping.SomeFieldsNotFoundTitle" ),
+          BaseMessages.getString( PKG, "SelectValuesDialog.DoMapping.SomeFieldsNotFound", missingFields.toString() ) );
       if ( !goOn ) {
         return;
       }

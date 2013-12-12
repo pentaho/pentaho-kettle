@@ -142,8 +142,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
   private TreeItem wTreeClassesItem;
   private Listener lsTree;
 
-  private Image imageActiveScript, imageInactiveScript, imageInputFields, imageOutputFields, imageArrowOrange,
-      imageArrowGreen, imageUnderGreen;
+  private Image imageActiveScript, imageInactiveScript, imageInputFields, imageOutputFields, imageArrowOrange, imageArrowGreen, imageUnderGreen;
 
   private CTabFolder folder, wTabFolder;
   private Menu cMenu, tMenu;
@@ -604,10 +603,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
       pw.println( outXML.toString() );
       pw.flush();
       pw.close();
-      ShowMessageDialog msgDialog =
-        new ShowMessageDialog( shell, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(
-          PKG, "UserDefinedJavaClassDialog.Plugin.CreateSuccess" ), BaseMessages.getString(
-          PKG, "UserDefinedJavaClassDialog.Plugin.CreatedFile", pluginFile.getPath() ), false );
+      ShowMessageDialog msgDialog = new ShowMessageDialog( shell, SWT.ICON_INFORMATION | SWT.OK,
+        BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreateSuccess" ),
+        BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.Plugin.CreatedFile", pluginFile.getPath() ), false );
       msgDialog.open();
 
     } catch ( IOException e ) {
@@ -1320,6 +1318,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
           genMeta = new RowGeneratorMeta();
           genMeta.setRowLimit( "10" );
           genMeta.allocate( rowMeta.size() );
+          //CHECKSTYLE:Indentation:OFF
           for ( int i = 0; i < rowMeta.size(); i++ ) {
             ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
             if ( valueMeta.isStorageBinaryString() ) {

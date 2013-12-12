@@ -368,6 +368,7 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
     int count = wFields.nrNonEmpty();
     input.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );

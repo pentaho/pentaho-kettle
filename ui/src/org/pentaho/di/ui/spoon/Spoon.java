@@ -1744,9 +1744,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             // "Error loading transformation", "I was unable to load this
             // transformation from the
             // XML file because of an error"
-            new ErrorDialog( loginDialog.getShell(), BaseMessages.getString(
-              PKG, "Spoon.Dialog.LoadTransformationError.Title" ), BaseMessages.getString(
-              PKG, "Spoon.Dialog.LoadTransformationError.Message" ), ke );
+            new ErrorDialog( loginDialog.getShell(),
+              BaseMessages.getString( PKG, "Spoon.Dialog.LoadTransformationError.Title" ),
+              BaseMessages.getString( PKG, "Spoon.Dialog.LoadTransformationError.Message" ), ke );
           }
         }
 
@@ -1771,9 +1771,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // "Error loading transformation", "I was unable to load this
         // transformation from the
         // XML file because of an error"
-        new ErrorDialog( loginDialog.getShell(), BaseMessages.getString(
-          PKG, "Spoon.Dialog.LoadTransformationError.Title" ), BaseMessages.getString(
-          PKG, "Spoon.Dialog.LoadTransformationError.Message" ), ke );
+        new ErrorDialog( loginDialog.getShell(),
+          BaseMessages.getString( PKG, "Spoon.Dialog.LoadTransformationError.Title" ),
+          BaseMessages.getString( PKG, "Spoon.Dialog.LoadTransformationError.Message" ), ke );
       }
     }
   }
@@ -2701,10 +2701,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // show the shell...
     //
-    EnterSelectionDialog dialog =
-      new EnterSelectionDialog( shell, databaseNames, BaseMessages.getString(
-        PKG, "Spoon.ExploreDB.SelectDB.Title" ), BaseMessages.getString(
-        PKG, "Spoon.ExploreDB.SelectDB.Message" ) );
+    EnterSelectionDialog dialog = new EnterSelectionDialog( shell, databaseNames,
+      BaseMessages.getString( PKG, "Spoon.ExploreDB.SelectDB.Title" ),
+      BaseMessages.getString( PKG, "Spoon.ExploreDB.SelectDB.Message" ) );
     String name = dialog.open();
     if ( name != null ) {
       selectionObject = DatabaseMeta.findDatabase( databases, name );
@@ -7868,6 +7867,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           SelectValuesMeta svm = new SelectValuesMeta();
           svm.allocate( mappings.size(), 0, 0 );
 
+          //CHECKSTYLE:Indentation:OFF
           for ( int i = 0; i < mappings.size(); i++ ) {
             SourceToTargetMapping mapping = mappings.get( i );
             svm.getSelectName()[i] = sourceFields.getValueMeta( mapping.getSourcePosition() ).getName();

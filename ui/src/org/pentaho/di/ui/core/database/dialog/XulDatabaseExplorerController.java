@@ -548,10 +548,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
           conn[i] = ( dbs.get( i ) ).getName();
         }
 
-        EnterSelectionDialog esd =
-          new EnterSelectionDialog( this.dbExplorerDialog.getShell(), conn, BaseMessages.getString(
-            PKG, "DatabaseExplorerDialog.TargetDatabase.Title" ), BaseMessages.getString(
-            PKG, "DatabaseExplorerDialog.TargetDatabase.Message" ) );
+        EnterSelectionDialog esd = new EnterSelectionDialog( this.dbExplorerDialog.getShell(), conn,
+          BaseMessages.getString( PKG, "DatabaseExplorerDialog.TargetDatabase.Title" ),
+          BaseMessages.getString( PKG, "DatabaseExplorerDialog.TargetDatabase.Message" ) );
         String target = esd.open();
         if ( target != null ) {
           DatabaseMeta targetdbi = DatabaseMeta.findDatabase( dbs, target );
@@ -621,9 +620,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
       }
 
     } catch ( Exception e ) {
-      new ErrorDialog( this.dbExplorerDialog.getShell(), BaseMessages.getString(
-        PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Title" ), BaseMessages.getString(
-        PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Message" ), e );
+      new ErrorDialog( this.dbExplorerDialog.getShell(),
+        BaseMessages.getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Title" ),
+        BaseMessages.getString( PKG, "DatabaseExplorerDialog.UnexpectedProfilingError.Message" ), e );
     }
 
   }

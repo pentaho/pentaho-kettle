@@ -72,7 +72,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
 
     for ( int i = 0; i < meta.getValue().length; i++ ) {
       if ( meta.getValueDefaultType()[i] < 0 ) {
-        // logError("unknown default value type: "+dtype+" for value "+value[i]+", default to type: String!");
+        //CHECKSTYLE:Indentation:OFF
         meta.getValueDefaultType()[i] = ValueMetaInterface.TYPE_STRING;
       }
       data.nullIf[i] = null;

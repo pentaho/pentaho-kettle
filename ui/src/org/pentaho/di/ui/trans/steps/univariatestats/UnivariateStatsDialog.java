@@ -394,9 +394,9 @@ public class UnivariateStatsDialog extends BaseStepDialog implements StepDialogI
       }
       boolean interpolate = item.getText( 9 ).equalsIgnoreCase( "True" );
 
-      m_currentMeta.getInputFieldMetaFunctions()[i] =
-        new UnivariateStatsMetaFunction(
-          inputFieldName, n, mean, stdDev, min, max, median, percentile, interpolate );
+      //CHECKSTYLE:Indentation:OFF
+      m_currentMeta.getInputFieldMetaFunctions()[i] = new UnivariateStatsMetaFunction(
+        inputFieldName, n, mean, stdDev, min, max, median, percentile, interpolate );
     }
 
     if ( !m_originalMeta.equals( m_currentMeta ) ) {

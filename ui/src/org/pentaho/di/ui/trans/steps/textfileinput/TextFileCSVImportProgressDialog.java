@@ -117,9 +117,7 @@ public class TextFileCSVImportProgressDialog {
           message = doScan( monitor );
         } catch ( Exception e ) {
           e.printStackTrace();
-          throw new InvocationTargetException( e, BaseMessages.getString(
-            PKG, "TextFileCSVImportProgressDialog.Exception.ErrorScanningFile", "" + rownumber, debug, e
-              .toString() ) );
+          throw new InvocationTargetException( e, BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Exception.ErrorScanningFile", "" + rownumber, debug, e.toString() ) );
         }
       }
     };
@@ -128,13 +126,13 @@ public class TextFileCSVImportProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Title" ), BaseMessages.getString(
-        PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Title" ),
+        BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Message" ), e );
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Title" ), BaseMessages.getString(
-        PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Title" ),
+        BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.ErrorScanningFile.Message" ), e );
     }
 
     return message;

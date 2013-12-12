@@ -72,8 +72,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private FormData fdResultField, fdlField, fdField, fdTabFolder, fdlXSLFilename, fdbXSLFilename, fdXSLFilename,
-      fdXSLField, fdlXSLField;
+  private FormData fdResultField, fdlField, fdField, fdTabFolder, fdlXSLFilename, fdbXSLFilename, fdXSLFilename, fdXSLField, fdlXSLField;
   private LabelTextVar wResultField;
   private CCombo wField, wXSLField;
   private FormData fdlXSLFileField, fdXSLFileField;
@@ -748,11 +747,13 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "HTTPDialog.Log.FoundArguments", String.valueOf( nrparams ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrparams; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getParameterField()[i] = item.getText( 1 );
       input.getParameterName()[i] = item.getText( 2 );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nroutputprops; i++ ) {
       TableItem item = wOutputProperties.getNonEmpty( i );
       input.getOutputPropertyName()[i] = item.getText( 1 );
