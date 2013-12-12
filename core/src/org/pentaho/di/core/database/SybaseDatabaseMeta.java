@@ -86,14 +86,6 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   }
 
   /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
-  /**
    * @return true if this database needs a transaction to perform a query (auto-commit turned off).
    */
   @Override

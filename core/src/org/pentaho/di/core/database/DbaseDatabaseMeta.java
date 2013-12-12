@@ -94,13 +94,6 @@ public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     return false;
   }
 
-  /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
 
   /**
    * @return true if the database supports views

@@ -113,14 +113,6 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   }
 
   /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
-  /**
    * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
    *
    * @return true if the database supports retrieval of query metadata from a prepared statement. False if the query

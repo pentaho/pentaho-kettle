@@ -97,14 +97,6 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   }
 
   /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
-  /**
    * @param tableName
    *          The table to be truncated.
    * @return The SQL statement to truncate a table: remove all rows from it without a transaction

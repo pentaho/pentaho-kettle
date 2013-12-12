@@ -394,12 +394,6 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   }
 
   @Override
-  public boolean supportsRepository() {
-    // not tested, yet: due to constraints on BLOB fields
-    return false;
-  }
-
-  @Override
   public String getTruncateTableStatement( String tableName ) {
     return "DELETE FROM " + tableName;
   }
