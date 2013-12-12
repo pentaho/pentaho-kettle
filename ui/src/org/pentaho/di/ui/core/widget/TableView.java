@@ -150,7 +150,6 @@ public class TableView extends Composite {
   private boolean field_changed;
 
   private Menu mRow;
-  private SelectionAdapter lsRowInsBef, lsRowInsAft, lsClipAll, lsCol1, lsCol2, lsRowUp, lsRowDown, lsClear, lsCopyToAll, lsSelAll, lsUnselAll, lsPasteAll, lsCutAll, lsDelAll, lsKeep, lsFilter, lsEditUndo, lsEditRedo;
 
   private ModifyListener lsMod, lsUndo, lsContent;
   private Clipboard clipboard;
@@ -376,92 +375,92 @@ public class TableView extends Composite {
       miKeep.setEnabled( false );
     }
 
-    lsRowInsBef = new SelectionAdapter() {
+    SelectionAdapter lsRowInsBef = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         insertRowBefore();
       }
     };
-    lsRowInsAft = new SelectionAdapter() {
+    SelectionAdapter lsRowInsAft = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         insertRowAfter();
       }
     };
-    lsCol1 = new SelectionAdapter() {
+    SelectionAdapter lsCol1 = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         optWidth( true );
       }
     };
-    lsCol2 = new SelectionAdapter() {
+    SelectionAdapter lsCol2 = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         optWidth( false );
       }
     };
-    lsRowUp = new SelectionAdapter() {
+    SelectionAdapter lsRowUp = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         moveRows( -1 );
       }
     };
-    lsRowDown = new SelectionAdapter() {
+    SelectionAdapter lsRowDown = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         moveRows( +1 );
       }
     };
-    lsClear = new SelectionAdapter() {
+    SelectionAdapter lsClear = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         clearAll( true );
       }
     };
-    lsClipAll = new SelectionAdapter() {
+    SelectionAdapter lsClipAll = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         clipSelected();
       }
     };
-    lsCopyToAll = new SelectionAdapter() {
+    SelectionAdapter lsCopyToAll = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         copyToAll();
       }
     };
-    lsSelAll = new SelectionAdapter() {
+    SelectionAdapter lsSelAll = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         selectAll();
       }
     };
-    lsUnselAll = new SelectionAdapter() {
+    SelectionAdapter lsUnselAll = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         unselectAll();
       }
     };
-    lsPasteAll = new SelectionAdapter() {
+    SelectionAdapter lsPasteAll = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         pasteSelected();
       }
     };
-    lsCutAll = new SelectionAdapter() {
+    SelectionAdapter lsCutAll = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         cutSelected();
       }
     };
-    lsDelAll = new SelectionAdapter() {
+    SelectionAdapter lsDelAll = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         delSelected();
       }
     };
-    lsKeep = new SelectionAdapter() {
+    SelectionAdapter lsKeep = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         keepSelected();
       }
     };
-    lsFilter = new SelectionAdapter() {
+    SelectionAdapter lsFilter = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         setFilter();
       }
     };
-    lsEditUndo = new SelectionAdapter() {
+    SelectionAdapter lsEditUndo = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         undoAction();
       }
     };
-    lsEditRedo = new SelectionAdapter() {
+    SelectionAdapter lsEditRedo = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         redoAction();
       }

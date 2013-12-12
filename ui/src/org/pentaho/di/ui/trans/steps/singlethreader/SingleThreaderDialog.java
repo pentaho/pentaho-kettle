@@ -868,7 +868,9 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         throw new KettleException(
           BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.NotConnectedToRepository.Message" ) );
       }
-      RepositoryObject transInf = repository.getObjectInformation( referenceObjectId, RepositoryObjectType.TRANSFORMATION );
+      RepositoryObject transInf = repository.getObjectInformation(
+        referenceObjectId,
+        RepositoryObjectType.TRANSFORMATION );
       if ( transInf != null ) {
         getByReferenceData( transInf );
       }

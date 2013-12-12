@@ -298,6 +298,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 
     RowMetaAndData table = new RowMetaAndData();
 
+    //CHECKSTYLE:LineLength:OFF
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );

@@ -117,7 +117,9 @@ public class TextFileCSVImportProgressDialog {
           message = doScan( monitor );
         } catch ( Exception e ) {
           e.printStackTrace();
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Exception.ErrorScanningFile", "" + rownumber, debug, e.toString() ) );
+          throw new InvocationTargetException( e,
+            BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Exception.ErrorScanningFile",
+              "" + rownumber, debug, e.toString() ) );
         }
       }
     };

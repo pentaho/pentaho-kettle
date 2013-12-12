@@ -599,7 +599,8 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
     } else {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.NOK", wUserName.getText() ), new Exception( msgError ) );
+        BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.NOK", wUserName.getText() ),
+        new Exception( msgError ) );
     }
 
   }

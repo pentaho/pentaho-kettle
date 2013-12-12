@@ -865,7 +865,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                       BaseMessages.getString( PKG, "System.Button.Yes" ),
                       BaseMessages.getString( PKG, "System.Button.No" ) },
                     0,
-                    BaseMessages.getString( PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ), spoon.props.getAutoSplit() );
+                    BaseMessages.getString( PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ),
+                    spoon.props.getAutoSplit() );
                 MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
                 id = md.open();
                 spoon.props.setAutoSplit( md.getToggleState() );
@@ -2526,7 +2527,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     } catch ( Throwable e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title" ),
-        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ), (Exception) e );
+        BaseMessages.getString( PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message" ),
+        (Exception) e );
     }
   }
 
@@ -2877,6 +2879,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     int y2 = line[3];
 
     // Not in the square formed by these 2 points: ignore!
+    //CHECKSTYLE:LineLength:OFF
     if ( !( ( ( x >= x1 && x <= x2 ) || ( x >= x2 && x <= x1 ) ) && ( ( y >= y1 && y <= y2 ) || ( y >= y2 && y <= y1 ) ) ) ) {
       return false;
     }
@@ -3309,7 +3312,11 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
                 .getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" )
                 + Const.CR
                 + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" )
-                + Const.CR, MessageDialog.QUESTION, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) },
+                + Const.CR,
+              MessageDialog.QUESTION,
+              new String[] {
+                BaseMessages.getString( PKG, "System.Button.Yes" ),
+                BaseMessages.getString( PKG, "System.Button.No" ) },
               0, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Toggle" ), spoon.props.getAutoSave() );
           int answer = md.open();
           if ( ( answer & 0xFF ) == 0 ) {

@@ -501,7 +501,8 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     } );
 
     // Proxy host line
-    wProxyHost = new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Label" ),
+    wProxyHost = new LabelTextVar( jobMeta, wServerSettings,
+      BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Label" ),
       BaseMessages.getString( PKG, "JobSFTPPUT.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );

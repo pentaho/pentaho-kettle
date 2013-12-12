@@ -908,7 +908,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     setValues( rowMeta, data, prepStatementLookup );
   }
 
-  public void setProcValues( RowMetaInterface rowMeta, Object[] data, int[] argnrs, String[] argdir, boolean result ) throws KettleDatabaseException {
+  public void setProcValues( RowMetaInterface rowMeta, Object[] data, int[] argnrs, String[] argdir, boolean result )
+    throws KettleDatabaseException {
     int pos;
 
     if ( result ) {

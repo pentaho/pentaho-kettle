@@ -165,7 +165,8 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
       }
     } );
 
-    wFields = new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields = new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+      colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -303,7 +304,10 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
       SystemDataMeta oneMeta = new SystemDataMeta();
       getInfo( oneMeta );
 
-      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(
+        transMeta,
+        oneMeta,
+        wStepname.getText() );
 
       EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
         BaseMessages.getString( PKG, "SystemDataDialog.NumberRows.DialogTitle" ),

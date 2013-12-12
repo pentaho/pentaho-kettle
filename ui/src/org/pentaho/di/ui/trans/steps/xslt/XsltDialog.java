@@ -72,7 +72,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private FormData fdResultField, fdlField, fdField, fdTabFolder, fdlXSLFilename, fdbXSLFilename, fdXSLFilename, fdXSLField, fdlXSLField;
   private LabelTextVar wResultField;
   private CCombo wField, wXSLField;
   private FormData fdlXSLFileField, fdXSLFileField;
@@ -194,7 +193,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     wlField = new Label( wGeneralComp, SWT.RIGHT );
     wlField.setText( BaseMessages.getString( PKG, "XsltDialog.Field.Label" ) );
     props.setLook( wlField );
-    fdlField = new FormData();
+    FormData fdlField = new FormData();
     fdlField.left = new FormAttachment( 0, 0 );
     fdlField.top = new FormAttachment( wStepname, 2 * margin );
     fdlField.right = new FormAttachment( middle, -margin );
@@ -203,7 +202,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     wField.setEditable( true );
     props.setLook( wField );
     wField.addModifyListener( lsMod );
-    fdField = new FormData();
+    FormData fdField = new FormData();
     fdField.left = new FormAttachment( middle, margin );
     fdField.top = new FormAttachment( wStepname, 2 * margin );
     fdField.right = new FormAttachment( 100, -margin );
@@ -242,7 +241,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
           .getString( PKG, "XsltDialog.ResultField.Tooltip" ) );
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
-    fdResultField = new FormData();
+    FormData fdResultField = new FormData();
     fdResultField.left = new FormAttachment( 0, 0 );
     fdResultField.top = new FormAttachment( wField, margin );
     fdResultField.right = new FormAttachment( 100, 0 );
@@ -301,7 +300,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     wlXSLField = new Label( wXSLFileGroup, SWT.RIGHT );
     wlXSLField.setText( BaseMessages.getString( PKG, "XsltDialog.XSLFilenameField.Label" ) );
     props.setLook( wlXSLField );
-    fdlXSLField = new FormData();
+    FormData fdlXSLField = new FormData();
     fdlXSLField.left = new FormAttachment( 0, 0 );
     fdlXSLField.top = new FormAttachment( wXSLFileField, margin );
     fdlXSLField.right = new FormAttachment( middle, -margin );
@@ -310,7 +309,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     wXSLField.setEditable( true );
     props.setLook( wXSLField );
     wXSLField.addModifyListener( lsMod );
-    fdXSLField = new FormData();
+    FormData fdXSLField = new FormData();
     fdXSLField.left = new FormAttachment( middle, margin );
     fdXSLField.top = new FormAttachment( wXSLFileField, margin );
     fdXSLField.right = new FormAttachment( 100, -margin );
@@ -354,7 +353,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     wlFilename = new Label( wXSLFileGroup, SWT.RIGHT );
     wlFilename.setText( BaseMessages.getString( PKG, "XsltDialog.XSLFilename.Label" ) );
     props.setLook( wlFilename );
-    fdlXSLFilename = new FormData();
+    FormData fdlXSLFilename = new FormData();
     fdlXSLFilename.left = new FormAttachment( 0, 0 );
     fdlXSLFilename.top = new FormAttachment( wXSLFieldIsAFile, 2 * margin );
     fdlXSLFilename.right = new FormAttachment( middle, -margin );
@@ -364,7 +363,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wbbFilename );
     wbbFilename.setText( BaseMessages.getString( PKG, "XsltDialog.FilenameBrowse.Button" ) );
     wbbFilename.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    fdbXSLFilename = new FormData();
+    FormData fdbXSLFilename = new FormData();
     fdbXSLFilename.right = new FormAttachment( 100, 0 );
     fdbXSLFilename.top = new FormAttachment( wXSLFieldIsAFile, 2 * margin );
     wbbFilename.setLayoutData( fdbXSLFilename );
@@ -372,7 +371,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     wXSLFilename = new TextVar( transMeta, wXSLFileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wXSLFilename );
     wXSLFilename.addModifyListener( lsMod );
-    fdXSLFilename = new FormData();
+    FormData fdXSLFilename = new FormData();
     fdXSLFilename.left = new FormAttachment( middle, margin );
     fdXSLFilename.right = new FormAttachment( wbbFilename, -margin );
     fdXSLFilename.top = new FormAttachment( wXSLFieldIsAFile, 2 * margin );
@@ -543,7 +542,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface {
     wAdditionalTab.setControl( wAdditionalComp );
     // ////// END of Additional Tab
 
-    fdTabFolder = new FormData();
+    FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( wStepname, margin );
     fdTabFolder.right = new FormAttachment( 100, 0 );

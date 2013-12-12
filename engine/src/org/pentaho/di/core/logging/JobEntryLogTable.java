@@ -133,6 +133,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     super.loadFieldsXML( node );
   }
 
+  //CHECKSTYLE:LineLength:OFF
   public static JobEntryLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     JobEntryLogTable table = new JobEntryLogTable( space, databasesInterface );
 

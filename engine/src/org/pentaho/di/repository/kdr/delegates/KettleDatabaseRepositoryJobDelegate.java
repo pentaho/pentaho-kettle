@@ -313,7 +313,8 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
    *          The directory in which the job resides.
    * @throws KettleException
    */
-  public JobMeta loadJobMeta( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor ) throws KettleException {
+  public JobMeta loadJobMeta( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor )
+    throws KettleException {
 
     JobMeta jobMeta = new JobMeta();
     synchronized ( repository ) {

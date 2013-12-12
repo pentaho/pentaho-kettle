@@ -101,7 +101,6 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
   private Label wlSuccessCondition, wlValueType, wlFieldType, wlMask;
   private CCombo wSuccessCondition, wValueType, wFieldType;
   private ComboVar wMask;
-  private FormData fdlSuccessCondition, fdSuccessCondition, fdlValueType, fdValueType, fdFieldType, fdlFieldType, fdMask, fdlMask;
 
   private Label wlSuccessNumberCondition;
   private CCombo wSuccessNumberCondition;
@@ -213,7 +212,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlValueType = new Label( wSource, SWT.RIGHT );
     wlValueType.setText( BaseMessages.getString( PKG, "JobSimpleEval.ValueType.Label" ) );
     props.setLook( wlValueType );
-    fdlValueType = new FormData();
+    FormData fdlValueType = new FormData();
     fdlValueType.left = new FormAttachment( 0, -margin );
     fdlValueType.right = new FormAttachment( middle, -margin );
     fdlValueType.top = new FormAttachment( 0, margin );
@@ -222,7 +221,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wValueType.setItems( JobEntrySimpleEval.valueTypeDesc );
 
     props.setLook( wValueType );
-    fdValueType = new FormData();
+    FormData fdValueType = new FormData();
     fdValueType.left = new FormAttachment( middle, 0 );
     fdValueType.top = new FormAttachment( 0, margin );
     fdValueType.right = new FormAttachment( 100, 0 );
@@ -281,7 +280,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlFieldType = new Label( wSource, SWT.RIGHT );
     wlFieldType.setText( BaseMessages.getString( PKG, "JobSimpleEval.FieldType.Label" ) );
     props.setLook( wlFieldType );
-    fdlFieldType = new FormData();
+    FormData fdlFieldType = new FormData();
     fdlFieldType.left = new FormAttachment( 0, 0 );
     fdlFieldType.right = new FormAttachment( middle, -margin );
     fdlFieldType.top = new FormAttachment( wVariableName, margin );
@@ -290,7 +289,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wFieldType.setItems( JobEntrySimpleEval.fieldTypeDesc );
 
     props.setLook( wFieldType );
-    fdFieldType = new FormData();
+    FormData fdFieldType = new FormData();
     fdFieldType.left = new FormAttachment( middle, 0 );
     fdFieldType.top = new FormAttachment( wVariableName, margin );
     fdFieldType.right = new FormAttachment( 100, 0 );
@@ -307,7 +306,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlMask = new Label( wSource, SWT.RIGHT );
     wlMask.setText( BaseMessages.getString( PKG, "JobSimpleEval.Mask.Label" ) );
     props.setLook( wlMask );
-    fdlMask = new FormData();
+    FormData fdlMask = new FormData();
     fdlMask.left = new FormAttachment( 0, 0 );
     fdlMask.right = new FormAttachment( middle, -margin );
     fdlMask.top = new FormAttachment( wFieldType, margin );
@@ -317,7 +316,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wMask.setItems( Const.getDateFormats() );
     wMask.setEditable( true );
     props.setLook( wMask );
-    fdMask = new FormData();
+    FormData fdMask = new FormData();
     fdMask.left = new FormAttachment( middle, 0 );
     fdMask.top = new FormAttachment( wFieldType, margin );
     fdMask.right = new FormAttachment( 100, 0 );
@@ -379,7 +378,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wlSuccessCondition = new Label( wSuccessOn, SWT.RIGHT );
     wlSuccessCondition.setText( BaseMessages.getString( PKG, "JobSimpleEval.SuccessCondition.Label" ) );
     props.setLook( wlSuccessCondition );
-    fdlSuccessCondition = new FormData();
+    FormData fdlSuccessCondition = new FormData();
     fdlSuccessCondition.left = new FormAttachment( 0, 0 );
     fdlSuccessCondition.right = new FormAttachment( middle, 0 );
     fdlSuccessCondition.top = new FormAttachment( wSuccessWhenSet, margin );
@@ -390,7 +389,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     wSuccessCondition.select( 0 ); // +1: starts at -1
 
     props.setLook( wSuccessCondition );
-    fdSuccessCondition = new FormData();
+    FormData fdSuccessCondition = new FormData();
     fdSuccessCondition.left = new FormAttachment( middle, 0 );
     fdSuccessCondition.top = new FormAttachment( wSuccessWhenSet, margin );
     fdSuccessCondition.right = new FormAttachment( 100, 0 );

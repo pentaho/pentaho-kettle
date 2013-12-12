@@ -118,6 +118,7 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
     super.replaceMeta( logTable );
   }
 
+  //CHECKSTYLE:LineLength:OFF
   public static ChannelLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     ChannelLogTable table = new ChannelLogTable( space, databasesInterface );
 

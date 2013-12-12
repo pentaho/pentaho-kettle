@@ -108,6 +108,7 @@ public class ConnectionsController extends LazilyInitializedController implement
     // Bind the connection table to a list of connections
     bf.setBindingType( Binding.Type.ONE_WAY );
 
+    //CHECKSTYLE:LineLength:OFF
     try {
       bf.createBinding( dbConnectionList, "children", connectionsTable, "elements" ).fireSourceChanged();
       ( bindButtonNew = bf.createBinding( this, "repReadOnly", "connections-new", "disabled" ) ).fireSourceChanged();

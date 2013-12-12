@@ -114,8 +114,6 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
   private FormData fdlTimeOut, fdTimeOut, fdFields, fdUserName, fdURL, fdPassword, fdCondition;
 
-  private FormData fdlCondition, fdlInclRownum, fdRownum, fdInclRownumField, fdUseCompression, fdlUseCompression, fdQueryAll, fdlQueryAll;
-
   private Button wInclURL, wInclModule, wInclRownum, wUseCompression, wQueryAll;
 
   private FormData fdInclSQLField;
@@ -128,7 +126,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
   private Group wConnectionGroup, wSettingsGroup;
 
-  private Label wlInclTimestampField, wlInclTimestamp, wlUseCompression, wlQueryAll, wlInclDeletionDateField, wlInclDeletionDate;
+  private Label wlInclTimestampField, wlInclTimestamp, wlUseCompression;
+  private Label wlQueryAll, wlInclDeletionDateField, wlInclDeletionDate;
 
   private FormData fdlInclSQL, fdInclSQL, fdlInclSQLField, fdlInclDeletionDateField, fdlInclDeletionDate;
 
@@ -417,7 +416,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlCondition = new Label( wSettingsGroup, SWT.RIGHT );
     wlCondition.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.Condition.Label" ) );
     props.setLook( wlCondition );
-    fdlCondition = new FormData();
+    FormData fdlCondition = new FormData();
     fdlCondition.left = new FormAttachment( 0, -margin );
     fdlCondition.top = new FormAttachment( wModule, margin );
     fdlCondition.right = new FormAttachment( middle, -margin );
@@ -619,7 +618,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlQueryAll = new Label( wAdvancedGroup, SWT.RIGHT );
     wlQueryAll.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.QueryAll.Label" ) );
     props.setLook( wlQueryAll );
-    fdlQueryAll = new FormData();
+    FormData fdlQueryAll = new FormData();
     fdlQueryAll.left = new FormAttachment( 0, 0 );
     fdlQueryAll.top = new FormAttachment( wRecordsFilter, margin );
     fdlQueryAll.right = new FormAttachment( middle, -margin );
@@ -627,7 +626,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wQueryAll = new Button( wAdvancedGroup, SWT.CHECK );
     props.setLook( wQueryAll );
     wQueryAll.setToolTipText( BaseMessages.getString( PKG, "SalesforceInputDialog.QueryAll.Tooltip" ) );
-    fdQueryAll = new FormData();
+    FormData fdQueryAll = new FormData();
     fdQueryAll.left = new FormAttachment( middle, 0 );
     fdQueryAll.top = new FormAttachment( wRecordsFilter, margin );
     wQueryAll.setLayoutData( fdQueryAll );
@@ -930,7 +929,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlInclRownum = new Label( wAdditionalFields, SWT.RIGHT );
     wlInclRownum.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.InclRownum.Label" ) );
     props.setLook( wlInclRownum );
-    fdlInclRownum = new FormData();
+    FormData fdlInclRownum = new FormData();
     fdlInclRownum.left = new FormAttachment( 0, 0 );
     fdlInclRownum.top = new FormAttachment( wInclTimestampField, margin );
     fdlInclRownum.right = new FormAttachment( middle, -margin );
@@ -938,7 +937,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wInclRownum = new Button( wAdditionalFields, SWT.CHECK );
     props.setLook( wInclRownum );
     wInclRownum.setToolTipText( BaseMessages.getString( PKG, "SalesforceInputDialog.InclRownum.Tooltip" ) );
-    fdRownum = new FormData();
+    FormData fdRownum = new FormData();
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( wInclTimestampField, margin );
     wInclRownum.setLayoutData( fdRownum );
@@ -959,7 +958,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wInclRownumField = new TextVar( transMeta, wAdditionalFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wInclRownumField );
     wInclRownumField.addModifyListener( lsMod );
-    fdInclRownumField = new FormData();
+    FormData fdInclRownumField = new FormData();
     fdInclRownumField.left = new FormAttachment( wlInclRownumField, margin );
     fdInclRownumField.top = new FormAttachment( wInclTimestampField, margin );
     fdInclRownumField.right = new FormAttachment( 100, 0 );
@@ -1038,7 +1037,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlUseCompression = new Label( wContentComp, SWT.RIGHT );
     wlUseCompression.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.UseCompression.Label" ) );
     props.setLook( wlUseCompression );
-    fdlUseCompression = new FormData();
+    FormData fdlUseCompression = new FormData();
     fdlUseCompression.left = new FormAttachment( 0, 0 );
     fdlUseCompression.top = new FormAttachment( wTimeOut, margin );
     fdlUseCompression.right = new FormAttachment( middle, -margin );
@@ -1046,7 +1045,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wUseCompression = new Button( wContentComp, SWT.CHECK );
     props.setLook( wUseCompression );
     wUseCompression.setToolTipText( BaseMessages.getString( PKG, "SalesforceInputDialog.UseCompression.Tooltip" ) );
-    fdUseCompression = new FormData();
+    FormData fdUseCompression = new FormData();
     fdUseCompression.left = new FormAttachment( middle, 0 );
     fdUseCompression.top = new FormAttachment( wTimeOut, margin );
     wUseCompression.setLayoutData( fdUseCompression );

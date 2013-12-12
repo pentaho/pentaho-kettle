@@ -2907,6 +2907,7 @@ public class RepositoryExplorerDialog extends Dialog {
         }
       }
     } catch ( KettleException e ) {
+      //CHECKSTYLE:LineLength:OFF
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Title" ),
         BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message" ) + clusterName + "]", e );

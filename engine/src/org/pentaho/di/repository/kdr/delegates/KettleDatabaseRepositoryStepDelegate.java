@@ -344,6 +344,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     }
   }
 
+  //CHECKSTYLE:LineLength:OFF
   public synchronized ObjectId insertStep( ObjectId id_transformation, String name, String description,
     String steptype, boolean distribute, long copies, long gui_location_x, long gui_location_y,
     boolean gui_draw, String copiesString ) throws KettleException {

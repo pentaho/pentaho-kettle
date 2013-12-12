@@ -143,6 +143,7 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
   public static PerformanceLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     PerformanceLogTable table = new PerformanceLogTable( space, databasesInterface );
 
+    //CHECKSTYLE:LineLength:OFF
     table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString( PKG, "PerformanceLogTable.FieldName.BatchID" ), BaseMessages.getString( PKG, "PerformanceLogTable.FieldDescription.BatchID" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
     table.fields.add( new LogTableField( ID.SEQ_NR.id, true, false, "SEQ_NR", BaseMessages.getString( PKG, "PerformanceLogTable.FieldName.SeqNr" ), BaseMessages.getString( PKG, "PerformanceLogTable.FieldDescription.SeqNr" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
     table.fields.add( new LogTableField( ID.LOGDATE.id, true, false, "LOGDATE", BaseMessages.getString( PKG, "PerformanceLogTable.FieldName.LogDate" ), BaseMessages.getString( PKG, "PerformanceLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );

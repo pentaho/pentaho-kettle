@@ -372,7 +372,8 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
       FileDialog dialog = new FileDialog( shell, SWT.OPEN );
       dialog.setFilterExtensions( new String[] { "*.sas7bdat;*.SAS7BDAT", "*.*" } );
       dialog.setFilterNames( new String[] {
-        BaseMessages.getString( PKG, "SASInputDialog.FileType.SAS7BAT" ) + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+        BaseMessages.getString( PKG, "SASInputDialog.FileType.SAS7BAT" ) + ", "
+          + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
         BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
         BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
         BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );

@@ -281,7 +281,8 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getCrossReference( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5 ) throws SQLException {
+  public ResultSet getCrossReference( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5 )
+    throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
     rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );

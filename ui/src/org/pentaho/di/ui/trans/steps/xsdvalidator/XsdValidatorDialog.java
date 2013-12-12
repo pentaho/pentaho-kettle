@@ -62,7 +62,10 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private FormData fdResultField, fdlXMLStream, fdXMLStream, fdTabFolder, fdOutputStringField, fdlOutputStringField, fdlFilename, fdbFilename, fdFilename, fdValidationMsg, fdIfXMLValid, fdIfXMLUnValid, fdXSDSource, fdlXSDSource, fdXMLSourceFile, fdlXMLSourceFile, fdXSDDefinedColumn, fdlXSDDefinedColumn;
+  private FormData fdResultField, fdlXMLStream, fdXMLStream, fdTabFolder, fdOutputStringField;
+  private FormData fdlOutputStringField, fdlFilename, fdbFilename, fdFilename, fdValidationMsg;
+  private FormData fdIfXMLValid, fdIfXMLUnValid, fdXSDSource, fdlXSDSource, fdXMLSourceFile;
+  private FormData fdlXMLSourceFile, fdXSDDefinedColumn, fdlXSDDefinedColumn;
 
   private LabelTextVar wResultField, wValidationMsg, wIfXMLValid, wIfXMLUnValid;
 
@@ -70,7 +73,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
   private FormData fdlAddValidationMsg, fdAddValidationMsg;
 
-  private Label wlXMLStream, wlFilename, wlAddValidationMsg, wlOutputStringField, wlXSDSource, wlXMLSourceFile, wlXSDDefinedColumn;
+  private Label wlXMLStream, wlFilename, wlAddValidationMsg, wlOutputStringField;
+  private Label wlXSDSource, wlXMLSourceFile, wlXSDDefinedColumn;
 
   private Button wbbFilename, wAddValidationMsg, wOutputStringField, wXMLSourceFile;
 

@@ -299,6 +299,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
     input.allocate( nrfields );
 
     //CHECKSTYLE:Indentation:OFF
+    //CHECKSTYLE:LineLength:OFF
     for ( i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );

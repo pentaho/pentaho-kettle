@@ -122,7 +122,9 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       quote( KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP ), lookupkey, key );
   }
 
-  public synchronized ObjectId getDependencyID( ObjectId id_transformation, ObjectId id_database, String tablename ) throws KettleException {
+  public synchronized ObjectId getDependencyID( ObjectId id_transformation, ObjectId id_database, String tablename )
+    throws KettleException {
+
     String[] lookupkey =
       new String[] {
         quote( KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION ),
@@ -1292,6 +1294,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       + quote( KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANSFORMATION ) + " = ? ", id_transformation );
   }
 
+  //CHECKSTYLE:LineLength:OFF
   private synchronized void insertTransformation( TransMeta transMeta ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
 

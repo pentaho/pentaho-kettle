@@ -217,7 +217,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       log.logError( Const.getStackTracker( t ) );
       new ErrorDialog( jobHistoryComposite.getShell(),
         BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 
@@ -241,6 +242,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
 
       MessageBox mb = new MessageBox( jobGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+      //CHECKSTYLE:LineLength:OFF
       mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable ) );
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) );
       if ( mb.open() == SWT.YES ) {

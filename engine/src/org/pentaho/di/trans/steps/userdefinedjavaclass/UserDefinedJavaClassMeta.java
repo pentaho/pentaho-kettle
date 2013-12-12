@@ -485,7 +485,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       int nrScripts = rep.countNrStepAttributes( id_step, ElementNames.class_name.name() );
       for ( int i = 0; i < nrScripts; i++ ) {
         definitions.add( new UserDefinedJavaClassDef(
-          UserDefinedJavaClassDef.ClassType.valueOf( rep.getStepAttributeString( id_step, i, ElementNames.class_type.name() ) ),
+          UserDefinedJavaClassDef.ClassType.valueOf(
+            rep.getStepAttributeString( id_step, i, ElementNames.class_type.name() ) ),
           rep.getStepAttributeString( id_step, i, ElementNames.class_name.name() ),
           rep.getStepAttributeString( id_step, i, ElementNames.class_source.name() ) ) );
 

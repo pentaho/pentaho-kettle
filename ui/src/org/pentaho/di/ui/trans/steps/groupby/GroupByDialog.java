@@ -639,7 +639,8 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         new MessageDialogWithToggle( shell,
           BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.DialogTitle" ), null,
           BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.DialogMessage", Const.CR ) + Const.CR,
-          MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.Option1" ) },
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.Option1" ) },
           0,
           BaseMessages.getString( PKG, "GroupByDialog.GroupByWarningDialog.Option2" ), "N".equalsIgnoreCase(
             props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );

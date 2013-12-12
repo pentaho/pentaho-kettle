@@ -185,7 +185,9 @@ public class LDAPConnection {
     return ( GetPagingSize() > 0 );
   }
 
-  public void search( String searchBase, String filter, int limitRows, String[] attributeReturned, int searchScope ) throws KettleException {
+  public void search( String searchBase, String filter, int limitRows, String[] attributeReturned, int searchScope )
+    throws KettleException {
+
     // Set the Search base.This is the place where the search will
     setSearchBase( searchBase );
     setFilter( Const.NVL( correctFilter( filter ), DEFAUL_FILTER_STRING ) );

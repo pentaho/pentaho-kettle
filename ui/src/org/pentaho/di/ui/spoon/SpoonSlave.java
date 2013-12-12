@@ -211,22 +211,22 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
     sash.setLayout( new FillLayout() );
 
-    colinf =
-      new ColumnInfo[] {
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Copynr" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Read" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Written" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Input" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Output" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Updated" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Rejected" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Errors" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Active" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Time" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Speed" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.PriorityBufferSizes" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.CarteObjectId" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+    //CHECKSTYLE:LineLength:OFF
+    colinf = new ColumnInfo[] {
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Copynr" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Read" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Written" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Input" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Output" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Updated" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Rejected" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Errors" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Active" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Time" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.Speed" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.PriorityBufferSizes" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+      new ColumnInfo( BaseMessages.getString( PKG, "SpoonSlave.Column.CarteObjectId" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     colinf[1].setAllignement( SWT.RIGHT );
     colinf[2].setAllignement( SWT.RIGHT );

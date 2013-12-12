@@ -216,7 +216,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       log.logError( Const.getStackTracker( t ) );
       new ErrorDialog( transHistoryComposite.getShell(),
         BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ), new Exception( t ) );
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 
@@ -400,6 +401,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         LogTableField nameField = logTable.getNameField();
         LogTableField keyField = logTable.getKeyField();
 
+        //CHECKSTYLE:LineLength:OFF
         if ( nameField != null ) {
           if ( transMeta.isUsingAClusterSchema() ) {
             sql.append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " LIKE ?" );

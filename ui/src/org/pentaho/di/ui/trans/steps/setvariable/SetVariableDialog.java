@@ -366,7 +366,8 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
           BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.DialogTitle" ),
           null,
           BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.DialogMessage", Const.CR ) + Const.CR,
-          MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.Option1" ) },
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.Option1" ) },
           0,
           BaseMessages.getString( PKG, "SetVariableDialog.UsageWarning.Option2" ),
           "N".equalsIgnoreCase( props.getCustomParameter( STRING_USAGE_WARNING_PARAMETER, "Y" ) ) );

@@ -1171,6 +1171,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
         HashSet<String> attributeSet = new HashSet<String>();
 
+        //CHECKSTYLE:LineLength:OFF
         for ( LDIFRecord recordLDIF = InputLDIF.nextRecord(); recordLDIF != null; recordLDIF = InputLDIF.nextRecord() ) {
           // Get LDIF Content
           LDIFContent contentLDIF = recordLDIF.getContent();

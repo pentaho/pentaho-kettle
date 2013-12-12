@@ -131,6 +131,7 @@ public class KettleDatabaseRepositoryNotePadDelegate extends KettleDatabaseRepos
     }
   }
 
+  //CHECKSTYLE:LineLength:OFF
   public synchronized ObjectId insertNote( String note, long gui_location_x, long gui_location_y,
     long gui_location_width, long gui_location_height, String fontname, long fontsize, boolean fontbold,
     boolean fontitalic, long fontcolorred, long fontcolorgreen, long fontcolorblue, long fontbackcolorred,

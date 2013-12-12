@@ -1235,8 +1235,12 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
       }
 
     } catch ( Exception e ) {
-      displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
-        BaseMessages.getString( PKG, "JobExportRepository.ErrorGettingRepositories.DialogMessage" ) + Const.CR + ":" + e.getMessage(), true );
+      displayMsg(
+        BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+        BaseMessages.getString( PKG, "JobExportRepository.ErrorGettingRepositories.DialogMessage" )
+          + Const.CR
+          + ":" + e.getMessage(),
+        true );
     } finally {
       reps_info.clear();
     }

@@ -121,6 +121,7 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
     super.replaceMeta( logTable );
   }
 
+  //CHECKSTYLE:LineLength:OFF
   public static StepLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     StepLogTable table = new StepLogTable( space, databasesInterface );
 

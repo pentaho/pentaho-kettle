@@ -125,7 +125,8 @@ public class TransPreviewProgressDialog {
   }
 
   private void doPreview( final IProgressMonitor progressMonitor ) {
-    progressMonitor.beginTask( BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
+    progressMonitor.beginTask(
+      BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
 
     // This transformation is ready to run in preview!
     trans = new Trans( transMeta );

@@ -145,6 +145,7 @@ public class TransProfileFactory {
       //
       if ( valueMeta.isNumeric() ) {
         //CHECKSTYLE:Indentation:OFF
+        //CHECKSTYLE:LineLength:OFF
         for ( int c = 0; c < numericCalculations.length; c++ ) {
           statsMeta.getAggregateField()[calcIndex] = valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( numericCalculations[c] ) + ")";
           statsMeta.getSubjectField()[calcIndex] = valueMeta.getName();
@@ -157,6 +158,7 @@ public class TransProfileFactory {
       //
       if ( valueMeta.isString() ) {
         //CHECKSTYLE:Indentation:OFF
+        //CHECKSTYLE:LineLength:OFF
         for ( int c = 0; c < stringCalculations.length; c++ ) {
           statsMeta.getAggregateField()[calcIndex] = valueMeta.getName() + "(" + GroupByMeta.getTypeDesc( stringCalculations[c] ) + ")";
           statsMeta.getSubjectField()[calcIndex] = valueMeta.getName();

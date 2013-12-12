@@ -142,7 +142,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
   private TreeItem wTreeClassesItem;
   private Listener lsTree;
 
-  private Image imageActiveScript, imageInactiveScript, imageInputFields, imageOutputFields, imageArrowOrange, imageArrowGreen, imageUnderGreen;
+  private Image imageActiveScript, imageInactiveScript, imageInputFields, imageOutputFields;
+  private Image imageArrowOrange, imageArrowGreen, imageUnderGreen;
 
   private CTabFolder folder, wTabFolder;
   private Menu cMenu, tMenu;

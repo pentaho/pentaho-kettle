@@ -957,7 +957,9 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         + quote( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_CODE ) + " LIKE '" + codePrefix + "%'";
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), new LongObjectId( jobId ) );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ),
+      new LongObjectId( jobId ) );
 
     return database.getRows( sql, table.getRowMeta(), table.getData(), ResultSet.FETCH_FORWARD, false, 0, null );
   }
@@ -968,15 +970,18 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   // etc)
   //
 
-  public ObjectId saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, long nr, String code, String value ) throws KettleException {
+  public ObjectId saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry,
+    long nr, String code, String value ) throws KettleException {
     return saveJobEntryAttribute( code, nr, id_job, id_jobentry, 0.0, value );
   }
 
-  public ObjectId saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, long nr, String code, double value ) throws KettleException {
+  public ObjectId saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry,
+    long nr, String code, double value ) throws KettleException {
     return saveJobEntryAttribute( code, nr, id_job, id_jobentry, value, null );
   }
 
-  public ObjectId saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, long nr, String code, boolean value ) throws KettleException {
+  public ObjectId saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry,
+    long nr, String code, boolean value ) throws KettleException {
     return saveJobEntryAttribute( code, nr, id_job, id_jobentry, 0.0, value ? "Y" : "N" );
   }
 
@@ -991,6 +996,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     RowMetaAndData table = new RowMetaAndData();
 
+    //CHECKSTYLE:LineLength:OFF
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
     table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );

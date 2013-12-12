@@ -659,7 +659,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
           }
 
           dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) + ", " + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) + ", "
+              + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
             BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );

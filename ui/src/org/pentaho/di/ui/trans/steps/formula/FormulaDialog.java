@@ -376,7 +376,8 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
       String replaceField = item.getText( 6 );
 
       //CHECKSTYLE:Indentation:OFF
-      currentMeta.getFormula()[i] = new FormulaMetaFunction( fieldName, formula, valueType, valueLength, valuePrecision, replaceField );
+      currentMeta.getFormula()[i] = new FormulaMetaFunction( fieldName, formula, valueType,
+        valueLength, valuePrecision, replaceField );
     }
 
     if ( !originalMeta.equals( currentMeta ) ) {

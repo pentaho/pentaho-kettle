@@ -191,6 +191,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
     super.replaceMeta( logTable );
   }
 
+  //CHECKSTYLE:LineLength:OFF
   public static TransLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface,
     List<StepMeta> steps ) {
     TransLogTable table = new TransLogTable( space, databasesInterface, steps );

@@ -126,6 +126,7 @@ public class MetricsLogTable extends BaseLogTable implements Cloneable, LogTable
   public static MetricsLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     MetricsLogTable table = new MetricsLogTable( space, databasesInterface );
 
+    //CHECKSTYLE:LineLength:OFF
     table.fields.add( new LogTableField( ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.IdBatch" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.IdBatch" ), ValueMetaInterface.TYPE_INTEGER, 8 ) );
     table.fields.add( new LogTableField( ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.ChannelId" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.ChannelId" ), ValueMetaInterface.TYPE_STRING, 255 ) );
     table.fields.add( new LogTableField( ID.LOG_DATE.id, true, false, "LOG_DATE", BaseMessages.getString( PKG, "MetricsLogTable.FieldName.LogDate" ), BaseMessages.getString( PKG, "MetricsLogTable.FieldDescription.LogDate" ), ValueMetaInterface.TYPE_DATE, -1 ) );

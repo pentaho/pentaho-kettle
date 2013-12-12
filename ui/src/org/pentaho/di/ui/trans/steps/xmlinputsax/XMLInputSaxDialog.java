@@ -1090,7 +1090,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
         if ( !progressDialog.isCancelled() ) {
           PreviewRowsDialog prd = new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(),
-            progressDialog.getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ) );
+            progressDialog.getPreviewRowsMeta( wStepname.getText() ),
+            progressDialog.getPreviewRows( wStepname.getText() ) );
           prd.open();
         }
       }

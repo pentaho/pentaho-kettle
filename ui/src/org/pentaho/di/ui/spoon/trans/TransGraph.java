@@ -3056,6 +3056,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     int y2 = line[3];
 
     // Not in the square formed by these 2 points: ignore!
+    //CHECKSTYLE:LineLength:OFF
     if ( !( ( ( x >= x1 && x <= x2 ) || ( x >= x2 && x <= x1 ) ) && ( ( y >= y1 && y <= y2 ) || ( y >= y2 && y <= y1 ) ) ) ) {
       return false;
     }
@@ -3243,6 +3244,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
         spoon.sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
       } catch ( KettleException e ) {
+        //CHECKSTYLE:LineLength:OFF
         new ErrorDialog( spoon.getShell(),
           BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ),
           BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTabName( transMeta, true ) ), e );
@@ -4629,9 +4631,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             shell,
             BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged.Title" ),
             null,
-            BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged1.Message" ) + Const.CR + BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged2.Message" ) + Const.CR,
+            BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged1.Message" )
+              + Const.CR
+              + BaseMessages.getString( PKG, "TransLog.Dialog.FileHasChanged2.Message" )
+              + Const.CR,
             MessageDialog.QUESTION,
-            new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ), BaseMessages.getString( PKG, "System.Button.No" ) },
+            new String[] {
+              BaseMessages.getString( PKG, "System.Button.Yes" ),
+              BaseMessages.getString( PKG, "System.Button.No" ) },
             0,
             BaseMessages.getString( PKG, "TransLog.Dialog.Option.AutoSaveTransformation" ), spoon.props.getAutoSave() );
         int answer = md.open();

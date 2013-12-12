@@ -394,7 +394,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       String script = rep.getStepAttributeString( id_step, "script" );
       compatible = rep.getStepAttributeBoolean( id_step, 0, "compatible", true );

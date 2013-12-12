@@ -85,7 +85,6 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
   private Button wbSourceFileFolder, wbDestinationFileFolder, wbSourceDirectory, wbDestinationDirectory;
 
   private TextVar wSourceFileFolder;
-  private FormData fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder, fdbDestinationFileFolder, fdbSourceDirectory, fdbDestinationDirectory;
 
   private Label wlIncludeSubfolders;
   private Button wIncludeSubfolders;
@@ -427,7 +426,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wlSourceFileFolder = new Label( wGeneralComp, SWT.RIGHT );
     wlSourceFileFolder.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.SourceFileFolder.Label" ) );
     props.setLook( wlSourceFileFolder );
-    fdlSourceFileFolder = new FormData();
+    FormData fdlSourceFileFolder = new FormData();
     fdlSourceFileFolder.left = new FormAttachment( 0, 0 );
     fdlSourceFileFolder.top = new FormAttachment( wSettings, 2 * margin );
     fdlSourceFileFolder.right = new FormAttachment( middle, -margin );
@@ -437,7 +436,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wbSourceDirectory = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbSourceDirectory );
     wbSourceDirectory.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.BrowseFolders.Label" ) );
-    fdbSourceDirectory = new FormData();
+    FormData fdbSourceDirectory = new FormData();
     fdbSourceDirectory.right = new FormAttachment( 100, 0 );
     fdbSourceDirectory.top = new FormAttachment( wSettings, margin );
     wbSourceDirectory.setLayoutData( fdbSourceDirectory );
@@ -465,7 +464,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wbSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbSourceFileFolder );
     wbSourceFileFolder.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.BrowseFiles.Label" ) );
-    fdbSourceFileFolder = new FormData();
+    FormData fdbSourceFileFolder = new FormData();
     fdbSourceFileFolder.right = new FormAttachment( wbSourceDirectory, -margin );
     fdbSourceFileFolder.top = new FormAttachment( wSettings, margin );
     wbSourceFileFolder.setLayoutData( fdbSourceFileFolder );
@@ -485,7 +484,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 
     props.setLook( wSourceFileFolder );
     wSourceFileFolder.addModifyListener( lsMod );
-    fdSourceFileFolder = new FormData();
+    FormData fdSourceFileFolder = new FormData();
     fdSourceFileFolder.left = new FormAttachment( middle, 0 );
     fdSourceFileFolder.top = new FormAttachment( wSettings, 2 * margin );
     fdSourceFileFolder.right = new FormAttachment( wbSourceFileFolder, -55 );
@@ -527,7 +526,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wbDestinationDirectory = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbDestinationDirectory );
     wbDestinationDirectory.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.BrowseFolders.Label" ) );
-    fdbDestinationDirectory = new FormData();
+    FormData fdbDestinationDirectory = new FormData();
     fdbDestinationDirectory.right = new FormAttachment( 100, 0 );
     fdbDestinationDirectory.top = new FormAttachment( wSourceFileFolder, margin );
     wbDestinationDirectory.setLayoutData( fdbDestinationDirectory );
@@ -555,7 +554,7 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
     wbDestinationFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbDestinationFileFolder );
     wbDestinationFileFolder.setText( BaseMessages.getString( PKG, "JobPGPDecryptFiles.BrowseFiles.Label" ) );
-    fdbDestinationFileFolder = new FormData();
+    FormData fdbDestinationFileFolder = new FormData();
     fdbDestinationFileFolder.right = new FormAttachment( wbDestinationDirectory, -margin );
     fdbDestinationFileFolder.top = new FormAttachment( wSourceFileFolder, margin );
     wbDestinationFileFolder.setLayoutData( fdbDestinationFileFolder );

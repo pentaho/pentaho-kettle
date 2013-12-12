@@ -975,6 +975,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
         if ( description != null ) {
           if ( Validation.findValidation( selectionList, description ) != null ) {
             MessageBox messageBox = new MessageBox( shell, SWT.ICON_ERROR );
+            //CHECKSTYLE:LineLength:OFF
             messageBox.setText( BaseMessages.getString( PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Title" ) );
             messageBox.setMessage( BaseMessages.getString( PKG, "ValidatorDialog.ValidationRuleNameAlreadyExists.Message" ) );
             messageBox.open();

@@ -1278,7 +1278,10 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
       YamlInputMeta oneMeta = new YamlInputMeta();
       getInfo( oneMeta );
 
-      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(
+        transMeta,
+        oneMeta,
+        wStepname.getText() );
 
       EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
         BaseMessages.getString( PKG, "YamlInputDialog.NumberRows.DialogTitle" ),

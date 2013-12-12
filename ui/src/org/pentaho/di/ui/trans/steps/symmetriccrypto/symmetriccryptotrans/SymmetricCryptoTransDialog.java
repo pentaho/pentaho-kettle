@@ -71,7 +71,6 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
   private Button wReadKeyAsBinary;
   private FormData fdlReadKeyAsBinary, fdReadKeyAsBinary;
 
-  private FormData fdResultField, fdlMessage, fdField, fdTabFolder, fdlSecretKey, fdSecretKey, fdSecretKeyField, fdlSecretKeyField;
   private LabelTextVar wResultField;
   private CCombo wMessage, wSecretKeyField;
   private FormData fdlSecretKeyInField, fdSecretKeyInField;
@@ -268,7 +267,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wlSecretKey = new Label( wCryptoSettings, SWT.RIGHT );
     wlSecretKey.setText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.SecretKey.Label" ) );
     props.setLook( wlSecretKey );
-    fdlSecretKey = new FormData();
+    FormData fdlSecretKey = new FormData();
     fdlSecretKey.left = new FormAttachment( 0, 0 );
     fdlSecretKey.top = new FormAttachment( wScheme, 2 * margin );
     fdlSecretKey.right = new FormAttachment( middle, -margin );
@@ -279,7 +278,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wSecretKey.setToolTipText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.SecretKey.Tooltip" ) );
     wSecretKey.setEchoChar( '*' );
     wSecretKey.addModifyListener( lsMod );
-    fdSecretKey = new FormData();
+    FormData fdSecretKey = new FormData();
     fdSecretKey.left = new FormAttachment( middle, margin );
     fdSecretKey.right = new FormAttachment( 100, -margin );
     fdSecretKey.top = new FormAttachment( wScheme, 2 * margin );
@@ -316,7 +315,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wlSecretKeyField = new Label( wCryptoSettings, SWT.RIGHT );
     wlSecretKeyField.setText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.SecretKeyField.Label" ) );
     props.setLook( wlSecretKeyField );
-    fdlSecretKeyField = new FormData();
+    FormData fdlSecretKeyField = new FormData();
     fdlSecretKeyField.left = new FormAttachment( 0, 0 );
     fdlSecretKeyField.top = new FormAttachment( wSecretKeyInField, margin );
     fdlSecretKeyField.right = new FormAttachment( middle, -margin );
@@ -325,7 +324,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wSecretKeyField.setEditable( true );
     props.setLook( wSecretKeyField );
     wSecretKeyField.addModifyListener( lsMod );
-    fdSecretKeyField = new FormData();
+    FormData fdSecretKeyField = new FormData();
     fdSecretKeyField.left = new FormAttachment( middle, margin );
     fdSecretKeyField.top = new FormAttachment( wSecretKeyInField, margin );
     fdSecretKeyField.right = new FormAttachment( 100, -margin );
@@ -389,7 +388,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wlMessage = new Label( wMessageGroup, SWT.RIGHT );
     wlMessage.setText( BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.Field.Label" ) );
     props.setLook( wlMessage );
-    fdlMessage = new FormData();
+    FormData fdlMessage = new FormData();
     fdlMessage.left = new FormAttachment( 0, 0 );
     fdlMessage.top = new FormAttachment( wCryptoSettings, margin );
     fdlMessage.right = new FormAttachment( middle, -margin );
@@ -398,7 +397,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     wMessage.setEditable( true );
     props.setLook( wMessage );
     wMessage.addModifyListener( lsMod );
-    fdField = new FormData();
+    FormData fdField = new FormData();
     fdField.left = new FormAttachment( middle, margin );
     fdField.top = new FormAttachment( wCryptoSettings, margin );
     fdField.right = new FormAttachment( 100, -margin );
@@ -442,7 +441,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
       BaseMessages.getString( PKG, "SymmetricCryptoTransDialog.ResultField.Tooltip" ) );
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
-    fdResultField = new FormData();
+    FormData fdResultField = new FormData();
     fdResultField.left = new FormAttachment( 0, 0 );
     fdResultField.top = new FormAttachment( wMessageGroup, margin );
     fdResultField.right = new FormAttachment( 100, 0 );
@@ -496,7 +495,7 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
     // / END OF GENERAL TAB
     // ///////////////////////////////////////////////////////////
 
-    fdTabFolder = new FormData();
+    FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( wStepname, margin );
     fdTabFolder.right = new FormAttachment( 100, 0 );

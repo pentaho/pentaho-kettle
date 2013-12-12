@@ -986,10 +986,12 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
-        message += BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() ) + Const.CR;
+        message += BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.SomeSourceFieldsNotFound",
+          missingSourceFields.toString() ) + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
-        message += BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() ) + Const.CR;
+        message += BaseMessages.getString( PKG, "TableOutputDialog.DoMapping.SomeTargetFieldsNotFound",
+          missingSourceFields.toString() ) + Const.CR;
       }
       message += Const.CR;
       message +=

@@ -2905,14 +2905,21 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(
+      transMeta,
+      oneMeta,
+      wStepname.getText() );
 
     EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
       BaseMessages.getString( PKG, "TextFileInputDialog.PreviewSize.DialogTitle" ),
       BaseMessages.getString( PKG, "TextFileInputDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
-      TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+      TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(
+        shell,
+        previewMeta,
+        new String[] { wStepname.getText() },
+        new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();

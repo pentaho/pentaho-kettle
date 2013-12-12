@@ -231,7 +231,8 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
       LogChannel.GENERAL.logError( Const.getStackTracker( t ) );
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Title" ),
-        BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ), new Exception( t ) );
+        BaseMessages.getString( PKG, "ImportRulesDialog.Exception.ErrorReadingXULFile.Message", XUL_FILE_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 

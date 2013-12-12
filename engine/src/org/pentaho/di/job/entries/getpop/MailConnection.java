@@ -412,6 +412,7 @@ public class MailConnection {
       }
       if ( log.isDebug() ) {
         // display some infos on folder
+        //CHECKSTYLE:LineLength:OFF
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName() ) );
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder.getFullName() ) );
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName().toString() ) );
@@ -419,9 +420,9 @@ public class MailConnection {
       }
 
     } catch ( Exception e ) {
-      throw new KettleException(
-        defaultFolder ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder",
-          foldername ), e );
+      throw new KettleException( defaultFolder
+        ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" )
+        : BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
     }
   }
 

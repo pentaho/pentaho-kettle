@@ -522,6 +522,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     input.allocate( nrfields );
 
     //CHECKSTYLE:Indentation:OFF
+    //CHECKSTYLE:LineLength:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );

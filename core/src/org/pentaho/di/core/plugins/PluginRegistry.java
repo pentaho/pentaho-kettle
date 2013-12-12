@@ -125,7 +125,8 @@ public class PluginRegistry {
     }
   }
 
-  public synchronized void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin ) throws KettlePluginException {
+  public synchronized void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
+    throws KettlePluginException {
 
     boolean changed = false; // Is this an add or an update?
 

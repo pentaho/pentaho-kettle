@@ -1775,7 +1775,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     return jobEntryDelegate.insertJobEntry( id_job, jobEntryBase );
   }
 
-  public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases ) throws KettleException {
+  public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases )
+    throws KettleException {
     long id_database = getStepAttributeInteger( idStep, code );
     if ( id_database <= 0 ) {
       return null;

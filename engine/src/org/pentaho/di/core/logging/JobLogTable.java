@@ -153,6 +153,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     logSizeLimit = logTable.logSizeLimit;
   }
 
+  //CHECKSTYLE:LineLength:OFF
   public static JobLogTable getDefault( VariableSpace space, HasDatabasesInterface databasesInterface ) {
     JobLogTable table = new JobLogTable( space, databasesInterface );
 

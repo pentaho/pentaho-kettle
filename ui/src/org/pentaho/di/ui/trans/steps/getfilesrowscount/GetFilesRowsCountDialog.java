@@ -806,9 +806,9 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
           String[] files = fileInputList.getFileStrings();
 
           if ( files.length > 0 ) {
-            EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogTitle" ),
-                BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {

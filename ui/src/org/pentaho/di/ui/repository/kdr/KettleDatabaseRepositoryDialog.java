@@ -503,7 +503,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                 rep.connect( "admin", pwd, true );
                 goAhead = true;
               } catch ( KettleException e ) {
-                new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ),
+                new ErrorDialog( shell,
+                  BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Title" ),
                   BaseMessages.getString( PKG, "RepositoryDialog.Dialog.UnableToVerifyUser.Message" ), e );
               }
             }

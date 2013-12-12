@@ -608,11 +608,13 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
   }
 
-  protected static MapiSocket getMonetDBConnection( String host, int port, String user, String password, String db ) throws Exception {
+  protected static MapiSocket getMonetDBConnection( String host, int port,
+    String user, String password, String db ) throws Exception {
     return getMonetDBConnection( host, port, user, password, db, null );
   }
 
-  protected static MapiSocket getMonetDBConnection( String host, int port, String user, String password, String db, LogChannelInterface log ) throws Exception {
+  protected static MapiSocket getMonetDBConnection( String host, int port,
+    String user, String password, String db, LogChannelInterface log ) throws Exception {
     MapiSocket mserver = new MapiSocket();
     mserver.setDatabase( db );
     mserver.setLanguage( "sql" );
