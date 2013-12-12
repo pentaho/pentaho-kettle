@@ -143,7 +143,7 @@ public class RowMeta implements RowMetaInterface {
 
   @Override
   public boolean exists( ValueMetaInterface meta ) {
-    return searchValueMeta( meta.getName() ) != null;
+    return ( meta != null ) ? searchValueMeta( meta.getName() ) != null : false;
   }
 
   /**
@@ -154,10 +154,12 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public void addValueMeta( ValueMetaInterface meta ) {
-    if ( !exists( meta ) ) {
-      valueMetaList.add( meta );
-    } else {
-      valueMetaList.add( renameValueMetaIfInRow( meta ) );
+    if ( meta != null ) {
+      if ( !exists( meta ) ) {
+        valueMetaList.add( meta );
+      } else {
+        valueMetaList.add( renameValueMetaIfInRow( meta ) );
+      }
     }
   }
 
@@ -172,10 +174,12 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public void addValueMeta( int index, ValueMetaInterface meta ) {
-    if ( !exists( meta ) ) {
-      valueMetaList.add( index, meta );
-    } else {
-      valueMetaList.add( index, renameValueMetaIfInRow( meta ) );
+    if ( meta != null ) {
+      if ( !exists( meta ) ) {
+        valueMetaList.add( index, meta );
+      } else {
+        valueMetaList.add( index, renameValueMetaIfInRow( meta ) );
+      }
     }
   }
 
@@ -188,7 +192,11 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public ValueMetaInterface getValueMeta( int index ) {
-    return valueMetaList.get( index );
+   if ( ( index >= 0 ) && ( index < valueMetaList.size() ) ) {
+     return valueMetaList.get( index );
+   } else {
+     return null;
+   }
   }
 
   /**
@@ -201,7 +209,9 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public void setValueMeta( int index, ValueMetaInterface valueMeta ) {
-    valueMetaList.set( index, valueMeta );
+    if ( valueMeta != null ) {
+      valueMetaList.set( index, valueMeta );
+    }
   }
 
   /**
