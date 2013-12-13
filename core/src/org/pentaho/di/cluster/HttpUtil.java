@@ -2,10 +2,15 @@ package org.pentaho.di.cluster;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
@@ -21,7 +26,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 
 public class HttpUtil {
-  
+
+  public static final int ZIP_BUFFER_SIZE = 8192;
+
   public static String execService(VariableSpace space, String hostname, String port, String webAppName, String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts) throws Exception
   {
       // Prepare HTTP get
@@ -45,16 +52,7 @@ public class HttpUtil {
           }
           
           // the response
-          //
-          inputStream = method.getResponseBodyAsStream();
-          bufferedInputStream = new BufferedInputStream(inputStream, 1000);
-          
-          StringBuffer bodyBuffer = new StringBuffer();
-          int c;
-          while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
-
-          String body = bodyBuffer.toString();
-          
+          String body = method.getResponseBodyAsString();
           return body;
       }
       finally
@@ -71,7 +69,18 @@ public class HttpUtil {
       }
 
   }
-  
+
+  /**
+   * Returns http GET request string using specified parameters.
+   * 
+   * @param space
+   * @param hostname
+   * @param port
+   * @param webAppName
+   * @param serviceAndArguments
+   * @return
+   * @throws UnsupportedEncodingException
+   */
   public static String constructUrl(VariableSpace space, String hostname, String port, String webAppName, String serviceAndArguments) throws UnsupportedEncodingException
   {
       String realHostname = space.environmentSubstitute(hostname);
@@ -82,7 +91,7 @@ public class HttpUtil {
       retval = Const.replace(retval, " ", "%20");   
       return retval;
   }
-  
+
   public static String getPortSpecification(VariableSpace space, String port)
   {
       String realPort = space.environmentSubstitute(port);
@@ -131,25 +140,73 @@ public class HttpUtil {
     }
   }
 
-  public static String decodeBase64ZippedString(String loggingString64) throws IOException {
-    byte[] bytes = new byte[] {};
-    if (loggingString64!=null) bytes = Base64.decodeBase64(loggingString64.getBytes());
-    if (bytes.length>0)
-    {
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        GZIPInputStream gzip = new GZIPInputStream(bais);
-        int c;
-        StringBuffer buffer = new StringBuffer();
-        while ( (c=gzip.read())!=-1) buffer.append((char)c);
-        gzip.close();
-        
-        return buffer.toString();
+  /**
+   * Base 64 decode, unzip and extract text using {@link Const#XML_ENCODING} 
+   * predefined charset value for byte-wise multi-byte character handling. 
+   * 
+   * @param loggingString64 base64 zip archive string representation
+   * @return text from zip archive
+   * @throws IOException
+   */
+  public static String decodeBase64ZippedString( String loggingString64 ) throws IOException {
+    if ( loggingString64 == null || loggingString64.isEmpty() ) {
+      return "";
     }
-    else
-    {
-        return "";
-    }
+    StringWriter writer = new StringWriter();
+    //base 64 decode
+    byte[] bytes64 = Base64.decodeBase64( loggingString64.getBytes() );
+    //unzip to string encoding-wise
+    ByteArrayInputStream zip = new ByteArrayInputStream( bytes64 );
 
+    GZIPInputStream unzip = null;
+    InputStreamReader reader = null;
+    BufferedInputStream in = null;
+    try {
+      unzip = new GZIPInputStream( zip, HttpUtil.ZIP_BUFFER_SIZE );
+      in = new BufferedInputStream( unzip, HttpUtil.ZIP_BUFFER_SIZE );
+      //PDI-4325 originally used xml encoding in servlet
+      reader = new InputStreamReader( in, Const.XML_ENCODING );
+      writer = new StringWriter();
+
+      //use same buffer size
+      char[] buff = new char[HttpUtil.ZIP_BUFFER_SIZE];
+      for ( int length = 0; ( length = reader.read( buff ) ) > 0; ) {
+        writer.write( buff, 0, length );
+      }
+    } finally {
+      //close resources
+      if ( reader != null ) {
+        try {
+          reader.close();
+        } catch ( IOException e ) {
+          //Suppress
+        }
+      }
+      if ( in != null ) {
+        try {
+          in.close();
+        } catch ( IOException e ) {
+          //Suppress
+        }
+      }
+      if ( unzip != null ) {
+        try {
+          unzip.close();
+        } catch ( IOException e ) {
+          //Suppress
+        }
+      }
+    }
+    return writer.toString();
   }
-  
+
+  public static String encodeBase64ZippedString( String in ) throws IOException {
+    Charset charset = Charset.forName( Const.XML_ENCODING );
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    GZIPOutputStream gzos = new GZIPOutputStream( baos );
+    gzos.write( in.getBytes( charset ) );
+    gzos.close();
+
+    return new String( Base64.encodeBase64( baos.toByteArray() ) );
+  }  
 }
