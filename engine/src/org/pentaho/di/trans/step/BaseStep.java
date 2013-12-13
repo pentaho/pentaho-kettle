@@ -522,8 +522,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
                   schema.expandPartitionsDynamically(this.clusterSize, this);
                 }
 
-                String partID = schema.getPartitionIDs().get(partitionNr);
-                setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
+                final List<String> partitionIDList = schema.getPartitionIDs();
+                if ( partitionIDList.size() > 0 ) {
+                  String partID = partitionIDList.get(partitionNr);
+                  setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
+                } else {
+                  logError( "Unable to retrieve a partition id from the partition schema: " +
+                            partitionSchemaName );
+                  return false;
+                }
+
                 break;
               }
             }
@@ -535,8 +543,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         int partitionNr = stepcopy;
         String partitionNrString = new DecimalFormat("000").format(partitionNr);
         setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
-        String partitionID = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().get(partitionNr);
-        setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
+
+        final List<String> partitionIDList = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+        if (partitionIDList.size () > 0) {
+          String partitionID = partitionIDList.get(partitionNr);
+          setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
+        } else {
+          logError( "Unable to retrieve a partition id from the partition schema: " +
+                  stepMeta.getStepPartitioningMeta().getPartitionSchema() );
+          return false;
+        }
       }
     } else if (!Const.isEmpty(partitionID)) {
       setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
