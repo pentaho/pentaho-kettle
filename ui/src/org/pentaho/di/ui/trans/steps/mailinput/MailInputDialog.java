@@ -1371,6 +1371,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       wListmails.select( 0 ); // Retrieve All Mails
     }
 
+    wFirstmails.setText( input.getFirstMails() );
+
     wIMAPListmails.setText( MailConnectionMeta.getValueImapListDesc( input.getValueImapList() ) );
     if ( input.getFirstIMAPMails() != null ) {
       wIMAPFirstmails.setText( input.getFirstIMAPMails() );

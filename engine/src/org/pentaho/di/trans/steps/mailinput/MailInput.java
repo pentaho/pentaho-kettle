@@ -344,10 +344,11 @@ public class MailInput extends BaseStep implements StepInterface {
         data.mailConn.openFolder( false );
       }
 
-      if ( meta.useBatch() || ( !Const.isEmpty( meta.getFirstMails() )
-                                  && Integer.parseInt( meta.getFirstMails() ) > 0  ) ) {
+      if ( meta.useBatch() || ( !Const.isEmpty( environmentSubstitute( meta.getFirstMails() ) )
+                                  && Integer.parseInt( environmentSubstitute( meta.getFirstMails() ) ) > 0  ) ) {
         // get data by pieces
-        Integer batchSize = meta.useBatch() ? meta.getBatchSize() : Integer.parseInt( meta.getFirstMails() );
+        Integer batchSize = meta.useBatch() ? meta.getBatchSize()
+            : Integer.parseInt( environmentSubstitute( meta.getFirstMails() ) );
         Integer start = meta.useBatch() ? data.start : 1;
         Integer end = meta.useBatch() ? data.end : batchSize;
         data.folderIterator =
