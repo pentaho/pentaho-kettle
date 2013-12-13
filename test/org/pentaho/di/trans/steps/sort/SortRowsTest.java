@@ -25,6 +25,9 @@ package org.pentaho.di.trans.steps.sort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Date;
+
+import java.sql.Timestamp;
 
 import junit.framework.TestCase;
 
@@ -36,6 +39,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -103,8 +107,30 @@ public class SortRowsTest extends TestCase
 		}
 		return list;
 	}
-	
-	/**
+
+  public List<RowMetaAndData> createTimestampData() {
+    // Create 
+    long time = new Date().getTime();
+    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+
+    RowMetaInterface rm = createRowMetaInterface();
+    List<ValueMetaInterface> valueMetaList = new ArrayList<ValueMetaInterface>();
+
+    valueMetaList.add( new ValueMetaTimestamp( "KEY1" ) );
+    valueMetaList.add( new ValueMetaTimestamp( "KEY2" ) );
+    rm.setValueMetaList( valueMetaList );
+    Random rand = new Random();
+    for ( int idx = 0; idx < MAX_COUNT; idx++ ) {
+      int key1 = Math.abs( rand.nextInt() % 10000 );
+      int key2 = Math.abs( rand.nextInt() % 10000 );
+
+      Object[] r1 = new Object[] { new Timestamp( time + key1 ), new Timestamp( time + key2 )};
+      list.add( new RowMetaAndData( rm, r1 ) );
+    }
+    return list;
+  }
+
+  /**
 	 *  Check the list, the list has to be sorted. 
 	 */
 	public void checkRows(List<RowMetaAndData> rows, boolean ascending) throws Exception
@@ -338,5 +364,90 @@ public class SortRowsTest extends TestCase
                                      
         List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         checkRows(resultRows, false);
-    }        
+    }
+
+  /**
+   * Test case for sorting step .. ascending order on "timestamp" data.
+   */
+  public void testSortRows3() throws Exception {
+    KettleEnvironment.init();
+
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "sortrowstest" );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    // 
+    // create an injector step
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    // 
+    // Create a sort rows step
+    //
+    String sortRowsStepname = "sort rows step";
+    SortRowsMeta srm = new SortRowsMeta();
+    srm.setSortSize( Integer.toString( MAX_COUNT / 10 ) );
+    String[] sortFields = { "KEY1", "KEY2" };
+    boolean[] ascendingFields = { true, true };
+    boolean[] caseSensitive = { true, true };
+    boolean[] presortedFields = { false, false };
+
+    srm.setFieldName( sortFields );
+    srm.setAscending( ascendingFields );
+    srm.setCaseSensitive( caseSensitive );
+    srm.setPreSortedField( presortedFields );
+    srm.setPrefix( "SortRowsTest" );
+    srm.setDirectory( "." );
+
+    String sortRowsStepPid = registry.getPluginId( StepPluginType.class, srm );
+    StepMeta sortRowsStep = new StepMeta( sortRowsStepPid, sortRowsStepname, srm );
+    transMeta.addStep( sortRowsStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, sortRowsStep );
+    transMeta.addTransHop( hi );
+
+    // 
+    // Create a dummy step
+    //
+    String dummyStepname = "dummy step";
+    DummyTransMeta dm = new DummyTransMeta();
+
+    String dummyPid = registry.getPluginId( StepPluginType.class, dm );
+    StepMeta dummyStep = new StepMeta( dummyPid, dummyStepname, dm );
+    transMeta.addStep( dummyStep );
+
+    TransHopMeta hi3 = new TransHopMeta( sortRowsStep, dummyStep );
+    transMeta.addTransHop( hi3 );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+    StepInterface si = trans.getStepInterface( dummyStepname, 0 );
+    RowStepCollector dummyRc = new RowStepCollector();
+    si.addRowListener( dummyRc );
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createTimestampData();
+    for ( RowMetaAndData rm : inputList ) {
+       rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+    List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
+    checkRows( resultRows, true );
+  }
 }

@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import java.sql.Timestamp;
+
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.KettleEnvironment;
@@ -35,8 +37,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -56,33 +58,34 @@ public class ConstantTest extends TestCase
 	public RowMetaInterface createResultRowMetaInterface()
 	{
 		RowMetaInterface rm = new RowMeta();
-		
-		ValueMetaInterface valuesMeta[] = {			    
-			    new ValueMeta("boolean1",     ValueMeta.TYPE_BOOLEAN),
-			    new ValueMeta("boolean2",     ValueMeta.TYPE_BOOLEAN),
-			    new ValueMeta("boolean3",     ValueMeta.TYPE_BOOLEAN),
-			    new ValueMeta("boolean4",     ValueMeta.TYPE_BOOLEAN),
-			    new ValueMeta("boolean5",     ValueMeta.TYPE_BOOLEAN),
-			    new ValueMeta("boolean6",     ValueMeta.TYPE_BOOLEAN),
-			    new ValueMeta("boolean7",     ValueMeta.TYPE_BOOLEAN),
-			    new ValueMeta("string1",      ValueMeta.TYPE_STRING),
-			    new ValueMeta("string2",      ValueMeta.TYPE_STRING),
-			    new ValueMeta("string3",      ValueMeta.TYPE_STRING),
-			    new ValueMeta("integer1",     ValueMeta.TYPE_INTEGER),
-			    new ValueMeta("integer2",     ValueMeta.TYPE_INTEGER),
-			    new ValueMeta("integer3",     ValueMeta.TYPE_INTEGER),
-			    new ValueMeta("integer4",     ValueMeta.TYPE_INTEGER),
-			    new ValueMeta("number1",      ValueMeta.TYPE_NUMBER),
-			    new ValueMeta("number2",      ValueMeta.TYPE_NUMBER),
-			    new ValueMeta("number3",      ValueMeta.TYPE_NUMBER),
-			    new ValueMeta("number4",      ValueMeta.TYPE_NUMBER),
-	    };
-
-		for (int i=0; i < valuesMeta.length; i++ )
-		{
-			rm.addValueMeta(valuesMeta[i]);
+		try {
+		  ValueMetaInterface[] valuesMeta = {
+		    ValueMetaFactory.createValueMeta( "boolean1", ValueMetaInterface.TYPE_BOOLEAN ),
+		    ValueMetaFactory.createValueMeta( "boolean2", ValueMetaInterface.TYPE_BOOLEAN ),
+		    ValueMetaFactory.createValueMeta( "boolean3", ValueMetaInterface.TYPE_BOOLEAN ),
+		    ValueMetaFactory.createValueMeta( "boolean4", ValueMetaInterface.TYPE_BOOLEAN ),
+		    ValueMetaFactory.createValueMeta( "boolean5", ValueMetaInterface.TYPE_BOOLEAN ),
+		    ValueMetaFactory.createValueMeta( "boolean6", ValueMetaInterface.TYPE_BOOLEAN ),
+		    ValueMetaFactory.createValueMeta( "boolean7", ValueMetaInterface.TYPE_BOOLEAN ),
+		    ValueMetaFactory.createValueMeta( "string1", ValueMetaInterface.TYPE_STRING ),
+		    ValueMetaFactory.createValueMeta( "string2", ValueMetaInterface.TYPE_STRING ),
+		    ValueMetaFactory.createValueMeta( "string3", ValueMetaInterface.TYPE_STRING ),
+		    ValueMetaFactory.createValueMeta( "integer1", ValueMetaInterface.TYPE_INTEGER ),
+		    ValueMetaFactory.createValueMeta( "integer2", ValueMetaInterface.TYPE_INTEGER ),
+		    ValueMetaFactory.createValueMeta( "integer3", ValueMetaInterface.TYPE_INTEGER ),
+		    ValueMetaFactory.createValueMeta( "integer4", ValueMetaInterface.TYPE_INTEGER ),
+		    ValueMetaFactory.createValueMeta( "number1", ValueMetaInterface.TYPE_NUMBER ),
+		    ValueMetaFactory.createValueMeta( "number2", ValueMetaInterface.TYPE_NUMBER ),
+		    ValueMetaFactory.createValueMeta( "number3", ValueMetaInterface.TYPE_NUMBER ),
+		    ValueMetaFactory.createValueMeta( "number4", ValueMetaInterface.TYPE_NUMBER ),
+		    ValueMetaFactory.createValueMeta( "timestamp1", ValueMetaInterface.TYPE_TIMESTAMP )
+		  };
+		  for ( int i = 0; i < valuesMeta.length; i++ ) {
+		    rm.addValueMeta( valuesMeta[i] );
+		  }
+		} catch ( Exception ex ) {
+		  return null;
 		}
-		
 		return rm;
 	}
 	
@@ -93,11 +96,13 @@ public class ConstantTest extends TestCase
 		RowMetaInterface rm = createResultRowMetaInterface();
 		
 		Object[] r1  = new Object[] { Boolean.TRUE, Boolean.FALSE, Boolean.FALSE,
-				                      Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null,
-				                      "AAAAAAAAAAAAAA", "   ", null,
-				                      Long.valueOf(-100L), Long.valueOf(0L), Long.valueOf(212L), null,
-				                      new Double(-100.2), new Double(0.0), new Double(212.23), null};
-		
+      Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null,
+      "AAAAAAAAAAAAAA", "   ", null,
+      Long.valueOf(-100L), Long.valueOf(0L), Long.valueOf(212L), null,
+      new Double(-100.2), new Double(0.0), new Double(212.23), null,
+      Timestamp.valueOf("1970-01-01 00:00:00.000")
+    };
+
 		list.add(new RowMetaAndData(rm, r1));
 		
 		return list;
@@ -222,6 +227,7 @@ public class ConstantTest extends TestCase
         		                  "number2",
         		                  "number3",
         		                  "number4",
+                              "timestamp1"
         		                };
         String type1[]        = { "boolean",
         		                  "Boolean",
@@ -240,7 +246,9 @@ public class ConstantTest extends TestCase
         		                  "number",
         		                  "number",
         		                  "number",
-        		                  "number"};
+        		                  "number",
+                              "timestamp"
+        		                  };
         String value1[]       = { "Y",
         		                  "T",
         		                  "a",
@@ -252,7 +260,9 @@ public class ConstantTest extends TestCase
         		                  "   ",
         		                  "",
         		                  "-100", "0", "212", "",
-        		                  "-100.2", "0.0", "212.23", ""};
+        		                  "-100.2", "0.0", "212.23", "",
+        		                  "1970-01-01 00:00:00.000"
+        		                  };
         String fieldFormat1[] = { "", "", "", "", "", "", "", "", "", "",
         		                  "", "", "", "", "", "", "", ""};
         String group1[]       = { "", "", "", "", "", "", "", "", "", "", 

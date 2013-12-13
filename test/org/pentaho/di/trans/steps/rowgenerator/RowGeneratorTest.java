@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import java.sql.Timestamp;
+
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.KettleEnvironment;
@@ -37,6 +39,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -44,7 +47,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
-
 
 /**
  * Test class for the RowGenerator step.
@@ -63,6 +65,7 @@ public class RowGeneratorTest extends TestCase
 			    new ValueMeta("string",  ValueMeta.TYPE_STRING),
 			    new ValueMeta("boolean", ValueMeta.TYPE_BOOLEAN),
 			    new ValueMeta("integer", ValueMeta.TYPE_INTEGER),
+          new ValueMeta("timestamp", ValueMeta.TYPE_TIMESTAMP)
 	    };
 
 		for (int i=0; i < valuesMeta.length; i++ )
@@ -80,7 +83,7 @@ public class RowGeneratorTest extends TestCase
 		RowMetaInterface rm = createRowMetaInterface();
 		
 		Object[] r1 = new Object[] { "string_value", Boolean.TRUE, 
-				                     new Long(20L)};
+				                     new Long(20L), Timestamp.valueOf("1970-01-01 00:00:00.000")};
 		
 		list.add(new RowMetaAndData(rm, r1));
 		list.add(new RowMetaAndData(rm, r1));
@@ -89,50 +92,47 @@ public class RowGeneratorTest extends TestCase
 		return list;					
 	}
 
-	/**
-	 *  Check the 2 lists comparing the rows in order.
-	 *  If they are not the same fail the test. 
-	 */
-    public void checkRows(List<RowMetaAndData> rows1, List<RowMetaAndData> rows2)
-    {
-    	int idx = 1;
-        if ( rows1.size() != rows2.size() )
-        {
-        	fail("Number of rows is not the same: " + 
-          		 rows1.size() + " and " + rows2.size());
-        }
-        Iterator<RowMetaAndData> it1 = rows1.iterator();
-        Iterator<RowMetaAndData> it2 = rows2.iterator();
-        
-        while ( it1.hasNext() && it2.hasNext() )
-        {
-        	RowMetaAndData rm1 = it1.next();
-        	RowMetaAndData rm2 = it2.next();
-        	
-        	Object[] r1 = rm1.getData();
-        	Object[] r2 = rm2.getData();
-        	
-        	if ( rm1.size() != rm2.size() )
-        	{
-        		fail("row nr " + idx + " is not equal");
-        	}
-        	int fields[] = new int[rm1.size()];
-        	for ( int ydx = 0; ydx < rm1.size(); ydx++ )
-        	{
-        		fields[ydx] = ydx;
-        	}
-            try {
-				if ( rm1.getRowMeta().compare(r1, r2, fields) != 0 )
-				{
-					fail("row nr " + idx + "is not equal");
-				}
-			} catch (KettleValueException e) {
-				fail("row nr " + idx + "is not equal");
-			}
-            	
-            idx++;
-        }
+  /**
+   *  Check the 2 lists comparing the rows in order.
+   *  If they are not the same fail the test. 
+   */
+  public void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2 ) {
+    int idx = 1;
+    if ( rows1.size() != rows2.size() ) {
+      fail( "Number of rows is not the same: " + rows1.size() + " and " + rows2.size() );
     }
+    Iterator<RowMetaAndData> it1 = rows1.iterator();
+    Iterator<RowMetaAndData> it2 = rows2.iterator();
+
+    while ( it1.hasNext() && it2.hasNext() ) {
+      RowMetaAndData rm1 = it1.next();
+      RowMetaAndData rm2 = it2.next();
+
+      Object[] r1 = rm1.getData();
+      Object[] r2 = rm2.getData();
+
+      if ( rm1.size() != rm2.size() ) {
+        fail( "row size of row at " + idx + " is not equal (" + rm1.size() + "," + rm2.size() + ")" );
+      }
+      int[] fields = new int[1];
+      for ( int ydx = 0; ydx < rm1.size(); ydx++ ) {
+        fields[0] = ydx;
+        try {
+          if ( rm1.getRowMeta().compare( r1, r2, fields ) != 0 ) {
+            fail( "row nr " + idx + " is not equal at field nr " + ydx + "(" + rm1.toString() + ";" + rm2.toString() + ")");
+          }
+        } catch ( KettleValueException e ) {
+          fail( 
+            "row nr " + idx + " is not equal at field nr " + ydx
+            + "(" + rm1.getRowMeta().getValueMeta(ydx).toString() + ";" + rm2.getRowMeta().getValueMeta(ydx).toString() + ")"
+            + "(" + rm1.getRowMeta().getValueMeta(ydx).getClass().getName() + ";" + rm2.getRowMeta().getValueMeta(ydx).getClass().getName() + ")"
+          );
+        }
+      }
+
+      idx++;
+    }
+  }
 	
    	
 	/**
@@ -164,15 +164,15 @@ public class RowGeneratorTest extends TestCase
         //
         // Do the following specs 3 times.
         //
-        String fieldName[]   = { "string", "boolean", "integer" };
-        String type[]        = { "String", "Boolean", "Integer" };
-        String value[]       = { "string_value", "true", "20"   };
-        String fieldFormat[] = { "", "", ""  };
-        String group[]       = { "", "", ""  };
-        String decimal[]     = { "", "", ""  };
-        String currency[]     = { "", "", ""  };
-        int    intDummies[]  = { -1, -1, -1 };
-        boolean    setEmptystring[]  = { false, false, false};
+        String fieldName[]   = { "string", "boolean", "integer", "timestamp"};
+        String type[]        = { "String", "Boolean", "Integer", "Timestamp"};
+        String value[]       = { "string_value", "true", "20", "1970-01-01 00:00:00.000"};
+        String fieldFormat[] = { "", "", "", ""};
+        String group[]       = { "", "", "", ""};
+        String decimal[]     = { "", "", "", ""};
+        String currency[]     = { "", "", "", ""};
+        int    intDummies[]  = { -1, -1, -1, -1};
+        boolean    setEmptystring[]  = { false, false, false, false};
                 
         rm.setDefault();
         rm.setFieldName(fieldName);

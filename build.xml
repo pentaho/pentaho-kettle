@@ -699,6 +699,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.constant.ConstantTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.calculator.CalculatorTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.csvinput.CsvInput1Test"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.csvinput.CsvInput2Test"

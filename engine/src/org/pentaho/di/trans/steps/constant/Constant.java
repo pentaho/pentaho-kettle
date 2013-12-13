@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.constant;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -35,6 +36,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -76,7 +78,14 @@ public class Constant extends BaseStep implements StepInterface
             int valtype = ValueMeta.getType(meta.getFieldType()[i]); 
             if (meta.getFieldName()[i]!=null)
             {
-                ValueMetaInterface value=new ValueMeta(meta.getFieldName()[i], valtype); // build a value!
+                ValueMetaInterface value = null;
+                // build a value!
+                try {
+                  value = ValueMetaFactory.createValueMeta( meta.getFieldName()[i], valtype );
+                } catch ( Exception exception ) {
+                  remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, exception.getMessage(), null ) );
+                  continue;
+                }
                 value.setLength(meta.getFieldLength()[i]);
                 value.setPrecision(meta.getFieldPrecision()[i]);
                 
@@ -182,7 +191,17 @@ public class Constant extends BaseStep implements StepInterface
 	                    case ValueMetaInterface.TYPE_BINARY:                    
 	                        rowData[i] = stringValue.getBytes();                        
 	                        break;                        
-	                        
+	                    case ValueMetaInterface.TYPE_TIMESTAMP:
+	                        try {
+	                          rowData[i] = Timestamp.valueOf( stringValue );
+	                        } catch ( Exception e ) {
+	                          String message = BaseMessages.getString(
+	                              PKG, "Constant.BuildRow.Error.Parsing.Timestamp", value.getName(),
+	                              stringValue, e.toString() 
+	                          );
+	                          remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
+	                        }
+	                        break;
 	                    default:
 	                        String message = BaseMessages.getString(PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue);
 	                        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
