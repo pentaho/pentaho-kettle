@@ -95,7 +95,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
   private FormData fdlTable, fdbTable, fdTable;
 
   private Label wlCommit;
-  private Text wCommit;
+  private TextVar wCommit;
   private FormData fdlCommit, fdCommit;
 
   private DeleteMeta input;
@@ -242,7 +242,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
     fdlCommit.top = new FormAttachment( wTable, margin );
     fdlCommit.right = new FormAttachment( middle, -margin );
     wlCommit.setLayoutData( fdlCommit );
-    wCommit = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wCommit = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wCommit );
     wCommit.addModifyListener( lsMod );
     fdCommit = new FormData();
@@ -422,7 +422,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
       logDebug( BaseMessages.getString( PKG, "DeleteDialog.Log.GettingKeyInfo" ) );
     }
 
-    wCommit.setText( "" + input.getCommitSize() );
+    wCommit.setText( input.getCommitSize() );
 
     if ( input.getKeyStream() != null ) {
       for ( int i = 0; i < input.getKeyStream().length; i++ ) {
@@ -518,7 +518,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
 
     inf.allocate( nrkeys );
 
-    inf.setCommitSize( Const.toInt( wCommit.getText(), 0 ) );
+    inf.setCommitSize( wCommit.getText() );
 
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "DeleteDialog.Log.FoundKeys", String.valueOf( nrkeys ) ) );
