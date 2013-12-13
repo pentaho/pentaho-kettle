@@ -119,7 +119,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         } else {
           data.subjectnrs[i] = data.inputRowMeta.indexOfValue( meta.getSubjectField()[i] );
         }
-        if ( data.subjectnrs[i] < 0 ) {
+        if ( ( r != null ) && ( data.subjectnrs[i] < 0 ) ) {
           logError( BaseMessages.getString( PKG, "GroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
             .getSubjectField()[i] ) );
           setErrors( 1 );
@@ -152,7 +152,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       data.groupnrs = new int[meta.getGroupField().length];
       for ( int i = 0; i < meta.getGroupField().length; i++ ) {
         data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
-        if ( data.groupnrs[i] < 0 ) {
+        if ( ( r != null ) && ( data.groupnrs[i] < 0 ) ) {
           logError( BaseMessages.getString( PKG, "GroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
           setErrors( 1 );
           stopAll();
@@ -623,9 +623,10 @@ public class GroupBy extends BaseStep implements StepInterface {
           break;
       }
 
-      if ( meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ALL
+      if ( ( subjMeta != null )
+        && ( meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ALL
         && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_DISTINCT
-        && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ANY ) {
+        && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ANY ) ) {
         vMeta.setLength( subjMeta.getLength(), subjMeta.getPrecision() );
       }
       if ( v != null ) {
