@@ -26,6 +26,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.pentaho.di.core.row.value.ValueMetaString;
+
 import junit.framework.TestCase;
 
 /**
@@ -186,6 +188,87 @@ public class ValueMetaTest extends TestCase {
 
     assertEquals( originalValue, x );
   }
+  
+  public void testDateStringDL8601() throws Exception {
+    TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
+
+    ValueMetaInterface datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'Z" );
+    try {
+      Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000Z" );
+    } catch ( Exception ex ) {
+      fail();
+    }
+
+    datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'Z" );
+    try {
+      Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000+01:00" );
+    } catch ( Exception ex ) {
+      fail();
+    }
+
+    datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH-mm-ss'.000'Z" );
+    try {
+      Date res = datValueMeta.getDate( "2008-03-09T02-34-54.000-01:00" );
+    } catch ( Exception ex ) {
+      fail();
+    }
+  }
+
+  public void testDateStringUTC() throws Exception {
+    TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
+
+    ValueMetaInterface datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'Z" );
+    try {
+      Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000UTC" );
+    } catch ( Exception ex ) {
+      fail();
+    }
+  }
+
+  public void testDateStringOffset() throws Exception {
+    TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
+
+    ValueMetaInterface datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'Z" );
+    try {
+      Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000-0100" );
+    } catch ( Exception ex ) {
+      fail();
+    }
+    datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'Z" );
+    try {
+      Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000+0100" );
+    } catch ( Exception ex ) {
+      fail();
+    }
+  }
+
+  public void testDateString8601() throws Exception {
+    TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Kaliningrad" ) );
+
+    ValueMetaInterface datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000Z'" );
+    try {
+      Date res = datValueMeta.getDate( "2011-03-13T02:23:18.000Z" );
+    } catch ( Exception ex ) {
+      fail();
+    }
+
+    TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
+    datValueMeta = new ValueMetaString();
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000Z'" );
+    try {
+      Date res = datValueMeta.getDate( "2011-03-13T02:23:18.000Z" );
+      fail();
+    } catch ( Exception ex ) {
+    }
+  }
+
 
   public void testConvertDataDate() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "CET" ) );
