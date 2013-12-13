@@ -149,6 +149,11 @@ public class RowGenerator extends BaseStep implements StepInterface {
                   remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                 }
                   break;
+                case ValueMetaInterface.TYPE_TIMESTAMP: {
+                  String message = BaseMessages.getString( PKG, "RowGenerator.BuildRow.Error.Parsing.Timestamp",
+                      valueMeta.getName(), stringValue, e.toString() );
+                  remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
+                }
                 default:
                 // Boolean and binary don't throw errors normally, so it's probably an unspecified error problem...
                 {

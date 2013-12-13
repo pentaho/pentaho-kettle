@@ -34,6 +34,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -256,7 +257,8 @@ public class Calculator extends BaseStep implements StepInterface
                     metaC = data.calcRowMeta.getValueMeta( data.fieldIndexes[i].indexC );
                     dataC = calcData[ data.fieldIndexes[i].indexC ];
                 }
-                
+
+                int calcType = fn.getCalcType();
                 //The data types are those of the first argument field, convert to the target field.
                 // Exceptions: 
                 //  - multiply can be string
@@ -274,7 +276,7 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_NONE;
                 }
                                 
-                switch(fn.getCalcType())
+                switch( calcType )
                 {
                 case CalculatorMetaFunction.CALC_NONE: 
                     break;
@@ -351,30 +353,30 @@ public class Calculator extends BaseStep implements StepInterface
                         calcData[index] = ValueDataUtil.round(metaA, dataA, metaB, dataB);
                     }
                     break;
-				case CalculatorMetaFunction.CALC_ROUND_STD_1: // ROUND( A )
-					{
-						calcData[index] = ValueDataUtil.round(metaA, dataA, java.math.BigDecimal.ROUND_HALF_UP);
-					}
-					break;
-				case CalculatorMetaFunction.CALC_ROUND_STD_2: // ROUND( A , B )
-					{
-						calcData[index] = ValueDataUtil.round(metaA, dataA, metaB, dataB, java.math.BigDecimal.ROUND_HALF_UP);
-					}
-					break;
-            	case CalculatorMetaFunction.CALC_CEIL                    : // CEIL( A )
-            	    {
-            	        calcData[index] = ValueDataUtil.ceil(metaA, dataA);
-            	    }
-            	    break;
-            	case CalculatorMetaFunction.CALC_FLOOR                    : // FLOOR( A )
-            	    {
-            	        calcData[index] = ValueDataUtil.floor(metaA, dataA);
-            	    }
-            	    break;
+                case CalculatorMetaFunction.CALC_ROUND_STD_1: // ROUND( A )
+                  {
+                    calcData[index] = ValueDataUtil.round(metaA, dataA, java.math.BigDecimal.ROUND_HALF_UP);
+                  }
+                  break;
+                case CalculatorMetaFunction.CALC_ROUND_STD_2: // ROUND( A , B )
+                  {
+                    calcData[index] = ValueDataUtil.round(metaA, dataA, metaB, dataB, java.math.BigDecimal.ROUND_HALF_UP);
+                  }
+                  break;
+                case CalculatorMetaFunction.CALC_CEIL                    : // CEIL( A )
+                    {
+                        calcData[index] = ValueDataUtil.ceil(metaA, dataA);
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_FLOOR                    : // FLOOR( A )
+                    {
+                        calcData[index] = ValueDataUtil.floor(metaA, dataA);
+                    }
+                    break;
                 case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                     {
                         calcData[index] = fn.getFieldA(); // A string
-                        resultType = ValueMetaInterface.TYPE_STRING;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
@@ -385,131 +387,134 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_ADD_DAYS           : // Add B days to date field A
                     {
                         calcData[index] = ValueDataUtil.addDays(metaA, dataA, metaB, dataB);
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_ADD_HOURS           : // Add B hours to date field A
-                {
-                    calcData[index] = ValueDataUtil.addHours(metaA, dataA, metaB, dataB);
-                }
-                	break;
+                    {
+                        calcData[index] = ValueDataUtil.addHours(metaA, dataA, metaB, dataB);
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
+                    }
+                    break;
                 case CalculatorMetaFunction.CALC_ADD_MINUTES           : // Add B minutes to date field A
-                {
-                    calcData[index] = ValueDataUtil.addMinutes(metaA, dataA, metaB, dataB);
-                }
-                	break;
+                    {
+                        calcData[index] = ValueDataUtil.addMinutes(metaA, dataA, metaB, dataB);
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
+                    }
+                    break;
                case CalculatorMetaFunction.CALC_YEAR_OF_DATE           : // What is the year (Integer) of a date?
                     {
                         calcData[index] = ValueDataUtil.yearOfDate(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
                     {
                         calcData[index] = ValueDataUtil.monthOfDate(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
                     {
                         calcData[index] = ValueDataUtil.dayOfYear(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_MONTH           : // What is the day of month (Integer) of a date?
                     {
                         calcData[index] = ValueDataUtil.dayOfMonth(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_WEEK           : // What is the day of week (Integer) of a date?
                     {
                         calcData[index] = ValueDataUtil.dayOfWeek(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_WEEK_OF_YEAR    : // What is the week of year (Integer) of a date?
                     {
                         calcData[index] = ValueDataUtil.weekOfYear(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_WEEK_OF_YEAR_ISO8601   : // What is the week of year (Integer) of a date ISO8601 style?
                     {
                         calcData[index] = ValueDataUtil.weekOfYearISO8601(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;                    
                 case CalculatorMetaFunction.CALC_YEAR_OF_DATE_ISO8601     : // What is the year (Integer) of a date ISO8601 style?
                     {
                         calcData[index] = ValueDataUtil.yearOfDateISO8601(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_INTEGER;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_BYTE_TO_HEX_ENCODE   : // Byte to Hex encode string field A
                     {
                         calcData[index] = ValueDataUtil.byteToHexEncode(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_STRING;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_HEX_TO_BYTE_DECODE   : // Hex to Byte decode string field A
                     {
                         calcData[index] = ValueDataUtil.hexToByteDecode(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_STRING;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 
                 case CalculatorMetaFunction.CALC_CHAR_TO_HEX_ENCODE   : // Char to Hex encode string field A
                     {
                         calcData[index] = ValueDataUtil.charToHexEncode(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_STRING;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
                     break;
                 case CalculatorMetaFunction.CALC_HEX_TO_CHAR_DECODE   : // Hex to Char decode string field A
                     {
                         calcData[index] = ValueDataUtil.hexToCharDecode(metaA, dataA);
-                        resultType=ValueMetaInterface.TYPE_STRING;
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                     }
-                    break;    
+                    break;
                 case CalculatorMetaFunction.CALC_CRC32   : // CRC32
-	                {
-	                    calcData[index] = ValueDataUtil.ChecksumCRC32(metaA, dataA);
-	                    resultType=ValueMetaInterface.TYPE_INTEGER;
-	                }
+                    {
+                        calcData[index] = ValueDataUtil.ChecksumCRC32(metaA, dataA);
+                        resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
+                    }
                 break;  
                 case CalculatorMetaFunction.CALC_ADLER32   : // ADLER32
                 {
                     calcData[index] = ValueDataUtil.ChecksumAdler32(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_MD5   : // MD5
                 {
                     calcData[index] = ValueDataUtil.createChecksum(metaA, dataA,"MD5");
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_SHA1   : // SHA-1
                 {
                     calcData[index] = ValueDataUtil.createChecksum(metaA, dataA,"SHA-1");
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE  : // LEVENSHTEIN DISTANCE 
                 {
                     calcData[index] = ValueDataUtil.getLevenshtein_Distance(metaA, dataA,metaB, dataB);
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_METAPHONE  : // METAPHONE 
                 {
                     calcData[index] = ValueDataUtil.get_Metaphone(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_DOUBLE_METAPHONE  : // Double METAPHONE 
                 {
                     calcData[index] = ValueDataUtil.get_Double_Metaphone(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_ABS            :  // ABS( A )
@@ -525,7 +530,7 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_DATE_DIFF                :  // DateA - DateB
                 {
                     calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "d");
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_ADD3                :  // A + B + C
@@ -537,228 +542,229 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_INITCAP            :  // InitCap( A )
                 {
                     calcData[index] = ValueDataUtil.initCap(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_UPPER_CASE            :  // UpperCase( A )
                 {
                     calcData[index] = ValueDataUtil.upperCase(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_LOWER_CASE            :  // UpperCase( A )
                 {
                     calcData[index] = ValueDataUtil.lowerCase(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_MASK_XML            :  // escapeXML( A )
                 {
                     calcData[index] = ValueDataUtil.escapeXML(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_USE_CDATA           :  // CDATA( A )
                 {
                     calcData[index] = ValueDataUtil.useCDATA(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_REMOVE_CR           :  // REMOVE CR FROM A 
                 {
                     calcData[index] = ValueDataUtil.removeCR(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_REMOVE_LF          :  // REMOVE LF FROM A 
                 {
                     calcData[index] = ValueDataUtil.removeLF(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_REMOVE_CRLF          :  // REMOVE CRLF FROM A 
                 {
                     calcData[index] = ValueDataUtil.removeCRLF(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_REMOVE_TAB          :  // REMOVE TAB FROM A 
                 {
                     calcData[index] = ValueDataUtil.removeTAB(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_GET_ONLY_DIGITS          :  // GET ONLY DIGITS FROM A 
                 {
                     calcData[index] = ValueDataUtil.getDigits(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_REMOVE_DIGITS          :  // REMOVE DIGITS FROM A 
                 {
                     calcData[index] = ValueDataUtil.removeDigits(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_STRING_LEN          :  // RETURN THE LENGTH OF A 
                 {
                     calcData[index] = ValueDataUtil.stringLen(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_INTEGER; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_LOAD_FILE_CONTENT_BINARY   :  // LOAD CONTENT OF A FILE A IN A BLOB 
                 {
                     calcData[index] = ValueDataUtil.loadFileContentInBinary(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_BINARY; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_ADD_TIME_TO_DATE          : // Add time B to a date A
                 {
                     calcData[index] = ValueDataUtil.addTimeToDate(metaA, dataA,metaB, dataB,metaC, dataC);
-                    resultType=ValueMetaInterface.TYPE_DATE; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_QUARTER_OF_DATE          : // What is the quarter (Integer) of a date?
                 {                   
                     calcData[index] = ValueDataUtil.quarterOfDate(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_SUBSTITUTE_VARIABLE      : // variable substitution in string
                 {                   
                     calcData[index] = environmentSubstitute(dataA.toString());
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_UNESCAPE_XML            :  // UnescapeXML( A )
                 {
                     calcData[index] = ValueDataUtil.unEscapeXML(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_ESCAPE_HTML            :  // EscapeHTML( A )
                 {
                     calcData[index] = ValueDataUtil.escapeHTML(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_UNESCAPE_HTML            :  // UnescapeHTML( A )
                 {
                     calcData[index] = ValueDataUtil.unEscapeHTML(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_ESCAPE_SQL            :  // EscapeSQL( A )
                 {
                     calcData[index] = ValueDataUtil.escapeSQL(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_DATE_WORKING_DIFF            :  // DateWorkingDiff( A , B)
                 {
                     calcData[index] = ValueDataUtil.DateWorkingDiff(metaA, dataA, metaB, dataB);
-                    resultType=ValueMetaInterface.TYPE_INTEGER; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_ADD_MONTHS           : // Add B months to date field A
                 {
                     calcData[index] = ValueDataUtil.addMonths(metaA, dataA, metaB, dataB);
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_CHECK_XML_FILE_WELL_FORMED      : // Check if file A is well formed
                 {
                     calcData[index] = ValueDataUtil.isXMLFileWellFormed(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_BOOLEAN; 
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_CHECK_XML_WELL_FORMED      : // Check if xml A is well formed
                 {
                     calcData[index] = ValueDataUtil.isXMLWellFormed(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_BOOLEAN;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_GET_FILE_ENCODING      : // Get file encoding from a file A
                 {
                     calcData[index] = ValueDataUtil.getFileEncoding(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN  : // DAMERAULEVENSHTEIN DISTANCE 
                 {
                     calcData[index] = ValueDataUtil.getDamerauLevenshtein_Distance(metaA, dataA,metaB, dataB);
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH  : // NEEDLEMANWUNSH DISTANCE 
                 {
                     calcData[index] = ValueDataUtil.getNeedlemanWunsch_Distance(metaA, dataA,metaB, dataB);
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_JARO  : // Jaro DISTANCE 
                 {
                     calcData[index] = ValueDataUtil.getJaro_Similitude(metaA, dataA,metaB, dataB);
-                    resultType=ValueMetaInterface.TYPE_NUMBER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_JARO_WINKLER  : // Jaro DISTANCE 
                 {
                     calcData[index] = ValueDataUtil.getJaroWinkler_Similitude(metaA, dataA,metaB, dataB);
-                    resultType=ValueMetaInterface.TYPE_NUMBER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_SOUNDEX  : // SOUNDEX 
                 {
                     calcData[index] = ValueDataUtil.get_SoundEx(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_REFINED_SOUNDEX : // REFINEDSOUNDEX 
                 {
                     calcData[index] = ValueDataUtil.get_RefinedSoundEx(metaA, dataA);
-                    resultType=ValueMetaInterface.TYPE_STRING;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_DATE_DIFF_MSEC               :  // DateA - DateB (ms)
                 {
                     calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "ms");
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_DATE_DIFF_SEC              :  // DateA - DateB (s)
                 {
                     calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "s");
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_DATE_DIFF_MN              :  // DateA - DateB (mn)
                 {
                     calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "mn");
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_DATE_DIFF_HR             :  // DateA - DateB (h)
                 {
                     calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "h");
-                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                    resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_HOUR_OF_DAY			:
                 {
                 	calcData[index] = ValueDataUtil.hourOfDay(metaA, dataA);
-                	resultType=ValueMetaInterface.TYPE_INTEGER;
+                  resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_MINUTE_OF_HOUR			:
                 {
                 	calcData[index] = ValueDataUtil.minuteOfHour(metaA, dataA);
-                	resultType=ValueMetaInterface.TYPE_INTEGER;
+                  resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 case CalculatorMetaFunction.CALC_SECOND_OF_MINUTE		:
                 {
                 	calcData[index] = ValueDataUtil.secondOfMinute(metaA, dataA);
-                	resultType=ValueMetaInterface.TYPE_INTEGER;
+                  resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
                 }
                 break;
                 default:
@@ -777,14 +783,24 @@ public class Calculator extends BaseStep implements StepInterface
                 // 
                 if (calcData[index]!=null)
                 {
-                	if (targetMeta.getType()!=resultType) 
-                    {
-                        ValueMetaInterface resultMeta = new ValueMeta("result", resultType);  // $NON-NLS-1$
+                    if (targetMeta.getType()!=resultType) {
+                        ValueMetaInterface resultMeta = null;
+                        try {
+                          resultMeta = ValueMetaFactory.createValueMeta( "result", resultType );
+                        } catch ( Exception exception ) {
+                          throw new KettleValueException( "Error creating value" );
+                        }
                         resultMeta.setConversionMask(fn.getConversionMask());
                         resultMeta.setGroupingSymbol(fn.getGroupingSymbol());
                         resultMeta.setDecimalSymbol(fn.getDecimalSymbol());
                         resultMeta.setCurrencySymbol(fn.getCurrencySymbol());
-                        calcData[index] = targetMeta.convertData(resultMeta, calcData[index]);
+                        try {
+                          calcData[index] = targetMeta.convertData( resultMeta, calcData[index] );
+                        } catch ( Exception ex ) {
+                          throw new KettleValueException(
+                            "resultType: " + resultType + "; targetMeta: " + targetMeta.getType(), ex
+                          );
+                        }
                     }
                 }
             }
