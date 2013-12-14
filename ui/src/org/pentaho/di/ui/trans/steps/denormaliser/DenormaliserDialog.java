@@ -26,9 +26,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -64,7 +65,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class DenormaliserDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   public static final String STRING_SORT_WARNING_PARAMETER = "PivotSortWarning";
 
@@ -155,11 +156,27 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
     fdKeyField.top = new FormAttachment( wStepname, margin );
     fdKeyField.right = new FormAttachment( 100, 0 );
     wKeyField.setLayoutData( fdKeyField );
-    wKeyField.addFocusListener( new FocusListener() {
-      public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+//    wKeyField.addFocusListener( new FocusListener() {
+//      public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
+//      }
+//
+//      public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
+//        Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
+//        shell.setCursor( busy );
+//        getPreviousFieldNames();
+//        shell.setCursor( null );
+//        busy.dispose();
+//      }
+//    } );
+
+    wKeyField.addMouseListener( new MouseListener() {
+      @Override public void mouseDoubleClick( MouseEvent e ) {
       }
 
-      public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
+      @Override public void mouseDown( MouseEvent e ) {
+      }
+
+      @Override public void mouseUp( MouseEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
         getPreviousFieldNames();
@@ -534,8 +551,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
   private void getPreviousFieldNames() {
     if ( !gotPreviousFields ) {
+      String keyValue = wKeyField.getText();
       try {
-        String keyValue = wKeyField.getText();
         wKeyField.removeAll();
         RowMetaInterface r = transMeta.getPrevStepFields( stepname );
 
@@ -551,6 +568,9 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
+        if ( keyValue != null ) {
+          wKeyField.setText( keyValue );
+        }
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogTitle" ), BaseMessages
             .getString( PKG, "DenormaliserDialog.FailedToGetFields.DialogMessage" ), ke );
