@@ -653,7 +653,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
       logDebug( BaseMessages.getString( PKG, "InsertUpdateDialog.Log.GettingKeyInfo" ) );
     }
 
-    wCommit.setText( input.getCommitSize() );
+    wCommit.setText( input.getCommitSizeVar() );
     wUpdateBypassed.setSelection( input.isUpdateBypassed() );
 
     if ( input.getKeyStream() != null ) {

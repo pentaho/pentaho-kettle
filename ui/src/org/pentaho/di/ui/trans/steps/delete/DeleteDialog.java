@@ -422,7 +422,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
       logDebug( BaseMessages.getString( PKG, "DeleteDialog.Log.GettingKeyInfo" ) );
     }
 
-    wCommit.setText( input.getCommitSize() );
+    wCommit.setText( input.getCommitSizeVar() );
 
     if ( input.getKeyStream() != null ) {
       for ( int i = 0; i < input.getKeyStream().length; i++ ) {

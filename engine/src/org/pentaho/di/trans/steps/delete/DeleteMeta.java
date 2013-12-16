@@ -92,14 +92,39 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the commitSize.
    */
-  public String getCommitSize() {
-    return commitSize; 
+  public String getCommitSizeVar() {
+    return commitSize;
   }
 
-  public int getCommitSize(VariableSpace vs){
+  /**
+   * @return Returns the commitSize.
+   * @deprecated use public String getCommitSizeVar() instead
+   */
+  @Deprecated
+  public int getCommitSize() {
+    return Integer.parseInt( commitSize );
+  }
+
+  /**
+   * @param vs -
+   *           variable space to be used for searching variable value
+   *           usually "this" for a calling step
+   * @return Returns the commitSize.
+   */
+  public int getCommitSize( VariableSpace vs ) {
     return Integer.parseInt( vs.environmentSubstitute( commitSize ) );
   }
-  
+
+  /**
+   * @param commitSize
+   *          The commitSize to set.
+   *          @deprecated use public void setCommitSize( String commitSize ) instead
+   */
+  @Deprecated
+  public void setCommitSize( int commitSize ) {
+    this.commitSize = Integer.toString( commitSize );
+  }
+
   /**
    * @param commitSize
    *          The commitSize to set.
@@ -305,6 +330,17 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
       commitSize = rep.getStepAttributeString( id_step, "commit" );
+      if ( commitSize == null ) {
+        long comSz = 0;
+        try {
+          comSz = rep.getStepAttributeInteger( id_step, "commit" );
+        } catch ( Exception ex ) {
+          commitSize = "100";
+        }
+        if ( comSz > 0 ) {
+          commitSize = Long.toString( comSz );
+        }
+      }
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
 
