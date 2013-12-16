@@ -48,14 +48,22 @@ import org.pentaho.reporting.engine.classic.core.modules.output.table.csv.CSVRep
 import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlReportUtil;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.rtf.RTFReportUtil;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
+import org.pentaho.reporting.engine.classic.core.style.BandStyleKeys;
 import org.pentaho.reporting.engine.classic.core.style.TextStyleKeys;
-import org.pentaho.reporting.engine.classic.core.style.TextWrap;
 
 public class KettleReportBuilder {
 
   public enum OutputType {
     PDF, HTML, DOC, XLS, CSV, METADATA
   }
+
+  private static final float DEF_FONT_HEIGHT = 12f;
+  private static final int DEF_LABEL_WIDTH = 120;
+  private static final int DEF_TEXT_WIDTH = 630;
+
+  private static final boolean DEF_LABEL_UNDERLINE = false;
+  private static final boolean DEF_LABEL_BOLD = false;
+  private static final boolean DEF_LABEL_ITALIC = true;
 
   private List<ReportSubjectLocation> filenames;
 
@@ -73,6 +81,49 @@ public class KettleReportBuilder {
     this.filenames = locations;
     this.targetFilename = targetFilename;
     this.options = options;
+  }
+
+  private static int createTextField( ItemBand details,
+      String labelText, String fieldName,
+      int labelWidth, int textWidth,
+      int pagePosition, float fontHeight,
+      boolean labelUnderline, boolean labelBold, boolean labelItalic ) {
+
+    ItemBand rowBand = new ItemBand();
+    rowBand.setLayout( BandStyleKeys.LAYOUT_ROW );
+
+    LabelElementFactory labelElementFactory = new LabelElementFactory();
+
+    labelElementFactory.setText( labelText );
+    labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
+    labelElementFactory.setMinimumWidth( (float) labelWidth );
+    labelElementFactory.setMinimumHeight( fontHeight );
+    labelElementFactory.setUnderline( labelUnderline );
+    labelElementFactory.setBold( labelBold );
+    labelElementFactory.setItalic( labelItalic );
+    labelElementFactory.setDynamicHeight( true );
+    Element label = labelElementFactory.createElement();
+    rowBand.addElement( label );
+
+    TextFieldElementFactory textFactory = new TextFieldElementFactory();
+    textFactory.setFieldname( fieldName );
+    textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
+    textFactory.setMinimumWidth( (float) textWidth );
+    textFactory.setMinimumHeight( fontHeight );
+    textFactory.setOverflowY( false );
+    textFactory.setDynamicHeight( true );
+    Element element = textFactory.createElement();
+    element.setDynamicContent( true );
+    rowBand.addElement( element );
+
+    details.addElement( rowBand );
+
+    return (int) ( pagePosition + fontHeight );
+  }
+
+  private static int createTextField( ItemBand details, String labelText, String fieldName, int pagePosition ) {
+    return createTextField( details, labelText, fieldName, DEF_LABEL_WIDTH, DEF_TEXT_WIDTH, pagePosition,
+        DEF_FONT_HEIGHT, DEF_LABEL_UNDERLINE, DEF_LABEL_BOLD, DEF_LABEL_ITALIC );
   }
 
   public void createReport() throws Exception {
@@ -104,6 +155,7 @@ public class KettleReportBuilder {
     GroupDataBody groupData = new GroupDataBody();
     ItemBand itemBand = new ItemBand();
     itemBand.setVisible( true );
+    itemBand.setLayout( BandStyleKeys.LAYOUT_AUTO );
     groupData.setItemBand( itemBand );
     group.setBody( groupData );
     report.setRootGroup( group );
@@ -118,217 +170,63 @@ public class KettleReportBuilder {
      *
      * // Add the label to the header... // reportHeader.addElement(label);
      */
-    Float fontHeight = 12f;
     int pagePosition = 0;
-    int labelWidth = 120;
-    int textWidth = 630;
-
-    boolean labelUnderline = false;
-    boolean labelBold = false;
-    boolean labelItalic = true;
 
     // Set the header to bold...
     //
     reportHeader.getStyle().setStyleProperty( TextStyleKeys.BOLD, true );
 
-    LabelElementFactory labelElementFactory = new LabelElementFactory();
-    labelElementFactory.setText( "Filename: " );
-    labelElementFactory.setMinimumWidth( (float) labelWidth );
-    labelElementFactory.setMinimumHeight( fontHeight );
-    labelElementFactory.setUnderline( labelUnderline );
-    labelElementFactory.setBold( labelBold );
-    labelElementFactory.setItalic( labelItalic );
-    Element label = labelElementFactory.createElement();
-    itemBand.addElement( label );
 
     // Now add the filename to the report
     //
-    TextFieldElementFactory textFactory = new TextFieldElementFactory();
-    textFactory.setFieldname( "filename" );
-    textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-    textFactory.setMinimumWidth( (float) textWidth );
-    textFactory.setMinimumHeight( fontHeight );
-    Element filenameElement = textFactory.createElement();
-    itemBand.addElement( filenameElement );
-
-    pagePosition += fontHeight;
+    pagePosition = createTextField( itemBand, "Filename: ", "filename", pagePosition );
 
     // The name of the transformation
     //
     if ( options.isIncludingName() ) {
-      labelElementFactory = new LabelElementFactory();
-      labelElementFactory.setText( "Name: " );
-      labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
-      labelElementFactory.setMinimumWidth( (float) labelWidth );
-      labelElementFactory.setMinimumHeight( fontHeight );
-      labelElementFactory.setUnderline( labelUnderline );
-      labelElementFactory.setBold( labelBold );
-      labelElementFactory.setItalic( labelItalic );
-      label = labelElementFactory.createElement();
-      itemBand.addElement( label );
-
-      textFactory = new TextFieldElementFactory();
-      textFactory.setFieldname( "name" );
-      textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-      textFactory.setMinimumWidth( (float) textWidth );
-      textFactory.setMinimumHeight( fontHeight );
-      Element nameElement = textFactory.createElement();
-      itemBand.addElement( nameElement );
-      pagePosition += fontHeight;
+      pagePosition = createTextField( itemBand, "Name: ", "name", pagePosition );
     }
 
     // The description of the transformation...
     //
     if ( options.isIncludingDescription() ) {
-      labelElementFactory = new LabelElementFactory();
-      labelElementFactory.setText( "Description: " );
-      labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
-      labelElementFactory.setMinimumWidth( (float) labelWidth );
-      labelElementFactory.setMinimumHeight( fontHeight );
-      labelElementFactory.setUnderline( labelUnderline );
-      labelElementFactory.setBold( labelBold );
-      labelElementFactory.setItalic( labelItalic );
-      label = labelElementFactory.createElement();
-      itemBand.addElement( label );
-
-      textFactory = new TextFieldElementFactory();
-      textFactory.setFieldname( "description" );
-      textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-      textFactory.setMinimumWidth( (float) textWidth );
-      textFactory.setMinimumHeight( fontHeight );
-      Element descriptionElement = textFactory.createElement();
-      itemBand.addElement( descriptionElement );
-      descriptionElement.setDynamicContent( true );
-
-      pagePosition += fontHeight;
+      pagePosition = createTextField( itemBand, "Description: ", "description", pagePosition );
     }
 
     // The description of the transformation...
     //
     if ( options.isIncludingExtendedDescription() ) {
-      labelElementFactory = new LabelElementFactory();
-      labelElementFactory.setText( "Long description: " );
-      labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
-      labelElementFactory.setMinimumWidth( (float) labelWidth );
-      labelElementFactory.setMinimumHeight( fontHeight );
-      labelElementFactory.setUnderline( labelUnderline );
-      labelElementFactory.setBold( labelBold );
-      labelElementFactory.setItalic( labelItalic );
-      label = labelElementFactory.createElement();
-      itemBand.addElement( label );
-
-      textFactory = new TextFieldElementFactory();
-      textFactory.setFieldname( "extended_description" );
-      textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-      textFactory.setMinimumWidth( (float) textWidth );
-      textFactory.setMinimumHeight( fontHeight );
-      textFactory.setDynamicHeight( true );
-      textFactory.setWrap( TextWrap.WRAP );
-      Element descriptionElement = textFactory.createElement();
-      itemBand.addElement( descriptionElement );
-      pagePosition += fontHeight;
+      pagePosition = createTextField( itemBand, "Long description: ", "extended_description", pagePosition );
     }
 
     // Include a line with logging information
     //
     if ( options.isIncludingLoggingConfiguration() ) {
-      labelElementFactory = new LabelElementFactory();
-      labelElementFactory.setText( "Logging: " );
-      labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
-      labelElementFactory.setMinimumWidth( (float) labelWidth );
-      labelElementFactory.setMinimumHeight( fontHeight );
-      labelElementFactory.setUnderline( labelUnderline );
-      labelElementFactory.setBold( labelBold );
-      labelElementFactory.setItalic( labelItalic );
-      label = labelElementFactory.createElement();
-      itemBand.addElement( label );
-
-      textFactory = new TextFieldElementFactory();
-      textFactory.setFieldname( "logging" );
-      textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-      textFactory.setMinimumWidth( (float) textWidth );
-      textFactory.setMinimumHeight( fontHeight );
-      Element loggingElement = textFactory.createElement();
-      itemBand.addElement( loggingElement );
-      pagePosition += fontHeight;
+      pagePosition = createTextField( itemBand, "Logging: ", "logging", pagePosition );
     }
 
     // Include a line with the creation date and user
     //
     if ( options.isIncludingCreated() ) {
-      labelElementFactory = new LabelElementFactory();
-      labelElementFactory.setText( "Creation: " );
-      labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
-      labelElementFactory.setMinimumWidth( (float) labelWidth );
-      labelElementFactory.setMinimumHeight( fontHeight );
-      labelElementFactory.setUnderline( labelUnderline );
-      labelElementFactory.setBold( labelBold );
-      labelElementFactory.setItalic( labelItalic );
-      label = labelElementFactory.createElement();
-      itemBand.addElement( label );
-
-      textFactory = new TextFieldElementFactory();
-      textFactory.setFieldname( "creation" );
-      textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-      textFactory.setMinimumWidth( (float) textWidth );
-      textFactory.setMinimumHeight( fontHeight );
-      Element loggingElement = textFactory.createElement();
-      itemBand.addElement( loggingElement );
-      pagePosition += fontHeight;
+      pagePosition = createTextField( itemBand, "Creation: ", "creation", pagePosition );
     }
 
     // Include a line with the modification date and user
     //
     if ( options.isIncludingModified() ) {
-      labelElementFactory = new LabelElementFactory();
-      labelElementFactory.setText( "Modification: " );
-      labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
-      labelElementFactory.setMinimumWidth( (float) labelWidth );
-      labelElementFactory.setMinimumHeight( fontHeight );
-      labelElementFactory.setUnderline( labelUnderline );
-      labelElementFactory.setBold( labelBold );
-      labelElementFactory.setItalic( labelItalic );
-      label = labelElementFactory.createElement();
-      itemBand.addElement( label );
-
-      textFactory = new TextFieldElementFactory();
-      textFactory.setFieldname( "modification" );
-      textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-      textFactory.setMinimumWidth( (float) textWidth );
-      textFactory.setMinimumHeight( fontHeight );
-      Element loggingElement = textFactory.createElement();
-      itemBand.addElement( loggingElement );
-      pagePosition += fontHeight;
+      pagePosition = createTextField( itemBand, "Modification: ", "modification", pagePosition );
     }
 
     // The last execution result
     //
     if ( options.isIncludingLastExecutionResult() ) {
-      labelElementFactory = new LabelElementFactory();
-      labelElementFactory.setText( "Last execution result: " );
-      labelElementFactory.setAbsolutePosition( new Point( 0, pagePosition ) );
-      labelElementFactory.setMinimumWidth( (float) labelWidth );
-      labelElementFactory.setMinimumHeight( fontHeight );
-      labelElementFactory.setUnderline( labelUnderline );
-      labelElementFactory.setBold( labelBold );
-      labelElementFactory.setItalic( labelItalic );
-      label = labelElementFactory.createElement();
-      itemBand.addElement( label );
-
-      textFactory = new TextFieldElementFactory();
-      textFactory.setFieldname( "last_exec_result" );
-      textFactory.setAbsolutePosition( new Point( labelWidth, pagePosition ) );
-      textFactory.setMinimumWidth( (float) textWidth );
-      textFactory.setMinimumHeight( fontHeight );
-      Element loggingElement = textFactory.createElement();
-      itemBand.addElement( loggingElement );
-      pagePosition += fontHeight;
+      pagePosition = createTextField( itemBand, "Last execution result: : ", "last_exec_result", pagePosition );
     }
 
     // Optionally include an image of the transformation...
     //
-    String packName = KettleReportBuilder.class.getPackage().getName();
     if ( options.isIncludingImage() ) {
+      String packName = KettleReportBuilder.class.getPackage().getName();
       String bshCode =
         "Object getValue() { "
           + Const.CR + "  return new " + packName + ".TransJobDrawable(dataRow, "
@@ -346,16 +244,19 @@ public class KettleReportBuilder {
       contentElementFactory.setMinimumHeight( 400f );
       contentElementFactory.setMaximumHeight( 750f );
       contentElementFactory.setScale( true );
-      contentElementFactory.setDynamicHeight( false );
-      // contentElementFactory.setAvoidPagebreaks(true);
+      contentElementFactory.setDynamicHeight( true );
       Element imageElement = contentElementFactory.createElement();
 
       imageElement
         .setAttributeExpression( AttributeNames.Core.NAMESPACE, AttributeNames.Core.VALUE, bshExpression );
       imageElement.setAttribute( AttributeNames.Core.NAMESPACE, AttributeNames.Core.IMAGE_ENCODING_QUALITY, "9" );
       imageElement.setAttribute( AttributeNames.Core.NAMESPACE, AttributeNames.Core.IMAGE_ENCODING_TYPE, "PNG" );
-      itemBand.addElement( imageElement );
-    }
+      
+      ItemBand imageBand = new ItemBand();
+      imageBand.setLayout( BandStyleKeys.LAYOUT_ROW );
+      imageBand.addElement( imageElement );
+      itemBand.addElement( imageBand );
+   }
 
     Paper a4Paper = new Paper();
 

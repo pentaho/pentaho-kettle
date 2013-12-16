@@ -159,6 +159,10 @@ public class JobInformation {
 
     Point min = jobMeta.getMinimum();
     Point area = jobMeta.getMaximum();
+
+    area.x -= min.x;
+    area.y -= min.y;
+
     int iconsize = 32;
 
     ScrollBarInterface bar = new ScrollBarInterface() {
@@ -175,20 +179,20 @@ public class JobInformation {
     Rectangle rect = new java.awt.Rectangle( 0, 0, area.x, area.y );
     double magnificationX = rectangle2d.getWidth() / rect.getWidth();
     double magnificationY = rectangle2d.getHeight() / rect.getHeight();
-    double magnification = Math.min( magnificationX, magnificationY );
+    float magnification = (float) Math.min( 1, Math.min( magnificationX, magnificationY ) );
 
     SwingGC gc = new SwingGC( g2d, rect, iconsize, 0, 0 );
     gc.setDrawingPixelatedImages( pixelateImages );
     List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
     JobPainter painter =
-      new JobPainter(
-        gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(), iconsize, 1,
-        0, 0, true, "FreeSans", 10 );
-    painter.setMagnification( (float) Math.min( magnification, 1 ) );
-    if ( pixelateImages ) {
-      painter.setTranslationX( 100 + min.x );
-      painter.setTranslationY( 100 + min.y );
-    }
+        new JobPainter( gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(),
+            iconsize, 1, 0, 0, true, "FreeSans", 10 );
+
+    painter.setMagnification( magnification );
+
+    painter.setTranslationX( ( -min.x ) * magnification );
+    painter.setTranslationY( ( -min.y ) * magnification );
+
     painter.drawJob();
   }
 
