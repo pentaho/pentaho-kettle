@@ -24,25 +24,10 @@ package org.pentaho.di;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.pentaho.di.compatibility.ValueBigNumberTest;
-import org.pentaho.di.compatibility.ValueBooleanTest;
-import org.pentaho.di.compatibility.ValueDateTest;
-import org.pentaho.di.compatibility.ValueIntegerTest;
-import org.pentaho.di.compatibility.ValueNumberTest;
-import org.pentaho.di.compatibility.ValueStringTest;
-import org.pentaho.di.compatibility.ValueTest;
-import org.pentaho.di.core.ConstTest;
-import org.pentaho.di.core.CounterTest;
-import org.pentaho.di.core.CountersTest;
-import org.pentaho.di.core.RowSetTest;
 import org.pentaho.di.core.database.DatabaseTest;
-import org.pentaho.di.core.encryption.EncrTest;
 import org.pentaho.di.core.parameters.ParameterSimpleTransTest;
-import org.pentaho.di.core.row.RowDataUtilTest;
-import org.pentaho.di.core.row.RowTest;
 import org.pentaho.di.core.row.ValueDataUtilTest;
-import org.pentaho.di.core.row.ValueMetaTest;
-import org.pentaho.di.core.util.StringUtilTest;
+import org.pentaho.di.core.util.StringEvaluatorTest;
 import org.pentaho.di.trans.HopTest;
 import org.pentaho.di.trans.steps.addsequence.AddSequenceTest;
 import org.pentaho.di.trans.steps.append.AppendTest;
@@ -82,28 +67,11 @@ public class AllRegressionTests {
     // So adding testcases in the right order is important.
     //
 
-    suite.addTestSuite( ValueStringTest.class );
-    suite.addTestSuite( ValueIntegerTest.class );
-    suite.addTestSuite( ValueNumberTest.class );
-    suite.addTestSuite( ValueBigNumberTest.class );
-    suite.addTestSuite( ValueDateTest.class );
-    suite.addTestSuite( ValueBooleanTest.class );
-    suite.addTestSuite( ValueTest.class );
-    suite.addTestSuite( ConstTest.class );
-    suite.addTestSuite( StringUtilTest.class );
-    suite.addTestSuite( EncrTest.class );
+    suite.addTestSuite( StringEvaluatorTest.class );
     suite.addTestSuite( ParameterSimpleTransTest.class );
-
-    suite.addTestSuite( ValueMetaTest.class );
-    suite.addTestSuite( RowDataUtilTest.class );
     suite.addTestSuite( ValueDataUtilTest.class );
     suite.addTestSuite( DatabaseTest.class );
-    suite.addTestSuite( RowTest.class );
-    suite.addTestSuite( RowSetTest.class );
     suite.addTestSuite( HopTest.class );
-    suite.addTestSuite( CounterTest.class );
-    suite.addTestSuite( CountersTest.class );
-
     suite.addTestSuite( InjectorTest.class );
     suite.addTestSuite( RowGeneratorTest.class );
     suite.addTestSuite( ConstantTest.class );
