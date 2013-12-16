@@ -2665,7 +2665,9 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER, KEY, 0 ) );
     table.addValueMeta( new ValueMeta(
       KettleDatabaseRepository.FIELD_NAMESPACE_NAME, ValueMetaInterface.TYPE_STRING,
-      KettleDatabaseRepository.REP_STRING_LENGTH, 0 ) );
+      ( database.getDatabaseMeta().getDatabaseInterface().getMaxVARCHARLength() - 1 > 0
+          ? database.getDatabaseMeta().getDatabaseInterface().getMaxVARCHARLength() - 1
+              : KettleDatabaseRepository.REP_ORACLE_STRING_LENGTH ), 0 ) );
     sql =
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE, false );

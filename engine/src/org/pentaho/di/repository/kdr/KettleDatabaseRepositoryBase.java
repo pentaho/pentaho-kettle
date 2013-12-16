@@ -428,6 +428,7 @@ public abstract class KettleDatabaseRepositoryBase extends AbstractRepository {
 
   /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */
   public static final int REP_STRING_LENGTH = 2000000;
+  public static final int REP_ORACLE_STRING_LENGTH = 2000;
   public static final int REP_STRING_CODE_LENGTH = 255;
 
   public static final String TRANS_ATTRIBUTE_ID_STEP_REJECTED = "ID_STEP_REJECTED";

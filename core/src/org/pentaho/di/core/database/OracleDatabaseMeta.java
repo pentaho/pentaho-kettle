@@ -390,7 +390,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         } else {
           if ( length == 1 ) {
             retval.append( "CHAR(1)" );
-          } else if ( length > 0 && length <= 2000 ) {
+          } else if ( length > 0 && length <= getMaxVARCHARLength() ) {
             retval.append( "VARCHAR2(" ).append( length ).append( ')' );
           } else {
             if ( length <= 0 ) {
@@ -619,4 +619,10 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   public boolean supportsErrorHandlingOnBatchUpdates() {
     return false;
   }
+
+  @Override
+  public int getMaxVARCHARLength() {
+    return 2000;
+  }
+
 }
