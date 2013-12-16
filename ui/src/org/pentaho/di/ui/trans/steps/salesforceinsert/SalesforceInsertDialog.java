@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.FieldType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -718,50 +720,34 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
   }
 
   private void test() {
-    boolean successConnection = true;
-    String msgError = null;
     SalesforceConnection connection = null;
     try {
-      SalesforceInsertMeta meta = new SalesforceInsertMeta();
-      getInfo( meta );
-
       // check if the user is given
       if ( !checkUser() ) {
         return;
       }
 
-      connection =
-        new SalesforceConnection( log, transMeta.environmentSubstitute( meta.getTargetURL() ), transMeta
-          .environmentSubstitute( meta.getUserName() ), transMeta.environmentSubstitute( meta.getPassword() ) );
-      connection.connect();
+      connection = getConnection();
 
-      successConnection = true;
-
-    } catch ( Exception e ) {
-      successConnection = false;
-      msgError = e.getMessage();
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
-    }
-
-    if ( successConnection ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
       mb.setMessage( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.OK", wUserName.getText() )
         + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Ok" ) );
       mb.open();
-    } else {
+    } catch ( Exception e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Error" ),
         BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.NOK", wUserName.getText() ),
-        new Exception( msgError ) );
+        new Exception( e.getMessage() ) );
+    } finally {
+      if ( connection != null ) {
+        try {
+          connection.close();
+        } catch ( Exception e ) {
+          // Ignore close error
+        }
+      }
     }
-
   }
 
   /**
@@ -882,31 +868,36 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     return true;
   }
 
-  private String[] getFields() throws KettleException {
-    SalesforceInsertMeta meta = new SalesforceInsertMeta();
-    getInfo( meta );
+  private SalesforceConnection getConnection() throws KettleException {
+    String url = transMeta.environmentSubstitute( wURL.getText() );
+    // Define a new Salesforce connection
+    SalesforceConnection connection =
+      new SalesforceConnection( log, url, transMeta.environmentSubstitute( wUserName.getText() ), transMeta
+        .environmentSubstitute( wPassword.getText() ) );
+    int realTimeOut = Const.toInt( transMeta.environmentSubstitute( wTimeOut.getText() ), 0 );
+    connection.setTimeOut( realTimeOut );
+    // connect to Salesforce
+    connection.connect();
 
+    return connection;
+  }
+
+  private String[] getFieldNames() throws KettleException {
     SalesforceConnection connection = null;
-    String url = transMeta.environmentSubstitute( meta.getTargetURL() );
+    String selectedModule = transMeta.environmentSubstitute( wModule.getText() );
     try {
-      String selectedModule = transMeta.environmentSubstitute( meta.getModule() );
       // Define a new Salesforce connection
-      connection =
-        new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
-          .environmentSubstitute( meta.getPassword() ) );
-      int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
-      connection.setTimeOut( realTimeOut );
-      // connect to Salesforce
-      connection.connect();
+      connection = getConnection();
       // return fieldsname for the module
       return connection.getFields( selectedModule );
     } catch ( Exception e ) {
-      throw new KettleException( "Erreur getting fields from module [" + url + "]!", e );
+      throw new KettleException( "Error getting fields from module [" + selectedModule + "]!", e );
     } finally {
       if ( connection != null ) {
         try {
           connection.close();
-        } catch ( Exception e ) { /* Ignore */
+        } catch ( Exception e ) {
+          // Ignore close errors
         }
       }
     }
@@ -937,10 +928,18 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     }
 
     try {
+      SalesforceConnection connection = getConnection();
+      Field[] fields = connection.getObjectFields( transMeta.environmentSubstitute( wModule.getText() ) );
+      String[] fieldNames = connection.getFields( fields );
 
-      String[] fields = getFields();
+      FieldType dateType = FieldType.fromString( "date" );
       for ( int i = 0; i < fields.length; i++ ) {
-        targetFields.addValueMeta( new ValueMeta( fields[i] ) );
+        // Keep data type for date field
+        if ( dateType.equals( fields[ i ].getType() ) ) {
+          targetFields.addValueMeta( new ValueMeta( fieldNames[i], ValueMetaInterface.TYPE_DATE ) );
+        } else {
+          targetFields.addValueMeta( new ValueMeta( fieldNames[i] ) );
+        }
       }
     } catch ( Exception e ) {
       new ErrorDialog( shell,
@@ -1072,7 +1071,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
           if ( !Const.isEmpty( selectedModule ) ) {
             try {
               // loop through the objects and find build the list of fields
-              String[] fieldsName = getFields();
+              String[] fieldsName = getFieldNames();
 
               if ( fieldsName != null ) {
                 for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
@@ -1100,19 +1099,10 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
       SalesforceConnection connection = null;
 
       try {
-        SalesforceInsertMeta meta = new SalesforceInsertMeta();
-        getInfo( meta );
-        String url = transMeta.environmentSubstitute( meta.getTargetURL() );
-
         String selectedField = wModule.getText();
         wModule.removeAll();
 
-        // Define a new Salesforce connection
-        connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
-            .environmentSubstitute( meta.getPassword() ) );
-        // connect to Salesforce
-        connection.connect();
+        connection = getConnection();
         // return
         wModule.setItems( connection.getAllAvailableObjects( false ) );
 

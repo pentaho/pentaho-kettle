@@ -23,6 +23,9 @@
 package org.pentaho.di.trans.steps.salesforceinsert;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
@@ -138,6 +141,18 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
             fieldsToNull.add( meta.getUpdateLookup()[i] );
           } else {
             Object normalObject = valueMeta.convertToNormalStorageType( object );
+
+            // Pass date field converted to UTC, see PDI-10836
+            if ( valueMeta.getType() == ValueMetaInterface.TYPE_DATE && normalObject instanceof Date ) {
+              Calendar cal = Calendar.getInstance( valueMeta.getDateFormatTimeZone() );
+              cal.setTime( (Date) normalObject );
+              Calendar utc = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+              // Reset time-related fields
+              utc.clear();
+              utc.set( cal.get( Calendar.YEAR ), cal.get( Calendar.MONTH ), cal.get( Calendar.DATE ) );
+              normalObject = utc.getTime();
+            }
+
             insertfields.add( SalesforceConnection.createMessageElement(
               meta.getUpdateLookup()[i], normalObject, meta.getUseExternalId()[i] ) );
           }
