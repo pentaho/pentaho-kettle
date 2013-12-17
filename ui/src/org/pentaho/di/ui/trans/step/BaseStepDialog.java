@@ -77,11 +77,12 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
+import org.pentaho.di.ui.core.dialog.ShowHelpDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.metastore.api.IMetaStore;
 
 /**
@@ -249,9 +250,7 @@ public class BaseStepDialog extends Dialog {
     try {
       final PluginInterface plugin =
         PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
-      if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
-        createHelpButton( shell, stepMeta, plugin );
-      }
+      createHelpButton( shell, stepMeta, plugin );
 
       String id = plugin.getIds()[0];
       if ( id != null ) {
@@ -1393,66 +1392,7 @@ public class BaseStepDialog extends Dialog {
   }
 
   protected Button createHelpButton( final Shell shell, final StepMeta stepMeta, final PluginInterface plugin ) {
-    return createHelpButton( shell, "Step documentation for " + plugin.getName(), plugin );
-  }
-
-  public static Button createHelpButton( final Composite parent, final String title, final PluginInterface plugin ) {
-    Button button = new Button( parent, SWT.PUSH );
-    button.setImage( GUIResource.getInstance().getImageHelpWeb() );
-    button.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
-    button.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.Help" ) );
-    FormData fdButton = new FormData();
-    fdButton.left = new FormAttachment( 0, 0 );
-    fdButton.bottom = new FormAttachment( 100, 0 );
-    button.setLayoutData( fdButton );
-
-    button.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent arg0 ) {
-        StringBuilder html = new StringBuilder();
-        html.append( "<HTML><TITLE>" ).append( plugin.getName() ).append( "</TITLE>" );
-        html.append( "<HEAD>" );
-        html.append( "<STYLE type=\"text/css\">" );
-
-        html.append( "body {" );
-        html.append( "  background-color:#a7c4e2;" );
-        html.append( "  font-family:arial,helvetica,sans-serif;" );
-        html.append( "  font-size:16px;" );
-        html.append( "}" );
-
-        html.append( "</STYLE>" );
-
-        html.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"docs/English/welcome/kettle.css\" />" );
-        html.append( "</HEAD>" );
-        html.append( "<BODY>" );
-        html.append( "<b>Name</b>: " ).append( plugin.getName() ).append( "<br>" );
-        html.append( "<b>ID: " ).append( plugin.getIds()[0] ).append( "<br>" );
-        if ( !Const.isEmpty( plugin.getDescription() ) ) {
-          html.append( "<b>Description</b>: " ).append( plugin.getDescription() ).append( "<br>" );
-        }
-        if ( !Const.isEmpty( plugin.getImageFile() ) ) {
-          html.append( "<b>Icon</b>: " ).append( plugin.getImageFile() ).append( "<br>" );
-        }
-        if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
-          html
-            .append( "<b>Documenation</b>: <a href=\"" ).append( plugin.getDocumentationUrl() ).append( "\">" )
-            .append( "Click here to view the documentation" ).append( "</a><br>" );
-        }
-        if ( !Const.isEmpty( plugin.getCasesUrl() ) ) {
-          html.append( "<b>Cases</b>: <a href=\"" ).append( plugin.getCasesUrl() ).append( "\">" ).append(
-            "Click here to view related PDI cases" ).append( "</a><br>" );
-        }
-        if ( !Const.isEmpty( plugin.getForumUrl() ) ) {
-          html.append( "<b>Forum</b>: <a href=\"" ).append( plugin.getForumUrl() ).append( "\">" ).append(
-            "Click here to go to the forum" ).append( "</a><br>" );
-        }
-        html.append( "</BODY></HTML>" );
-
-        ShowBrowserDialog browserDialog = new ShowBrowserDialog( parent.getShell(), title, html.toString() );
-        browserDialog.open();
-      }
-    } );
-    return button;
+    return HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
   }
 
   public IMetaStore getMetaStore() {
