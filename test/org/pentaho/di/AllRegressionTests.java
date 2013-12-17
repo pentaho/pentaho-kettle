@@ -22,6 +22,7 @@
 
 package org.pentaho.di;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.pentaho.di.compatibility.ValueBigNumberTest;
@@ -52,6 +53,7 @@ import org.pentaho.di.trans.steps.constant.ConstantTest;
 import org.pentaho.di.trans.steps.csvinput.CsvInput1Test;
 import org.pentaho.di.trans.steps.csvinput.CsvInput2Test;
 import org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest;
+import org.pentaho.di.trans.steps.filterrows.FilterRowsTest;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.nullif.NullIfTest;
@@ -110,14 +112,15 @@ public class AllRegressionTests {
     suite.addTestSuite( AppendTest.class );
     suite.addTestSuite( DetectLastRowStepTest.class );
     suite.addTestSuite( BlockingStepTest.class );
-    suite.addTestSuite( SortRowsTest.class );
+    suite.addTest( new JUnit4TestAdapter( SortRowsTest.class ) );
+    suite.addTest( new JUnit4TestAdapter( FilterRowsTest.class ) );
     suite.addTestSuite( ValueMapperTest.class );
     suite.addTestSuite( NullIfTest.class );
     suite.addTestSuite( RegexEvalTest.class );
     suite.addTestSuite( AddSequenceTest.class );
     suite.addTestSuite( TableInputTest.class );
     suite.addTestSuite( TableOutputTest.class );
-    // suite.addTestSuite(DatabaseLookupTest.class); Now a JUnit 4 testcase
+    //        suite.addTestSuite(DatabaseLookupTest.class);    Now a JUnit 4 testcase
     suite.addTestSuite( CombinationLookupTest.class );
     suite.addTestSuite( JavaScriptStringTest.class );
     suite.addTestSuite( JavaScriptSpecialTest.class );

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.filterrows;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -299,31 +300,18 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
           PKG, "FilterRowsMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
-      boolean first = true;
-      error_message = "";
-      boolean error_found = false;
-
-      // What fields are used in the condition?
-      String[] key = condition.getUsedFields();
-      for ( int i = 0; i < key.length; i++ ) {
-        ValueMetaInterface v = prev.searchValueMeta( key[i] );
-        if ( v == null ) {
-          if ( first ) {
-            first = false;
-            error_message +=
-              BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.FieldsNotFoundFromPreviousStep" )
-                + Const.CR;
-          }
-          error_found = true;
-          error_message += "\t\t" + key[i] + Const.CR;
+      List<String> orphanFields = getOrphanFields( condition, prev );
+      if ( orphanFields.size() > 0 ) {
+        error_message = BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.FieldsNotFoundFromPreviousStep" )
+          + Const.CR;
+        for ( String field : orphanFields ) {
+          error_message += "\t\t" + field + Const.CR;
         }
-      }
-      if ( error_found ) {
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
       } else {
         cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-            PKG, "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+            "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
       }
       remarks.add( cr );
     } else {
@@ -413,4 +401,26 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public boolean excludeFromCopyDistributeVerification() {
     return true;
   }
+
+  /**
+   * Get non-existing referenced input fields
+   * @param condition
+   * @param prev
+   * @return
+   */
+  public List<String> getOrphanFields( Condition condition, RowMetaInterface prev ) {
+    List<String> orphans = new ArrayList<String>(  );
+    if ( condition == null || prev == null ) {
+      return orphans;
+    }
+    String[] key = condition.getUsedFields();
+    for ( int i = 0; i < key.length; i++ ) {
+      ValueMetaInterface v = prev.searchValueMeta( key[i] );
+      if ( v == null ) {
+        orphans.add( key[i] );
+      }
+    }
+    return orphans;
+  }
+
 }
