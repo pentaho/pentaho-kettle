@@ -1323,8 +1323,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           Thread thread = new Thread( runThread );
           thread.setName( getName() + " - " + combi.stepname );
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.StepBeforeStart.id, combi );
-          thread.start();
-
           // Call an extension point at the end of the step
           //
           combi.step.addStepListener( new StepAdapter() {
@@ -1339,6 +1337,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             }
 
           } );
+
+          thread.start();
         }
         break;
 
