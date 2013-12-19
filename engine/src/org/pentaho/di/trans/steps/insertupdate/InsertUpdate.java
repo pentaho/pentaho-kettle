@@ -135,7 +135,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
             Object rowvalue = row[data.valuenrs[i]];
             Object retvalue = add[i];
 
-            if ( valueMeta.compare( rowvalue, retMeta, retvalue ) != 0 ) {
+            if ( retMeta.compare( retvalue, valueMeta, rowvalue ) != 0 ) {
               update = true;
             }
           }
