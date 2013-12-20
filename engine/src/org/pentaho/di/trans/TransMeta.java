@@ -497,7 +497,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   protected static final String XML_TAG_INFO = "info";
 
   /** A constant specifying the tag value for the XML node of the order of steps. */
-  protected static final String XML_TAG_ORDER = "order";
+  public static final String XML_TAG_ORDER = "order";
 
   /** A constant specifying the tag value for the XML node of the notes. */
   public static final String XML_TAG_NOTEPADS = "notepads";
@@ -518,7 +518,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   public static final String XML_TAG_CLUSTERSCHEMAS = "clusterschemas";
 
   /** A constant specifying the tag value for the XML node of the steps' error-handling information. */
-  protected static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
+  public static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
 
   /**
    * Builds a new empty transformation. The transformation will have default logging capability and no variables, and
@@ -1471,9 +1471,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The hop or null if no hop was found.
    */
   public TransHopMeta findTransHop( StepMeta from, StepMeta to, boolean disabledToo ) {
-
-    int i;
-    for ( i = 0; i < nrTransHops(); i++ ) {
+    for ( int i = 0; i < nrTransHops(); i++ ) {
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() || disabledToo ) {
         if ( hi.getFromStep() != null
