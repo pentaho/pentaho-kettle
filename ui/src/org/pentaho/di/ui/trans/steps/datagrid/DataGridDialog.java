@@ -315,7 +315,6 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
       //
       getMetaInfo( dataGridMeta );
     }
-    getMetaData();
 
     if ( refresh ) {
       // Retain the data edited in the dialog...
