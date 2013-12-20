@@ -30,6 +30,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -502,7 +503,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     blockPointer = 0;
 
-    stepListeners = new ArrayList<StepListener>();
+    stepListeners = Collections.synchronizedList( new ArrayList<StepListener>() );
 
     dispatch();
 
@@ -594,8 +595,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           String partitionID = partitionIDList.get( partitionNr );
           setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID );
         } else {
-          logError( "Unable to retrieve a partition id from the partition schema: " +
-                    stepMeta.getStepPartitioningMeta().getPartitionSchema().getName());
+          logError( "Unable to retrieve a partition id from the partition schema: "
+            + stepMeta.getStepPartitioningMeta().getPartitionSchema().getName() );
           return false;
         }
       }
@@ -997,7 +998,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   }
 
   /**
-   * @param newLinesOutputValue
+   * @param newLinesUpdatedValue
    *          the new number of lines updated in an output target: database, file, socket, etc.
    */
   public void setLinesUpdated( long newLinesUpdatedValue ) {
@@ -2958,8 +2959,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // Here we are completely done with the transformation.
     // Call all the attached listeners and notify the outside world that the step has finished.
     //
-    for ( StepListener stepListener : stepListeners ) {
-      stepListener.stepFinished( trans, stepMeta, this );
+    synchronized ( stepListeners ) {
+      for ( StepListener stepListener : stepListeners ) {
+        stepListener.stepFinished( trans, stepMeta, this );
+      }
     }
 
     // We're finally completely done with this step.
@@ -3722,7 +3725,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *          the stepListeners to set
    */
   public void setStepListeners( List<StepListener> stepListeners ) {
-    this.stepListeners = stepListeners;
+    this.stepListeners = Collections.synchronizedList( stepListeners );
   }
 
   /*
