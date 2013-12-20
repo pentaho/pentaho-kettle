@@ -1472,13 +1472,15 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setPort( wPort.getText() );
 
     // [PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
-    // for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
+    // for backward compatibility: 0 is 'retrieve all', 2 is 'retrieve first...'
     int actualIndex = wListmails.getSelectionIndex();
     in.setRetrievemails( actualIndex > 0 ? 2 : 0 );
 
+    //Set first... emails for POP3
     in.setFirstMails( wFirstmails.getText() );
     in.setProtocol( wProtocol.getText() );
     in.setValueImapList( MailConnectionMeta.getValueImapListByDesc( wIMAPListmails.getText() ) );
+    //Set first... emails for IMAP
     in.setFirstIMAPMails( wIMAPFirstmails.getText() );
     in.setIMAPFolder( wIMAPFolder.getText() );
     // search term
