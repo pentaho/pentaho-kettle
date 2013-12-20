@@ -91,7 +91,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
   private Boolean[] update;
 
   /** Commit size for inserts/updates */
-  private int commitSize;
+  private String commitSize;
 
   /** Bypass any updates */
   private boolean updateBypassed;
@@ -102,16 +102,45 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
 
   /**
    * @return Returns the commitSize.
+   * @deprecated use public String getCommitSizeVar() instead
    */
+  @Deprecated
   public int getCommitSize() {
+    return Integer.parseInt( commitSize );
+  }
+
+  /**
+   * @return Returns the commitSize.
+   */
+  public String getCommitSizeVar() {
     return commitSize;
+  }
+
+  /**
+   * @param vs -
+   *           variable space to be used for searching variable value
+   *           usually "this" for a calling step
+   * @return Returns the commitSize.
+   */
+  public int getCommitSize( VariableSpace vs ) {
+    return Integer.parseInt( vs.environmentSubstitute( commitSize ) );
+  }
+
+  /**
+   * @param commitSize
+   *          The commitSize to set.
+   *          @deprecated use public void setCommitSize( String commitSize ) instead
+   */
+  @Deprecated
+  public void setCommitSize( int commitSize ) {
+    this.commitSize = Integer.toString( commitSize );
   }
 
   /**
    * @param commitSize
    *          The commitSize to set.
    */
-  public void setCommitSize( int commitSize ) {
+  public void setCommitSize( String commitSize ) {
     this.commitSize = commitSize;
   }
 
@@ -289,7 +318,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
       csize = XMLHandler.getTagValue( stepnode, "commit" );
-      commitSize = Const.toInt( csize, 0 );
+      commitSize = ( csize != null ) ? csize : "0";
       schemaName = XMLHandler.getTagValue( stepnode, "lookup", "schema" );
       tableName = XMLHandler.getTagValue( stepnode, "lookup", "table" );
       updateBypassed = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "update_bypassed" ) );
@@ -342,7 +371,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
     keyStream = null;
     updateLookup = null;
     databaseMeta = null;
-    commitSize = 100;
+    commitSize = "100";
     schemaName = "";
     tableName = BaseMessages.getString( PKG, "InsertUpdateMeta.DefaultTableName" );
 
@@ -404,7 +433,18 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
-      commitSize = (int) rep.getStepAttributeInteger( id_step, "commit" );
+      commitSize = rep.getStepAttributeString( id_step, "commit" );
+      if ( commitSize == null ) {
+        long comSz = 0;
+        try {
+          comSz = rep.getStepAttributeInteger( id_step, "commit" );
+        } catch ( Exception ex ) {
+          commitSize = "100";
+        }
+        if ( comSz > 0 ) {
+          commitSize = Long.toString( comSz );
+        }
+      }
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
       updateBypassed = rep.getStepAttributeBoolean( id_step, "update_bypassed" );
