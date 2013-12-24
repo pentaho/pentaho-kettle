@@ -37,6 +37,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
@@ -53,6 +55,8 @@ public class JobExecutionConfiguration implements Cloneable
 {
     public static final String XML_TAG = "job_execution_configuration";
     
+    private final LogChannelInterface log = LogChannel.GENERAL;
+
     private boolean executingLocally;
     
     private boolean executingRemotely;
@@ -498,7 +502,8 @@ public class JobExecutionConfiguration implements Cloneable
         	RepositoryMeta repositoryMeta = repositoriesMeta.findRepository(repositoryName);
         	if (repositoryMeta==null)
         	{
-        		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
+            log.logBasic("I couldn't find the repository with name '" + repositoryName + "'",new KettleException() );
+            return;
         	}
 
 //        	Repository rep = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, PluginClassType.MainClassType);
@@ -509,7 +514,8 @@ public class JobExecutionConfiguration implements Cloneable
 			try {
 				rep.connect(username, password);
 			} catch(Exception e) {
-				throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
+			  log.logBasic("Unable to connect to the repository with name '" + repositoryName + "'", e);
+			  return;
 			}
 			
 			// Confirmed access:
