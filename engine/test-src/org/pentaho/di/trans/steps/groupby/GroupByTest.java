@@ -23,7 +23,16 @@
 package org.pentaho.di.trans.steps.groupby;
 
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,19 +44,10 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 public class GroupByTest extends TestCase {
     private StepMockHelper<GroupByMeta, GroupByData> mockHelper;
-
-    private GroupBy groupBy;
 
     @Before
     public void setUp() throws Exception {

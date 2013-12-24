@@ -43,7 +43,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
  * @author Pavel Sakun
  */
 public class ExcelOutputTemplateTest {
-  private static StepMockHelper helper;
+  private static StepMockHelper<ExcelOutputMeta, ExcelOutputData> helper;
 
   @BeforeClass
   public static void setUp() throws KettleException {
