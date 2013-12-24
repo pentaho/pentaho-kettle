@@ -31,7 +31,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 
 public class LdapProtocolFactory {
-  private static final List<Class<? extends LdapProtocol>> protocols = initProtocols();
+  protected static final List<Class<? extends LdapProtocol>> protocols = initProtocols();
 
   private static List<Class<? extends LdapProtocol>> initProtocols() {
     List<Class<? extends LdapProtocol>> protocols = new ArrayList<Class<? extends LdapProtocol>>();
