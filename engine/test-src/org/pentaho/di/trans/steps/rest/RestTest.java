@@ -22,8 +22,15 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
-import com.sun.net.httpserver.HttpServer;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertTrue;
+
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +44,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import java.util.Arrays;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import static org.pentaho.di.core.util.Assert.assertTrue;
+import com.sun.jersey.api.container.httpserver.HttpServerFactory;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * User: Dzmitry Stsiapanau Date: 11/29/13 Time: 3:42 PM
@@ -60,6 +64,7 @@ public class RestTest {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     }
 
+    @SuppressWarnings( "unused" )
     public void setRow( Object[] row ) {
       this.row = row;
     }

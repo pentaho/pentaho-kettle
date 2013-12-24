@@ -4,6 +4,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +14,6 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BaseStepTest {
   private StepMockHelper<StepMetaInterface, StepDataInterface> mockHelper;
@@ -67,7 +67,6 @@ public class BaseStepTest {
 
     //Mark start and stop while listeners are being added
     try{
-      int numListeners;
       addListeners.start();
 
       //Allow a few listeners to be added

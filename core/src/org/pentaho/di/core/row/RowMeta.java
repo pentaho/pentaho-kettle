@@ -192,11 +192,11 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public ValueMetaInterface getValueMeta( int index ) {
-   if ( ( index >= 0 ) && ( index < valueMetaList.size() ) ) {
-     return valueMetaList.get( index );
-   } else {
-     return null;
-   }
+    if ( ( index >= 0 ) && ( index < valueMetaList.size() ) ) {
+      return valueMetaList.get( index );
+    } else {
+      return null;
+    }
   }
 
   /**
