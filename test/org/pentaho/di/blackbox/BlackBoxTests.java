@@ -214,7 +214,7 @@ public class BlackBoxTests {
         actualFile = actualFile.replaceFirst( ".expected.", ".actual." ); // single file case
         File actual = new File( actualFile );
         if ( result.getResult() ) {
-          fileCompare( expected, actual, log );
+          fileCompare( expected, actual, log, true );
         }
       }
     }
@@ -307,6 +307,10 @@ public class BlackBoxTests {
   }
 
   public void fileCompare( File expected, File actual, LogChannelInterface log ) throws IOException {
+    fileCompare( expected, actual, log, false );
+  }
+  
+  public void fileCompare( File expected, File actual, LogChannelInterface log, boolean ignoreCRs ) throws IOException {
 
     InputStream expectedStream = new FileInputStream( expected );
     InputStream actualStream = new FileInputStream( actual );
@@ -333,6 +337,7 @@ public class BlackBoxTests {
       int indexTmp = 0;
       int totalGold = goldPos;
       int totalTmp = tmpPos;
+      int skippedCRs = 0;
       while ( goldPos > 0 && tmpPos > 0 ) {
         if ( indexGold == goldPos ) {
           goldPos = expectedStream.read( goldBuffer );
@@ -356,6 +361,13 @@ public class BlackBoxTests {
         }
 
         charno++;
+        //dealing with Windows \ Unix line endings differences
+        if ( ignoreCRs && goldBuffer[indexGold] != tmpBuffer[indexTmp]
+            && tmpBuffer[indexTmp] == '\r' && tmpBuffer[indexTmp + 1] == '\n' ) {
+          indexTmp++;
+          skippedCRs++;
+        }
+
         if ( goldBuffer[indexGold] != tmpBuffer[indexTmp] ) {
           int start = indexTmp > 10 ? indexTmp - 10 : 0;
           int end = indexTmp < tmpBuffer.length - 11 ? indexTmp + 10 : tmpBuffer.length - 1;
@@ -389,7 +401,7 @@ public class BlackBoxTests {
         indexTmp++;
 
       }
-      if ( totalGold != totalTmp ) {
+      if ( totalGold != totalTmp - skippedCRs ) {
         String message =
           "Comparison files are not same length. "
             + "Expected=" + expected.getPath() + " (" + totalGold + ") " + "Actual=" + actual.getPath() + " ("
