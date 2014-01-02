@@ -26,10 +26,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
+import org.junit.Test;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
@@ -51,36 +52,58 @@ import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 /**
  * This class was a "copy and modification" of Kettle's JsonOutputTests.
- *
+ * 
  * @author Hendy Irawan <hendy@soluvas.com> Modified by Sean Flatley, removing dependency on external text file to hold
  *         expected results and modifying code to handle "Compatibility Mode".
  */
-public class JsonOutputTest extends TestCase {
+public class JsonOutputTest {
 
   private static final String EXPECTED_NON_COMPATIBILITY_JSON =
-    "{\"data\":[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
-      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"}]}";
+      "{\"data\":[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+          + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"}]}";
 
   private static final String EXPECTED_COMPATIBILITY_MODE_JSON =
-    "{\"data\":[{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
-      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
-      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
-      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
-      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
-      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
-      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]}";
+      "{\"data\":[{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+          + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+          + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+          + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+          + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+          + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+          + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]}";
+
+  private static final String EXPECTED_COMP_NO_BLOC = "[{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]";
+
+  private static final String EXPECTED_NONCOMP_NO_BLOC = "[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
+      + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"}]";
 
   /**
    * Creates a row generator step for this class..
-   *
+   * 
    * @param name
    * @param registry
    * @return
@@ -113,7 +136,7 @@ public class JsonOutputTest extends TestCase {
 
   /**
    * Create a dummy step for this class.
-   *
+   * 
    * @param name
    * @param registry
    * @return
@@ -131,7 +154,7 @@ public class JsonOutputTest extends TestCase {
   /**
    * Create result data for test case 1. Each Object array in element in list should mirror the data written by the row
    * generator created by the createRowGenerator method.
-   *
+   * 
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -165,7 +188,7 @@ public class JsonOutputTest extends TestCase {
 
   /**
    * Creates a RowMetaInterface with a ValueMetaInterface with the name "filename".
-   *
+   * 
    * @return
    */
   public RowMetaInterface createRowMetaInterface() {
@@ -181,31 +204,28 @@ public class JsonOutputTest extends TestCase {
 
   /**
    * Creates data... Will add more as I figure what the data is.
-   *
+   * 
    * @param fileName
    * @return
    */
-  public List<RowMetaAndData> createData() {
-    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
-    RowMetaInterface rowMetaInterface = createRowMetaInterface();
-    Object[] r1 = new Object[] {};
-    list.add( new RowMetaAndData( rowMetaInterface, r1 ) );
-    return list;
-  }
+  /*
+   * public List<RowMetaAndData> createData() { List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+   * RowMetaInterface rowMetaInterface = createRowMetaInterface(); Object[] r1 = new Object[] {}; list.add( new
+   * RowMetaAndData( rowMetaInterface, r1 ) ); return list; }
+   */
 
   /**
    * Creates a row meta interface for the fields that are defined by performing a getFields and by checking "Result
    * filenames - Add filenames to result from "Text File Input" dialog.
-   *
+   * 
    * @return
    */
   public RowMetaInterface createResultRowMetaInterface() {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "State", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "City", ValueMeta.TYPE_STRING ) };
+        { new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "State", ValueMeta.TYPE_STRING ),
+          new ValueMeta( "City", ValueMeta.TYPE_STRING ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );
@@ -214,7 +234,7 @@ public class JsonOutputTest extends TestCase {
     return rowMetaInterface;
   }
 
-  private StepMeta createJsonOutputStep( String name, String jsonFileName, PluginRegistry registry ) {
+  private StepMeta createJsonOutputStep( String name, String jsonFileName, PluginRegistry registry, String jsonBlock ) {
 
     // Create a Text File Output step
     String testFileOutputName = name;
@@ -256,13 +276,13 @@ public class JsonOutputTest extends TestCase {
     jsonOutputMeta.setFileName( jsonFileName );
     jsonOutputMeta.setExtension( "js" );
     jsonOutputMeta.setNrRowsInBloc( "0" ); // a single "data" contains an array of all records
-    jsonOutputMeta.setJsonBloc( "data" );
+    jsonOutputMeta.setJsonBloc( jsonBlock );
 
     return jsonOutputStep;
 
   }
 
-  public String test( boolean compatibilityMode ) throws Exception {
+  public String test( boolean compatibilityMode, String jsonBlock ) throws Exception {
     KettleEnvironment.init();
 
     // Create a new transformation...
@@ -287,7 +307,7 @@ public class JsonOutputTest extends TestCase {
     // create the json output step
     // but first lets get a filename
     String jsonFileName = TestUtilities.createEmptyTempFile( "testJsonOutput1_" );
-    StepMeta jsonOutputStep = createJsonOutputStep( "json output step", jsonFileName, registry );
+    StepMeta jsonOutputStep = createJsonOutputStep( "json output step", jsonFileName, registry, jsonBlock );
     ( (JsonOutputMeta) jsonOutputStep.getStepMetaInterface() ).setCompatibilityMode( compatibilityMode );
     transMeta.addStep( jsonOutputStep );
 
@@ -324,15 +344,61 @@ public class JsonOutputTest extends TestCase {
     return jsonStructure;
   }
 
-  // The actual tests
-
+  /**
+   * PDI-7159 test that Json output step can produce backward compatible json.
+   * @throws Exception
+   */
+  @Test
   public void testNonCompatibilityMode() throws Exception {
-    String jsonStructure = test( false );
-    Assert.assertEquals( EXPECTED_NON_COMPATIBILITY_JSON, jsonStructure );
+    String jsonStructure = test( false, "data" );
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode tree1 = mapper.readTree( EXPECTED_NON_COMPATIBILITY_JSON );
+    JsonNode tree2 = mapper.readTree( jsonStructure );
+    Assert.assertEquals( "Json objects is equals for backward compatibility mode", tree1, tree2 );
   }
 
+  /**
+   * PDI-7159 test that Json output step can produce fixed compatible json.
+   * @throws Exception
+   */
+  @Test
   public void testCompatibilityMode() throws Exception {
-    String jsonStructure = test( true );
-    Assert.assertEquals( EXPECTED_COMPATIBILITY_MODE_JSON, jsonStructure );
+    String jsonStructure = test( true, "data" );
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode tree1 = mapper.readTree( EXPECTED_COMPATIBILITY_MODE_JSON );
+    JsonNode tree2 = mapper.readTree( jsonStructure );
+    Assert.assertEquals( "Json objects are equals", tree1, tree2 );
+  }
+
+  /**
+   * PDI-7243 test that Json output step can produce backward compatible json
+   * If json block are not specified it will be produced as array.
+   * 
+   * @throws Exception
+   * @see {@link #EXPECTED_NONCOMP_NO_BLOC}
+   */
+  @Test
+  public void testNonCompatibilityModeNoBlock() throws Exception {
+    String jsonStructure = test( false, "" );
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode tree1 = mapper.readTree( EXPECTED_NONCOMP_NO_BLOC );
+    JsonNode tree2 = mapper.readTree( jsonStructure );
+    Assert.assertEquals( "Json objects is equals for backward compatibility mode", tree1, tree2 );
+  }
+
+  /**
+   * PDI-7243 test that Json output step can produce fixed compatible json
+   * If json block are not specified it will be produced as array.
+   * 
+   * @throws Exception
+   * @see {@link #EXPECTED_COMP_NO_BLOC}
+   */
+  @Test
+  public void testCompatibilityModeNoBlock() throws Exception {
+    String jsonStructure = test( true, "" );
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode tree1 = mapper.readTree( EXPECTED_COMP_NO_BLOC );
+    JsonNode tree2 = mapper.readTree( jsonStructure );
+    Assert.assertEquals( "Json objects are equals", tree1, tree2 );
   }
 }
