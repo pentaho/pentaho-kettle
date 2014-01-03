@@ -80,6 +80,9 @@ public class FilterRows extends BaseStep implements StepInterface {
       return false;
     }
 
+    // if filter refers to non-existing fields, throw exception
+    checkNonExistingFields();
+
     if ( first ) {
       first = false;
 
@@ -167,4 +170,21 @@ public class FilterRows extends BaseStep implements StepInterface {
     return false;
   }
 
+  protected void checkNonExistingFields() throws KettleException {
+    List<String> orphanFields = meta.getOrphanFields(
+      meta.getCondition(), getTransMeta().getPrevStepFields( getStepMeta() ) );
+    if ( orphanFields != null && orphanFields.size() > 0 ) {
+      String fields = "";
+      boolean first = true;
+      for ( String field : orphanFields ) {
+        if ( !first ) {
+          fields += ", ";
+        }
+        fields += "'" + field + "'";
+        first = false;
+      }
+      String errorMsg = BaseMessages.getString( PKG, "FilterRows.CheckResult.FieldsNotFoundFromPreviousStep", fields );
+      throw new KettleException( errorMsg );
+    }
+  }
 }

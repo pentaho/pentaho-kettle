@@ -377,6 +377,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public static final String APP_NAME = BaseMessages.getString( PKG, "Spoon.Application.Name" );
 
+  private static final String STRING_SPOON_MAIN_TREE = BaseMessages.getString( PKG, "Spoon.MainTree.Label" );
+
+  private static final String STRING_SPOON_CORE_OBJECTS_TREE = BaseMessages.getString( PKG,
+    "Spoon.CoreObjectsTree.Label" );
+
+  public static final String XML_TAG_TRANSFORMATION_STEPS = "transformation-steps";
+
+  public static final String XML_TAG_JOB_JOB_ENTRIES = "job-jobentries";
+
+  private static final String XML_TAG_STEPS = "steps";
+
   private static Spoon staticSpoon;
 
   private static LogChannelInterface log;
@@ -1778,15 +1789,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private static final String STRING_SPOON_MAIN_TREE = BaseMessages.getString( PKG, "Spoon.MainTree.Label" );
-
-  private static final String STRING_SPOON_CORE_OBJECTS_TREE = BaseMessages.getString(
-    PKG, "Spoon.CoreObjectsTree.Label" );
-
-  public static final String XML_TAG_TRANSFORMATION_STEPS = "transformation-steps";
-
-  public static final String XML_TAG_JOB_JOB_ENTRIES = "job-jobentries";
-
   private void addTree() {
     // Color background = GUIResource.getInstance().getColorLightPentaho();
     mainComposite = new Composite( sashform, SWT.BORDER );
@@ -3187,11 +3189,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       Node stepsnode = XMLHandler.getSubNode( transnode, "steps" );
       int nr = XMLHandler.countNodes( stepsnode, "step" );
-      if ( log.isDebug() ) {
+      if ( getLog().isDebug() ) {
         // "I found "+nr+" steps to paste on location: "
-        log.logDebug( BaseMessages.getString( PKG, "Spoon.Log.FoundSteps", "" + nr ) + loc );
+        getLog().logDebug( BaseMessages.getString( PKG, "Spoon.Log.FoundSteps", "" + nr ) + loc );
       }
       StepMeta[] steps = new StepMeta[nr];
+      ArrayList<String> stepOldNames = new ArrayList<String>( nr );
 
       // Point min = new Point(loc.x, loc.y);
       Point min = new Point( 99999999, 99999999 );
@@ -3216,9 +3219,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Load the hops...
       Node hopsnode = XMLHandler.getSubNode( transnode, "order" );
       nr = XMLHandler.countNodes( hopsnode, "hop" );
-      if ( log.isDebug() ) {
+      if ( getLog().isDebug() ) {
         // "I found "+nr+" hops to paste."
-        log.logDebug( BaseMessages.getString( PKG, "Spoon.Log.FoundHops", "" + nr ) );
+        getLog().logDebug( BaseMessages.getString( PKG, "Spoon.Log.FoundHops", "" + nr ) );
       }
       TransHopMeta[] hops = new TransHopMeta[nr];
 
@@ -3247,6 +3250,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         steps[i].setDraw( true );
 
         // Check the name, find alternative...
+        stepOldNames.add( name );
         steps[i].setName( transMeta.getAlternativeStepname( name ) );
         transMeta.addStep( steps[i] );
         position[i] = transMeta.indexOfStep( steps[i] );
@@ -3254,16 +3258,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       // Add the hops too...
-      for ( int i = 0; i < hops.length; i++ ) {
-        transMeta.addTransHop( hops[i] );
+      for ( TransHopMeta hop : hops ) {
+        transMeta.addTransHop( hop );
       }
 
       // Load the notes...
       Node notesnode = XMLHandler.getSubNode( transnode, "notepads" );
       nr = XMLHandler.countNodes( notesnode, "notepad" );
-      if ( log.isDebug() ) {
+      if ( getLog().isDebug() ) {
         // "I found "+nr+" notepads to paste."
-        log.logDebug( BaseMessages.getString( PKG, "Spoon.Log.FoundNotepads", "" + nr ) );
+        getLog().logDebug( BaseMessages.getString( PKG, "Spoon.Log.FoundNotepads", "" + nr ) );
       }
       NotePadMeta[] notes = new NotePadMeta[nr];
 
@@ -3280,6 +3284,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       for ( int i = 0; i < steps.length; i++ ) {
         StepMetaInterface smi = steps[i].getStepMetaInterface();
         smi.searchInfoAndTargetSteps( transMeta.getSteps() );
+      }
+
+      // Set the error handling hops
+      Node errorHandlingNode = XMLHandler.getSubNode( transnode, TransMeta.XML_TAG_STEP_ERROR_HANDLING );
+      int nrErrorHandlers = XMLHandler.countNodes( errorHandlingNode, StepErrorMeta.XML_TAG );
+      for ( int i = 0; i < nrErrorHandlers; i++ ) {
+        Node stepErrorMetaNode = XMLHandler.getSubNodeByNr( errorHandlingNode, StepErrorMeta.XML_TAG, i );
+        StepErrorMeta stepErrorMeta =
+            new StepErrorMeta( transMeta.getParentVariableSpace(), stepErrorMetaNode, transMeta.getSteps() );
+
+        // Handle pasting multiple times, need to update source and target step names
+        int srcStepPos = stepOldNames.indexOf( stepErrorMeta.getSourceStep().getName() );
+        int tgtStepPos = stepOldNames.indexOf( stepErrorMeta.getTargetStep().getName() );
+        StepMeta sourceStep = transMeta.findStep( steps[ srcStepPos ].getName() );
+        if ( sourceStep != null ) {
+          sourceStep.setStepErrorMeta( stepErrorMeta );
+        }
+        StepMeta targetStep = transMeta.findStep( steps[ tgtStepPos ].getName() );
+        stepErrorMeta.setSourceStep( sourceStep );
+        stepErrorMeta.setTargetStep( targetStep );
       }
 
       // Save undo information too...
@@ -3314,48 +3338,50 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    String xml = XMLHandler.getXMLHeader();
+    StringBuilder xml = new StringBuilder( 5000 ).append( XMLHandler.getXMLHeader() );
     try {
-      xml += XMLHandler.openTag( Spoon.XML_TAG_TRANSFORMATION_STEPS ) + Const.CR;
-      xml += " <steps>" + Const.CR;
+      xml.append( XMLHandler.openTag( Spoon.XML_TAG_TRANSFORMATION_STEPS ) ).append( Const.CR );
 
-      for ( int i = 0; i < steps.size(); i++ ) {
-        xml += steps.get( i ).getXML();
+      xml.append( XMLHandler.openTag( Spoon.XML_TAG_STEPS ) ).append( Const.CR );
+      for ( StepMeta step : steps ) {
+        xml.append( step.getXML() );
       }
+      xml.append( XMLHandler.closeTag( Spoon.XML_TAG_STEPS ) ).append( Const.CR );
 
-      xml += "    </steps>" + Const.CR;
-
-      //
       // Also check for the hops in between the selected steps...
-      //
-
-      xml += "<order>" + Const.CR;
-      if ( steps != null ) {
-        for ( int i = 0; i < steps.size(); i++ ) {
-          for ( int j = 0; j < steps.size(); j++ ) {
-            if ( i != j ) {
-              TransHopMeta hop = transMeta.findTransHop( steps.get( i ), steps.get( j ), true );
-              if ( hop != null ) { // Ok, we found one...
-
-                xml += hop.getXML() + Const.CR;
-              }
+      xml.append( XMLHandler.openTag( TransMeta.XML_TAG_ORDER ) ).append( Const.CR );
+      for ( StepMeta step1 : steps ) {
+        for ( StepMeta step2 : steps ) {
+          if ( step1 != step2 ) {
+            TransHopMeta hop = transMeta.findTransHop( step1, step2, true );
+            if ( hop != null ) {
+              // Ok, we found one...
+              xml.append( hop.getXML() ).append( Const.CR );
             }
           }
         }
       }
-      xml += "  </order>" + Const.CR;
+      xml.append( XMLHandler.closeTag( TransMeta.XML_TAG_ORDER ) ).append( Const.CR );
 
-      xml += "  <notepads>" + Const.CR;
+      xml.append( XMLHandler.openTag( TransMeta.XML_TAG_NOTEPADS ) ).append( Const.CR );
       if ( notes != null ) {
-        for ( int i = 0; i < notes.size(); i++ ) {
-          xml += notes.get( i ).getXML();
+        for ( NotePadMeta note : notes ) {
+          xml.append( note.getXML() );
         }
       }
-      xml += "   </notepads>" + Const.CR;
+      xml.append( XMLHandler.closeTag( TransMeta.XML_TAG_NOTEPADS ) ).append( Const.CR );
 
-      xml += " " + XMLHandler.closeTag( Spoon.XML_TAG_TRANSFORMATION_STEPS ) + Const.CR;
+      xml.append( XMLHandler.openTag( TransMeta.XML_TAG_STEP_ERROR_HANDLING ) ).append( Const.CR );
+      for ( StepMeta step : steps ) {
+        if ( step.getStepErrorMeta() != null ) {
+          xml.append( step.getStepErrorMeta().getXML() ).append( Const.CR );
+        }
+      }
+      xml.append( XMLHandler.closeTag( TransMeta.XML_TAG_STEP_ERROR_HANDLING ) ).append( Const.CR );
 
-      toClipboard( xml );
+      xml.append( XMLHandler.closeTag( Spoon.XML_TAG_TRANSFORMATION_STEPS ) ).append( Const.CR );
+
+      toClipboard( xml.toString() );
     } catch ( Exception ex ) {
       new ErrorDialog( getShell(), "Error", "Error encoding to XML", ex );
     }
@@ -4070,8 +4096,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName() );
             addMenuLast();
             transMeta.clearChanged();
-            // transMeta.setFilename(name); // Don't do it, it's a
-            // bad idea!
+            // transMeta.setFilename(name); // Don't do it, it's a bad idea!
             addTransGraph( transMeta );
           }
           refreshGraph();
@@ -4079,9 +4104,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         } else if ( RepositoryObjectType.JOB.equals( type ) ) {
           // Load a job
           JobLoadProgressDialog jlpd = new JobLoadProgressDialog( shell, rep, name, repdir, null ); // Loads
-          // the
-          // last
-          // version
+          // the last version
           JobMeta jobMeta = jlpd.open();
           sharedObjectsFileMap.put( jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects() );
           setJobMetaVariables( jobMeta );
@@ -4704,7 +4727,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( exit || !canCancel ) {
       // we have asked about it all and we're still here. Now close
       // all the tabs, stop the running transformations
-
       for ( TabMapEntry mapEntry : list ) {
         if ( !mapEntry.getObject().canBeClosed() ) {
           // Unsaved transformation?
@@ -6349,7 +6371,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
         if ( name != null ) {
           // OK pressed in the dialog: we have a step-name
-
           String newname = name;
           StepMeta stepMeta = transMeta.findStep( newname );
           int nr = 2;
@@ -7875,17 +7896,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             svm.getSelectLength()[i] = -1;
             svm.getSelectPrecision()[i] = -1;
           }
-          // a new comment
-          // Now that we have the meta-data, create a new step info
-          // object
-
+          // a new comment. Sincerely yours CO ;)
+          // Now that we have the meta-data, create a new step info object
           String stepName = stepMeta.getName() + " Mapping";
           stepName = transMeta.getAlternativeStepname( stepName ); // if
-          // it's
-          // already
-          // there,
-          // rename
-          // it.
+          // it's already there, rename it.
 
           StepMeta newStep = new StepMeta( "SelectValues", stepName, svm );
           newStep.setLocation( stepMeta.getLocation().x + 20, stepMeta.getLocation().y + 20 );
@@ -8036,7 +8051,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   /**
    * Select a clustering schema for this step.
    *
-   * @param stepMeta
+   * @param stepMetas
    *          The steps (at least one!) to set the clustering schema for.
    */
   public void editClustering( TransMeta transMeta, List<StepMeta> stepMetas ) {

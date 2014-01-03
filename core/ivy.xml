@@ -43,6 +43,6 @@
     <dependency org="javassist"           name="javassist"           rev="3.12.1.GA"        transitive="false" conf="runtime->default"/>
     
     <dependency org="junit"               name="junit"               rev="4.7"              transitive="false" conf="test->default"/>
-    <dependency org="org.mockito"         name="mockito-all"         rev="1.8.4"            transitive="false" conf="test->default"/>
+    <dependency org="org.mockito"         name="mockito-all"         rev="1.9.5"            transitive="false" conf="test->default"/>
   </dependencies>
 </ivy-module>

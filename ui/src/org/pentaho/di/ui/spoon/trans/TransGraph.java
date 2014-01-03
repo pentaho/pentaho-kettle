@@ -2110,7 +2110,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         mb.open();
 
       }
-
+      String cps = stepMeta.getCopiesString();
+      if ( ( cps != null && !cps.equals( cop ) ) || ( cps == null && cop != null) ) {
+        stepMeta.setChanged();
+      }
       stepMeta.setCopiesString( cop );
       spoon.refreshGraph();
     }
