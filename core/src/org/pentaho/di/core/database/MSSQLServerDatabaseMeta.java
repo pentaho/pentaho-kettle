@@ -272,7 +272,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
         }
         break;
       case ValueMetaInterface.TYPE_STRING:
-        if ( length < 8000 ) {
+        if ( length < getMaxVARCHARLength() ) {
           // Maybe use some default DB String length in case length<=0
           if ( length > 0 ) {
             retval += "VARCHAR(" + length + ")";
@@ -503,4 +503,10 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
   public boolean supportsErrorHandlingOnBatchUpdates() {
     return true;
   }
+
+  @Override
+  public int getMaxVARCHARLength() {
+    return 8000;
+  }
+
 }
