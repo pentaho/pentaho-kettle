@@ -45,6 +45,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
@@ -266,6 +267,12 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   @Override
   public StepDataInterface getStepData() {
     return new ConcatFieldsData();
+  }
+  
+    
+  @Override
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return new ConcatFieldsMetaInjection( this );
   }
 
 }
