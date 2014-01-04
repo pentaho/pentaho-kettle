@@ -51,7 +51,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -283,8 +282,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   public void setDatabaseMeta( DatabaseMeta database ) {
     this.databaseMeta = database;
   }
-  
-   /**
+
+  /**
    * @return Returns the commitSize.
    */
   public String getCommitSize() {
@@ -964,11 +963,6 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   public String getMissingDatabaseConnectionInformationMessage() {
     // Use default connection missing message
     return null;
-  }
-  
-  @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new TableOutputMetaInjection( this );
   }
 
 }
