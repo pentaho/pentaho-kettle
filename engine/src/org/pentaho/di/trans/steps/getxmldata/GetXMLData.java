@@ -321,7 +321,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       if ( first ) {
         first = false;
 
-        data.nrReadRow = data.readrow.length;
+        data.nrReadRow = getInputRowMeta().size();
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
