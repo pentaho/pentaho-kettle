@@ -65,9 +65,9 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface 
    */
   public RowMetaInterface keyTypes;
 
-  public RowMetaInterface keyMeta;
+  public RowMetaInterface cacheKeyMeta;
 
-  public RowMetaInterface valueMeta;
+  public RowMetaInterface cacheValueMeta;
 
   public Comparator<KeyValue> comparator;
 
@@ -102,7 +102,7 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface 
     comparator = new Comparator<KeyValue>() {
       public int compare( KeyValue k1, KeyValue k2 ) {
         try {
-          return keyMeta.compare( k1.getKey(), k2.getKey() );
+          return cacheKeyMeta.compare( k1.getKey(), k2.getKey() );
         } catch ( KettleValueException e ) {
           throw new RuntimeException( "Stream Lookup comparator error", e );
         }

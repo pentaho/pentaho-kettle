@@ -60,14 +60,15 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
   public RowSet getMockInputRowSet( final List<Object[]> rows ) {
     final AtomicInteger index = new AtomicInteger( 0 );
     RowSet rowSet = mock( RowSet.class, Mockito.RETURNS_MOCKS );
-    when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenAnswer( new Answer<Object[]>() {
+    Answer answer = new Answer<Object[]>() {
       @Override
       public Object[] answer( InvocationOnMock invocation ) throws Throwable {
         int i = index.getAndIncrement();
         return i < rows.size() ? rows.get( i ) : null;
       }
-
-    } );
+    };
+    when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenAnswer( answer );
+    when( rowSet.getRow() ).thenAnswer( answer );
     when( rowSet.isDone() ).thenAnswer( new Answer<Boolean>() {
 
       @Override

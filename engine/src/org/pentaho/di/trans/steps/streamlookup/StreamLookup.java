@@ -93,15 +93,15 @@ public class StreamLookup extends BaseStep implements StepInterface {
           break;
         case ValueMetaInterface.TYPE_NUMBER:
           try {
-            data.nullIf[i] = new Double( Double.parseDouble( meta.getValueDefault()[i] ) );
+            data.nullIf[i] = Double.parseDouble( meta.getValueDefault()[i] );
           } catch ( Exception e ) {
             // Ignore errors
           }
           break;
         case ValueMetaInterface.TYPE_INTEGER:
           try {
-            data.nullIf[i] = new Long( Long.parseLong( meta.getValueDefault()[i] ) );
-          } catch ( Exception e ) {
+            data.nullIf[i] = Long.parseLong( meta.getValueDefault()[i] );
+        } catch ( Exception e ) {
             // Ignore errors
           }
           break;
@@ -165,56 +165,55 @@ public class StreamLookup extends BaseStep implements StepInterface {
         data.hasLookupRows = true;
 
         data.infoMeta = rowSet.getRowMeta().clone();
-        data.keyMeta = new RowMeta();
-        data.valueMeta = new RowMeta();
+        RowMetaInterface cacheKeyMeta = new RowMeta();
+        RowMetaInterface cacheValueMeta = new RowMeta();
 
-        // Look up the keys in the source rows
+   // Look up the keys in the source rows
         for ( int i = 0; i < meta.getKeylookup().length; i++ ) {
           keyNrs[i] = rowSet.getRowMeta().indexOfValue( meta.getKeylookup()[i] );
           if ( keyNrs[i] < 0 ) {
             throw new KettleStepException( BaseMessages.getString(
               PKG, "StreamLookup.Exception.UnableToFindField", meta.getKeylookup()[i] ) );
           }
-          data.keyMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( keyNrs[i] ) );
+          cacheKeyMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( keyNrs[i] ) );
         }
-        // Save the data types of the keys to optionally convert input rows later on...
+       // Save the data types of the keys to optionally convert input rows later on...
         if ( data.keyTypes == null ) {
-          data.keyTypes = data.keyMeta.clone();
-        }
-        // set the meta data for the keys also to STORAGE_TYPE_NORMAL, otherwise it will conflict later on
-        // for the data is is already set to STORAGE_TYPE_NORMAL in StreamLookupMeta.getFields()
-        // all values in the cache are of this storage type (see convertToNormalStorageType below)
-        // position here after keyTypes are stored (needed below for correct convertToNormalStorageType)
-        for ( int i = 0; i < keyNrs.length; i++ ) {
-          data.keyMeta.getValueMeta( i ).setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+          data.keyTypes = cacheKeyMeta.clone();
         }
 
-        for ( int v = 0; v < meta.getValue().length; v++ ) {
+        // Cache keys are stored as normal types, not binary
+        for ( int i = 0; i < keyNrs.length; i++ ) {
+          cacheKeyMeta.getValueMeta( i ).setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+        }
+
+       for ( int v = 0; v < meta.getValue().length; v++ ) {
           valueNrs[v] = rowSet.getRowMeta().indexOfValue( meta.getValue()[v] );
           if ( valueNrs[v] < 0 ) {
             throw new KettleStepException( BaseMessages.getString(
               PKG, "StreamLookup.Exception.UnableToFindField", meta.getValue()[v] ) );
           }
-          data.valueMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( valueNrs[v] ) );
+          cacheValueMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( valueNrs[v] ) );
         }
+
+        data.cacheKeyMeta = cacheKeyMeta;
+        data.cacheValueMeta = cacheValueMeta;
       }
 
       Object[] keyData = new Object[keyNrs.length];
       for ( int i = 0; i < keyNrs.length; i++ ) {
         ValueMetaInterface keyMeta = data.keyTypes.getValueMeta( i );
-        keyData[i] = keyMeta.convertToNormalStorageType( rowData[keyNrs[i]] ); // Make sure only normal storage goes in
-        keyMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL ); // now we need to change keyMeta/keyTypes also
-                                                                          // to normal
+        // Convert keys to normal storage type
+        keyData[i] = keyMeta.convertToNormalStorageType( rowData[keyNrs[i]] );
       }
 
       Object[] valueData = new Object[valueNrs.length];
       for ( int i = 0; i < valueNrs.length; i++ ) {
-        ValueMetaInterface valueMeta = data.valueMeta.getValueMeta( i );
-        valueData[i] = valueMeta.convertToNormalStorageType( rowData[valueNrs[i]] ); // make sure only normal storage
-                                                                                     // goes in
+        // Store value as is, avoid preliminary binary->normal storage type conversion
+        valueData[i] = rowData[valueNrs[i]];
       }
 
-      addToCache( data.keyMeta, keyData, data.valueMeta, valueData );
+      addToCache( data.cacheKeyMeta, keyData, data.cacheValueMeta, valueData );
 
       rowData = getRowFrom( rowSet );
     }
@@ -276,9 +275,9 @@ public class StreamLookup extends BaseStep implements StepInterface {
     if ( data.hasLookupRows ) {
       try {
         if ( meta.getKeystream().length > 0 ) {
-          add = getFromCache( data.keyTypes, lu );
+          add = getFromCache( data.cacheKeyMeta, lu );
         } else {
-          // Just take the first element in the hashtable...
+   // Just take the first element in the hashtable...
           throw new KettleStepException( BaseMessages.getString( PKG, "StreamLookup.Log.GotRowWithoutKeys" ) );
         }
       } catch ( Exception e ) {
@@ -331,11 +330,8 @@ public class StreamLookup extends BaseStep implements StepInterface {
         }
       }
     } else {
-      // We can't just put Object[] in the map
-      // The compare function is not in it.
-      // We need to wrap in and use that.
-      // Let's use RowMetaAndData for this one.
-      //
+      // We can't just put Object[] in the map The compare function is not in it.
+      // We need to wrap in and use that. Let's use RowMetaAndData for this one.
       data.look.put( new RowMetaAndData( keyMeta, keyData ), valueData );
     }
   }
@@ -364,8 +360,8 @@ public class StreamLookup extends BaseStep implements StepInterface {
             if ( value == null ) {
               return null;
             }
-            return RowMeta.getRow( data.valueMeta, value );
-          } catch ( Exception e ) {
+            return RowMeta.getRow( data.cacheValueMeta, value );
+   } catch ( Exception e ) {
             logError( "Oops", e );
             throw new RuntimeException( e );
           }
@@ -385,25 +381,10 @@ public class StreamLookup extends BaseStep implements StepInterface {
 
       if ( !readLookupValues() ) {
         // Read values in lookup table (look)
-
         logError( BaseMessages.getString( PKG, "StreamLookup.Log.UnableToReadDataFromLookupStream" ) );
         setErrors( 1 );
         stopAll();
         return false;
-      }
-
-      // At this point, all the values in the cache are of normal storage data type...
-      // We should reflect this in the metadata...
-      //
-      if ( data.keyMeta != null ) { // null when no rows coming from lookup stream
-        for ( ValueMetaInterface valueMeta : data.keyMeta.getValueMetaList() ) {
-          valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
-        }
-      }
-      if ( data.valueMeta != null ) { // null when no rows coming from lookup stream
-        for ( ValueMetaInterface valueMeta : data.valueMeta.getValueMetaList() ) {
-          valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
-        }
       }
 
       return true;
@@ -465,6 +446,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
     Object[] outputRow = lookupValues( getInputRowMeta(), r ); // Do the actual lookup in the hastable.
     if ( outputRow == null ) {
       setOutputDone(); // signal end to receiver(s)
+
       return false;
     }
 
@@ -488,6 +470,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
 
       return true;
     }
+
     return false;
   }
 
@@ -501,5 +484,4 @@ public class StreamLookup extends BaseStep implements StepInterface {
 
     super.dispose( smi, sdi );
   }
-
 }
