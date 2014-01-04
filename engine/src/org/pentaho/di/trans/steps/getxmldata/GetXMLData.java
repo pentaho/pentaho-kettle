@@ -1,8 +1,8 @@
-/*******************************************************************************
+/*! ******************************************************************************
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -320,9 +320,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       if ( first ) {
         first = false;
 
-        if ( data.readrow != null ) {
-          data.nrReadRow = data.readrow.length;
-        }
+        data.nrReadRow = getInputRowMeta().size();
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
