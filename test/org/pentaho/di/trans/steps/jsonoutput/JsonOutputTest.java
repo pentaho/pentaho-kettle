@@ -23,18 +23,17 @@
 package org.pentaho.di.trans.steps.jsonoutput;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
@@ -108,7 +107,7 @@ public class JsonOutputTest {
    * @param registry
    * @return
    */
-  private StepMeta createRowGeneratorStep( String name, PluginRegistry registry ) {
+  private StepMeta createRowGeneratorStep( String name, PluginRegistry registry, String amount ) {
 
     // Default the name if it is empty
     String testFileOutputName = ( Const.isEmpty( name ) ? "generate rows" : name );
@@ -128,7 +127,7 @@ public class JsonOutputTest {
     rowGeneratorMeta.setDecimal( new String[] { "", "", "" } );
     rowGeneratorMeta.setCurrency( new String[] { "", "", "" } );
     rowGeneratorMeta.setFieldFormat( new String[] { "", "", "" } );
-    rowGeneratorMeta.setRowLimit( "10" );
+    rowGeneratorMeta.setRowLimit( amount );
 
     // return the step meta
     return generateRowsStep;
@@ -152,41 +151,6 @@ public class JsonOutputTest {
   }
 
   /**
-   * Create result data for test case 1. Each Object array in element in list should mirror the data written by the row
-   * generator created by the createRowGenerator method.
-   * 
-   * @return list of metadata/data couples of how the result should look like.
-   */
-  public List<RowMetaAndData> createResultData1() {
-    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
-
-    RowMetaInterface rowMetaInterface = createResultRowMetaInterface();
-
-    Object[] r1 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r2 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r3 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r4 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r5 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r6 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r7 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r8 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r9 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-    Object[] r10 = new Object[] { new Long( 1L ), "Orlando", "Florida" };
-
-    list.add( new RowMetaAndData( rowMetaInterface, r1 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r2 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r3 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r4 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r5 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r6 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r7 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r8 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r9 ) );
-    list.add( new RowMetaAndData( rowMetaInterface, r10 ) );
-    return list;
-  }
-
-  /**
    * Creates a RowMetaInterface with a ValueMetaInterface with the name "filename".
    * 
    * @return
@@ -201,18 +165,6 @@ public class JsonOutputTest {
 
     return rowMetaInterface;
   }
-
-  /**
-   * Creates data... Will add more as I figure what the data is.
-   * 
-   * @param fileName
-   * @return
-   */
-  /*
-   * public List<RowMetaAndData> createData() { List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
-   * RowMetaInterface rowMetaInterface = createRowMetaInterface(); Object[] r1 = new Object[] {}; list.add( new
-   * RowMetaAndData( rowMetaInterface, r1 ) ); return list; }
-   */
 
   /**
    * Creates a row meta interface for the fields that are defined by performing a getFields and by checking "Result
@@ -282,7 +234,8 @@ public class JsonOutputTest {
 
   }
 
-  public String test( boolean compatibilityMode, String jsonBlock ) throws Exception {
+  public String test( boolean compatibilityMode, String jsonBlock, String amount, String nbrRowsInBlock )
+    throws Exception {
     KettleEnvironment.init();
 
     // Create a new transformation...
@@ -297,7 +250,7 @@ public class JsonOutputTest {
     transMeta.addStep( injectorStep );
 
     // create a row generator step
-    StepMeta rowGeneratorStep = createRowGeneratorStep( "Create rows for testJsonOutput1", registry );
+    StepMeta rowGeneratorStep = createRowGeneratorStep( "Create rows for testJsonOutput1", registry, amount );
     transMeta.addStep( rowGeneratorStep );
 
     // create a TransHopMeta for injector and add it to the transMeta
@@ -309,6 +262,7 @@ public class JsonOutputTest {
     String jsonFileName = TestUtilities.createEmptyTempFile( "testJsonOutput1_" );
     StepMeta jsonOutputStep = createJsonOutputStep( "json output step", jsonFileName, registry, jsonBlock );
     ( (JsonOutputMeta) jsonOutputStep.getStepMetaInterface() ).setCompatibilityMode( compatibilityMode );
+    ( (JsonOutputMeta) jsonOutputStep.getStepMetaInterface() ).setNrRowsInBloc( nbrRowsInBlock );
     transMeta.addStep( jsonOutputStep );
 
     // create a TransHopMeta for jsonOutputStep and add it to the transMeta
@@ -346,11 +300,12 @@ public class JsonOutputTest {
 
   /**
    * PDI-7159 test that Json output step can produce backward compatible json.
+   * 
    * @throws Exception
    */
   @Test
   public void testNonCompatibilityMode() throws Exception {
-    String jsonStructure = test( false, "data" );
+    String jsonStructure = test( false, "data", "10", "0" );
     ObjectMapper mapper = new ObjectMapper();
     JsonNode tree1 = mapper.readTree( EXPECTED_NON_COMPATIBILITY_JSON );
     JsonNode tree2 = mapper.readTree( jsonStructure );
@@ -359,11 +314,12 @@ public class JsonOutputTest {
 
   /**
    * PDI-7159 test that Json output step can produce fixed compatible json.
+   * 
    * @throws Exception
    */
   @Test
   public void testCompatibilityMode() throws Exception {
-    String jsonStructure = test( true, "data" );
+    String jsonStructure = test( true, "data", "10", "0" );
     ObjectMapper mapper = new ObjectMapper();
     JsonNode tree1 = mapper.readTree( EXPECTED_COMPATIBILITY_MODE_JSON );
     JsonNode tree2 = mapper.readTree( jsonStructure );
@@ -371,34 +327,108 @@ public class JsonOutputTest {
   }
 
   /**
-   * PDI-7243 test that Json output step can produce backward compatible json
-   * If json block are not specified it will be produced as array.
+   * PDI-7243 test that Json output step can produce backward compatible json If json block are not specified it will be
+   * produced as array.
    * 
    * @throws Exception
    * @see {@link #EXPECTED_NONCOMP_NO_BLOC}
    */
   @Test
   public void testNonCompatibilityModeNoBlock() throws Exception {
-    String jsonStructure = test( false, "" );
+    String jsonStructure = test( false, "", "10", "0" );
     ObjectMapper mapper = new ObjectMapper();
     JsonNode tree1 = mapper.readTree( EXPECTED_NONCOMP_NO_BLOC );
     JsonNode tree2 = mapper.readTree( jsonStructure );
-    Assert.assertEquals( "Json objects is equals for backward compatibility mode", tree1, tree2 );
+    Assert.assertEquals( "Json objects is equals for backward compatibility mode" + "with no block name specified",
+        tree1, tree2 );
   }
 
   /**
-   * PDI-7243 test that Json output step can produce fixed compatible json
-   * If json block are not specified it will be produced as array.
+   * PDI-7243 test that Json output step can produce fixed compatible json If json block are not specified it will be
+   * produced as array.
    * 
    * @throws Exception
    * @see {@link #EXPECTED_COMP_NO_BLOC}
    */
   @Test
   public void testCompatibilityModeNoBlock() throws Exception {
-    String jsonStructure = test( true, "" );
+    String jsonStructure = test( true, "", "10", "0" );
     ObjectMapper mapper = new ObjectMapper();
     JsonNode tree1 = mapper.readTree( EXPECTED_COMP_NO_BLOC );
     JsonNode tree2 = mapper.readTree( jsonStructure );
-    Assert.assertEquals( "Json objects are equals", tree1, tree2 );
+    Assert.assertEquals( "Json objects are equals with no block name specified", tree1, tree2 );
   }
+
+  /**
+   * PDI-7243 test that Json output step in case of no rows
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testNoRowsAvailable() throws Exception {
+    String jsonStructure = test( true, "", "0", "0" );
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode tree1 = mapper.readTree( "[]" );
+    JsonNode tree2 = mapper.readTree( jsonStructure );
+    Assert.assertEquals( "Json objects are equals if output object is empty", tree1, tree2 );
+  }
+
+  /**
+   * PDI-8395 - test that if number rows in a block is limited output file is consistent.
+   * 
+   * Since step output file just dump every output json value we need to do some magic to discover that output dump file
+   * is correct.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testOutputFileIsConsistent() throws Exception {
+    String jsonStructure = test( false, "", "3", "2" );
+    // dirty hack №1
+    jsonStructure = jsonStructure.replaceAll( "\\]\\s*\\[", "," );
+    // dirty hack №2
+    ObjectMapper mapper = new ObjectMapper();
+    List<Cont> obj = mapper.readValue( jsonStructure, new TypeReference<List<Cont>>() {
+    } );
+    Assert.assertEquals( "Json objects are equals if output object is empty", 3, obj.size() );
+  }
+
+  /**
+   * Local helper class to parse json avoiding blind String comparisons.
+   *
+   */
+  static class Cont {
+    public Cont() {
+    }
+
+    int id;
+
+    public int getId() {
+      return id;
+    }
+
+    public void setId( int id ) {
+      this.id = id;
+    }
+
+    public String getState() {
+      return state;
+    }
+
+    public void setState( String state ) {
+      this.state = state;
+    }
+
+    public String getCity() {
+      return city;
+    }
+
+    public void setCity( String city ) {
+      this.city = city;
+    }
+
+    String state;
+    String city;
+  }
+
 }
