@@ -49,7 +49,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to one or more XML files.
- *
+ * 
  * @author Matt
  * @since 14-jan-2006
  */
@@ -98,7 +98,6 @@ public class JsonOutput extends BaseStep implements StepInterface {
 
       for ( int i = 0; i < data.nrFields; i++ ) {
         JsonOutputField outputField = meta.getOutputFields()[i];
-
         ValueMetaInterface v = data.inputRowMeta.getValueMeta( data.fieldIndexes[i] );
         addJsonField( jo, outputField, v, row, i );
       }
@@ -107,10 +106,10 @@ public class JsonOutput extends BaseStep implements StepInterface {
       data.nrRow++;
 
       if ( data.nrRowsInBloc > 0 ) {
-        // System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
+        //System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
         if ( data.nrRow % data.nrRowsInBloc == 0 ) {
           // We can now output an object
-          // System.out.println("outputting the row.");
+          //System.out.println("outputting the row.");
           outPutRow( row );
         }
       }
@@ -120,7 +119,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
   private void addJsonField( ObjectNode jo, JsonOutputField outputField, ValueMetaInterface v, Object[] row, int i )
     throws KettleValueException {
     if ( data.inputRowMeta.isNull( row, data.fieldIndexes[i] ) ) {
-      jo.put( outputField.getElementName(), "" );
+      jo.put( outputField.getElementName(), (String) null );
     } else {
       switch ( v.getType() ) {
         case ValueMeta.TYPE_BOOLEAN:
@@ -202,7 +201,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     compatibilityFactory.execute( r );
 
     if ( data.writeToFile && !data.outputValue ) {
-      putRow( data.inputRowMeta, r ); // in case we want it go further...
+      putRow( data.inputRowMeta, r ); // in case we don't output generated json
       incrementLinesOutput();
     }
     return true;
@@ -244,10 +243,11 @@ public class JsonOutput extends BaseStep implements StepInterface {
       throw new KettleStepException( "Cannot encode JSON", e );
     }
 
-    if ( rowData != null && data.outputValue ) {
+    boolean notLastCall = rowData != null;
+    if ( notLastCall && data.outputValue ) {
       Object[] outputRowData = RowDataUtil.addValueData( rowData, data.inputRowMetaSize, value );
-      incrementLinesOutput();
       putRow( data.outputRowMeta, outputRowData );
+      incrementLinesOutput();
     }
 
     if ( data.writeToFile ) {
@@ -257,59 +257,73 @@ public class JsonOutput extends BaseStep implements StepInterface {
       }
       // Write data to file
       try {
+        //TODO
+        System.out.println( value );
         data.writer.write( value );
       } catch ( Exception e ) {
         throw new KettleStepException( BaseMessages.getString( PKG, "JsonOutput.Error.Writing" ), e );
       }
-      // Close file
-      closeFile();
+      // Close file      
+      //closeFile();
     }
     // Data are safe
     data.rowsAreSafe = true;
-    data.jsonArray = data.mapper.createArrayNode();
+    if ( notLastCall ) {
+      // this is not a last call
+      data.jsonArray = data.mapper.createArrayNode();
+    }
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (JsonOutputMeta) smi;
     data = (JsonOutputData) sdi;
-    if ( super.init( smi, sdi ) ) {
 
-      data.writeToFile = ( meta.getOperationType() != JsonOutputMeta.OPERATION_TYPE_OUTPUT_VALUE );
-      data.outputValue = ( meta.getOperationType() != JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE );
-
-      if ( data.outputValue ) {
-        // We need to have output field name
-        if ( Const.isEmpty( environmentSubstitute( meta.getOutputValue() ) ) ) {
-          logError( BaseMessages.getString( PKG, "JsonOutput.Error.MissingOutputFieldName" ) );
-          stopAll();
-          setErrors( 1 );
-          return false;
-        }
-      }
-      if ( data.writeToFile ) {
-        // We need to have output field name
-        if ( !meta.isServletOutput() && Const.isEmpty( meta.getFileName() ) ) {
-          logError( BaseMessages.getString( PKG, "JsonOutput.Error.MissingTargetFilename" ) );
-          stopAll();
-          setErrors( 1 );
-          return false;
-        }
-        if ( !meta.isDoNotOpenNewFileInit() ) {
-          if ( !openNewFile() ) {
-            logError( BaseMessages.getString( PKG, "JsonOutput.Error.OpenNewFile", buildFilename() ) );
-            stopAll();
-            setErrors( 1 );
-            return false;
-          }
-        }
-
-      }
-      data.realBlocName = Const.NVL( environmentSubstitute( meta.getJsonBloc() ), "" );
-      data.nrRowsInBloc = Const.toInt( environmentSubstitute( meta.getNrRowsInBloc() ), 0 );
-      return true;
+    if ( !super.init( smi, sdi ) ) {
+      return false;
     }
 
-    return false;
+    // Here we decide whether or not to build the structure in
+    // compatible mode or fixed mode
+    ///JsonOutputMeta jsonOutputMeta = (JsonOutputMeta) ( smi.getStepMetaInterface() );
+    if ( meta.isCompatibilityMode() ) {
+      compatibilityFactory = new CompatibilityMode();
+    } else {
+      compatibilityFactory = new FixedMode();
+    }
+
+    data.writeToFile = ( meta.getOperationType() != JsonOutputMeta.OPERATION_TYPE_OUTPUT_VALUE );
+    data.outputValue = ( meta.getOperationType() != JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE );
+
+    if ( data.outputValue ) {
+      // We need to have output field name
+      if ( Const.isEmpty( environmentSubstitute( meta.getOutputValue() ) ) ) {
+        logError( BaseMessages.getString( PKG, "JsonOutput.Error.MissingOutputFieldName" ) );
+        stopAll();
+        setErrors( 1 );
+        return false;
+      }
+    }
+    if ( data.writeToFile ) {
+      // We need to have output field name
+      if ( !meta.isServletOutput() && Const.isEmpty( meta.getFileName() ) ) {
+        logError( BaseMessages.getString( PKG, "JsonOutput.Error.MissingTargetFilename" ) );
+        stopAll();
+        setErrors( 1 );
+        return false;
+      }
+      if ( !meta.isDoNotOpenNewFileInit() ) {
+        if ( !openNewFile() ) {
+          logError( BaseMessages.getString( PKG, "JsonOutput.Error.OpenNewFile", buildFilename() ) );
+          stopAll();
+          setErrors( 1 );
+          return false;
+        }
+      }
+
+    }
+    data.realBlocName = Const.NVL( environmentSubstitute( meta.getJsonBloc() ), "" );
+    data.nrRowsInBloc = Const.toInt( environmentSubstitute( meta.getNrRowsInBloc() ), 0 );
+    return true;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -367,18 +381,17 @@ public class JsonOutput extends BaseStep implements StepInterface {
       } else {
         String filename = buildFilename();
         createParentFolder( filename );
+        FileObject fileObject = KettleVFS.getFileObject( filename, getTransMeta() );
         if ( meta.AddToResult() ) {
           // Add this to the result file names...
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
+              new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject,
                   getTransMeta().getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "JsonOutput.ResultFilenames.Comment" ) );
           addResultFile( resultFile );
         }
 
-        OutputStream outputStream;
-        OutputStream fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
-        outputStream = fos;
+        OutputStream outputStream = KettleVFS.getOutputStream( fileObject, meta.isFileAppended() );
 
         if ( !Const.isEmpty( meta.getEncoding() ) ) {
           data.writer =
