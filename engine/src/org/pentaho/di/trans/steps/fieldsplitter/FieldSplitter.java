@@ -120,15 +120,26 @@ public class FieldSplitter extends BaseStep implements StepInterface {
     String[] splits = Const.splitString( v, data.delimiter, data.enclosure );
     int prev = 0;
     for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-      String split = ( splits == null || i >= splits.length ) ? null : splits[i];
+      String split = null;
       if ( use_ids ) {
-        // Optionally remove the indicator
-        if ( split != null && meta.getFieldRemoveID()[i] ) {
-          final StringBuilder sb = new StringBuilder( split );
-          final int idx = sb.indexOf( meta.getFieldID()[i] );
-          sb.delete( idx, idx + meta.getFieldID()[i].length() );
-          split = sb.toString();
-        }
+    	if ( v.indexOf( meta.getFieldID()[i] ) >= 0 )  
+    	{
+	    	for ( int e=0; e < splits.length; e++)
+	    	{
+	    		if( splits[e].indexOf( meta.getFieldID()[i] ) == 0 )
+	    		{
+	    			split = splits[e];
+	    			break;
+	    		}
+	    	}
+	        // Optionally remove the indicator
+	        if ( split != null && meta.getFieldRemoveID()[i] ) {
+	          final StringBuilder sb = new StringBuilder( split );
+	          final int idx = sb.indexOf( meta.getFieldID()[i] );
+	          sb.delete( idx, idx + meta.getFieldID()[i].length() );
+	          split = sb.toString();
+	        }
+    	}
 
         if ( split == null ) {
           split = "";
@@ -141,9 +152,10 @@ public class FieldSplitter extends BaseStep implements StepInterface {
           logDebug( BaseMessages
             .getString( PKG, "FieldSplitter.Log.SplitFieldsInfo", split, String.valueOf( prev ) ) );
         }
+        split = ( splits == null || i >= splits.length ) ? null : splits[i];
         prev += ( split == null ? 0 : split.length() ) + data.delimiter.length();
       }
-
+      
       try {
         ValueMetaInterface valueMeta = data.outputMeta.getValueMeta( data.fieldnr + i );
         ValueMetaInterface conversionValueMeta = data.conversionMeta.getValueMeta( data.fieldnr + i );
