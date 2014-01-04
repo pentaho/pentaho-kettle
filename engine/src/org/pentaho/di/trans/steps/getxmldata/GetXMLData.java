@@ -276,12 +276,10 @@ public class GetXMLData extends BaseStep implements StepInterface {
   /**
    * Build an empty row based on the meta-data.
    *
-   * @return
+   * @return empty row built
    */
   private Object[] buildEmptyRow() {
-    Object[] rowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-
-    return rowData;
+    return RowDataUtil.allocateRowData( data.outputRowMeta.size() );
   }
 
   private void handleMissingFiles() throws KettleException {
@@ -323,9 +321,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       if ( first ) {
         first = false;
 
-        if ( data.readrow != null ) {
-          data.nrReadRow = data.readrow.length;
-        }
+        data.nrReadRow = data.readrow.length;
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -475,8 +471,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         if ( newPath.length() > 0 ) {
           newPath.append( GetXMLDataMeta.N0DE_SEPARATOR );
         }
-        if ( tmp.length() > 0
-          && tmp.indexOf( ":" ) == -1 && tmp.indexOf( "." ) == -1 && tmp.indexOf( GetXMLDataMeta.AT ) == -1 ) {
+        if ( tmp.length() > 0 && !tmp.contains( ":" ) && !tmp.contains( "." ) && !tmp.contains( GetXMLDataMeta.AT ) ) {
           int index = indexs[i + indexs.length - pathStrs.length];
           if ( index >= 0 ) {
             newPath.append( "pre" ).append( index ).append( ":" ).append( tmp );
@@ -671,11 +666,10 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
   private Object[] getXMLRowPutRowWithErrorhandling() throws KettleException {
     // Build an empty row based on the meta-data
-    Object[] r = null;
+    Object[] r;
     data.errorInRowButContinue = false;
     try {
       if ( meta.isInFields() ) {
-
         while ( ( data.nodenr >= data.nodesize || data.readrow == null ) ) {
           if ( !ReadNextString() ) {
             return null;
@@ -724,7 +718,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         }
 
         // Get node value
-        String nodevalue = null;
+        String nodevalue;
 
         // Handle namespaces
         if ( meta.isNamespaceAware() ) {
@@ -792,7 +786,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       }
       // See if we need to add the row number to the row...
       if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
-        outputRowData[rowIndex++] = new Long( data.rownr );
+        outputRowData[rowIndex++] = data.rownr;
       }
       // Possibly add short filename...
       if ( meta.getShortFileNameField() != null && meta.getShortFileNameField().length() > 0 ) {
@@ -808,11 +802,11 @@ public class GetXMLData extends BaseStep implements StepInterface {
       }
       // Add Size
       if ( meta.getSizeField() != null && meta.getSizeField().length() > 0 ) {
-        outputRowData[rowIndex++] = new Long( data.size );
+        outputRowData[rowIndex++] = data.size;
       }
       // add Hidden
       if ( meta.isHiddenField() != null && meta.isHiddenField().length() > 0 ) {
-        outputRowData[rowIndex++] = new Boolean( data.path );
+        outputRowData[rowIndex++] = Boolean.valueOf( data.path );
       }
       // Add modification date
       if ( meta.getLastModificationDateField() != null && meta.getLastModificationDateField().length() > 0 ) {
@@ -824,7 +818,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       }
       // Add RootUri
       if ( meta.getRootUriField() != null && meta.getRootUriField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.rootUriName;
+        outputRowData[rowIndex] = data.rootUriName;
       }
 
       RowMetaInterface irow = getInputRowMeta();
@@ -834,14 +828,10 @@ public class GetXMLData extends BaseStep implements StepInterface {
       } else {
         // clone to previously allocated array to make sure next step doesn't
         // change it in between...
-        for ( int i = 0; i < outputRowData.length; i++ ) {
-          // Clone without re-allocating array
-          this.prevRow[i] = outputRowData[i]; // Direct copy
-        }
-        data.previousRow = irow.cloneRow( outputRowData, this.prevRow ); // Pick up everything else that needs a real
-                                                                         // deep clone
+        System.arraycopy( outputRowData, 0, this.prevRow, 0, outputRowData.length );
+        // Pick up everything else that needs a real deep clone
+        data.previousRow = irow.cloneRow( outputRowData, this.prevRow );
       }
-
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {
         // Simply add this row to the error row
@@ -861,7 +851,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       return null;
     }
 
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     String rest = aString;
 
