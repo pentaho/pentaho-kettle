@@ -139,7 +139,7 @@ public class TransformationInformation {
         0, 0, true, "FreeSans", 10 );
     painter.setMagnification( 0.5f );
     painter.setTranslationX( min.x );
-    painter.setTranslationX( min.y );
+    painter.setTranslationY( min.y );
     painter.buildTransformationImage();
     BufferedImage bufferedImage = (BufferedImage) gc.getImage();
     int newWidth = bufferedImage.getWidth() - min.x;
@@ -165,6 +165,10 @@ public class TransformationInformation {
 
     Point min = transMeta.getMinimum();
     Point area = transMeta.getMaximum();
+
+    area.x -= min.x;
+    area.y -= min.y;
+
     int iconsize = 32;
 
     ScrollBarInterface bar = new ScrollBarInterface() {
@@ -181,20 +185,20 @@ public class TransformationInformation {
     Rectangle rect = new java.awt.Rectangle( 0, 0, area.x, area.y );
     double magnificationX = rectangle2d.getWidth() / rect.getWidth();
     double magnificationY = rectangle2d.getHeight() / rect.getHeight();
-    double magnification = Math.min( magnificationX, magnificationY );
+    float magnification = (float) Math.min( 1, Math.min( magnificationX, magnificationY ) );
 
     SwingGC gc = new SwingGC( g2d, rect, iconsize, 0, 0 );
     gc.setDrawingPixelatedImages( pixelateImages );
 
     TransPainter painter =
-      new TransPainter(
-        gc, transMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(),
-        new ArrayList<StepMeta>(), iconsize, 1, 0, 0, true, "FreeSans", 10 );
-    painter.setMagnification( (float) Math.min( magnification, 1 ) );
-    if ( pixelateImages ) {
-      painter.setTranslationX( 100 + min.x );
-      painter.setTranslationY( 100 + min.y );
-    }
+        new TransPainter( gc, transMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(),
+            new ArrayList<StepMeta>(), iconsize, 1, 0, 0, true, "FreeSans", 10 );
+
+    painter.setMagnification( magnification );
+
+    painter.setTranslationX( ( -min.x ) * magnification );
+    painter.setTranslationY( ( -min.y ) * magnification );
+
     painter.buildTransformationImage();
   }
 
