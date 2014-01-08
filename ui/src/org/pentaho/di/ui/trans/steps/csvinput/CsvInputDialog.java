@@ -848,11 +848,12 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
       inputStream = KettleVFS.getInputStream(fileObject);
 
+      String realEncoding = transMeta.environmentSubstitute(meta.getEncoding());
       InputStreamReader reader;
-      if (Const.isEmpty(meta.getEncoding())) {
+      if (Const.isEmpty(realEncoding)) {
         reader = new InputStreamReader(inputStream);
       } else {
-        reader = new InputStreamReader(inputStream, meta.getEncoding());
+        reader = new InputStreamReader(inputStream, realEncoding);
       }
 
       EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
