@@ -95,6 +95,7 @@ public class SynchronizeAfterMergeData extends BaseStepData implements StepDataI
   public boolean specialErrorHandling;
   public Savepoint savepoint;
   public boolean releaseSavepoint;
+  public boolean supportsSavepoints;
 
   public List<Object[]> batchBuffer;
 
