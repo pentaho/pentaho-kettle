@@ -52,8 +52,6 @@ public class JsonOutputData extends BaseStepData implements StepDataInterface {
   public int nrFields;
 
   public int[] fieldIndexes;
-  //public JSONObject jg;
-  //public JSONArray ja;  
   public ObjectNode jg;
   public ArrayNode jsonArray;
 

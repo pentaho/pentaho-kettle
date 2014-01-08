@@ -78,16 +78,14 @@ public class JsonOutputTest {
           + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
           + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]}";
 
-  private static final String EXPECTED_COMP_NO_BLOC = "[{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
-      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]";
+  private static final String EXPECTED_COMP_NO_BLOC = "{\"\":[{\"id\":1},{\"state\":\"Florida\"},"
+      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},"
+      + "{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},"
+      + "{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},"
+      + "{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]}";
 
   private static final String EXPECTED_NONCOMP_NO_BLOC = "[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
       + "{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},"
@@ -175,9 +173,8 @@ public class JsonOutputTest {
   public RowMetaInterface createResultRowMetaInterface() {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "State", ValueMeta.TYPE_STRING ),
-          new ValueMeta( "City", ValueMeta.TYPE_STRING ) };
+    ValueMetaInterface[] valuesMeta = { new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "State", ValueMeta.TYPE_STRING ), new ValueMeta( "City", ValueMeta.TYPE_STRING ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );
@@ -234,6 +231,15 @@ public class JsonOutputTest {
 
   }
 
+  /**
+   * 
+   * @param compatibilityMode
+   * @param jsonBlock - json block name
+   * @param amount - amount of data to generate
+   * @param nbrRowsInBlock - number rows in a block
+   * @return
+   * @throws Exception
+   */
   public String test( boolean compatibilityMode, String jsonBlock, String amount, String nbrRowsInBlock )
     throws Exception {
     KettleEnvironment.init();
@@ -366,7 +372,7 @@ public class JsonOutputTest {
    */
   @Test
   public void testNoRowsAvailable() throws Exception {
-    String jsonStructure = test( true, "", "0", "0" );
+    String jsonStructure = test( false, "", "0", "0" );
     ObjectMapper mapper = new ObjectMapper();
     JsonNode tree1 = mapper.readTree( "[]" );
     JsonNode tree2 = mapper.readTree( jsonStructure );
@@ -384,9 +390,8 @@ public class JsonOutputTest {
   @Test
   public void testOutputFileIsConsistent() throws Exception {
     String jsonStructure = test( false, "", "3", "2" );
-    // dirty hack №1
+    // hack to handle separate objects
     jsonStructure = jsonStructure.replaceAll( "\\]\\s*\\[", "," );
-    // dirty hack №2
     ObjectMapper mapper = new ObjectMapper();
     List<Cont> obj = mapper.readValue( jsonStructure, new TypeReference<List<Cont>>() {
     } );

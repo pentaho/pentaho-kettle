@@ -28,6 +28,7 @@ import java.io.OutputStreamWriter;
 
 import org.apache.commons.vfs.FileObject;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.node.ObjectNode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -61,9 +62,11 @@ public class JsonOutput extends BaseStep implements StepInterface {
 
   private interface CompatibilityFactory {
     public void execute( Object[] row ) throws KettleException;
+    JsonNode getJsonNode();
   }
 
   private class CompatibilityMode implements CompatibilityFactory {
+    @Override
     public void execute( Object[] row ) throws KettleException {
 
       for ( int i = 0; i < data.nrFields; i++ ) {
@@ -76,21 +79,22 @@ public class JsonOutput extends BaseStep implements StepInterface {
         addJsonField( jo, outputField, v, row, i );
         data.jsonArray.add( jo );
       }
+      attemptToFlush( row );
+    }
 
-      data.nrRow++;
-
-      if ( data.nrRowsInBloc > 0 ) {
-        // System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
-        if ( data.nrRow % data.nrRowsInBloc == 0 ) {
-          // We can now output an object
-          // System.out.println("outputting the row.");
-          outPutRow( row );
-        }
-      }
+    /**
+     * Avoid make changes to compatibility mode.
+     */
+    @Override
+    public JsonNode getJsonNode() {
+      ObjectNode jsonDoc = data.mapper.createObjectNode();
+      jsonDoc.put( data.realBlocName, data.jsonArray );
+      return jsonDoc;
     }
   }
 
   private class FixedMode implements CompatibilityFactory {
+    @Override
     public void execute( Object[] row ) throws KettleException {
 
       // Create a new object with specified fields
@@ -102,16 +106,57 @@ public class JsonOutput extends BaseStep implements StepInterface {
         addJsonField( jo, outputField, v, row, i );
       }
       data.jsonArray.add( jo );
+      attemptToFlush( row );
+    }
 
-      data.nrRow++;
+    /**
+     * based on patch from PDI-7243
+     */
+    @Override
+    public JsonNode getJsonNode() {
+      JsonNode jsonDoc;
+      if ( !data.realBlocName.isEmpty() ) {
+        ObjectNode jsonObj = data.mapper.createObjectNode();
 
-      if ( data.nrRowsInBloc > 0 ) {
-        //System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
-        if ( data.nrRow % data.nrRowsInBloc == 0 ) {
-          // We can now output an object
-          //System.out.println("outputting the row.");
-          outPutRow( row );
+        if ( data.nrRowsInBloc == 1 ) {
+          // rows in bloc == 1 is special case: do not output array, just output the data as object
+          if ( data.jsonArray.size() > 0 ) {
+            jsonObj.put( data.realBlocName, data.jsonArray.get( 0 ) );
+          } else {
+            // empty object, since JSON doesn't support
+            jsonObj.put( data.realBlocName, data.mapper.createObjectNode() );
+          }
+          // direct 'null'
+        } else {
+          jsonObj.put( data.realBlocName, data.jsonArray );
         }
+        jsonDoc = jsonObj;
+      } else {
+        if ( data.nrRowsInBloc == 1 ) {
+          // rows in bloc == 1 is special case: do not output array, just output the data as object
+          if ( data.jsonArray.size() > 0 ) {
+            jsonDoc = data.jsonArray.get( 0 );
+          } else {
+            jsonDoc = data.mapper.createObjectNode(); // empty object, since JSON doesn't support direct 'null'
+          }
+        } else {
+          jsonDoc = data.jsonArray;
+        }
+      }
+      return jsonDoc;
+    }
+  }
+
+  private void attemptToFlush( Object[] row ) throws KettleStepException {
+    data.nrRow++;
+    if ( data.nrRowsInBloc > 0 ) {
+      if ( data.nrRow % data.nrRowsInBloc == 0 ) {
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JsonOutputLog.OutputingRow" ), data.nrRow );
+        }
+        data.nrRow = 0; //aware of integer overflow
+        // We can now output an object
+        outPutRow( row );
       }
     }
   }
@@ -210,41 +255,14 @@ public class JsonOutput extends BaseStep implements StepInterface {
   private void outPutRow( Object[] rowData ) throws KettleStepException {
     String value = null;
     // We can now output either an object (if blocName != "") or array if (blocName empty)
-    JsonNode jsonDoc;
-    if ( !data.realBlocName.isEmpty() ) {
-      ObjectNode jsonObj = data.mapper.createObjectNode();
-      if ( data.nrRowsInBloc == 1 ) {
-        // rows in bloc == 1 is special case: do not output array, just output the data as object
-        if ( data.jsonArray.size() > 0 ) {
-          jsonObj.put( data.realBlocName, data.jsonArray.get( 0 ) );
-        } else {
-          jsonObj.put( data.realBlocName, data.mapper.createObjectNode() ); // empty object, since JSON doesn't support
-        }
-        // direct 'null'
-      } else {
-        jsonObj.put( data.realBlocName, data.jsonArray );
-      }
-      jsonDoc = jsonObj;
-    } else {
-      if ( data.nrRowsInBloc == 1 ) {
-        // rows in bloc == 1 is special case: do not output array, just output the data as object
-        if ( data.jsonArray.size() > 0 ) {
-          jsonDoc = data.jsonArray.get( 0 );
-        } else {
-          jsonDoc = data.mapper.createObjectNode(); // empty object, since JSON doesn't support direct 'null'
-        }
-      } else {
-        jsonDoc = data.jsonArray;
-      }
-    }
+    JsonNode jsonDoc = this.compatibilityFactory.getJsonNode();
     try {
       value = data.mapper.writeValueAsString( jsonDoc );
     } catch ( Exception e ) {
       throw new KettleStepException( "Cannot encode JSON", e );
     }
-
-    boolean notLastCall = rowData != null;
-    if ( notLastCall && data.outputValue ) {
+    // PDI - 11183 fix NPE if there is no rows
+    if ( data.outputValue && !first ) {
       Object[] outputRowData = RowDataUtil.addValueData( rowData, data.inputRowMetaSize, value );
       putRow( data.outputRowMeta, outputRowData );
       incrementLinesOutput();
@@ -257,8 +275,6 @@ public class JsonOutput extends BaseStep implements StepInterface {
       }
       // Write data to file
       try {
-        //TODO
-        System.out.println( value );
         data.writer.write( value );
       } catch ( Exception e ) {
         throw new KettleStepException( BaseMessages.getString( PKG, "JsonOutput.Error.Writing" ), e );
@@ -268,10 +284,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     }
     // Data are safe
     data.rowsAreSafe = true;
-    if ( notLastCall ) {
-      // this is not a last call
-      data.jsonArray = data.mapper.createArrayNode();
-    }
+    data.jsonArray = data.mapper.createArrayNode();
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -287,6 +300,8 @@ public class JsonOutput extends BaseStep implements StepInterface {
     ///JsonOutputMeta jsonOutputMeta = (JsonOutputMeta) ( smi.getStepMetaInterface() );
     if ( meta.isCompatibilityMode() ) {
       compatibilityFactory = new CompatibilityMode();
+      //turn off pretty print for compatibility mode.
+      data.mapper.configure( SerializationConfig.Feature.INDENT_OUTPUT, false );
     } else {
       compatibilityFactory = new FixedMode();
     }
