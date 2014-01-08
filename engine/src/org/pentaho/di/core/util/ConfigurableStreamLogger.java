@@ -70,24 +70,25 @@ public class ConfigurableStreamLogger implements Runnable {
       BufferedReader br = new BufferedReader( isr );
       String line = null;
       while ( ( line = br.readLine() ) != null ) {
+        String logEntry = this.type + " " + line;
         switch ( this.logLevel ) {
           case MINIMAL:
-            log.logMinimal( this.type, line );
+            log.logMinimal( logEntry );
             break;
           case BASIC:
-            log.logBasic( this.type, line );
+            log.logBasic( logEntry );
             break;
           case DETAILED:
-            log.logDetailed( this.type, line );
+            log.logDetailed( logEntry );
             break;
           case DEBUG:
-            log.logDebug( this.type, line );
+            log.logDebug( logEntry );
             break;
           case ROWLEVEL:
-            log.logRowlevel( this.type, line );
+            log.logRowlevel( logEntry );
             break;
           case ERROR:
-            log.logError( this.type, line );
+            log.logError( logEntry );
             break;
           default: // NONE
             break;
@@ -95,7 +96,7 @@ public class ConfigurableStreamLogger implements Runnable {
       }
     } catch ( IOException ioe ) {
       if ( log.isError() ) {
-        log.logError( this.type, Const.getStackTracker( ioe ) );
+        log.logError( this.type + " " + Const.getStackTracker( ioe ) );
       }
     }
   }
