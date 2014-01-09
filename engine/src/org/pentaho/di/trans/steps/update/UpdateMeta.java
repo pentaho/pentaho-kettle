@@ -130,6 +130,8 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
    * @return Returns the commitSize.
    */
   public int getCommitSize( VariableSpace vs ) {
+    // this happens when the step is created via API and no setDefaults was called
+    commitSize = ( commitSize == null ) ? "0" : commitSize;
     return Integer.parseInt( vs.environmentSubstitute( commitSize ) );
   }
 
@@ -470,13 +472,13 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
       skipLookup = rep.getStepAttributeBoolean( id_step, "skip_lookup" );
       commitSize = rep.getStepAttributeString( id_step, "commit" );
       if ( commitSize == null ) {
-        long comSz = 0;
+        long comSz = -1;
         try {
           comSz = rep.getStepAttributeInteger( id_step, "commit" );
         } catch ( Exception ex ) {
           commitSize = "100";
         }
-        if ( comSz > 0 ) {
+        if ( comSz >= 0 ) {
           commitSize = Long.toString( comSz );
         }
       }
