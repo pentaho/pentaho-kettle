@@ -3298,33 +3298,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( job == null || job.isFinished() && !job.isActive() ) {
       // Auto save feature...
       //
-      if ( jobMeta.hasChanged() ) {
-        if ( spoon.props.getAutoSave() ) {
-          if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobLog.Log.AutoSaveFileBeforeRunning" ) );
-          }
-          System.out.println( BaseMessages.getString( PKG, "JobLog.Log.AutoSaveFileBeforeRunning2" ) );
-          spoon.saveToFile( jobMeta );
-        } else {
-          MessageDialogWithToggle md =
-            new MessageDialogWithToggle(
-              shell, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Title" ), null, BaseMessages
-                .getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" )
-                + Const.CR
-                + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" )
-                + Const.CR,
-              MessageDialog.QUESTION,
-              new String[] {
-                BaseMessages.getString( PKG, "System.Button.Yes" ),
-                BaseMessages.getString( PKG, "System.Button.No" ) },
-              0, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Toggle" ), spoon.props.getAutoSave() );
-          int answer = md.open();
-          if ( ( answer & 0xFF ) == 0 ) {
-            spoon.saveToFile( jobMeta );
-          }
-          spoon.props.setAutoSave( md.getToggleState() );
-        }
-      }
+      handleJobMetaChanges( jobMeta );
 
       // Is the repository available & name / id set?
       // Is there a filename set and no repository available?
@@ -3627,5 +3601,34 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     JobEntryCopy copy = selectedEntries.get( 0 );
 
     spoon.executeJob( jobMeta, true, false, null, false, copy.getName(), copy.getNr() );
+  }
+
+  public void handleJobMetaChanges( JobMeta jobMeta ) throws KettleException {
+    if ( jobMeta.hasChanged() ) {
+      if ( spoon.props.getAutoSave() ) {
+        if ( log.isDetailed() ) {
+          log.logDetailed( BaseMessages.getString( PKG, "JobLog.Log.AutoSaveFileBeforeRunning" ) );
+        }
+        spoon.saveToFile( jobMeta );
+      } else {
+        MessageDialogWithToggle md =
+          new MessageDialogWithToggle(
+            shell, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Title" ), null, BaseMessages
+            .getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" )
+            + Const.CR
+            + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" )
+            + Const.CR,
+            MessageDialog.QUESTION,
+            new String[] {
+              BaseMessages.getString( PKG, "System.Button.Yes" ),
+              BaseMessages.getString( PKG, "System.Button.No" ) },
+            0, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Toggle" ), spoon.props.getAutoSave() );
+        int answer = md.open();
+        if ( ( answer & 0xFF ) == 0 ) {
+          spoon.saveToFile( jobMeta );
+        }
+        spoon.props.setAutoSave( md.getToggleState() );
+      }
+    }
   }
 }

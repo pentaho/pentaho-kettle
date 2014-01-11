@@ -880,6 +880,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         // Are we executing remotely?
         //
       } else if ( executionConfiguration.isExecutingRemotely() ) {
+        activeTransGraph.handleTransMetaChanges( transMeta );
         if ( executionConfiguration.getRemoteServer() != null ) {
           String carteObjectId =
             Trans.sendToSlaveServer( transMeta, executionConfiguration, spoon.rep, spoon.metaStore );
