@@ -50,13 +50,14 @@ import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
 import org.pentaho.di.trans.steps.sort.SortRowsTest;
 import org.pentaho.di.trans.steps.tableinput.TableInputTest;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputTest;
+import org.pentaho.di.trans.steps.transexecutor.TransExecutorTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
 import org.pentaho.di.ui.dialog.TipsDialogTest;
 
 
 /**
  * Regression tests for the PDI framework.
- * 
+ *
  * @author sboden
  */
 public class AllRegressionTests {
@@ -99,7 +100,8 @@ public class AllRegressionTests {
     suite.addTestSuite( CsvInput2Test.class );
     suite.addTest( new JUnit4TestAdapter( GPLoadTest.class ) );
     suite.addTest( new JUnit4TestAdapter( TipsDialogTest.class ) );
-
+    suite.addTest( new JUnit4TestAdapter( TransExecutorTest.class ) );
+    
     // Temporarily disable this test, it never worked on Windows or Unix so
     // it doesn't make sense executing it for the moment.
     // suite.addTestSuite( BlackBoxTests.class );
