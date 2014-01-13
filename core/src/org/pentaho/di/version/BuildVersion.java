@@ -34,7 +34,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 
 /**
  * Singleton class to allow us to see on which date & time the kettle3.jar was built.
- *
+ * 
  * @author Matt
  * @since 2006-aug-12
  */
@@ -80,6 +80,9 @@ public class BuildVersion {
     revision = manifest.getMainAttributes().getValue( Attributes.Name.SPECIFICATION_VERSION );
     buildDate = manifest.getMainAttributes().getValue( "Compile-Timestamp" );
     buildUser = manifest.getMainAttributes().getValue( "Compile-User" );
+    if ( version == null ) {
+      throw new Exception( "Error:  Version can't be NULL in manifest." );
+    }
   }
 
   private void loadBuildInfoFromEnvironmentVariables() throws Exception {
@@ -87,6 +90,9 @@ public class BuildVersion {
     revision = environmentVariableGetter.getEnvVarible( "KETTLE_BUILD_REVISION" );
     buildDate = environmentVariableGetter.getEnvVarible( "KETTLE_BUILD_DATE" );
     buildUser = environmentVariableGetter.getEnvVarible( "KETTLE_BUILD_USER" );
+    if ( version == null ) {
+      throw new Exception( "Error : Version can't be null in environment variables" );
+    }
   }
 
   private BuildVersion() {
