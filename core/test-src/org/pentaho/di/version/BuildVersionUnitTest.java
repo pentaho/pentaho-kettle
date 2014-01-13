@@ -82,8 +82,8 @@ public class BuildVersionUnitTest {
 
   @Test
   public void testGetInstance() {
+
     initManifestGetter( null, null, null, null ); // it's possible to have a manifest w/ no version, which causes an NPE
-                                                  // later...
     BuildVersion.refreshInstance();
     BuildVersion version = BuildVersion.getInstance();
     if ( version == null || version.getVersion() == null || version.getVersion().isEmpty() ) {
@@ -100,6 +100,28 @@ public class BuildVersionUnitTest {
     if ( version2 != version ) {
       fail( "Build version is required to be singleton" );
     }
+
+    initManifestGetter( null, null, null, null ); // it's possible to have a manifest w/ no version, which causes an NPE
+    initEnvironmentVariableGetter( null, null, null, null ); // it's possible to have a manifest w/ no version, which
+                                                             // causes an NPE
+    BuildVersion.refreshInstance();
+    version = BuildVersion.getInstance();
+    if ( version == null || version.getVersion() == null || version.getVersion().isEmpty() ) {
+      fail( "Unable to retrieve BuildVersion" );
+    }
+
+    initEnvironmentVariableGetter( "version", null, null, null ); // it's possible to have a manifest w/ no version,
+                                                                  // which causes an NPE
+    BuildVersion.refreshInstance();
+    version = BuildVersion.getInstance();
+    if ( version == null || version.getVersion().isEmpty() ) {
+      fail( "Unable to retrieve BuildVersion" );
+    }
+    version2 = BuildVersion.getInstance();
+    if ( version2 != version ) {
+      fail( "Build version is required to be singleton" );
+    }
+
   }
 
   @Test
