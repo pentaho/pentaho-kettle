@@ -71,10 +71,8 @@ public class BuildVersionUnitTest {
 
   private void initEnvironmentVariableGetter( String version, String revision, String date, String user ) {
     try {
-      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_VERSION ) )
-        .thenReturn( version );
-      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_REVISION ) ).thenReturn(
-        revision );
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_VERSION ) ).thenReturn( version );
+      when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_REVISION ) ).thenReturn( revision );
       when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_DATE ) ).thenReturn( date );
       when( mockEnvironmentVariableGetter.getEnvVarible( BuildVersion.KETTLE_BUILD_USER ) ).thenReturn( user );
     } catch ( Exception e ) {
@@ -84,9 +82,17 @@ public class BuildVersionUnitTest {
 
   @Test
   public void testGetInstance() {
-    initManifestGetter( "version", null, null, null );
+    initManifestGetter( null, null, null, null ); // it's possible to have a manifest w/ no version, which causes an NPE
+                                                  // later...
     BuildVersion.refreshInstance();
     BuildVersion version = BuildVersion.getInstance();
+    if ( version == null || version.getVersion() == null || version.getVersion().isEmpty() ) {
+      fail( "Unable to retrieve BuildVersion" );
+    }
+
+    initManifestGetter( "version", null, null, null );
+    BuildVersion.refreshInstance();
+    version = BuildVersion.getInstance();
     if ( version == null || version.getVersion().isEmpty() ) {
       fail( "Unable to retrieve BuildVersion" );
     }
