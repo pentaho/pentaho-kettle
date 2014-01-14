@@ -197,10 +197,10 @@ public class SequenceMetaTests {
 
     databaseInterface = new HypersonicDatabaseMeta();
     assertEquals( "SELECT NEXT VALUE FOR sequence_name "
-      + "FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'SEQUENCE_NAME'",
+      + "FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'sequence_name'",
       databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "SELECT sequence_name.currval "
-      + "FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'SEQUENCE_NAME'",
+      + "FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = 'sequence_name'",
       databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new KingbaseESDatabaseMeta();
