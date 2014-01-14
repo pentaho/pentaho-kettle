@@ -406,8 +406,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     paused = new AtomicBoolean( false );
     stopped = new AtomicBoolean( false );
 
-    transListeners = new ArrayList<TransListener>();
-    transStoppedListeners = new ArrayList<TransStoppedListener>();
+    transListeners = Collections.synchronizedList( new ArrayList<TransListener>() );
+    transStoppedListeners = Collections.synchronizedList( new ArrayList<TransStoppedListener>() );
     delegationListeners = new ArrayList<DelegationListener>();
 
     // Get a valid transactionId in case we run database transactional.
@@ -1104,12 +1104,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
       // Just for safety, fire the trans finished listeners...
-      //
-      fireTransFinishedListeners();
-
-      // Flag the transformation as finished
-      //
-      finished.set( true );
+      try {
+        fireTransFinishedListeners();
+      } catch ( KettleException e ) {
+        //listeners produces errors
+        log.logError( BaseMessages.getString( PKG, "Trans.FinishListeners.Exception" ) );
+        //we will not pass this exception up to prepareExecuton() entry point.
+      } finally {
+        // Flag the transformation as finished even if exception was thrown
+        setFinished( true );
+      }
 
       // Pass along the log during preview. Otherwise it becomes hard to see
       // what went wrong.
@@ -1174,9 +1178,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           nrOfActiveSteps++;
           if ( nrOfActiveSteps == 1 ) {
             // Transformation goes from in-active to active...
-            //
-            for ( TransListener listener : transListeners ) {
-              listener.transActive( Trans.this );
+            // PDI-5229 sync added
+            synchronized ( transListeners ) {
+              for ( TransListener listener : transListeners ) {
+                listener.transActive( Trans.this );
+              }
             }
           }
         }
@@ -1188,7 +1194,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if ( nrOfFinishedSteps >= steps.size() ) {
               // Set the finished flag
               //
-              finished.set( true );
+              setFinished( true );
 
               // Grab the performance statistics one last time (if enabled)
               //
@@ -1253,7 +1259,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Now start a thread to monitor the running transformation...
     //
-    finished.set( false );
+    setFinished( false );
     paused.set( false );
     stopped.set( false );
 
@@ -1275,7 +1281,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           stepPerformanceSnapShotTimer.cancel();
         }
 
-        finished.set( true );
+        setFinished( true );
         running = false; // no longer running
 
         log.snap( Metrics.METRIC_TRANSFORMATION_EXECUTION_STOP );
@@ -1299,13 +1305,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if ( transMeta.isUsingUniqueConnections() ) {
           trans.closeUniqueDatabaseConnections( getResult() );
         }
-
-        // Signal for the the waitUntilFinished blocker...
-        //
-        transFinishedBlockingQueue.add( new Object() );
       }
     };
-    // This should always be done first so that the other listeners ahve a clean slate to start from (finished set and
+    // This should always be done first so that the other listeners achieve a clean state to start from (setFinished and
     // so on)
     //
     transListeners.add( 0, transListener );
@@ -1425,15 +1427,32 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   /**
-   * Fires the finish-event listeners (if any are registered).
-   *
+   * Make attempt to fire all registered listeners if possible.
+   * 
    * @throws KettleException
    *           if any errors occur during notification
    */
   protected void fireTransFinishedListeners() throws KettleException {
-
-    for ( TransListener transListener : transListeners ) {
-      transListener.transFinished( this );
+    // PDI-5229 sync added
+    synchronized  ( transListeners ) {
+      if ( transListeners.size() == 0 ) {
+        return;
+      }
+      //prevent Exception from one listener to block others execution
+      List<KettleException> badGuys = new ArrayList<KettleException>( transListeners.size() );
+      for ( TransListener transListener : transListeners ) {
+        try {
+          transListener.transFinished( this );
+        } catch ( KettleException e ) {
+          badGuys.add( e );
+        }
+      }
+      // Signal for the the waitUntilFinished blocker...
+      transFinishedBlockingQueue.add( new Object() );
+      if ( !badGuys.isEmpty() ) {
+        //FIFO
+        throw new KettleException( badGuys.get( 0 ) );
+      }
     }
   }
 
@@ -1444,11 +1463,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *           if any errors occur during notification
    */
   protected void fireTransStartedListeners() throws KettleException {
-
-    for ( TransListener transListener : transListeners ) {
-      transListener.transStarted( this );
+    // PDI-5229 sync added
+    synchronized ( transListeners ) {
+      for ( TransListener transListener : transListeners ) {
+        transListener.transStarted( this );
+      }
     }
-
   }
 
   /**
@@ -1614,6 +1634,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return finished.get();
   }
 
+  private void setFinished( boolean newValue ) {
+    finished.set( newValue );
+  }
+
   /**
    * Attempts to stops all running steps and subtransformations. If all steps have finished, the transformation is
    * marked as Finished.
@@ -1650,7 +1674,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     if ( nrStepsFinished == steps.size() ) {
-      finished.set( true );
+      setFinished( true );
     }
   }
 
@@ -1850,8 +1874,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Fire the stopped listener...
     //
-    for ( TransStoppedListener listener : transStoppedListeners ) {
-      listener.transStopped( this );
+    synchronized ( transStoppedListeners ) {
+      for ( TransStoppedListener listener : transStoppedListeners ) {
+        listener.transStopped( this );
+      }
     }
   }
 
@@ -4528,7 +4554,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   /**
-   * Gets a list of the transformation listeners.
+   * Gets a list of the transformation listeners. 
+   * Please do not attempt to modify this list externally.
+   * Returned list is mutable only for backward compatibility purposes.
    *
    * @return the transListeners
    */
@@ -4543,7 +4571,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the transListeners to set
    */
   public void setTransListeners( List<TransListener> transListeners ) {
-    this.transListeners = transListeners;
+    this.transListeners = Collections.synchronizedList( transListeners );
   }
 
   /**
@@ -4553,6 +4581,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the trans listener
    */
   public void addTransListener( TransListener transListener ) {
+    // PDI-5229 sync added
     synchronized ( transListeners ) {
       transListeners.add( transListener );
     }
@@ -4565,11 +4594,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the list of stop-event listeners to set
    */
   public void setTransStoppedListeners( List<TransStoppedListener> transStoppedListeners ) {
-    this.transStoppedListeners = transStoppedListeners;
+    this.transStoppedListeners = Collections.synchronizedList( transStoppedListeners );
   }
 
   /**
-   * Gets the list of stop-event listeners for the transformation.
+   * Gets the list of stop-event listeners for the transformation. This is not concurrent safe.
+   * Please note this is mutable implementation only for backward compatibility reasons.
    *
    * @return the list of stop-event listeners
    */
@@ -5226,7 +5256,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public void clearError() {
     stopped.set( false );
     errors.set( 0 );
-    finished.set( false );
+    setFinished( false );
     for ( StepMetaDataCombi combi : steps ) {
       StepInterface step = combi.step;
       for ( RowSet rowSet : step.getInputRowSets() ) {
