@@ -117,6 +117,7 @@ import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 
@@ -2608,16 +2609,28 @@ public class RepositoryExplorerDialog extends Dialog {
   }
 
   public void exportAll( RepositoryDirectoryInterface dir ) {
-    FileDialog dialog = new FileDialog( shell, SWT.SAVE | SWT.SINGLE );
-    if ( dialog.open() != null ) {
-      String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-      if ( log.isBasic() ) {
-        log.logBasic( "Exporting All", "Export objects to file [" + filename + "]" );
-      }
-
-      RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog( shell, rep, dir, filename );
-      repd.open();
+    FileDialog dialog = Spoon.getInstance().getExportFileDialog(); // new FileDialog( shell, SWT.SAVE | SWT.SINGLE );
+    if ( dialog.open() == null ) {
+      return;
     }
+
+    String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
+
+    // check if file is exists
+    MessageBox box = RepositoryExportProgressDialog.checkIsFileIsAcceptable( shell, log, filename );
+    int answer = ( box == null ) ? SWT.OK : box.open();
+    if ( answer != SWT.OK ) {
+      // seems user don't want to overwrite file...
+      return;
+    }
+
+    if ( log.isBasic() ) {
+      log.logBasic( "Exporting All", "Export objects to file [" + filename + "]" ); //$NON-NLS-3$
+    }
+
+    // check file is not empty
+    RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog( shell, rep, dir, filename );
+    repd.open();
   }
 
   public void importAll() {

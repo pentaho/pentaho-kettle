@@ -5325,24 +5325,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    */
   public boolean exportRepositoryDirectory( RepositoryDirectory directoryToExport ) {
 
-    if ( directoryToExport != null ) {
-      MessageBox box =
-        new MessageBox( shell, SWT.ICON_QUESTION
-          | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.YES | SWT.NO | SWT.CANCEL );
-      box.setText( BaseMessages.getString( PKG, "Spoon.QuestionExportDirectory.Title" ) );
-      box.setMessage( BaseMessages.getString(
-        PKG, "Spoon.QuestionExportFolder.Message", Const.CR, directoryToExport.getPath() ) );
-      int answer = box.open();
-      if ( answer == SWT.NO ) {
-        return true;
-      }
-      if ( answer == SWT.CANCEL ) {
-        return false;
-      }
-    }
-
-    FileDialog dialog = new FileDialog( shell, SWT.SAVE | SWT.SINGLE );
-    dialog.setText( BaseMessages.getString( PKG, "Spoon.SelectAnXMLFileToExportTo.Message" ) );
+    FileDialog dialog = this.getExportFileDialog();
     if ( dialog.open() == null ) {
       return false;
     }
@@ -5351,12 +5334,22 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     log.logBasic( BaseMessages.getString( PKG, "Spoon.Log.Exporting" ), BaseMessages.getString(
       PKG, "Spoon.Log.ExportObjectsToFile", filename ) );
 
-    MessageBox box =
+    // check if file is exists
+    MessageBox box = RepositoryExportProgressDialog.checkIsFileIsAcceptable( shell, log, filename );
+    int answer = ( box == null ) ? SWT.OK : box.open();
+    if ( answer != SWT.OK ) {
+      // seems user don't want to overwrite file...
+      return false;
+    }
+
+    //ok, let's show one more modal dialog, users like modal dialogs. 
+    //They feel that their opinion are important to us.
+    box =
       new MessageBox( shell, SWT.ICON_QUESTION
         | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.YES | SWT.NO | SWT.CANCEL );
     box.setText( BaseMessages.getString( PKG, "Spoon.QuestionApplyImportRulesToExport.Title" ) );
     box.setMessage( BaseMessages.getString( PKG, "Spoon.QuestionApplyImportRulesToExport.Message" ) );
-    int answer = box.open();
+    answer = box.open();
     if ( answer == SWT.CANCEL ) {
       return false;
     }
@@ -5377,6 +5370,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     return true;
   }
+
+  /**
+   * local method to be able to use Spoon localization messages.
+   * @return
+   */
+  public FileDialog getExportFileDialog() {
+    FileDialog dialog = new FileDialog( shell, SWT.SAVE | SWT.SINGLE );
+    dialog.setText( BaseMessages.getString( PKG, "Spoon.SelectAnXMLFileToExportTo.Message" ) );
+    return dialog;
+  }
+
 
   public void importDirectoryToRepository() {
     FileDialog dialog = new FileDialog( shell, SWT.OPEN | SWT.MULTI );
