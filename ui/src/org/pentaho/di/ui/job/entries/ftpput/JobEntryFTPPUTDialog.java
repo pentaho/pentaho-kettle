@@ -1036,19 +1036,18 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
         String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        int realPort = Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
+        ftpclient.setRemotePort( realPort );
 
         if ( !Const.isEmpty( wProxyHost.getText() ) ) {
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
 
-          // FIXME: Proper default port for proxy
-          int port = Const.toInt( jobMeta.environmentSubstitute( wProxyHost.getText() ), 21 );
+          int port = Const.toInt( jobMeta.environmentSubstitute( wProxyPort.getText() ), 21 );
           if ( port != 0 ) {
             ftpclient.setRemotePort( port );
           }
-        } else {
-          ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         }
 
         // login to ftp host ...

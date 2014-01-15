@@ -953,8 +953,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     fdDateTimeFormat.top = new FormAttachment( wSpecifyFormat, margin );
     fdDateTimeFormat.right = new FormAttachment( 100, 0 );
     wDateTimeFormat.setLayoutData( fdDateTimeFormat );
-    for ( int x = 0; x < dats.length; x++ ) {
-      wDateTimeFormat.add( dats[x] );
+    for ( String dat : dats ) {
+      wDateTimeFormat.add( dat );
     }
 
     // Add Date before extension?
@@ -1416,20 +1416,18 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
         String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        int realPort = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
+        ftpclient.setRemotePort( realPort );
 
         if ( !Const.isEmpty( wProxyHost.getText() ) ) {
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
 
-          // FIXME: Proper default port for proxy
-          int port = Const.toInt( jobMeta.environmentSubstitute( wProxyHost.getText() ), 21 );
+          int port = Const.toInt( jobMeta.environmentSubstitute( wProxyPort.getText() ), 21 );
           if ( port != 0 ) {
             ftpclient.setRemotePort( port );
           }
-        } else {
-          ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
-
         }
 
         // login to ftp host ...
