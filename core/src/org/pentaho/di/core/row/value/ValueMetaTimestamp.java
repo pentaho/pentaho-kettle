@@ -245,7 +245,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return null;
     }
 
-    String dateTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( timestamp );
+    String dateTime = getDateFormat().format( timestamp );
     dateTime += "." + new DecimalFormat( "000000000" ).format( timestamp.getNanos() );
     // return timestamp.toString();
 
