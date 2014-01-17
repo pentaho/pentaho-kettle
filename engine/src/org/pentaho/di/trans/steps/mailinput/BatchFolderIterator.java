@@ -87,7 +87,7 @@ public class BatchFolderIterator implements Iterator<Message> {
     } else {
       batchFirst = batchLast + 1;
       batchLast = Math.min( batchFirst + batchSize - 1, end );
-      if ( batchLast <= batchFirst ) {
+      if ( batchLast < batchFirst ) {
         return false;
       }
       try {
