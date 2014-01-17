@@ -170,7 +170,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
     toolbarControl.setLayoutData( fdToolbar );
     toolbarControl.setParent( shell );
 
-    table = new Table( shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI );
+    table = new Table( shell, SWT.FULL_SELECTION | SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI );
     props.setLook( table );
     table.setHeaderVisible( true );
 
