@@ -209,7 +209,7 @@ in ancient times ;-)</note>
         <position>5</position>
         <length>3</length>
         <precision>-1</precision>
-        <trim_type>none</trim_type>
+        <trim_type>both</trim_type>
         <repeat>N</repeat>
         </field>
       <field>
@@ -224,7 +224,7 @@ in ancient times ;-)</note>
         <position>8</position>
         <length>3</length>
         <precision>-1</precision>
-        <trim_type>none</trim_type>
+        <trim_type>both</trim_type>
         <repeat>N</repeat>
         </field>
       <field>
@@ -239,7 +239,7 @@ in ancient times ;-)</note>
         <position>11</position>
         <length>3</length>
         <precision>-1</precision>
-        <trim_type>none</trim_type>
+        <trim_type>both</trim_type>
         <repeat>N</repeat>
         </field>
       <field>
@@ -299,7 +299,7 @@ in ancient times ;-)</note>
         <position>18</position>
         <length>2</length>
         <precision>-1</precision>
-        <trim_type>none</trim_type>
+        <trim_type>both</trim_type>
         <repeat>N</repeat>
         </field>
       <field>
@@ -314,7 +314,7 @@ in ancient times ;-)</note>
         <position>20</position>
         <length>2</length>
         <precision>-1</precision>
-        <trim_type>none</trim_type>
+        <trim_type>both</trim_type>
         <repeat>N</repeat>
         </field>
       <field>
