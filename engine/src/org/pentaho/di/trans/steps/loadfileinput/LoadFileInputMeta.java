@@ -935,20 +935,20 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       IMetaStore metaStore ) {
     CheckResult cr;
 
-    // See if we get input...
-    if ( input.length <= 0 ) {
-      cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LoadFileInputMeta.CheckResult.NoInputExpected" ), stepMeta );
-      remarks.add( cr );
-    } else {
-      cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "LoadFileInputMeta.CheckResult.NoInput" ), stepMeta );
-      remarks.add( cr );
-    }
-
     if ( getIsInFields() ) {
+      // See if we get input...
+      if ( input.length == 0 ) {
+        cr =
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "LoadFileInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+        remarks.add( cr );
+      } else {
+        cr =
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "LoadFileInputMeta.CheckResult.NoInput" ), stepMeta );
+        remarks.add( cr );
+      }
+
       if ( Const.isEmpty( getDynamicFilenameField() ) ) {
         cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
@@ -975,7 +975,6 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
         remarks.add( cr );
       }
     }
-
   }
 
   /**
@@ -987,7 +986,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
