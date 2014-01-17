@@ -209,11 +209,13 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
         String formula = item.getText( e.x );
 
         try {
-          LibFormulaEditor libFormulaEditor =
-            new LibFormulaEditor( shell, SWT.APPLICATION_MODAL | SWT.SHEET, Const.NVL( formula, "" ), fieldNames );
-          formula = libFormulaEditor.open();
-          if ( formula != null ) {
-            tv.setText( formula, e.x, e.y );
+          if ( !shell.isDisposed() ) {
+            LibFormulaEditor libFormulaEditor =
+              new LibFormulaEditor( shell, SWT.APPLICATION_MODAL | SWT.SHEET, Const.NVL( formula, "" ), fieldNames );
+            formula = libFormulaEditor.open();
+            if ( formula != null && !tv.isDisposed() ) {
+              tv.setText( formula, e.x, e.y );
+            }
           }
         } catch ( Exception ex ) {
           new ErrorDialog( shell, "Error", "There was an unexpected error in the formula editor", ex );
