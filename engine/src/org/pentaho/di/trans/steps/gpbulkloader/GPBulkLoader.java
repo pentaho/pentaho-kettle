@@ -134,7 +134,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
   public String getControlFileContents( GPBulkLoaderMeta meta, RowMetaInterface rm, Object[] r )
     throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
-    String inputName = String.format( "%s%s%s", enclosure, environmentSubstitute( meta.getDataFile() ), enclosure );
+    String inputName = "'" + environmentSubstitute( meta.getDataFile() ) + "'";
 
     // if ( GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
     // {
