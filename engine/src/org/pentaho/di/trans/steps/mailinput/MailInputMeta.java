@@ -56,6 +56,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+  private static int DEFAULT_BATCH_SIZE = 500;
 
   public int conditionReceivedDate;
 
@@ -96,7 +97,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String start;
   private String end;
 
-  private Integer batchSize;
+  private Integer batchSize = DEFAULT_BATCH_SIZE;
 
   private boolean stopOnError;
 
@@ -164,7 +165,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       batchSize = Integer.parseInt( XMLHandler.getTagValue( stepnode, Tags.BATCH_SIZE ) );
     } catch ( NumberFormatException e ) {
-      batchSize = null;
+      batchSize = DEFAULT_BATCH_SIZE;
     }
     start = XMLHandler.getTagValue( stepnode, Tags.START_MSG );
     end = XMLHandler.getTagValue( stepnode, Tags.END_MSG );
@@ -213,7 +214,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     usedynamicfolder = false;
     rowlimit = "0";
 
-    batchSize = 500;
+    batchSize = DEFAULT_BATCH_SIZE;
     useBatch = false;
     start = null;
     end = null;
@@ -278,7 +279,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       try {
         batchSize = (int) rep.getStepAttributeInteger( id_step, Tags.BATCH_SIZE );
       } catch ( Exception e ) {
-        batchSize = null;
+        batchSize = DEFAULT_BATCH_SIZE;
       }
       start = rep.getStepAttributeString( id_step, Tags.START_MSG );
       end = rep.getStepAttributeString( id_step, Tags.END_MSG );
