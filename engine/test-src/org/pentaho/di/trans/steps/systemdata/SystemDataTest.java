@@ -96,11 +96,11 @@ public class SystemDataTest {
     SystemDataMeta systemDataMeta = new SystemDataMeta();
     systemDataMeta.allocate( 2 );
     String[] names = systemDataMeta.getFieldName();
-    int[] types = systemDataMeta.getFieldType();
+    SystemDataTypes[] types = systemDataMeta.getFieldType();
     names[0] = "hostname";
     names[1] = "hostname_real";
-    types[0] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( 26 ) );
-    types[1] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( 27 ) );
+    types[0] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME ) );
+    types[1] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME_REAL ) );
     SystemDataHandler systemData =
         new SystemDataHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
