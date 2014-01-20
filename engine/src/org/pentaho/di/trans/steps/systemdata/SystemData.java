@@ -212,6 +212,9 @@ public class SystemData extends BaseStep implements StepInterface {
         case SystemDataMeta.TYPE_SYSTEM_INFO_JOB_BATCH_ID:
           row[index] = new Long( getTrans().getPassedBatchId() );
           break;
+        case SystemDataMeta.TYPE_SYSTEM_INFO_HOSTNAME_REAL:
+          row[index] = Const.getHostnameReal();
+          break;
         case SystemDataMeta.TYPE_SYSTEM_INFO_HOSTNAME:
           row[index] = Const.getHostname();
           break;

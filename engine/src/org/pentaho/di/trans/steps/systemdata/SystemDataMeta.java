@@ -87,77 +87,78 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int TYPE_SYSTEM_INFO_TRANS_BATCH_ID = 24;
   public static final int TYPE_SYSTEM_INFO_JOB_BATCH_ID = 25;
   public static final int TYPE_SYSTEM_INFO_HOSTNAME = 26;
-  public static final int TYPE_SYSTEM_INFO_IP_ADDRESS = 27;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_01 = 28;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_02 = 29;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_03 = 30;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_04 = 31;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_05 = 32;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_06 = 33;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_07 = 34;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_08 = 35;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_09 = 36;
-  public static final int TYPE_SYSTEM_INFO_ARGUMENT_10 = 37;
+  public static final int TYPE_SYSTEM_INFO_HOSTNAME_REAL = 27;
+  public static final int TYPE_SYSTEM_INFO_IP_ADDRESS = 28;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_01 = 29;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_02 = 30;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_03 = 31;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_04 = 32;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_05 = 33;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_06 = 34;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_07 = 35;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_08 = 36;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_09 = 37;
+  public static final int TYPE_SYSTEM_INFO_ARGUMENT_10 = 38;
 
-  public static final int TYPE_SYSTEM_INFO_KETTLE_VERSION = 38;
-  public static final int TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION = 39;
-  public static final int TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE = 40;
-  public static final int TYPE_SYSTEM_INFO_CURRENT_PID = 41;
-  public static final int TYPE_SYSTEM_INFO_JVM_MAX_MEMORY = 42;
-  public static final int TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY = 43;
-  public static final int TYPE_SYSTEM_INFO_JVM_FREE_MEMORY = 44;
-  public static final int TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY = 45;
-  public static final int TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS = 46;
-  public static final int TYPE_SYSTEM_INFO_JVM_CPU_TIME = 47;
-  public static final int TYPE_SYSTEM_INFO_TOTAL_PHYSICAL_MEMORY_SIZE = 48;
-  public static final int TYPE_SYSTEM_INFO_TOTAL_SWAP_SPACE_SIZE = 49;
-  public static final int TYPE_SYSTEM_INFO_COMMITTED_VIRTUAL_MEMORY_SIZE = 50;
-  public static final int TYPE_SYSTEM_INFO_FREE_PHYSICAL_MEMORY_SIZE = 51;
-  public static final int TYPE_SYSTEM_INFO_FREE_SWAP_SPACE_SIZE = 52;
-  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_START = 53;
-  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_END = 54;
-  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END = 55;
-  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_START_US = 56;
-  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_END_US = 57;
-  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_START = 58;
-  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_END = 59;
-  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END = 60;
-  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_START_US = 61;
-  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_END_US = 62;
-  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_START = 63;
-  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_END = 64;
-  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END = 65;
-  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_START_US = 66;
-  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_END_US = 67;
-  public static final int TYPE_SYSTEM_INFO_PREV_QUARTER_START = 68;
-  public static final int TYPE_SYSTEM_INFO_PREV_QUARTER_END = 69;
-  public static final int TYPE_SYSTEM_INFO_THIS_QUARTER_START = 70;
-  public static final int TYPE_SYSTEM_INFO_THIS_QUARTER_END = 71;
-  public static final int TYPE_SYSTEM_INFO_NEXT_QUARTER_START = 72;
-  public static final int TYPE_SYSTEM_INFO_NEXT_QUARTER_END = 73;
-  public static final int TYPE_SYSTEM_INFO_PREV_YEAR_START = 74;
-  public static final int TYPE_SYSTEM_INFO_PREV_YEAR_END = 75;
-  public static final int TYPE_SYSTEM_INFO_THIS_YEAR_START = 76;
-  public static final int TYPE_SYSTEM_INFO_THIS_YEAR_END = 77;
-  public static final int TYPE_SYSTEM_INFO_NEXT_YEAR_START = 78;
-  public static final int TYPE_SYSTEM_INFO_NEXT_YEAR_END = 79;
+  public static final int TYPE_SYSTEM_INFO_KETTLE_VERSION = 39;
+  public static final int TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION = 40;
+  public static final int TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE = 41;
+  public static final int TYPE_SYSTEM_INFO_CURRENT_PID = 42;
+  public static final int TYPE_SYSTEM_INFO_JVM_MAX_MEMORY = 43;
+  public static final int TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY = 44;
+  public static final int TYPE_SYSTEM_INFO_JVM_FREE_MEMORY = 45;
+  public static final int TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY = 46;
+  public static final int TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS = 47;
+  public static final int TYPE_SYSTEM_INFO_JVM_CPU_TIME = 48;
+  public static final int TYPE_SYSTEM_INFO_TOTAL_PHYSICAL_MEMORY_SIZE = 49;
+  public static final int TYPE_SYSTEM_INFO_TOTAL_SWAP_SPACE_SIZE = 50;
+  public static final int TYPE_SYSTEM_INFO_COMMITTED_VIRTUAL_MEMORY_SIZE = 51;
+  public static final int TYPE_SYSTEM_INFO_FREE_PHYSICAL_MEMORY_SIZE = 52;
+  public static final int TYPE_SYSTEM_INFO_FREE_SWAP_SPACE_SIZE = 53;
+  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_START = 54;
+  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_END = 55;
+  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END = 56;
+  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_START_US = 57;
+  public static final int TYPE_SYSTEM_INFO_PREV_WEEK_END_US = 58;
+  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_START = 59;
+  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_END = 60;
+  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END = 61;
+  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_START_US = 62;
+  public static final int TYPE_SYSTEM_INFO_THIS_WEEK_END_US = 63;
+  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_START = 64;
+  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_END = 65;
+  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END = 66;
+  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_START_US = 67;
+  public static final int TYPE_SYSTEM_INFO_NEXT_WEEK_END_US = 68;
+  public static final int TYPE_SYSTEM_INFO_PREV_QUARTER_START = 69;
+  public static final int TYPE_SYSTEM_INFO_PREV_QUARTER_END = 70;
+  public static final int TYPE_SYSTEM_INFO_THIS_QUARTER_START = 71;
+  public static final int TYPE_SYSTEM_INFO_THIS_QUARTER_END = 72;
+  public static final int TYPE_SYSTEM_INFO_NEXT_QUARTER_START = 73;
+  public static final int TYPE_SYSTEM_INFO_NEXT_QUARTER_END = 74;
+  public static final int TYPE_SYSTEM_INFO_PREV_YEAR_START = 75;
+  public static final int TYPE_SYSTEM_INFO_PREV_YEAR_END = 76;
+  public static final int TYPE_SYSTEM_INFO_THIS_YEAR_START = 77;
+  public static final int TYPE_SYSTEM_INFO_THIS_YEAR_END = 78;
+  public static final int TYPE_SYSTEM_INFO_NEXT_YEAR_START = 79;
+  public static final int TYPE_SYSTEM_INFO_NEXT_YEAR_END = 80;
   // Previous result
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT = 80;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS = 81;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR = 82;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS = 83;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT = 84;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT = 85;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ = 86;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED = 87;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN = 88;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED = 89;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED = 90;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ROWS = 91;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED = 92;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES = 93;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED = 94;
-  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT = 95;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT = 81;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS = 82;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR = 83;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS = 84;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT = 85;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT = 86;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ = 87;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED = 88;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN = 89;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED = 90;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED = 91;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ROWS = 92;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED = 93;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES = 94;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED = 95;
+  public static final int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT = 96;
 
   public static final SystemDataMetaFunction[] functions = new SystemDataMetaFunction[] {
     null,
@@ -212,6 +213,8 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
     new SystemDataMetaFunction( TYPE_SYSTEM_INFO_JOB_BATCH_ID, "job batch ID", BaseMessages.getString(
       PKG, "SystemDataMeta.TypeDesc.JobBatchID" ) ),
     new SystemDataMetaFunction( TYPE_SYSTEM_INFO_HOSTNAME, "Hostname", BaseMessages.getString(
+      PKG, "SystemDataMeta.TypeDesc.HostnameNetworkSetup" ) ),
+    new SystemDataMetaFunction( TYPE_SYSTEM_INFO_HOSTNAME_REAL, "Hostname real", BaseMessages.getString(
       PKG, "SystemDataMeta.TypeDesc.Hostname" ) ),
     new SystemDataMetaFunction( TYPE_SYSTEM_INFO_IP_ADDRESS, "IP address", BaseMessages.getString(
       PKG, "SystemDataMeta.TypeDesc.IPAddress" ) ),
@@ -570,6 +573,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
         case TYPE_SYSTEM_INFO_ARGUMENT_10:
         case TYPE_SYSTEM_INFO_MODIFIED_USER:
         case TYPE_SYSTEM_INFO_HOSTNAME:
+        case TYPE_SYSTEM_INFO_HOSTNAME_REAL:
         case TYPE_SYSTEM_INFO_IP_ADDRESS:
         case TYPE_SYSTEM_INFO_KETTLE_VERSION:
         case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:

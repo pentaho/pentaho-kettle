@@ -1366,8 +1366,46 @@ public class Const {
   }
 
   /**
+   * Determine the hostname of the machine Kettle is running on
+   * 
+   * @return The hostname
+   */
+  public static final String getHostnameReal() {
+    if ( isWindows() ) {
+      // Windows will always set the 'COMPUTERNAME' variable
+      return System.getenv( "COMPUTERNAME" );
+    } else {
+      // If it is not Windows then it is most likely a Unix-like operating system
+      // such as Solaris, AIX, HP-UX, Linux or MacOS.
+      // Most modern shells (such as Bash or derivatives) sets the
+      // HOSTNAME variable so lets try that first.
+      String hostname = System.getenv( "HOSTNAME" );
+      if ( hostname != null ) {
+        return hostname;
+      } else {
+        BufferedReader br;
+        try {
+          Process pr = Runtime.getRuntime().exec( "hostname" );
+          br = new BufferedReader( new InputStreamReader( pr.getInputStream() ) );
+          String line;
+          if ( ( line = br.readLine() ) != null ) {
+            return line;
+          }
+          pr.waitFor();
+          br.close();
+        } catch ( IOException e ) {
+          return getHostname();
+        } catch ( InterruptedException e ) {
+          return getHostname();
+        }
+      }
+    }
+    return getHostname();
+  }
+
+  /**
    * Determins the IP address of the machine Kettle is running on.
-   *
+   * 
    * @return The IP address
    */
   public static final String getIPAddress() throws Exception {
