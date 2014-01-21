@@ -1,6 +1,5 @@
 package org.pentaho.di.ui.dialog;
 
-import junit.framework.TestCase;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
@@ -10,15 +9,21 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.dialog.TipsDialog;
 
+import static org.junit.Assert.fail;
+
 /**
  * User: Dzmitry Stsiapanau Date: 10/10/13 Time: 3:14 PM
  */
-public class TipsDialogTest extends TestCase {
+public class TipsDialogTest {
   private TipsDialog tipsDialog;
   private Boolean showTips;
+  private String prevUserDir;
 
   @Before
   public void setUp() throws Exception {
+    prevUserDir = System.getProperty( "user.dir" );
+    String separator = System.getProperty( "file.separator" );
+    System.setProperty( "user.dir", prevUserDir + separator + "assembly" + separator + "package-res" );
     KettleEnvironment.init();
 
     Display display = Display.getDefault();
@@ -38,6 +43,7 @@ public class TipsDialogTest extends TestCase {
   @After
   public void tearDown() throws Exception {
     PropsUI.getInstance().setShowTips( showTips );
+    System.setProperty( "user.dir", prevUserDir );
   }
 
   @Test

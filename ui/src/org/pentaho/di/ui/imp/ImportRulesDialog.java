@@ -323,6 +323,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
    * Save the rules to an XML file
    */
   protected void exportRules() {
+    syncUIWithData();
     FileDialog dialog = new FileDialog( shell, SWT.SAVE );
     dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
     dialog.setFilterNames( new String[] {
@@ -418,6 +419,13 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
 
       ir.getRules().add( rule );
     }
+  }
+
+  protected void syncUIWithData() {
+    ImportRules newRules = new ImportRules();
+    getInfo( newRules );
+    importRules = newRules;
+    getCompositesData();
   }
 
   protected void getCompositesData() {
