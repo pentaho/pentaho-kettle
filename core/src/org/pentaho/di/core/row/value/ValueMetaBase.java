@@ -43,6 +43,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -107,6 +108,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected TimeZone dateFormatTimeZone;
   protected boolean dateFormatLenient;
   protected boolean lenientStringToNumber;
+  protected boolean ignoreTimezone;
 
   protected SimpleDateFormat dateFormat;
   protected boolean dateFormatChanged;
@@ -185,6 +187,10 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.lenientStringToNumber =
       convertStringToBoolean( Const.NVL( System.getProperty(
         Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ), "N" ) );
+    this.ignoreTimezone =
+      convertStringToBoolean( Const.NVL( System.getProperty(
+        Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ), "N" ) );
+
 
     determineSingleByteEncoding();
     setDefaultConversionMask();
@@ -4772,21 +4778,36 @@ public class ValueMetaBase implements ValueMetaInterface {
           break;
         case ValueMetaInterface.TYPE_DATE:
           if ( !isNull( data ) ) {
-
+            // Environment variable to disable timezone setting for the database updates
+            // When it is set, timezone will not be taken into account and the value will be converted
+            // into the local java timezone
             if ( getPrecision() == 1 || !databaseMeta.supportsTimeStampToDateConversion() ) {
               // Convert to DATE!
               long dat = getInteger( data ).longValue(); // converts using Date.getTime()
               java.sql.Date ddate = new java.sql.Date( dat );
-              preparedStatement.setDate( index, ddate );
+              if ( ignoreTimezone || this.getDateFormatTimeZone() == null ) {
+                preparedStatement.setDate( index, ddate );
+              } else {
+                preparedStatement.setDate( index, ddate, Calendar.getInstance( this.getDateFormatTimeZone() ) );
+              }
             } else {
               if ( data instanceof java.sql.Timestamp ) {
                 // Preserve ns precision!
                 //
-                preparedStatement.setTimestamp( index, (java.sql.Timestamp) data );
+                if ( ignoreTimezone || this.getDateFormatTimeZone() == null ) {
+                  preparedStatement.setTimestamp( index, (java.sql.Timestamp) data );
+                } else {
+                  preparedStatement.setTimestamp( index, (java.sql.Timestamp) data,
+                    Calendar.getInstance( this.getDateFormatTimeZone() ) );
+                }
               } else {
                 long dat = getInteger( data ).longValue(); // converts using Date.getTime()
                 java.sql.Timestamp sdate = new java.sql.Timestamp( dat );
-                preparedStatement.setTimestamp( index, sdate );
+                if ( ignoreTimezone || this.getDateFormatTimeZone() == null ) {
+                  preparedStatement.setTimestamp( index, sdate );
+                } else {
+                  preparedStatement.setTimestamp( index, sdate, Calendar.getInstance( this.getDateFormatTimeZone() ) );
+                }
               }
             }
           } else {
