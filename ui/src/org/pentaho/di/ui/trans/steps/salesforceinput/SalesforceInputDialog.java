@@ -1476,7 +1476,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     }
 
     addField(
-      field.getName(), field.getLabel(), field.isIdLookup(), field.getType().getValue(), fieldLength,
+      field.getName(), field.getName(), field.isIdLookup(), field.getType().getValue(), fieldLength,
       fieldPrecision );
   }
 
