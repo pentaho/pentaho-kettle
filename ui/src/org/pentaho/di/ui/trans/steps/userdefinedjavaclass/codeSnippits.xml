@@ -18,7 +18,7 @@
 
 	// It is always safest to call createOutputRow() to ensure that your output row's Object[] is large
     // enough to handle any new fields you are creating in this step.
-    r = createOutputRow(r, outputRowSize);
+    r = createOutputRow(r, data.outputRowMeta.size());
 	
     /* TODO: Your code here. (See Sample)
     
