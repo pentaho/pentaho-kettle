@@ -40,12 +40,12 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 /**
- * Test for InsertUpdate step
+ * Test for PDI-3499
  *
  * @author Pavel Sakun
  * @see InsertUpdate
  */
-public class InsertUpdateTest {
+public class PDI3499Test {
   StepMockHelper<InsertUpdateMeta, InsertUpdateData> smh;
 
   @Before
