@@ -415,6 +415,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
     String[] key = condition.getUsedFields();
     for ( int i = 0; i < key.length; i++ ) {
+      if ( Const.isEmpty( key[i] ) ) {
+        continue;
+      }
       ValueMetaInterface v = prev.searchValueMeta( key[i] );
       if ( v == null ) {
         orphans.add( key[i] );
