@@ -284,4 +284,10 @@
 		<default-value></default-value>
 	</kettle-variable>
 	
+	<kettle-variable>
+		<description>Set this variable to Y when you want the job/transformation fail with an error when the related logging process (e.g. to a database) fails.</description>
+		<variable>KETTLE_FAIL_ON_LOGGING_ERROR</variable>
+		<default-value>N</default-value>
+	</kettle-variable>
+	
 </kettle-variables>
