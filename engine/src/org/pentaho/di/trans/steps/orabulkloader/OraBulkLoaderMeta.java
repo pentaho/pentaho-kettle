@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.orabulkloader;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.drools.util.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
