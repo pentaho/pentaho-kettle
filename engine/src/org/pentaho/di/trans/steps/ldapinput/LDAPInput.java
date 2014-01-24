@@ -342,14 +342,18 @@ public class LDAPInput extends BaseStep implements StepInterface
       }
 
       data.attrReturned[i] = name;
-      // Do we need to sort based on some attributes?
-      if (field.isSortedKey()) {
-        data.connection.addSortingAttributes(name);
-      }
     }
 
     // Define new LDAP connection
-    data.connection = new LDAPConnection(log, this, meta, data.attributesBinary);
+    data.connection = new LDAPConnection( log, this, meta, data.attributesBinary );
+
+    for ( int i = 0; i < data.attrReturned.length; i++ ){
+      LDAPInputField field = meta.getInputFields()[i];
+      // Do we need to sort based on some attributes?
+      if ( field.isSortedKey() ) {
+        data.connection.addSortingAttributes( data.attrReturned[i] );
+      }
+    }
 
     if (meta.UseAuthentication()) {
       String username = environmentSubstitute(meta.getUserName());
