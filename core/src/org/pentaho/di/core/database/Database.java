@@ -52,6 +52,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -109,7 +110,9 @@ import org.pentaho.di.repository.RepositoryDirectory;
  */
 public class Database implements VariableSpace, LoggingObjectInterface {
   /** for i18n purposes, needed by Translator2!! */
-  private static Class<?> PKG = Database.class;
+  private static Class<?> PKG = Database.class; 
+  
+  private static final Map<String, Set<String>> registeredDrivers = new HashMap<String, Set<String>>();
 
   private DatabaseMeta databaseMeta;
 
@@ -446,36 +449,49 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *
    * @param classname
    *          for example "org.gjt.mm.mysql.Driver"
-   * @return true if the connect was succesfull, false if something went wrong.
+   * @return true if the connect was successful, false if something went wrong.
    */
   private void connectUsingClass( String classname, String partitionId ) throws KettleDatabaseException {
-    // Install and load the jdbc Driver
-
     // first see if this is a JNDI connection
     if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
       initWithNamedDataSource( environmentSubstitute( databaseMeta.getDatabaseName() ) );
       return;
     }
-
+    
+    // Install and load the jdbc Driver
     PluginInterface plugin =
-      PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+        PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
 
     try {
       synchronized ( java.sql.DriverManager.class ) {
-
         ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( plugin );
         Class<?> driverClass = classLoader.loadClass( classname );
 
-        DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+        // Only need DelegatingDriver for drivers not from our classloader
+        if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
+          String pluginId =
+              PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+          Set<String> registeredDriversFromPlugin = registeredDrivers.get( pluginId );
+          if ( registeredDriversFromPlugin == null ) {
+            registeredDriversFromPlugin = new HashSet<String>();
+            registeredDrivers.put( pluginId, registeredDriversFromPlugin );
+          }
+          // Prevent registering multiple delegating drivers for same class, plugin
+          if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
+            DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+            registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
+          }
+        } else {
+          // Trigger static register block in driver class
+          Class.forName( classname );
+        }
       }
     } catch ( NoClassDefFoundError e ) {
-      throw new KettleDatabaseException( BaseMessages.getString(
-        PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin
-          .getName() ), e );
+      throw new KettleDatabaseException( BaseMessages.getString( PKG,
+          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( ClassNotFoundException e ) {
-      throw new KettleDatabaseException( BaseMessages.getString(
-        PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin
-          .getName() ), e );
+      throw new KettleDatabaseException( BaseMessages.getString( PKG,
+          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Exception while loading class", e );
     }
