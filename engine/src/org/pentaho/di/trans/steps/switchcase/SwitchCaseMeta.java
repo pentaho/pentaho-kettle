@@ -123,14 +123,14 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append(XMLHandler.addTagValue("case_value_type", ValueMeta.getTypeDesc(caseValueType)));	 
 		retval.append(XMLHandler.addTagValue("case_value_format", caseValueFormat));	 
 		retval.append(XMLHandler.addTagValue("case_value_decimal", caseValueDecimal));	 
-		retval.append(XMLHandler.addTagValue("case_value_group", caseValueGroup));		 
-		retval.append(XMLHandler.addTagValue("default_target_step", defaultTargetStep==null ? null : defaultTargetStep.getName())); 
-		
+		retval.append(XMLHandler.addTagValue("case_value_group", caseValueGroup));
+		retval.append(XMLHandler.addTagValue("default_target_step", defaultTargetStep!=null ?  defaultTargetStep.getName() : defaultTargetStepname ));
+
 		retval.append(XMLHandler.openTag(XML_TAG_CASE_VALUES));
 		for (SwitchCaseTarget target : caseTargets) {
 			retval.append(XMLHandler.openTag(XML_TAG_CASE_VALUE));
-			retval.append(XMLHandler.addTagValue("value", target.caseValue));
-			retval.append(XMLHandler.addTagValue("target_step", target.caseTargetStep!=null ? target.caseTargetStep.getName() : null));
+			retval.append(XMLHandler.addTagValue("value", target.caseValue!=null ? target.caseValue : ""));
+      retval.append(XMLHandler.addTagValue("target_step", target.caseTargetStep!=null ? target.caseTargetStep.getName() : target.caseTargetStepname ));
 			retval.append(XMLHandler.closeTag(XML_TAG_CASE_VALUE));
 		}
 		retval.append(XMLHandler.closeTag(XML_TAG_CASE_VALUES));
@@ -212,12 +212,12 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "case_value_decimal", caseValueDecimal); 
 			rep.saveStepAttribute(id_transformation, id_step, "case_value_group", caseValueGroup); 
 			
-			rep.saveStepAttribute(id_transformation, id_step, "default_target_step", defaultTargetStep==null ? null : defaultTargetStep.getName());
+			rep.saveStepAttribute(id_transformation, id_step, "default_target_step", defaultTargetStep!=null ? defaultTargetStep.getName() : defaultTargetStepname);
 
 			for (int i=0;i<caseTargets.size();i++) {
 				SwitchCaseTarget target = caseTargets.get(i);
-				rep.saveStepAttribute(id_transformation, id_step, i, "case_value", target.caseValue);
-				rep.saveStepAttribute(id_transformation, id_step, i, "case_target_step", target.caseTargetStep!=null ? target.caseTargetStep.getName() : null);
+				rep.saveStepAttribute(id_transformation, id_step, i, "case_value", target.caseValue!=null ? target.caseValue : "");
+				rep.saveStepAttribute(id_transformation, id_step, i, "case_target_step", target.caseTargetStep!=null ? target.caseTargetStep.getName() : target.caseTargetStepname);
 			}
 		}
 		catch(Exception e)
