@@ -7,18 +7,36 @@ import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.mockito.stubbing.Answer;
 
 public class MockDriver implements Driver {
+  private static final List<MockDriver> drivers = new ArrayList<MockDriver>();
+
+  public static synchronized void registerInstance() throws SQLException {
+    MockDriver driver = new MockDriver();
+    DriverManager.registerDriver( driver );
+    drivers.add( driver );
+  }
+
+  public static synchronized void deregeisterInstances() throws SQLException {
+    for ( Driver driver : drivers ) {
+      DriverManager.deregisterDriver( driver );
+    }
+    drivers.clear();
+  }
+
   public MockDriver() {
 
   }
