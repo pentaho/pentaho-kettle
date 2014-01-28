@@ -651,7 +651,14 @@ public class Const
 	 */
 	public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION = "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
 
-	/**
+
+    /**
+     * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
+     */
+    public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
+
+
+    /**
 	 * System wide flag to set the maximum number of log lines that are kept internally by Kettle.
 	 * Set to 0 to keep all rows (default)
 	 */
