@@ -513,6 +513,7 @@ public class TransDialog extends Dialog {
     wTransstatus.add( BaseMessages.getString( PKG, "TransDialog.Production_Transstatus.Label" ) );
     wTransstatus.add( "" );
     wTransstatus.select( -1 ); // +1: starts at -1
+    wTransstatus.addSelectionListener( lsModSel );
 
     props.setLook( wTransstatus );
     fdTransstatus = new FormData();
