@@ -47,7 +47,7 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 
 /**
  * Execute a mapping: a re-usuable transformation
- *
+ * 
  * @author Matt
  * @since 22-nov-2005
  */
@@ -58,7 +58,7 @@ public class SimpleMapping extends BaseStep implements StepInterface {
   private SimpleMappingData data;
 
   public SimpleMapping( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -74,6 +74,7 @@ public class SimpleMapping extends BaseStep implements StepInterface {
 
       if ( first ) {
         first = false;
+        data.wasStarted = true;
 
         // Rows read are injected into the one available Mapping Input step
         //
@@ -86,13 +87,13 @@ public class SimpleMapping extends BaseStep implements StepInterface {
         String mappingOutputStepname = data.mappingOutput.getStepname();
         StepInterface outputStepInterface = data.mappingTrans.findStepInterface( mappingOutputStepname, 0 );
         RowOutputDataMapper outputDataMapper =
-          new RowOutputDataMapper( meta.getInputMapping(), meta.getOutputMapping(), new PutRowInterface() {
+            new RowOutputDataMapper( meta.getInputMapping(), meta.getOutputMapping(), new PutRowInterface() {
 
-            @Override
-            public void putRow( RowMetaInterface rowMeta, Object[] rowData ) throws KettleStepException {
-              SimpleMapping.this.putRow( rowMeta, rowData );
-            }
-          } );
+              @Override
+              public void putRow( RowMetaInterface rowMeta, Object[] rowData ) throws KettleStepException {
+                SimpleMapping.this.putRow( rowMeta, rowData );
+              }
+            } );
         outputStepInterface.addRowListener( outputDataMapper );
 
         // Start the mapping/sub-transformation threads
@@ -208,8 +209,8 @@ public class SimpleMapping extends BaseStep implements StepInterface {
     try {
       data.mappingTrans.prepareExecution( getTrans().getArguments() );
     } catch ( KettleException e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "SimpleMapping.Exception.UnableToPrepareExecutionOfMapping" ), e );
+      throw new KettleException( BaseMessages.getString( PKG,
+          "SimpleMapping.Exception.UnableToPrepareExecutionOfMapping" ), e );
     }
 
     // If there is no read/write logging step set, we can insert the data from
@@ -218,11 +219,11 @@ public class SimpleMapping extends BaseStep implements StepInterface {
     MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
     if ( mappingInputs.length == 0 ) {
       throw new KettleException(
-        "The simple mapping step needs one Mapping Input step to write to in the sub-transformation" );
+          "The simple mapping step needs one Mapping Input step to write to in the sub-transformation" );
     }
     if ( mappingInputs.length > 1 ) {
       throw new KettleException(
-        "The simple mapping step does not support multiple Mapping Input steps to write to in the sub-transformation" );
+          "The simple mapping step does not support multiple Mapping Input steps to write to in the sub-transformation" );
     }
 
     data.mappingInput = mappingInputs[0];
@@ -236,11 +237,11 @@ public class SimpleMapping extends BaseStep implements StepInterface {
     MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
     if ( mappingOutputs.length == 0 ) {
       throw new KettleException(
-        "The simple mapping step needs one Mapping Output step to read from in the sub-transformation" );
+          "The simple mapping step needs one Mapping Output step to read from in the sub-transformation" );
     }
     if ( mappingOutputs.length > 1 ) {
       throw new KettleException( "The simple mapping step does not support "
-        + "multiple Mapping Output steps to read from in the sub-transformation" );
+          + "multiple Mapping Output steps to read from in the sub-transformation" );
     }
     data.mappingOutput = mappingOutputs[0];
 
@@ -275,7 +276,7 @@ public class SimpleMapping extends BaseStep implements StepInterface {
         meta.setRepository( getTransMeta().getRepository() );
 
         data.mappingTransMeta =
-          SimpleMappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
+            SimpleMappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
         if ( data.mappingTransMeta != null ) { // Do we have a mapping at all?
 
           // OK, now prepare the execution of the mapping.
@@ -302,12 +303,14 @@ public class SimpleMapping extends BaseStep implements StepInterface {
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     // Close the running transformation
     if ( data.wasStarted ) {
-      // Wait until the child transformation has finished.
-      data.mappingTrans.waitUntilFinished();
+      if ( !data.mappingTrans.isFinished() ) {
+        // Wait until the child transformation has finished.
+        data.mappingTrans.waitUntilFinished();
 
-      // Remove it from the list of active sub-transformations...
-      //
-      getTrans().getActiveSubtransformations().remove( getStepname() );
+        // Remove it from the list of active sub-transformations...
+        //
+        getTrans().getActiveSubtransformations().remove( getStepname() );
+      }
 
       // See if there was an error in the sub-transformation, in that case, flag error etc.
       if ( data.mappingTrans.getErrors() > 0 ) {
@@ -353,8 +356,8 @@ public class SimpleMapping extends BaseStep implements StepInterface {
     /*
      * if (mappingOutputs.length==1) { mappingOutputs[0].addRowListener(rowListener); } else { // Find the main data
      * path... //
-     *
-     *
+     * 
+     * 
      * }
      */
 
@@ -364,4 +367,9 @@ public class SimpleMapping extends BaseStep implements StepInterface {
       mappingOutput.addRowListener( rowListener );
     }
   }
+
+  public SimpleMappingData getData() {
+    return data;
+  }
+
 }
