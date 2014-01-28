@@ -192,7 +192,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   }
 
   public void replaceMeta( JobEntryCopy jobEntryCopy ) {
-    entry = jobEntryCopy.entry;
+    entry = (JobEntryInterface) jobEntryCopy.entry.clone();
     nr = jobEntryCopy.nr; // Copy nr. 0 is the base copy...
 
     selected = jobEntryCopy.selected;
