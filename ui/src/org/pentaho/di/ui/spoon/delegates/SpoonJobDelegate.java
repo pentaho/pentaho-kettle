@@ -843,7 +843,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
   }
 
   /**
-   * @param transMeta
+   * @param jobMeta
    *          the transformation to close, make sure it's ok to dispose of it BEFORE you call this.
    */
   public void closeJob( JobMeta jobMeta ) {
@@ -1354,7 +1354,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
         jobGraph.startJob( executionConfiguration );
       } else if ( executionConfiguration.isExecutingRemotely() ) {
         // Executing remotely
-        //
+        // Check if jobMeta has changed
+        jobGraph.handleJobMetaChanges( jobMeta );
 
         // Activate the parameters, turn them into variables...
         // jobMeta.hasChanged()
