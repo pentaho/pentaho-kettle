@@ -835,7 +835,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     Result result = previousResult;
     result.setResult( false );
 
-    FileObject fileObject = null;
+    //FileObject fileObject = null;
     MailConnection mailConn = null;
     Date beginDate = null;
     Date endDate = null;
@@ -851,62 +851,67 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
           getFirstIMAPMails(), 0 );
 
       String realOutputFolder = getRealOutputDirectory();
-      fileObject = KettleVFS.getFileObject( realOutputFolder, this );
-
-      // Check if output folder exists
-      if ( fileObject.exists() ) {
-        if ( fileObject.getType() != FileType.FOLDER ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "JobGetMailsFromPOP.Error.NotAFolderNot", realOutputFolder ) );
-        }
-        if ( isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Log.OutputFolderExists", realOutputFolder ) );
-        }
-      } else {
-        if ( isCreateLocalFolder() ) {
-          if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString(
-              PKG, "JobGetMailsFromPOP.Log.OutputFolderNotExist", realOutputFolder ) );
+      String targetAttachmentFolder = null;
+      if ( getActionType() == MailConnectionMeta.ACTION_TYPE_GET ) {
+        FileObject fileObject = KettleVFS.getFileObject( realOutputFolder, this );
+        // Check if output folder exists
+        if ( fileObject.exists() ) {
+          if ( fileObject.getType() != FileType.FOLDER ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.NotAFolderNot", realOutputFolder ) );
           }
-          // create folder
-          fileObject.createFolder();
+          if ( isDebug() ) {
+            logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Log.OutputFolderExists", realOutputFolder ) );
+          }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderNotExists1.Label" )
-            + realOutputFolder + BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderNotExists2.Label" ) );
-        }
-      }
-
-      String targetAttachmentFolder = KettleVFS.getFilename( fileObject );
-      // check for attachment folder
-      boolean useDifferentFolderForAttachment = ( isSaveAttachment() && isDifferentFolderForAttachment() );
-
-      if ( useDifferentFolderForAttachment ) {
-        String realFolderAttachment = environmentSubstitute( getAttachmentFolder() );
-        if ( Const.isEmpty( realFolderAttachment ) ) {
-          throw new KettleException( BaseMessages
-            .getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty" ) );
-        }
-
-        fileObject = KettleVFS.getFileObject( realFolderAttachment, this );
-
-        if ( !fileObject.exists() ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotExist", realFolderAttachment ) );
-        }
-
-        if ( fileObject.getType() != FileType.FOLDER ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotAFolder", realFolderAttachment ) );
+          if ( isCreateLocalFolder() ) {
+            if ( isDetailed() ) {
+              logDetailed( BaseMessages.getString(
+                PKG, "JobGetMailsFromPOP.Log.OutputFolderNotExist", realOutputFolder ) );
+            }
+            // create folder
+            fileObject.createFolder();
+          } else {
+            throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderNotExists1.Label" )
+              + realOutputFolder + BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderNotExists2.Label" ) );
+          }
         }
 
         targetAttachmentFolder = KettleVFS.getFilename( fileObject );
-      }
-      // Close fileObject! we don't need it anymore ...
-      try {
-        fileObject.close();
-        fileObject = null;
-      } catch ( IOException ex ) { /* Ignore */
-      }
+        // check for attachment folder
+        boolean useDifferentFolderForAttachment = ( isSaveAttachment() && isDifferentFolderForAttachment() );
+
+        if ( useDifferentFolderForAttachment ) {
+          String realFolderAttachment = environmentSubstitute( getAttachmentFolder() );
+          if ( Const.isEmpty( realFolderAttachment ) ) {
+            throw new KettleException( BaseMessages
+              .getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty" ) );
+          }
+          //close old file object
+          try {
+            fileObject.close();
+          } catch ( IOException ex ) { /* Ignore */
+          }
+          //reuse old link
+          fileObject = KettleVFS.getFileObject( realFolderAttachment, this );
+
+          if ( !fileObject.exists() ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotExist", realFolderAttachment ) );
+          }
+
+          if ( fileObject.getType() != FileType.FOLDER ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotAFolder", realFolderAttachment ) );
+          }
+          targetAttachmentFolder = KettleVFS.getFilename( fileObject );
+        }
+        // Close fileObject! we don't need it anymore ...
+        try {
+          fileObject.close();
+        } catch ( IOException ex ) { /* Ignore */
+        }
+      } // end if get
 
       // Check destination folder
       String realMoveToIMAPFolder = environmentSubstitute( getMoveToIMAPFolder() );
@@ -1019,7 +1024,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         if ( getRetrievemails() == 1 ) {
           // New messages
           // POP doesn't support the concept of "new" messages!
-          // TODO : remove this option from the dialog
           mailConn.setFlagTermUnread();
         }
       } else {
@@ -1101,13 +1105,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       logError( "Unexpected error: " + e.getMessage() );
       logError( Const.getStackTracker( e ) );
     } finally {
-      if ( fileObject != null ) {
-        try {
-          fileObject.close();
-          fileObject = null;
-        } catch ( IOException ex ) { /* Ignore */
-        }
-      }
       try {
         if ( mailConn != null ) {
           mailConn.disconnect();
