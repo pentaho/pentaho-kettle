@@ -797,14 +797,14 @@
         <fileset dir="${dist.dir}/${lib.dir}" includes="kettle-core*.jar,kettle-engine*.jar"/>
         <fileset dir="test/libext/" includes="*.jar"/>
         <pathelement path="${testClasses}"/>
-
+      	<pathelement path="${dist.dir}/testfiles"/>
         <fileset dir="${dist.dir}/${lib.dir}" includes="*.jar *.zip"/>
         <fileset dir="${dist.dir}/${libswt}" includes="*.jar *.zip"/>
         <fileset dir="${dist.dir}/${libswt}/win32/" includes="*.jar *.zip"/>
       </classpath>
 
       <formatter type="xml"/>
-
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.JobTrackerExecutionTest" haltonerror="false" />
       <!-- Removed while PDI-10167 is open <test todir="${testreports.xml.dir}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />-->
     </junit>
     <junitreport todir="${testreports.html.dir}">
