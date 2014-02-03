@@ -805,7 +805,7 @@
 
       <formatter type="xml"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.JobTrackerExecutionTest" haltonerror="false" />
-      <!-- Removed while PDI-10167 is open <test todir="${testreports.xml.dir}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />-->
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />
     </junit>
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
