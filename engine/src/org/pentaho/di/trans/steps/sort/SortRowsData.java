@@ -55,44 +55,40 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
     // To store rows and file references
     public List<RowTempFile> tempRows;
 
-	public int     fieldnrs[];      // the corresponding field numbers;
-    public FileObject fil;
-    public RowMetaInterface outputRowMeta;
-	public int sortSize;
-	public boolean compressFiles;
-	public boolean[] convertKeysToNative;
+  public int[] fieldnrs; // the corresponding field numbers;
+  public FileObject fil;
+  public RowMetaInterface outputRowMeta;
+  public int sortSize;
+  public boolean compressFiles;
+  public int[] convertKeysToNative;
+  public boolean convertAnyKeysToNative;
 
-	public Comparator<RowTempFile> comparator;
-	
-	public int freeCounter;
-	public int freeMemoryPct;
-	public int minSortSize;
-	public int freeMemoryPctLimit;
-	public int memoryReporting;
-	
-    /*
-     * Group Fields Implemenation
-     * haric
-     */
-	public Object previous[];
-	public int  groupnrs[];   
-    public boolean newBatch;	
-	
-	
-	/**
-	 * 
-	 */
-	public SortRowsData()
-	{
-		super();
-		
-		files= new ArrayList<FileObject>();
-		fis  = new ArrayList<InputStream>();
-        gzis  = new ArrayList<GZIPInputStream>();
-        dis = new ArrayList<DataInputStream>();
-        bufferSizes = new ArrayList<Integer>();
-        
-        previous=null;	//haric
-	}
+  Comparator<RowTempFile> comparator;
+  Comparator<Object[]> rowComparator;
+
+  public int freeCounter;
+  public int freeMemoryPct;
+  public int minSortSize;
+  public int freeMemoryPctLimit;
+  public int memoryReporting;
+
+  /*
+   * Group Fields Implementation heroic
+   */
+  public Object[] previous;
+  public int[] groupnrs;
+  public boolean newBatch;
+
+  public SortRowsData() {
+    super();
+
+    files = new ArrayList<FileObject>();
+    fis = new ArrayList<InputStream>();
+    gzis = new ArrayList<GZIPInputStream>();
+    dis = new ArrayList<DataInputStream>();
+    bufferSizes = new ArrayList<Integer>();
+
+    previous = null; // Heroic
+  }
 
 }
