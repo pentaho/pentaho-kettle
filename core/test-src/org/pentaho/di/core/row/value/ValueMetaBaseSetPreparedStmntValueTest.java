@@ -26,10 +26,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -49,6 +54,15 @@ public class ValueMetaBaseSetPreparedStmntValueTest {
     ts = new Timestamp( System.currentTimeMillis() );
   }
 
+  @Test
+  public void testXMLParsingWithNoDataFormatLocale() throws IOException {
+    ValueMetaInterface r1 = new ValueMetaString( "value" );
+    r1.setDateFormatLocale( null );
+    RowMetaInterface row = new RowMeta();
+    row.setValueMetaList( new ArrayList<ValueMetaInterface>( Arrays.asList( r1 ) ) );
+
+    row.getMetaXML();
+  }
 
   @Test
   public void testDateRegular() throws Exception {

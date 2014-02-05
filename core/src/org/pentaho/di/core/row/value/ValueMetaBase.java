@@ -2931,7 +2931,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                   break;
                 default:
                   throw new IOException( toString()
-                    + " : Unable to serialize indexe storage type to XML for data type " + getType() );
+                    + " : Unable to serialize index storage type to XML for data type " + getType() );
               }
             } catch ( ClassCastException e ) {
               throw new RuntimeException( toString()
@@ -2971,7 +2971,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.addTagValue( "sort_descending", sortedDescending ) );
     xml.append( XMLHandler.addTagValue( "output_padding", outputPaddingEnabled ) );
     xml.append( XMLHandler.addTagValue( "date_format_lenient", dateFormatLenient ) );
-    xml.append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale.toString() ) );
+    xml.append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale != null ? dateFormatLocale
+      .toString() : null ) );
     xml.append( XMLHandler.addTagValue( "date_format_timezone", dateFormatTimeZone != null ? dateFormatTimeZone
       .getID() : null ) );
     xml.append( XMLHandler.addTagValue( "lenient_string_to_number", lenientStringToNumber ) );
