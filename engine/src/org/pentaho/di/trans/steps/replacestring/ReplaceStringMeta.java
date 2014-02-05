@@ -112,7 +112,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
-   * @param fieldInStream
+   * @param keyStream
    *          The fieldInStream to set.
    */
   public void setFieldInStream( String[] keyStream ) {
@@ -342,12 +342,18 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     int nrFields = fieldInStream == null ? 0 : fieldInStream.length;
     for ( int i = 0; i < nrFields; i++ ) {
       String fieldName = space.environmentSubstitute( fieldOutStream[i] );
-
+      ValueMetaInterface valueMeta;
       if ( !Const.isEmpty( fieldOutStream[i] ) ) {
         // We have a new field
-        ValueMetaInterface valueMeta = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
+        valueMeta = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
         valueMeta.setOrigin( name );
         inputRowMeta.addValueMeta( valueMeta );
+      } else {
+        valueMeta = inputRowMeta.searchValueMeta( fieldInStream[i] );
+        if ( valueMeta == null ) {
+          continue;
+        }
+        valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
       }
     }
   }

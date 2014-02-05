@@ -37,6 +37,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -97,12 +98,15 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
             PKG, "FuzzyMatch.Exception.CouldnotFindLookField", meta.getLookupField() ) );
         }
         data.infoCache = new RowMeta();
-        data.infoCache.addValueMeta( data.infoMeta.getValueMeta( indexOfLookupField ) );
+        ValueMetaInterface keyValueMeta = data.infoMeta.getValueMeta( indexOfLookupField );
+        keyValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+        data.infoCache.addValueMeta( keyValueMeta );
         // Add key
         data.indexOfCachedFields[0] = indexOfLookupField;
 
         // Check additional fields
         if ( data.addAdditionalFields ) {
+          ValueMetaInterface additionalFieldValueMeta;
           for ( int i = 0; i < meta.getValue().length; i++ ) {
             int fi = i + 1;
             data.indexOfCachedFields[fi] = data.infoMeta.indexOfValue( meta.getValue()[i] );
@@ -111,7 +115,9 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
               throw new KettleException( BaseMessages.getString(
                 PKG, "FuzzyMatch.Exception.CouldnotFindLookField", meta.getValue()[i] ) );
             }
-            data.infoCache.addValueMeta( data.infoMeta.getValueMeta( data.indexOfCachedFields[fi] ) );
+            additionalFieldValueMeta = data.infoMeta.getValueMeta( data.indexOfCachedFields[fi] );
+            additionalFieldValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+            data.infoCache.addValueMeta( additionalFieldValueMeta );
           }
           data.nrCachedFields += meta.getValue().length;
         }
@@ -126,11 +132,25 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
       Object[] storeData = new Object[data.nrCachedFields];
       // Add key field
-      storeData[0] = rowData[data.indexOfCachedFields[0]] == null ? "" : rowData[data.indexOfCachedFields[0]];
+      if ( rowData[data.indexOfCachedFields[0]] == null ) {
+        storeData[0] = "";
+      } else {
+        ValueMetaInterface fromStreamRowMeta = rowSet.getRowMeta().getValueMeta( data.indexOfCachedFields[0] );
+        if ( fromStreamRowMeta.isStorageBinaryString() ) {
+          storeData[0] = fromStreamRowMeta.convertToNormalStorageType( rowData[data.indexOfCachedFields[0]] );
+        } else {
+          storeData[0] = rowData[data.indexOfCachedFields[0]];
+        }
+      }
 
       // Add additional fields?
       for ( int i = 1; i < data.nrCachedFields; i++ ) {
-        storeData[i] = rowData[data.indexOfCachedFields[i]];
+        ValueMetaInterface fromStreamRowMeta = rowSet.getRowMeta().getValueMeta( data.indexOfCachedFields[i] );
+        if ( fromStreamRowMeta.isStorageBinaryString() ) {
+          storeData[i] = fromStreamRowMeta.convertToNormalStorageType( rowData[data.indexOfCachedFields[i]] );
+        } else {
+          storeData[i] = rowData[data.indexOfCachedFields[0]];
+        }
       }
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "FuzzyMatch.Log.AddingValueToCache", data.infoCache
