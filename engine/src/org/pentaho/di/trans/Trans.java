@@ -1453,12 +1453,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         //FIFO
         throw new KettleException( badGuys.get( 0 ) );
       }
-      // Signal for the the waitUntilFinished blocker...
-      transFinishedBlockingQueue.add( new Object() );
-      if ( !badGuys.isEmpty() ) {
-        //FIFO
-        throw new KettleException( badGuys.get( 0 ) );
-      }
     }
   }
 
