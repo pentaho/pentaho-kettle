@@ -287,12 +287,6 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     return "http://pub.eigenbase.org/wiki/LucidDbDocs";
   }
 
-  // LucidDB is not suitable for repository storage
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
   @Override
   public boolean useSchemaNameForTableList() {
     // This prevents the DB explorer from showing unqualified table names,

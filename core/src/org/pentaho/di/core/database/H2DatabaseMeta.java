@@ -110,14 +110,6 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
     return false;
   }
 
-  /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return true;
-  }
-
   @Override
   public boolean supportsAutoInc() {
     return true;

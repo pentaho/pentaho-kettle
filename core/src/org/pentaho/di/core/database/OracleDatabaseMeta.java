@@ -116,8 +116,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
       // the database name can be a SID (starting with :) or a Service (starting with /)
       // <host>:<port>/<service>
       // <host>:<port>:<SID>
-      if ( databaseName != null
-        && databaseName.length() > 0 && ( databaseName.startsWith( "/" ) || databaseName.startsWith( ":" ) ) ) {
+      if ( databaseName != null && databaseName.length() > 0
+          && ( databaseName.startsWith( "/" ) || databaseName.startsWith( ":" ) ) ) {
         return "jdbc:oracle:thin:@" + hostname + ":" + port + databaseName;
       } else if ( Const.isEmpty( hostname ) && ( Const.isEmpty( port ) || port.equals( "-1" ) ) ) { // -1 when file
                                                                                                     // based stored
@@ -147,15 +147,15 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         // Has the user specified hostname & port number?
         if ( hostname != null && hostname.length() > 0 && port != null && port.length() > 0 ) {
           // User wants the full url
-          return "jdbc:oracle:oci:@(description=(address=(host="
-            + hostname + ")(protocol=tcp)(port=" + port + "))(connect_data=(sid=" + databaseName + ")))";
+          return "jdbc:oracle:oci:@(description=(address=(host=" + hostname + ")(protocol=tcp)(port=" + port
+              + "))(connect_data=(sid=" + databaseName + ")))";
         } else {
           // User wants the shortcut url
           return "jdbc:oracle:oci:@" + databaseName;
         }
       } else {
         throw new KettleDatabaseException(
-          "Unable to construct a JDBC URL: at least the database name must be specified" );
+            "Unable to construct a JDBC URL: at least the database name must be specified" );
       }
     }
   }
@@ -618,6 +618,14 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   @Override
   public boolean supportsErrorHandlingOnBatchUpdates() {
     return false;
+  }
+
+  /**
+   * @return true if Kettle can create a repository on this type of database.
+   */
+  @Override
+  public boolean supportsRepository() {
+    return true;
   }
 
   @Override

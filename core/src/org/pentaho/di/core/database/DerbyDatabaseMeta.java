@@ -100,13 +100,6 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     return false;
   }
 
-  /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return true;
-  }
 
   /**
    * @param tableName
