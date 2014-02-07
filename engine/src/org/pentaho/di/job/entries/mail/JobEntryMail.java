@@ -1148,9 +1148,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       Transport transport = null;
       try {
-        String authPass = Encr.decryptPasswordOptionallyEncrypted(
-            environmentSubstitute( Const.NVL( authenticationPassword, "" ) ) );
         transport = session.getTransport( protocol );
+        String authPass = getPassword( authenticationPassword );
+
         if ( usingAuthentication ) {
           if ( !Const.isEmpty( port ) ) {
             transport.connect(
@@ -1339,6 +1339,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
     andValidator().validate( this, "port", remarks, putValidators( integerValidator() ) );
 
+  }
+
+  public String getPassword( String authPassword ) {
+    return Encr.decryptPasswordOptionallyEncrypted(
+        environmentSubstitute( Const.NVL( authPassword, "" ) ) );
   }
 
 }
