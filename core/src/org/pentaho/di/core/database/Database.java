@@ -1685,11 +1685,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         log.snap( Metrics.METRIC_DATABASE_SQL_VALUES_STOP, databaseMeta.getName() );
 
         if ( canWeSetFetchSize( pstmt ) ) {
-          int fs = Const.FETCH_SIZE <= pstmt.getMaxRows() ? pstmt.getMaxRows() : Const.FETCH_SIZE;
-
-          if ( databaseMeta.isMySQLVariant()
-            && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
-            pstmt.setFetchSize( Integer.MIN_VALUE );
+          int maxRows = pstmt.getMaxRows();
+          int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+          if ( databaseMeta.isMySQLVariant() ) {
+            setMysqlFetchSize( pstmt, fs, maxRows );
           } else {
             pstmt.setFetchSize( fs );
           }
@@ -1764,11 +1763,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.snap( Metrics.METRIC_DATABASE_SQL_VALUES_STOP, databaseMeta.getName() );
 
       if ( canWeSetFetchSize( ps ) ) {
-        int fs = Const.FETCH_SIZE <= ps.getMaxRows() ? ps.getMaxRows() : Const.FETCH_SIZE;
-        if ( databaseMeta.isMySQLVariant()
-          && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
-          ps.setFetchSize( Integer.MIN_VALUE );
+        int maxRows = ps.getMaxRows();
+        int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+        // mysql have some restriction on fetch size assignment
+        if ( databaseMeta.isMySQLVariant() ) {
+          setMysqlFetchSize( ps, fs, maxRows );
         } else {
+          // other databases seems not.
           ps.setFetchSize( fs );
         }
 
@@ -1800,6 +1801,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     return res;
+  }
+
+  void setMysqlFetchSize( PreparedStatement ps, int fs, int getMaxRows ) throws SQLException, KettleDatabaseException {
+    if ( databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
+      ps.setFetchSize( Integer.MIN_VALUE );
+    } else if ( fs <= getMaxRows ) {
+      // PDI-11373 do not set fetch size more than max rows can returns
+      ps.setFetchSize( fs );
+    }
   }
 
   public RowMetaInterface getTableFields( String tablename ) throws KettleDatabaseException {
