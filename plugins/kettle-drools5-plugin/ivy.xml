@@ -15,14 +15,14 @@
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>  
 
-    <dependency org="janino" name="janino" rev="2.5.16" transitive="false"/>
-
-    <dependency org="org.drools" name="drools-api" rev="5.0.1"/>
-    <dependency org="org.drools" name="drools-core" rev="5.0.1"/>
-    <dependency org="org.drools" name="drools-compiler" rev="5.0.1"/>
-    <dependency org="org.mvel" name="mvel2" rev="2.0.10"/>
-    <dependency org="org.eclipse.jdt" name="core" rev="3.4.2.v_883_R34x"/>    
-    
+    <dependency org="org.drools" name="drools-core" rev="5.5.0.Final" transitive="true"/>
+    <dependency org="org.drools" name="drools-compiler" rev="5.5.0.Final" transitive="true"/>
+    <dependency org="org.drools" name="knowledge-api" rev="5.5.0.Final" transitive="true"/>
+    <dependency org="org.drools" name="knowledge-internal-api" rev="5.5.0.Final" transitive="true"/>
+<!--
+    <dependency org="org.mvel" name="mvel2" rev="2.1.13.Final"/>
+    <dependency org="org.eclipse.jdt.core.compiler" name="ecj" rev="3.5.1"/>    
+-->    
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>     
   </dependencies>
 </ivy-module>
