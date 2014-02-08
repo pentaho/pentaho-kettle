@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<dialog id="step-configuration-dialog" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul" 
+	title="${RulesExecutor.StepConfigruationDialog.Title}"
+	resizable="true"
+	buttons="accept, cancel"
+	buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
+	ondialogaccept="handler.onAccept()"
+	ondialogcancel="handler.onCancel()" 
+    height="600" width="800"
+	appicon="ui/images/spoon.ico">
+	
+	<vbox flex="1">
+		<hbox id="step-name-box">
+			<label value="${RulesDialog.StepName.Label}" />
+			<textbox id="step-name" flex="1" multiline="false"/>
+		</hbox>
+
+		<tabbox id="step-configuration-tab-box" flex="1">
+			<tabs id="step-configuration-tab-set">
+				<tab id="rules-tab" label="${RulesDialog.Tabs.RuleDefinition}" />
+				<tab id="fields-tab" label="${RulesDialog.Tabs.ColumnSelection}" />
+			</tabs>
+	
+			<tabpanels id="repository-panels-set" flex="1">
+				<tabpanel id="rules-tab">
+					<vbox flex="1">
+						<radio id="rule-file-radio-button" label="${RulesDialog.RuleDefinition.FilePath}" command="handler.setRuleSource('file')"/>
+						<textbox id="rule-file" multiline="false"/>
+						<radio id="rule-definition-radio-button" label="${RulesDialog.RuleDefinition.RuleDefinition}" command="handler.setRuleSource('definition')"/>
+						<textbox id="rule-definition" flex="1" multiline="true"/>
+					</vbox>
+				</tabpanel>
+	
+				<tabpanel id="fields-tab">
+					<tree id="fields-table" flex="1" hidecolumnpicker="true"
+					autocreatenewrows="true" newitembinding="handler.addNewRow()">
+						<treecols>
+							<treecol id="name-col" editable="true" flex="1" label="${RulesDialog.ColumnSelection.ColumnName}"
+								pen:binding="name"/>
+							<treecol id="type-col" label="${RulesDialog.ColumnSelection.ColumnType}" flex="1" editable="true" type="combobox" pen:binding="type" pen:combobinding="typeList"/>
+						</treecols>
+						<treechildren />
+					</tree>
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+	</vbox>
+</dialog>
