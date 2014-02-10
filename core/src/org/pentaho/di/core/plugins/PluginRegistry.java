@@ -483,6 +483,15 @@ public class PluginRegistry {
   public static void addPluginType( PluginTypeInterface type ) {
     pluginTypes.add( type );
   }
+  
+  /**
+   * Added so we can tell when types have been added (but not necessarily registered)
+   * 
+   * @return the list of added plugin types
+   */
+  public static List<PluginTypeInterface> getAddedPluginTypes() {
+    return Collections.unmodifiableList( pluginTypes );
+  }
 
   public static synchronized void init() throws KettlePluginException {
     init( false );
@@ -506,6 +515,7 @@ public class PluginRegistry {
       for ( PluginInterface extensionPlugin : plugins ) {
         log.snap( Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSION_START, extensionPlugin.getName() );
         PluginRegistryExtension extension = (PluginRegistryExtension) registry.loadClass( extensionPlugin );
+        extension.init( registry );
         extensions.add( extension );
         log.snap( Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_STOP, extensionPlugin.getName() );
       }

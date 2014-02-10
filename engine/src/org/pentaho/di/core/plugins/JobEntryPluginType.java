@@ -69,6 +69,10 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
     super( JobEntry.class, "JOBENTRY", "Job entry" );
     populateFolders( "jobentries" );
   }
+  
+  protected JobEntryPluginType( Class<? extends Annotation> pluginType, String id, String name ) {
+    super( pluginType, id, name );
+  }
 
   public static JobEntryPluginType getInstance() {
     if ( pluginType == null ) {
