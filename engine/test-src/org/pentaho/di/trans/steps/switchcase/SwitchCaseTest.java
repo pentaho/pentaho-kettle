@@ -73,6 +73,7 @@ import org.xml.sax.SAXException;
 public class SwitchCaseTest {
 
   private StepMockHelper<SwitchCaseMeta, SwitchCaseData> mockHelper;
+  private static Boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = false;
 
   @Before
   public void setUp() throws Exception {
@@ -123,8 +124,9 @@ public class SwitchCaseTest {
     // expected 1*2 = 2 times 3
     // expected 5*2 + 5 = 15 rows generated
     // expected 15 - 5 - 2 = 8 rows go to default.
+    // expected one empty string at the end
     // System.out.println( krasavez.getInputDataOverview() );
-    // 1, 1, null, 2, 2, null, 3, 3, null, 4, 4, null, 5, 5, null
+    // 1, 1, null, 2, 2, null, 3, 3, null, 4, 4, null, 5, 5, null,""
     krasavez.generateData( 1, 5, 2 );
 
     // call method under test
@@ -133,8 +135,8 @@ public class SwitchCaseTest {
     Assert.assertEquals( "First row set collects 2 rows", 2, rowSetOne.size() );
     Assert.assertEquals( "Second row set collects 2 rows", 2, rowSetTwo.size() );
 
-    Assert.assertEquals( "First null row set collects 5 rowa", 5, rowSetNullOne.size() );
-    Assert.assertEquals( "Second null row set collects 5 rowa", 5, rowSetNullTwo.size() );
+    Assert.assertEquals( "First null row set collects 5 rows", 6, rowSetNullOne.size() );
+    Assert.assertEquals( "Second null row set collects 5 rows", 6, rowSetNullTwo.size() );
 
     Assert.assertEquals( "Default row set collects the rest of rows", 8, def.size() );
 
@@ -318,7 +320,21 @@ public class SwitchCaseTest {
         public Object answer( InvocationOnMock invocation ) throws Throwable {
           Object[] objArr = invocation.getArguments();
           Object obj = objArr[0];
-          return obj == null;
+          if ( obj == null ) {
+            return true;
+          }
+          if ( EMPTY_STRING_AND_NULL_ARE_DIFFERENT ) {
+            return false;
+          }
+
+          // If it's a string and the string is empty, it's a null value as well
+          //
+          if ( obj instanceof String ) {
+            if ( ( (String) obj ).length() == 0 ) {
+              return true;
+            }
+          }
+          return false;
         }
       } );
 
@@ -339,11 +355,12 @@ public class SwitchCaseTest {
         }
         input.add( new Object[] { null } );
       }
+      input.add( new Object[] { "" } );
     }
 
     /**
      * useful to see generated data as String
-     *
+     * 
      * @return
      */
     @SuppressWarnings( "unused" )

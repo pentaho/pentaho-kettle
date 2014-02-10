@@ -85,7 +85,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
 
     // Determine the output set of rowset to use...
     Set<RowSet> rowSetSet = null;
-    rowSetSet = ( lookupData == null ) ? data.nullRowSetSet : data.outputMap.get( lookupData );
+    rowSetSet = ( data.valueMeta.isNull( lookupData ) ) ? data.nullRowSetSet : data.outputMap.get( lookupData );
 
     // If the rowset is still not found (unspecified key value, we drop down to the default option
     // For now: send it to the default step...
