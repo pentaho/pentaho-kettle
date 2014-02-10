@@ -109,16 +109,6 @@ public class MappingInput extends BaseStep implements StepInterface {
       //
       data.outputRowMeta = getInputRowMeta().clone();
 
-      if ( meta.isSelectingAndSortingUnspecifiedFields() ) {
-        //
-        // Create a list of the indexes to select to get the right order or fields on the output.
-        //
-        data.fieldNrs = new int[data.outputRowMeta.size()];
-        for ( int i = 0; i < data.outputRowMeta.size(); i++ ) {
-          data.fieldNrs[i] = getInputRowMeta().indexOfValue( data.outputRowMeta.getValueMeta( i ).getName() );
-        }
-      }
-
       // Now change the field names according to the mapping specification...
       // That means that all fields go through unchanged, unless specified.
       //
@@ -149,6 +139,16 @@ public class MappingInput extends BaseStep implements StepInterface {
 
       // Fill the output row meta with the processed fields
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+
+      if ( meta.isSelectingAndSortingUnspecifiedFields() ) {
+        //
+        // Create a list of the indexes to get the right order or fields on the output.
+        //
+        data.fieldNrs = new int[data.outputRowMeta.size()];
+        for ( int i = 0; i < data.outputRowMeta.size(); i++ ) {
+          data.fieldNrs[i] = getInputRowMeta().indexOfValue( data.outputRowMeta.getValueMeta( i ).getName() );
+        }
+      }
     }
 
     // Fill and send the output row
