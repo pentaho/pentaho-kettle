@@ -115,8 +115,9 @@ public class JobTracker {
   public void addJobTracker( JobTracker jobTracker ) {
     synchronized ( this ) {
       jobTrackers.add( jobTracker );
-      if ( jobTrackers.size() > maxChildren + 50 ) {
-        jobTrackers = jobTrackers.subList( 50, jobTrackers.size() );
+      while ( jobTrackers.size() > maxChildren ) {
+        // Use remove instead of subList
+        ( (LinkedList<JobTracker>) jobTrackers ).removeFirst();
       }
     }
   }
