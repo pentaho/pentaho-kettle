@@ -888,7 +888,7 @@
           <property key="samedir" value="${checkstyle.dir}"/>
           <fileset dir="@{module}/src" includes="**/*.java"/>
           <fileset dir="@{module}/test-src" includes="**/*.java" erroronmissingdir="false"/>
-          <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/@{module}-checkstyle-report.xml"/>
+          <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/@{module}-checkstyle-result.xml"/>
         </checkstyle>
       </sequential>
     </for>
@@ -900,7 +900,7 @@
             <checkstyle config="${checkstyle.config.file}" failonviolation="false">
               <fileset dir="plugins/@{plugin}/src" includes="**/*.java"/>
               <fileset dir="plugins/@{plugin}/test-src" includes="**/*.java" erroronmissingdir="false"/>
-              <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/@{plugin}-checkstyle-report.xml"/>
+              <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/@{plugin}-checkstyle-result.xml"/>
             </checkstyle>
           </sequential>
         </for>
