@@ -1,4 +1,14 @@
 classes/
+classes-core/
+classes-db/
+classes-ui/
+classes-dbdialog/
+distrib/
+lib/
+testClasses/
+src-plugins/
 .idea/
 
 Kettle 4.4.2.iml
+
+*.iml
