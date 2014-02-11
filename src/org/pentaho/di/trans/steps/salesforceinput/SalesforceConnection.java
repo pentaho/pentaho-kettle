@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.salesforceinput;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -75,7 +76,6 @@ public class SalesforceConnection {
 	private String condition;
 	
 	private SoapBindingStub binding;
-	private LoginResult loginResult;
 	private GetUserInfoResult userInfo;
 	private String sql;
 	private Date serverTimestamp;
@@ -107,7 +107,6 @@ public class SalesforceConnection {
 		setTimeOut(0);
 	
 		this.binding=null;
-		this.loginResult = null;
 		this.userInfo = null;
 		this.sql=null;
 		this.serverTimestamp=null;
@@ -258,20 +257,31 @@ public class SalesforceConnection {
 	        }
 	        
 	        // Login
-	        this.loginResult = getBinding().login(getUsername(), getPassword());
-	        
+            boolean bUseOauth = getUsername().startsWith("OAUTH:");
+            String serverUrl = null;
+            String sessionId = null;
+
+            if (!bUseOauth) {
+	            LoginResult loginResult = getBinding().login(getUsername(), getPassword());
+                serverUrl = loginResult.getServerUrl();
+                sessionId = loginResult.getSessionId();
+            } else {
+                serverUrl = getUsername().substring("OAUTH:".length()) +  new URL(getURL()).getPath();
+                sessionId = getPassword();
+            }
+
 	        if (log.isDebug()) {
-	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + this.loginResult.getSessionId());
-	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + this.loginResult.getServerUrl());
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + sessionId);
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + serverUrl);
 	        }
-	        
+
 	        // set the session header for subsequent call authentication
-	        this.binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY,this.loginResult.getServerUrl());
+	        this.binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, serverUrl);
 	
 	        // Create a new session header object and set the session id to that
 	        // returned by the login
 	        SessionHeader sh = new SessionHeader();
-	        sh.setSessionId(loginResult.getSessionId());
+	        sh.setSessionId(sessionId);
 	        this.binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "SessionHeader", sh);
 	       
 	        // Return the user Infos
@@ -404,7 +414,6 @@ public class SalesforceConnection {
 				}
 				if(this.sObjects!=null) this.sObjects=null;
 				if(this.binding!=null) this.binding=null;
-				if(this.loginResult!=null) this.loginResult=null;
 				if(this.userInfo!=null) this.userInfo=null;
 				if(this.getDeletedList!=null) {
 					getDeletedList.clear();
