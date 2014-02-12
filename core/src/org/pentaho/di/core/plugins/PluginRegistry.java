@@ -483,7 +483,7 @@ public class PluginRegistry {
   public static void addPluginType( PluginTypeInterface type ) {
     pluginTypes.add( type );
   }
-  
+
   /**
    * Added so we can tell when types have been added (but not necessarily registered)
    * 

@@ -33,7 +33,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pentaho.di.compatibility.Value;
