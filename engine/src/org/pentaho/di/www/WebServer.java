@@ -135,17 +135,24 @@ public class WebServer {
       jaasRealm.setLoginModuleName( System.getProperty( "loginmodulename" ) );
       securityHandler.setUserRealm( jaasRealm );
     } else {
-      // See if there is a kettle.pwd file in the KETTLE_HOME directory:
-      //
-      if ( Const.isEmpty( passwordFile ) ) {
-        File homePwdFile = new File( Const.getKettleCartePasswordFile() );
-        if ( homePwdFile.exists() ) {
-          passwordFile = Const.getKettleCartePasswordFile();
-        } else {
-          passwordFile = Const.getKettleLocalCartePasswordFile();
+      HashUserRealm hashUserRealm;
+      SlaveServer slaveServer = transformationMap.getSlaveServerConfig().getSlaveServer();
+      if (!Const.isEmpty( slaveServer.getPassword() )) {
+        hashUserRealm = new HashUserRealm( "Kettle" );
+        hashUserRealm.put( slaveServer.getUsername(), slaveServer.getPassword() );
+      } else {
+        // See if there is a kettle.pwd file in the KETTLE_HOME directory:
+        if ( Const.isEmpty( passwordFile ) ) {
+          File homePwdFile = new File( Const.getKettleCartePasswordFile() );
+          if ( homePwdFile.exists() ) {
+            passwordFile = Const.getKettleCartePasswordFile();
+          } else {
+            passwordFile = Const.getKettleLocalCartePasswordFile();
+          }
         }
+        hashUserRealm = new HashUserRealm( "Kettle", passwordFile );
       }
-      securityHandler.setUserRealm( new HashUserRealm( "Kettle", passwordFile ) );
+      securityHandler.setUserRealm( hashUserRealm );
     }
 
     securityHandler.setConstraintMappings( new ConstraintMapping[] { constraintMapping } );
