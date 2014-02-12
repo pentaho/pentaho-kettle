@@ -111,8 +111,8 @@ import org.pentaho.di.repository.RepositoryDirectory;
  */
 public class Database implements VariableSpace, LoggingObjectInterface {
   /** for i18n purposes, needed by Translator2!! */
-  private static Class<?> PKG = Database.class; 
-  
+  private static Class<?> PKG = Database.class;
+
   private static final Map<String, Set<String>> registeredDrivers = new HashMap<String, Set<String>>();
 
   private DatabaseMeta databaseMeta;
@@ -464,7 +464,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       initWithNamedDataSource( environmentSubstitute( databaseMeta.getDatabaseName() ) );
       return;
     }
-    
+
     // Install and load the jdbc Driver
     PluginInterface plugin =
         PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
