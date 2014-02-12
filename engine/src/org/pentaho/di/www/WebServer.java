@@ -209,7 +209,11 @@ public class WebServer {
 
     server.start();
   }
-
+  
+  public void join() throws InterruptedException {
+    server.join();
+  }
+  
   public void stopServer() {
     try {
       if ( server != null ) {
