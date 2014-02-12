@@ -864,16 +864,17 @@
     </junitreport>
   </target>
 
-  <target name="checkstyle" depends="install-ivy" description="Runs checkstyle against project's sources">
+  <!--
+    =============================================================================
+       checkstyle.xml-report : Produces machine-readable xml Checkstyle report
+    =============================================================================
+  -->
+  <target name="checkstyle.xml-report" depends="install-ivy">
+    <delete dir="${checkstyle.reports.dir}/xml"/>
+
     <mkdir dir="${checkstyle.dir}/lib"/>
-    <mkdir dir="${checkstyle.reports.dir}/xml"/>
-    <mkdir dir="${checkstyle.reports.dir}/html"/>
-
-    <delete>
-      <fileset dir="${checkstyle.reports.dir}" includes="*-checkstyle-report.xml"/>
-    </delete>
-
     <ivy-resolve directory="${checkstyle.lib.dir}" ivyfile="${ivyfile}" conf="checkstyle"/>
+
     <taskdef resource="checkstyletask.properties">
       <classpath>
         <fileset dir="${checkstyle.lib.dir}" includes="*.jar"/>
@@ -882,6 +883,8 @@
 
     <get usetimestamp="true" src="${checkstyle.config.url}" dest="${checkstyle.config.file}"/>
     <get usetimestamp="true" src="${checkstyle.suppressions.url}" dest="${checkstyle.suppressions.file}"/>
+
+    <mkdir dir="${checkstyle.reports.dir}/xml"/>
     <for list="${module.list}" param="module" trim="true">
       <sequential>
         <checkstyle config="${checkstyle.config.file}" failonviolation="false">
@@ -892,21 +895,17 @@
         </checkstyle>
       </sequential>
     </for>
+  </target>
 
-    <!--
-      Commented out till plugins pass code reformat
-        <for list="${plugin.list}" param="plugin" trim="true">
-          <sequential>
-            <checkstyle config="${checkstyle.config.file}" failonviolation="false">
-              <fileset dir="plugins/@{plugin}/src" includes="**/*.java"/>
-              <fileset dir="plugins/@{plugin}/test-src" includes="**/*.java" erroronmissingdir="false"/>
-              <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/@{plugin}-checkstyle-result.xml"/>
-            </checkstyle>
-          </sequential>
-        </for>
-    -->
-
+  <!--
+    ==============================================================================
+       checkstyle.html-report :  Produces human-readable html Checkstyle report
+    ==============================================================================
+  -->
+  <target name="checkstyle.html-report" depends="checkstyle.xml-report">
+    <delete dir="${checkstyle.reports.dir}/html"/>
+    <mkdir dir="${checkstyle.reports.dir}/html"/>
     <xslt style="${checkstyle.stylesheet.file}" basedir="${checkstyle.reports.dir}/xml"
-          includes="*-checkstyle-report.xml" destdir="${checkstyle.reports.dir}/html"/>
+          includes="*-checkstyle-result.xml" destdir="${checkstyle.reports.dir}/html"/>
   </target>
 </project>
