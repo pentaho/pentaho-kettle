@@ -4,8 +4,9 @@
   <configurations>
     <conf name="default" />
     <conf name="test" visibility="private" />
+    <conf name="checkstyle" visibility="private" />
   </configurations>
-  
+
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"     rev="${project.revision}" changing="true"/>
@@ -14,12 +15,12 @@
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true">
       <exclude name="swt-linux-x86_64"/>
     </dependency>
-    
+
     <!-- Common (Unit, Integration) test dependencies -->
     <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>
     <dependency org="org.mockito"              name="mockito-all"          rev="1.9.5"  transitive="false" conf="test->default"/>
     <dependency org="org.mortbay.jetty"        name="jetty-servlet-tester" rev="6.1.21" transitive="false" conf="test->default"/>
-    <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>    
-    
+    <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>
+    <dependency org="com.puppycrawl.tools"     name="checkstyle"           rev="5.7"    transitive="true"  conf="checkstyle->default"/>
   </dependencies>
 </ivy-module>
