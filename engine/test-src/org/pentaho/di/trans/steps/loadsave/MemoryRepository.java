@@ -37,24 +37,28 @@ import org.pentaho.metastore.api.IMetaStore;
 public class MemoryRepository extends AbstractRepository {
   private final Map<ObjectId, Map<Integer, Map<String, String>>> stepAttributeMap =
       new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
+  private final Map<ObjectId, Map<Integer, Map<String, String>>> jobAttributeMap =
+      new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
 
-  private String getStepAttribute( ObjectId id_step, int nr, String code ) {
+  private String getAttribute( Map<ObjectId, Map<Integer, Map<String, String>>> attributeMap, ObjectId id, int nr,
+      String code, String def ) {
     String value = null;
-    Map<Integer, Map<String, String>> stepMap = stepAttributeMap.get( id_step );
+    Map<Integer, Map<String, String>> stepMap = attributeMap.get( id );
     if ( stepMap != null ) {
       Map<String, String> numberMap = stepMap.get( nr );
       if ( numberMap != null ) {
         value = numberMap.get( code );
       }
     }
-    return value;
+    return value == null ? def : value;
   }
 
-  private void setStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, String value ) {
-    Map<Integer, Map<String, String>> stepMap = stepAttributeMap.get( id_step );
+  private void setAttribute( Map<ObjectId, Map<Integer, Map<String, String>>> attributeMap, ObjectId id, int nr,
+      String code, String value ) {
+    Map<Integer, Map<String, String>> stepMap = attributeMap.get( id );
     if ( stepMap == null ) {
       stepMap = new HashMap<Integer, Map<String, String>>();
-      stepAttributeMap.put( id_step, stepMap );
+      attributeMap.put( id, stepMap );
     }
     Map<String, String> numberMap = stepMap.get( nr );
     if ( numberMap == null ) {
@@ -62,6 +66,22 @@ public class MemoryRepository extends AbstractRepository {
       stepMap.put( nr, numberMap );
     }
     numberMap.put( code, value );
+  }
+
+  private String getStepAttribute( ObjectId id_step, int nr, String code, String def ) {
+    return getAttribute( stepAttributeMap, id_step, nr, code, def );
+  }
+
+  private void setStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, String value ) {
+    setAttribute( stepAttributeMap, id_step, nr, code, value );
+  }
+
+  private String getJobAttribute( ObjectId id_job, int nr, String code, String def ) {
+    return getAttribute( jobAttributeMap, id_job, nr, code, def );
+  }
+
+  private void setJobAttribute( ObjectId id_job, int nr, String code, String value ) {
+    setAttribute( jobAttributeMap, id_job, nr, code, value );
   }
 
   @Override
@@ -501,17 +521,17 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public boolean getStepAttributeBoolean( ObjectId id_step, int nr, String code, boolean def ) throws KettleException {
-    return "Y".equalsIgnoreCase( getStepAttribute( id_step, nr, code ) );
+    return "Y".equalsIgnoreCase( getStepAttribute( id_step, nr, code, def ? "Y" : "N" ) );
   }
 
   @Override
   public long getStepAttributeInteger( ObjectId id_step, int nr, String code ) throws KettleException {
-    return Long.valueOf( getStepAttribute( id_step, nr, code ) );
+    return Long.valueOf( getStepAttribute( id_step, nr, code, "0" ) );
   }
 
   @Override
   public String getStepAttributeString( ObjectId id_step, int nr, String code ) throws KettleException {
-    return getStepAttribute( id_step, nr, code );
+    return getStepAttribute( id_step, nr, code, null );
   }
 
   @Override
@@ -558,35 +578,30 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public long getJobEntryAttributeInteger( ObjectId id_jobentry, int nr, String code ) throws KettleException {
-    // TODO Auto-generated method stub
-    return 0;
+    return Long.parseLong( getJobAttribute( id_jobentry, nr, code, "0" ) );
   }
 
   @Override
   public String getJobEntryAttributeString( ObjectId id_jobentry, int nr, String code ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    return getJobAttribute( id_jobentry, nr, code, null );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value )
     throws KettleException {
-    // TODO Auto-generated method stub
-
+    setJobAttribute( id_jobentry, nr, code, value );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value )
     throws KettleException {
-    // TODO Auto-generated method stub
-
+    setJobAttribute( id_jobentry, nr, code, value ? "Y" : "N" );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value )
     throws KettleException {
-    // TODO Auto-generated method stub
-
+    setJobAttribute( id_jobentry, nr, code, Long.toString( value ) );
   }
 
   @Override
@@ -687,8 +702,7 @@ public class MemoryRepository extends AbstractRepository {
   @Override
   public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def )
     throws KettleException {
-    // TODO Auto-generated method stub
-    return false;
+    return "Y".equalsIgnoreCase( getJobAttribute( id_jobentry, nr, code, def ? "Y" : "N" ) );
   }
 
 }
