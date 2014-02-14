@@ -826,7 +826,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
         BaseMessages.getString( PKG, "TextFileInput.Log.Error.ErrorConvertingLineText" ), e );
     }
 
-    if ( passThruFields != null ) {
+    if ( passThruFields != null  && r != null ) {
       // Simply add all fields from source files step
       for ( int i = 0; i < nrPassThruFields; i++ ) {
         r[i] = passThruFields[i];
