@@ -607,7 +607,7 @@
       </classpath>
 
       <formatter type="xml"/>
-      <!-- Removed while PDI-10166 is open <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="false" />-->
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="false" />
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SelectCountTests" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SQLStatementParserTest"
