@@ -164,7 +164,7 @@ public class Update extends BaseStep implements StepInterface {
           ValueMetaInterface returnValueMeta = returnRowMeta.getValueMeta( i );
           Object retvalue = add[i];
 
-          if ( valueMeta.compare( rowvalue, returnValueMeta, retvalue ) != 0 ) {
+          if ( returnValueMeta.compare( retvalue, valueMeta, rowvalue ) != 0 ) {
             update = true;
           }
         }
@@ -499,7 +499,7 @@ public class Update extends BaseStep implements StepInterface {
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "Update.Log.ConnectedToDB" ) );
         }
-        
+
         data.db.setCommit( meta.getCommitSize( this ) );
 
         return true;
