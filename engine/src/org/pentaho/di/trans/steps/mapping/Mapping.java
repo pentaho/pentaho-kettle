@@ -269,50 +269,35 @@ public class Mapping extends BaseStep implements StepInterface {
     }
   }
 
-  private void setMappingParameters() throws KettleException {
-    MappingParameters mappingParameters = meta.getMappingParameters();
-    if ( mappingParameters != null ) {
+  void setMappingParameters( Trans trans, TransMeta transMeta, MappingParameters mappingParameters )
+    throws KettleException {
+    if ( mappingParameters == null ) {
+      return;
+    }
 
-      String[] parameters;
-      String[] parameterValues;
+    if ( mappingParameters.isInheritingAllVariables() ) {
+      // We pass the values for all the parameters from the parent transformation
+      // Note that variables and already activated parameters will be copied.
+      trans.copyVariablesFrom( this.getTrans() );
+    }
+    // Override mapping parameters
+    String[] childParameters = mappingParameters.getVariable();
+    String[] inputValues = mappingParameters.getInputField();
+    for ( int i = 0; i < childParameters.length; i++ ) {
+      String value = this.environmentSubstitute( inputValues[i] );
+      String key = childParameters[i];
 
-      if ( mappingParameters.isInheritingAllVariables() ) {
-        // We pass the values for all the parameters from the parent transformation
-        //
-        parameters = data.mappingTransMeta.listParameters();
-        parameterValues = new String[parameters.length];
-        for ( int i = 0; i < parameters.length; i++ ) {
-          parameterValues[i] = getVariable( parameters[i] );
-        }
-      } else {
-        // We pass down the listed variables with the specified values...
-        //
-        parameters = mappingParameters.getVariable();
-        parameterValues = new String[parameters.length];
-        for ( int i = 0; i < parameters.length; i++ ) {
-          parameterValues[i] = environmentSubstitute( mappingParameters.getInputField()[i] );
-        }
-      }
-
-      for ( int i = 0; i < parameters.length; i++ ) {
-        String value = Const.NVL( parameterValues[i], "" );
-
-        data.mappingTrans.setParameterValue( parameters[i], value );
-      }
-
-      data.mappingTrans.activateParameters();
+      transMeta.setParameterValue( key, value );
+      // avoid transformation's 'activate parameters' call override with defaults
+      trans.setParameterValue( key, value );
+      trans.setVariable( key, value );
     }
   }
 
   public void prepareMappingExecution() throws KettleException {
-
     // Create the transformation from meta-data...
     //
     data.mappingTrans = new Trans( data.mappingTransMeta, this );
-
-    // Set the parameters values in the mapping.
-    //
-    setMappingParameters();
 
     if ( data.mappingTransMeta.getTransformationType() != TransformationType.Normal ) {
       data.mappingTrans.getTransMeta().setUsingThreadPriorityManagment( false );
@@ -340,6 +325,8 @@ public class Mapping extends BaseStep implements StepInterface {
     data.mappingTrans.setServletPrintWriter( getTrans().getServletPrintWriter() );
     data.mappingTrans.setServletReponse( getTrans().getServletResponse() );
     data.mappingTrans.setServletRequest( getTrans().getServletRequest() );
+
+    setMappingParameters( data.mappingTrans, data.mappingTransMeta, meta.getMappingParameters() );
 
     // We launch the transformation in the processRow when the first row is
     // received.
@@ -564,38 +551,38 @@ public class Mapping extends BaseStep implements StepInterface {
     meta = (MappingMeta) smi;
     data = (MappingData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
+    if ( !super.init( smi, sdi ) ) {
+      return false;
+    }
       // First we need to load the mapping (transformation)
-      try {
-        // Pass the repository down to the metadata object...
-        //
-        meta.setRepository( getTransMeta().getRepository() );
+    try {
+      // Pass the repository down to the metadata object...
+      //
+      meta.setRepository( getTransMeta().getRepository() );
 
-        data.mappingTransMeta =
-          MappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
-        if ( data.mappingTransMeta != null ) {
-          // Do we have a mapping at all?
+      data.mappingTransMeta =
+        MappingMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
 
-          // OK, now prepare the execution of the mapping.
-          // This includes the allocation of RowSet buffers, the creation of the
-          // sub-transformation threads, etc.
-          //
-          prepareMappingExecution();
-
-          lookupStatusStepNumbers();
-          // That's all for now...
-          return true;
-        } else {
-          logError( "No valid mapping was specified!" );
-          return false;
-        }
-      } catch ( Exception e ) {
-        logError( "Unable to load the mapping transformation because of an error : " + e.toString() );
-        logError( Const.getStackTracker( e ) );
+      if ( data.mappingTransMeta == null ) {
+        // Do we have a mapping at all?
+        logError( "No valid mapping was specified!" );
+        return false;
       }
 
+      // OK, now prepare the execution of the mapping.
+      // This includes the allocation of RowSet buffers, the creation of the
+      // sub-transformation threads, etc.
+      //
+      prepareMappingExecution();
+
+      lookupStatusStepNumbers();
+      // That's all for now...
+      return true;
+    } catch ( Exception e ) {
+      logError( "Unable to load the mapping transformation because of an error : " + e.toString() );
+      logError( Const.getStackTracker( e ) );
+      return false;
     }
-    return false;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
