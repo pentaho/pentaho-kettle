@@ -64,7 +64,7 @@ public class TeraFastMeta extends AbstractStepMeta {
   /**
    * Default data file.
    */
-  public static final String DEFAULT_DATA_FILE = "${internal.step.copyNr}.dat";
+  public static final String DEFAULT_DATA_FILE = "${Internal.Step.CopyNr}.dat";
 
   public static final String DEFAULT_TARGET_TABLE = "${TARGET_TABLE}_${RUN_ID}";
 
