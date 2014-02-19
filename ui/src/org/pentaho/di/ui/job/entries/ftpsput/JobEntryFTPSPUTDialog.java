@@ -55,6 +55,7 @@ import org.pentaho.di.job.entries.ftpsput.JobEntryFTPSPUT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -379,6 +380,12 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
+    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
+      }
+    } );
+
     // Proxy host line
     wProxyHost =
       new LabelTextVar(
@@ -430,6 +437,12 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
+
+    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
+      }
+    } );
 
     wlConnectionType = new Label( wServerSettings, SWT.RIGHT );
     wlConnectionType.setText( BaseMessages.getString( PKG, "JobFTPSPUT.ConnectionType.Label" ) );
