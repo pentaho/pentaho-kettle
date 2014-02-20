@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,7 +32,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -52,6 +51,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -66,10 +66,10 @@ public class XMLJoin extends BaseStep implements StepInterface {
   private XMLJoinMeta meta;
   private XMLJoinData data;
 
-  private Transformer serializer;
+  private Transformer transformer;
 
   public XMLJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-                  Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -99,7 +99,6 @@ public class XMLJoin extends BaseStep implements StepInterface {
       }
 
       // get target xml
-      meta.getTargetXMLstep();
       String[] target_field_names = data.TargetRowSet.getRowMeta().getFieldNames();
       for ( int i = 0; i < target_field_names.length; i++ ) {
         if ( meta.getTargetXMLfield().equals( target_field_names[i] ) ) {
@@ -109,12 +108,13 @@ public class XMLJoin extends BaseStep implements StepInterface {
       // Throw exception if target field has not been found
       if ( target_field_id == -1 ) {
         throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
-            .getTargetXMLfield() ) );
+          .getTargetXMLfield() ) );
       }
 
       data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() },
-          null, this, repository, metaStore );
+      meta.getFields(
+        data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() }, null,
+        this, repository, metaStore );
       data.outputRowData = rTarget.clone();
 
       // get the target xml structure and create a DOM
@@ -140,22 +140,17 @@ public class XMLJoin extends BaseStep implements StepInterface {
     }
 
     Object[] rJoinSource = getRowFrom( data.SourceRowSet ); // This also waits for a row to be finished.
-    // no more input to be expected... create the output row
-    if ( rJoinSource == null ) { // no more input to be expected...
-      // create string from xml tree
+    if ( rJoinSource == null ) {
+      // no more input to be expected... create the output row
       try {
-        String strOmitXMLHeader;
-        if ( meta.isOmitXMLHeader() ) {
-          strOmitXMLHeader = "yes";
-        } else {
-          strOmitXMLHeader = "no";
+        if ( meta.isOmitNullValues() ) {
+          removeEmptyNodes( data.targetDOM.getChildNodes() );
         }
-        serializer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, strOmitXMLHeader );
-        serializer.setOutputProperty( OutputKeys.INDENT, "no" );
+        // create string from xml tree
         StringWriter sw = new StringWriter();
         StreamResult resultXML = new StreamResult( sw );
         DOMSource source = new DOMSource( data.targetDOM );
-        serializer.transform( source, resultXML );
+        getTransformer().transform( source, resultXML );
 
         int outputIndex = data.outputRowMeta.size() - 1;
 
@@ -163,83 +158,69 @@ public class XMLJoin extends BaseStep implements StepInterface {
         putRow( data.outputRowMeta, RowDataUtil.addValueData( data.outputRowData, outputIndex, sw.toString() ) );
         // finishing up
         setOutputDone();
+
         return false;
       } catch ( Exception e ) {
         throw new KettleException( e );
       }
-
-    }
-
-    if ( data.iSourceXMLField == -1 ) {
-      // assume failure
-      // get the column of the join xml set
-      // get target xml
-      String[] source_field_names = data.SourceRowSet.getRowMeta().getFieldNames();
-      for ( int i = 0; i < source_field_names.length; i++ ) {
-        if ( meta.getSourceXMLfield().equals( source_field_names[i] ) ) {
-          data.iSourceXMLField = i;
-        }
-      }
-      // Throw exception if source xml field has not been found
+    } else {
       if ( data.iSourceXMLField == -1 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
-          .getSourceXMLfield() ) );
-      }
-    }
-
-    if ( meta.isComplexJoin() && data.iCompareFieldID == -1 ) {
-      // get the column of the compare value
-      String[] source_field_names = data.SourceRowSet.getRowMeta().getFieldNames();
-      for ( int i = 0; i < source_field_names.length; i++ ) {
-        if ( meta.getJoinCompareField().equals( source_field_names[i] ) ) {
-          data.iCompareFieldID = i;
+        // assume failure
+        // get the column of the join xml set
+        // get target xml
+        String[] source_field_names = data.SourceRowSet.getRowMeta().getFieldNames();
+        for ( int i = 0; i < source_field_names.length; i++ ) {
+          if ( meta.getSourceXMLfield().equals( source_field_names[i] ) ) {
+            data.iSourceXMLField = i;
+          }
+        }
+        // Throw exception if source xml field has not been found
+        if ( data.iSourceXMLField == -1 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
+              .getSourceXMLfield() ) );
         }
       }
-      // Throw exception if source xml field has not been found
-      if ( data.iCompareFieldID == -1 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
-          .getJoinCompareField() ) );
+
+      if ( meta.isComplexJoin() && data.iCompareFieldID == -1 ) {
+        // get the column of the compare value
+        String[] source_field_names = data.SourceRowSet.getRowMeta().getFieldNames();
+        for ( int i = 0; i < source_field_names.length; i++ ) {
+          if ( meta.getJoinCompareField().equals( source_field_names[i] ) ) {
+            data.iCompareFieldID = i;
+          }
+        }
+        // Throw exception if source xml field has not been found
+        if ( data.iCompareFieldID == -1 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "XMLJoin.Exception.FieldNotFound", meta
+              .getJoinCompareField() ) );
+        }
       }
-    }
 
-    // get XML tags to join
-    Document joinDocument;
-
-    if ( rJoinSource != null ) {
+      // get XML tags to join
       String strJoinXML = (String) rJoinSource[data.iSourceXMLField];
 
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       try {
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        joinDocument = builder.parse( new InputSource( new StringReader( strJoinXML ) ) );
-      } catch ( Exception e ) {
-        throw new KettleException( e );
-      }
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document joinDocument = builder.parse( new InputSource( new StringReader( strJoinXML ) ) );
 
-      Node node = data.targetDOM.importNode( joinDocument.getDocumentElement(), true );
+        Node node = data.targetDOM.importNode( joinDocument.getDocumentElement(), true );
 
-      if ( meta.isComplexJoin() ) {
-        String strCompareValue = rJoinSource[data.iCompareFieldID].toString();
-        String strXPathStatement = data.XPathStatement.replace( "?", strCompareValue );
+        if ( meta.isComplexJoin() ) {
+          String strCompareValue = rJoinSource[data.iCompareFieldID].toString();
+          String strXPathStatement = data.XPathStatement.replace( "?", strCompareValue );
 
-        try {
           data.targetNode = (Node) xpath.evaluate( strXPathStatement, data.targetDOM, XPathConstants.NODE );
           if ( data.targetNode == null ) {
             throw new KettleXMLException( "XPath statement returned no result [" + strXPathStatement + "]" );
-          } else {
-            data.targetNode.appendChild( node );
           }
-        } catch ( Exception e ) {
-          throw new KettleException( e );
         }
-      } else {
         data.targetNode.appendChild( node );
+      } catch ( Exception e ) {
+        throw new KettleException( e );
       }
-
     }
 
     return true;
-
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -250,28 +231,26 @@ public class XMLJoin extends BaseStep implements StepInterface {
     }
 
     try {
-      if ( meta.isOmitNullValues() ) {
-        setSerializer( TransformerFactory.newInstance().newTransformer(
-            new StreamSource( XMLJoin.class.getClassLoader().getResourceAsStream(
-                "org/pentaho/di/trans/steps/xmljoin/RemoveNulls.xsl" ) ) ) );
-      } else {
-        setSerializer( TransformerFactory.newInstance().newTransformer() );
-      }
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+
       if ( meta.getEncoding() != null ) {
-        getSerializer().setOutputProperty( OutputKeys.ENCODING, meta.getEncoding() );
+        transformer.setOutputProperty( OutputKeys.ENCODING, meta.getEncoding() );
       }
 
       if ( meta.isOmitXMLHeader() ) {
-        getSerializer().setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+        transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
       }
+
+      transformer.setOutputProperty( OutputKeys.INDENT, "no" );
+
+      setTransformer( transformer );
 
       // See if a main step is supplied: in that case move the corresponding rowset to position 0
       //
       for ( int i = 0; i < getInputRowSets().size(); i++ ) {
         BlockingRowSet rs = (BlockingRowSet) getInputRowSets().get( i );
         if ( rs.getOriginStepName().equalsIgnoreCase( meta.getTargetXMLstep() ) ) {
-          // swap this one and position 0...
-          // That means, the main stream is always stream 0 --> easy!
+          // swap this one and position 0...that means, the main stream is always stream 0 --> easy!
           //
           BlockingRowSet zero = (BlockingRowSet) getInputRowSets().get( 0 );
           getInputRowSets().set( 0, rs );
@@ -290,14 +269,34 @@ public class XMLJoin extends BaseStep implements StepInterface {
     data = (XMLJoinData) sdi;
 
     super.dispose( smi, sdi );
-
   }
 
-  private Transformer getSerializer() {
-    return serializer;
+  private void setTransformer( Transformer transformer ) {
+    this.transformer = transformer;
   }
 
-  private void setSerializer( Transformer serializer ) {
-    this.serializer = serializer;
+  private Transformer getTransformer() {
+    return transformer;
+  }
+
+  private void removeEmptyNodes( NodeList nodes ) {
+    for ( int i = 0; i < nodes.getLength(); i++ ) {
+      Node node = nodes.item( i );
+
+      // Process the tree bottom-up
+      if ( node.hasChildNodes() ) {
+        removeEmptyNodes( node.getChildNodes() );
+      }
+
+      boolean nodeIsEmpty =
+          node.getNodeType() == Node.ELEMENT_NODE && !node.hasAttributes() && !node.hasChildNodes()
+              && node.getTextContent().length() == 0;
+
+      if ( nodeIsEmpty ) {
+        // We shifted elements left, do not increment counter
+        node.getParentNode().removeChild( node );
+        i--;
+      }
+    }
   }
 }
