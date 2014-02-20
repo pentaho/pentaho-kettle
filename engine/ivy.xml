@@ -42,7 +42,7 @@
     <dependency org="org.drools"                       name="drools-core"          rev="5.0.1"           transitive="false"/>
     <dependency org="org.drools"                       name="drools-compiler"      rev="5.0.1"           transitive="false"/>
     <dependency org="org.mvel"                         name="mvel2"                rev="2.0.10"          transitive="false"/>
-    <dependency org="org.eclipse.jdt"                  name="core"                 rev="3.4.2.v_883_R34x" transitive="false"/>    
+    <dependency org="org.eclipse.jdt"                  name="core"                 rev="3.4.2.v_883_R34x" transitive="false"/>
     <dependency org="elasticsearch"                    name="elasticsearch"        rev="0.16.3"          transitive="false"/>
     <dependency org="feed4j"                           name="feed4j"               rev="1.0"             transitive="false"/>
     <dependency org="ftp4che"                          name="ftp4che"              rev="0.7.1"           transitive="false"/>
@@ -83,8 +83,8 @@
     <dependency org="trilead-ssh2"                     name="trilead-ssh2"         rev="build213"        transitive="false"/>
     <dependency org="javax.servlet"                    name="servlet-api"          rev="2.5"             transitive="false"/>
     <dependency org="javax.xml"                        name="jaxrpc-api"           rev="1.1"             transitive="false"/>
-    <dependency org="org.olap4j"                       name="olap4j"               rev="1.1.0"           transitive="false"/>
-    <dependency org="org.olap4j"                       name="olap4j-xmla"          rev="1.1.0"           transitive="false"/>
+    <dependency org="org.olap4j"                       name="olap4j"               rev="1.2.0"           transitive="false"/>
+    <dependency org="org.olap4j"                       name="olap4j-xmla"          rev="1.2.0"           transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.8"             transitive="false"/>
     <dependency org="wsdl4j"                           name="wsdl4j"               rev="1.6.2"           transitive="false"/>
     <dependency org="wsdl4j"                           name="wsdl4j-qname"         rev="1.6.1"           transitive="false"/>
@@ -106,6 +106,7 @@
     <dependency org="rhino"                            name="js"                   rev="1.7R3"           transitive="false"/>
     <dependency org="javax.mail"                       name="mail"                 rev="1.4.7"           transitive="false" />
     <dependency org="org.mnode.mstor"                  name="mstor"                rev="0.9.13"          transitive="false"/>
+
     
     <!-- OLAP4J is bringing in an older version of beanutils-core than is needed -->
     <dependency org="commons-beanutils"   name="commons-beanutils-core" rev="1.8.0"         transitive="false"/>

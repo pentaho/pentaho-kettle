@@ -665,6 +665,7 @@ public class Const {
    */
   public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
+
   /**
    * System wide flag to allow non-strict string to number conversion for backward compatibility. If this setting is set
    * to "Y", an string starting with digits will be converted successfully into a number. (example: 192.168.1.1 will be
@@ -673,6 +674,11 @@ public class Const {
    */
   public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION =
     "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
+
+  /**
+   * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
+   */
+  public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
 
   /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
@@ -1360,8 +1366,46 @@ public class Const {
   }
 
   /**
+   * Determine the hostname of the machine Kettle is running on
+   * 
+   * @return The hostname
+   */
+  public static final String getHostnameReal() {
+    if ( isWindows() ) {
+      // Windows will always set the 'COMPUTERNAME' variable
+      return System.getenv( "COMPUTERNAME" );
+    } else {
+      // If it is not Windows then it is most likely a Unix-like operating system
+      // such as Solaris, AIX, HP-UX, Linux or MacOS.
+      // Most modern shells (such as Bash or derivatives) sets the
+      // HOSTNAME variable so lets try that first.
+      String hostname = System.getenv( "HOSTNAME" );
+      if ( hostname != null ) {
+        return hostname;
+      } else {
+        BufferedReader br;
+        try {
+          Process pr = Runtime.getRuntime().exec( "hostname" );
+          br = new BufferedReader( new InputStreamReader( pr.getInputStream() ) );
+          String line;
+          if ( ( line = br.readLine() ) != null ) {
+            return line;
+          }
+          pr.waitFor();
+          br.close();
+        } catch ( IOException e ) {
+          return getHostname();
+        } catch ( InterruptedException e ) {
+          return getHostname();
+        }
+      }
+    }
+    return getHostname();
+  }
+
+  /**
    * Determins the IP address of the machine Kettle is running on.
-   *
+   * 
    * @return The IP address
    */
   public static final String getIPAddress() throws Exception {

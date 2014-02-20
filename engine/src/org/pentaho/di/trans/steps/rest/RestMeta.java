@@ -409,7 +409,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "urlField", urlField ) );
     retval.append( "    " + XMLHandler.addTagValue( "bodyField", bodyField ) );
     retval.append( "    " + XMLHandler.addTagValue( "httpLogin", httpLogin ) );
-    retval.append( "    " + XMLHandler.addTagValue( "httpPassword", httpPassword ) );
     retval.append( "    "
       + XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
 

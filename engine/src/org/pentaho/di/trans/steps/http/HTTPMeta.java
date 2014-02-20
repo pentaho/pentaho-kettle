@@ -28,6 +28,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -360,7 +361,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "urlField", urlField ) );
     retval.append( "    " + XMLHandler.addTagValue( "encoding", encoding ) );
     retval.append( "    " + XMLHandler.addTagValue( "httpLogin", httpLogin ) );
-    retval.append( "    " + XMLHandler.addTagValue( "httpPassword", httpPassword ) );
+    retval.append( "    "
+      + XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "proxyHost", proxyHost ) );
     retval.append( "    " + XMLHandler.addTagValue( "proxyPort", proxyPort ) );
     retval.append( "    " + XMLHandler.addTagValue( "socketTimeout", socketTimeout ) );
@@ -403,7 +405,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
       urlField = XMLHandler.getTagValue( stepnode, "urlField" );
       encoding = XMLHandler.getTagValue( stepnode, "encoding" );
       httpLogin = XMLHandler.getTagValue( stepnode, "httpLogin" );
-      httpPassword = XMLHandler.getTagValue( stepnode, "httpPassword" );
+      httpPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "httpPassword" ) );
       proxyHost = XMLHandler.getTagValue( stepnode, "proxyHost" );
       proxyPort = XMLHandler.getTagValue( stepnode, "proxyPort" );
 
@@ -446,7 +448,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
       urlField = rep.getStepAttributeString( id_step, "urlField" );
       encoding = rep.getStepAttributeString( id_step, "encoding" );
       httpLogin = rep.getStepAttributeString( id_step, "httpLogin" );
-      httpPassword = rep.getStepAttributeString( id_step, "httpPassword" );
+      httpPassword =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "httpPassword" ) );
       proxyHost = rep.getStepAttributeString( id_step, "proxyHost" );
       proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
       socketTimeout = rep.getStepAttributeString( id_step, "socketTimeout" );
@@ -484,7 +487,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "urlField", urlField );
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
       rep.saveStepAttribute( id_transformation, id_step, "httpLogin", httpLogin );
-      rep.saveStepAttribute( id_transformation, id_step, "httpPassword", httpPassword );
+      rep.saveStepAttribute( id_transformation, id_step, "httpPassword", Encr
+        .encryptPasswordIfNotUsingVariables( httpPassword ) );
       rep.saveStepAttribute( id_transformation, id_step, "proxyHost", proxyHost );
       rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
       rep.saveStepAttribute( id_transformation, id_step, "socketTimeout", socketTimeout );

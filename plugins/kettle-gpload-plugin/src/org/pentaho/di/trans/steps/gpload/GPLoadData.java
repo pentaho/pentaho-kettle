@@ -27,17 +27,15 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @author Sven Boden
  * @since  20-feb-2005
  */
-public class GPLoadData extends BaseStepData implements StepDataInterface
-{
-	public Database db;
+public class GPLoadData extends BaseStepData implements StepDataInterface {
+  public Database db;
 
-	/**
-	 *  Default constructor.
-	 */
-	public GPLoadData()
-	{
-		super();
+  /**
+   *  Default constructor.
+   */
+  public GPLoadData() {
+    super();
 
-		db=null;
-	}
+    db = null;
+  }
 }

@@ -20,13 +20,15 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.insertupdate;
+package org.pentaho.di.trans.steps.update;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,26 +42,23 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 /**
- * Test for InsertUpdate step
+ * Regression test for PDI-11152
  *
  * @author Pavel Sakun
- * @see InsertUpdate
  */
-public class InsertUpdateTest {
-  StepMockHelper<InsertUpdateMeta, InsertUpdateData> smh;
+public class PDI_11152_Test {
+  StepMockHelper<UpdateMeta, UpdateData> smh;
 
   @Before
   public void setUp() {
-    smh =
-        new StepMockHelper<InsertUpdateMeta, InsertUpdateData>( "insertUpdate", InsertUpdateMeta.class,
-            InsertUpdateData.class );
+    smh = new StepMockHelper<UpdateMeta, UpdateData>( "Update", UpdateMeta.class, UpdateData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
   }
 
   @Test
-  public void testDateLazyConversion() throws KettleException {
+  public void testInputLazyConversion() throws KettleException {
     Database db = mock( Database.class );
     RowMeta returnRowMeta = new RowMeta();
     doReturn( new Object[] { new Timestamp( System.currentTimeMillis() ) } ).when( db ).getLookup(
@@ -77,21 +76,20 @@ public class InsertUpdateTest {
     RowMeta inputRowMeta = new RowMeta();
     inputRowMeta.addValueMeta( valueMeta );
 
-    InsertUpdateMeta stepMeta = smh.processRowsStepMetaInterface;
-    doReturn( new Boolean[] { true } ).when( stepMeta ).getUpdate();
+    UpdateMeta stepMeta = smh.processRowsStepMetaInterface;
 
-    InsertUpdateData stepData = smh.processRowsStepDataInterface;
+    UpdateData stepData = smh.processRowsStepDataInterface;
     stepData.lookupParameterRowMeta = inputRowMeta;
     stepData.db = db;
     stepData.keynrs = stepData.valuenrs = new int[] { 0 };
     stepData.keynrs2 = new int[] { -1 };
     stepData.updateParameterRowMeta = when( mock( RowMeta.class ).size() ).thenReturn( 2 ).getMock();
 
-    InsertUpdate step = new InsertUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    Update step = new Update( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.setInputRowMeta( inputRowMeta );
     step.getInputRowSets().add( smh.getMockInputRowSet( new Object[] { "2013-12-20".getBytes() } ) );
     step.init( smh.initStepMetaInterface, smh.initStepDataInterface );
     step.first = false;
-    step.processRow( stepMeta, stepData );
+    Assert.assertTrue( "Failure during row processing", step.processRow( stepMeta, stepData ) );
   }
 }

@@ -28,7 +28,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -39,10 +42,12 @@ import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * Tests for the Kettle Environment
- *
+ * 
  */
 public class KettleEnvironmentTest {
 
@@ -87,10 +92,28 @@ public class KettleEnvironmentTest {
   }
 
   private void resetKettleEnvironmentInitializationFlag() throws SecurityException, NoSuchFieldException,
-    IllegalArgumentException, IllegalAccessException {
+    IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException,
+    InstantiationException {
     Field f = KettleEnvironment.class.getDeclaredField( "initialized" );
     f.setAccessible( true );
-    f.set( KettleEnvironment.class, null );
+    f.set( null, null );
+    Constructor<KettleVFS> constructor;
+    constructor = KettleVFS.class.getDeclaredConstructor();
+    constructor.setAccessible( true );
+    KettleVFS KVFS = constructor.newInstance();
+    f = KVFS.getClass().getDeclaredField( "kettleVFS" );
+    f.setAccessible( true );
+    Field modifiersField = Field.class.getDeclaredField( "modifiers" );
+    modifiersField.setAccessible( true );
+    modifiersField.setInt( f, f.getModifiers() & ~Modifier.FINAL | Modifier.VOLATILE );
+    f.set( null, KVFS );
+    f = KVFS.getClass().getDeclaredField( "defaultVariableSpace" );
+    f.setAccessible( true );
+    modifiersField.setInt( f, f.getModifiers() & ~Modifier.FINAL );
+    Variables var = new Variables();
+    var.initializeVariablesFrom( null );
+    f.set( null, var );
+
   }
 
   /**
@@ -100,13 +123,13 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-      .isInitialized() );
+        .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, MockLifecycleListener.class.getName() );
     KettleEnvironment.init();
 
     PluginInterface pi = PluginRegistry.getInstance().findPluginWithId( KettleLifecyclePluginType.class, pluginId );
     MockLifecycleListener l =
-      (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
+        (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
     assertNotNull( "Test plugin not registered properly", l );
 
     assertTrue( environmentInitCalled.get() );
@@ -119,16 +142,15 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback_exception_thrown() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-      .isInitialized() );
+        .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, FailingMockLifecycleListener.class.getName() );
     KettleEnvironment.init();
 
     PluginInterface pi = PluginRegistry.getInstance().findPluginWithId( KettleLifecyclePluginType.class, pluginId );
     MockLifecycleListener l =
-      (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
+        (MockLifecycleListener) PluginRegistry.getInstance().loadClass( pi, KettleLifecycleListener.class );
     assertNotNull( "Test plugin not registered properly", l );
 
-    assertTrue( environmentInitCalled.get() );
     assertTrue( KettleEnvironment.isInitialized() );
   }
 
@@ -139,13 +161,14 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback_exception_thrown_severe() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-      .isInitialized() );
+        .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, SevereFailingMockLifecycleListener.class.getName() );
     try {
       KettleEnvironment.init();
       fail( "Expected exception" );
     } catch ( KettleException ex ) {
       assertEquals( LifecycleException.class, ex.getCause().getClass() );
+      ex.printStackTrace();
     }
 
     assertFalse( KettleEnvironment.isInitialized() );
@@ -155,13 +178,14 @@ public class KettleEnvironmentTest {
   public void lifecycleListenerEnvironmentInitCallback_throwable_thrown() throws Exception {
     resetKettleEnvironmentInitializationFlag();
     assertFalse( "This test only works if the Kettle Environment is not yet initialized", KettleEnvironment
-      .isInitialized() );
+        .isInitialized() );
     System.setProperty( Const.KETTLE_PLUGIN_CLASSES, ThrowableFailingMockLifecycleListener.class.getName() );
     try {
       KettleEnvironment.init();
       fail( "Expected exception" );
     } catch ( KettleException ex ) {
       assertEquals( AbstractMethodError.class, ex.getCause().getClass() );
+      ex.printStackTrace();
     }
 
     assertFalse( KettleEnvironment.isInitialized() );

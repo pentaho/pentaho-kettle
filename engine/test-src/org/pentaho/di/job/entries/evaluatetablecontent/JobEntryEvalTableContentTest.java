@@ -153,6 +153,7 @@ public class JobEntryEvalTableContentTest {
 
   @Before
   public void setUp() throws Exception {
+    MockDriver.registerInstance();
     Job job = new Job( null, new JobMeta() );
     entry = new JobEntryEvalTableContent();
 
@@ -169,6 +170,7 @@ public class JobEntryEvalTableContentTest {
 
   @After
   public void tearDown() throws Exception {
+    MockDriver.deregeisterInstances();
   }
 
   @Test

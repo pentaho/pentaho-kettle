@@ -92,14 +92,6 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   }
 
   /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
-  /**
    * @return true if the database supports catalogs
    */
   @Override

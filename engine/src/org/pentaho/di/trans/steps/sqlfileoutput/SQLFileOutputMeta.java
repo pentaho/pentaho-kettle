@@ -561,6 +561,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
       rep.saveStepAttribute( id_transformation, id_step, "dateformat", dateformat );
       rep.saveStepAttribute( id_transformation, id_step, "addtoresult", AddToResult );
+      rep.saveStepAttribute( id_transformation, id_step, "startnewline", StartNewLine );
 
       rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
       rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );

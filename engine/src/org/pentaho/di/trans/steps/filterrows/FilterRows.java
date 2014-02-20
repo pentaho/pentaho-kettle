@@ -80,14 +80,13 @@ public class FilterRows extends BaseStep implements StepInterface {
       return false;
     }
 
-    // if filter refers to non-existing fields, throw exception
-
     if ( first ) {
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( getInputRowMeta(), getStepname(), null, null, this, repository, metaStore );
 
+      // if filter refers to non-existing fields, throw exception
       checkNonExistingFields();
 
       // Cache the position of the RowSet for the output.

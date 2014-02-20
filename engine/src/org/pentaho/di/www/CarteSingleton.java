@@ -52,7 +52,8 @@ public class CarteSingleton {
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
 
   private static SlaveServerConfig slaveServerConfig;
-  private static CarteSingleton carte;
+  private static CarteSingleton carteSingleton;
+  private static Carte carte;
 
   private LogChannelInterface log;
 
@@ -218,14 +219,14 @@ public class CarteSingleton {
 
   public static CarteSingleton getInstance() {
     try {
-      if ( carte == null ) {
+      if ( carteSingleton == null ) {
         if ( slaveServerConfig == null ) {
           slaveServerConfig = new SlaveServerConfig();
           SlaveServer slaveServer = new SlaveServer();
           slaveServerConfig.setSlaveServer( slaveServer );
         }
 
-        carte = new CarteSingleton( slaveServerConfig );
+        carteSingleton = new CarteSingleton( slaveServerConfig );
 
         Trans trans = Carte.generateTestTransformation();
 
@@ -235,13 +236,13 @@ public class CarteSingleton {
         servletLoggingObject.setContainerObjectId( carteObjectId );
         servletLoggingObject.setLogLevel( LogLevel.BASIC );
 
-        carte.getTransformationMap().addTransformation(
+        carteSingleton.getTransformationMap().addTransformation(
           trans.getName(), carteObjectId, trans,
           new TransConfiguration( trans.getTransMeta(), new TransExecutionConfiguration() ) );
 
-        return carte;
+        return carteSingleton;
       } else {
-        return carte;
+        return carteSingleton;
       }
     } catch ( KettleException ke ) {
       throw new RuntimeException( ke );
@@ -286,6 +287,14 @@ public class CarteSingleton {
 
   public static void setSlaveServerConfig( SlaveServerConfig slaveServerConfig ) {
     CarteSingleton.slaveServerConfig = slaveServerConfig;
+  }
+  
+  public static void setCarte(Carte carte) {
+    CarteSingleton.carte = carte;
+  }
+  
+  public static Carte getCarte() {
+    return CarteSingleton.carte;
   }
 
   public LogChannelInterface getLog() {

@@ -923,7 +923,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public boolean supportsRepository() {
-    return true;
+    return false;
   }
 
   /**

@@ -477,10 +477,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( Const.isEmpty( info ) || info[0] == null ) // null or length 0 : no info from database
     {
-      for ( int i = 0; i < returnValueNewName.length; i++ ) {
+      for ( int i = 0; i < getReturnValueNewName().length; i++ ) {
         try {
           ValueMetaInterface v =
-            ValueMetaFactory.createValueMeta( returnValueNewName[i], returnValueDefaultType[i] );
+            ValueMetaFactory.createValueMeta( getReturnValueNewName()[i], getReturnValueDefaultType()[i] );
           v.setOrigin( name );
           row.addValueMeta( v );
         } catch ( Exception e ) {

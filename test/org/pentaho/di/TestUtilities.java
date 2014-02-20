@@ -22,9 +22,12 @@
 
 package org.pentaho.di;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -284,5 +287,36 @@ public class TestUtilities {
     StepMeta sortRowsStep = new StepMeta( sortRowsStepPid, name, sortRowsMeta );
 
     return sortRowsStep;
+  }
+  
+  public static String getStringFromInput( InputStream in ) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    InputStreamReader is = null;
+    BufferedReader br = null;
+    try {
+      is = new InputStreamReader( in );
+      br = new BufferedReader( is );
+      String read = br.readLine();
+      while ( read != null ) {
+        sb.append( read );
+        read = br.readLine();
+      }
+    } finally {
+      if ( is != null ) {
+        try {
+          is.close();
+        } catch ( IOException e ) {
+          // Suppress
+        }
+      }
+      if ( br != null ) {
+        try {
+          br.close();
+        } catch ( IOException e ) {
+          // Suppress
+        }
+      }
+    }
+    return sb.toString();
   }
 }

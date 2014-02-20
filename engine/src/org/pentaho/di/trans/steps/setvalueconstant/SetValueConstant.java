@@ -48,8 +48,8 @@ public class SetValueConstant extends BaseStep implements StepInterface {
   private SetValueConstantMeta meta;
   private SetValueConstantData data;
 
-  public SetValueConstant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-    TransMeta transMeta, Trans trans ) {
+  public SetValueConstant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -68,47 +68,47 @@ public class SetValueConstant extends BaseStep implements StepInterface {
       first = false;
 
       // What's the format of the output row?
-      data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      data.setOutputRowMeta( getInputRowMeta().clone() );
+      meta.getFields( data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore );
       // Create convert meta-data objects that will contain Date & Number formatters
       // data.convertRowMeta = data.outputRowMeta.clone();
 
       // For String to <type> conversions, we allocate a conversion meta data row as well...
       //
-      data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
+      data.setConvertRowMeta( data.getOutputRowMeta().cloneToType( ValueMetaInterface.TYPE_STRING ) );
 
       // Consider only selected fields
       if ( meta.getFieldName() != null && meta.getFieldName().length > 0 ) {
-        data.fieldnrs = new int[meta.getFieldName().length];
-        data.realReplaceByvalues = new String[meta.getReplaceValue().length];
+        data.setFieldnrs( new int[meta.getFieldName().length] );
+        data.setRealReplaceByValues( new String[meta.getReplaceValue().length] );
         for ( int i = 0; i < meta.getFieldName().length; i++ ) {
           // Check if this field was specified only one time
           for ( int j = 0; j < meta.getFieldName().length; j++ ) {
             if ( meta.getFieldName()[j].equals( meta.getFieldName()[i] ) ) {
               if ( j != i ) {
-                throw new KettleException( BaseMessages.getString(
-                  PKG, "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
+                throw new KettleException( BaseMessages.getString( PKG,
+                    "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
               }
             }
           }
 
-          data.fieldnrs[i] = data.outputRowMeta.indexOfValue( meta.getFieldName()[i] );
+          data.getFieldnrs()[i] = data.getOutputRowMeta().indexOfValue( meta.getFieldName()[i] );
 
-          if ( data.fieldnrs[i] < 0 ) {
+          if ( data.getFieldnrs()[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta.getFieldName()[i] ) );
             throw new KettleException( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta
-              .getFieldName()[i] ) );
+                .getFieldName()[i] ) );
           }
 
           if ( meta.isSetEmptyString()[i] ) {
             // Just set empty string
-            data.realReplaceByvalues[i] = StringUtil.EMPTY_STRING;
+            data.getRealReplaceByValues()[i] = StringUtil.EMPTY_STRING;
           } else {
             // set specified value
             if ( meta.isUseVars() ) {
-              data.realReplaceByvalues[i] = environmentSubstitute( meta.getReplaceValue()[i] );
+              data.getRealReplaceByValues()[i] = environmentSubstitute( meta.getReplaceValue()[i] );
             } else {
-              data.realReplaceByvalues[i] = meta.getReplaceValue()[i];
+              data.getRealReplaceByValues()[i] = meta.getReplaceValue()[i];
             }
           }
         }
@@ -116,20 +116,17 @@ public class SetValueConstant extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "SetValueConstant.Log.SelectFieldsEmpty" ) );
       }
 
-      data.fieldnr = data.fieldnrs.length;
+      data.setFieldnr( data.getFieldnrs().length );
 
     } // end if first
 
     try {
       updateField( r );
-      putRow( data.outputRowMeta, r ); // copy row to output rowset(s);
+      putRow( data.getOutputRowMeta(), r ); // copy row to output rowset(s);
     } catch ( Exception e ) {
-      boolean sendToErrorRow = false;
-      String errorMessage = null;
-
       if ( getStepMeta().isDoingErrorHandling() ) {
-        sendToErrorRow = true;
-        errorMessage = e.toString();
+        // Simply add this row to the error row
+        putError( data.getOutputRowMeta(), r, 1, e.toString(), null, "SVC001" );
       } else {
         logError( BaseMessages.getString( PKG, "SetValueConstant.Log.ErrorInStep", e.getMessage() ) );
         setErrors( 1 );
@@ -137,25 +134,25 @@ public class SetValueConstant extends BaseStep implements StepInterface {
         setOutputDone(); // signal end to receiver(s)
         return false;
       }
-      if ( sendToErrorRow ) {
-        // Simply add this row to the error row
-        putError( data.outputRowMeta, r, 1, errorMessage, null, "SVC001" );
-      }
     }
     return true;
   }
 
   private void updateField( Object[] r ) throws Exception {
     // Loop through fields
-    for ( int i = 0; i < data.fieldnr; i++ ) {
+    for ( int i = 0; i < data.getFieldnr(); i++ ) {
       // DO CONVERSION OF THE DEFAULT VALUE ...
       // Entered by user
-      ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta( data.fieldnrs[i] );
-      ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( data.fieldnrs[i] );
+      ValueMetaInterface targetValueMeta = data.getOutputRowMeta().getValueMeta( data.getFieldnrs()[i] );
+      ValueMetaInterface sourceValueMeta = data.getConvertRowMeta().getValueMeta( data.getFieldnrs()[i] );
+
       if ( !Const.isEmpty( meta.getReplaceMask()[i] ) ) {
         sourceValueMeta.setConversionMask( meta.getReplaceMask()[i] );
       }
-      r[data.fieldnrs[i]] = targetValueMeta.convertData( sourceValueMeta, data.realReplaceByvalues[i] );
+
+      sourceValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+      r[data.getFieldnrs()[i]] = targetValueMeta.convertData( sourceValueMeta, data.getRealReplaceByValues()[i] );
+      targetValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
     }
   }
 
@@ -163,11 +160,7 @@ public class SetValueConstant extends BaseStep implements StepInterface {
     meta = (SetValueConstantMeta) smi;
     data = (SetValueConstantData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      // Add init code here.
-      return true;
-    }
-    return false;
+    return super.init( smi, sdi );
   }
 
 }

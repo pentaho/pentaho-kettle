@@ -23,7 +23,6 @@
 package org.pentaho.di.job.entries.getpop;
 
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 /**
  * MailConnection handles the process of connecting to, reading from POP3/IMAP.
@@ -319,11 +318,14 @@ public class MailConnectionMeta {
   }
 
   public static int getProtocolFromString( String protocolCode, int defaultProtocol ) {
-    if ( StringUtils.equals( protocolCode, PROTOCOL_STRING_IMAP ) ) {
+    if ( protocolCode == null ) {
+      return defaultProtocol;
+    }
+    if ( protocolCode.toUpperCase().equals( PROTOCOL_STRING_IMAP ) ) {
       return PROTOCOL_IMAP;
-    } else if ( StringUtils.equals( protocolCode, PROTOCOL_STRING_POP3 ) ) {
+    } else if ( protocolCode.toUpperCase().equals( PROTOCOL_STRING_POP3 ) ) {
       return PROTOCOL_POP3;
-    } else if ( StringUtils.equals( protocolCode, PROTOCOL_STRING_MBOX ) ) {
+    } else if ( protocolCode.toUpperCase().equals( PROTOCOL_STRING_MBOX ) ) {
       return PROTOCOL_MBOX;
     }
     return defaultProtocol;
