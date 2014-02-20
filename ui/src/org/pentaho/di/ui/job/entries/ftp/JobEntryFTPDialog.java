@@ -23,8 +23,6 @@
 package org.pentaho.di.ui.job.entries.ftp;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -52,13 +50,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftp.JobEntryFTP;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -423,10 +421,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -483,10 +480,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkProxyPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
       }
     } );
 
@@ -1257,10 +1253,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     fdSocksProxyPassword.right = new FormAttachment( 100, margin );
     wSocksProxyPassword.setLayoutData( fdSocksProxyPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wSocksProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkSocksProxyPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wSocksProxyPassword.getTextWidget() );
       }
     } );
 
@@ -1506,39 +1501,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     wCreateMoveFolder.setEnabled( wMove.getSelection() );
     wlCreateMoveFolder.setEnabled( wMove.getSelection() );
     wbTestFolderExists.setEnabled( wMove.getSelection() );
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
-    }
-  }
-
-  public void checkProxyPasswordVisible() {
-    String password = wProxyPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wProxyPassword.setEchoChar( '*' );
-    } else {
-      wProxyPassword.setEchoChar( '\0' ); // Show it all...
-    }
-  }
-
-  public void checkSocksProxyPasswordVisible() {
-    String password = wSocksProxyPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wSocksProxyPassword.setEchoChar( '*' );
-    } else {
-      wSocksProxyPassword.setEchoChar( '\0' ); // Show it all...
-    }
   }
 
   private void setDateTimeFormat() {

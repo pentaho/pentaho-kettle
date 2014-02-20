@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.pgpdecryptstream;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusListener;
@@ -50,12 +47,12 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.pgpdecryptstream.PGPDecryptStreamMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -224,10 +221,11 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     fdPassphrase.top = new FormAttachment( wGPGLocation, margin );
     fdPassphrase.right = new FormAttachment( 100, 0 );
     wPassphrase.setLayoutData( fdPassphrase );
+
     wPassphrase.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassphrase.getTextWidget() );
       }
     } );
 
@@ -483,16 +481,4 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
       }
     }
   }
-
-  public void checkPasswordVisible() {
-    String password = wPassphrase.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassphrase.setEchoChar( '*' );
-    } else {
-      wPassphrase.setEchoChar( '\0' ); // Show it all...
-    }
-  }
-
 }

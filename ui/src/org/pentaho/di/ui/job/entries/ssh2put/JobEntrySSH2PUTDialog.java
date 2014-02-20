@@ -397,7 +397,6 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
@@ -558,7 +557,6 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
     fdHTTPProxyPassword.right = new FormAttachment( 100, 0 );
     wHTTPProxyPassword.setLayoutData( fdHTTPProxyPassword );
 
-    // OK, if the HttpProxyPassword contains a variable, we don't want to have the HttpProxyPassword hidden...
     wHTTPProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         DatabaseDialog.checkPasswordVisible( wHTTPProxyPassword.getTextWidget() );
@@ -676,7 +674,6 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
     fdkeyfilePass.right = new FormAttachment( 100, 0 );
     wkeyfilePass.setLayoutData( fdkeyfilePass );
 
-    // OK, if the keyfilePass contains a variable, we don't want to have the keyfilePass hidden...
     wkeyfilePass.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         DatabaseDialog.checkPasswordVisible( wkeyfilePass.getTextWidget() );
