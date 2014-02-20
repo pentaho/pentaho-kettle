@@ -49,7 +49,7 @@ public abstract class JobTrackerExecution {
   public static String CREATE = "logTableCreate.sql";
   public static final String NAME = "Junit_JobTest";
   public static final String DB = "mem:HSQLDB-JUNIT-LOGJOB";
-  public static String PKG = "blackbox/tests/job/logging/";
+  public static String PKG = "org/pentaho/di/job/";
 
   @Before
   public void setUpBeforeClass() throws Exception {
