@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.insertupdate;
+package org.pentaho.di.trans.steps.insupd;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -51,6 +51,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+import org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta;
 
 public class InsertUpdateTest extends TestCase {
 

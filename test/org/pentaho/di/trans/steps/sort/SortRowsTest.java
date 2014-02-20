@@ -22,17 +22,15 @@
 
 package org.pentaho.di.trans.steps.sort;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Date;
+import static org.junit.Assert.fail;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import org.junit.Test;
-import org.pentaho.di.core.row.value.ValueMetaTimestamp;
-
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -41,6 +39,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -50,9 +49,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
-
-import static org.junit.Assert.fail;
-
 
 /**
  * Test class for the Sort step.
@@ -101,7 +97,6 @@ public class SortRowsTest {
     }
     return list;
   }
-
 
   public List<RowMetaAndData> createTimestampData() {
     // Create
@@ -425,7 +420,7 @@ public class SortRowsTest {
     checkRows( resultRows, true );
   }
 
-  @Test (timeout = 4000)
+  @Test( timeout = 4000 )
   public void testSortRowsPresortedNullInput() throws Exception {
     KettleEnvironment.init();
 
