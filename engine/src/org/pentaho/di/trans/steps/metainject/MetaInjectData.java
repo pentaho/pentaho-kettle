@@ -39,6 +39,9 @@ public class MetaInjectData extends BaseStepData implements StepDataInterface {
   public TransMeta transMeta;
   public Map<String, StepMetaInjectionInterface> stepInjectionMap;
   public Map<String, List<RowMetaAndData>> rowMap;
+  public boolean streaming;
+  public String streamingSourceStepname;
+  public String streamingTargetStepname;
 
   public MetaInjectData() {
     super();

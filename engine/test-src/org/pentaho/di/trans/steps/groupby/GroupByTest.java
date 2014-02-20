@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -47,58 +46,56 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class GroupByTest extends TestCase {
-    private StepMockHelper<GroupByMeta, GroupByData> mockHelper;
+  private StepMockHelper<GroupByMeta, GroupByData> mockHelper;
 
-    @Before
-    public void setUp() throws Exception {
-        mockHelper =
-                new StepMockHelper<GroupByMeta, GroupByData>( "Group By", GroupByMeta.class, GroupByData.class );
-        when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-                mockHelper.logChannelInterface );
-        when( mockHelper.trans.isRunning() ).thenReturn( true );
-    }
+  @Before
+  public void setUp() throws Exception {
+    mockHelper =
+      new StepMockHelper<GroupByMeta, GroupByData>( "Group By", GroupByMeta.class, GroupByData.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+      mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        mockHelper.cleanUp();
-    }
+  @After
+  public void tearDown() throws Exception {
+    mockHelper.cleanUp();
+  }
 
-    @Test
-    public void testProcessRow() throws KettleException {
-        GroupByMeta groupByMeta = mock( GroupByMeta.class );
-        GroupByData groupByData = mock( GroupByData.class );
+  @Test
+  public void testProcessRow() throws KettleException {
+    GroupByMeta groupByMeta = mock( GroupByMeta.class );
+    GroupByData groupByData = mock( GroupByData.class );
 
-        GroupBy groupBySpy = Mockito.spy( new GroupBy( mockHelper.stepMeta, mockHelper.stepDataInterface, 0,
-                                                       mockHelper.transMeta, mockHelper.trans ) );
-        doReturn( null ).when( groupBySpy ).getRow();
-        doReturn( null ).when( groupBySpy ).getInputRowMeta();
+    GroupBy groupBySpy = Mockito.spy( new GroupBy( mockHelper.stepMeta, mockHelper.stepDataInterface, 0,
+      mockHelper.transMeta, mockHelper.trans ) );
+    doReturn( null ).when( groupBySpy ).getRow();
+    doReturn( null ).when( groupBySpy ).getInputRowMeta();
 
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMeta( "ROWNR", ValueMeta.TYPE_INTEGER ) );
 
-        RowMetaInterface rowMeta = new RowMeta();
-        rowMeta.addValueMeta( new ValueMeta( "ROWNR", ValueMeta.TYPE_INTEGER ) );
+    List<RowSet> outputRowSets = new ArrayList<RowSet>();
+    BlockingRowSet rowSet = new BlockingRowSet( 1 );
+    rowSet.putRow( rowMeta, new Object[] { new Long( 0 ) } );
+    outputRowSets.add( rowSet );
+    groupBySpy.setOutputRowSets( outputRowSets );
 
-        List<RowSet> outputRowSets = new ArrayList<RowSet>();
-        BlockingRowSet rowSet = new BlockingRowSet( 1 );
-        rowSet.putRow( rowMeta, new Object[] { new Long( 0 ) } );
-        outputRowSets.add( rowSet );
-        groupBySpy.setOutputRowSets( outputRowSets );
+    final String[] sub = { "b" };
+    doReturn( sub ).when( groupByMeta ).getSubjectField();
 
-        final String [] sub = {"b"};
-        doReturn( sub ).when( groupByMeta ).getSubjectField();
+    final String[] groupField = { "a" };
+    doReturn( groupField ).when( groupByMeta ).getGroupField();
 
-        final String [] groupField = {"a"};
-        doReturn( groupField ).when( groupByMeta ).getGroupField();
+    final String[] aggFields = { "b_g" };
+    doReturn( aggFields ).when( groupByMeta ).getAggregateField();
 
-        final String [] aggFields = {"b_g"};
-        doReturn( aggFields ).when( groupByMeta ).getAggregateField();
+    final int[] aggType = { GroupByMeta.TYPE_GROUP_CONCAT_COMMA };
+    doReturn( aggType ).when( groupByMeta ).getAggregateType();
 
-        final int [] aggType = {GroupByMeta.TYPE_GROUP_CONCAT_COMMA};
-        doReturn( aggType ).when( groupByMeta ).getAggregateType();
+    when( mockHelper.transMeta.getPrevStepFields( mockHelper.stepMeta ) ).thenReturn( new RowMeta() );
+    groupBySpy.processRow( groupByMeta, groupByData );
 
-        when( mockHelper.transMeta.getPrevStepFields( mockHelper.stepMeta ) ).thenReturn(new RowMeta());
-        groupBySpy.processRow( groupByMeta, groupByData );
-
-        assertTrue( groupBySpy.getOutputRowSets().get( 0 ).isDone() );
-    }
+    assertTrue( groupBySpy.getOutputRowSets().get( 0 ).isDone() );
+  }
 }
-

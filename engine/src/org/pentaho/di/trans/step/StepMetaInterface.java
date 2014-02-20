@@ -687,6 +687,12 @@ public interface StepMetaInterface {
   public boolean[] isReferencedObjectEnabled();
 
   /**
+   * @return A description of the active referenced object in a transformation.  
+   * Null if nothing special needs to be done or if the active metadata isn't different from design.
+   */
+  public String getActiveReferencedObjectDescription();
+
+  /**
    * Load the referenced object
    *
    * @param index

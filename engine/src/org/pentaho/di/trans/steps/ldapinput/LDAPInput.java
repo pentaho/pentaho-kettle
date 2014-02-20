@@ -360,7 +360,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
     // Define new LDAP connection
     data.connection = new LDAPConnection( log, this, meta, data.attributesBinary );
 
-    for ( int i = 0; i < data.attrReturned.length; i++ ){
+    for ( int i = 0; i < data.attrReturned.length; i++ ) {
       LDAPInputField field = meta.getInputFields()[i];
       // Do we need to sort based on some attributes?
       if ( field.isSortedKey() ) {

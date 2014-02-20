@@ -1,12 +1,13 @@
 package org.pentaho.di.trans.steps.ldapinput;
 
+import java.util.Collection;
+
+import javax.naming.ldap.InitialLdapContext;
+
 import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-
-import javax.naming.ldap.InitialLdapContext;
-import java.util.Collection;
 
 /**
  * Mock LDAP connection protocol, for testing
@@ -21,7 +22,7 @@ public class LdapMockProtocol extends LdapProtocol {
     super( log, variableSpace, meta, binaryAttributes );
   }
 
-  public static String getName(){
+  public static String getName() {
     return "LDAP MOCK";
   }
 
@@ -37,16 +38,18 @@ public class LdapMockProtocol extends LdapProtocol {
 
   @Override
   protected void doConnect( String username, String password ) throws KettleException {
-    if( mockContext == null )
+    if ( mockContext == null ) {
       throw new RuntimeException( "LDAP Mock Connection was not setup" );
+    }
   }
 
   @Override
   public InitialLdapContext getCtx() {
-    if( mockContext == null )
+    if ( mockContext == null ) {
       throw new RuntimeException( "LDAP Mock Connection was not setup" );
-    else
+    } else {
       return mockContext;
+    }
   }
 
   @Override

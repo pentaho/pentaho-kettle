@@ -84,10 +84,10 @@ public class KettleReportBuilder {
   }
 
   private static int createTextField( ItemBand details,
-      String labelText, String fieldName,
-      int labelWidth, int textWidth,
-      int pagePosition, float fontHeight,
-      boolean labelUnderline, boolean labelBold, boolean labelItalic ) {
+    String labelText, String fieldName,
+    int labelWidth, int textWidth,
+    int pagePosition, float fontHeight,
+    boolean labelUnderline, boolean labelBold, boolean labelItalic ) {
 
     ItemBand rowBand = new ItemBand();
     rowBand.setLayout( BandStyleKeys.LAYOUT_ROW );
@@ -123,7 +123,7 @@ public class KettleReportBuilder {
 
   private static int createTextField( ItemBand details, String labelText, String fieldName, int pagePosition ) {
     return createTextField( details, labelText, fieldName, DEF_LABEL_WIDTH, DEF_TEXT_WIDTH, pagePosition,
-        DEF_FONT_HEIGHT, DEF_LABEL_UNDERLINE, DEF_LABEL_BOLD, DEF_LABEL_ITALIC );
+      DEF_FONT_HEIGHT, DEF_LABEL_UNDERLINE, DEF_LABEL_BOLD, DEF_LABEL_ITALIC );
   }
 
   public void createReport() throws Exception {
@@ -175,7 +175,6 @@ public class KettleReportBuilder {
     // Set the header to bold...
     //
     reportHeader.getStyle().setStyleProperty( TextStyleKeys.BOLD, true );
-
 
     // Now add the filename to the report
     //
@@ -251,12 +250,12 @@ public class KettleReportBuilder {
         .setAttributeExpression( AttributeNames.Core.NAMESPACE, AttributeNames.Core.VALUE, bshExpression );
       imageElement.setAttribute( AttributeNames.Core.NAMESPACE, AttributeNames.Core.IMAGE_ENCODING_QUALITY, "9" );
       imageElement.setAttribute( AttributeNames.Core.NAMESPACE, AttributeNames.Core.IMAGE_ENCODING_TYPE, "PNG" );
-      
+
       ItemBand imageBand = new ItemBand();
       imageBand.setLayout( BandStyleKeys.LAYOUT_ROW );
       imageBand.addElement( imageElement );
       itemBand.addElement( imageBand );
-   }
+    }
 
     Paper a4Paper = new Paper();
 

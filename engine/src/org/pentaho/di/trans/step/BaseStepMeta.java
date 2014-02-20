@@ -1020,6 +1020,14 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   /**
+   * @return A description of the active referenced object in a transformation.  
+   * Null if nothing special needs to be done or if the active metadata isn't different from design.
+   */
+  public String getActiveReferencedObjectDescription() {
+    return null;
+  }
+
+  /**
    * Load the referenced object
    *
    * @param meta

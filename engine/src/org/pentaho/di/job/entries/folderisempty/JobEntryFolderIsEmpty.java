@@ -257,7 +257,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   }
 
   private class ExpectedException extends Exception {
-
+    private static final long serialVersionUID = -692662556327569162L;
   }
 
   private class TextFileSelector implements FileSelector {
@@ -305,14 +305,14 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
         }
         if ( filescount > 0 ) {
           rethrow = true;
-          throw new ExpectedException(  );
+          throw new ExpectedException();
         }
         return true;
 
       } catch ( Exception e ) {
         if ( !rethrow ) {
           log.logError( BaseMessages.getString( PKG, "JobFolderIsEmpty.Error" ), BaseMessages.getString(
-              PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
+            PKG, "JobFolderIsEmpty.Error.Exception", info.getFile().toString(), e.getMessage() ) );
           returncode = false;
         } else {
           throw (ExpectedException) e;

@@ -499,7 +499,7 @@ public class Update extends BaseStep implements StepInterface {
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "Update.Log.ConnectedToDB" ) );
         }
-        
+
         data.db.setCommit( meta.getCommitSize( this ) );
 
         return true;

@@ -58,6 +58,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface {
   public int sortSize;
   public boolean compressFiles;
   public boolean[] convertKeysToNative;
+  public boolean convertAnyKeysToNative;
 
   public Comparator<RowTempFile> comparator;
 

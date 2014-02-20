@@ -3628,4 +3628,38 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     spoon.executeJob( jobMeta, true, false, null, false, copy.getName(), copy.getNr() );
   }
+
+  private JobEntryCopy lastChained = null;
+
+  public void addJobEntryToChain( String typeDesc ) {
+    JobMeta jobMeta = spoon.getActiveJob();
+    if ( jobMeta == null ) {
+      return;
+    }
+
+    // Where do we add this?
+
+    Point p = null;
+    if ( lastChained == null ) {
+      p = new Point( 0, 50 );
+    } else {
+      p = new Point( lastChained.getLocation().x, lastChained.getLocation().y );
+    }
+
+    p.x += 200;
+
+    // Which is the new entry?
+
+    JobEntryCopy newEntry = spoon.newJobEntry( jobMeta, typeDesc, false );
+    newEntry.setLocation( p.x, p.y );
+    newEntry.setDrawn();
+
+    jobMeta.addJobEntry( newEntry );
+    jobMeta.addJobHop( new JobHopMeta( lastChained, newEntry ) );
+
+    lastChained = newEntry;
+    spoon.refreshGraph();
+    spoon.refreshTree();
+
+  }
 }

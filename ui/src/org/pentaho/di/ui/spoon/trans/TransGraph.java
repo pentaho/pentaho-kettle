@@ -95,6 +95,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.AreaOwner;
@@ -2111,7 +2112,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
       }
       String cps = stepMeta.getCopiesString();
-      if ( ( cps != null && !cps.equals( cop ) ) || ( cps == null && cop != null) ) {
+      if ( ( cps != null && !cps.equals( cop ) ) || ( cps == null && cop != null ) ) {
         stepMeta.setChanged();
       }
       stepMeta.setCopiesString( cop );
@@ -2463,6 +2464,23 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           launchMenu.setDisabled( Const.isEmpty( referencedObjects ) );
 
           launchMenu.removeChildren();
+          int childIndex = 0;
+
+          // First see if we need to add a special "active" entry (running transformation)
+          //
+          StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
+          String activeReferencedObjectDescription = stepMetaInterface.getActiveReferencedObjectDescription();
+          if ( getActiveSubtransformation( this, stepMeta ) != null && activeReferencedObjectDescription != null ) {
+            action = new Action( activeReferencedObjectDescription, Action.AS_DROP_DOWN_MENU ) {
+              public void run() {
+                openMapping( stepMeta, -1 ); // negative by convention
+              }
+            };
+            child = new JfaceMenuitem( null, launchMenu, xulDomContainer,
+              activeReferencedObjectDescription, childIndex++, action );
+            child.setLabel( activeReferencedObjectDescription );
+            child.setDisabled( false );
+          }
 
           if ( !Const.isEmpty( referencedObjects ) ) {
             for ( int i = 0; i < referencedObjects.length; i++ ) {
@@ -2473,7 +2491,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                   openMapping( stepMeta, index );
                 }
               };
-              child = new JfaceMenuitem( null, launchMenu, xulDomContainer, referencedObject, i, action );
+              child = new JfaceMenuitem( null, launchMenu, xulDomContainer, referencedObject, childIndex++, action );
               child.setLabel( referencedObject );
               child.setDisabled( !enabledObjects[i] );
             }
@@ -4152,7 +4170,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     try {
       Object referencedMeta = null;
       Trans subTrans = getActiveSubtransformation( this, stepMeta );
-      if ( subTrans != null ) {
+      if ( subTrans != null && ( stepMeta.getStepMetaInterface().getActiveReferencedObjectDescription() == null || index < 0 ) ) {
         TransMeta subTransMeta = subTrans.getTransMeta();
         referencedMeta = subTransMeta;
         if ( stepMeta.getStepMetaInterface() instanceof MetaInjectMeta ) {
@@ -4160,8 +4178,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // Modify the name so the users sees it's a result
           subTransMeta.setFilename( null );
           subTransMeta.setObjectId( null );
-          subTransMeta.setName( subTransMeta.getName()
-            + " (" + BaseMessages.getString( PKG, "TransGraph.AfterInjection" ) + ")" );
+          String appendName = " (" + BaseMessages.getString( PKG, "TransGraph.AfterInjection" ) + ")";
+          if ( !subTransMeta.getName().endsWith( appendName ) ) {
+            subTransMeta.setName( subTransMeta.getName() + appendName );
+          }
         }
       } else {
         StepMetaInterface meta = stepMeta.getStepMetaInterface();
@@ -4651,5 +4671,44 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         spoon.props.setAutoSave( md.getToggleState() );
       }
     }
+  }
+
+  private StepMeta lastChained = null;
+
+  public void addStepToChain( PluginInterface stepPlugin ) {
+    TransMeta transMeta = spoon.getActiveTransformation();
+    if ( transMeta == null ) {
+      return;
+    }
+
+    // Where do we add this?
+
+    Point p = null;
+    if ( lastChained == null ) {
+      p = new Point( 0, 50 );
+    } else {
+      p = new Point( lastChained.getLocation().x, lastChained.getLocation().y );
+    }
+
+    p.x += 200;
+
+    // Which is the new step?
+
+    try {
+      StepMetaInterface stepMetaInterface = (StepMetaInterface) PluginRegistry.getInstance().loadClass( stepPlugin );
+      StepMeta newStep = new StepMeta( stepPlugin.getName(), stepMetaInterface );
+      newStep.setLocation( p.x, p.y );
+      newStep.setDraw( true );
+      transMeta.addStep( newStep );
+      transMeta.addTransHop( new TransHopMeta( lastChained, newStep ) );
+
+      lastChained = newStep;
+      spoon.refreshGraph();
+      spoon.refreshTree();
+
+    } catch ( KettlePluginException e ) {
+      LogChannel.GENERAL.logError( "Error chaining step...", e );
+    }
+
   }
 }
