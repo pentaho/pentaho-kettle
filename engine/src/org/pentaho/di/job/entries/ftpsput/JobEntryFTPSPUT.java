@@ -507,65 +507,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       // Define a new connection
       connection = new FTPSConnection( getConnectionType(), realServerName, realPort, realUsername, realPassword );
 
-      if ( !Const.isEmpty( proxyHost ) ) {
-        String realProxy_host = environmentSubstitute( proxyHost );
-        String realProxy_username = environmentSubstitute( proxyUsername );
-        String realProxy_password = environmentSubstitute( proxyPassword );
-        connection.setProxyHost( realProxy_host );
-        if ( !Const.isEmpty( realProxy_username ) ) {
-          connection.setProxyUser( realProxy_username );
-        }
-        if ( !Const.isEmpty( realProxy_password ) ) {
-          connection.setProxyPassword( realProxy_password );
-        }
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedProxyConnectionOn", realProxy_host ) );
-        }
-
-        int proxyport = Const.toInt( environmentSubstitute( proxyPort ), 21 );
-        if ( proxyport != 0 ) {
-          connection.setProxyPort( proxyport );
-        }
-      } else {
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedConnectionTo", realServerName ) );
-        }
-      }
-
-      // set activeConnection connectmode ...
-      if ( activeConnection ) {
-        connection.setPassiveMode( false );
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetActiveConnection" ) );
-        }
-      } else {
-        connection.setPassiveMode( true );
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetPassiveConnection" ) );
-        }
-      }
-
-      // Set binary mode
-      if ( isBinaryMode() ) {
-        connection.setBinaryMode( true );
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.BinaryMod" ) );
-        }
-      }
-
-      // Set the timeout
-      connection.setTimeOut( timeout );
-      if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetTimeout", timeout ) );
-      }
-
-      // login to FTPS host ...
-      connection.connect();
-      if ( isDetailed() ) {
-        // Remove password from logging, you don't know where it ends up.
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.Logged", realUsername ) );
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.WorkingDirectory", connection.getWorkingDirectory() ) );
-      }
+      this.buildFTPSConnection( connection );
 
       // move to spool dir ...
       if ( !Const.isEmpty( realRemoteDirectory ) ) {
@@ -574,10 +516,19 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
           logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory ) );
         }
       }
+
       realRemoteDirectory = Const.NVL( realRemoteDirectory, FTPSConnection.HOME_FOLDER );
 
       ArrayList<String> myFileList = new ArrayList<String>();
       File localFiles = new File( realLocalDirectory );
+
+      if ( !localFiles.exists() ) {
+        // if local directory uses ${ signature this will be fail to MessageFormat.format ...
+        String error = BaseMessages.getString(
+            PKG, "JobFTPSPUT.LocalFileDirectoryNotExists" ) + realLocalDirectory;
+        throw new Exception( error );
+      }
+
       File[] children = localFiles.listFiles();
       for ( int i = 0; i < children.length; i++ ) {
         // Get filename of file or directory
@@ -691,6 +642,70 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );
+  }
+
+  void buildFTPSConnection( FTPSConnection connection ) throws Exception {
+    if ( !Const.isEmpty( proxyHost ) ) {
+      String realProxy_host = environmentSubstitute( proxyHost );
+      String realProxy_username = environmentSubstitute( proxyUsername );
+      String realProxy_password = environmentSubstitute( proxyPassword );
+      realProxy_password = Encr.decryptPasswordOptionallyEncrypted( realProxy_password );
+
+      connection.setProxyHost( realProxy_host );
+      if ( !Const.isEmpty( realProxy_username ) ) {
+        connection.setProxyUser( realProxy_username );
+      }
+      if ( !Const.isEmpty( realProxy_password ) ) {
+        connection.setProxyPassword( realProxy_password );
+      }
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedProxyConnectionOn", realProxy_host ) );
+      }
+
+      int proxyport = Const.toInt( environmentSubstitute( proxyPort ), 21 );
+      if ( proxyport != 0 ) {
+        connection.setProxyPort( proxyport );
+      }
+    } else {
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedConnectionTo", connection.getHostName() ) );
+      }
+    }
+
+    // set activeConnection connectmode ...
+    if ( activeConnection ) {
+      connection.setPassiveMode( false );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetActiveConnection" ) );
+      }
+    } else {
+      connection.setPassiveMode( true );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetPassiveConnection" ) );
+      }
+    }
+
+    // Set the timeout
+    connection.setTimeOut( timeout );
+    if ( isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetTimeout", timeout ) );
+    }
+
+    // login to FTPS host ...
+    connection.connect();
+    if ( isDetailed() ) {
+      // Remove password from logging, you don't know where it ends up.
+      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.Logged", connection.getUserName() ) );
+      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.WorkingDirectory", connection.getWorkingDirectory() ) );
+    }
+
+    // Set binary mode
+    if ( isBinaryMode() ) {
+      connection.setBinaryMode( true );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.BinaryMod" ) );
+      }
+    }
   }
 
 }
