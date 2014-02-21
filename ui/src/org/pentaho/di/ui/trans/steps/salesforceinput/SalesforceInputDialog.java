@@ -76,6 +76,7 @@ import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -115,7 +116,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
   private FormData fdlTimeOut, fdTimeOut, fdFields, fdUserName, fdURL, fdPassword, fdCondition;
 
   private FormData fdlCondition, fdlInclRownum, fdRownum, fdInclRownumField, fdUseCompression, fdlUseCompression,
-  fdQueryAll, fdlQueryAll;
+      fdQueryAll, fdlQueryAll;
 
   private Button wInclURL, wInclModule, wInclRownum, wUseCompression, wQueryAll;
 
@@ -130,7 +131,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
   private Group wConnectionGroup, wSettingsGroup;
 
   private Label wlInclTimestampField, wlInclTimestamp, wlUseCompression, wlQueryAll, wlInclDeletionDateField,
-  wlInclDeletionDate;
+      wlInclDeletionDate;
 
   private FormData fdlInclSQL, fdInclSQL, fdlInclSQLField, fdlInclDeletionDateField, fdlInclDeletionDate;
 
@@ -304,9 +305,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     // Password line
     wPassword =
-        new LabelTextVar( transMeta, wConnectionGroup, 
-            BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Label" ), 
-            BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Tooltip" ) );
+        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString( PKG,
+            "SalesforceInputDialog.Password.Label" ), BaseMessages.getString( PKG,
+            "SalesforceInputDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -316,10 +317,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -1259,18 +1259,6 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     return stepname;
   }
 
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    }
-    else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
-    }
-  }
-
   private void setEnableInclTargetURL() {
     wInclURLField.setEnabled( wInclURL.getSelection() );
     wlInclURLField.setEnabled( wInclURL.getSelection() );
@@ -1752,9 +1740,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
-              BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogTitle" ),
-              BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
+              "SalesforceInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
+              "SalesforceInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =

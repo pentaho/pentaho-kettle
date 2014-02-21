@@ -64,7 +64,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -73,6 +72,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -262,9 +262,10 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     wConnectionGroup.setLayout( connectionGroupLayout );
 
     // Webservice URL
-    wURL = new LabelTextVar( transMeta, wConnectionGroup,
-      BaseMessages.getString( PKG, "SalesforceInsertDialog.URL.Label" ),
-      BaseMessages.getString( PKG, "SalesforceInsertDialog.URL.Tooltip" ) );
+    wURL =
+        new LabelTextVar( transMeta, wConnectionGroup,
+            BaseMessages.getString( PKG, "SalesforceInsertDialog.URL.Label" ), BaseMessages.getString( PKG,
+                "SalesforceInsertDialog.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -274,9 +275,10 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     wURL.setLayoutData( fdURL );
 
     // UserName line
-    wUserName = new LabelTextVar( transMeta, wConnectionGroup,
-      BaseMessages.getString( PKG, "SalesforceInsertDialog.User.Label" ),
-      BaseMessages.getString( PKG, "SalesforceInsertDialog.User.Tooltip" ) );
+    wUserName =
+        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages
+            .getString( PKG, "SalesforceInsertDialog.User.Label" ), BaseMessages.getString( PKG,
+            "SalesforceInsertDialog.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -286,9 +288,10 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     wUserName.setLayoutData( fdUserName );
 
     // Password line
-    wPassword = new LabelTextVar( transMeta, wConnectionGroup,
-      BaseMessages.getString( PKG, "SalesforceInsertDialog.Password.Label" ),
-      BaseMessages.getString( PKG, "SalesforceInsertDialog.Password.Tooltip" ) );
+    wPassword =
+        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString( PKG,
+            "SalesforceInsertDialog.Password.Label" ), BaseMessages.getString( PKG,
+            "SalesforceInsertDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -298,10 +301,9 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -368,8 +370,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     wlUseCompression.setLayoutData( fdlUseCompression );
     wUseCompression = new Button( wSettingsGroup, SWT.CHECK );
     props.setLook( wUseCompression );
-    wUseCompression
-      .setToolTipText( BaseMessages.getString( PKG, "SalesforceInsertDialog.UseCompression.Tooltip" ) );
+    wUseCompression.setToolTipText( BaseMessages.getString( PKG, "SalesforceInsertDialog.UseCompression.Tooltip" ) );
     fdUseCompression = new FormData();
     fdUseCompression.left = new FormAttachment( middle, 0 );
     fdUseCompression.top = new FormAttachment( wTimeOut, margin );
@@ -377,8 +378,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
     // Rollback all changes on error?
     wlRollbackAllChangesOnError = new Label( wSettingsGroup, SWT.RIGHT );
-    wlRollbackAllChangesOnError.setText( BaseMessages.getString(
-      PKG, "SalesforceInsertDialog.RollbackAllChangesOnError.Label" ) );
+    wlRollbackAllChangesOnError.setText( BaseMessages.getString( PKG,
+        "SalesforceInsertDialog.RollbackAllChangesOnError.Label" ) );
     props.setLook( wlRollbackAllChangesOnError );
     fdlRollbackAllChangesOnError = new FormData();
     fdlRollbackAllChangesOnError.left = new FormAttachment( 0, 0 );
@@ -387,8 +388,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     wlRollbackAllChangesOnError.setLayoutData( fdlRollbackAllChangesOnError );
     wRollbackAllChangesOnError = new Button( wSettingsGroup, SWT.CHECK );
     props.setLook( wRollbackAllChangesOnError );
-    wRollbackAllChangesOnError.setToolTipText( BaseMessages.getString(
-      PKG, "SalesforceInsertDialog.RollbackAllChangesOnError.Tooltip" ) );
+    wRollbackAllChangesOnError.setToolTipText( BaseMessages.getString( PKG,
+        "SalesforceInsertDialog.RollbackAllChangesOnError.Tooltip" ) );
     fdRollbackAllChangesOnError = new FormData();
     fdRollbackAllChangesOnError.left = new FormAttachment( middle, 0 );
     fdRollbackAllChangesOnError.top = new FormAttachment( wUseCompression, margin );
@@ -438,9 +439,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
-        if ( Const.isEmpty( wURL.getText() )
-          || Const.isEmpty( wUserName.getText() ) || Const.isEmpty( wPassword.getText() )
-          || ( getModulesListError ) ) {
+        if ( Const.isEmpty( wURL.getText() ) || Const.isEmpty( wUserName.getText() )
+            || Const.isEmpty( wPassword.getText() ) || ( getModulesListError ) ) {
           return;
         }
 
@@ -477,8 +477,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
     // SalesforceIDFieldName
     wlSalesforceIDFieldName = new Label( wOutFieldsGroup, SWT.RIGHT );
-    wlSalesforceIDFieldName.setText( BaseMessages.getString(
-      PKG, "SalesforceInsertDialog.SalesforceIDFieldName.Label" ) );
+    wlSalesforceIDFieldName
+        .setText( BaseMessages.getString( PKG, "SalesforceInsertDialog.SalesforceIDFieldName.Label" ) );
     props.setLook( wlSalesforceIDFieldName );
     fdlSalesforceIDFieldName = new FormData();
     fdlSalesforceIDFieldName.left = new FormAttachment( 0, 0 );
@@ -487,8 +487,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     wlSalesforceIDFieldName.setLayoutData( fdlSalesforceIDFieldName );
     wSalesforceIDFieldName = new TextVar( transMeta, wOutFieldsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wSalesforceIDFieldName );
-    wSalesforceIDFieldName.setToolTipText( BaseMessages.getString(
-      PKG, "SalesforceInsertDialog.SalesforceIDFieldName.Tooltip" ) );
+    wSalesforceIDFieldName.setToolTipText( BaseMessages.getString( PKG,
+        "SalesforceInsertDialog.SalesforceIDFieldName.Tooltip" ) );
     wSalesforceIDFieldName.addModifyListener( lsMod );
     fdSalesforceIDFieldName = new FormData();
     fdSalesforceIDFieldName.left = new FormAttachment( middle, 0 );
@@ -520,23 +520,19 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.ColumnInfo.TableField" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInsertDialog.ColumnInfo.TableField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.ColumnInfo.StreamField" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInsertDialog.ColumnInfo.StreamField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.ColumnInfo.UseExternalId" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
-    ciReturn[2].setToolTip( BaseMessages
-      .getString( PKG, "SalesforceInsertDialog.ColumnInfo.UseExternalId.Tooltip" ) );
+        new ColumnInfo( BaseMessages.getString( PKG, "SalesforceInsertDialog.ColumnInfo.UseExternalId" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
+    ciReturn[2].setToolTip( BaseMessages.getString( PKG, "SalesforceInsertDialog.ColumnInfo.UseExternalId.Tooltip" ) );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-      new TableView( transMeta, wGeneralComp, SWT.BORDER
-        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+        new TableView( transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
+            | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
 
     wGetLU = new Button( wGeneralComp, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "SalesforceInsertDialog.GetAndUpdateFields.Label" ) );
@@ -702,20 +698,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "SalesforceInsertDialog.FailedToGetFields.DialogTitle" ),
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.FailedToGetFields.DialogMessage" ), ke );
-    }
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInsertDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "SalesforceInsertDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -731,14 +715,13 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
       mb.setMessage( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.OK", wUserName.getText() )
-        + Const.CR );
+          + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Ok" ) );
       mb.open();
     } catch ( Exception e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.NOK", wUserName.getText() ),
-        new Exception( e.getMessage() ) );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Error" ),
+          BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.NOK", wUserName.getText() ), new Exception( e
+              .getMessage() ) );
     } finally {
       if ( connection != null ) {
         try {
@@ -752,7 +735,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
-   *
+   * 
    * @param in
    *          The SalesforceInsertMeta object to obtain the data from.
    */
@@ -807,9 +790,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorValidateData.DialogTitle" ),
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorValidateData.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorValidateData.DialogTitle" ),
+          BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorValidateData.DialogMessage" ), e );
     }
 
     dispose();
@@ -830,7 +812,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
     in.allocate( nrfields );
 
-    //CHECKSTYLE:Indentation:OFF
+    // CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       in.getUpdateLookup()[i] = item.getText( 1 );
@@ -872,8 +854,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     String url = transMeta.environmentSubstitute( wURL.getText() );
     // Define a new Salesforce connection
     SalesforceConnection connection =
-      new SalesforceConnection( log, url, transMeta.environmentSubstitute( wUserName.getText() ), transMeta
-        .environmentSubstitute( wPassword.getText() ) );
+        new SalesforceConnection( log, url, transMeta.environmentSubstitute( wUserName.getText() ), transMeta
+            .environmentSubstitute( wPassword.getText() ) );
     int realTimeOut = Const.toInt( transMeta.environmentSubstitute( wTimeOut.getText() ), 0 );
     connection.setTimeOut( realTimeOut );
     // connect to Salesforce
@@ -921,9 +903,9 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.UnableToFindSourceFields.Title" ),
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG,
+          "SalesforceInsertDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
+          "SalesforceInsertDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
 
@@ -935,16 +917,16 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
       FieldType dateType = FieldType.fromString( "date" );
       for ( int i = 0; i < fields.length; i++ ) {
         // Keep data type for date field
-        if ( dateType.equals( fields[ i ].getType() ) ) {
+        if ( dateType.equals( fields[i].getType() ) ) {
           targetFields.addValueMeta( new ValueMeta( fieldNames[i], ValueMetaInterface.TYPE_DATE ) );
         } else {
           targetFields.addValueMeta( new ValueMeta( fieldNames[i] ) );
         }
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.UnableToFindTargetFields.Title" ),
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG,
+          "SalesforceInsertDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
+          "SalesforceInsertDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -989,30 +971,30 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-          BaseMessages.getString(
-            PKG, "SalesforceInsertDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
-            + Const.CR;
+            BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.SomeSourceFieldsNotFound",
+                missingSourceFields.toString() )
+                + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-          BaseMessages.getString(
-            PKG, "SalesforceInsertDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
-            + Const.CR;
+            BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.SomeTargetFieldsNotFound",
+                missingSourceFields.toString() )
+                + Const.CR;
       }
       message += Const.CR;
       message +=
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
+          BaseMessages.getString( PKG, "SalesforceInsertDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-        MessageDialog.openConfirm( shell, BaseMessages.getString(
-          PKG, "SalesforceInsertDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
+              "SalesforceInsertDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-      new EnterMappingDialog( SalesforceInsertDialog.this.shell, sourceFields.getFieldNames(), targetFields
-        .getFieldNames(), mappings );
+        new EnterMappingDialog( SalesforceInsertDialog.this.shell, sourceFields.getFieldNames(), targetFields
+            .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -1115,8 +1097,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
       } catch ( Exception e ) {
         new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorRetrieveModules.DialogTitle" ),
-          BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
+            BaseMessages.getString( PKG, "SalesforceInsertDialog.ErrorRetrieveModules.DialogTitle" ), BaseMessages
+                .getString( PKG, "SalesforceInsertDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
       } finally {
         if ( connection != null ) {
