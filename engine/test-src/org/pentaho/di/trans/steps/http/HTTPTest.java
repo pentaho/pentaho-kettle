@@ -22,9 +22,20 @@
 
 package org.pentaho.di.trans.steps.http;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.util.Assert.assertTrue;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,15 +48,15 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import static org.pentaho.di.core.util.Assert.assertTrue;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * User: Dzmitry Stsiapanau Date: 12/2/13 Time: 1:24 PM
@@ -146,5 +157,33 @@ public class HTTPTest {
       }
     } );
     httpServer.start();
+  }
+
+  @Test
+  public void testLoadSaveRoundTrip() throws KettleException {
+    List<String> attributes =
+        Arrays.asList( "url", "urlInField", "urlField", "encoding", "httpLogin", "httpPassword", "proxyHost",
+            "proxyPort", "socketTimeout", "connectionTimeout", "closeIdleConnectionsTime", "argumentField",
+            "argumentParameter", "headerField", "headerParameter", "fieldName", "resultCodeFieldName",
+            "responseTimeFieldName" );
+
+    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
+        new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    //Arrays need to be consistent length
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
+    fieldLoadSaveValidatorAttributeMap.put( "argumentField", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "argumentParameter", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "headerField", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "headerParameter", stringArrayLoadSaveValidator );
+
+    LoadSaveTester loadSaveTester =
+        new LoadSaveTester( HTTPMeta.class, attributes, new HashMap<String, String>(),
+            new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
+            new HashMap<String, FieldLoadSaveValidator<?>>() );
+
+    loadSaveTester.testRepoRoundTrip();
+    loadSaveTester.testXmlRoundTrip();
   }
 }

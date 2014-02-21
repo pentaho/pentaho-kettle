@@ -10,6 +10,7 @@ import org.pentaho.di.trans.steps.loadsave.getter.MethodGetter;
 import org.pentaho.di.trans.steps.loadsave.setter.FieldSetter;
 import org.pentaho.di.trans.steps.loadsave.setter.MethodSetter;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
+import org.springframework.context.NoSuchMessageException;
 
 public class JavaBeanManipulator<T> {
   private final Class<? extends T> clazz;
@@ -55,7 +56,11 @@ public class JavaBeanManipulator<T> {
           try {
             getter = new MethodGetter( clazz.getMethod( getPrefixedName( "get", attribute ) ) );
           } catch ( NoSuchMethodException e ) {
-            getter = new FieldGetter( clazz.getField( attribute ) );
+            try {
+              getter = new MethodGetter( clazz.getMethod( getPrefixedName( "is", attribute ) ) );
+            } catch ( NoSuchMessageException e2 ) {
+              getter = new FieldGetter( clazz.getField( attribute ) );
+            }
           }
         }
         getterMethodMap.put( attribute, getter );

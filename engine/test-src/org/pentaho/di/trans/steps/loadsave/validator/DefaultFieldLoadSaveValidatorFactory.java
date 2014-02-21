@@ -22,6 +22,12 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
     registerValidator( getName( List.class, String.class ), new ListLoadSaveValidator<String>(
         new StringLoadSaveValidator() ) {
     } );
+    registerValidator( String[].class.getCanonicalName(), new ArrayLoadSaveValidator<String>(
+        new StringLoadSaveValidator() ) );
+    registerValidator( boolean[].class.getCanonicalName(), new PrimitiveBooleanArrayLoadSaveValidator(
+        new BooleanLoadSaveValidator() ) );
+    registerValidator( Boolean[].class.getCanonicalName(), new ArrayLoadSaveValidator<Boolean>(
+        new BooleanLoadSaveValidator() ) );
   }
 
   public void registerValidator( String typeString, FieldLoadSaveValidator<?> validator ) {
