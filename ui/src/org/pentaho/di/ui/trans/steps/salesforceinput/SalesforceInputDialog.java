@@ -115,7 +115,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
   private FormData fdlTimeOut, fdTimeOut, fdFields, fdUserName, fdURL, fdPassword, fdCondition;
 
   private FormData fdlCondition, fdlInclRownum, fdRownum, fdInclRownumField, fdUseCompression, fdlUseCompression,
-  fdQueryAll, fdlQueryAll;
+      fdQueryAll, fdlQueryAll;
 
   private Button wInclURL, wInclModule, wInclRownum, wUseCompression, wQueryAll;
 
@@ -130,7 +130,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
   private Group wConnectionGroup, wSettingsGroup;
 
   private Label wlInclTimestampField, wlInclTimestamp, wlUseCompression, wlQueryAll, wlInclDeletionDateField,
-  wlInclDeletionDate;
+      wlInclDeletionDate;
 
   private FormData fdlInclSQL, fdInclSQL, fdlInclSQLField, fdlInclDeletionDateField, fdlInclDeletionDate;
 
@@ -304,9 +304,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     // Password line
     wPassword =
-        new LabelTextVar( transMeta, wConnectionGroup, 
-            BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Label" ), 
-            BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Tooltip" ) );
+        new LabelTextVar( transMeta, wConnectionGroup, BaseMessages.getString( PKG,
+            "SalesforceInputDialog.Password.Label" ), BaseMessages.getString( PKG,
+            "SalesforceInputDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
@@ -1265,8 +1265,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     StringUtil.getUsedVariables( password, list, true );
     if ( list.size() == 0 ) {
       wPassword.setEchoChar( '*' );
-    }
-    else {
+    } else {
       wPassword.setEchoChar( '\0' ); // Show it all...
     }
   }
@@ -1752,9 +1751,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
-              BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogTitle" ),
-              BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogMessage" ) );
+          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
+              "SalesforceInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
+              "SalesforceInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
