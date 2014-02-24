@@ -50,6 +50,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.utils.RowMetaUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -720,36 +721,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
         // Copy the row
-        RowMetaInterface tableFields = new RowMeta();
-
-        // Now change the field names
-        // the key fields
-        if ( keyLookup != null ) {
-          for ( int i = 0; i < keyLookup.length; i++ ) {
-            ValueMetaInterface v = prev.searchValueMeta( keyStream[i] );
-            if ( v != null ) {
-              ValueMetaInterface tableField = v.clone();
-              tableField.setName( keyLookup[i] );
-              tableFields.addValueMeta( tableField );
-            } else {
-              throw new KettleStepException( "Unable to find field [" + keyStream[i] + "] in the input rows" );
-            }
-          }
-        }
-        // the lookup fields
-        for ( int i = 0; i < updateLookup.length; i++ ) {
-          ValueMetaInterface v = prev.searchValueMeta( updateStream[i] );
-          if ( v != null ) {
-            ValueMetaInterface vk = tableFields.searchValueMeta( updateStream[i] );
-            if ( vk == null ) { // do not add again when already added as key fields
-              ValueMetaInterface tableField = v.clone();
-              tableField.setName( updateLookup[i] );
-              tableFields.addValueMeta( tableField );
-            }
-          } else {
-            throw new KettleStepException( "Unable to find field [" + updateStream[i] + "] in the input rows" );
-          }
-        }
+        RowMetaInterface tableFields = RowMetaUtils.getRowMetaForUpdate( prev, keyLookup,
+            keyStream, updateLookup, updateStream );
 
         if ( !Const.isEmpty( tableName ) ) {
           Database db = new Database( loggingObject, databaseMeta );

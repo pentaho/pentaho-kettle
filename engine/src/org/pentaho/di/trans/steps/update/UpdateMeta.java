@@ -33,6 +33,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -50,6 +51,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.utils.RowMetaUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -754,11 +756,14 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-    Repository repository, IMetaStore metaStore ) {
+    Repository repository, IMetaStore metaStore ) throws KettleStepException  {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
+        // Copy the row
+        RowMetaInterface tableFields = RowMetaUtils.getRowMetaForUpdate( prev, keyLookup, keyStream,
+            updateLookup, updateStream );
         if ( !Const.isEmpty( tableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
 
@@ -771,7 +776,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
               prev.addValueMeta( new ValueMeta( getIgnoreFlagField(), ValueMetaInterface.TYPE_BOOLEAN ) );
             }
 
-            String cr_table = db.getDDL( schemaTable, prev, null, false, null, true );
+            String cr_table = db.getDDL( schemaTable, tableFields, null, false, null, true );
 
             String cr_index = "";
             String[] idx_fields = null;
