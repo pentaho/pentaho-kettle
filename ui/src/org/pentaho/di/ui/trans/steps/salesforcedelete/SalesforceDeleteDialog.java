@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.salesforcedelete;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -53,7 +50,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -61,6 +57,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.salesforcedelete.SalesforceDeleteMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -256,10 +253,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -541,17 +537,6 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
           BaseMessages.getString( PKG, "SalesforceDeleteDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPrevious = true;
-    }
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
     }
   }
 

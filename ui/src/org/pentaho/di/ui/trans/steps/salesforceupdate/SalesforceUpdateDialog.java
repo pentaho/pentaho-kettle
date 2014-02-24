@@ -62,7 +62,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -71,6 +70,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforceupdate.SalesforceUpdateMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -292,10 +292,9 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -655,17 +654,6 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "SalesforceUpdateDialog.FailedToGetFields.DialogTitle" ),
         BaseMessages.getString( PKG, "SalesforceUpdateDialog.FailedToGetFields.DialogMessage" ), ke );
-    }
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
     }
   }
 

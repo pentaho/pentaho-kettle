@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.job.entries.exportrepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -54,7 +51,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository;
@@ -64,6 +60,7 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -340,10 +337,10 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-    // OK, if the password contains a variable, we don't want to have the password hidden...
+
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -921,17 +918,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
   private void activeSuccessCondition() {
     wlLimit.setEnabled( wSuccessCondition.getSelectionIndex() != 0 );
     wLimit.setEnabled( wSuccessCondition.getSelectionIndex() != 0 );
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
-    }
   }
 
   private void setDateTimeFormat() {

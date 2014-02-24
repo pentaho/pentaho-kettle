@@ -23,8 +23,6 @@
 package org.pentaho.di.ui.job.entries.sftp;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -53,7 +51,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
@@ -61,6 +58,7 @@ import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -394,6 +392,12 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
+    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
+      }
+    } );
+
     // usePublicKey
     wlusePublicKey = new Label( wServerSettings, SWT.RIGHT );
     wlusePublicKey.setText( BaseMessages.getString( PKG, "JobSFTP.useKeyFile.Label" ) );
@@ -476,6 +480,12 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     fdkeyfilePass.right = new FormAttachment( 100, 0 );
     wkeyfilePass.setLayoutData( fdkeyfilePass );
 
+    wkeyfilePass.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wkeyfilePass.getTextWidget() );
+      }
+    } );
+
     wlProxyType = new Label( wServerSettings, SWT.RIGHT );
     wlProxyType.setText( BaseMessages.getString( PKG, "JobSFTP.ProxyType.Label" ) );
     props.setLook( wlProxyType );
@@ -554,10 +564,9 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkProxyPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
       }
     } );
 
@@ -1123,17 +1132,6 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 
   public boolean isUnconditional() {
     return false;
-  }
-
-  public void checkProxyPasswordVisible() {
-    String password = wProxyPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wProxyPassword.setEchoChar( '*' );
-    } else {
-      wProxyPassword.setEchoChar( '\0' ); // Show it all...
-    }
   }
 
   private void setDefaulProxyPort() {

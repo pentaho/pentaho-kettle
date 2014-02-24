@@ -1200,7 +1200,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     compositeTabWebService.layout();
     tabItemWebService.setControl( compositeTabWebService );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wHttpPassword.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         DatabaseDialog.checkPasswordVisible( wHttpPassword.getTextWidget() );
