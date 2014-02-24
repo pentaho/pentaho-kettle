@@ -726,8 +726,25 @@ public class SalesforceConnection {
     }
   }
 
+  /**
+   * Method returns specified object's fields' names, use #getObjectFields to get fields itself
+   * @param objectName object name
+   * @return fields' names
+   * @throws KettleException in case of error
+   * @see #getObjectFields(String)
+   */
   public String[] getFields( String objectName ) throws KettleException {
-    Field[] fields = getObjectFields( objectName );
+    return getFields( getObjectFields( objectName ) );
+  }
+
+  /**
+   * Method returns names of the fields specified.
+   * @param fields fields
+   * @return fields' names
+   * @throws KettleException in case of error
+   * @see #getObjectFields(String)
+   */
+  public String[] getFields( Field[] fields ) throws KettleException {
     if ( fields != null ) {
       int nrFields = fields.length;
       String[] fieldsMapp = new String[nrFields];

@@ -22,7 +22,12 @@
 
 package org.pentaho.di.trans.steps.salesforceinsert;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
@@ -130,16 +135,28 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
         // Add fields to insert
         for ( int i = 0; i < data.nrfields; i++ ) {
           ValueMetaInterface valueMeta = data.inputRowMeta.getValueMeta( data.fieldnrs[i] );
-          Object object = rowData[data.fieldnrs[i]];
+          Object value = rowData[data.fieldnrs[i]];
 
-          if ( valueMeta.isNull( object ) ) {
+          if ( valueMeta.isNull( value ) ) {
             // The value is null
             // We need to keep track of this field
             fieldsToNull.add( meta.getUpdateLookup()[i] );
           } else {
-            Object normalObject = valueMeta.convertToNormalStorageType( object );
+            if ( valueMeta.isDate() ) {
+              // Pass date field converted to UTC, see PDI-10836
+              Calendar cal = Calendar.getInstance( valueMeta.getDateFormatTimeZone() );
+              cal.setTime( valueMeta.getDate( value ) );
+              Calendar utc = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+              // Reset time-related fields
+              utc.clear();
+              utc.set( cal.get( Calendar.YEAR ), cal.get( Calendar.MONTH ), cal.get( Calendar.DATE ) );
+              value = utc.getTime();
+            } else if ( valueMeta.isStorageBinaryString() ) {
+              value = valueMeta.convertToNormalStorageType( value );
+            }
+
             insertfields.add( SalesforceConnection.createMessageElement(
-              meta.getUpdateLookup()[i], normalObject, meta.getUseExternalId()[i] ) );
+              meta.getUpdateLookup()[i], value, meta.getUseExternalId()[i] ) );
           }
         }
 
