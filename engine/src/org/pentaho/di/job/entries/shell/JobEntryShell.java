@@ -576,7 +576,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       Process proc = procBuilder.start();
 
       // any error message?
-      StreamLogger errorLogger = new StreamLogger( log, proc.getErrorStream(), "(stderr)" );
+      StreamLogger errorLogger = new StreamLogger( log, proc.getErrorStream(), "(stderr)", true );
 
       // any output?
       StreamLogger outputLogger = new StreamLogger( log, proc.getInputStream(), "(stdout)" );
