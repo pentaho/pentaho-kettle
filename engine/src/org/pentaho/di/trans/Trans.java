@@ -1224,8 +1224,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             //
             if ( step.getErrors() > 0 ) {
 
-              log.logMinimal( getName(), BaseMessages.getString( PKG, "Trans.Log.TransformationDetectedErrors" ) );
-              log.logMinimal( getName(), BaseMessages.getString(
+              log.logMinimal( BaseMessages.getString( PKG, "Trans.Log.TransformationDetectedErrors" ) );
+              log.logMinimal( BaseMessages.getString(
                 PKG, "Trans.Log.TransformationIsKillingTheOtherSteps" ) );
 
               killAllNoWait();

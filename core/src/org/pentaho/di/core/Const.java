@@ -924,14 +924,19 @@ public class Const {
 
   /**
    * The name of the local client MetaStore
-   *
+   * 
    */
   public static final String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
 
   /**
+   * A variable to configure turning on/off detailed subjects in log.
+   */
+  public static final String KETTLE_LOG_MARK_MAPPINGS = "KETTLE_LOG_MARK_MAPPINGS";
+
+   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
-   *
+   * 
    * @param f
    *          The value to round
    * @param places

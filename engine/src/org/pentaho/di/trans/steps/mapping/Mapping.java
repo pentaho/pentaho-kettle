@@ -308,7 +308,7 @@ public class Mapping extends BaseStep implements StepInterface {
 
     // Create the transformation from meta-data...
     //
-    data.mappingTrans = new Trans( data.mappingTransMeta, getTrans() );
+    data.mappingTrans = new Trans( data.mappingTransMeta, this );
 
     // Set the parameters values in the mapping.
     //
