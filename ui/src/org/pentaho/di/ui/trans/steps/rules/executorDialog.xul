@@ -5,10 +5,13 @@
     xmlns:pen="http://www.pentaho.org/2008/xul" 
 	title="${RulesExecutor.StepConfigruationDialog.Title}"
 	resizable="true"
-	buttons="accept, cancel"
-	buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
-	ondialogaccept="handler.onAccept()"
-	ondialogcancel="handler.onCancel()" 
+	buttons="extra1,accept,cancel"
+	buttonlabelextra1="${Dialog.Help}"
+	buttonlabelcancel="${Dialog.Cancel}"
+  	buttonlabelaccept="${Dialog.Ok}"
+	ondialogextra1="handler.onHelp()"
+  	ondialogaccept="handler.onAccept()"
+  	ondialogcancel="handler.onCancel()"
     height="600" width="800"
 	appicon="ui/images/spoon.ico">
 	

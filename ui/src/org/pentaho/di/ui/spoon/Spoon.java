@@ -293,6 +293,7 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.di.version.BuildVersion;
@@ -2744,6 +2745,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delegates.steps.delStep( transMeta, stepMeta );
   }
 
+  public void helpStep() {
+    final StepMeta stepMeta = (StepMeta) selectionObject;
+    PluginInterface stepPlugin =
+      PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, stepMeta.getStepID() );
+    HelpUtils.openHelpDialog( shell, stepPlugin );
+  }
+
   public void shareObject( String id ) {
     if ( "database-inst-share".equals( id ) ) {
       final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
@@ -2787,6 +2795,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     final JobMeta jobMeta = (JobMeta) selectionObjectParent;
     final JobEntryCopy jobEntry = (JobEntryCopy) selectionObject;
     deleteJobEntryCopies( jobMeta, jobEntry );
+  }
+
+  public void helpJobEntry() {
+    final JobEntryCopy jobEntry = (JobEntryCopy) selectionObject;
+    String jobName = jobEntry.getName();
+    PluginInterface jobEntryPlugin =
+      PluginRegistry.getInstance().findPluginWithName( JobEntryPluginType.class, jobName );
+    HelpUtils.openHelpDialog( shell, jobEntryPlugin );
   }
 
   public void editHop() {

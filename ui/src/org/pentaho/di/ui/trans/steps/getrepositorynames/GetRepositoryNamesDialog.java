@@ -70,6 +70,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.HelpUtils;
 
 public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = GetRepositoryNamesMeta.class; // i18n
@@ -506,7 +507,7 @@ public class GetRepositoryNamesDialog extends BaseStepDialog implements StepDial
 
   @Override
   protected Button createHelpButton( Shell shell, StepMeta stepMeta, PluginInterface plugin ) {
-    return createHelpButton( helpComp, "Step documentation for " + plugin.getName(), plugin );
+    return HelpUtils.createHelpButton( helpComp, HelpUtils.getHelpDialogTitle( plugin ), plugin );
   }
 
   /**

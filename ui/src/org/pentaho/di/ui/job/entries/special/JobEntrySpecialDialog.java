@@ -52,6 +52,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -107,6 +108,7 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
 
     shell = new Shell( parent, props.getJobsDialogStyle() );
     props.setLook( shell );
+    JobDialog.setShellImage( shell, jobEntry );
     shell.setImage( GUIResource.getInstance().getImageStart() );
 
     ModifyListener lsMod = new ModifyListener() {

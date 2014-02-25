@@ -85,6 +85,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.di.ui.util.HelpUtils;
 
 /**
  * Dialog class for the Oracle bulk loader step. Created on 21feb2007.
@@ -1680,6 +1681,6 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
   @Override
   protected Button createHelpButton( Shell shell, StepMeta stepMeta, PluginInterface plugin ) {
-    return createHelpButton( helpComp, "Step documentation for " + plugin.getName(), plugin );
+    return HelpUtils.createHelpButton( helpComp, HelpUtils.getHelpDialogTitle( plugin ), plugin );
   }
 }
