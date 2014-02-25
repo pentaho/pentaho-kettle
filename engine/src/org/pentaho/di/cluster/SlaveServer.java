@@ -43,7 +43,6 @@ import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
@@ -510,7 +509,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ConnectingTo", urlString ) );
     }
 
-    PutMethod putMethod = new PutMethod( urlString );
+    PostMethod putMethod = new PostMethod( urlString );
 
     // Request content will be retrieved directly from the input stream
     //
