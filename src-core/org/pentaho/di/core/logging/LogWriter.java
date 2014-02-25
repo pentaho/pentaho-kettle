@@ -55,6 +55,9 @@ public class LogWriter {
 
     public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";
     public static final String STRING_PENTAHO_DI_CONSOLE_APPENDER = "ConsoleAppender:" + STRING_PENTAHO_DI_LOGGER_NAME;
+    public static final String STRING_PENTAHO_BASERVER_FILE_APPENDER = "PENTAHOFILE";       //$NON-NLS-1$
+    public static final String STRING_PENTAHO_BASERVER_CONSOLE_APPENDER = "PENTAHOCONSOLE"; //$NON-NLS-1$
+
 
     // String...
     private int type;
@@ -265,22 +268,32 @@ public class LogWriter {
     }
 
     public boolean close() {
-        boolean retval = true;
+        boolean isNotEmbedded = true;
         try {
-            // Close all appenders...
+            // Close all appenders only if we are not embedded (ie. running a report in BA Server
+            // that has a PDI data source)
             Logger logger = Logger.getLogger(STRING_PENTAHO_DI_LOGGER_NAME);
             Enumeration<?> appenders = logger.getAllAppenders();
             while (appenders.hasMoreElements()) {
                 Appender appender = (Appender) appenders.nextElement();
-                appender.close();
+                // Check to see if we have registered BA Server appenders.  If so we are running embedded.
+                if ((appender.getName().compareTo(STRING_PENTAHO_BASERVER_FILE_APPENDER) == 0) ||
+                        (appender.getName().compareTo(STRING_PENTAHO_BASERVER_CONSOLE_APPENDER) == 0)) {
+                    isNotEmbedded = false;
+                    break;
+                }
             }
-            pentahoLogger.removeAllAppenders();
-            LogWriter.unsetLogWriter();
+
+            // If we are not embedded, we can safely close all appenders.
+            if (isNotEmbedded == true) {
+                pentahoLogger.removeAllAppenders();
+                LogWriter.unsetLogWriter();
+            }
         } catch (Exception e) {
-            retval = false;
+            isNotEmbedded = false;
         }
 
-        return retval;
+        return isNotEmbedded;
     }
 
     // synchronizing logWriter singleton instance PDI-6840
