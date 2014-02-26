@@ -726,7 +726,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
 
     super.dispose( smi, sdi );
   }
-  
+
   /** Preload the cache
    * 
    * @param hashRowMeta The RowMeta of the hashRow
@@ -735,66 +735,71 @@ public class CombinationLookup extends BaseStep implements StepInterface {
    * @throws KettleValueException If something went wrong while adding the data to the cache
    * @throws KettleConfigException If the step configuration is incomplete
    */
-	private void preloadCache( RowMetaInterface hashRowMeta ) throws KettleDatabaseException, KettleValueException, KettleConfigException {
-		// fast exit if no preload cache or no cache
-		if ( meta.getPreloadCache() && meta.getCacheSize() >= 0 )
-		{
-			if ( hashRowMeta == null ) throw new KettleConfigException( BaseMessages.getString( PKG, "CombinationLookup.Log.UnexpectedError" ) );
-			DatabaseMeta databaseMeta = meta.getDatabaseMeta();
-			if ( databaseMeta == null ) throw new KettleConfigException( BaseMessages.getString( PKG, "CombinationLookup.Log.UnexpectedError" ) );
-			String lookupKeys = "";
-			String sql = "";
-			List<Object[]> cacheValues;
-			
-			/* build SQl Statement to preload cache
-			 * 
-	         * SELECT 
-	         * min(<retval>) as <retval>, 
-	         * key1, 
-	         * key2, 
-	         * key3  
-	         * FROM   <table> 
-	         * 
-	         * GROUP BY key1,
-	         * key2,
-	         * key3;
-	         * 
-	         */
-			
-			
-			// Build a string representation of the lookupKeys 
-			for ( int i = 0; i < meta.getKeyLookup().length; i++ )
-	        {
-				lookupKeys += databaseMeta.quoteField( meta.getKeyLookup()[i] );
-				
-				// No comma after last field
-				if ( i < meta.getKeyLookup().length - 1 ) lookupKeys += "," + Const.CR;
-	        }
-			
-			// Use min in case of disambiguation
-			sql += "SELECT " + Const.CR;
-			sql += "MIN(" + databaseMeta.quoteField( meta.getTechnicalKeyField() ) + ") as " + databaseMeta.quoteField( meta.getTechnicalKeyField() ) + "," + Const.CR;			
-			sql += lookupKeys + Const.CR;
-			sql += "FROM "+ data.schemaTable + Const.CR;
-			sql += "GROUP BY" + Const.CR;
-			sql += lookupKeys + Const.CR;
-			
-			
-			
-			if ( log.isDebug() ) logDebug( "Using preload cache statement:" + Const.CR + sql );
-			cacheValues = data.db.getRows( databaseMeta.stripCR(sql), meta.getCacheSize() );
-			for ( Object[] cacheRow: cacheValues ) {
-				// Create a correctly structured array for the cache
-				Object[] hashRow = new Object[data.hashRowMeta.size()];
-				// Assumes the technical key is at position 0 !!
-				System.arraycopy( cacheRow, 1, hashRow, 0, hashRow.length );
-				// Potential Cache Overflow is ahndled inside 
-				addToCache( hashRowMeta, hashRow, (Long) cacheRow[0] );
-				incrementLinesInput();
-			}
-			
-		}
-		
-	}
+  private void preloadCache( RowMetaInterface hashRowMeta )
+    throws KettleDatabaseException, KettleValueException, KettleConfigException {
+    // fast exit if no preload cache or no cache
+    if ( meta.getPreloadCache() && meta.getCacheSize() >= 0 ) {
+      if ( hashRowMeta == null ) {
+        throw new KettleConfigException( BaseMessages.getString( PKG, "CombinationLookup.Log.UnexpectedError" ) );
+      }
+      DatabaseMeta databaseMeta = meta.getDatabaseMeta();
+      if ( databaseMeta == null ) {
+        throw new KettleConfigException( BaseMessages.getString( PKG, "CombinationLookup.Log.UnexpectedError" ) );
+      }
+      String lookupKeys = "";
+      String sql = "";
+      List<Object[]> cacheValues;
+
+      /* build SQl Statement to preload cache
+       * 
+           * SELECT 
+           * min(<retval>) as <retval>, 
+           * key1, 
+           * key2, 
+           * key3  
+           * FROM   <table> 
+           * 
+           * GROUP BY key1,
+           * key2,
+           * key3;
+           * 
+           */
+
+      // Build a string representation of the lookupKeys 
+      for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
+        lookupKeys += databaseMeta.quoteField( meta.getKeyLookup()[i] );
+
+        // No comma after last field
+        if ( i < meta.getKeyLookup().length - 1 ) {
+          lookupKeys += "," + Const.CR;
+        }
+      }
+
+      // Use min in case of disambiguation
+      sql += "SELECT " + Const.CR;
+      sql += "MIN(" + databaseMeta.quoteField( meta.getTechnicalKeyField() ) + ") as "
+        + databaseMeta.quoteField( meta.getTechnicalKeyField() ) + "," + Const.CR;
+      sql += lookupKeys + Const.CR;
+      sql += "FROM " + data.schemaTable + Const.CR;
+      sql += "GROUP BY" + Const.CR;
+      sql += lookupKeys + Const.CR;
+
+      if ( log.isDebug() ) {
+        logDebug( "Using preload cache statement:" + Const.CR + sql );
+      }
+      cacheValues = data.db.getRows( databaseMeta.stripCR( sql ), meta.getCacheSize() );
+      for ( Object[] cacheRow : cacheValues ) {
+        // Create a correctly structured array for the cache
+        Object[] hashRow = new Object[data.hashRowMeta.size()];
+        // Assumes the technical key is at position 0 !!
+        System.arraycopy( cacheRow, 1, hashRow, 0, hashRow.length );
+        // Potential Cache Overflow is ahndled inside 
+        addToCache( hashRowMeta, hashRow, (Long) cacheRow[0] );
+        incrementLinesInput();
+      }
+
+    }
+
+  }
 
 }
