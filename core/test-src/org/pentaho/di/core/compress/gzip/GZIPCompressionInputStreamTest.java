@@ -80,7 +80,7 @@ public class GZIPCompressionInputStreamTest {
     inStream.read( new byte[100], 0, inStream.available() );
   }
 
-  private InputStream createGZIPInputStream() throws IOException {
+  protected InputStream createGZIPInputStream() throws IOException {
     // Create an in-memory GZIP output stream for use by the input stream (to avoid exceptions)
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     GZIPOutputStream gos = new GZIPOutputStream( baos );
