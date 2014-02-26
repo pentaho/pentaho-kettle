@@ -22,6 +22,7 @@
 
 package org.pentaho.di;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -113,7 +114,7 @@ public class AllRegressionTests
         suite.addTestSuite(AppendTest.class);   
         suite.addTestSuite(DetectLastRowStepTest.class);        
         suite.addTestSuite(BlockingStepTest.class);
-        suite.addTestSuite(SortRowsTest.class);
+        suite.addTest( new JUnit4TestAdapter( SortRowsTest.class ) );
         suite.addTestSuite(ValueMapperTest.class);
         suite.addTestSuite(NullIfTest.class);
         suite.addTestSuite(RegexEvalTest.class);

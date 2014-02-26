@@ -29,8 +29,7 @@ import java.util.Date;
 
 import java.sql.Timestamp;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -50,6 +49,8 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
+import static org.junit.Assert.fail;
+
 
 /**
  * Test class for the Sort step.
@@ -58,7 +59,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  *
  * @author Sven Boden
  */
-public class SortRowsTest extends TestCase
+public class SortRowsTest
 {
 	public static int MAX_COUNT = 1000;
 	 
@@ -191,6 +192,7 @@ public class SortRowsTest extends TestCase
 	/**
 	 * Test case for sorting step .. ascending order on "numeric" data.
 	 */
+    @Test
     public void testSortRows1() throws Exception
     {
         KettleEnvironment.init();
@@ -280,6 +282,7 @@ public class SortRowsTest extends TestCase
 	/**
 	 * Test case for sorting step .. descending order on "numeric" data.
 	 */
+    @Test
     public void testSortRows2() throws Exception
     {
         KettleEnvironment.init();
@@ -369,6 +372,7 @@ public class SortRowsTest extends TestCase
   /**
    * Test case for sorting step .. ascending order on "timestamp" data.
    */
+  @Test
   public void testSortRows3() throws Exception {
     KettleEnvironment.init();
 
@@ -449,5 +453,64 @@ public class SortRowsTest extends TestCase
     trans.waitUntilFinished();
     List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
     checkRows( resultRows, true );
+  }
+
+  @Test(timeout = 4000)
+  public void testSortRowsPresortedNullInput() throws Exception {
+    KettleEnvironment.init();
+
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "sortrowstest" );
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // Create a sort rows step
+    //
+    String sortRowsStepname = "sort rows step";
+    SortRowsMeta srm = new SortRowsMeta();
+    srm.setSortSize( Integer.toString( MAX_COUNT / 100 ) );
+    String[] sortFields = { "KEY1", "KEY2" };
+    boolean[] ascendingFields = { true, true };
+    boolean[] caseSensitive = { true, true };
+    boolean[] presortedFields = { true, false };
+    srm.setFieldName( sortFields );
+    srm.setAscending( ascendingFields );
+    srm.setCaseSensitive( caseSensitive );
+    srm.setPreSortedField( presortedFields );
+    srm.setPrefix( "SortRowsTest" );
+    srm.setDirectory( "." );
+
+    String sortRowsStepPid = registry.getPluginId( StepPluginType.class, srm );
+    StepMeta sortRowsStep = new StepMeta( sortRowsStepPid, sortRowsStepname, srm );
+    transMeta.addStep( sortRowsStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, sortRowsStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    rp.finished();
+
+    trans.waitUntilFinished();
+
   }
 }
