@@ -23,10 +23,6 @@
 
 package org.pentaho.di.ui.trans.steps.getxmldata;
 
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -34,6 +30,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -82,6 +80,10 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterface {
   private String XMLSource = null;
@@ -428,11 +430,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     fdXMLField.top = new FormAttachment( wreadUrl, margin );
     fdXMLField.right = new FormAttachment( 100, -margin );
     wXMLField.setLayoutData( fdXMLField );
-    wXMLField.addFocusListener( new FocusListener() {
-      public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
-      }
-
-      public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
+    wXMLField.addMouseListener( new MouseAdapter() {
+      @Override public void mouseUp( MouseEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
         setXMLStreamField();
@@ -1317,6 +1316,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "GetXMLDataDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "GetXMLDataDialog.FailedToGetFields.DialogMessage" ), ke );
+      wXMLField.setListVisible( false );
     }
   }
 
