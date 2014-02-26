@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -543,20 +544,20 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             //
             String instance = environmentSubstitute( databaseMeta.getSQLServerInstance() );
             if ( Const.isEmpty( instance ) ) {
-              connection = DriverManager.getConnection( url + ";user=" + username + ";password=" + password );
+              connection = getDriverManagerConnection( url + ";user=" + username + ";password=" + password );
             } else {
               connection =
-                DriverManager.getConnection( url
+                  getDriverManagerConnection( url
                   + ";user=" + username + ";password=" + password + ";instanceName=" + instance );
             }
           } else {
             // also allow for empty username with given password, in this case
             // username must be given with one space
-            connection = DriverManager.getConnection( url, Const.NVL( username, " " ), Const.NVL( password, "" ) );
+            connection = getDriverManagerConnection( url, Const.NVL( username, " " ), Const.NVL( password, "" ) );
           }
         } else {
           // Perhaps the username is in the URL or no username is required...
-          connection = DriverManager.getConnection( url );
+          connection = getDriverManagerConnection( url );
         }
       } else {
         Properties properties = databaseMeta.getConnectionProperties();
@@ -567,12 +568,78 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           properties.put( "password", password );
         }
 
-        connection = DriverManager.getConnection( url, properties );
+        connection = getDriverManagerConnection( url, properties );
       }
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
     } catch ( Throwable e ) {
       throw new KettleDatabaseException( "Error connecting to database: (using class " + classname + ")", e );
+    }
+  }
+
+  private Connection getDriverManagerConnection( String url )  throws SQLException {
+    return getDriverManagerConnection( url, new Properties() );
+  }
+
+  private Connection getDriverManagerConnection( String url, String user, String password )  throws SQLException {
+    Properties info = new Properties();
+    if ( user != null ) {
+      info.put( "user", user );
+    }
+    if ( password != null ) {
+      info.put( "password", password );
+    }
+
+    return getDriverManagerConnection( url, info );
+  }
+
+  /**
+   * Reimplement DriverManager.getConnection() logic with check for suitable driver 
+   */
+  private Connection getDriverManagerConnection( String url, Properties info ) throws SQLException {
+    Enumeration<Driver> drivers = DriverManager.getDrivers();
+    SQLException ex = null;
+
+    while ( drivers.hasMoreElements() ) {
+      Driver d = drivers.nextElement();
+      // check that the driver accepts the url
+      boolean accepts = false;
+      try {
+        accepts = d.acceptsURL( url );
+      } catch ( SQLException e ) {
+        if ( log.isDetailed() ) {
+          log.logDetailed( "Driver:" + d
+              + " does not accept url:" + url
+              + " with exception:" + e + ". Skipping ..." );
+          continue;
+        }
+      }
+
+      if ( accepts ) {
+        // the driver accepts the url 
+        try {
+          // try to connect
+          Connection cn = d.connect( url, info );
+          if ( cn != null ) {
+            return cn;
+          }
+        } catch ( SQLException e ) {
+          log.logDetailed( "Driver:" + d
+              + " can't connect using url:" + url
+              + " with exception:" + e + ". Skipping ..." );
+          if ( ex == null ) {
+            ex = e;
+          }
+        }
+      }
+    }
+
+    if ( ex != null ) {
+      throw ex;
+    } else {
+      // last attempt in case we did something wrong
+      // rely on DriverManager original implementation
+      return DriverManager.getConnection( url, info );
     }
   }
 
