@@ -27,19 +27,28 @@ public class ZIPCompressionInputStream extends CompressionInputStream {
 
   @Override
   public void close() throws IOException {
-    ZipInputStream zis = (ZipInputStream)delegate;
+    ZipInputStream zis = (ZipInputStream) delegate;
+    if ( zis == null ) {
+      throw new IOException( "Not a valid input stream!" );
+    }
     zis.close();
   }
 
   @Override
   public int read() throws IOException {
-    ZipInputStream zis = (ZipInputStream)delegate;
+    ZipInputStream zis = (ZipInputStream) delegate;
+    if ( zis == null ) {
+      throw new IOException( "Not a valid input stream!" );
+    }
     return zis.read();
   }
 
   @Override
   public Object nextEntry() throws IOException {
-    ZipInputStream zis = (ZipInputStream)delegate;
+    ZipInputStream zis = (ZipInputStream) delegate;
+    if ( zis == null ) {
+      throw new IOException( "Not a valid input stream!" );
+    }
     return zis.getNextEntry();
   }
 

@@ -2,10 +2,13 @@ package org.pentaho.di.core.compress.zip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -60,16 +63,12 @@ public class ZIPCompressionInputStreamTest {
 
   @Test
   public void testNextEntry() throws IOException {
-    assertNull( inStream.nextEntry() );
+    assertNotNull( createZIPInputStream().getNextEntry() );
   }
 
   @Test
   public void testClose() throws IOException {
-    CompressionProvider provider = inStream.getCompressionProvider();
-    ByteArrayInputStream in = new ByteArrayInputStream( "Test".getBytes() );
-    inStream = new ZIPCompressionInputStream( in, provider ) {
-    };
-    inStream.close();
+    createZIPInputStream().close();
   }
 
   @Test
@@ -79,5 +78,17 @@ public class ZIPCompressionInputStreamTest {
     inStream = new ZIPCompressionInputStream( in, provider ) {
     };
     inStream.read( new byte[100], 0, inStream.available() );
+  }
+
+  private ZipInputStream createZIPInputStream() throws IOException {
+    // Create an in-memory GZIP output stream for use by the input stream (to avoid exceptions)
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ZipOutputStream gos = new ZipOutputStream( baos );
+    gos.putNextEntry( new ZipEntry("./test.txt") );
+    byte[] testBytes = "Test".getBytes();
+    gos.write( testBytes );
+    ByteArrayInputStream in = new ByteArrayInputStream( baos.toByteArray() );
+
+    return new ZipInputStream( in );
   }
 }
