@@ -400,6 +400,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       ) {
         try {
           this.connection = ConnectionPoolUtil.getConnection( log, databaseMeta, partitionId );
+          if ( getConnection().getAutoCommit() != isAutoCommit() ) {
+            setAutoCommit( isAutoCommit() );
+          }
         } catch ( Exception e ) {
           throw new KettleDatabaseException( "Error occured while trying to connect to the database", e );
         }
