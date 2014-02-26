@@ -29,8 +29,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.tools.FileObject;
-
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.compress.CompressionProvider;
@@ -64,7 +64,6 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
