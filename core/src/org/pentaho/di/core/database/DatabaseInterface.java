@@ -97,6 +97,17 @@ public interface DatabaseInterface extends Cloneable {
   public void setName( String name );
 
   /**
+   * @return Returns the un-escaped connection Name.
+   */
+  public String getDisplayName();
+
+  /**
+   * @param displayName
+   *          The un-escaped connection Name to set.
+   */
+  public void setDisplayName( String displayName );
+
+  /**
    * @return Returns the databaseName.
    */
   public String getDatabaseName();
@@ -762,7 +773,7 @@ public interface DatabaseInterface extends Cloneable {
   public String getSQLTableExists( String tablename );
 
   /**
-   * @param columnname
+   * @param column
    *          The column to verify the existance for
    * @param tablename
    *          The table to verify the existance for
@@ -815,7 +826,7 @@ public interface DatabaseInterface extends Cloneable {
   public boolean isForcingIdentifiersToUpperCase();
 
   /**
-   * @param forceLowerCase
+   * @param forceUpperCase
    *          true if all identifiers should be forced to upper case
    */
   public void setForcingIdentifiersToUpperCase( boolean forceUpperCase );
@@ -1035,9 +1046,9 @@ public interface DatabaseInterface extends Cloneable {
    * Returns the tablespace DDL fragment for a "Data" tablespace. In most databases that use tablespaces this is where
    * the tables are to be created.
    *
-   * @param VariableSpace
+   * @param variables
    *          variables used for possible substitution
-   * @param DatabaseMeta
+   * @param databaseMeta
    *          databaseMeta the database meta used for possible string enclosure of the tablespace. This method needs
    *          this as this is done after environmental substitution.
    *
@@ -1049,9 +1060,9 @@ public interface DatabaseInterface extends Cloneable {
   /**
    * Returns the tablespace DDL fragment for a "Index" tablespace.
    *
-   * @param VariableSpace
+   * @param variables
    *          variables used for possible substitution
-   * @param DatabaseMeta
+   * @param databaseMeta
    *          databaseMeta the database meta used for possible string enclosure of the tablespace. This method needs
    *          this as this is done after environmental substitution.
    *
