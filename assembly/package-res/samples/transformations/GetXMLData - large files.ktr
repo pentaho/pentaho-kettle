@@ -5,20 +5,40 @@
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
+    <parameters>
+    </parameters>
     <log>
-      <read/>
-      <write/>
-      <input/>
-      <output/>
-      <update/>
-      <rejected/>
-      <connection/>
-      <table/>
-      <step_performance_table/>
-      <use_batchid>Y</use_batchid>
-      <use_logfield>N</use_logfield>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -37,6 +57,7 @@
     <shared_objects_file/>
     <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -45,71 +66,198 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2014&#x2f;03&#x2f;03 20&#x3a;39&#x3a;03.155</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2008&#47;08&#47;19 21:19:50.498</modified_date>
+  <modified_date>2008&#x2f;08&#x2f;19 21&#x3a;19&#x3a;50.498</modified_date>
   </info>
   <notepads>
     <notepad>
       <note>Limit to 1 line</note>
       <xloc>40</xloc>
       <yloc>247</yloc>
-      <width>75</width>
-      <heigth>22</heigth>
+      <width>89</width>
+      <heigth>25</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Tests for the option &quot;Prune path to handle large files&quot; (only functionality tests with small files).
-A larger test file with 300MB is available on the PDI online documentation for this step: http:&#47;&#47;wiki.pentaho.com&#47;display&#47;EAI&#47;Get+Data+From+XML
-When you switch on detailed logging you will see messages like: &quot;Streaming mode for processing large XML files is activated&quot;
-Debug logging shows you more detailed messages.</note>
+      <note>Tests for the option &#x22;Prune path to handle large files&#x22; &#x28;only functionality tests with small files&#x29;.&#xa;A larger test file with 300MB is available on the PDI online documentation for this step&#x3a; http&#x3a;&#x2f;&#x2f;wiki.pentaho.com&#x2f;display&#x2f;EAI&#x2f;Get&#x2b;Data&#x2b;From&#x2b;XML&#xa;When you switch on detailed logging you will see messages like&#x3a; &#x22;Streaming mode for processing large XML files is activated&#x22;&#xa;Debug logging shows you more detailed messages.</note>
       <xloc>12</xloc>
       <yloc>15</yloc>
-      <width>720</width>
-      <heigth>60</heigth>
+      <width>848</width>
+      <heigth>70</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
       <note>Error handling</note>
       <xloc>41</xloc>
       <yloc>382</yloc>
-      <width>79</width>
-      <heigth>22</heigth>
+      <width>91</width>
+      <heigth>25</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
       <note>Missing elements</note>
       <xloc>37</xloc>
       <yloc>176</yloc>
-      <width>95</width>
-      <heigth>22</heigth>
+      <width>112</width>
+      <heigth>25</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
       <note>Basics</note>
       <xloc>37</xloc>
       <yloc>107</yloc>
-      <width>42</width>
-      <heigth>22</heigth>
+      <width>50</width>
+      <heigth>25</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Revision notes:
-2008-09-16 Jens Bleuel: created</note>
+      <note>Revision notes&#x3a;&#xa;2008-09-16 Jens Bleuel&#x3a; created</note>
       <xloc>40</xloc>
       <yloc>548</yloc>
-      <width>169</width>
-      <heigth>35</heigth>
+      <width>197</width>
+      <heigth>40</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
       <note>Read 3 files</note>
       <xloc>40</xloc>
       <yloc>312</yloc>
-      <width>68</width>
-      <heigth>22</heigth>
+      <width>78</width>
+      <heigth>25</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>GetXMLData - test 1 - simple functionality test</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>GetXMLData - test 2 - missing elements</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>GetXMLData - test 2 - missing elements 2</from><to>Dummy (do nothing) 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>GetXMLData - test 3 - error handling</from><to>Dummy (do nothing) 2 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>GetXMLData - test 3 - error handling</from><to>Conversion Errors</to><enabled>Y</enabled> </hop>  <hop> <from>GetXMLData - test 1 - simple functionality test - file read triple</from><to>Dummy (do nothing) 3</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>GetXMLData - test 1 - simple functionality test</from><to>Dummy &#x28;do nothing&#x29;</to><enabled>Y</enabled> </hop>
+  <hop> <from>GetXMLData - test 2 - missing elements</from><to>Dummy &#x28;do nothing&#x29; 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>GetXMLData - test 2 - missing elements 2</from><to>Dummy &#x28;do nothing&#x29; 2 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>GetXMLData - test 3 - error handling</from><to>Dummy &#x28;do nothing&#x29; 2 2 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>GetXMLData - test 3 - error handling</from><to>Conversion Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>GetXMLData - test 1 - simple functionality test - file read triple</from><to>Dummy &#x28;do nothing&#x29; 3</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Conversion Errors</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -124,10 +272,11 @@ Debug logging shows you more detailed messages.</note>
     </step>
 
   <step>
-    <name>Dummy (do nothing)</name>
+    <name>Dummy &#x28;do nothing&#x29;</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -142,10 +291,11 @@ Debug logging shows you more detailed messages.</note>
     </step>
 
   <step>
-    <name>Dummy (do nothing) 2</name>
+    <name>Dummy &#x28;do nothing&#x29; 2</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -160,10 +310,11 @@ Debug logging shows you more detailed messages.</note>
     </step>
 
   <step>
-    <name>Dummy (do nothing) 2 2</name>
+    <name>Dummy &#x28;do nothing&#x29; 2 2</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -178,10 +329,11 @@ Debug logging shows you more detailed messages.</note>
     </step>
 
   <step>
-    <name>Dummy (do nothing) 2 2 2</name>
+    <name>Dummy &#x28;do nothing&#x29; 2 2 2</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -196,10 +348,11 @@ Debug logging shows you more detailed messages.</note>
     </step>
 
   <step>
-    <name>Dummy (do nothing) 3</name>
+    <name>Dummy &#x28;do nothing&#x29; 3</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -218,6 +371,7 @@ Debug logging shows you more detailed messages.</note>
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -237,15 +391,18 @@ Debug logging shows you more detailed messages.</note>
     <rownum_field/>
     <encoding>UTF-8</encoding>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;GetXMLData - test 1 - simple functionality test.xml</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;GetXMLData - test 1 - simple functionality test.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>testDescription</name>
-        <xpath>..&#47;..&#47;@testDescription</xpath>
+        <xpath>..&#x2f;..&#x2f;&#x40;testDescription</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -258,8 +415,9 @@ Debug logging shows you more detailed messages.</note>
       </field>
       <field>
         <name>rowID</name>
-        <xpath>..&#47;@rowID</xpath>
+        <xpath>..&#x2f;&#x40;rowID</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>Integer</type>
         <format/>
         <currency/>
@@ -274,6 +432,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v1</name>
         <xpath>v1</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -288,6 +447,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v2</name>
         <xpath>v2</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -300,11 +460,19 @@ Debug logging shows you more detailed messages.</note>
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>&#47;AllRows&#47;Rows&#47;Row</loopxpath>
+    <loopxpath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</loopxpath>
     <IsInFields>N</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField/>
-    <prunePath>&#47;AllRows&#47;Rows&#47;Row</prunePath>
+    <prunePath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</prunePath>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>259</xloc>
@@ -318,6 +486,7 @@ Debug logging shows you more detailed messages.</note>
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -337,21 +506,28 @@ Debug logging shows you more detailed messages.</note>
     <rownum_field/>
     <encoding>UTF-8</encoding>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;GetXMLData - test 1 - simple functionality test.xml</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;GetXMLData - test 1 - simple functionality test.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;GetXMLData - test 1 - simple functionality test.xml</name>
+      <include_subfolders/>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;GetXMLData - test 1 - simple functionality test.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;GetXMLData - test 1 - simple functionality test.xml</name>
+      <include_subfolders/>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;GetXMLData - test 1 - simple functionality test.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>testDescription</name>
-        <xpath>..&#47;..&#47;@testDescription</xpath>
+        <xpath>..&#x2f;..&#x2f;&#x40;testDescription</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -364,8 +540,9 @@ Debug logging shows you more detailed messages.</note>
       </field>
       <field>
         <name>rowID</name>
-        <xpath>..&#47;@rowID</xpath>
+        <xpath>..&#x2f;&#x40;rowID</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>Integer</type>
         <format/>
         <currency/>
@@ -380,6 +557,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v1</name>
         <xpath>v1</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -394,6 +572,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v2</name>
         <xpath>v2</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -406,11 +585,19 @@ Debug logging shows you more detailed messages.</note>
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>&#47;AllRows&#47;Rows&#47;Row</loopxpath>
+    <loopxpath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</loopxpath>
     <IsInFields>N</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField/>
-    <prunePath>&#47;AllRows&#47;Rows&#47;Row</prunePath>
+    <prunePath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</prunePath>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>265</xloc>
@@ -424,6 +611,7 @@ Debug logging shows you more detailed messages.</note>
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -443,15 +631,18 @@ Debug logging shows you more detailed messages.</note>
     <rownum_field/>
     <encoding>UTF-8</encoding>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;GetXMLData - test 2 - missing elements.xml</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;GetXMLData - test 2 - missing elements.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>testDescription</name>
-        <xpath>..&#47;..&#47;@testDescription</xpath>
+        <xpath>..&#x2f;..&#x2f;&#x40;testDescription</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -464,8 +655,9 @@ Debug logging shows you more detailed messages.</note>
       </field>
       <field>
         <name>rowID</name>
-        <xpath>..&#47;@rowID</xpath>
+        <xpath>..&#x2f;&#x40;rowID</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>Integer</type>
         <format/>
         <currency/>
@@ -480,6 +672,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v1</name>
         <xpath>v1</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -494,6 +687,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v2</name>
         <xpath>v2</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -506,11 +700,19 @@ Debug logging shows you more detailed messages.</note>
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>&#47;AllRows&#47;Rows&#47;Row</loopxpath>
+    <loopxpath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</loopxpath>
     <IsInFields>N</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField/>
-    <prunePath>&#47;AllRows&#47;Rows&#47;Row</prunePath>
+    <prunePath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</prunePath>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>263</xloc>
@@ -524,6 +726,7 @@ Debug logging shows you more detailed messages.</note>
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -543,15 +746,18 @@ Debug logging shows you more detailed messages.</note>
     <rownum_field/>
     <encoding>UTF-8</encoding>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;GetXMLData - test 2 - missing elements.xml</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;GetXMLData - test 2 - missing elements.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>testDescription</name>
-        <xpath>..&#47;..&#47;@testDescription</xpath>
+        <xpath>..&#x2f;..&#x2f;&#x40;testDescription</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -564,8 +770,9 @@ Debug logging shows you more detailed messages.</note>
       </field>
       <field>
         <name>rowID</name>
-        <xpath>..&#47;@rowID</xpath>
+        <xpath>..&#x2f;&#x40;rowID</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>Integer</type>
         <format/>
         <currency/>
@@ -580,6 +787,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v1</name>
         <xpath>v1</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -594,6 +802,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v2</name>
         <xpath>v2</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -606,11 +815,19 @@ Debug logging shows you more detailed messages.</note>
       </field>
     </fields>
     <limit>1</limit>
-    <loopxpath>&#47;AllRows&#47;Rows&#47;Row</loopxpath>
+    <loopxpath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</loopxpath>
     <IsInFields>N</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField/>
-    <prunePath>&#47;AllRows&#47;Rows&#47;Row</prunePath>
+    <prunePath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</prunePath>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>263</xloc>
@@ -624,6 +841,7 @@ Debug logging shows you more detailed messages.</note>
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -643,15 +861,18 @@ Debug logging shows you more detailed messages.</note>
     <rownum_field/>
     <encoding>UTF-8</encoding>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;GetXMLData - test 3 - error handling.xml</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;GetXMLData - test 3 - error handling.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>testDescription</name>
-        <xpath>..&#47;..&#47;@testDescription</xpath>
+        <xpath>..&#x2f;..&#x2f;&#x40;testDescription</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -664,8 +885,9 @@ Debug logging shows you more detailed messages.</note>
       </field>
       <field>
         <name>rowID</name>
-        <xpath>..&#47;@rowID</xpath>
+        <xpath>..&#x2f;&#x40;rowID</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>Integer</type>
         <format/>
         <currency/>
@@ -680,6 +902,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v1</name>
         <xpath>v1</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -694,6 +917,7 @@ Debug logging shows you more detailed messages.</note>
         <name>v2</name>
         <xpath>v2</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -706,11 +930,19 @@ Debug logging shows you more detailed messages.</note>
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>&#47;AllRows&#47;Rows&#47;Row</loopxpath>
+    <loopxpath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</loopxpath>
     <IsInFields>N</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField/>
-    <prunePath>&#47;AllRows&#47;Rows&#47;Row</prunePath>
+    <prunePath>&#x2f;AllRows&#x2f;Rows&#x2f;Row</prunePath>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>266</xloc>
@@ -736,4 +968,5 @@ Debug logging shows you more detailed messages.</note>
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

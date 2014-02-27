@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -17,7 +17,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -34,6 +34,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -58,21 +63,21 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>CARTE</name><hostname>${CARTE_HOSTNAME}</hostname><port>${CARTE_PORT}</port><webAppName/><username>${CARTE_USER}</username><password>${CARTE_PWD}</password><proxy_hostname>${CARTE_PROXY_HOST}</proxy_hostname><proxy_port>${CARTE_PROXY_PORT}</proxy_port><non_proxy_hosts>${CARTE_NON_PROXY}</non_proxy_hosts><master>Y</master></slaveserver>
+         <slaveserver><name>CARTE</name><hostname>&#x24;&#x7b;CARTE_HOSTNAME&#x7d;</hostname><port>&#x24;&#x7b;CARTE_PORT&#x7d;</port><webAppName/><username>&#x24;&#x7b;CARTE_USER&#x7d;</username><password>&#x24;&#x7b;CARTE_PWD&#x7d;</password><proxy_hostname>&#x24;&#x7b;CARTE_PROXY_HOST&#x7d;</proxy_hostname><proxy_port>&#x24;&#x7b;CARTE_PROXY_PORT&#x7d;</proxy_port><non_proxy_hosts>&#x24;&#x7b;CARTE_NON_PROXY&#x7d;</non_proxy_hosts><master>Y</master></slaveserver>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
   <created_user/>
-  <created_date>2010&#47;10&#47;08 15:51:58.308</created_date>
+  <created_date>2010&#x2f;10&#x2f;08 15&#x3a;51&#x3a;58.308</created_date>
   <modified_user/>
-  <modified_date>2007&#47;09&#47;11 21:34:50.919</modified_date>
+  <modified_date>2007&#x2f;09&#x2f;11 21&#x3a;34&#x3a;50.919</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>XML&#47;KTR Source</note>
+      <note>XML&#x2f;KTR Source</note>
       <xloc>78</xloc>
       <yloc>160</yloc>
-      <width>102</width>
+      <width>110</width>
       <heigth>25</heigth>
       <fontname>Arial</fontname>
       <fontsize>10</fontsize>
@@ -90,13 +95,39 @@
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Data Grid</from><to>User Defined Java Class</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Data Grid</from><to>User Defined Java Class</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Data Grid</name>
     <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -112,282 +143,11 @@
         <group/>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <data>
-      <line> <item>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;transformation&gt;
-  &lt;info&gt;
-    &lt;name&#47;&gt;
-    &lt;directory&gt;&amp;#47;&lt;&#47;directory&gt;
-    &lt;log&gt;
-      &lt;read&#47;&gt;
-      &lt;write&#47;&gt;
-      &lt;input&#47;&gt;
-      &lt;output&#47;&gt;
-      &lt;update&#47;&gt;
-      &lt;connection&#47;&gt;
-      &lt;table&#47;&gt;
-      &lt;use_batchid&gt;Y&lt;&#47;use_batchid&gt;
-      &lt;use_logfield&gt;N&lt;&#47;use_logfield&gt;
-      &lt;&#47;log&gt;
-    &lt;maxdate&gt;
-      &lt;connection&#47;&gt;
-      &lt;table&#47;&gt;
-      &lt;field&#47;&gt;
-      &lt;offset&gt;0.0&lt;&#47;offset&gt;
-      &lt;maxdiff&gt;0.0&lt;&#47;maxdiff&gt;
-      &lt;&#47;maxdate&gt;
-    &lt;size_rowset&gt;1000&lt;&#47;size_rowset&gt;
-    &lt;sleep_time_empty&gt;1&lt;&#47;sleep_time_empty&gt;
-    &lt;sleep_time_full&gt;1&lt;&#47;sleep_time_full&gt;
-    &lt;unique_connections&gt;N&lt;&#47;unique_connections&gt;
-    &lt;feedback_shown&gt;Y&lt;&#47;feedback_shown&gt;
-    &lt;feedback_size&gt;5000&lt;&#47;feedback_size&gt;
-    &lt;dependencies&gt;
-      &lt;&#47;dependencies&gt;
-    &lt;partitionschemas&gt;
-      &lt;&#47;partitionschemas&gt;
-  &lt;modified_user&gt;-&lt;&#47;modified_user&gt;
-  &lt;modified_date&gt;2006&amp;#47;10&amp;#47;24 11:39:02.963&lt;&#47;modified_date&gt;
-    &lt;&#47;info&gt;
-  &lt;notepads&gt;
-    &lt;notepad&gt;
-      &lt;note&gt;If you do a preview on the Result step you will note that the generated ID is unique.
-If you specify another counter name in either of the sequence generator steps, you will get duplicates.
-
-Step &amp;quot;Generate Rows&amp;quot; does not actually produce output. It creates 1000 empty lines and splits them evenly
-before they reach the two &amp;quot;Generate ID&amp;quot; steps (step type &amp;quot;sequence generator&amp;quot;). Both sequence generators
-do have the same &amp;quot;Counter name&amp;quot; (double click to edit and see the &amp;quot;Counter name&amp;quot; value). That makes the
-generated ids unique, even though they are produced by two different sequence generators.&lt;&#47;note&gt;
-      &lt;xloc&gt;32&lt;&#47;xloc&gt;
-      &lt;yloc&gt;28&lt;&#47;yloc&gt;
-      &lt;width&gt;535&lt;&#47;width&gt;
-      &lt;heigth&gt;101&lt;&#47;heigth&gt;
-      &lt;&#47;notepad&gt;
-    &lt;notepad&gt;
-      &lt;note&gt;You basically get the same result if you have 2 row generators (both generating 20 lines, with no
-actual output) that are linked to two ID sequence generators. Both ID sequence generators have got the
-same &amp;quot;counter name&amp;quot; and thus the finally created IDs are unique. The difference to the example above is
-that the generated IDs are in order (enumerated from 1..40).&lt;&#47;note&gt;
-      &lt;xloc&gt;45&lt;&#47;xloc&gt;
-      &lt;yloc&gt;472&lt;&#47;yloc&gt;
-      &lt;width&gt;516&lt;&#47;width&gt;
-      &lt;heigth&gt;62&lt;&#47;heigth&gt;
-      &lt;&#47;notepad&gt;
-    &lt;&#47;notepads&gt;
-  &lt;order&gt;
-  &lt;hop&gt; &lt;from&gt;Generate Rows&lt;&#47;from&gt;&lt;to&gt;Generate ID&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;hop&gt; &lt;from&gt;Generate ID&lt;&#47;from&gt;&lt;to&gt;Result&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;hop&gt; &lt;from&gt;Generate ID (2)&lt;&#47;from&gt;&lt;to&gt;Result&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;hop&gt; &lt;from&gt;Generate Rows&lt;&#47;from&gt;&lt;to&gt;Generate ID (2)&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;hop&gt; &lt;from&gt;Row Gen [1]&lt;&#47;from&gt;&lt;to&gt;Gen ID [1]&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;hop&gt; &lt;from&gt;Row Gen [2]&lt;&#47;from&gt;&lt;to&gt;Gen ID [2]&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;hop&gt; &lt;from&gt;Gen ID [1]&lt;&#47;from&gt;&lt;to&gt;Result 2&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;hop&gt; &lt;from&gt;Gen ID [2]&lt;&#47;from&gt;&lt;to&gt;Result 2&lt;&#47;to&gt;&lt;enabled&gt;Y&lt;&#47;enabled&gt; &lt;&#47;hop&gt;  &lt;&#47;order&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Generate ID&lt;&#47;name&gt;
-    &lt;type&gt;Sequence&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-      &lt;valuename&gt;ID&lt;&#47;valuename&gt;
-      &lt;use_database&gt;N&lt;&#47;use_database&gt;
-      &lt;connection&#47;&gt;
-      &lt;seqname&gt;SEQ_&lt;&#47;seqname&gt;
-      &lt;use_counter&gt;Y&lt;&#47;use_counter&gt;
-      &lt;counter_name&gt;id-counter&lt;&#47;counter_name&gt;
-      &lt;start_at&gt;1&lt;&#47;start_at&gt;
-      &lt;increment_by&gt;1&lt;&#47;increment_by&gt;
-      &lt;max_value&gt;9999999&lt;&#47;max_value&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;355&lt;&#47;xloc&gt;
-      &lt;yloc&gt;179&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Generate ID (2)&lt;&#47;name&gt;
-    &lt;type&gt;Sequence&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-      &lt;valuename&gt;ID&lt;&#47;valuename&gt;
-      &lt;use_database&gt;N&lt;&#47;use_database&gt;
-      &lt;connection&#47;&gt;
-      &lt;seqname&gt;SEQ_&lt;&#47;seqname&gt;
-      &lt;use_counter&gt;Y&lt;&#47;use_counter&gt;
-      &lt;counter_name&gt;id-counter&lt;&#47;counter_name&gt;
-      &lt;start_at&gt;1&lt;&#47;start_at&gt;
-      &lt;increment_by&gt;1&lt;&#47;increment_by&gt;
-      &lt;max_value&gt;9999999&lt;&#47;max_value&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;360&lt;&#47;xloc&gt;
-      &lt;yloc&gt;361&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Generate Rows&lt;&#47;name&gt;
-    &lt;type&gt;RowGenerator&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-    &lt;fields&gt;
-      &lt;&#47;fields&gt;
-    &lt;limit&gt;40&lt;&#47;limit&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;188&lt;&#47;xloc&gt;
-      &lt;yloc&gt;267&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Result&lt;&#47;name&gt;
-    &lt;type&gt;Dummy&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;563&lt;&#47;xloc&gt;
-      &lt;yloc&gt;251&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Row Gen [1]&lt;&#47;name&gt;
-    &lt;type&gt;RowGenerator&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-    &lt;fields&gt;
-      &lt;&#47;fields&gt;
-    &lt;limit&gt;20&lt;&#47;limit&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;158&lt;&#47;xloc&gt;
-      &lt;yloc&gt;631&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Row Gen [2]&lt;&#47;name&gt;
-    &lt;type&gt;RowGenerator&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-    &lt;fields&gt;
-      &lt;&#47;fields&gt;
-    &lt;limit&gt;20&lt;&#47;limit&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;157&lt;&#47;xloc&gt;
-      &lt;yloc&gt;698&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Gen ID [1]&lt;&#47;name&gt;
-    &lt;type&gt;Sequence&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-      &lt;valuename&gt;AnotherID&lt;&#47;valuename&gt;
-      &lt;use_database&gt;N&lt;&#47;use_database&gt;
-      &lt;connection&#47;&gt;
-      &lt;seqname&gt;SEQ_&lt;&#47;seqname&gt;
-      &lt;use_counter&gt;Y&lt;&#47;use_counter&gt;
-      &lt;counter_name&gt;another-counter&lt;&#47;counter_name&gt;
-      &lt;start_at&gt;1&lt;&#47;start_at&gt;
-      &lt;increment_by&gt;1&lt;&#47;increment_by&gt;
-      &lt;max_value&gt;9999999&lt;&#47;max_value&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;352&lt;&#47;xloc&gt;
-      &lt;yloc&gt;576&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Gen ID [2]&lt;&#47;name&gt;
-    &lt;type&gt;Sequence&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-      &lt;valuename&gt;AnotherID&lt;&#47;valuename&gt;
-      &lt;use_database&gt;N&lt;&#47;use_database&gt;
-      &lt;connection&#47;&gt;
-      &lt;seqname&gt;SEQ_&lt;&#47;seqname&gt;
-      &lt;use_counter&gt;Y&lt;&#47;use_counter&gt;
-      &lt;counter_name&gt;another-counter&lt;&#47;counter_name&gt;
-      &lt;start_at&gt;1&lt;&#47;start_at&gt;
-      &lt;increment_by&gt;1&lt;&#47;increment_by&gt;
-      &lt;max_value&gt;9999999&lt;&#47;max_value&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;351&lt;&#47;xloc&gt;
-      &lt;yloc&gt;736&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-  &lt;step&gt;
-    &lt;name&gt;Result 2&lt;&#47;name&gt;
-    &lt;type&gt;Dummy&lt;&#47;type&gt;
-    &lt;description&#47;&gt;
-    &lt;distribute&gt;Y&lt;&#47;distribute&gt;
-    &lt;copies&gt;1&lt;&#47;copies&gt;
-         &lt;partitioning&gt;
-           &lt;method&gt;none&lt;&#47;method&gt;
-           &lt;field_name&#47;&gt;
-           &lt;schema_name&#47;&gt;
-           &lt;&#47;partitioning&gt;
-    &lt;GUI&gt;
-      &lt;xloc&gt;568&lt;&#47;xloc&gt;
-      &lt;yloc&gt;655&lt;&#47;yloc&gt;
-      &lt;draw&gt;Y&lt;&#47;draw&gt;
-      &lt;&#47;GUI&gt;
-    &lt;&#47;step&gt;
-
-&lt;&#47;transformation&gt;
-</item> </line>
+      <line> <item>&#x3c;&#x3f;xml version&#x3d;&#x22;1.0&#x22; encoding&#x3d;&#x22;UTF-8&#x22;&#x3f;&#x3e;&#xa;&#x3c;transformation&#x3e;&#xa;  &#x3c;info&#x3e;&#xa;    &#x3c;name&#x2f;&#x3e;&#xa;    &#x3c;directory&#x3e;&#x26;&#x23;47&#x3b;&#x3c;&#x2f;directory&#x3e;&#xa;    &#x3c;log&#x3e;&#xa;      &#x3c;read&#x2f;&#x3e;&#xa;      &#x3c;write&#x2f;&#x3e;&#xa;      &#x3c;input&#x2f;&#x3e;&#xa;      &#x3c;output&#x2f;&#x3e;&#xa;      &#x3c;update&#x2f;&#x3e;&#xa;      &#x3c;connection&#x2f;&#x3e;&#xa;      &#x3c;table&#x2f;&#x3e;&#xa;      &#x3c;use_batchid&#x3e;Y&#x3c;&#x2f;use_batchid&#x3e;&#xa;      &#x3c;use_logfield&#x3e;N&#x3c;&#x2f;use_logfield&#x3e;&#xa;      &#x3c;&#x2f;log&#x3e;&#xa;    &#x3c;maxdate&#x3e;&#xa;      &#x3c;connection&#x2f;&#x3e;&#xa;      &#x3c;table&#x2f;&#x3e;&#xa;      &#x3c;field&#x2f;&#x3e;&#xa;      &#x3c;offset&#x3e;0.0&#x3c;&#x2f;offset&#x3e;&#xa;      &#x3c;maxdiff&#x3e;0.0&#x3c;&#x2f;maxdiff&#x3e;&#xa;      &#x3c;&#x2f;maxdate&#x3e;&#xa;    &#x3c;size_rowset&#x3e;1000&#x3c;&#x2f;size_rowset&#x3e;&#xa;    &#x3c;sleep_time_empty&#x3e;1&#x3c;&#x2f;sleep_time_empty&#x3e;&#xa;    &#x3c;sleep_time_full&#x3e;1&#x3c;&#x2f;sleep_time_full&#x3e;&#xa;    &#x3c;unique_connections&#x3e;N&#x3c;&#x2f;unique_connections&#x3e;&#xa;    &#x3c;feedback_shown&#x3e;Y&#x3c;&#x2f;feedback_shown&#x3e;&#xa;    &#x3c;feedback_size&#x3e;5000&#x3c;&#x2f;feedback_size&#x3e;&#xa;    &#x3c;dependencies&#x3e;&#xa;      &#x3c;&#x2f;dependencies&#x3e;&#xa;    &#x3c;partitionschemas&#x3e;&#xa;      &#x3c;&#x2f;partitionschemas&#x3e;&#xa;  &#x3c;modified_user&#x3e;-&#x3c;&#x2f;modified_user&#x3e;&#xa;  &#x3c;modified_date&#x3e;2006&#x26;&#x23;47&#x3b;10&#x26;&#x23;47&#x3b;24 11&#x3a;39&#x3a;02.963&#x3c;&#x2f;modified_date&#x3e;&#xa;    &#x3c;&#x2f;info&#x3e;&#xa;  &#x3c;notepads&#x3e;&#xa;    &#x3c;notepad&#x3e;&#xa;      &#x3c;note&#x3e;If you do a preview on the Result step you will note that the generated ID is unique.&#xa;If you specify another counter name in either of the sequence generator steps, you will get duplicates.&#xa;&#xa;Step &#x26;quot&#x3b;Generate Rows&#x26;quot&#x3b; does not actually produce output. It creates 1000 empty lines and splits them evenly&#xa;before they reach the two &#x26;quot&#x3b;Generate ID&#x26;quot&#x3b; steps &#x28;step type &#x26;quot&#x3b;sequence generator&#x26;quot&#x3b;&#x29;. Both sequence generators&#xa;do have the same &#x26;quot&#x3b;Counter name&#x26;quot&#x3b; &#x28;double click to edit and see the &#x26;quot&#x3b;Counter name&#x26;quot&#x3b; value&#x29;. That makes the&#xa;generated ids unique, even though they are produced by two different sequence generators.&#x3c;&#x2f;note&#x3e;&#xa;      &#x3c;xloc&#x3e;32&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;28&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;width&#x3e;535&#x3c;&#x2f;width&#x3e;&#xa;      &#x3c;heigth&#x3e;101&#x3c;&#x2f;heigth&#x3e;&#xa;      &#x3c;&#x2f;notepad&#x3e;&#xa;    &#x3c;notepad&#x3e;&#xa;      &#x3c;note&#x3e;You basically get the same result if you have 2 row generators &#x28;both generating 20 lines, with no&#xa;actual output&#x29; that are linked to two ID sequence generators. Both ID sequence generators have got the&#xa;same &#x26;quot&#x3b;counter name&#x26;quot&#x3b; and thus the finally created IDs are unique. The difference to the example above is&#xa;that the generated IDs are in order &#x28;enumerated from 1..40&#x29;.&#x3c;&#x2f;note&#x3e;&#xa;      &#x3c;xloc&#x3e;45&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;472&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;width&#x3e;516&#x3c;&#x2f;width&#x3e;&#xa;      &#x3c;heigth&#x3e;62&#x3c;&#x2f;heigth&#x3e;&#xa;      &#x3c;&#x2f;notepad&#x3e;&#xa;    &#x3c;&#x2f;notepads&#x3e;&#xa;  &#x3c;order&#x3e;&#xa;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Generate Rows&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Generate ID&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Generate ID&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Result&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Generate ID &#x28;2&#x29;&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Result&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Generate Rows&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Generate ID &#x28;2&#x29;&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Row Gen &#x5b;1&#x5d;&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Gen ID &#x5b;1&#x5d;&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Row Gen &#x5b;2&#x5d;&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Gen ID &#x5b;2&#x5d;&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Gen ID &#x5b;1&#x5d;&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Result 2&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;hop&#x3e; &#x3c;from&#x3e;Gen ID &#x5b;2&#x5d;&#x3c;&#x2f;from&#x3e;&#x3c;to&#x3e;Result 2&#x3c;&#x2f;to&#x3e;&#x3c;enabled&#x3e;Y&#x3c;&#x2f;enabled&#x3e; &#x3c;&#x2f;hop&#x3e;  &#x3c;&#x2f;order&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Generate ID&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;Sequence&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;      &#x3c;valuename&#x3e;ID&#x3c;&#x2f;valuename&#x3e;&#xa;      &#x3c;use_database&#x3e;N&#x3c;&#x2f;use_database&#x3e;&#xa;      &#x3c;connection&#x2f;&#x3e;&#xa;      &#x3c;seqname&#x3e;SEQ_&#x3c;&#x2f;seqname&#x3e;&#xa;      &#x3c;use_counter&#x3e;Y&#x3c;&#x2f;use_counter&#x3e;&#xa;      &#x3c;counter_name&#x3e;id-counter&#x3c;&#x2f;counter_name&#x3e;&#xa;      &#x3c;start_at&#x3e;1&#x3c;&#x2f;start_at&#x3e;&#xa;      &#x3c;increment_by&#x3e;1&#x3c;&#x2f;increment_by&#x3e;&#xa;      &#x3c;max_value&#x3e;9999999&#x3c;&#x2f;max_value&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;355&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;179&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Generate ID &#x28;2&#x29;&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;Sequence&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;      &#x3c;valuename&#x3e;ID&#x3c;&#x2f;valuename&#x3e;&#xa;      &#x3c;use_database&#x3e;N&#x3c;&#x2f;use_database&#x3e;&#xa;      &#x3c;connection&#x2f;&#x3e;&#xa;      &#x3c;seqname&#x3e;SEQ_&#x3c;&#x2f;seqname&#x3e;&#xa;      &#x3c;use_counter&#x3e;Y&#x3c;&#x2f;use_counter&#x3e;&#xa;      &#x3c;counter_name&#x3e;id-counter&#x3c;&#x2f;counter_name&#x3e;&#xa;      &#x3c;start_at&#x3e;1&#x3c;&#x2f;start_at&#x3e;&#xa;      &#x3c;increment_by&#x3e;1&#x3c;&#x2f;increment_by&#x3e;&#xa;      &#x3c;max_value&#x3e;9999999&#x3c;&#x2f;max_value&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;360&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;361&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Generate Rows&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;RowGenerator&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;    &#x3c;fields&#x3e;&#xa;      &#x3c;&#x2f;fields&#x3e;&#xa;    &#x3c;limit&#x3e;40&#x3c;&#x2f;limit&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;188&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;267&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Result&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;Dummy&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;563&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;251&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Row Gen &#x5b;1&#x5d;&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;RowGenerator&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;    &#x3c;fields&#x3e;&#xa;      &#x3c;&#x2f;fields&#x3e;&#xa;    &#x3c;limit&#x3e;20&#x3c;&#x2f;limit&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;158&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;631&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Row Gen &#x5b;2&#x5d;&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;RowGenerator&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;    &#x3c;fields&#x3e;&#xa;      &#x3c;&#x2f;fields&#x3e;&#xa;    &#x3c;limit&#x3e;20&#x3c;&#x2f;limit&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;157&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;698&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Gen ID &#x5b;1&#x5d;&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;Sequence&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;      &#x3c;valuename&#x3e;AnotherID&#x3c;&#x2f;valuename&#x3e;&#xa;      &#x3c;use_database&#x3e;N&#x3c;&#x2f;use_database&#x3e;&#xa;      &#x3c;connection&#x2f;&#x3e;&#xa;      &#x3c;seqname&#x3e;SEQ_&#x3c;&#x2f;seqname&#x3e;&#xa;      &#x3c;use_counter&#x3e;Y&#x3c;&#x2f;use_counter&#x3e;&#xa;      &#x3c;counter_name&#x3e;another-counter&#x3c;&#x2f;counter_name&#x3e;&#xa;      &#x3c;start_at&#x3e;1&#x3c;&#x2f;start_at&#x3e;&#xa;      &#x3c;increment_by&#x3e;1&#x3c;&#x2f;increment_by&#x3e;&#xa;      &#x3c;max_value&#x3e;9999999&#x3c;&#x2f;max_value&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;352&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;576&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Gen ID &#x5b;2&#x5d;&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;Sequence&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;      &#x3c;valuename&#x3e;AnotherID&#x3c;&#x2f;valuename&#x3e;&#xa;      &#x3c;use_database&#x3e;N&#x3c;&#x2f;use_database&#x3e;&#xa;      &#x3c;connection&#x2f;&#x3e;&#xa;      &#x3c;seqname&#x3e;SEQ_&#x3c;&#x2f;seqname&#x3e;&#xa;      &#x3c;use_counter&#x3e;Y&#x3c;&#x2f;use_counter&#x3e;&#xa;      &#x3c;counter_name&#x3e;another-counter&#x3c;&#x2f;counter_name&#x3e;&#xa;      &#x3c;start_at&#x3e;1&#x3c;&#x2f;start_at&#x3e;&#xa;      &#x3c;increment_by&#x3e;1&#x3c;&#x2f;increment_by&#x3e;&#xa;      &#x3c;max_value&#x3e;9999999&#x3c;&#x2f;max_value&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;351&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;736&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;  &#x3c;step&#x3e;&#xa;    &#x3c;name&#x3e;Result 2&#x3c;&#x2f;name&#x3e;&#xa;    &#x3c;type&#x3e;Dummy&#x3c;&#x2f;type&#x3e;&#xa;    &#x3c;description&#x2f;&#x3e;&#xa;    &#x3c;distribute&#x3e;Y&#x3c;&#x2f;distribute&#x3e;&#xa;    &#x3c;copies&#x3e;1&#x3c;&#x2f;copies&#x3e;&#xa;         &#x3c;partitioning&#x3e;&#xa;           &#x3c;method&#x3e;none&#x3c;&#x2f;method&#x3e;&#xa;           &#x3c;field_name&#x2f;&#x3e;&#xa;           &#x3c;schema_name&#x2f;&#x3e;&#xa;           &#x3c;&#x2f;partitioning&#x3e;&#xa;    &#x3c;GUI&#x3e;&#xa;      &#x3c;xloc&#x3e;568&#x3c;&#x2f;xloc&#x3e;&#xa;      &#x3c;yloc&#x3e;655&#x3c;&#x2f;yloc&#x3e;&#xa;      &#x3c;draw&#x3e;Y&#x3c;&#x2f;draw&#x3e;&#xa;      &#x3c;&#x2f;GUI&#x3e;&#xa;    &#x3c;&#x2f;step&#x3e;&#xa;&#xa;&#x3c;&#x2f;transformation&#x3e;&#xa;</item> </line>
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -402,6 +162,7 @@ that the generated IDs are in order (enumerated from 1..40).&lt;&#47;note&gt;
     <type>UserDefinedJavaClass</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -463,4 +224,5 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

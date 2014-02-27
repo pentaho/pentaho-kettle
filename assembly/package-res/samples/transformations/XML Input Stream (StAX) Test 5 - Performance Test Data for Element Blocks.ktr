@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
         <parameter>
             <name>number_of_new_products</name>
@@ -22,7 +22,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -39,6 +39,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -63,51 +68,21 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>Slave3</name><hostname>localhost</hostname><port>8084</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>Slave2</name><hostname>localhost</hostname><port>8083</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>Slave1</name><hostname>localhost</hostname><port>8082</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>DI Server</name><hostname>localhost</hostname><port>9080</port><webAppName>pentaho-di</webAppName><username>joe</username><password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>Master</name><hostname>localhost</hostname><port>8081</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
     </slaveservers>
     <clusterschemas>
-        <clusterschema>
-          <name>ClusterSchema</name>
-          <base_port>40000</base_port>
-          <sockets_buffer_size>2000</sockets_buffer_size>
-          <sockets_flush_interval>5000</sockets_flush_interval>
-          <sockets_compressed>Y</sockets_compressed>
-          <dynamic>N</dynamic>
-          <slaveservers>
-            <name>Slave2</name>
-            <name>Slave1</name>
-            <name>Master</name>
-          </slaveservers>
-        </clusterschema>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2011&#47;01&#47;14 13:37:59.729</created_date>
+  <created_date>2011&#x2f;01&#x2f;14 13&#x3a;37&#x3a;59.729</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2011&#47;01&#47;14 13:37:59.729</modified_date>
+  <modified_date>2011&#x2f;01&#x2f;14 13&#x3a;37&#x3a;59.729</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>This example creates performance test data and writes them out to
-files&#47;XML Input Stream (StAX) Test 5 - Performance Test Data for Element Blocks.ktr
-
-Note: You need to enable the hop before &apos;Write XML test data&apos; to get the file created.
-See named parameter &apos;number_of_new_products&apos; for the # of test data.
-This parameter defaults to 1 million and produces 1 million test records for the
-Analyzer Lists part and 1 million for the Products parts, in total 2 million records.
-
-After creation of the test data, you can replace the file name in the transformation
-XML Input Stream (StAX) Test 2 - Element Blocks.ktr
-and check the performance.
-
-The file size for the default 1 million will be around 280 MB!</note>
+      <note>This example creates performance test data and writes them out to&#xa;files&#x2f;XML Input Stream &#x28;StAX&#x29; Test 5 - Performance Test Data for Element Blocks.ktr&#xa;&#xa;Note&#x3a; You need to enable the hop before &#x27;Write XML test data&#x27; to get the file created.&#xa;See named parameter &#x27;number_of_new_products&#x27; for the &#x23; of test data.&#xa;This parameter defaults to 1 million and produces 1 million test records for the&#xa;Analyzer Lists part and 1 million for the Products parts, in total 2 million records.&#xa;&#xa;After creation of the test data, you can replace the file name in the transformation&#xa;XML Input Stream &#x28;StAX&#x29; Test 2 - Element Blocks.ktr&#xa;and check the performance.&#xa;&#xa;The file size for the default 1 million will be around 280 MB&#x21;</note>
       <xloc>5</xloc>
       <yloc>5</yloc>
       <width>428</width>
-      <heigth>172</heigth>
+      <heigth>179</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -124,12 +99,11 @@ The file size for the default 1 million will be around 280 MB!</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Revision notes:
-2011-06-20 Jens Bleuel: created</note>
+      <note>Revision notes&#x3a;&#xa;2011-06-20 Jens Bleuel&#x3a; created</note>
       <xloc>13</xloc>
       <yloc>567</yloc>
       <width>169</width>
-      <heigth>35</heigth>
+      <heigth>36</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -146,11 +120,11 @@ The file size for the default 1 million will be around 280 MB!</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Enable this hop to test!</note>
+      <note>Enable this hop to test&#x21;</note>
       <xloc>642</xloc>
       <yloc>451</yloc>
       <width>121</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -171,7 +145,7 @@ The file size for the default 1 million will be around 280 MB!</note>
       <xloc>59</xloc>
       <yloc>335</yloc>
       <width>53</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -192,7 +166,7 @@ The file size for the default 1 million will be around 280 MB!</note>
       <xloc>60</xloc>
       <yloc>271</yloc>
       <width>78</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -209,13 +183,55 @@ The file size for the default 1 million will be around 280 MB!</note>
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Generate Rows</from><to>Generate random value</to><enabled>Y</enabled> </hop>  <hop> <from>Generate random value</from><to>Calculator</to><enabled>Y</enabled> </hop>  <hop> <from>Calculator</from><to>Replace in string</to><enabled>Y</enabled> </hop>  <hop> <from>Replace in string</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>Append streams</to><enabled>Y</enabled> </hop>  <hop> <from>AnalyzerList HEAD - items.added</from><to>Append streams</to><enabled>Y</enabled> </hop>  <hop> <from>Append streams</from><to>Append streams 2</to><enabled>Y</enabled> </hop>  <hop> <from>AnalyzerList TAIL &#47; Products HEAD</from><to>Append streams 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>Generate random value 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate random value 2</from><to>Calculator 2</to><enabled>Y</enabled> </hop>  <hop> <from>Replace in string 2</from><to>Select values 2</to><enabled>Y</enabled> </hop>  <hop> <from>Calculator 2</from><to>Replace in string 2</to><enabled>Y</enabled> </hop>  <hop> <from>Select values 2</from><to>Append streams 3</to><enabled>Y</enabled> </hop>  <hop> <from>Append streams 2</from><to>Append streams 3</to><enabled>Y</enabled> </hop>  <hop> <from>Products TAIL</from><to>Append streams 4</to><enabled>Y</enabled> </hop>  <hop> <from>Append streams 3</from><to>Append streams 4</to><enabled>Y</enabled> </hop>  <hop> <from>Append streams 4</from><to>Write XML test data</to><enabled>N</enabled> </hop>  </order>
+  <hop> <from>Generate Rows</from><to>Generate random value</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate random value</from><to>Calculator</to><enabled>Y</enabled> </hop>
+  <hop> <from>Calculator</from><to>Replace in string</to><enabled>Y</enabled> </hop>
+  <hop> <from>Replace in string</from><to>Select values</to><enabled>Y</enabled> </hop>
+  <hop> <from>Select values</from><to>Append streams</to><enabled>Y</enabled> </hop>
+  <hop> <from>AnalyzerList HEAD - items.added</from><to>Append streams</to><enabled>Y</enabled> </hop>
+  <hop> <from>Append streams</from><to>Append streams 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>AnalyzerList TAIL &#x2f; Products HEAD</from><to>Append streams 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate Rows 2</from><to>Generate random value 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate random value 2</from><to>Calculator 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Replace in string 2</from><to>Select values 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Calculator 2</from><to>Replace in string 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Select values 2</from><to>Append streams 3</to><enabled>Y</enabled> </hop>
+  <hop> <from>Append streams 2</from><to>Append streams 3</to><enabled>Y</enabled> </hop>
+  <hop> <from>Products TAIL</from><to>Append streams 4</to><enabled>Y</enabled> </hop>
+  <hop> <from>Append streams 3</from><to>Append streams 4</to><enabled>Y</enabled> </hop>
+  <hop> <from>Append streams 4</from><to>Write XML test data</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>AnalyzerList HEAD - items.added</name>
     <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -231,14 +247,15 @@ The file size for the default 1 million will be around 280 MB!</note>
         <group/>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <data>
-      <line> <item>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</item> </line>
-      <line> <item>&lt;ProductInformation ExportTime=&quot;2011-05-17 23:59:59&quot;  WorkspaceID=&quot;PERFORMACE TEST&quot; id=&quot;2&quot; parent=&quot;0&quot;&gt;</item> </line>
-      <line> <item>&lt;AnalyzerResult&gt;</item> </line>
-      <line> <item>&lt;AnalyzerLists&gt;</item> </line>
-      <line> <item>&lt;AnalyzerList name=&quot;items.added&quot;&gt;</item> </line>
+      <line> <item>&#x3c;&#x3f;xml version&#x3d;&#x22;1.0&#x22; encoding&#x3d;&#x22;UTF-8&#x22;&#x3f;&#x3e;</item> </line>
+      <line> <item>&#x3c;ProductInformation ExportTime&#x3d;&#x22;2011-05-17 23&#x3a;59&#x3a;59&#x22;  WorkspaceID&#x3d;&#x22;PERFORMACE TEST&#x22; id&#x3d;&#x22;2&#x22; parent&#x3d;&#x22;0&#x22;&#x3e;</item> </line>
+      <line> <item>&#x3c;AnalyzerResult&#x3e;</item> </line>
+      <line> <item>&#x3c;AnalyzerLists&#x3e;</item> </line>
+      <line> <item>&#x3c;AnalyzerList name&#x3d;&#x22;items.added&#x22;&#x3e;</item> </line>
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -249,10 +266,11 @@ The file size for the default 1 million will be around 280 MB!</note>
     </step>
 
   <step>
-    <name>AnalyzerList TAIL &#47; Products HEAD</name>
+    <name>AnalyzerList TAIL &#x2f; Products HEAD</name>
     <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -268,13 +286,14 @@ The file size for the default 1 million will be around 280 MB!</note>
         <group/>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <data>
-      <line> <item>&lt;&#47;AnalyzerList&gt;</item> </line>
-      <line> <item>&lt;&#47;AnalyzerLists&gt;</item> </line>
-      <line> <item>&lt;&#47;AnalyzerResult&gt;</item> </line>
-      <line> <item>&lt;Products&gt;</item> </line>
+      <line> <item>&#x3c;&#x2f;AnalyzerList&#x3e;</item> </line>
+      <line> <item>&#x3c;&#x2f;AnalyzerLists&#x3e;</item> </line>
+      <line> <item>&#x3c;&#x2f;AnalyzerResult&#x3e;</item> </line>
+      <line> <item>&#x3c;Products&#x3e;</item> </line>
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -289,6 +308,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>Append</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -309,13 +329,14 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>Append</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
 <head_name>Append streams</head_name>
-<tail_name>AnalyzerList TAIL &#47; Products HEAD</tail_name>
+<tail_name>AnalyzerList TAIL &#x2f; Products HEAD</tail_name>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>580</xloc>
@@ -329,6 +350,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>Append</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -349,6 +371,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>Append</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -369,6 +392,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>Calculator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -383,7 +407,7 @@ The file size for the default 1 million will be around 280 MB!</note>
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
-<conversion_mask>#</conversion_mask>
+<conversion_mask>&#x23;</conversion_mask>
 <decimal_symbol/>
 <grouping_symbol/>
 <currency_symbol/>
@@ -401,6 +425,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>Calculator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -415,7 +440,7 @@ The file size for the default 1 million will be around 280 MB!</note>
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
-<conversion_mask>#</conversion_mask>
+<conversion_mask>&#x23;</conversion_mask>
 <decimal_symbol/>
 <grouping_symbol/>
 <currency_symbol/>
@@ -433,6 +458,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -446,12 +472,17 @@ The file size for the default 1 million will be around 280 MB!</note>
         <currency/>
         <decimal/>
         <group/>
-        <nullif>&lt;AnalyzerElement ItemID=&quot;product?id=REPLACE&quot; ProductID=&quot;REPLACE&quot; &#47;&gt;</nullif>
+        <nullif>&#x3c;AnalyzerElement ItemID&#x3d;&#x22;product&#x3f;id&#x3d;REPLACE&#x22; ProductID&#x3d;&#x22;REPLACE&#x22; &#x2f;&#x3e;</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
-    <limit>${number_of_new_products}</limit>
+    <limit>&#x24;&#x7b;number_of_new_products&#x7d;</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>60</xloc>
@@ -465,6 +496,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -478,12 +510,17 @@ The file size for the default 1 million will be around 280 MB!</note>
         <currency/>
         <decimal/>
         <group/>
-        <nullif>&lt;Product id=&quot;REPLACEINT&quot; name=&quot;REPLACESTR1&quot;&gt;&lt;MetaData&gt;&lt;Value AttributeID=&quot;AttrShortName&quot;&gt;Short REPLACESTR2&lt;&#47;Value&gt;&lt;Value AttributeID=&quot;AttrLongName&quot;&gt;Long REPLACESTR3&lt;&#47;Value&gt;&lt;&#47;MetaData&gt;&lt;&#47;Product&gt;</nullif>
+        <nullif>&#x3c;Product id&#x3d;&#x22;REPLACEINT&#x22; name&#x3d;&#x22;REPLACESTR1&#x22;&#x3e;&#x3c;MetaData&#x3e;&#x3c;Value AttributeID&#x3d;&#x22;AttrShortName&#x22;&#x3e;Short REPLACESTR2&#x3c;&#x2f;Value&#x3e;&#x3c;Value AttributeID&#x3d;&#x22;AttrLongName&#x22;&#x3e;Long REPLACESTR3&#x3c;&#x2f;Value&#x3e;&#x3c;&#x2f;MetaData&#x3e;&#x3c;&#x2f;Product&#x3e;</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
-    <limit>${number_of_new_products}</limit>
+    <limit>&#x24;&#x7b;number_of_new_products&#x7d;</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>60</xloc>
@@ -497,6 +534,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>RandomValue</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -521,6 +559,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>RandomValue</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -557,6 +596,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -572,11 +612,12 @@ The file size for the default 1 million will be around 280 MB!</note>
         <group/>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <data>
-      <line> <item>&lt;&#47;Products&gt;</item> </line>
-      <line> <item>&lt;&#47;ProductInformation&gt;</item> </line>
+      <line> <item>&#x3c;&#x2f;Products&#x3e;</item> </line>
+      <line> <item>&#x3c;&#x2f;ProductInformation&#x3e;</item> </line>
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -591,6 +632,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>ReplaceString</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -603,6 +645,7 @@ The file size for the default 1 million will be around 280 MB!</note>
         <use_regex>no</use_regex>
         <replace_string>REPLACE</replace_string>
         <replace_by_string/>
+        <set_empty_string>N</set_empty_string>
         <replace_field_by_string>random_abs</replace_field_by_string>
         <whole_word>no</whole_word>
         <case_sensitive>no</case_sensitive>
@@ -621,6 +664,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>ReplaceString</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -633,6 +677,7 @@ The file size for the default 1 million will be around 280 MB!</note>
         <use_regex>no</use_regex>
         <replace_string>REPLACEINT</replace_string>
         <replace_by_string/>
+        <set_empty_string>N</set_empty_string>
         <replace_field_by_string>REPLACEINT_ABS</replace_field_by_string>
         <whole_word>no</whole_word>
         <case_sensitive>no</case_sensitive>
@@ -643,6 +688,7 @@ The file size for the default 1 million will be around 280 MB!</note>
         <use_regex>no</use_regex>
         <replace_string>REPLACESTR1</replace_string>
         <replace_by_string/>
+        <set_empty_string>N</set_empty_string>
         <replace_field_by_string>REPLACESTR1</replace_field_by_string>
         <whole_word>no</whole_word>
         <case_sensitive>no</case_sensitive>
@@ -653,6 +699,7 @@ The file size for the default 1 million will be around 280 MB!</note>
         <use_regex>no</use_regex>
         <replace_string>REPLACESTR2</replace_string>
         <replace_by_string/>
+        <set_empty_string>N</set_empty_string>
         <replace_field_by_string>REPLACESTR2</replace_field_by_string>
         <whole_word>no</whole_word>
         <case_sensitive>no</case_sensitive>
@@ -663,6 +710,7 @@ The file size for the default 1 million will be around 280 MB!</note>
         <use_regex>no</use_regex>
         <replace_string>REPLACESTR3</replace_string>
         <replace_by_string/>
+        <set_empty_string>N</set_empty_string>
         <replace_field_by_string>REPLACESTR3</replace_field_by_string>
         <whole_word>no</whole_word>
         <case_sensitive>no</case_sensitive>
@@ -681,6 +729,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -704,6 +753,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -727,12 +777,13 @@ The file size for the default 1 million will be around 280 MB!</note>
     <type>TextFileOutput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <separator>;</separator>
+    <separator>&#x3b;</separator>
     <enclosure/>
     <enclosure_forced>N</enclosure_forced>
     <enclosure_fix_disabled>N</enclosure_fix_disabled>
@@ -746,7 +797,7 @@ The file size for the default 1 million will be around 280 MB!</note>
     <fileNameField/>
     <create_parent_folder>N</create_parent_folder>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Input Stream (StAX) Test 5 - Performance Test Data for Element Blocks</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;XML Input Stream &#x28;StAX&#x29; Test 5 - Performance Test Data for Element Blocks</name>
       <is_command>N</is_command>
       <servlet_output>N</servlet_output>
       <do_not_open_new_file_init>N</do_not_open_new_file_init>
@@ -778,4 +829,5 @@ The file size for the default 1 million will be around 280 MB!</note>
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

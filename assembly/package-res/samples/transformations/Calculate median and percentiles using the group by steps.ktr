@@ -63,8 +63,6 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>localhost&#x3a;8585</name><hostname>localhost</hostname><port>8585</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>ID-Server</name><hostname>localhost</hostname><port>8181</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
@@ -75,6 +73,30 @@
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
   <hop> <from>10 rows</from><to>group</to><enabled>Y</enabled> </hop>
   <hop> <from>group</from><to>Join Rows &#x28;cartesian product&#x29;</to><enabled>Y</enabled> </hop>
@@ -89,7 +111,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -98,6 +120,10 @@
     <fields>
     </fields>
     <limit>10</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>81</xloc>
@@ -111,7 +137,7 @@
     <type>GroupBy</type>
     <description/>
     <distribute>Y</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -181,7 +207,7 @@
     <type>DataGrid</type>
     <description/>
     <distribute>N</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -230,7 +256,7 @@
     <type>JoinRows</type>
     <description/>
     <distribute>N</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -261,7 +287,7 @@
     <type>MemoryGroupBy</type>
     <description/>
     <distribute>Y</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -324,7 +350,7 @@
     <type>SortRows</type>
     <description/>
     <distribute>Y</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -342,6 +368,7 @@
         <name>rnd</name>
         <ascending>Y</ascending>
         <case_sensitive>N</case_sensitive>
+        <presorted>N</presorted>
       </field>
     </fields>
      <cluster_schema/>
@@ -357,7 +384,7 @@
     <type>Sequence</type>
     <description/>
     <distribute>Y</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -386,7 +413,7 @@
     <type>RandomValue</type>
     <description/>
     <distribute>Y</distribute>
-    <loadbalance>N</loadbalance>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -411,4 +438,5 @@
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

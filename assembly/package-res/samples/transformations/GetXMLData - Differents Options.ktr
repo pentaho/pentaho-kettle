@@ -5,20 +5,40 @@
     <description/>
     <extended_description/>
     <trans_version>1.0</trans_version>
+    <trans_type>Normal</trans_type>
     <trans_status>2</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
+    <parameters>
+    </parameters>
     <log>
-      <read/>
-      <write/>
-      <input/>
-      <output/>
-      <update/>
-      <rejected/>
-      <connection/>
-      <table/>
-      <step_performance_table/>
-      <use_batchid>Y</use_batchid>
-      <use_logfield>N</use_logfield>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -37,6 +57,7 @@
     <shared_objects_file/>
     <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -45,117 +66,334 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2014&#x2f;03&#x2f;03 20&#x3a;39&#x3a;03.065</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2007&#47;10&#47;15 12:57:16.107</modified_date>
+  <modified_date>2007&#x2f;10&#x2f;15 12&#x3a;57&#x3a;16.107</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>The XML field contain: 
-
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
-	&lt;persons&gt;
-		&lt;person&gt;
-			&lt;id&gt;1&lt;&#47;id&gt;
-			&lt;firstname&gt;Samatar&lt;&#47;firstname&gt;
-			&lt;name&gt;Hassan&lt;&#47;name&gt;
-			&lt;birthdate&gt;20&#47;06&#47;1978&lt;&#47;birthdate&gt;
-		&lt;&#47;person&gt;
-		&lt;person&gt;
-			&lt;id&gt;2&lt;&#47;id&gt;
-			&lt;firstname&gt;Isaac&lt;&#47;firstname&gt;
-			&lt;name&gt;Hassan&lt;&#47;name&gt;
-			&lt;birthdate&gt;20&#47;09&#47;2004&lt;&#47;birthdate&gt;
-		&lt;&#47;person&gt;
-		&lt;person&gt;
-			&lt;id&gt;3&lt;&#47;id&gt;
-			&lt;firstname&gt;Souley&lt;&#47;firstname&gt;
-			&lt;name&gt;Hassan&lt;&#47;name&gt;
-			&lt;birthdate&gt;20&#47;09&#47;2007&lt;&#47;birthdate&gt;
-		&lt;&#47;person&gt;
-	&lt;&#47;persons&gt;</note>
+      <note>The XML field contain&#x3a; &#xa;&#xa;&#x3c;&#x3f;xml version&#x3d;&#x22;1.0&#x22; encoding&#x3d;&#x22;utf-8&#x22; standalone&#x3d;&#x22;yes&#x22;&#x3f;&#x3e;&#xa;	&#x3c;persons&#x3e;&#xa;		&#x3c;person&#x3e;&#xa;			&#x3c;id&#x3e;1&#x3c;&#x2f;id&#x3e;&#xa;			&#x3c;firstname&#x3e;Samatar&#x3c;&#x2f;firstname&#x3e;&#xa;			&#x3c;name&#x3e;Hassan&#x3c;&#x2f;name&#x3e;&#xa;			&#x3c;birthdate&#x3e;20&#x2f;06&#x2f;1978&#x3c;&#x2f;birthdate&#x3e;&#xa;		&#x3c;&#x2f;person&#x3e;&#xa;		&#x3c;person&#x3e;&#xa;			&#x3c;id&#x3e;2&#x3c;&#x2f;id&#x3e;&#xa;			&#x3c;firstname&#x3e;Isaac&#x3c;&#x2f;firstname&#x3e;&#xa;			&#x3c;name&#x3e;Hassan&#x3c;&#x2f;name&#x3e;&#xa;			&#x3c;birthdate&#x3e;20&#x2f;09&#x2f;2004&#x3c;&#x2f;birthdate&#x3e;&#xa;		&#x3c;&#x2f;person&#x3e;&#xa;		&#x3c;person&#x3e;&#xa;			&#x3c;id&#x3e;3&#x3c;&#x2f;id&#x3e;&#xa;			&#x3c;firstname&#x3e;Souley&#x3c;&#x2f;firstname&#x3e;&#xa;			&#x3c;name&#x3e;Hassan&#x3c;&#x2f;name&#x3e;&#xa;			&#x3c;birthdate&#x3e;20&#x2f;09&#x2f;2007&#x3c;&#x2f;birthdate&#x3e;&#xa;		&#x3c;&#x2f;person&#x3e;&#xa;	&#x3c;&#x2f;persons&#x3e;</note>
       <xloc>32</xloc>
       <yloc>800</yloc>
-      <width>298</width>
-      <heigth>296</heigth>
+      <width>354</width>
+      <heigth>356</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>This step will parse the input XML field and extract all person with
-the selected fields.
-You can use it to read RSS like this :
-
-Generate 1 row --&gt; Call HTTP --&gt; Parse</note>
+      <note>This step will parse the input XML field and extract all person with&#xa;the selected fields.&#xa;You can use it to read RSS like this &#x3a;&#xa;&#xa;Generate 1 row --&#x3e; Call HTTP --&#x3e; Parse</note>
       <xloc>352</xloc>
       <yloc>800</yloc>
-      <width>333</width>
-      <heigth>75</heigth>
+      <width>388</width>
+      <heigth>86</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>1 - Read the file and extract all session data
---------------------------------------------------------------------
-Use of token</note>
+      <note>1 - Read the file and extract all session data&#xa;--------------------------------------------------------------------&#xa;Use of token</note>
       <xloc>17</xloc>
       <yloc>26</yloc>
-      <width>265</width>
-      <heigth>47</heigth>
+      <width>283</width>
+      <heigth>55</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>4 - Parse the contain of a field
-----------------------------------------------------------------------------
-Image you want to extract all person (id, first name, name, birth date) for the XML field.
-In fact, you will get nb returned rows=nb persons.
-This kind of result can be from Web service  or HTTP service.</note>
+      <note>4 - Parse the contain of a field&#xa;----------------------------------------------------------------------------&#xa;Image you want to extract all person &#x28;id, first name, name, birth date&#x29; for the XML field.&#xa;In fact, you will get nb returned rows&#x3d;nb persons.&#xa;This kind of result can be from Web service  or HTTP service.</note>
       <xloc>32</xloc>
       <yloc>608</yloc>
-      <width>436</width>
-      <heigth>72</heigth>
+      <width>509</width>
+      <heigth>85</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Please notice &apos;kind of variable&apos; use : @_User- mean current User
------------------------------------------------------------------------------
-
-Data field =  ..&#47;..&#47;InfoSession&#47;InfoSessionData[@User={$User}]&#47;Data
-@_User-  mean that the step must search Data for current user.
-There must be User field before. </note>
+      <note>Please notice &#x27;kind of variable&#x27; use &#x3a; &#x40;_User- mean current User&#xa;-----------------------------------------------------------------------------&#xa;&#xa;Data field &#x3d;  ..&#x2f;..&#x2f;InfoSession&#x2f;InfoSessionData&#x5b;&#x40;User&#x3d;&#x7b;&#x24;User&#x7d;&#x5d;&#x2f;Data&#xa;&#x40;_User-  mean that the step must search Data for current user.&#xa;There must be User field before. </note>
       <xloc>384</xloc>
       <yloc>64</yloc>
-      <width>347</width>
-      <heigth>85</heigth>
+      <width>403</width>
+      <heigth>101</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>2- Read the file and extract all session data
-------------------------------------------------------
-Same than 1. but filename is passed by previous step</note>
+      <note>2- Read the file and extract all session data&#xa;------------------------------------------------------&#xa;Same than 1. but filename is passed by previous step</note>
       <xloc>32</xloc>
       <yloc>224</yloc>
-      <width>270</width>
-      <heigth>47</heigth>
+      <width>321</width>
+      <heigth>55</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Autor : Samatar Hassan
-Date : 27&#47;06&#47;2008  
-Version : 1.0</note>
+      <note>Autor &#x3a; Samatar Hassan&#xa;Date &#x3a; 27&#x2f;06&#x2f;2008  &#xa;Version &#x3a; 1.0</note>
       <xloc>960</xloc>
       <yloc>32</yloc>
-      <width>133</width>
-      <heigth>47</heigth>
+      <width>151</width>
+      <heigth>55</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>3- Read Url (ex:http:&#47;&#47;forums.pentaho.org&#47;external.php?type=xml)
-------------------------------------------------------
-You can also read the Url thanks to Http step and after parse string (see 4)</note>
+      <note>3- Read Url &#x28;ex&#x3a;http&#x3a;&#x2f;&#x2f;forums.pentaho.org&#x2f;external.php&#x3f;type&#x3d;xml&#x29;&#xa;------------------------------------------------------&#xa;You can also read the Url thanks to Http step and after parse string &#x28;see 4&#x29;</note>
       <xloc>32</xloc>
       <yloc>416</yloc>
-      <width>371</width>
-      <heigth>47</heigth>
+      <width>442</width>
+      <heigth>55</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Read XML file</from><to>Preview</to><enabled>Y</enabled> </hop>  <hop> <from>Read XML</from><to>Preview4</to><enabled>Y</enabled> </hop>  <hop> <from>parse file from filename</from><to>Preview2</to><enabled>Y</enabled> </hop>  <hop> <from>get filename</from><to>parse file from filename</to><enabled>Y</enabled> </hop>  <hop> <from>generate XML</from><to>Read XML</to><enabled>Y</enabled> </hop>  <hop> <from>Pass URl</from><to>Read Url</to><enabled>Y</enabled> </hop>  <hop> <from>Read Url</from><to>Preview3</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Read XML file</from><to>Preview</to><enabled>Y</enabled> </hop>
+  <hop> <from>Read XML</from><to>Preview4</to><enabled>Y</enabled> </hop>
+  <hop> <from>parse file from filename</from><to>Preview2</to><enabled>Y</enabled> </hop>
+  <hop> <from>get filename</from><to>parse file from filename</to><enabled>Y</enabled> </hop>
+  <hop> <from>generate XML</from><to>Read XML</to><enabled>Y</enabled> </hop>
+  <hop> <from>Pass URl</from><to>Read Url</to><enabled>Y</enabled> </hop>
+  <hop> <from>Read Url</from><to>Preview3</to><enabled>Y</enabled> </hop>
+  </order>
+  <step>
+    <name>Pass URl</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>xmlUrl</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>http&#x3a;&#x2f;&#x2f;forums.pentaho.org&#x2f;external.php&#x3f;type&#x3d;xml</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>64</xloc>
+      <yloc>512</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Preview</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>260</xloc>
+      <yloc>102</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Preview2</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>352</xloc>
+      <yloc>320</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Preview3</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>352</xloc>
+      <yloc>512</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Preview4</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>576</xloc>
+      <yloc>736</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
   <step>
     <name>Read Url</name>
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -177,13 +415,16 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <file>
       <name/>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>id</name>
         <xpath>id</xpath>
         <element_type>attribut</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -198,6 +439,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <name>title</name>
         <xpath>title</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -212,6 +454,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <name>author</name>
         <xpath>author</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -226,6 +469,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <name>date</name>
         <xpath>date</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -240,6 +484,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <name>time</name>
         <xpath>time</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -252,10 +497,19 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>source&#47;thread</loopxpath>
+    <loopxpath>source&#x2f;thread</loopxpath>
     <IsInFields>Y</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField>xmlUrl</XmlField>
+    <prunePath/>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>224</xloc>
@@ -265,96 +519,11 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     </step>
 
   <step>
-    <name>Pass URl</name>
-    <type>RowGenerator</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>xmlUrl</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>http:&#47;&#47;forums.pentaho.org&#47;external.php?type=xml</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <limit>1</limit>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>64</xloc>
-      <yloc>512</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Preview</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>260</xloc>
-      <yloc>102</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Preview2</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>352</xloc>
-      <yloc>320</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Preview4</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>576</xloc>
-      <yloc>736</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
     <name>Read XML</name>
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -376,13 +545,16 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <file>
       <name/>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>id</name>
         <xpath>id</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -397,6 +569,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <name>firstname</name>
         <xpath>firstname</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -411,6 +584,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <name>name</name>
         <xpath>name</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -425,6 +599,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <name>birthdate</name>
         <xpath>birthdate</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -437,10 +612,19 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>persons&#47;person</loopxpath>
+    <loopxpath>persons&#x2f;person</loopxpath>
     <IsInFields>Y</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField>xmlstring</XmlField>
+    <prunePath/>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>352</xloc>
@@ -454,6 +638,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -473,15 +658,18 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <rownum_field/>
     <encoding>UTF-8</encoding>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;test_xml_file.xml</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;test_xml_file.xml</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>Code</name>
-        <xpath>..&#47;..&#47;@Code</xpath>
+        <xpath>..&#x2f;..&#x2f;&#x40;Code</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -494,8 +682,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>User</name>
-        <xpath>Parameter&#47;User</xpath>
+        <xpath>Parameter&#x2f;User</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -508,8 +697,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>Password</name>
-        <xpath>Parameter&#47;Password</xpath>
+        <xpath>Parameter&#x2f;Password</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -522,8 +712,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>Status</name>
-        <xpath>OutputData&#47;Step&#47;Status</xpath>
+        <xpath>OutputData&#x2f;Step&#x2f;Status</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -536,8 +727,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>Error_Message</name>
-        <xpath>OutputData&#47;Step&#47;Error_Message</xpath>
+        <xpath>OutputData&#x2f;Step&#x2f;Error_Message</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -550,8 +742,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>Data</name>
-        <xpath>..&#47;..&#47;InfoSession&#47;InfoSessionData[@User=@_User-]&#47;Data</xpath>
+        <xpath>..&#x2f;..&#x2f;InfoSession&#x2f;InfoSessionData&#x5b;&#x40;User&#x3d;&#x40;_User-&#x5d;&#x2f;Data</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -564,10 +757,19 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>Session_header&#47;Session&#47;SessionData</loopxpath>
+    <loopxpath>Session_header&#x2f;Session&#x2f;SessionData</loopxpath>
     <IsInFields>N</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField/>
+    <prunePath/>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>48</xloc>
@@ -581,6 +783,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -594,12 +797,17 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
         <currency/>
         <decimal/>
         <group/>
-        <nullif>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;&lt;persons&gt;&lt;person&gt;&lt;id&gt;1&lt;&#47;id&gt;&lt;firstname&gt;Samatar&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;06&#47;1978&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;person&gt;&lt;id&gt;2&lt;&#47;id&gt;&lt;firstname&gt;Isaac&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;09&#47;2004&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;person&gt;&lt;id&gt;3&lt;&#47;id&gt;&lt;firstname&gt;Souley&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;09&#47;2007&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;&#47;persons&gt;</nullif>
+        <nullif>&#x3c;&#x3f;xml version&#x3d;&#x22;1.0&#x22; encoding&#x3d;&#x22;utf-8&#x22; standalone&#x3d;&#x22;yes&#x22;&#x3f;&#x3e;&#x3c;persons&#x3e;&#x3c;person&#x3e;&#x3c;id&#x3e;1&#x3c;&#x2f;id&#x3e;&#x3c;firstname&#x3e;Samatar&#x3c;&#x2f;firstname&#x3e;&#x3c;name&#x3e;Hassan&#x3c;&#x2f;name&#x3e;&#x3c;birthdate&#x3e;20&#x2f;06&#x2f;1978&#x3c;&#x2f;birthdate&#x3e;&#x3c;&#x2f;person&#x3e;&#x3c;person&#x3e;&#x3c;id&#x3e;2&#x3c;&#x2f;id&#x3e;&#x3c;firstname&#x3e;Isaac&#x3c;&#x2f;firstname&#x3e;&#x3c;name&#x3e;Hassan&#x3c;&#x2f;name&#x3e;&#x3c;birthdate&#x3e;20&#x2f;09&#x2f;2004&#x3c;&#x2f;birthdate&#x3e;&#x3c;&#x2f;person&#x3e;&#x3c;person&#x3e;&#x3c;id&#x3e;3&#x3c;&#x2f;id&#x3e;&#x3c;firstname&#x3e;Souley&#x3c;&#x2f;firstname&#x3e;&#x3c;name&#x3e;Hassan&#x3c;&#x2f;name&#x3e;&#x3c;birthdate&#x3e;20&#x2f;09&#x2f;2007&#x3c;&#x2f;birthdate&#x3e;&#x3c;&#x2f;person&#x3e;&#x3c;&#x2f;persons&#x3e;</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>32</xloc>
@@ -613,6 +821,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <type>GetVariable</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -621,7 +830,15 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <fields>
       <field>
         <name>filename</name>
-        <variable>${Internal.Transformation.Filename.Directory}&#47;files&#47;test_xml_file.xml</variable>
+        <variable>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;test_xml_file.xml</variable>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
       </field>
     </fields>
      <cluster_schema/>
@@ -637,6 +854,7 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <type>getXMLData</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -653,18 +871,21 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
     <usetoken>Y</usetoken>
     <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>
     <doNotFailIfNoFile>N</doNotFailIfNoFile>
-    <rownum_field>N°ligne</rownum_field>
+    <rownum_field>N&#xb0;ligne</rownum_field>
     <encoding>UTF-8</encoding>
     <file>
       <name/>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
+      <include_subfolders/>
     </file>
     <fields>
       <field>
         <name>Code</name>
-        <xpath>..&#47;..&#47;@Code</xpath>
+        <xpath>..&#x2f;..&#x2f;&#x40;Code</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -677,8 +898,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>User</name>
-        <xpath>Parameter&#47;User</xpath>
+        <xpath>Parameter&#x2f;User</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -691,8 +913,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>Password</name>
-        <xpath>Parameter&#47;Password</xpath>
+        <xpath>Parameter&#x2f;Password</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -705,8 +928,9 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
       <field>
         <name>Data</name>
-        <xpath>..&#47;..&#47;InfoSession&#47;InfoSessionData[@User=@_User-]&#47;Data</xpath>
+        <xpath>..&#x2f;..&#x2f;InfoSession&#x2f;InfoSessionData&#x5b;&#x40;User&#x3d;&#x40;_User-&#x5d;&#x2f;Data</xpath>
         <element_type>node</element_type>
+        <result_type>valueof</result_type>
         <type>String</type>
         <format/>
         <currency/>
@@ -719,32 +943,23 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
       </field>
     </fields>
     <limit>0</limit>
-    <loopxpath>Session_header&#47;Session&#47;SessionData</loopxpath>
+    <loopxpath>Session_header&#x2f;Session&#x2f;SessionData</loopxpath>
     <IsInFields>Y</IsInFields>
     <IsAFile>Y</IsAFile>
     <XmlField>filename</XmlField>
+    <prunePath/>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>202</xloc>
       <yloc>320</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Preview3</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>352</xloc>
-      <yloc>512</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -754,4 +969,5 @@ You can also read the Url thanks to Http step and after parse string (see 4)</no
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

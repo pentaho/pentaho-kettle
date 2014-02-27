@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -17,7 +17,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -34,6 +34,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -62,24 +67,17 @@
     <clusterschemas>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2010&#47;08&#47;28 23:17:14.750</created_date>
+  <created_date>2010&#x2f;08&#x2f;28 23&#x3a;17&#x3a;14.750</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2010&#47;08&#47;28 23:17:14.750</modified_date>
+  <modified_date>2010&#x2f;08&#x2f;28 23&#x3a;17&#x3a;14.750</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>Read file and extract first level:
-- invoice
-- date
-- bill-to
-- all products
-- tax
-- total
-- comments</note>
+      <note>Read file and extract first level&#x3a;&#xa;- invoice&#xa;- date&#xa;- bill-to&#xa;- all products&#xa;- tax&#xa;- total&#xa;- comments</note>
       <xloc>128</xloc>
       <yloc>32</yloc>
       <width>168</width>
-      <heigth>116</heigth>
+      <heigth>122</heigth>
       <fontname>Tahoma</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -96,12 +94,11 @@
       <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Break invoice by products
-Create a row per product</note>
+      <note>Break invoice by products&#xa;Create a row per product</note>
       <xloc>352</xloc>
       <yloc>96</yloc>
       <width>141</width>
-      <heigth>37</heigth>
+      <heigth>38</heigth>
       <fontname>Tahoma</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -118,15 +115,11 @@ Create a row per product</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Extract details for each product
-- ref
-- quantity
-- description
-- price</note>
+      <note>Extract details for each product&#xa;- ref&#xa;- quantity&#xa;- description&#xa;- price</note>
       <xloc>576</xloc>
       <yloc>64</yloc>
       <width>168</width>
-      <heigth>76</heigth>
+      <heigth>80</heigth>
       <fontname>Tahoma</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -143,14 +136,11 @@ Create a row per product</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Get Bill_to adresse
-- given
-- family
-- Complete address address</note>
+      <note>Get Bill_to adresse&#xa;- given&#xa;- family&#xa;- Complete address address</note>
       <xloc>128</xloc>
       <yloc>384</yloc>
       <width>145</width>
-      <heigth>63</heigth>
+      <heigth>66</heigth>
       <fontname>Tahoma</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -167,15 +157,11 @@ Create a row per product</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Extract adress detail
-- lines
-- city
-- state
-- postal</note>
+      <note>Extract adress detail&#xa;- lines&#xa;- city&#xa;- state&#xa;- postal</note>
       <xloc>384</xloc>
       <yloc>384</yloc>
       <width>114</width>
-      <heigth>76</heigth>
+      <heigth>80</heigth>
       <fontname>Tahoma</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -192,13 +178,42 @@ Create a row per product</note>
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Break by product</from><to>Get product detail</to><enabled>Y</enabled> </hop>  <hop> <from>Read file</from><to>Break by product</to><enabled>Y</enabled> </hop>  <hop> <from>Read file</from><to>Get Bill to</to><enabled>Y</enabled> </hop>  <hop> <from>Get Bill to</from><to>Get Bill to Infos</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Break by product</from><to>Get product detail</to><enabled>Y</enabled> </hop>
+  <hop> <from>Read file</from><to>Break by product</to><enabled>Y</enabled> </hop>
+  <hop> <from>Read file</from><to>Get Bill to</to><enabled>Y</enabled> </hop>
+  <hop> <from>Get Bill to</from><to>Get Bill to Infos</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Break by product</name>
     <type>YamlInput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -250,6 +265,7 @@ Create a row per product</note>
     <type>YamlInput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -325,6 +341,7 @@ Create a row per product</note>
     <type>YamlInput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -412,6 +429,7 @@ Create a row per product</note>
     <type>YamlInput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -499,6 +517,7 @@ Create a row per product</note>
     <type>YamlInput</type>
     <description/>
     <distribute>N</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -514,7 +533,7 @@ Create a row per product</note>
     <rownum_field/>
     <encoding/>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files\Invoice.yaml</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x5c;Invoice.yaml</name>
       <filemask/>
       <file_required>N</file_required>
       <include_subfolders>N</include_subfolders>
@@ -622,4 +641,5 @@ Create a row per product</note>
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

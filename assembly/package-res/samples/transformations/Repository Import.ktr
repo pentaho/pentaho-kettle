@@ -7,16 +7,16 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
         <parameter>
             <name>DIRECTORY</name>
-            <default_value>&#47;auto-import</default_value>
+            <default_value>&#x2f;auto-import</default_value>
             <description>The repository directory to import into</description>
         </parameter>
         <parameter>
             <name>FILENAME</name>
-            <default_value>&#47;tmp&#47;export.xml</default_value>
+            <default_value>&#x2f;tmp&#x2f;export.xml</default_value>
             <description>The export file</description>
         </parameter>
         <parameter>
@@ -27,12 +27,12 @@
         <parameter>
             <name>OVERWRITE</name>
             <default_value>false</default_value>
-            <description>Overwrite existing repository objects?</description>
+            <description>Overwrite existing repository objects&#x3f;</description>
         </parameter>
         <parameter>
             <name>TRANSDIROVERRIDE</name>
             <default_value/>
-            <description>The dir to override the default for mapping&#47;sub-transformations</description>
+            <description>The dir to override the default for mapping&#x2f;sub-transformations</description>
         </parameter>
     </parameters>
     <log>
@@ -42,7 +42,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -59,6 +59,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -87,24 +92,13 @@
     <clusterschemas>
     </clusterschemas>
   <created_user/>
-  <created_date>2011&#47;01&#47;24 13:12:50.000</created_date>
+  <created_date>2011&#x2f;01&#x2f;24 13&#x3a;12&#x3a;50.000</created_date>
   <modified_user>admin</modified_user>
-  <modified_date>2011&#47;01&#47;26 15:30:15.857</modified_date>
+  <modified_date>2011&#x2f;01&#x2f;26 15&#x3a;30&#x3a;15.857</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>This transformation shows how to to use the JavaScript step to import objects into a repository.
-
-1) Import this transformation into your repository.
-2) Run the transformation and provide the following parameters in the run dialog:
-
-DIRECTORY:  The directory in the repository to import into.
-FILENAME: The file or directory name to import from. (If a directory is used all files within that directory will be imported.)
-OVERWRITE: Overwrite existing objects in the repository?
-
-Optional parameters, if used will override DIRECTORY.
-TRANSDIROVERRIDE: Directory to import transformations into.
-JOBDIROVERRIDE: Directory to import jobs into.</note>
+      <note>This transformation shows how to to use the JavaScript step to import objects into a repository.&#xa;&#xa;1&#x29; Import this transformation into your repository.&#xa;2&#x29; Run the transformation and provide the following parameters in the run dialog&#x3a;&#xa;&#xa;DIRECTORY&#x3a;  The directory in the repository to import into.&#xa;FILENAME&#x3a; The file or directory name to import from. &#x28;If a directory is used all files within that directory will be imported.&#x29;&#xa;OVERWRITE&#x3a; Overwrite existing objects in the repository&#x3f;&#xa;&#xa;Optional parameters, if used will override DIRECTORY.&#xa;TRANSDIROVERRIDE&#x3a; Directory to import transformations into.&#xa;JOBDIROVERRIDE&#x3a; Directory to import jobs into.</note>
       <xloc>18</xloc>
       <yloc>24</yloc>
       <width>772</width>
@@ -125,7 +119,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>You may use the .&#47;samples&#47;transformations&#47;jobs&#47;sample-export.xml as a sample export to import.</note>
+      <note>You may use the .&#x2f;samples&#x2f;transformations&#x2f;jobs&#x2f;sample-export.xml as a sample export to import.</note>
       <xloc>84</xloc>
       <yloc>380</yloc>
       <width>635</width>
@@ -146,13 +140,39 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Get Variables</from><to>Import Repository</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Get Variables</from><to>Import Repository</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Get Variables</name>
     <type>GetVariable</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -161,7 +181,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
     <fields>
       <field>
         <name>directory</name>
-        <variable>${DIRECTORY}</variable>
+        <variable>&#x24;&#x7b;DIRECTORY&#x7d;</variable>
         <type>String</type>
         <format/>
         <currency/>
@@ -173,7 +193,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       </field>
       <field>
         <name>filename</name>
-        <variable>${FILENAME}</variable>
+        <variable>&#x24;&#x7b;FILENAME&#x7d;</variable>
         <type>String</type>
         <format/>
         <currency/>
@@ -185,7 +205,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       </field>
       <field>
         <name>transDirOverride</name>
-        <variable>${TRANSDIROVERRIDE}</variable>
+        <variable>&#x24;&#x7b;TRANSDIROVERRIDE&#x7d;</variable>
         <type>String</type>
         <format/>
         <currency/>
@@ -197,7 +217,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       </field>
       <field>
         <name>jobDirOverride</name>
-        <variable>${JOBDIROVERRIDE}</variable>
+        <variable>&#x24;&#x7b;JOBDIROVERRIDE&#x7d;</variable>
         <type>String</type>
         <format/>
         <currency/>
@@ -209,7 +229,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       </field>
       <field>
         <name>overwrite</name>
-        <variable>${OVERWRITE}</variable>
+        <variable>&#x24;&#x7b;OVERWRITE&#x7d;</variable>
         <type>String</type>
         <format/>
         <currency/>
@@ -233,77 +253,17 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
     <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
     <compatible>N</compatible>
+    <optimizationLevel/>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>&#47;&#47; Get the repository we&apos;re connected to
-var rep = _step_.getTrans().getRepository();
-&#47;&#47; Load the repository directory structure
-var root = rep.loadRepositoryDirectoryTree();
-
-&#47;&#47; Find the directory we want to import into in the repository and create it if it doesn&apos;t exist.
-&#47;&#47;
-var repdir = root.findDirectory(directory);
-if (repdir==null) {
- repdir = rep.createRepositoryDirectory(root, directory);
-}
-&#47;&#47; Ask the repository for its importer
-var importer = rep.getImporter();
-
-&#47;&#47; Set the directory overrides if they&apos;re being used
-if (transDirOverride != null &amp;&amp; !&quot;&quot;.equals(transDirOverride)) {
-  importer.setTransDirOverride(transDirOverride);
-}
-if (jobDirOverride != null &amp;&amp; !&quot;&quot;.equals(jobDirOverride)) {
-  importer.setJobDirOverride(jobDirOverride);
-}
-
-&#47;&#47; Get the file that was specified as FILENAME
-var file = new Packages.java.io.File(filename);
-
-&#47;&#47; Must pass file names to import as an array
-var filenames = null;
-&#47;&#47; Check if the filename is a directory
-if (file.isDirectory()) {
-  &#47;&#47; If the file is a directory find all the files inside of it
-  &#47;&#47; and use those for the import
-  var files = file.listFiles();
-  filenames = java.lang.reflect.Array.newInstance(
-    java.lang.String, &#47;&#47; Element type, do not change
-    files.length  &#47;&#47; Number of file names to pass in
-  );
-  for (i=0;i&lt;files.length;i++) {
-    filenames[i] = files[i].getAbsolutePath();
-  }
-} else {
-  &#47;&#47; If the file is not a directory it is the only file to be used
-  &#47;&#47; for importing
-  filenames = java.lang.reflect.Array.newInstance(
-    java.lang.String, &#47;&#47; Element type, do not change
-    1  &#47;&#47; Number of file names to pass in
-  );
-  filenames[0] = filename;
-}
-
-&#47;&#47; Set the overwrite flag
-var overwrite = Packages.java.lang.Boolean.parseBoolean(overwrite);
-
-&#47;&#47; Perform the import
-&#47;&#47;
-importer.importAll(
-   importer,        &#47;&#47; The feedback object
-   null,            &#47;&#47; Relative file directory of filenames (next parameter)
-   filenames,       &#47;&#47; The export files to import
-   repdir,          &#47;&#47; The directory to import into
-   overwrite,            &#47;&#47; Overwrite existing objects
-   true,            &#47;&#47; Continue on error
-   &quot;Batch import&quot;); &#47;&#47; Version comment
-</jsScript_script>
+        <jsScript_script>&#x2f;&#x2f; Get the repository we&#x27;re connected to&#xa;var rep &#x3d; _step_.getTrans&#x28;&#x29;.getRepository&#x28;&#x29;&#x3b;&#xa;&#x2f;&#x2f; Load the repository directory structure&#xa;var root &#x3d; rep.loadRepositoryDirectoryTree&#x28;&#x29;&#x3b;&#xa;&#xa;&#x2f;&#x2f; Find the directory we want to import into in the repository and create it if it doesn&#x27;t exist.&#xa;&#x2f;&#x2f;&#xa;var repdir &#x3d; root.findDirectory&#x28;directory&#x29;&#x3b;&#xa;if &#x28;repdir&#x3d;&#x3d;null&#x29; &#x7b;&#xa; repdir &#x3d; rep.createRepositoryDirectory&#x28;root, directory&#x29;&#x3b;&#xa;&#x7d;&#xa;&#x2f;&#x2f; Ask the repository for its importer&#xa;var importer &#x3d; rep.getImporter&#x28;&#x29;&#x3b;&#xa;&#xa;&#x2f;&#x2f; Set the directory overrides if they&#x27;re being used&#xa;if &#x28;transDirOverride &#x21;&#x3d; null &#x26;&#x26; &#x21;&#x22;&#x22;.equals&#x28;transDirOverride&#x29;&#x29; &#x7b;&#xa;  importer.setTransDirOverride&#x28;transDirOverride&#x29;&#x3b;&#xa;&#x7d;&#xa;if &#x28;jobDirOverride &#x21;&#x3d; null &#x26;&#x26; &#x21;&#x22;&#x22;.equals&#x28;jobDirOverride&#x29;&#x29; &#x7b;&#xa;  importer.setJobDirOverride&#x28;jobDirOverride&#x29;&#x3b;&#xa;&#x7d;&#xa;&#xa;&#x2f;&#x2f; Get the file that was specified as FILENAME&#xa;var file &#x3d; new Packages.java.io.File&#x28;filename&#x29;&#x3b;&#xa;&#xa;&#x2f;&#x2f; Must pass file names to import as an array&#xa;var filenames &#x3d; null&#x3b;&#xa;&#x2f;&#x2f; Check if the filename is a directory&#xa;if &#x28;file.isDirectory&#x28;&#x29;&#x29; &#x7b;&#xa;  &#x2f;&#x2f; If the file is a directory find all the files inside of it&#xa;  &#x2f;&#x2f; and use those for the import&#xa;  var files &#x3d; file.listFiles&#x28;&#x29;&#x3b;&#xa;  filenames &#x3d; java.lang.reflect.Array.newInstance&#x28;&#xa;    java.lang.String, &#x2f;&#x2f; Element type, do not change&#xa;    files.length  &#x2f;&#x2f; Number of file names to pass in&#xa;  &#x29;&#x3b;&#xa;  for &#x28;i&#x3d;0&#x3b;i&#x3c;files.length&#x3b;i&#x2b;&#x2b;&#x29; &#x7b;&#xa;    filenames&#x5b;i&#x5d; &#x3d; files&#x5b;i&#x5d;.getAbsolutePath&#x28;&#x29;&#x3b;&#xa;  &#x7d;&#xa;&#x7d; else &#x7b;&#xa;  &#x2f;&#x2f; If the file is not a directory it is the only file to be used&#xa;  &#x2f;&#x2f; for importing&#xa;  filenames &#x3d; java.lang.reflect.Array.newInstance&#x28;&#xa;    java.lang.String, &#x2f;&#x2f; Element type, do not change&#xa;    1  &#x2f;&#x2f; Number of file names to pass in&#xa;  &#x29;&#x3b;&#xa;  filenames&#x5b;0&#x5d; &#x3d; filename&#x3b;&#xa;&#x7d;&#xa;&#xa;&#x2f;&#x2f; Set the overwrite flag&#xa;var overwrite &#x3d; Packages.java.lang.Boolean.parseBoolean&#x28;overwrite&#x29;&#x3b;&#xa;&#xa;&#x2f;&#x2f; Perform the import&#xa;&#x2f;&#x2f;&#xa;importer.importAll&#x28;&#xa;   importer,        &#x2f;&#x2f; The feedback object&#xa;   null,            &#x2f;&#x2f; Relative file directory of filenames &#x28;next parameter&#x29;&#xa;   filenames,       &#x2f;&#x2f; The export files to import&#xa;   repdir,          &#x2f;&#x2f; The directory to import into&#xa;   overwrite,            &#x2f;&#x2f; Overwrite existing objects&#xa;   true,            &#x2f;&#x2f; Continue on error&#xa;   &#x22;Batch import&#x22;&#x29;&#x3b; &#x2f;&#x2f; Version comment&#xa;</jsScript_script>
       </jsScript>    </jsScripts>    <fields>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>499</xloc>
@@ -317,4 +277,5 @@ importer.importAll(
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

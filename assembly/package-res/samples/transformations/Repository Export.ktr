@@ -7,11 +7,11 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
         <parameter>
             <name>DIRECTORY</name>
-            <default_value>&#47;</default_value>
+            <default_value>&#x2f;</default_value>
             <description>The repository directory to export</description>
         </parameter>
         <parameter>
@@ -27,7 +27,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -44,6 +44,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -72,19 +77,13 @@
     <clusterschemas>
     </clusterschemas>
   <created_user/>
-  <created_date>2011&#47;01&#47;24 13:01:43.595</created_date>
+  <created_date>2011&#x2f;01&#x2f;24 13&#x3a;01&#x3a;43.595</created_date>
   <modified_user>admin</modified_user>
-  <modified_date>2010&#47;06&#47;29 09:36:36.000</modified_date>
+  <modified_date>2010&#x2f;06&#x2f;29 09&#x3a;36&#x3a;36.000</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>This transformation shows how to to use the JavaScript step to export objects from a repository.
-
-1) Import this transformation into your repository.
-2) Run the transformation and provide the following parameters in the run dialog:
-
-DIRECTORY:  The directory in the repository to export.
-FILENAME: The file name to save the export as.</note>
+      <note>This transformation shows how to to use the JavaScript step to export objects from a repository.&#xa;&#xa;1&#x29; Import this transformation into your repository.&#xa;2&#x29; Run the transformation and provide the following parameters in the run dialog&#x3a;&#xa;&#xa;DIRECTORY&#x3a;  The directory in the repository to export.&#xa;FILENAME&#x3a; The file name to save the export as.</note>
       <xloc>19</xloc>
       <yloc>15</yloc>
       <width>619</width>
@@ -105,29 +104,49 @@ FILENAME: The file name to save the export as.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Get Variables</from><to>Export Repository</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Get Variables</from><to>Export Repository</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Export Repository</name>
     <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
     <compatible>N</compatible>
+    <optimizationLevel/>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>&#47;&#47; Get the repository we&apos;re connected to
-var rep = _step_.getTrans().getRepository();
-&#47;&#47; Ask the repository for its exporter
-var exporter = rep.getExporter();
-&#47;&#47; Find the directory to export in the repository
-var repdir = rep.loadRepositoryDirectoryTree().findDirectory(directory);
-&#47;&#47; Export all the objects from the directory into the filename we specified
-exporter.exportAllObjects(null, filename, repdir, &quot;all&quot;);</jsScript_script>
+        <jsScript_script>&#x2f;&#x2f; Get the repository we&#x27;re connected to&#xa;var rep &#x3d; _step_.getTrans&#x28;&#x29;.getRepository&#x28;&#x29;&#x3b;&#xa;&#x2f;&#x2f; Ask the repository for its exporter&#xa;var exporter &#x3d; rep.getExporter&#x28;&#x29;&#x3b;&#xa;&#x2f;&#x2f; Find the directory to export in the repository&#xa;var repdir &#x3d; rep.loadRepositoryDirectoryTree&#x28;&#x29;.findDirectory&#x28;directory&#x29;&#x3b;&#xa;&#x2f;&#x2f; Export all the objects from the directory into the filename we specified&#xa;exporter.exportAllObjects&#x28;null, filename, repdir, &#x22;all&#x22;&#x29;&#x3b;</jsScript_script>
       </jsScript>    </jsScripts>    <fields>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>410</xloc>
@@ -141,6 +160,7 @@ exporter.exportAllObjects(null, filename, repdir, &quot;all&quot;);</jsScript_sc
     <type>GetVariable</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -149,7 +169,7 @@ exporter.exportAllObjects(null, filename, repdir, &quot;all&quot;);</jsScript_sc
     <fields>
       <field>
         <name>directory</name>
-        <variable>${DIRECTORY}</variable>
+        <variable>&#x24;&#x7b;DIRECTORY&#x7d;</variable>
         <type>String</type>
         <format/>
         <currency/>
@@ -161,7 +181,7 @@ exporter.exportAllObjects(null, filename, repdir, &quot;all&quot;);</jsScript_sc
       </field>
       <field>
         <name>filename</name>
-        <variable>${FILENAME}</variable>
+        <variable>&#x24;&#x7b;FILENAME&#x7d;</variable>
         <type>String</type>
         <format/>
         <currency/>
@@ -185,4 +205,5 @@ exporter.exportAllObjects(null, filename, repdir, &quot;all&quot;);</jsScript_sc
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

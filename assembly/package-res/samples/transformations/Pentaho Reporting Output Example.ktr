@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -17,7 +17,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -34,6 +34,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -62,13 +67,13 @@
     <clusterschemas>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2011&#47;08&#47;09 10:07:36.830</created_date>
+  <created_date>2011&#x2f;08&#x2f;09 10&#x3a;07&#x3a;36.830</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2011&#47;08&#47;09 10:07:36.830</modified_date>
+  <modified_date>2011&#x2f;08&#x2f;09 10&#x3a;07&#x3a;36.830</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>Create a row for Customer &quot;333&quot;</note>
+      <note>Create a row for Customer &#x22;333&#x22;</note>
       <xloc>36</xloc>
       <yloc>112</yloc>
       <width>217</width>
@@ -89,8 +94,7 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Create the path\filename for the Report Template
-and the output name for the generated report.</note>
+      <note>Create the path&#x5c;filename for the Report Template&#xa;and the output name for the generated report.</note>
       <xloc>194</xloc>
       <yloc>269</yloc>
       <width>323</width>
@@ -111,10 +115,7 @@ and the output name for the generated report.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Generate the PDF Reports
-Please note that you need to start up the sampledata
-hypersonic database that ships with Pentaho BI Server
-in order for this sample to run successfully.</note>
+      <note>Generate the PDF Reports&#xa;Please note that you need to start up the sampledata&#xa;hypersonic database that ships with Pentaho BI Server&#xa;in order for this sample to run successfully.</note>
       <xloc>431</xloc>
       <yloc>73</yloc>
       <width>358</width>
@@ -135,33 +136,50 @@ in order for this sample to run successfully.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Create Template and Output paths</from><to>Generate Reports</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows</from><to>Create Template and Output paths</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Create Template and Output paths</from><to>Generate Reports</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate Rows</from><to>Create Template and Output paths</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Create Template and Output paths</name>
     <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
     <compatible>N</compatible>
+    <optimizationLevel/>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>
-var Report_Template;
-var Report_Output;
-
-
-&#47;&#47; Create full path combining transformation directory + filename
-Report_Template = getVariable(&quot;Internal.Transformation.Filename.Directory&quot;,&quot; &quot;)+Report_Template_name;
-Report_Output = getVariable(&quot;Internal.Transformation.Filename.Directory&quot;,&quot; &quot;)+Report_Output_name;
-
-&#47;&#47; Trim the leading &apos;file:C&#47;&#47;&#47;&apos; characters from the full path
-Report_Template = substr(Report_Template,6);
-Report_Output = substr(Report_Output,6);</jsScript_script>
+        <jsScript_script>&#xa;var Report_Template&#x3b;&#xa;var Report_Output&#x3b;&#xa;&#xa;&#xa;&#x2f;&#x2f; Create full path combining transformation directory &#x2b; filename&#xa;Report_Template &#x3d; getVariable&#x28;&#x22;Internal.Transformation.Filename.Directory&#x22;,&#x22; &#x22;&#x29;&#x2b;Report_Template_name&#x3b;&#xa;Report_Output &#x3d; getVariable&#x28;&#x22;Internal.Transformation.Filename.Directory&#x22;,&#x22; &#x22;&#x29;&#x2b;Report_Output_name&#x3b;&#xa;&#xa;&#x2f;&#x2f; Trim the leading &#x27;file&#x3a;C&#x2f;&#x2f;&#x2f;&#x27; characters from the full path&#xa;Report_Template &#x3d; substr&#x28;Report_Template,6&#x29;&#x3b;&#xa;Report_Output &#x3d; substr&#x28;Report_Output,6&#x29;&#x3b;</jsScript_script>
       </jsScript>    </jsScripts>    <fields>      <field>        <name>Report_Template</name>
         <rename>Report_Template</rename>
         <type>String</type>
@@ -187,6 +205,7 @@ Report_Output = substr(Report_Output,6);</jsScript_script>
     <type>PentahoReportingOutput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -210,6 +229,7 @@ Report_Output = substr(Report_Output,6);</jsScript_script>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -226,6 +246,7 @@ Report_Output = substr(Report_Output,6);</jsScript_script>
         <nullif>333</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
       <field>
         <name>Output_type</name>
@@ -237,6 +258,7 @@ Report_Output = substr(Report_Output,6);</jsScript_script>
         <nullif>pdf</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
       <field>
         <name>Report_Template_name</name>
@@ -245,9 +267,10 @@ Report_Output = substr(Report_Output,6);</jsScript_script>
         <currency/>
         <decimal/>
         <group/>
-        <nullif>&#47;files&#47;Invoice_Statements.prpt</nullif>
+        <nullif>&#x2f;files&#x2f;Invoice_Statements.prpt</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
       <field>
         <name>Report_Output_name</name>
@@ -256,12 +279,17 @@ Report_Output = substr(Report_Output,6);</jsScript_script>
         <currency/>
         <decimal/>
         <group/>
-        <nullif>&#47;output&#47;invoice_output.pdf</nullif>
+        <nullif>&#x2f;output&#x2f;invoice_output.pdf</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>135</xloc>
@@ -275,4 +303,5 @@ Report_Output = substr(Report_Output,6);</jsScript_script>
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

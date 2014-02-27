@@ -73,14 +73,14 @@
   <notepads>
   </notepads>
   <connection>
-    <name>Postgres</name>
-    <server>localhost</server>
-    <type>POSTGRESQL</type>
-    <access>Native</access>
-    <database>test</database>
-    <port>5432</port>
-    <username>matt</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -88,7 +88,7 @@
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>5432</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
       <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
       <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
@@ -98,7 +98,7 @@
   </connection>
   <order>
   <hop> <from>Get File Names</from><to>Java Script Value</to><enabled>Y</enabled> </hop>
-  <hop> <from>Java Script Value</from><to>Table output</to><enabled>N</enabled> </hop>
+  <hop> <from>Java Script Value</from><to>Table output</to><enabled>Y</enabled> </hop>
   </order>
   <step>
     <name>Get File Names</name>
@@ -180,7 +180,7 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <connection>Postgres</connection>
+    <connection>Sampledata</connection>
     <schema/>
     <table>BLOB_TEST</table>
     <commit>100</commit>

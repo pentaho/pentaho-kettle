@@ -5,19 +5,39 @@
     <description/>
     <extended_description/>
     <trans_version/>
-    <directory>&#47;</directory>
+    <trans_type>Normal</trans_type>
+    <directory>&#x2f;</directory>
+    <parameters>
+    </parameters>
     <log>
-      <read/>
-      <write/>
-      <input/>
-      <output/>
-      <update/>
-      <rejected/>
-      <connection/>
-      <table/>
-      <step_performance_table/>
-      <use_batchid>Y</use_batchid>
-      <use_logfield>N</use_logfield>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -36,6 +56,7 @@
     <shared_objects_file/>
     <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -44,29 +65,63 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2014&#x2f;02&#x2f;26 16&#x3a;12&#x3a;08.685</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2008&#47;05&#47;06 11:26:06.498</modified_date>
+  <modified_date>2008&#x2f;05&#x2f;06 11&#x3a;26&#x3a;06.498</modified_date>
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Append streams</from><to>Append streams 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate one bad record</from><to>Append streams</to><enabled>Y</enabled> </hop>  <hop> <from>Generate one record with no referrer (nullif example)</from><to>Append streams</to><enabled>Y</enabled> </hop>  <hop> <from>Generate one record with no user_agent (nullif+ifnull example)</from><to>Append streams 2</to><enabled>Y</enabled> </hop>  <hop> <from>Append streams 2</from><to>Append streams 3</to><enabled>Y</enabled> </hop>  <hop> <from>Generate lots of access log records</from><to>Append streams 3</to><enabled>Y</enabled> </hop>  <hop> <from>Append streams 3</from><to>Regex Evaluation</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Append streams</from><to>Append streams 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate one bad record</from><to>Append streams</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate one record with no referrer &#x28;nullif example&#x29;</from><to>Append streams</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate one record with no user_agent &#x28;nullif&#x2b;ifnull example&#x29;</from><to>Append streams 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Append streams 2</from><to>Append streams 3</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate lots of access log records</from><to>Append streams 3</to><enabled>Y</enabled> </hop>
+  <hop> <from>Append streams 3</from><to>Regex Evaluation</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Append streams</name>
     <type>Append</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
 <head_name>Generate one bad record</head_name>
-<tail_name>Generate one record with no referrer (nullif example)</tail_name>
+<tail_name>Generate one record with no referrer &#x28;nullif example&#x29;</tail_name>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>260</xloc>
-      <yloc>120</yloc>
+      <xloc>355</xloc>
+      <yloc>116</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -76,17 +131,18 @@
     <type>Append</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
 <head_name>Append streams</head_name>
-<tail_name>Generate one record with no user_agent (nullif+ifnull example)</tail_name>
+<tail_name>Generate one record with no user_agent &#x28;nullif&#x2b;ifnull example&#x29;</tail_name>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>260</xloc>
-      <yloc>220</yloc>
+      <xloc>355</xloc>
+      <yloc>216</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -96,6 +152,7 @@
     <type>Append</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -105,8 +162,8 @@
 <tail_name>Generate lots of access log records</tail_name>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>260</xloc>
-      <yloc>320</yloc>
+      <xloc>355</xloc>
+      <yloc>316</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -116,6 +173,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -129,12 +187,17 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>127.0.0.1 - - [01&#47;Jan&#47;2008:00:00:00 -0800] &quot;GET &#47; HTTP&#47;1.1&quot; 200 50 &quot;http:&#47;&#47;localhost&#47;&quot; &quot;Mozilla&#47;5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1) Gecko&#47;20061010 Firefox&#47;2.0&quot;</nullif>
+        <nullif>127.0.0.1 - - &#x5b;01&#x2f;Jan&#x2f;2008&#x3a;00&#x3a;00&#x3a;00 -0800&#x5d; &#x22;GET &#x2f; HTTP&#x2f;1.1&#x22; 200 50 &#x22;http&#x3a;&#x2f;&#x2f;localhost&#x2f;&#x22; &#x22;Mozilla&#x2f;5.0 &#x28;Windows&#x3b; U&#x3b; Windows NT 5.1&#x3b; en-US&#x3b; rv&#x3a;1.8.1&#x29; Gecko&#x2f;20061010 Firefox&#x2f;2.0&#x22;</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>100000</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
@@ -148,6 +211,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -161,12 +225,17 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>127.0.0.1 - - [01&#47;Jan&#47;2008:00:00:00 -0800] &quot;DELETE &#47;this_is_a_row_that_will_not_match HTTP&#47;1.1&quot; 200 50 &quot;http:&#47;&#47;localhost&#47;&quot; &quot;Mozilla&#47;5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1) Gecko&#47;20061010 Firefox&#47;2.0&quot;</nullif>
+        <nullif>127.0.0.1 - - &#x5b;01&#x2f;Jan&#x2f;2008&#x3a;00&#x3a;00&#x3a;00 -0800&#x5d; &#x22;DELETE &#x2f;this_is_a_row_that_will_not_match HTTP&#x2f;1.1&#x22; 200 50 &#x22;http&#x3a;&#x2f;&#x2f;localhost&#x2f;&#x22; &#x22;Mozilla&#x2f;5.0 &#x28;Windows&#x3b; U&#x3b; Windows NT 5.1&#x3b; en-US&#x3b; rv&#x3a;1.8.1&#x29; Gecko&#x2f;20061010 Firefox&#x2f;2.0&#x22;</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
@@ -176,10 +245,11 @@
     </step>
 
   <step>
-    <name>Generate one record with no referrer (nullif example)</name>
+    <name>Generate one record with no referrer &#x28;nullif example&#x29;</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -193,12 +263,17 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>127.0.0.1 - - [01&#47;Jan&#47;2008:00:00:00 -0800] &quot;GET &#47; HTTP&#47;1.1&quot; 200 50 &quot;-&quot; &quot;Mozilla&#47;5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1) Gecko&#47;20061010 Firefox&#47;2.0&quot;</nullif>
+        <nullif>127.0.0.1 - - &#x5b;01&#x2f;Jan&#x2f;2008&#x3a;00&#x3a;00&#x3a;00 -0800&#x5d; &#x22;GET &#x2f; HTTP&#x2f;1.1&#x22; 200 50 &#x22;-&#x22; &#x22;Mozilla&#x2f;5.0 &#x28;Windows&#x3b; U&#x3b; Windows NT 5.1&#x3b; en-US&#x3b; rv&#x3a;1.8.1&#x29; Gecko&#x2f;20061010 Firefox&#x2f;2.0&#x22;</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
@@ -208,10 +283,11 @@
     </step>
 
   <step>
-    <name>Generate one record with no user_agent (nullif+ifnull example)</name>
+    <name>Generate one record with no user_agent &#x28;nullif&#x2b;ifnull example&#x29;</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -225,12 +301,17 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>127.0.0.1 - - [01&#47;Jan&#47;2008:00:00:00 -0800] &quot;GET &#47; HTTP&#47;1.1&quot; 200 50 &quot;http:&#47;&#47;localhost&#47;&quot; &quot;-&quot;</nullif>
+        <nullif>127.0.0.1 - - &#x5b;01&#x2f;Jan&#x2f;2008&#x3a;00&#x3a;00&#x3a;00 -0800&#x5d; &#x22;GET &#x2f; HTTP&#x2f;1.1&#x22; 200 50 &#x22;http&#x3a;&#x2f;&#x2f;localhost&#x2f;&#x22; &#x22;-&#x22;</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
@@ -244,29 +325,30 @@
     <type>RegexEval</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>2</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <script>^([^\s]{7,15})\s            # client_ip
+    <script><![CDATA[^([^\s]{7,15})\s            # client_ip
 -\s                         # unused IDENT field
 -\s                         # unused USER field
-\[((\d{2})&#47;(\w{3})&#47;(\d{4})  # request date dd&#47;MMM&#47;yyyy
+\[((\d{2})/(\w{3})/(\d{4})  # request date dd/MMM/yyyy
 :(\d{2}):(\d{2}):(\d{2})\s([-+ ]\d{4}))\]
                             # request time :HH:mm:ss -0800
-\s&quot;(GET|POST)\s             # HTTP verb
+\s"(GET|POST)\s             # HTTP verb
 ([^\s]*)                     # HTTP URI
-\sHTTP&#47;1\.[01]&quot;\s           # HTTP version
+\sHTTP/1\.[01]"\s           # HTTP version
 
 (\d{3})\s                   # HTTP status code
 (\d+)\s                     # bytes returned
-&quot;([^&quot;]+)&quot;\s                 # referrer field
+"([^"]+)"\s                 # referrer field
 
-&quot;                           # User agent parsing, always quoted.
-&quot;?                          # Sometimes if the user spoofs the user_agent, they incorrectly quote it.
+"                           # User agent parsing, always quoted.
+"?                          # Sometimes if the user spoofs the user_agent, they incorrectly quote it.
 (                           # The UA string
-  [^&quot;]*?                    # Uninteresting bits
+  [^"]*?                    # Uninteresting bits
   (?:
     (?:
      rv:                    # Beginning of the gecko engine version token
@@ -277,18 +359,18 @@
        (?:\.(\d{1,2}[^.;)]{0,8}))? # version_component_a
        (?:\.(\d{1,2}[^.;)]{0,8}))? # version_component_b
      )
-     [^&quot;]*                  # More uninteresting bits
+     [^"]*                  # More uninteresting bits
     )
    |
-    [^&quot;]*                   # More uninteresting bits
+    [^"]*                   # More uninteresting bits
   )
 )                           # End of UA string
-&quot;?
-&quot;</script>
-    <matcher>line</matcher>
+"?
+"]]></script>    <matcher>line</matcher>
     <resultfieldname>is_match</resultfieldname>
     <usevar>N</usevar>
     <allowcapturegroups>Y</allowcapturegroups>
+    <replacefields>N</replacefields>
     <canoneq>N</canoneq>
     <caseinsensitive>N</caseinsensitive>
     <comment>Y</comment>
@@ -312,7 +394,7 @@
       <field>
         <name>full_request_date</name>
         <type>Date</type>
-        <format>dd&#47;MMM&#47;yyyy:HH:mm:ss Z</format>
+        <format>dd&#x2f;MMM&#x2f;yyyy&#x3a;HH&#x3a;mm&#x3a;ss Z</format>
         <group/>
         <decimal/>
         <length>-1</length>
@@ -540,8 +622,8 @@
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>400</xloc>
-      <yloc>320</yloc>
+      <xloc>495</xloc>
+      <yloc>316</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -551,4 +633,5 @@
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

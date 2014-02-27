@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -17,7 +17,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -34,6 +34,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -62,27 +67,17 @@
     <clusterschemas>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2012&#47;03&#47;16 10:30:08.060</created_date>
+  <created_date>2012&#x2f;03&#x2f;16 10&#x3a;30&#x3a;08.060</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2012&#47;03&#47;16 10:30:08.060</modified_date>
+  <modified_date>2012&#x2f;03&#x2f;16 10&#x3a;30&#x3a;08.060</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>The Java Filter step exposes all of your fields as native Java types
-They are not wrapped up in some other kind of object where you need
-getters and setters.
-
-We use the java.lang.Boolean type in this example:
-http:&#47;&#47;docs.oracle.com&#47;javase&#47;1.4.2&#47;docs&#47;api&#47;java&#47;lang&#47;Boolean.html
-
-True values are Boolean.TRUE
-False values are Boolean FALSE
-
-See the step below</note>
+      <note>The Java Filter step exposes all of your fields as native Java types&#xa;They are not wrapped up in some other kind of object where you need&#xa;getters and setters.&#xa;&#xa;We use the java.lang.Boolean type in this example&#x3a;&#xa;http&#x3a;&#x2f;&#x2f;docs.oracle.com&#x2f;javase&#x2f;1.4.2&#x2f;docs&#x2f;api&#x2f;java&#x2f;lang&#x2f;Boolean.html&#xa;&#xa;True values are Boolean.TRUE&#xa;False values are Boolean FALSE&#xa;&#xa;See the step below</note>
       <xloc>443</xloc>
       <yloc>120</yloc>
       <width>418</width>
-      <heigth>172</heigth>
+      <heigth>178</heigth>
       <fontname>Ariel</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
@@ -99,17 +94,11 @@ See the step below</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Deeper information:
-
-A row in PDI is comprised of one RowMetaInterface class to describe the row.  The row metadata contains everything you need to know about 
-the rows like the names of the fields, the data types, the lengths, descriptions and much more.  The row also contains 0, 1 or more rows of data in the form of a 
-simple Object[]: array of java.lang.Object where each value contains either null or one of the data types listed in the available data types section.
-
-http:&#47;&#47;wiki.pentaho.com&#47;display&#47;EAI&#47;PDI+Rows+Of+Data</note>
+      <note>Deeper information&#x3a;&#xa;&#xa;A row in PDI is comprised of one RowMetaInterface class to describe the row.  The row metadata contains everything you need to know about &#xa;the rows like the names of the fields, the data types, the lengths, descriptions and much more.  The row also contains 0, 1 or more rows of data in the form of a &#xa;simple Object&#x5b;&#x5d;&#x3a; array of java.lang.Object where each value contains either null or one of the data types listed in the available data types section.&#xa;&#xa;http&#x3a;&#x2f;&#x2f;wiki.pentaho.com&#x2f;display&#x2f;EAI&#x2f;PDI&#x2b;Rows&#x2b;Of&#x2b;Data</note>
       <xloc>33</xloc>
       <yloc>467</yloc>
-      <width>929</width>
-      <heigth>113</heigth>
+      <width>933</width>
+      <heigth>117</heigth>
       <fontname>Ariel</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
@@ -126,20 +115,11 @@ http:&#47;&#47;wiki.pentaho.com&#47;display&#47;EAI&#47;PDI+Rows+Of+Data</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>PDI&apos;s Boolean type accepts
-
-True when assigned the value &quot;Y&quot;
-False when assigned the value &quot;N&quot;
-
-Internally there is a plain java.lang.Boolean object which
-will be initialized to &quot;Boolean.TRUE&quot; or &quot;Boolean.FALSE&quot;
-whichever the initial values above suggest.
-
-Inspect the step below:</note>
+      <note>PDI&#x27;s Boolean type accepts&#xa;&#xa;True when assigned the value &#x22;Y&#x22;&#xa;False when assigned the value &#x22;N&#x22;&#xa;&#xa;Internally there is a plain java.lang.Boolean object which&#xa;will be initialized to &#x22;Boolean.TRUE&#x22; or &#x22;Boolean.FALSE&#x22;&#xa;whichever the initial values above suggest.&#xa;&#xa;Inspect the step below&#x3a;</note>
       <xloc>35</xloc>
       <yloc>121</yloc>
       <width>345</width>
-      <heigth>157</heigth>
+      <heigth>163</heigth>
       <fontname>Ariel</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
@@ -156,15 +136,11 @@ Inspect the step below:</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Purpose: Demonstrate using a Java Filter step to evaluate outcomes to &apos;true&apos; or &apos;false&apos; values to direct the rows to a final destination.
-
-A test on a Boolean data type is demonstrated here. Only expressions are accepted.
-We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE : Boolean.FALSE
-</note>
+      <note>Purpose&#x3a; Demonstrate using a Java Filter step to evaluate outcomes to &#x27;true&#x27; or &#x27;false&#x27; values to direct the rows to a final destination.&#xa;&#xa;A test on a Boolean data type is demonstrated here. Only expressions are accepted.&#xa;We use a special syntax format in this example -&#x3e;  &#x28;FRIEND&#x29; &#x3f;  Boolean.TRUE &#x3a; Boolean.FALSE&#xa;</note>
       <xloc>34</xloc>
       <yloc>32</yloc>
       <width>772</width>
-      <heigth>69</heigth>
+      <heigth>87</heigth>
       <fontname>Ariel</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
@@ -181,13 +157,41 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>My Friends</from><to>Java Filter</to><enabled>Y</enabled> </hop>  <hop> <from>Java Filter</from><to>We are friends</to><enabled>Y</enabled> </hop>  <hop> <from>Java Filter</from><to>We are not friends</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>My Friends</from><to>Java Filter</to><enabled>Y</enabled> </hop>
+  <hop> <from>Java Filter</from><to>We are friends</to><enabled>Y</enabled> </hop>
+  <hop> <from>Java Filter</from><to>We are not friends</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Java Filter</name>
     <type>JavaFilter</type>
     <description/>
     <distribute>N</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -195,7 +199,7 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
            </partitioning>
 <send_true_to>We are friends</send_true_to>
 <send_false_to>We are not friends</send_false_to>
-<condition>(FRIEND) ?  Boolean.TRUE : Boolean.FALSE</condition>
+<condition>&#x28;FRIEND&#x29; &#x3f;  Boolean.TRUE &#x3a; Boolean.FALSE</condition>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>610</xloc>
@@ -209,6 +213,7 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
     <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -224,6 +229,7 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
         <group/>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
       <field>
         <name>FRIEND</name>
@@ -234,6 +240,7 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
         <group/>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <data>
@@ -260,6 +267,7 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -278,6 +286,7 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -296,4 +305,5 @@ We use a special syntax format in this example -&gt;  (FRIEND) ?  Boolean.TRUE :
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

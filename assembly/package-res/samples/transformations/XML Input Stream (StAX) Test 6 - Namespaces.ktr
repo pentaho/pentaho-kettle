@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -17,7 +17,7 @@
 <size_limit_lines/>
 <interval>60</interval>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection>dev_daily_tgt</connection>
 <schema>dm</schema>
 <table>perf</table>
@@ -34,6 +34,11 @@
 <table>step</table>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -58,40 +63,21 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>Slave3</name><hostname>localhost</hostname><port>8084</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>Slave2</name><hostname>localhost</hostname><port>8083</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>Slave1</name><hostname>localhost</hostname><port>8082</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>DI Server</name><hostname>localhost</hostname><port>9080</port><webAppName>pentaho-di</webAppName><username>joe</username><password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>Master</name><hostname>localhost</hostname><port>8081</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
     </slaveservers>
     <clusterschemas>
-        <clusterschema>
-          <name>ClusterSchema</name>
-          <base_port>40000</base_port>
-          <sockets_buffer_size>2000</sockets_buffer_size>
-          <sockets_flush_interval>5000</sockets_flush_interval>
-          <sockets_compressed>Y</sockets_compressed>
-          <dynamic>N</dynamic>
-          <slaveservers>
-            <name>Slave2</name>
-            <name>Slave1</name>
-            <name>Master</name>
-          </slaveservers>
-        </clusterschema>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2011&#47;04&#47;08 16:06:02.212</created_date>
+  <created_date>2011&#x2f;04&#x2f;08 16&#x3a;06&#x3a;02.212</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2011&#47;04&#47;08 16:06:02.212</modified_date>
+  <modified_date>2011&#x2f;04&#x2f;08 16&#x3a;06&#x3a;02.212</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>Put a &apos;1&apos; or &apos;-1&apos; to the group field that alternates on each Level 2 element.
-(The JavaScript on the right is easier but slower.)</note>
+      <note>Put a &#x27;1&#x27; or &#x27;-1&#x27; to the group field that alternates on each Level 2 element.&#xa;&#x28;The JavaScript on the right is easier but slower.&#x29;</note>
       <xloc>227</xloc>
       <yloc>310</yloc>
       <width>367</width>
-      <heigth>35</heigth>
+      <heigth>36</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -108,12 +94,11 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>This example parses the XML Input Stream (StAX) Test 6 - Namespaces.xml
-and parses different fields.</note>
+      <note>This example parses the XML Input Stream &#x28;StAX&#x29; Test 6 - Namespaces.xml&#xa;and parses different fields.</note>
       <xloc>8</xloc>
       <yloc>11</yloc>
       <width>389</width>
-      <heigth>35</heigth>
+      <heigth>36</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -130,12 +115,11 @@ and parses different fields.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Revision notes:
-2011-05-29 Jens Bleuel: created</note>
+      <note>Revision notes&#x3a;&#xa;2011-05-29 Jens Bleuel&#x3a; created</note>
       <xloc>7</xloc>
       <yloc>587</yloc>
       <width>169</width>
-      <heigth>35</heigth>
+      <heigth>36</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -152,11 +136,11 @@ and parses different fields.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>&quot;Add namespace information&quot; is checked</note>
+      <note>&#x22;Add namespace information&#x22; is checked</note>
       <xloc>190</xloc>
       <yloc>81</yloc>
       <width>209</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -177,7 +161,7 @@ and parses different fields.</note>
       <xloc>223</xloc>
       <yloc>446</yloc>
       <width>156</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -198,7 +182,7 @@ and parses different fields.</note>
       <xloc>223</xloc>
       <yloc>510</yloc>
       <width>138</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -219,7 +203,7 @@ and parses different fields.</note>
       <xloc>321</xloc>
       <yloc>225</yloc>
       <width>322</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -240,7 +224,7 @@ and parses different fields.</note>
       <xloc>2</xloc>
       <yloc>281</yloc>
       <width>153</width>
-      <heigth>22</heigth>
+      <heigth>23</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -257,13 +241,45 @@ and parses different fields.</note>
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Only CHARACTERS</from><to>Row denormaliser</to><enabled>Y</enabled> </hop>  <hop> <from>XML Input Stream (StAX) Test 6 - Namespaces.xml</from><to>No END_ELEMENT</to><enabled>Y</enabled> </hop>  <hop> <from>Row denormaliser</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Alternate group on Level 2</from><to>Only CHARACTERS</to><enabled>Y</enabled> </hop>  <hop> <from>No END_ELEMENT</from><to>Filter on NAMESPACE</to><enabled>Y</enabled> </hop>  <hop> <from>Filter on NAMESPACE</from><to>Alternate group on Level 2</to><enabled>Y</enabled> </hop>  <hop> <from>Filter on NAMESPACE</from><to>NAMESPACES</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Only CHARACTERS</from><to>Row denormaliser</to><enabled>Y</enabled> </hop>
+  <hop> <from>XML Input Stream &#x28;StAX&#x29; Test 6 - Namespaces.xml</from><to>No END_ELEMENT</to><enabled>Y</enabled> </hop>
+  <hop> <from>Row denormaliser</from><to>Select values</to><enabled>Y</enabled> </hop>
+  <hop> <from>Alternate group on Level 2</from><to>Only CHARACTERS</to><enabled>Y</enabled> </hop>
+  <hop> <from>No END_ELEMENT</from><to>Filter on NAMESPACE</to><enabled>Y</enabled> </hop>
+  <hop> <from>Filter on NAMESPACE</from><to>Alternate group on Level 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Filter on NAMESPACE</from><to>NAMESPACES</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Alternate group on Level 2</name>
     <type>UserDefinedJavaClass</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -345,24 +361,20 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
     <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
     <compatible>N</compatible>
+    <optimizationLevel/>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>&#47;&#47;Script here
-
-if (xml_element_level==2) {
-	group=group*(-1);
-}</jsScript_script>
+        <jsScript_script>&#x2f;&#x2f;Script here&#xa;&#xa;if &#x28;xml_element_level&#x3d;&#x3d;2&#x29; &#x7b;&#xa;	group&#x3d;group&#x2a;&#x28;-1&#x29;&#x3b;&#xa;&#x7d;</jsScript_script>
       </jsScript>      <jsScript>        <jsScript_type>1</jsScript_type>
         <jsScript_name>Start Script</jsScript_name>
-        <jsScript_script>&#47;&#47;Script here
-
-var group=1;</jsScript_script>
+        <jsScript_script>&#x2f;&#x2f;Script here&#xa;&#xa;var group&#x3d;1&#x3b;</jsScript_script>
       </jsScript>    </jsScripts>    <fields>      <field>        <name>group</name>
         <rename>group</rename>
         <type>Integer</type>
@@ -378,10 +390,68 @@ var group=1;</jsScript_script>
     </step>
 
   <step>
+    <name>Filter on NAMESPACE</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to>NAMESPACES</send_true_to>
+<send_false_to>Alternate group on Level 2</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>xml_data_type_description</leftvalue>
+ <function>&#x3d;</function>
+ <rightvalue/>
+ <value><name>constant</name><type>String</type><text>NAMESPACE</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>140</xloc>
+      <yloc>220</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>NAMESPACES</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>      <field>        <name>xml_data_name</name>
+        <rename>Namespace_Prefix</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>xml_data_value</name>
+        <rename>Namespace_URI</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>        <select_unspecified>N</select_unspecified>
+    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>260</xloc>
+      <yloc>220</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>No END_ELEMENT</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -396,7 +466,7 @@ var group=1;</jsScript_script>
   <condition>
    <negated>Y</negated>
    <leftvalue>xml_data_type_description</leftvalue>
-   <function>=</function>
+   <function>&#x3d;</function>
    <rightvalue/>
    <value><name>constant</name><type>String</type><text>END_ELEMENT</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>   </condition>
   </conditions>
@@ -415,6 +485,7 @@ var group=1;</jsScript_script>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -429,7 +500,7 @@ var group=1;</jsScript_script>
   <condition>
    <negated>N</negated>
    <leftvalue>xml_data_type_description</leftvalue>
-   <function>=</function>
+   <function>&#x3d;</function>
    <rightvalue/>
    <value><name>constant</name><type>String</type><text>CHARACTERS</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>   </condition>
   </conditions>
@@ -448,6 +519,7 @@ var group=1;</jsScript_script>
     <type>Denormaliser</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -462,7 +534,7 @@ var group=1;</jsScript_script>
       <fields>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;IsSuccessful</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;IsSuccessful</key_value>
           <target_name>IsSuccessful</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -476,7 +548,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;Message</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;Message</key_value>
           <target_name>Message</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -490,7 +562,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Id</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;ProductInfo&#x2f;Id</key_value>
           <target_name>ProductInfo_Id</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -504,7 +576,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Name</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;ProductInfo&#x2f;Name</key_value>
           <target_name>ProductInfo_Name</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -518,7 +590,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Fruits:ProductGroup</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;ProductInfo&#x2f;Fruits&#x3a;ProductGroup</key_value>
           <target_name>ProductInfo_PG_Fruits</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -532,7 +604,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Fish:ProductGroup</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;ProductInfo&#x2f;Fish&#x3a;ProductGroup</key_value>
           <target_name>ProductInfo_PG_Fish</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -546,7 +618,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProducerInfo&#47;Id</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;ProducerInfo&#x2f;Id</key_value>
           <target_name>ProducerInfo_Id</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -560,7 +632,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProducerInfo&#47;Name</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;ProducerInfo&#x2f;Name</key_value>
           <target_name>ProducerInfo_Name</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -574,7 +646,7 @@ var group=1;</jsScript_script>
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ExtraInfoAvail</key_value>
+          <key_value>&#x2f;ProductInfoResults&#x2f;ProductInfoResult&#x2f;ExtraInfoAvail</key_value>
           <target_name>ExtraInfoAvail</target_name>
           <target_type>String</target_type>
           <target_format/>
@@ -600,6 +672,7 @@ var group=1;</jsScript_script>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -619,16 +692,17 @@ var group=1;</jsScript_script>
     </step>
 
   <step>
-    <name>XML Input Stream (StAX) Test 6 - Namespaces.xml</name>
+    <name>XML Input Stream &#x28;StAX&#x29; Test 6 - Namespaces.xml</name>
     <type>XMLInputStream</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <filename>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Input Stream (StAX) Test 6 - Namespaces.xml</filename>
+    <filename>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;XML Input Stream &#x28;StAX&#x29; Test 6 - Namespaces.xml</filename>
     <addResultFile>N</addResultFile>
     <nrRowsToSkip>0</nrRowsToSkip>
     <rowLimit>0</rowLimit>
@@ -670,64 +744,10 @@ var group=1;</jsScript_script>
       </GUI>
     </step>
 
-  <step>
-    <name>Filter on NAMESPACE</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-<send_true_to>NAMESPACES</send_true_to>
-<send_false_to>Alternate group on Level 2</send_false_to>
-    <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>xml_data_type_description</leftvalue>
- <function>=</function>
- <rightvalue/>
- <value><name>constant</name><type>String</type><text>NAMESPACE</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
-    </compare>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>140</xloc>
-      <yloc>220</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>NAMESPACES</name>
-    <type>SelectValues</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>      <field>        <name>xml_data_name</name>
-        <rename>Namespace_Prefix</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>xml_data_value</name>
-        <rename>Namespace_URI</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>        <select_unspecified>N</select_unspecified>
-    </fields>     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>260</xloc>
-      <yloc>220</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
   <step_error_handling>
   </step_error_handling>
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

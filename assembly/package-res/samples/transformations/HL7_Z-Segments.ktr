@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -17,7 +17,7 @@
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -34,6 +34,11 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -98,16 +103,13 @@
         </clusterschema>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2012&#47;01&#47;18 16:03:07.273</created_date>
+  <created_date>2012&#x2f;01&#x2f;18 16&#x3a;03&#x3a;07.273</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2012&#47;01&#47;18 16:03:07.273</modified_date>
+  <modified_date>2012&#x2f;01&#x2f;18 16&#x3a;03&#x3a;07.273</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>HL7 sample for user defined Z-Segments.
-
-Z-Segment values are written to the data stream with an empty FieldName, a question mark (&quot;?&quot;) for the FieldDescription and with an &quot;UNKNOWN&quot; HL7DataType.
-Due to the fact, that the Coordinates field gives the level within each Segment, these values can be analyzed according to the user defined Z-Segment definition: Segment.Terser.Component.SubComponent </note>
+      <note>HL7 sample for user defined Z-Segments.&#xa;&#xa;Z-Segment values are written to the data stream with an empty FieldName, a question mark &#x28;&#x22;&#x3f;&#x22;&#x29; for the FieldDescription and with an &#x22;UNKNOWN&#x22; HL7DataType.&#xa;Due to the fact, that the Coordinates field gives the level within each Segment, these values can be analyzed according to the user defined Z-Segment definition&#x3a; Segment.Terser.Component.SubComponent </note>
       <xloc>15</xloc>
       <yloc>19</yloc>
       <width>1196</width>
@@ -128,8 +130,7 @@ Due to the fact, that the Coordinates field gives the level within each Segment,
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>This example is derived from
-http:&#47;&#47;www.hl7.de&#47;komitees&#47;konformitaet&#47;zsegmente&#47;segzbe.php</note>
+      <note>This example is derived from&#xa;http&#x3a;&#x2f;&#x2f;www.hl7.de&#x2f;komitees&#x2f;konformitaet&#x2f;zsegmente&#x2f;segzbe.php</note>
       <xloc>817</xloc>
       <yloc>273</yloc>
       <width>379</width>
@@ -150,9 +151,7 @@ http:&#47;&#47;www.hl7.de&#47;komitees&#47;konformitaet&#47;zsegmente&#47;segzbe
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>The handling of the fields can also be handled as shown in example
-HL7_test_multiple_files.ktr
-only using the code=StructureName+Coordinates</note>
+      <note>The handling of the fields can also be handled as shown in example&#xa;HL7_test_multiple_files.ktr&#xa;only using the code&#x3d;StructureName&#x2b;Coordinates</note>
       <xloc>617</xloc>
       <yloc>354</yloc>
       <width>406</width>
@@ -173,13 +172,42 @@ only using the code=StructureName+Coordinates</note>
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>HL7 Input</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>Handle Z Segments: fill FieldName &amp; FieldDescription</to><enabled>Y</enabled> </hop>  <hop> <from>Handle Z Segments: fill FieldName &amp; FieldDescription</from><to>Value Mapper example for ZBE</to><enabled>Y</enabled> </hop>  <hop> <from>Load file content in memory</from><to>HL7 Input</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>HL7 Input</from><to>Select values</to><enabled>Y</enabled> </hop>
+  <hop> <from>Select values</from><to>Handle Z Segments&#x3a; fill FieldName &#x26; FieldDescription</to><enabled>Y</enabled> </hop>
+  <hop> <from>Handle Z Segments&#x3a; fill FieldName &#x26; FieldDescription</from><to>Value Mapper example for ZBE</to><enabled>Y</enabled> </hop>
+  <hop> <from>Load file content in memory</from><to>HL7 Input</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>HL7 Input</name>
     <type>HL7Input</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -195,24 +223,25 @@ only using the code=StructureName+Coordinates</note>
     </step>
 
   <step>
-    <name>Handle Z Segments: fill FieldName &amp; FieldDescription</name>
+    <name>Handle Z Segments&#x3a; fill FieldName &#x26; FieldDescription</name>
     <type>Janino</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
        <formula><field_name>FieldName</field_name>
-<formula_string>(FieldName == null) ? StructureName+Coordinates : FieldName</formula_string>
+<formula_string>&#x28;FieldName &#x3d;&#x3d; null&#x29; &#x3f; StructureName&#x2b;Coordinates &#x3a; FieldName</formula_string>
 <value_type>String</value_type>
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <replace_field>FieldName</replace_field>
 </formula>
        <formula><field_name>FieldDescription</field_name>
-<formula_string>(FieldDescription == null || FieldDescription.equals(&quot;?&quot;)) ? StructureName+Coordinates : FieldDescription</formula_string>
+<formula_string>&#x28;FieldDescription &#x3d;&#x3d; null &#x7c;&#x7c; FieldDescription.equals&#x28;&#x22;&#x3f;&#x22;&#x29;&#x29; &#x3f; StructureName&#x2b;Coordinates &#x3a; FieldDescription</formula_string>
 <value_type>String</value_type>
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
@@ -231,6 +260,7 @@ only using the code=StructureName+Coordinates</note>
     <type>LoadFileInput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -244,7 +274,7 @@ only using the code=StructureName+Coordinates</note>
     <rownum_field>ID</rownum_field>
     <encoding>ISO-8859-1</encoding>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;hl7_message_ZBE_sample.txt</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;hl7_message_ZBE_sample.txt</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -306,6 +336,7 @@ only using the code=StructureName+Coordinates</note>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -381,6 +412,7 @@ only using the code=StructureName+Coordinates</note>
     <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -432,4 +464,5 @@ only using the code=StructureName+Coordinates</note>
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

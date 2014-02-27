@@ -5,19 +5,40 @@
     <description>Explore all possible use-cases of the Data Validator step</description>
     <extended_description/>
     <trans_version/>
+    <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
+    <parameters>
+    </parameters>
     <log>
-      <read/>
-      <write/>
-      <input/>
-      <output/>
-      <update/>
-      <rejected/>
-      <connection/>
-      <table/>
-      <use_batchid>Y</use_batchid>
-      <use_logfield>N</use_logfield>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -34,6 +55,9 @@
     <feedback_size>50000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -42,74 +66,253 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2014&#x2f;03&#x2f;03 20&#x3a;38&#x3a;59.831</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2008&#47;01&#47;11 22:25:53.768</modified_date>
+  <modified_date>2008&#x2f;01&#x2f;11 22&#x3a;25&#x3a;53.768</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>Longer than maximum? (3)</note>
+      <note>Longer than maximum&#x3f; &#x28;3&#x29;</note>
       <xloc>23</xloc>
       <yloc>23</yloc>
       <width>214</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Shorter than minimum? (3)</note>
+      <note>Shorter than minimum&#x3f; &#x28;3&#x29;</note>
       <xloc>23</xloc>
       <yloc>136</yloc>
       <width>212</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Correct data type? (String)</note>
+      <note>Correct data type&#x3f; &#x28;String&#x29;</note>
       <xloc>27</xloc>
       <yloc>397</yloc>
       <width>207</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Higher than maximum? (C)</note>
+      <note>Higher than maximum&#x3f; &#x28;C&#x29;</note>
       <xloc>31</xloc>
       <yloc>533</yloc>
       <width>211</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Lower than minimum? (B)</note>
+      <note>Lower than minimum&#x3f; &#x28;B&#x29;</note>
       <xloc>33</xloc>
       <yloc>652</yloc>
       <width>202</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Is the value Null?</note>
+      <note>Is the value Null&#x3f;</note>
       <xloc>30</xloc>
       <yloc>262</yloc>
       <width>132</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>In list of values? (A,B,C)</note>
+      <note>In list of values&#x3f; &#x28;A,B,C&#x29;</note>
       <xloc>36</xloc>
       <yloc>753</yloc>
       <width>182</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Abort if we don&apos;t find exactly 7 validation errors</note>
+      <note>Abort if we don&#x27;t find exactly 7 validation errors</note>
       <xloc>845</xloc>
       <yloc>38</yloc>
       <width>357</width>
       <heigth>28</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>A1</from><to>Longer?</to><enabled>Y</enabled> </hop>  <hop> <from>Longer?</from><to>Validation Errors</to><enabled>Y</enabled> </hop>  <hop> <from>A2</from><to>Shorter?</to><enabled>Y</enabled> </hop>  <hop> <from>Shorter?</from><to>Validation Errors</to><enabled>Y</enabled> </hop>  <hop> <from>B1</from><to>Longer?</to><enabled>Y</enabled> </hop>  <hop> <from>Longer?</from><to>OK</to><enabled>Y</enabled> </hop>  <hop> <from>B2</from><to>Shorter?</to><enabled>Y</enabled> </hop>  <hop> <from>Shorter?</from><to>OK</to><enabled>Y</enabled> </hop>  <hop> <from>C1</from><to>Longer?</to><enabled>Y</enabled> </hop>  <hop> <from>C2</from><to>Shorter?</to><enabled>Y</enabled> </hop>  <hop> <from>A3</from><to>Null?</to><enabled>Y</enabled> </hop>  <hop> <from>B3</from><to>Null?</to><enabled>Y</enabled> </hop>  <hop> <from>Null?</from><to>Validation Errors</to><enabled>Y</enabled> </hop>  <hop> <from>Null?</from><to>OK</to><enabled>Y</enabled> </hop>  <hop> <from>A4</from><to>Data type?</to><enabled>Y</enabled> </hop>  <hop> <from>B4</from><to>Data type? OK</to><enabled>Y</enabled> </hop>  <hop> <from>Data type? OK</from><to>Validation Errors</to><enabled>Y</enabled> </hop>  <hop> <from>Data type?</from><to>Validation Errors (alt)</to><enabled>Y</enabled> </hop>  <hop> <from>A5</from><to>Maximum?</to><enabled>Y</enabled> </hop>  <hop> <from>A6</from><to>Minimum?</to><enabled>Y</enabled> </hop>  <hop> <from>B5</from><to>Maximum?</to><enabled>Y</enabled> </hop>  <hop> <from>B6</from><to>Minimum?</to><enabled>Y</enabled> </hop>  <hop> <from>C5</from><to>Maximum?</to><enabled>Y</enabled> </hop>  <hop> <from>C6</from><to>Minimum?</to><enabled>Y</enabled> </hop>  <hop> <from>Maximum?</from><to>OK</to><enabled>Y</enabled> </hop>  <hop> <from>Maximum?</from><to>Validation Errors</to><enabled>Y</enabled> </hop>  <hop> <from>Minimum?</from><to>Validation Errors</to><enabled>Y</enabled> </hop>  <hop> <from>Minimum?</from><to>OK</to><enabled>Y</enabled> </hop>  <hop> <from>A7</from><to>In list of values?</to><enabled>Y</enabled> </hop>  <hop> <from>B7</from><to>In list of values?</to><enabled>Y</enabled> </hop>  <hop> <from>C7</from><to>In list of values?</to><enabled>Y</enabled> </hop>  <hop> <from>D7</from><to>In list of values?</to><enabled>Y</enabled> </hop>  <hop> <from>In list of values?</from><to>Validation Errors</to><enabled>Y</enabled> </hop>  <hop> <from>In list of values?</from><to>OK</to><enabled>Y</enabled> </hop>  <hop> <from>Validation Errors (alt)</from><to>Group by</to><enabled>Y</enabled> </hop>  <hop> <from>Validation Errors</from><to>Group by 2</to><enabled>Y</enabled> </hop>  <hop> <from>Group by</from><to>Total Caught</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 2</from><to>Total Caught</to><enabled>Y</enabled> </hop>  <hop> <from>Total Caught</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Abort</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>A1</from><to>Longer&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>Longer&#x3f;</from><to>Validation Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>A2</from><to>Shorter&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>Shorter&#x3f;</from><to>Validation Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>B1</from><to>Longer&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>Longer&#x3f;</from><to>OK</to><enabled>Y</enabled> </hop>
+  <hop> <from>B2</from><to>Shorter&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>Shorter&#x3f;</from><to>OK</to><enabled>Y</enabled> </hop>
+  <hop> <from>C1</from><to>Longer&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>C2</from><to>Shorter&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>A3</from><to>Null&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>B3</from><to>Null&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>Null&#x3f;</from><to>Validation Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>Null&#x3f;</from><to>OK</to><enabled>Y</enabled> </hop>
+  <hop> <from>A4</from><to>Data type&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>B4</from><to>Data type&#x3f; OK</to><enabled>Y</enabled> </hop>
+  <hop> <from>Data type&#x3f; OK</from><to>Validation Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>Data type&#x3f;</from><to>Validation Errors &#x28;alt&#x29;</to><enabled>Y</enabled> </hop>
+  <hop> <from>A5</from><to>Maximum&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>A6</from><to>Minimum&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>B5</from><to>Maximum&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>B6</from><to>Minimum&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>C5</from><to>Maximum&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>C6</from><to>Minimum&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>Maximum&#x3f;</from><to>OK</to><enabled>Y</enabled> </hop>
+  <hop> <from>Maximum&#x3f;</from><to>Validation Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>Minimum&#x3f;</from><to>Validation Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>Minimum&#x3f;</from><to>OK</to><enabled>Y</enabled> </hop>
+  <hop> <from>A7</from><to>In list of values&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>B7</from><to>In list of values&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>C7</from><to>In list of values&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>D7</from><to>In list of values&#x3f;</to><enabled>Y</enabled> </hop>
+  <hop> <from>In list of values&#x3f;</from><to>Validation Errors</to><enabled>Y</enabled> </hop>
+  <hop> <from>In list of values&#x3f;</from><to>OK</to><enabled>Y</enabled> </hop>
+  <hop> <from>Validation Errors &#x28;alt&#x29;</from><to>Group by</to><enabled>Y</enabled> </hop>
+  <hop> <from>Validation Errors</from><to>Group by 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Group by</from><to>Total Caught</to><enabled>Y</enabled> </hop>
+  <hop> <from>Group by 2</from><to>Total Caught</to><enabled>Y</enabled> </hop>
+  <hop> <from>Total Caught</from><to>Filter rows</to><enabled>Y</enabled> </hop>
+  <hop> <from>Filter rows</from><to>Abort</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>A1</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -126,9 +329,14 @@
         <nullif>ABCDE</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>267</xloc>
@@ -142,6 +350,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -158,9 +367,14 @@
         <nullif>AB</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>268</xloc>
@@ -174,6 +388,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -190,9 +405,14 @@
         <nullif>ABC</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>270</xloc>
@@ -206,6 +426,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -222,9 +443,14 @@
         <nullif>123</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>272</xloc>
@@ -238,6 +464,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -254,9 +481,14 @@
         <nullif>E</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>278</xloc>
@@ -270,6 +502,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -286,9 +519,14 @@
         <nullif>A</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>281</xloc>
@@ -302,6 +540,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -318,9 +557,14 @@
         <nullif>D</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>284</xloc>
@@ -334,13 +578,14 @@
     <type>Abort</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
       <row_threshold>0</row_threshold>
-      <message>WE DIDN&apos;T FIND EXACTLY 8 VALIDATION ERRORS!!</message>
+      <message>WE DIDN&#x27;T FIND EXACTLY 8 VALIDATION ERRORS&#x21;&#x21;</message>
       <always_log_rows>Y</always_log_rows>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -355,6 +600,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -371,9 +617,14 @@
         <nullif>ABC</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>323</xloc>
@@ -387,6 +638,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -403,9 +655,14 @@
         <nullif>ABC</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>328</xloc>
@@ -419,6 +676,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -435,9 +693,14 @@
         <nullif/>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>328</xloc>
@@ -451,6 +714,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -467,9 +731,14 @@
         <nullif>ABC</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>278</xloc>
@@ -483,6 +752,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -499,9 +769,14 @@
         <nullif>C</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>328</xloc>
@@ -515,6 +790,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -531,9 +807,14 @@
         <nullif>B</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>334</xloc>
@@ -547,6 +828,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -563,9 +845,14 @@
         <nullif>A</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>337</xloc>
@@ -579,6 +866,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -595,9 +883,14 @@
         <nullif>A</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>385</xloc>
@@ -611,6 +904,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -627,9 +921,14 @@
         <nullif>ABCD</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>386</xloc>
@@ -643,6 +942,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -659,9 +959,14 @@
         <nullif>A</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>376</xloc>
@@ -675,6 +980,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -691,9 +997,14 @@
         <nullif>C</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>383</xloc>
@@ -707,6 +1018,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -723,9 +1035,14 @@
         <nullif>B</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>386</xloc>
@@ -739,6 +1056,7 @@
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -755,9 +1073,14 @@
         <nullif>C</nullif>
         <length>-1</length>
         <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
       </field>
     </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>439</xloc>
@@ -767,19 +1090,26 @@
     </step>
 
   <step>
-    <name>Data type?</name>
+    <name>Data type&#x3f;</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>-1</max_length>
 <min_length>-1</min_length>
 <null_allowed>N</null_allowed>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
 <data_type>String</data_type>
 <data_type_verified>Y</data_type_verified>
 <conversion_mask/>
@@ -787,6 +1117,17 @@
 <grouping_symbol/>
 <max_value/>
 <min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value></allowed_value></validator_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -797,19 +1138,26 @@
     </step>
 
   <step>
-    <name>Data type? OK</name>
+    <name>Data type&#x3f; OK</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>-1</max_length>
 <min_length>-1</min_length>
 <null_allowed>N</null_allowed>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
 <data_type>String</data_type>
 <data_type_verified>Y</data_type_verified>
 <conversion_mask/>
@@ -817,6 +1165,17 @@
 <grouping_symbol/>
 <max_value/>
 <min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value></allowed_value></validator_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -831,6 +1190,7 @@
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -842,9 +1202,9 @@
 <condition>
  <negated>N</negated>
  <leftvalue>nrCaught</leftvalue>
- <function>&lt;&gt;</function>
+ <function>&#x3c;&#x3e;</function>
  <rightvalue/>
- <value><name>constant</name><type>Integer</type><text>7</text><length>-1</length><precision>0</precision><isnull>N</isnull></value> </condition>
+ <value><name>constant</name><type>Integer</type><text>7</text><length>-1</length><precision>0</precision><isnull>N</isnull><mask>&#x23;&#x3b;-&#x23;</mask></value> </condition>
     </compare>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -859,6 +1219,7 @@
     <type>GroupBy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -867,10 +1228,11 @@
       <all_rows>N</all_rows>
       <ignore_aggregate>N</ignore_aggregate>
       <field_ignore/>
-      <directory>%%java.io.tmpdir%%</directory>
+      <directory>&#x25;&#x25;java.io.tmpdir&#x25;&#x25;</directory>
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
       </group>
       <fields>
@@ -878,6 +1240,7 @@
           <aggregate>nrCaught</aggregate>
           <subject>ErrorCount</subject>
           <type>SUM</type>
+          <valuefield/>
         </field>
       </fields>
      <cluster_schema/>
@@ -893,6 +1256,7 @@
     <type>GroupBy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -901,10 +1265,11 @@
       <all_rows>N</all_rows>
       <ignore_aggregate>N</ignore_aggregate>
       <field_ignore/>
-      <directory>%%java.io.tmpdir%%</directory>
+      <directory>&#x25;&#x25;java.io.tmpdir&#x25;&#x25;</directory>
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
       </group>
       <fields>
@@ -912,6 +1277,7 @@
           <aggregate>nrCaught</aggregate>
           <subject>ErrorCount</subject>
           <type>SUM</type>
+          <valuefield/>
         </field>
       </fields>
      <cluster_schema/>
@@ -923,19 +1289,26 @@
     </step>
 
   <step>
-    <name>In list of values?</name>
+    <name>In list of values&#x3f;</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>-1</max_length>
 <min_length>-1</min_length>
 <null_allowed>N</null_allowed>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
 <data_type>String</data_type>
 <data_type_verified>N</data_type_verified>
 <conversion_mask/>
@@ -943,6 +1316,17 @@
 <grouping_symbol/>
 <max_value/>
 <min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value><value>A</value>
 <value>B</value>
 <value>C</value>
@@ -956,26 +1340,44 @@
     </step>
 
   <step>
-    <name>Longer?</name>
+    <name>Longer&#x3f;</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>3</max_length>
 <min_length>-1</min_length>
 <null_allowed>Y</null_allowed>
-<data_type>-</data_type>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
+<data_type>None</data_type>
 <data_type_verified>N</data_type_verified>
 <conversion_mask/>
 <decimal_symbol/>
 <grouping_symbol/>
 <max_value/>
 <min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value></allowed_value></validator_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -986,19 +1388,26 @@
     </step>
 
   <step>
-    <name>Maximum?</name>
+    <name>Maximum&#x3f;</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>-1</max_length>
 <min_length>-1</min_length>
 <null_allowed>Y</null_allowed>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
 <data_type>String</data_type>
 <data_type_verified>N</data_type_verified>
 <conversion_mask/>
@@ -1006,6 +1415,17 @@
 <grouping_symbol/>
 <max_value>C</max_value>
 <min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value></allowed_value></validator_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -1016,19 +1436,26 @@
     </step>
 
   <step>
-    <name>Minimum?</name>
+    <name>Minimum&#x3f;</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>-1</max_length>
 <min_length>-1</min_length>
 <null_allowed>N</null_allowed>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
 <data_type>String</data_type>
 <data_type_verified>N</data_type_verified>
 <conversion_mask/>
@@ -1036,6 +1463,17 @@
 <grouping_symbol/>
 <max_value/>
 <min_value>B</min_value>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value></allowed_value></validator_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -1046,26 +1484,44 @@
     </step>
 
   <step>
-    <name>Null?</name>
+    <name>Null&#x3f;</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>-1</max_length>
 <min_length>-1</min_length>
 <null_allowed>N</null_allowed>
-<data_type>-</data_type>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
+<data_type>None</data_type>
 <data_type_verified>N</data_type_verified>
 <conversion_mask/>
 <decimal_symbol/>
 <grouping_symbol/>
 <max_value/>
 <min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value></allowed_value></validator_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -1080,6 +1536,7 @@
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -1094,26 +1551,44 @@
     </step>
 
   <step>
-    <name>Shorter?</name>
+    <name>Shorter&#x3f;</name>
     <type>Validator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
        <validator_field><name>A</name>
+<validation_name>A</validation_name>
 <max_length>-1</max_length>
 <min_length>3</min_length>
 <null_allowed>N</null_allowed>
-<data_type>-</data_type>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
+<data_type>None</data_type>
 <data_type_verified>N</data_type_verified>
 <conversion_mask/>
 <decimal_symbol/>
 <grouping_symbol/>
 <max_value/>
 <min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>N</is_sourcing_values>
+<sourcing_step/>
+<sourcing_field/>
 <allowed_value></allowed_value></validator_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -1128,6 +1603,7 @@
     <type>GroupBy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -1136,10 +1612,11 @@
       <all_rows>N</all_rows>
       <ignore_aggregate>N</ignore_aggregate>
       <field_ignore/>
-      <directory>%%java.io.tmpdir%%</directory>
+      <directory>&#x25;&#x25;java.io.tmpdir&#x25;&#x25;</directory>
       <prefix>grp</prefix>
       <add_linenr>N</add_linenr>
       <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
       <group>
       </group>
       <fields>
@@ -1147,6 +1624,7 @@
           <aggregate>nrCaught</aggregate>
           <subject>nrCaught</subject>
           <type>SUM</type>
+          <valuefield/>
         </field>
       </fields>
      <cluster_schema/>
@@ -1162,6 +1640,7 @@
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -1176,10 +1655,11 @@
     </step>
 
   <step>
-    <name>Validation Errors (alt)</name>
+    <name>Validation Errors &#x28;alt&#x29;</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -1195,8 +1675,8 @@
 
   <step_error_handling>
       <error>
-        <source_step>Data type?</source_step>
-        <target_step>Validation Errors (alt)</target_step>
+        <source_step>Data type&#x3f;</source_step>
+        <target_step>Validation Errors &#x28;alt&#x29;</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
         <descriptions_valuename>ErrorDescription</descriptions_valuename>
@@ -1207,7 +1687,7 @@
         <min_pct_rows>-1</min_pct_rows>
       </error>
       <error>
-        <source_step>Data type? OK</source_step>
+        <source_step>Data type&#x3f; OK</source_step>
         <target_step>Validation Errors</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
@@ -1219,7 +1699,7 @@
         <min_pct_rows>-1</min_pct_rows>
       </error>
       <error>
-        <source_step>In list of values?</source_step>
+        <source_step>In list of values&#x3f;</source_step>
         <target_step>Validation Errors</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
@@ -1231,7 +1711,7 @@
         <min_pct_rows>-1</min_pct_rows>
       </error>
       <error>
-        <source_step>Longer?</source_step>
+        <source_step>Longer&#x3f;</source_step>
         <target_step>Validation Errors</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
@@ -1243,7 +1723,7 @@
         <min_pct_rows>-1</min_pct_rows>
       </error>
       <error>
-        <source_step>Maximum?</source_step>
+        <source_step>Maximum&#x3f;</source_step>
         <target_step>Validation Errors</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
@@ -1255,7 +1735,7 @@
         <min_pct_rows>-1</min_pct_rows>
       </error>
       <error>
-        <source_step>Minimum?</source_step>
+        <source_step>Minimum&#x3f;</source_step>
         <target_step>Validation Errors</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
@@ -1267,7 +1747,7 @@
         <min_pct_rows>-1</min_pct_rows>
       </error>
       <error>
-        <source_step>Null?</source_step>
+        <source_step>Null&#x3f;</source_step>
         <target_step>Validation Errors</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
@@ -1279,7 +1759,7 @@
         <min_pct_rows>-1</min_pct_rows>
       </error>
       <error>
-        <source_step>Shorter?</source_step>
+        <source_step>Shorter&#x3f;</source_step>
         <target_step>Validation Errors</target_step>
         <is_enabled>Y</is_enabled>
         <nr_valuename>ErrorCount</nr_valuename>
@@ -1294,4 +1774,5 @@
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

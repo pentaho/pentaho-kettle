@@ -33,9 +33,10 @@
   <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
 
   <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
-	
-  <target name="assemble" depends="resolve-swtlibs,subfloor-pkg.assemble" description="copy jar files to distribution directory" >
-  	<echo>Construct the distribution package...</echo>
+
+  <target name="assemble" depends="resolve-swtlibs,create-sampledb-from-sql,subfloor-pkg.assemble"
+          description="copy jar files to distribution directory">
+    <echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
     <chmod file="${approot.stage.dir}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
   	<!-- insert version info into the canned info.plist -->
@@ -173,5 +174,34 @@
         <include name="**/*.zip"/>
       </fileset>
     </unzip>
-  </target>  
+  </target>
+
+  <target name="create-sampledb-from-sql">
+    <property name="samples.db.dir" value="${package.resdir}/samples/db"/>
+    <echo message="${samples.db.dir}"/>
+    <property file="${samples.db.dir}/sampledb.init.properties"/>
+    <property name="db.postfix" value="db"/>
+    <delete quiet="true" includeemptydirs="true">
+      <dirset dir="${samples.db.dir}" includes="**/${sample.db.name}*${db.postfix}"/>
+      <fileset dir="${samples.db.dir}" includes="**/${sample.db.name}*${db.postfix}"/>
+    </delete>
+    <echo message="${sample.db.url}${samples.db.dir}/${sample.db.name}" />
+    <sql
+        driver="${sample.db.driver}"
+        url="${sample.db.url}${samples.db.dir}/${sample.db.name}"
+        userid="${sample.db.driver}"
+        password="${sample.db.password}"
+        >
+      <path>
+        <fileset dir="${samples.db.dir}">
+          <include name="**/*.sql"/>
+        </fileset>
+      </path>
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="**/h2*.jar"/>
+        </fileset>
+      </classpath>
+    </sql>
+  </target>
 </project>

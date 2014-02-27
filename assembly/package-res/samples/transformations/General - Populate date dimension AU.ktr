@@ -5,19 +5,40 @@
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
+    <parameters>
+    </parameters>
     <log>
-      <read/>
-      <write/>
-      <input/>
-      <output/>
-      <update/>
-      <rejected/>
-      <connection/>
-      <table/>
-      <use_batchid>N</use_batchid>
-      <use_logfield>N</use_logfield>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>N</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -34,6 +55,9 @@
     <feedback_size>5000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -42,42 +66,102 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2014&#x2f;02&#x2f;26 15&#x3a;30&#x3a;16.506</created_date>
   <modified_user/>
-  <modified_date>2007&#47;01&#47;17 10:48:08.793</modified_date>
+  <modified_date>2007&#x2f;01&#x2f;17 10&#x3a;48&#x3a;08.793</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note> Dimension Day
-=========
-1.  This data flow loads basic date dimenson columns.
-2.  It is based on a transformation created by Matt Casters at Pentaho (a few additions added by Breadboard BI and BizCubed Pty Ltd)</note>
+      <note> Dimension Day&#xa;&#x3d;&#x3d;&#x3d;&#x3d;&#x3d;&#x3d;&#x3d;&#x3d;&#x3d;&#xa;1.  This data flow loads basic date dimenson columns.&#xa;2.  It is based on a transformation created by Matt Casters at Pentaho &#x28;a few additions added by Breadboard BI and BizCubed Pty Ltd&#x29;</note>
       <xloc>10</xloc>
       <yloc>11</yloc>
       <width>840</width>
       <heigth>74</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>DAY_DESC format is day-month-year.  This is good for Australia...
-to change edit java script step
-Weeks run from Sunday to Saturday.  If you need something else, you will need to modify the tranform
-</note>
+      <note>DAY_DESC format is day-month-year.  This is good for Australia...&#xa;to change edit java script step&#xa;Weeks run from Sunday to Saturday.  If you need something else, you will need to modify the tranform&#xa;</note>
       <xloc>52</xloc>
       <yloc>508</yloc>
       <width>654</width>
       <heigth>74</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>, </access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>40000 days: 100+ years</from><to>Days_since</to><enabled>Y</enabled> </hop>  <hop> <from>Days_since</from><to>Calc Date</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc Gen</from><to>DayOfWeekDesc Norm</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc Norm</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc Gen</from><to>MonthDesc Norm</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc Norm</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>Java Script Value</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc</from><to>Select values 2</to><enabled>Y</enabled> </hop>  <hop> <from>Select values 2</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Calc Date</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>DIMENSION_DAY</to><enabled>N</enabled> </hop>  </order>
+  <hop> <from>40000 days&#x3a; 100&#x2b; years</from><to>Days_since</to><enabled>Y</enabled> </hop>
+  <hop> <from>Days_since</from><to>Calc Date</to><enabled>Y</enabled> </hop>
+  <hop> <from>DayOfWeekDesc Gen</from><to>DayOfWeekDesc Norm</to><enabled>Y</enabled> </hop>
+  <hop> <from>DayOfWeekDesc Norm</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>
+  <hop> <from>MonthDesc Gen</from><to>MonthDesc Norm</to><enabled>Y</enabled> </hop>
+  <hop> <from>MonthDesc Norm</from><to>MonthDesc</to><enabled>Y</enabled> </hop>
+  <hop> <from>Java Script Value</from><to>Select values</to><enabled>Y</enabled> </hop>
+  <hop> <from>MonthDesc</from><to>Select values 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Select values 2</from><to>Java Script Value</to><enabled>Y</enabled> </hop>
+  <hop> <from>Calc Date</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>
+  <hop> <from>DayOfWeekDesc</from><to>MonthDesc</to><enabled>Y</enabled> </hop>
+  <hop> <from>Select values</from><to>DIMENSION_DAY</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
-    <name>40000 days: 100+ years</name>
+    <name>40000 days&#x3a; 100&#x2b; years</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -91,11 +175,16 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>19500101</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
     <limit>40000</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>50</xloc>
       <yloc>224</yloc>
       <draw>Y</draw>
@@ -107,10 +196,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
     <type>Calculator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
        <calculation><field_name>one</field_name>
@@ -122,6 +211,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>1</value_length>
 <value_precision>0</value_precision>
 <remove>Y</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>2_9</field_name>
 <calc_type>CONSTANT</calc_type>
@@ -132,6 +225,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0.0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>33</field_name>
 <calc_type>CONSTANT</calc_type>
@@ -142,6 +239,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0.0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>v_date</field_name>
 <calc_type>ADD_DAYS</calc_type>
@@ -152,6 +253,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>Year</field_name>
 <calc_type>YEAR_OF_DATE</calc_type>
@@ -162,6 +267,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>4</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>Month</field_name>
 <calc_type>MONTH_OF_DATE</calc_type>
@@ -172,6 +281,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>2</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>MntTmp</field_name>
 <calc_type>MONTH_OF_DATE</calc_type>
@@ -182,6 +295,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0.0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>DayOfYear</field_name>
 <calc_type>DAY_OF_YEAR</calc_type>
@@ -192,6 +309,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>3</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>DayOfMonth</field_name>
 <calc_type>DAY_OF_MONTH</calc_type>
@@ -202,6 +323,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>2</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>DayOfWeek</field_name>
 <calc_type>DAY_OF_WEEK</calc_type>
@@ -212,6 +337,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>1</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>WeekOfYear</field_name>
 <calc_type>WEEK_OF_YEAR</calc_type>
@@ -222,6 +351,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>2</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>QuarterTmp</field_name>
 <calc_type>DIVIDE</calc_type>
@@ -232,6 +365,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0.0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>Quarter</field_name>
 <calc_type>ADD</calc_type>
@@ -242,6 +379,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>date_tk</field_name>
 <calc_type>ADD</calc_type>
@@ -252,6 +393,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>1</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>QuarterConstant</field_name>
 <calc_type>CONSTANT</calc_type>
@@ -262,6 +407,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>QuarterName</field_name>
 <calc_type>ADD</calc_type>
@@ -272,6 +421,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>2</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>YearQuarterName</field_name>
 <calc_type>ADD</calc_type>
@@ -282,6 +435,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>32</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>weekofmnthtmp1</field_name>
 <calc_type>SUBTRACT</calc_type>
@@ -292,6 +449,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0.0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>seven</field_name>
 <calc_type>CONSTANT</calc_type>
@@ -302,6 +463,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>weekofmnthtmp2</field_name>
 <calc_type>DIVIDE</calc_type>
@@ -312,6 +477,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0.0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>1_49</field_name>
 <calc_type>CONSTANT</calc_type>
@@ -322,6 +491,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask>0.0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>week_of_month_number</field_name>
 <calc_type>ADD</calc_type>
@@ -332,6 +505,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>WeekConstant</field_name>
 <calc_type>CONSTANT</calc_type>
@@ -342,6 +519,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>1</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>week_of_month_name</field_name>
 <calc_type>ADD</calc_type>
@@ -352,6 +533,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>week_name_tmp</field_name>
 <calc_type>ADD</calc_type>
@@ -362,6 +547,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>4</value_length>
 <value_precision>-1</value_precision>
 <remove>Y</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>week_name</field_name>
 <calc_type>ADD</calc_type>
@@ -372,9 +561,13 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 <value_length>32</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>258</xloc>
       <yloc>225</yloc>
       <draw>Y</draw>
@@ -386,13 +579,13 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
     <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <connection>iman</connection>
+    <connection>Sampledata</connection>
     <commit>100</commit>
     <update_bypassed>N</update_bypassed>
     <lookup>
@@ -401,7 +594,7 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
       <key>
         <name>DATE_SK</name>
         <field>DATE_SK</field>
-        <condition>=</condition>
+        <condition>&#x3d;</condition>
         <name2/>
       </key>
       <value>
@@ -531,7 +724,7 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>931</xloc>
       <yloc>219</yloc>
       <draw>Y</draw>
@@ -543,10 +736,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
     <type>StreamLookup</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <from>DayOfWeekDesc Norm</from>
@@ -579,7 +772,7 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>418</xloc>
       <yloc>219</yloc>
       <draw>Y</draw>
@@ -591,10 +784,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -608,7 +801,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>2</nullif>
         <length>1</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDesc1</name>
         <type>String</type>
@@ -619,7 +813,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Monday</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDescShort1</name>
         <type>String</type>
@@ -630,7 +825,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>MON</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>WeekendInd1</name>
         <type>String</type>
@@ -641,7 +837,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>N</nullif>
         <length>1</length>
         <precision>-1</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayNr2</name>
         <type>Integer</type>
@@ -652,7 +849,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>3</nullif>
         <length>1</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDesc2</name>
         <type>String</type>
@@ -663,7 +861,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Tuesday</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDescShort2</name>
         <type>String</type>
@@ -674,7 +873,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>TUE</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>WeekendInd2</name>
         <type>String</type>
@@ -685,7 +885,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>N</nullif>
         <length>1</length>
         <precision>-1</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayNr3</name>
         <type>Integer</type>
@@ -696,7 +897,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>4</nullif>
         <length>1</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDesc3</name>
         <type>String</type>
@@ -707,7 +909,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Wednesday</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDescShort3</name>
         <type>String</type>
@@ -718,7 +921,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>WED</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>WeekendInd3</name>
         <type>String</type>
@@ -729,7 +933,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>N</nullif>
         <length>1</length>
         <precision>-1</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayNr4</name>
         <type>Integer</type>
@@ -740,7 +945,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>5</nullif>
         <length>1</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDesc4</name>
         <type>String</type>
@@ -751,7 +957,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Thursday</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDescShort4</name>
         <type>String</type>
@@ -762,7 +969,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>THU</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>WeekendInd4</name>
         <type>String</type>
@@ -773,7 +981,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>N</nullif>
         <length>1</length>
         <precision>-1</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayNr5</name>
         <type>Integer</type>
@@ -784,7 +993,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>6</nullif>
         <length>1</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDesc5</name>
         <type>String</type>
@@ -795,7 +1005,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Friday</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDescShort5</name>
         <type>String</type>
@@ -806,7 +1017,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>FRI</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>WeekendInd5</name>
         <type>String</type>
@@ -817,7 +1029,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>N</nullif>
         <length>1</length>
         <precision>-1</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayNr6</name>
         <type>Integer</type>
@@ -828,7 +1041,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>7</nullif>
         <length>1</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDesc6</name>
         <type>String</type>
@@ -839,7 +1053,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Saturday</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDescShort6</name>
         <type>String</type>
@@ -850,7 +1065,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>SAT</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>WeekendInd6</name>
         <type>String</type>
@@ -861,7 +1077,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Y</nullif>
         <length>1</length>
         <precision>-1</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayNr7</name>
         <type>Integer</type>
@@ -872,7 +1089,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>1</nullif>
         <length>1</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDesc7</name>
         <type>String</type>
@@ -883,7 +1101,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Sunday</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>DayDescShort7</name>
         <type>String</type>
@@ -894,7 +1113,8 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>SUN</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>WeekendInd7</name>
         <type>String</type>
@@ -905,11 +1125,16 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <nullif>Y</nullif>
         <length>1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>419</xloc>
       <yloc>434</yloc>
       <draw>Y</draw>
@@ -921,10 +1146,10 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
     <type>Normaliser</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
    <typefield>typefield</typefield>
@@ -1013,7 +1238,7 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
         <value>7</value>
         <norm>WeekendInd</norm>
         </field>      </fields>     <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>416</xloc>
       <yloc>324</yloc>
       <draw>Y</draw>
@@ -1025,15 +1250,15 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
     <type>Sequence</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <valuename>Days_since</valuename>
       <use_database>N</use_database>
-      <connection>breadboardbi</connection>
+      <connection/>
       <schema/>
       <seqname>SEQ_</seqname>
       <use_counter>Y</use_counter>
@@ -1042,7 +1267,7 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
       <increment_by>1</increment_by>
       <max_value>10000000</max_value>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>157</xloc>
       <yloc>227</yloc>
       <draw>Y</draw>
@@ -1051,77 +1276,82 @@ Weeks run from Sunday to Saturday.  If you need something else, you will need to
 
   <step>
     <name>Java Script Value</name>
-    <type>ScriptValue</type>
+    <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <script>var DATE_SK = IN_DATE.Clone().dat2str(&quot;yyyyMMdd&quot;).getInteger();
-var DAY_DESC = IN_DATE.Clone().dat2str(&quot;dd-MM-yyyy&quot;).getString();
-var OUT_DATE = IN_DATE.Clone();
-var DAYS_IN_MONTH_QTY = IN_DATE.Clone().last_day().dat2str(&quot;dd&quot;);
-var WEEK_SK = IN_DATE.Clone().dat2str(&quot;yyyyWW&quot;).getInteger();
-var MONTH_SK = IN_DATE.Clone().dat2str(&quot;MM&quot;).getInteger();
-var YEAR_SK = IN_DATE.Clone().dat2str(&quot;yyyy&quot;).getInteger();
-var QUARTER_SK = Quarter.Clone();
-var YEAR_SORT_NUMBER = IN_DATE.Clone().dat2str(&quot;yyyy&quot;)
-var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
-    <fields>      <field>        <name>DATE_SK</name>
+    <compatible>Y</compatible>
+    <optimizationLevel/>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>ScriptValue</jsScript_name>
+        <jsScript_script>var DATE_SK &#x3d; IN_DATE.Clone&#x28;&#x29;.dat2str&#x28;&#x22;yyyyMMdd&#x22;&#x29;.getInteger&#x28;&#x29;&#x3b;&#xa;var DAY_DESC &#x3d; IN_DATE.Clone&#x28;&#x29;.dat2str&#x28;&#x22;dd-MM-yyyy&#x22;&#x29;.getString&#x28;&#x29;&#x3b;&#xa;var OUT_DATE &#x3d; IN_DATE.Clone&#x28;&#x29;&#x3b;&#xa;var DAYS_IN_MONTH_QTY &#x3d; IN_DATE.Clone&#x28;&#x29;.last_day&#x28;&#x29;.dat2str&#x28;&#x22;dd&#x22;&#x29;&#x3b;&#xa;var WEEK_SK &#x3d; IN_DATE.Clone&#x28;&#x29;.dat2str&#x28;&#x22;yyyyWW&#x22;&#x29;.getInteger&#x28;&#x29;&#x3b;&#xa;var MONTH_SK &#x3d; IN_DATE.Clone&#x28;&#x29;.dat2str&#x28;&#x22;MM&#x22;&#x29;.getInteger&#x28;&#x29;&#x3b;&#xa;var YEAR_SK &#x3d; IN_DATE.Clone&#x28;&#x29;.dat2str&#x28;&#x22;yyyy&#x22;&#x29;.getInteger&#x28;&#x29;&#x3b;&#xa;var QUARTER_SK &#x3d; Quarter.Clone&#x28;&#x29;&#x3b;&#xa;var YEAR_SORT_NUMBER &#x3d; IN_DATE.Clone&#x28;&#x29;.dat2str&#x28;&#x22;yyyy&#x22;&#x29;&#xa;var DAY_OF_WEEK_SORT_NAME &#x3d; &#x22;Day &#x22; &#x2b; DayOfWeek.getInteger&#x28;&#x29;&#x3b;</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>DATE_SK</name>
         <rename>DATE_SK</rename>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      <field>        <name>DAY_DESC</name>
+        <replace>N</replace>
+      </field>      <field>        <name>DAY_DESC</name>
         <rename>DAY_DESC</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      <field>        <name>OUT_DATE</name>
+        <replace>N</replace>
+      </field>      <field>        <name>OUT_DATE</name>
         <rename>DAY_DATE</rename>
         <type>Date</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      <field>        <name>DAYS_IN_MONTH_QTY</name>
+        <replace>N</replace>
+      </field>      <field>        <name>DAYS_IN_MONTH_QTY</name>
         <rename>DAYS_IN_MONTH_QTY</rename>
         <type>Integer</type>
         <length>2</length>
         <precision>-1</precision>
-        </field>      <field>        <name>WEEK_SK</name>
+        <replace>N</replace>
+      </field>      <field>        <name>WEEK_SK</name>
         <rename>WEEK_SK</rename>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      <field>        <name>MONTH_SK</name>
+        <replace>N</replace>
+      </field>      <field>        <name>MONTH_SK</name>
         <rename>MONTH_SK</rename>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      <field>        <name>YEAR_SK</name>
+        <replace>N</replace>
+      </field>      <field>        <name>YEAR_SK</name>
         <rename>YEAR_SK</rename>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      <field>        <name>QUARTER_SK</name>
+        <replace>N</replace>
+      </field>      <field>        <name>QUARTER_SK</name>
         <rename>QUARTER_SK</rename>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>      <field>        <name>YEAR_SORT_NUMBER</name>
+        <replace>N</replace>
+      </field>      <field>        <name>YEAR_SORT_NUMBER</name>
         <rename>YEAR_SORT_NUMBER</rename>
         <type>String</type>
         <length>4</length>
         <precision>-1</precision>
-        </field>      <field>        <name>DAY_OF_WEEK_SORT_NAME</name>
+        <replace>N</replace>
+      </field>      <field>        <name>DAY_OF_WEEK_SORT_NAME</name>
         <rename>DAY_OF_WEEK_SORT_NAME</rename>
         <type>String</type>
         <length>60</length>
         <precision>-1</precision>
-        </field>      </fields>     <cluster_schema/>
-    <GUI>
+        <replace>N</replace>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>736</xloc>
       <yloc>215</yloc>
       <draw>Y</draw>
@@ -1133,10 +1363,10 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
     <type>StreamLookup</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <from>MonthDesc Norm</from>
@@ -1163,7 +1393,7 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>547</xloc>
       <yloc>219</yloc>
       <draw>Y</draw>
@@ -1175,10 +1405,10 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -1192,7 +1422,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>January</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short1</name>
         <type>String</type>
@@ -1203,7 +1434,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>JAN</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc2</name>
         <type>String</type>
@@ -1214,7 +1446,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>February</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short2</name>
         <type>String</type>
@@ -1225,7 +1458,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>FEB</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc3</name>
         <type>String</type>
@@ -1236,7 +1470,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>March</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short3</name>
         <type>String</type>
@@ -1247,7 +1482,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>MAR</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc4</name>
         <type>String</type>
@@ -1258,7 +1494,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>April</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short4</name>
         <type>String</type>
@@ -1269,7 +1506,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>APR</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc5</name>
         <type>String</type>
@@ -1280,7 +1518,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>May</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short5</name>
         <type>String</type>
@@ -1291,7 +1530,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>MAY</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc6</name>
         <type>String</type>
@@ -1302,7 +1542,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>June</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short6</name>
         <type>String</type>
@@ -1313,7 +1554,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>JUN</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc7</name>
         <type>String</type>
@@ -1324,7 +1566,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>July</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short7</name>
         <type>String</type>
@@ -1335,7 +1578,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>JUL</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc8</name>
         <type>String</type>
@@ -1346,7 +1590,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>August</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short8</name>
         <type>String</type>
@@ -1357,7 +1602,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>AUG</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc9</name>
         <type>String</type>
@@ -1368,7 +1614,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>September</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short9</name>
         <type>String</type>
@@ -1379,7 +1626,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>SEP</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc10</name>
         <type>String</type>
@@ -1390,7 +1638,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>October</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short10</name>
         <type>String</type>
@@ -1401,7 +1650,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>OCT</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc11</name>
         <type>String</type>
@@ -1412,7 +1662,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>November</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short11</name>
         <type>String</type>
@@ -1423,7 +1674,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>NOV</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>desc12</name>
         <type>String</type>
@@ -1434,7 +1686,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>December</nullif>
         <length>30</length>
         <precision>0</precision>
-        </field>
+        <set_empty_string>N</set_empty_string>
+      </field>
       <field>
         <name>short12</name>
         <type>String</type>
@@ -1445,11 +1698,16 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <nullif>DEC</nullif>
         <length>3</length>
         <precision>0</precision>
-        </field>
-      </fields>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
     <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>557</xloc>
       <yloc>436</yloc>
       <draw>Y</draw>
@@ -1461,10 +1719,10 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
     <type>Normaliser</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
    <typefield>MonthNr</typefield>
@@ -1541,7 +1799,7 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <value>12</value>
         <norm>MonthDescShort</norm>
         </field>      </fields>     <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>549</xloc>
       <yloc>323</yloc>
       <draw>Y</draw>
@@ -1553,10 +1811,10 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>      <field>        <name>Year</name>
@@ -1659,8 +1917,9 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <rename/>
         <length>-2</length>
         <precision>-2</precision>
-      </field>    </fields>     <cluster_schema/>
-    <GUI>
+      </field>        <select_unspecified>N</select_unspecified>
+    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>823</xloc>
       <yloc>215</yloc>
       <draw>Y</draw>
@@ -1672,10 +1931,10 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>      <field>        <name>v_date</name>
@@ -1762,8 +2021,9 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
         <rename/>
         <length>-2</length>
         <precision>-2</precision>
-      </field>    </fields>     <cluster_schema/>
-    <GUI>
+      </field>        <select_unspecified>N</select_unspecified>
+    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>633</xloc>
       <yloc>216</yloc>
       <draw>Y</draw>
@@ -1772,4 +2032,8 @@ var DAY_OF_WEEK_SORT_NAME = &quot;Day &quot; + DayOfWeek.getInteger();</script>
 
   <step_error_handling>
   </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+
 </transformation>
