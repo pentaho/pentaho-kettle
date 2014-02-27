@@ -590,6 +590,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
 
     setName(oldInterface.getName());
+    setDisplayName( oldInterface.getDisplayName() );
     setAccessType(oldInterface.getAccessType());
     setHostname(oldInterface.getHostname());
     setDBName(oldInterface.getDatabaseName());
@@ -624,6 +625,19 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   @Override
   public String getName() {
     return databaseInterface.getName();
+  }
+
+  public void setDisplayName( String displayName ) {
+    databaseInterface.setDisplayName( displayName );
+  }
+
+  /**
+   * Returns the name of the database connection
+   *
+   * @return The name of the database connection
+   */
+  public String getDisplayName() {
+    return databaseInterface.getDisplayName();
   }
 
   /**
@@ -870,6 +884,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       }
 
       setName(XMLHandler.getTagValue(con, "name"));
+      setDisplayName( getName() );
       setHostname(XMLHandler.getTagValue(con, "server"));
       String acc = XMLHandler.getTagValue(con, "access");
       setAccessType(getAccessType(acc));

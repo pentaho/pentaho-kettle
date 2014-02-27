@@ -92,8 +92,19 @@ public interface DatabaseInterface extends Cloneable
 	 * @param name The connection Name to set.
 	 */
 	public void setName(String name);
-	
-	/**
+
+  /**
+   * @return Returns the un-escaped connection Name.
+   */
+  public String getDisplayName();
+
+  /**
+   * @param displayName
+   * The un-escaped connection Name to set.
+   */
+  public void setDisplayName( String displayName );
+
+  /**
 	 * @return Returns the databaseName.
 	 */
 	public String getDatabaseName();
