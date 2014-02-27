@@ -77,6 +77,7 @@ public class SimpleMapping extends BaseStep implements StepInterface
 			
 			if (first) {
 			  first=false;
+			  data.wasStarted = true;
 
 		    // Rows read are injected into the one available Mapping Input step
 		    //
@@ -303,13 +304,14 @@ public class SimpleMapping extends BaseStep implements StepInterface
   public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
     // Close the running transformation
     if (data.wasStarted) {
+    	if ( !data.mappingTrans.isFinished() ) {
       // Wait until the child transformation has finished.
       data.mappingTrans.waitUntilFinished();
 
       // Remove it from the list of active sub-transformations...
       //
       getTrans().getActiveSubtransformations().remove(getStepname());
-
+    	}
       // See if there was an error in the sub-transformation, in that case, flag error etc.
       if (data.mappingTrans.getErrors() > 0) {
         logError(BaseMessages.getString(PKG, "SimpleMapping.Log.ErrorOccurredInSubTransformation"));
