@@ -24,7 +24,12 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 
 import java.util.List;
 
-import org.pentaho.di.core.*;
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleAttributeInterface;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -32,7 +37,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -43,8 +47,13 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
-import org.pentaho.di.trans.steps.selectvalues.SelectMetadataChange;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -54,8 +63,8 @@ import org.w3c.dom.Node;
  * @author Sven Boden (originally)
  */
 public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionInterface, StepMetaInterface,
-
   ProvidesDatabaseConnectionInformation {
+
   private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** what's the schema for the target? */
@@ -689,75 +698,69 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
   }
 
 
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return this;
+  }
 
-    public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-        return this;
-    }
+  /**
+   * Describe the metadata attributes that can be injected into this step metadata object.
+   */
+  public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() {
+    return getStepInjectionMetadataEntries( PKG );
+  }
 
-    /**
-     * Describe the metadata attributes that can be injected into this step metadata object.
-     */
-    public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() {
-        return getStepInjectionMetadataEntries( PKG );
-    }
+  public void injectStepMetadataEntries( List<StepInjectionMetaEntry> metadata ) {
+    for ( StepInjectionMetaEntry entry : metadata ) {
+      KettleAttributeInterface attr = findAttribute( entry.getKey() );
 
-    public void injectStepMetadataEntries( List<StepInjectionMetaEntry> metadata ) {
-        for ( StepInjectionMetaEntry entry : metadata ) {
-            KettleAttributeInterface attr = findAttribute( entry.getKey() );
+      // Set top level attributes...
+      //
+      if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
 
-            // Set top level attributes...
-            //
-            if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
-            } else {
-                // The data sets...
-                //
-                if ( attr.getKey().equals( "MAPPINGS" ) ) {
-                    List<StepInjectionMetaEntry> selectMappings = entry.getDetails();
+        logBasic( "TODO" );
+      } else {
+        // The data sets...
+        //
+        if ( attr.getKey().equals( "MAPPINGS" ) ) {
+          List<StepInjectionMetaEntry> selectMappings = entry.getDetails();
 
-                    fieldTable = new String [selectMappings.size()];
-                    fieldStream = new String[selectMappings.size()];
-                    dateMask = new String[selectMappings.size()];
+          fieldTable = new String[selectMappings.size()];
+          fieldStream = new String[selectMappings.size()];
+          dateMask = new String[selectMappings.size()];
 
-                    for ( int row = 0; row < selectMappings.size(); row++ ) {
-                        StepInjectionMetaEntry selectField = selectMappings.get( row );
+          for ( int row = 0; row < selectMappings.size(); row++ ) {
+            StepInjectionMetaEntry selectField = selectMappings.get( row );
 
-                        List<StepInjectionMetaEntry> fieldAttributes = selectField.getDetails();
-                        //CHECKSTYLE:Indentation:OFF
-                        for ( int i = 0; i < fieldAttributes.size(); i++ ) {
-                            StepInjectionMetaEntry fieldAttribute = fieldAttributes.get( i );
-                            KettleAttributeInterface fieldAttr = findAttribute( fieldAttribute.getKey() );
+            List<StepInjectionMetaEntry> fieldAttributes = selectField.getDetails();
+            //CHECKSTYLE:Indentation:OFF
+            for ( int i = 0; i < fieldAttributes.size(); i++ ) {
+              StepInjectionMetaEntry fieldAttribute = fieldAttributes.get( i );
+              KettleAttributeInterface fieldAttr = findAttribute( fieldAttribute.getKey() );
 
-                            String attributeValue = (String) fieldAttribute.getValue();
-                            if ( fieldAttr.getKey().equals( "STREAMNAME" ) ) {
-                                getFieldStream()[row] = attributeValue;
-                            } else if ( fieldAttr.getKey().equals( "FIELDNAME" ) ) {
-                                getFieldTable()[row] = attributeValue;
-                            } else if ( fieldAttr.getKey().equals( "DATEMASK" ) ) {
-                               getDateMask()[row] = attributeValue;
-                            } else {
-                                throw new RuntimeException( "Unhandled metadata injection of attribute: "
-                                        + fieldAttr.toString() + " - " + fieldAttr.getDescription() );
-                            }
-                        }
-                    }
-                }
-                if (!Const.isEmpty(getFieldStream())){
-                    for (int i = 0; i < getFieldStream().length; i++) {
-                        logDetailed("row " + Integer.toString(i) + ": stream=" + getFieldStream()[i] + " : table=" + getFieldTable()[i] );
-                    }
-                }
-
+              String attributeValue = (String) fieldAttribute.getValue();
+              if ( fieldAttr.getKey().equals( "STREAMNAME" ) ) {
+                getFieldStream()[row] = attributeValue;
+              } else if ( fieldAttr.getKey().equals( "FIELDNAME" ) ) {
+                getFieldTable()[row] = attributeValue;
+              } else if ( fieldAttr.getKey().equals( "DATEMASK" ) ) {
+                getDateMask()[row] = attributeValue;
+              } else {
+                throw new RuntimeException( "Unhandled metadata injection of attribute: "
+                  + fieldAttr.toString() + " - " + fieldAttr.getDescription() );
+              }
             }
+          }
         }
+        if ( !Const.isEmpty( getFieldStream() ) ) {
+          for ( int i = 0; i < getFieldStream().length; i++ ) {
+            logDetailed( "row " + Integer.toString( i ) + ": stream=" + getFieldStream()[i]
+              + " : table=" + getFieldTable()[i] );
+          }
+        }
+
+      }
     }
-
-
-
-
-
-
-
-
+  }
 
 
 }
