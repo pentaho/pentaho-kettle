@@ -39,15 +39,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import junit.framework.Assert;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -61,6 +67,17 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
  * User: Dzmitry Stsiapanau Date: 10/18/13 Time: 2:23 PM
  */
 public class TextFileOutputTest {
+  
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
+    PluginRegistry.init( true );
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+  }
+  
 
   private class TextFileOutputTestHandler extends TextFileOutput {
     public List<Throwable> errors = new ArrayList<Throwable>();
