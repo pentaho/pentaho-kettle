@@ -9,8 +9,6 @@ import org.pentaho.di.core.compress.CompressionProvider;
 
 public class ZIPCompressionInputStream extends CompressionInputStream {
 
-  private ZipInputStream delegate;
-
   public ZIPCompressionInputStream( InputStream in, CompressionProvider provider ) throws IOException {
     super( getDelegate( in ), provider );
   }

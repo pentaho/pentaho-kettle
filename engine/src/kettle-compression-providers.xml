@@ -24,4 +24,12 @@
     <cases_url/>
     <forum_url/> 
   </compression-provider>
+  <compression-provider id="SNAPPY"> 
+    <description>Snappy</description> 
+    <tooltip>Snappy compression</tooltip>
+    <classname>org.pentaho.di.core.compress.snappy.SnappyCompressionProvider</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/> 
+  </compression-provider>
 </compression-providers>

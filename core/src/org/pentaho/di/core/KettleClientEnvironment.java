@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.logging.ConsoleLoggingEventListener;
@@ -91,7 +90,6 @@ public class KettleClientEnvironment {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
     PluginRegistry.addPluginType( ExtensionPointPluginType.getInstance() );
-    PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
     PluginRegistry.init( true );
 
     initialized = new Boolean( true );
