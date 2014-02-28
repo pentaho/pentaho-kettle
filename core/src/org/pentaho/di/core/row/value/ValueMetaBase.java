@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -2872,7 +2873,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                   break;
                 default:
                   throw new IOException( toString()
-                      + " : Unable to serialize indexe storage type to XML for data type " + getType() );
+                      + " : Unable to serialize index storage type to XML for data type " + getType() );
               }
             } catch ( ClassCastException e ) {
               throw new RuntimeException( toString() + " : There was a data type error: the data type of "
@@ -2912,9 +2913,9 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.addTagValue( "sort_descending", sortedDescending ) );
     xml.append( XMLHandler.addTagValue( "output_padding", outputPaddingEnabled ) );
     xml.append( XMLHandler.addTagValue( "date_format_lenient", dateFormatLenient ) );
-    xml.append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale.toString() ) );
-    xml.append( XMLHandler.addTagValue( "date_format_timezone", dateFormatTimeZone != null ? dateFormatTimeZone.getID()
-        : null ) );
+    xml.append( XMLHandler.addTagValue( "date_format_locale", ObjectUtils.toString( dateFormatLocale ) ) );
+    xml.append( XMLHandler.addTagValue( "date_format_timezone", dateFormatTimeZone != null ? dateFormatTimeZone
+      .getID() : null ) );
     xml.append( XMLHandler.addTagValue( "lenient_string_to_number", lenientStringToNumber ) );
 
     xml.append( XMLHandler.closeTag( XML_META_TAG ) );
