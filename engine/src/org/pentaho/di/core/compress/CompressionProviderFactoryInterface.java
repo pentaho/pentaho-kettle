@@ -27,10 +27,10 @@ import java.util.Collection;
 public interface CompressionProviderFactoryInterface {
 
   CompressionProvider createCompressionProviderInstance( String name );
-  
+
   Collection<CompressionProvider> getCompressionProviders();
-  
+
   String[] getCompressionProviderNames();
-  
+
   CompressionProvider getCompressionProviderByName( String name );
 }

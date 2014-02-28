@@ -25,13 +25,13 @@ public class GZIPCompressionInputStream extends CompressionInputStream {
 
   @Override
   public void close() throws IOException {
-    GZIPInputStream gis = (GZIPInputStream)delegate;
+    GZIPInputStream gis = (GZIPInputStream) delegate;
     gis.close();
   }
 
   @Override
   public int read() throws IOException {
-    GZIPInputStream gis = (GZIPInputStream)delegate;
+    GZIPInputStream gis = (GZIPInputStream) delegate;
     return gis.read();
   }
 

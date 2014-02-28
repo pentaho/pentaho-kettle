@@ -77,6 +77,7 @@ public class CompressionProviderFactoryTest {
         put( "None", false );
         put( "Zip", false );
         put( "GZip", false );
+        put( "Snappy", false );
       }
     };
 
@@ -106,6 +107,7 @@ public class CompressionProviderFactoryTest {
         put( "None", false );
         put( "Zip", false );
         put( "GZip", false );
+        put( "Snappy", false );
       }
     };
 

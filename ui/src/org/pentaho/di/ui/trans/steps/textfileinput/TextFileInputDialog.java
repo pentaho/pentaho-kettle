@@ -32,8 +32,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.wizard.Wizard;
@@ -73,6 +71,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.compress.CompressionInputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
@@ -104,7 +103,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.hadoop.HadoopCompression;
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -1330,17 +1328,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wCompression.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Compression.Label" ) );
     wCompression.setToolTipText( BaseMessages.getString( PKG, "TextFileInputDialog.Compression.Tooltip" ) );
     props.setLook( wCompression );
-    wCompression.add( "None" );
-    wCompression.add( "Zip" );
-    wCompression.add( "GZip" );
-    try {
-      if ( HadoopCompression.isHadoopSnappyAvailable() ) {
-        wCompression.add( "Hadoop-snappy" );
-      }
-    } catch ( Exception ex ) {
-      // Ignore errors
-    }
-    wCompression.select( 0 );
+    wCompression.setItems( CompressionProviderFactory.getInstance().getCompressionProviderNames() );
+
     wCompression.addModifyListener( lsMod );
     fdCompression = new FormData();
     fdCompression.left = new FormAttachment( middle, 0 );
@@ -2655,9 +2644,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
     FileInputList textFileList = meta.getTextFileList( transMeta );
     InputStream fileInputStream = null;
-    ZipInputStream zipInputStream = null;
-    GZIPInputStream gzipInputStream = null;
-    InputStream inputStream = null;
+    CompressionInputStream inputStream = null;
     StringBuilder lineStringBuilder = new StringBuilder( 256 );
     int fileFormatType = meta.getFileFormatTypeNr();
 
@@ -2686,22 +2673,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fileInputStream = KettleVFS.getInputStream( fileObject );
         Table table = wFields.table;
 
-        if ( meta.getFileCompression().equals( "Zip" ) ) {
-          zipInputStream = new ZipInputStream( fileInputStream );
-          zipInputStream.getNextEntry();
-          inputStream = zipInputStream;
-        } else if ( meta.getFileCompression().equals( "GZip" ) ) {
-          gzipInputStream = new GZIPInputStream( fileInputStream );
-          inputStream = gzipInputStream;
-        } else if ( meta.getFileCompression().equals( "Hadoop-snappy" ) && HadoopCompression.isHadoopSnappyAvailable() ) {
-          try {
-            inputStream = HadoopCompression.getSnappyInputStream( fileInputStream );
-          } catch ( Exception ex ) {
-            throw new IOException( ex.fillInStackTrace() );
-          }
-        } else {
-          inputStream = fileInputStream;
-        }
+        CompressionProvider provider =
+            CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.getFileCompression() );
+        inputStream = provider.createInputStream( fileInputStream );
 
         InputStreamReader reader;
         if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
@@ -2800,12 +2774,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             PKG, "TextFileInputDialog.ErrorGettingFileDesc.DialogMessage" ), e );
       } finally {
         try {
-          if ( meta.getFileCompression().equals( "Zip" ) && zipInputStream != null ) {
-            zipInputStream.closeEntry();
-            zipInputStream.close();
-          } else if ( meta.getFileCompression().equals( "GZip" ) && gzipInputStream != null ) {
-            gzipInputStream.close();
-          }
           inputStream.close();
         } catch ( Exception e ) {
           // Ignore errors
@@ -2964,9 +2932,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     FileInputList textFileList = meta.getTextFileList( transMeta );
 
     InputStream fi = null;
-    ZipInputStream zi = null;
-    GZIPInputStream gzi = null;
-    InputStream f = null;
+    CompressionInputStream f = null;
     StringBuilder lineStringBuilder = new StringBuilder( 256 );
     int fileFormatType = meta.getFileFormatTypeNr();
 
@@ -2977,18 +2943,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       try {
         fi = KettleVFS.getInputStream( file );
 
-        if ( meta.getFileCompression().equals( "Zip" ) ) {
-          zi = new ZipInputStream( fi );
-          zi.getNextEntry();
-          f = zi;
-        } else if ( meta.getFileCompression().equals( "GZip" ) ) {
-          gzi = new GZIPInputStream( fi );
-          f = gzi;
-        } else if ( meta.getFileCompression().equals( "Hadoop-snappy" ) && HadoopCompression.isHadoopSnappyAvailable() ) {
-          f = HadoopCompression.getSnappyInputStream( fi );
-        } else {
-          f = fi;
-        }
+        CompressionProvider provider =
+            CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.getFileCompression() );
+        f = provider.createInputStream( fi );
 
         InputStreamReader reader;
         if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
@@ -3034,12 +2991,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             "" + nrlines, file.getName().getURI() ), e );
       } finally {
         try {
-          if ( meta.getFileCompression().equals( "Zip" ) && zi != null ) {
-            zi.closeEntry();
-            zi.close();
-          } else if ( meta.getFileCompression().equals( "GZip" ) && gzi != null ) {
-            gzi.close();
-          }
           f.close();
         } catch ( Exception e ) {
           // Ignore errors
