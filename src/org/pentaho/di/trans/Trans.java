@@ -1174,12 +1174,34 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      * @throws KettleException if any errors occur during notification
      */
     protected void fireTransFinishedListeners() throws KettleException {
-    	
-		for (TransListener transListener : transListeners)
-		{
-			transListener.transFinished(this);
-		}
-	}
+      // PDI-5229 sync added
+      synchronized ( transListeners ) {
+        if ( transListeners.size() == 0 ) {
+          return;
+        }
+        //prevent Exception from one listener to block others execution
+        List<KettleException> badGuys = new ArrayList<KettleException>( transListeners.size() );
+        for ( TransListener transListener : transListeners ) {
+          try {
+            transListener.transFinished( this );
+          } catch ( KettleException e ) {
+            badGuys.add( e );
+          }
+        }
+        // Signal for the the waitUntilFinished blocker...
+        transFinishedBlockingQueue.add( new Object() );
+        if ( !badGuys.isEmpty() ) {
+          //FIFO
+          throw new KettleException( badGuys.get( 0 ) );
+        }
+        // Signal for the the waitUntilFinished blocker...
+        transFinishedBlockingQueue.add( new Object() );
+        if ( !badGuys.isEmpty() ) {
+          //FIFO
+          throw new KettleException( badGuys.get( 0 ) );
+        }
+      }
+    }
     
     /**
      * Fires the start-event listeners (if any are registered).
@@ -1950,7 +1972,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                   
                   // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
                   //
-                	if (!transLogTableDatabaseConnection.isAutoCommit()) transLogTableDatabaseConnection.commit(true);
+                	if (!transLogTableDatabaseConnection.isAutoCommit()){
+                	  transLogTableDatabaseConnection.commitLog(true, transLogTable);
+                	}
                   
                     // If we need to do periodic logging, make sure to install a timer for this...
                     //
@@ -2246,7 +2270,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				
 				// Commit the operations to prevent locking issues
 				//
-				if (!ldb.isAutoCommit()) ldb.commit(true);
+				if (!ldb.isAutoCommit()){
+				  ldb.commitLog(true, transLogTable);
+				}
+			}
+			catch ( KettleDatabaseException e ){
+			  log.logError(BaseMessages.getString( PKG, "Database.Error.WriteLogTable", logTable ), e );
+			  errors.incrementAndGet();
 			}
 			catch(Exception e)
 			{

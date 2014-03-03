@@ -57,6 +57,7 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
+import org.pentaho.di.core.database.util.DatabaseLogExceptionFactory;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -667,6 +668,49 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			
 		}
 	}
+	
+	
+  /**
+  * This methods may be removed in future.
+  * @param logTable
+  * @throws KettleDatabaseException
+  */
+  public void commitLog( LogTableInterface logTable ) throws KettleDatabaseException {
+    this.commitLog( false, logTable );
+  }
+  
+  /**
+  * This methods may be removed in future.
+  * @param force
+  * @param logTable
+  * @throws KettleDatabaseException
+  */
+  public void commitLog( boolean force, LogTableInterface logTable ) throws KettleDatabaseException {
+    try {
+      commitInternal( force );
+    } catch ( Exception e ) {
+      DatabaseLogExceptionFactory.getExceptionStrategy( this )
+        .registerException( log, e, PKG, "Database.Error.UnableToCommitToLogTable",
+              logTable.getActualTableName() );
+    }
+  }
+  
+  private void commitInternal( boolean force ) throws KettleDatabaseException, SQLException {
+    if ( !Const.isEmpty( connectionGroup ) && !force ) {
+      return;
+    }
+    if ( getDatabaseMetaData().supportsTransactions() ) {
+      if ( log.isDebug() ) {
+        log.logDebug( "Commit on database connection [" + toString() + "]" );
+      }
+    connection.commit();
+    nrExecutedCommits++;
+    } else {
+      if ( log.isDetailed() ) {
+        log.logDetailed( "No commit possible on database connection [" + toString() + "]" );
+      }
+    }
+  }
 	
     /**
      * Perform a commit the connection if this is supported by the database
@@ -3531,7 +3575,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return par;
 	}
 	
-	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject, Object parent) throws KettleException {
+	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject, Object parent)
+	    throws KettleDatabaseException {
 		try {
 			RowMetaAndData logRecord = logTable.getLogRecord(status, subject, parent);
 			if (logRecord==null) return;
@@ -3576,7 +3621,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
 			}
 		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to write log record to log table " + environmentSubstitute(logTable.getActualTableName()), e);
+		  DatabaseLogExceptionFactory.getExceptionStrategy( this )
+  		  .registerException(log, e, PKG, "Database.Error.WriteLogTable", 
+  		      environmentSubstitute( logTable.getActualTableName() ) );
+		  
 		}
 	}
 	
@@ -3611,7 +3659,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				}
 			}
 		} catch(Exception e) {
-			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", environmentSubstitute(logTable.getActualTableName())), e);
+		  DatabaseLogExceptionFactory.getExceptionStrategy( this )
+        .registerException( log, PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable",
+        environmentSubstitute( logTable.getActualTableName() ) );
 		}
 	}
 	
