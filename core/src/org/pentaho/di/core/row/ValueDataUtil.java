@@ -1734,4 +1734,36 @@ public class ValueDataUtil {
       throw new KettleValueException( e );
     }
   }
+
+  /**
+   *  Default utility method to get exact zero value according to ValueMetaInterface. Using
+   *  this utility method saves from ClassCastExceptions later.
+   *  
+   * @param type
+   * @return
+   * @throws KettleValueException
+   */
+  public static Object getZeroForValueMetaType( ValueMetaInterface type ) throws KettleValueException {
+    if ( type == null ) {
+      throw new KettleValueException( "API error. ValueMetaInterface can't be null!" );
+    }
+
+    switch ( type.getType() ) {
+      case ( ValueMetaInterface.TYPE_INTEGER ) : {
+        return new Long( 0 );
+      }
+      case ( ValueMetaInterface.TYPE_NUMBER ) : {
+        return new Double( 0 );
+      }
+      case ( ValueMetaInterface.TYPE_BIGNUMBER ) : {
+        return new BigDecimal( 0 );
+      }
+      case ( ValueMetaInterface.TYPE_STRING ) : {
+        return "";
+      }
+      default : {
+        throw new KettleValueException( "get zero function undefined for data type: " + type.getType() );
+      }
+    }
+  }
 }
