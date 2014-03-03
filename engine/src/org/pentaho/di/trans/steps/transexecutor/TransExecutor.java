@@ -215,7 +215,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
       //
       if (meta.getOutputRowsSourceStepMeta() != null) {
         
-        StepInterface stepInterface = data.executorTrans.findRunThread(meta.getOutputRowsSourceStepMeta().getName());
+        StepInterface stepInterface =
+          data.executorTrans.getParentTrans().findRunThread( meta.getOutputRowsSourceStepMeta().getName() );
         stepInterface.addRowListener(new RowAdapter() { 
           @Override
           public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
@@ -225,6 +226,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
         
       }
 
+      // run transformation
+      data.executorTrans.startThreads();
       
       // Inform the parent transformation we started something here...
       //
