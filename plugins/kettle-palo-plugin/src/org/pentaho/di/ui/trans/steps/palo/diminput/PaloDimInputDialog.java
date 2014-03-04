@@ -259,8 +259,6 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     setSize();
     shell.open();
 
-    PaloCellInputDialog.showPaloLibWarningDialog(shell);
-
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch())
         display.sleep();

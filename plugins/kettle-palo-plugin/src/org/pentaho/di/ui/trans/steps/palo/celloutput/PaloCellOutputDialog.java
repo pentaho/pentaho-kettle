@@ -377,8 +377,6 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     setSize();
     shell.open();
 
-    PaloCellInputDialog.showPaloLibWarningDialog(shell);
-
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch())
         display.sleep();

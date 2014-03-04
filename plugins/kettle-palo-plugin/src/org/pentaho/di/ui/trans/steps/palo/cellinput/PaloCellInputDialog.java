@@ -70,8 +70,6 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInterface {
-  public static final String      STRING_PALO_LIB_WARNING_PARAMETER = "PaloLibWarning";
-
   private static Class<?>         PKG                               = PaloCellInputMeta.class; // for
                                                                                                // i18n
                                                                                                // purposes,
@@ -290,8 +288,6 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
 
     shell.open();
 
-    showPaloLibWarningDialog(shell);
-
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch())
         display.sleep();
@@ -436,28 +432,6 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
       dispose();
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "PaloCellInputDialog.FailedToSaveDataErrorTitle"), BaseMessages.getString(PKG, "PaloCellInputDialog.FailedToSaveDataError"), e);
-    }
-  }
-
-  public static void showPaloLibWarningDialog(Shell shell) {
-    PropsUI props = PropsUI.getInstance();
-
-    if ("Y".equalsIgnoreCase(props.getCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, "Y")))
-    {
-      MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
-          BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogTitle"),
-          null,
-          BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogMessage", Const.CR) + Const.CR,
-          MessageDialog.WARNING, new String[] {
-            BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option1") },
-            0,
-            BaseMessages.getString(PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option2"),
-          "N".equalsIgnoreCase(props.getCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, "Y"))
-      );
-      MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-      md.open();
-      props.setCustomParameter(STRING_PALO_LIB_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y");
-      props.saveProps();
     }
   }
 
