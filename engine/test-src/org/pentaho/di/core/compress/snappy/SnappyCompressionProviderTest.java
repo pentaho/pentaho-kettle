@@ -90,7 +90,7 @@ public class SnappyCompressionProviderTest {
     SnappyCompressionOutputStream ncis = (SnappyCompressionOutputStream) provider.createOutputStream( out );
     assertNotNull( ncis );
   }
-  
+
   private SnappyInputStream createSnappyInputStream() throws IOException {
     // Create an in-memory ZIP output stream for use by the input stream (to avoid exceptions)
     ByteArrayOutputStream baos = new ByteArrayOutputStream();

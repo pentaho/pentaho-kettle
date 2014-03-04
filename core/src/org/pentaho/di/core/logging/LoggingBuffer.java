@@ -326,7 +326,7 @@ public class LoggingBuffer {
 
   public void addLogggingEvent( KettleLoggingEvent loggingEvent ) {
     doAppend( loggingEvent );
-    synchronized( eventListeners ) {
+    synchronized ( eventListeners ) {
       for ( KettleLoggingEventListener listener : eventListeners ) {
         listener.eventAdded( loggingEvent );
       }

@@ -58,7 +58,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to text and then writes this text to one or more files.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
@@ -206,7 +206,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   /**
    * This method should only be used when you have a filename in the input stream.
-   * 
+   *
    * @param filename
    *          the filename to set the data.writer field for
    * @throws KettleException
@@ -716,7 +716,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           logDebug( "Closing normal file ..." );
         }
         data.out.close();
-        
+
         if ( data.fos != null ) {
           data.fos.close();
           data.fos = null;
@@ -957,12 +957,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
       } else {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist", parentfolder.getName() ) );
+          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist",
+            parentfolder.getName() ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated", parentfolder.getName() ) );
+            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated",
+              parentfolder.getName() ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",

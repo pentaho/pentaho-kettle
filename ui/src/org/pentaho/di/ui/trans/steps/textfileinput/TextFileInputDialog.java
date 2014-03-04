@@ -2224,7 +2224,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
-   * 
+   *
    * @param meta
    *          The TextFileInputMeta object to obtain the data from.
    */
@@ -2846,7 +2846,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta,
+      wStepname.getText() );
 
     EnterNumberDialog numberDialog =
         new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,

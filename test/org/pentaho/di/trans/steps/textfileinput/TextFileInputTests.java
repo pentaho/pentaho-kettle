@@ -64,7 +64,7 @@ import org.pentaho.reporting.libraries.base.util.CSVTokenizer;
  * @author sflatley
  */
 public class TextFileInputTests extends TestCase {
-  
+
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( CompressionPluginType.getInstance() );

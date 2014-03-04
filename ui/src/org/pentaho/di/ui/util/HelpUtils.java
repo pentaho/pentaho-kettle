@@ -86,7 +86,8 @@ public class HelpUtils {
       return null;
     }
     if ( isPluginDocumented( plugin ) ) {
-      ShowHelpDialog helpDlg = new ShowHelpDialog( shell, getHelpDialogTitle( plugin ), plugin.getDocumentationUrl(), plugin.getName() );
+      ShowHelpDialog helpDlg = new ShowHelpDialog( shell, getHelpDialogTitle( plugin ), plugin.getDocumentationUrl(),
+        plugin.getName() );
       helpDlg.open();
       return helpDlg;
     } else {

@@ -15,11 +15,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -55,11 +52,11 @@ public class SystemDataTest {
      * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
      * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
      * to each rowset!
-     * 
+     *
      * @param row
      *          The row to put to the destination rowset(s).
      * @throws org.pentaho.di.core.exception.KettleStepException
-     * 
+     *
      */
     @Override
     public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -112,6 +109,6 @@ public class SystemDataTest {
     systemData.init( systemDataMeta, systemDataData );
     assertFalse( systemData.processRow( systemDataMeta, systemDataData ) );
     Object[] out = systemData.getOutputRow();
-    assertArrayEquals(expectedRow, out);
+    assertArrayEquals( expectedRow, out );
   }
 }

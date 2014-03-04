@@ -28,10 +28,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.compress.CompressionProvider;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
@@ -67,7 +69,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
@@ -212,7 +214,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
             int p = from + len_encl;
 
             boolean is_enclosure =
-                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equalsIgnoreCase( enclosure );
+                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl )
+                  .equalsIgnoreCase( enclosure );
             boolean is_escape =
                 len_esc > 0 && p + len_esc < length
                     && line.substring( p, p + len_esc ).equalsIgnoreCase( escapeCharacter );
@@ -604,9 +607,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
   }
 
   /**
-   * @deprecated Use
-   *             {@link #convertLineToRow(TextFileLine,InputFileMetaInterface,Object[], int,RowMetaInterface,RowMetaInterface,String,long, FileErrorHandler)}
-   *             instead
+   * @deprecated Use {@link #convertLineToRow(TextFileLine,InputFileMetaInterface,Object[], int,
+   * RowMetaInterface,RowMetaInterface,String,long, FileErrorHandler)} instead.
    */
   @Deprecated
   public static final Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
@@ -1150,7 +1152,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
   }
 
   /**
-   * 
+   *
    * @param errorMsg
    *          Message to send to rejected row if enabled
    * @return If should stop processing after having problems with a file
@@ -1168,12 +1170,13 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
   /**
    * Send file name and/or error message to error output
-   * 
+   *
    * @param errorMsg
    *          Message to send to rejected row if enabled
    */
   private void rejectCurrentFile( String errorMsg ) {
-    if ( StringUtils.isNotBlank( meta.getFileErrorField() ) || StringUtils.isNotBlank( meta.getFileErrorMessageField() ) ) {
+    if ( StringUtils.isNotBlank( meta.getFileErrorField() )
+      || StringUtils.isNotBlank( meta.getFileErrorMessageField() ) ) {
       RowMetaInterface rowMeta = getInputRowMeta();
       if ( rowMeta == null ) {
         rowMeta = new RowMeta();
@@ -1209,7 +1212,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
   /**
    * Adds <code>String</code> value meta with given name if not present and returns index
-   * 
+   *
    * @param rowMeta
    * @param fieldName
    * @return Index in row meta of value meta with <code>fieldName</code>
@@ -1230,7 +1233,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
   /**
    * Check if the line should be taken.
-   * 
+   *
    * @param line
    * @param isFilterLastLine
    *          (dummy input param, only set when return value is false)
@@ -1498,8 +1501,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
       // If there are missing files, fail if we don't ignore errors
       //
-      if ( ( getTrans().getPreviousResult() == null || getTrans().getPreviousResult().getResultFiles() == null || getTrans()
-          .getPreviousResult().getResultFiles().size() == 0 )
+      Result previousResult = getTrans().getPreviousResult();
+      Map<String, ResultFile> resultFiles = previousResult.getResultFiles();
+
+      if ( ( previousResult == null || resultFiles == null || resultFiles.size() == 0 )
           && data.files.nrOfMissingFiles() > 0 && !meta.isAcceptingFilenames() && !meta.isErrorIgnored() ) {
         logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.NoFilesSpecified" ) );
         return false;

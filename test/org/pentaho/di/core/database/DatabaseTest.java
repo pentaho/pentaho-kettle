@@ -42,7 +42,7 @@ import org.pentaho.di.trans.TransMeta;
 /**
  * Try to test database functionality using a hypersonic database. This is just a small fraction of the functionality,
  * but could already trap a few problems.
- * 
+ *
  * @author Sven Boden
  */
 public class DatabaseTest extends TestCase {
@@ -111,8 +111,9 @@ public class DatabaseTest extends TestCase {
 
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER ), };
+    ValueMetaInterface[] valuesMeta = {
+      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER )
+    };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       valuesMeta[i].setLength( 8 );

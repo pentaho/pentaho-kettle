@@ -146,7 +146,7 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
     nrLinesOnPage = 0;
 
     in = null;
-    
+
     filterProcessor = null;
     lineStringBuilder = new StringBuilder( 256 );
 

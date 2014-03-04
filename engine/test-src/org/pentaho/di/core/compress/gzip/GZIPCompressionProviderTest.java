@@ -17,9 +17,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
-import org.pentaho.di.core.compress.gzip.GZIPCompressionInputStream;
-import org.pentaho.di.core.compress.gzip.GZIPCompressionOutputStream;
-import org.pentaho.di.core.compress.gzip.GZIPCompressionProvider;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
 public class GZIPCompressionProviderTest {

@@ -101,7 +101,7 @@ public class AllRegressionTests {
     suite.addTest( new JUnit4TestAdapter( GPLoadTest.class ) );
     suite.addTest( new JUnit4TestAdapter( TipsDialogTest.class ) );
     suite.addTest( new JUnit4TestAdapter( TransExecutorTest.class ) );
-    
+
     // Temporarily disable this test, it never worked on Windows or Unix so
     // it doesn't make sense executing it for the moment.
     // suite.addTestSuite( BlackBoxTests.class );

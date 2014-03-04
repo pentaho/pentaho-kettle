@@ -288,11 +288,11 @@ public class CarteSingleton {
   public static void setSlaveServerConfig( SlaveServerConfig slaveServerConfig ) {
     CarteSingleton.slaveServerConfig = slaveServerConfig;
   }
-  
-  public static void setCarte(Carte carte) {
+
+  public static void setCarte( Carte carte ) {
     CarteSingleton.carte = carte;
   }
-  
+
   public static Carte getCarte() {
     return CarteSingleton.carte;
   }

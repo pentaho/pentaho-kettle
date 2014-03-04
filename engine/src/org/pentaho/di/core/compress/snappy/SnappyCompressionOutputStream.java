@@ -14,7 +14,7 @@ public class SnappyCompressionOutputStream extends CompressionOutputStream {
   }
 
   private static SnappyOutputStream getDelegate( OutputStream out ) throws IOException {
-    SnappyOutputStream delegate = null;
+    SnappyOutputStream delegate;
     if ( out instanceof SnappyOutputStream ) {
       delegate = (SnappyOutputStream) out;
     } else {
@@ -32,6 +32,6 @@ public class SnappyCompressionOutputStream extends CompressionOutputStream {
 
   @Override
   public void write( int b ) throws IOException {
-    ((SnappyOutputStream)delegate).write( b );
+    delegate.write( b );
   }
 }
