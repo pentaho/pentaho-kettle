@@ -17,7 +17,7 @@ public class SwitchCaseMetaTest {
 
   LoadSaveTester loadSaveTester;
 
-  public SwitchCaseMetaTest(){
+  public SwitchCaseMetaTest() {
     //SwitchCaseMeta bean-like attributes
     List<String> attributes = Arrays.asList(
       "fieldname",
@@ -53,23 +53,25 @@ public class SwitchCaseMetaTest {
 
       @Override
       public SwitchCaseTarget getTestObject() {
-        return new SwitchCaseTarget() {{
-          caseValue = UUID.randomUUID().toString();
-          caseTargetStepname = UUID.randomUUID().toString();
-          caseTargetStep = new StepMeta( caseTargetStepname, targetStepInterface );
-        }};
+        return new SwitchCaseTarget() {
+          {
+            caseValue = UUID.randomUUID().toString();
+            caseTargetStepname = UUID.randomUUID().toString();
+            caseTargetStep = new StepMeta( caseTargetStepname, targetStepInterface );
+          }
+        };
       }
 
       @Override
       public boolean validateTestObject( SwitchCaseTarget testObject, Object actual ) {
-        return testObject.caseValue.equals( ((SwitchCaseTarget) actual).caseValue ) &&
-          testObject.caseTargetStepname.equals( ((SwitchCaseTarget) actual).caseTargetStepname );
+        return testObject.caseValue.equals( ( (SwitchCaseTarget) actual ).caseValue )
+          && testObject.caseTargetStepname.equals( ( (SwitchCaseTarget) actual ).caseTargetStepname );
       }
     };
 
     validatorFactory.registerValidator( validatorFactory.getName( SwitchCaseTarget.class ), targetValidator );
     validatorFactory.registerValidator( validatorFactory.getName( List.class, SwitchCaseTarget.class ),
-      new ListLoadSaveValidator<SwitchCaseTarget>(targetValidator) );
+      new ListLoadSaveValidator<SwitchCaseTarget>( targetValidator ) );
   }
 
   @Test

@@ -79,7 +79,7 @@ public class TransExecutorTest {
     String dummyStepname = "Dummy Output";
     DummyTransMeta dummyTransMeta = new DummyTransMeta();
     String dummyStepPID = registry.getPluginId( StepPluginType.class, dummyTransMeta );
-    StepMeta dummyStep = new StepMeta( dummyStepPID, dummyStepname, dummyTransMeta);
+    StepMeta dummyStep = new StepMeta( dummyStepPID, dummyStepname, dummyTransMeta );
     transMeta.addStep( dummyStep );
 
     // INIT

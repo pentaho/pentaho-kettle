@@ -840,7 +840,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       retval.append( "    " ).append( XMLHandler.addTagValue( "job_status", jobStatus ) );
     }
 
-    retval.append( "  " ).append( XMLHandler.addTagValue( "directory", (directory != null ? directory.getPath(): RepositoryDirectory.DIRECTORY_SEPARATOR) ) );
+    retval.append( "  " ).append( XMLHandler.addTagValue( "directory", ( directory != null ? directory.getPath()
+      : RepositoryDirectory.DIRECTORY_SEPARATOR ) ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_user", created_user ) );
     retval
       .append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( created_date ) ) );

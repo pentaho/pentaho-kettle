@@ -147,13 +147,11 @@ public class MemoryRepository extends AbstractRepository {
   @Override
   public void init( RepositoryMeta repositoryMeta ) {
     // TODO Auto-generated method stub
-
   }
 
   @Override
-  public boolean
-    exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
-      throws KettleException {
+  public boolean exists( String name, RepositoryDirectoryInterface repositoryDirectory,
+    RepositoryObjectType objectType ) throws KettleException {
     // TODO Auto-generated method stub
     return false;
   }
@@ -506,9 +504,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public void
-    saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
-      throws KettleException {
+  public void saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
+    Condition condition ) throws KettleException {
     // TODO Auto-generated method stub
 
   }

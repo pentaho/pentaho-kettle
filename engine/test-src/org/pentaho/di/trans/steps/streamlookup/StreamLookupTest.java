@@ -68,10 +68,10 @@ public class StreamLookupTest {
     when( smh.trans.isRunning() ).thenReturn( true );
   }
 
-  private void convertDataToBinary ( Object[][] data ) {
+  private void convertDataToBinary( Object[][] data ) {
     for ( int i = 0; i < data.length; i++ ) {
       for ( int j = 0; j < data[i].length; j++ ) {
-        data[i][j] = ((String)data[i][j]).getBytes();
+        data[i][j] = ( (String) data[i][j] ).getBytes();
       }
     }
   }
@@ -129,7 +129,7 @@ public class StreamLookupTest {
     return dataRowSet;
   }
 
-  private StreamLookupMeta mockProcessRowMeta( boolean memoryPreservationActive) throws KettleStepException {
+  private StreamLookupMeta mockProcessRowMeta( boolean memoryPreservationActive ) throws KettleStepException {
     StreamLookupMeta meta = smh.processRowsStepMetaInterface;
 
     StepMeta lookupStepMeta = when( mock( StepMeta.class ).getName() ).thenReturn( "Lookup" ).getMock();
@@ -149,13 +149,14 @@ public class StreamLookupTest {
     doReturn( new String[] { "" } ).when( meta ).getValueDefault();
     doReturn( new String[] { "Value" } ).when( meta ).getValueName();
     doReturn( new String[] { "Value" } ).when( meta ).getValue();
-    doCallRealMethod().when( meta ).getFields( any(RowMetaInterface.class), anyString(), any(RowMetaInterface[].class), any(StepMeta.class),
-      any( VariableSpace.class), any( Repository.class), any( IMetaStore.class));
+    doCallRealMethod().when( meta ).getFields( any( RowMetaInterface.class ), anyString(),
+      any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
+      any( IMetaStore.class ) );
 
     return meta;
   }
 
-  private void doTest ( boolean memoryPreservationActive, boolean binaryLookupStream, boolean binaryDataStream )
+  private void doTest( boolean memoryPreservationActive, boolean binaryLookupStream, boolean binaryDataStream )
     throws KettleException {
     StreamLookup step = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.initStepDataInterface );
@@ -192,42 +193,42 @@ public class StreamLookupTest {
   }
 
   @Test
-  public void testWithNormalStreams () throws KettleException {
+  public void testWithNormalStreams() throws KettleException {
     doTest( false, false, false );
   }
 
   @Test
-  public void testWithBinaryLookupStream () throws KettleException {
+  public void testWithBinaryLookupStream() throws KettleException {
     doTest( false, true, false );
   }
 
   @Test
-  public void testWithBinaryDateStream () throws KettleException {
+  public void testWithBinaryDateStream() throws KettleException {
     doTest( false, false, true );
   }
 
   @Test
-  public void testWithBinaryStreams () throws KettleException {
+  public void testWithBinaryStreams() throws KettleException {
     doTest( false, false, true );
   }
 
   @Test
-  public void testMemoryPreservationWithNormalStreams () throws KettleException {
+  public void testMemoryPreservationWithNormalStreams() throws KettleException {
     doTest( true, false, false );
   }
 
   @Test
-  public void testMemoryPreservationWithBinaryLookupStream () throws KettleException {
+  public void testMemoryPreservationWithBinaryLookupStream() throws KettleException {
     doTest( true, true, false );
   }
 
   @Test
-  public void testMemoryPreservationWithBinaryDateStream () throws KettleException {
+  public void testMemoryPreservationWithBinaryDateStream() throws KettleException {
     doTest( true, false, true );
   }
 
   @Test
-  public void testMemoryPreservationWithBinaryStreams () throws KettleException {
+  public void testMemoryPreservationWithBinaryStreams() throws KettleException {
     doTest( true, false, true );
   }
 }

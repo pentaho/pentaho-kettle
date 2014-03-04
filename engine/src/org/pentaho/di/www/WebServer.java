@@ -137,7 +137,7 @@ public class WebServer {
     } else {
       HashUserRealm hashUserRealm;
       SlaveServer slaveServer = transformationMap.getSlaveServerConfig().getSlaveServer();
-      if (!Const.isEmpty( slaveServer.getPassword() )) {
+      if ( !Const.isEmpty( slaveServer.getPassword() ) ) {
         hashUserRealm = new HashUserRealm( "Kettle" );
         hashUserRealm.put( slaveServer.getUsername(), slaveServer.getPassword() );
       } else {
@@ -209,11 +209,11 @@ public class WebServer {
 
     server.start();
   }
-  
+
   public void join() throws InterruptedException {
     server.join();
   }
-  
+
   public void stopServer() {
     try {
       if ( server != null ) {

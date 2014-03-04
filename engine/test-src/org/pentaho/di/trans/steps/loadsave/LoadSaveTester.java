@@ -55,7 +55,7 @@ public class LoadSaveTester {
       Map<String, String> getterMap, Map<String, String> setterMap,
       Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
       Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
-    this( clazz, commonAttributes,Arrays.<String>asList( ), Arrays.<String>asList( ), getterMap, setterMap, 
+    this( clazz, commonAttributes, Arrays.<String>asList( ), Arrays.<String>asList( ), getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap );
   }
 
@@ -68,7 +68,7 @@ public class LoadSaveTester {
 
   public LoadSaveTester( Class<? extends StepMetaInterface> clazz, List<String> commonAttributes,
       Map<String, String> getterMap, Map<String, String> setterMap ) {
-    this( clazz, commonAttributes, Arrays.<String> asList(), Arrays.<String> asList(), getterMap, setterMap,
+    this( clazz, commonAttributes, Arrays.<String>asList(), Arrays.<String>asList(), getterMap, setterMap,
         new HashMap<String, FieldLoadSaveValidator<?>>(), new HashMap<String, FieldLoadSaveValidator<?>>() );
   }
 

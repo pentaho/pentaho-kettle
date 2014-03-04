@@ -857,7 +857,7 @@ public class Const {
    * The XML file that contains the list of native Kettle database types (MySQL, Oracle, etc)
    */
   public static final String XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
-  
+
   /**
    * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
    */
@@ -1372,7 +1372,7 @@ public class Const {
 
   /**
    * Determine the hostname of the machine Kettle is running on
-   * 
+   *
    * @return The hostname
    */
   public static final String getHostnameReal() {
@@ -1410,7 +1410,7 @@ public class Const {
 
   /**
    * Determins the IP address of the machine Kettle is running on.
-   * 
+   *
    * @return The IP address
    */
   public static final String getIPAddress() throws Exception {

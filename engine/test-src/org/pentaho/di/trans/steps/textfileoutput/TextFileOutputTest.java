@@ -67,7 +67,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
  * User: Dzmitry Stsiapanau Date: 10/18/13 Time: 2:23 PM
  */
 public class TextFileOutputTest {
-  
+
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
@@ -77,7 +77,6 @@ public class TextFileOutputTest {
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
   }
-  
 
   private class TextFileOutputTestHandler extends TextFileOutput {
     public List<Throwable> errors = new ArrayList<Throwable>();
