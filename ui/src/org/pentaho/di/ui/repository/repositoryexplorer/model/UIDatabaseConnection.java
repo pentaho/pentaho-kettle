@@ -49,6 +49,14 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
     return null;
   }
 
+  public String getDisplayName() {
+    if (dbMeta != null) {
+      return dbMeta.getDisplayName();
+    }
+
+    return null;
+  }
+
   public String getType() {
     if(dbMeta != null) {
       return dbMeta.getPluginId();

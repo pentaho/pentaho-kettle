@@ -219,6 +219,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   private static final String FIELDNAME_PROTECTOR = "_";
 
 	private String name;
+  private String displayName;
 	private int    accessType;        // Database.TYPE_ODBC / NATIVE / OCI
 	private String hostname;
 	private String databaseName;
@@ -338,8 +339,28 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface
   public void setName(String name)
 	{
 		this.name = name;
+
+    // Default display name to be the same as connection name if it has not
+    // been initialized before
+    if ( ( getDisplayName() == null ) || ( getDisplayName().length() == 0 ) ) {
+      setDisplayName( name );
+    }
 	}
-	
+
+  /**
+   * @return Returns the un-escaped connection Name.
+   */
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  /**
+   * @param displayName The un-escaped connection Name to set.
+   */
+  public void setDisplayName( String displayName ) {
+    this.displayName = displayName;
+  }
+
 	/**
 	 * @return Returns the databaseName.
 	 */
