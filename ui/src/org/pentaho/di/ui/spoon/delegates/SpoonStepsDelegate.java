@@ -246,9 +246,15 @@ public class SpoonStepsDelegate extends SpoonDelegate {
         // Ignore errors
       }
 
+      String errorTitle =
+        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorCreatingStepDialog.Title" );
+      String errorMsg =
+        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorCreatingStepDialog.Message", stepMeta.getDialogClassName() );
+      new ErrorDialog(
+        spoon.getShell(), errorTitle, errorMsg, e );
+
       throw new KettleException( e );
     }
-
   }
 
   public StepDialogInterface getPartitionerDialog( StepMeta stepMeta, StepPartitioningMeta partitioningMeta,
