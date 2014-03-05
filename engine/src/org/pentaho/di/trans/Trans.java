@@ -1367,9 +1367,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException if any errors occur during notification
    */
   protected void fireTransFinishedListeners() throws KettleException {
-
+    //prevent Exception from one listener to block others execution
+    List<KettleException> badGuys = new ArrayList<KettleException>( transListeners.size() );
     for (TransListener transListener : transListeners) {
       transListener.transFinished(this);
+      // Signal for the the waitUntilFinished blocker...
+      transFinishedBlockingQueue.add( new Object() );
+      if ( !badGuys.isEmpty() ) {
+        //FIFO
+        throw new KettleException( badGuys.get( 0 ) );
+      }
     }
   }
 
@@ -2086,8 +2093,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
           // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
           //
-          if (!transLogTableDatabaseConnection.isAutoCommit())
-            transLogTableDatabaseConnection.commit(true);
+          if ( !transLogTableDatabaseConnection.isAutoCommit() ) {
+            transLogTableDatabaseConnection.commitLog( true, transLogTable );
+          }
 
           // If we need to do periodic logging, make sure to install a timer for this...
           //
@@ -2468,11 +2476,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         // Commit the operations to prevent locking issues
         //
-        if (!ldb.isAutoCommit())
-          ldb.commit(true);
-      } catch (Exception e) {
-        throw new KettleException(BaseMessages.getString(PKG,
-            "Trans.Exception.ErrorWritingLogRecordToTable", transMeta.getTransLogTable().getActualTableName()), e);  
+        if ( !ldb.isAutoCommit() ) {
+          ldb.commitLog( true, transMeta.getTransLogTable() );
+        }
+      } catch ( KettleDatabaseException e ) {
+        // PDI-9790 error write to log db is transaction error
+        log.logError(BaseMessages.getString( PKG, "Database.Error.WriteLogTable", logTable ), e );
+        errors.incrementAndGet();
+        //end PDI-9790
+      } catch ( Exception e ) {
+        throw new KettleException( BaseMessages
+          .getString( PKG, "Trans.Exception.ErrorWritingLogRecordToTable", transMeta
+            .getTransLogTable().getActualTableName() ), e );
       } finally {
         if (intervalInSeconds <= 0 || (status.equals(LogStatus.END) || status.equals(LogStatus.STOP))) {
           ldb.disconnect();

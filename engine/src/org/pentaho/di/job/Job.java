@@ -413,12 +413,15 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // So we create a new error object.
       //
       result = new Result();
-      result.setNrErrors(1L);
-      result.setResult(false);
-      addErrors(1); // This can be before actual execution
-      active.set(false);
-      finished.set(true);
-      stopped.set(false);
+      result.setNrErrors( 1L );
+      result.setResult( false );
+      addErrors( 1 ); // This can be before actual execution
+
+      emergencyWriteJobTracker( result );
+
+      active.set( false );
+      finished.set( true );
+      stopped.set( false );
     } finally {
       try {
         ExtensionPointHandler.callExtensionPoint(log, KettleExtensionPoint.JobFinish.id, this);
@@ -428,8 +431,20 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         result.setNrErrors(1);
         result.setResult(false);
         log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()), e);
+
+        emergencyWriteJobTracker( result );
       }
     }
+  }
+
+  private void emergencyWriteJobTracker( Result res ) {
+    JobEntryResult jerFinalResult = new JobEntryResult( res,
+        this.getLogChannelId(),
+        BaseMessages.getString( PKG, "Job.Comment.JobFinished" ),
+        null, null, 0, null );
+    JobTracker finalTrack = new JobTracker( this.getJobMeta(), jerFinalResult );
+    //jobTracker is up to date too.
+    this.jobTracker.addJobTracker( finalTrack );
   }
 
   /**
@@ -992,9 +1007,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         depDate = currentDate;
 
-        ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this, null);
-        if (!ldb.isAutoCommit())
-          ldb.commit(true);
+        ldb.writeLogRecord( jobMeta.getJobLogTable(), LogStatus.START, this, null );
+        if ( !ldb.isAutoCommit() ) {
+          ldb.commitLog( true,  jobMeta.getJobLogTable() );
+        }
         ldb.disconnect();
 
         // If we need to do periodic logging, make sure to install a timer for
@@ -1028,13 +1044,16 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // Add a listener at the end of the job to take of writing the final job
         // log record...
         //
-        addJobListener(new JobAdapter() {
-          public void jobFinished(Job job) {
+        addJobListener( new JobAdapter() {
+          public void jobFinished( Job job ) throws KettleException {
             try {
               endProcessing();
-            } catch (Exception e) {
-              log.logError(
-                  BaseMessages.getString(PKG, "Job.Exception.UnableToWriteToLoggingTable", jobLogTable.toString()), e);
+            } catch ( KettleJobException e ) {
+              log.logError( BaseMessages.getString( PKG, "Job.Exception.UnableToWriteToLoggingTable", jobLogTable
+                .toString() ), e );
+              //do not skip exception here
+              //job is failed in case log database record is failed!
+              throw new KettleException( e );
             }
           }
         });
@@ -1134,8 +1153,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           addErrors(1);
           throw new KettleJobException("Unable to end processing by writing log record to table " + tableName, dbe);
         } finally {
-          if (!ldb.isAutoCommit())
-            ldb.commit(true);
+          if ( !ldb.isAutoCommit() ) {
+            ldb.commitLog( true, jobMeta.getJobLogTable() );
+          }
           ldb.disconnect();
         }
       }
@@ -1210,8 +1230,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     } catch (Exception e) {
       throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToJobEntryInformationToLogTable"), e);
     } finally {
-      if (!db.isAutoCommit())
-        db.commit(true);
+      if ( !db.isAutoCommit() ) {
+        db.commitLog( true,  jobEntryLogTable );
+      }
       db.disconnect();
     }
   }
