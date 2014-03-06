@@ -25,6 +25,7 @@ package org.pentaho.di.trans;
 
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -670,7 +671,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // folks want to test it locally...
     //
     if ( servletPrintWriter == null ) {
-      servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+      String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+      if ( encoding == null ) {
+        servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+      } else {
+        try {
+          servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out, encoding ) );
+        } catch ( UnsupportedEncodingException ex ) {
+          servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+        }
+      }
     }
 
     // Keep track of all the row sets and allocated steps
@@ -1434,7 +1444,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected void fireTransFinishedListeners() throws KettleException {
     // PDI-5229 sync added
-    synchronized  ( transListeners ) {
+    synchronized ( transListeners ) {
       if ( transListeners.size() == 0 ) {
         return;
       }
@@ -2663,7 +2673,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
       } catch ( KettleDatabaseException e ) {
         // PDI-9790 error write to log db is transaction error
-        log.logError(BaseMessages.getString( PKG, "Database.Error.WriteLogTable", logTable ), e );
+        log.logError( BaseMessages.getString( PKG, "Database.Error.WriteLogTable", logTable ), e );
         errors.incrementAndGet();
         //end PDI-9790
       } catch ( Exception e ) {
@@ -5321,6 +5331,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   public void setServletReponse( HttpServletResponse response ) {
+    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+      try {
+        response.setCharacterEncoding( encoding );
+        response.setContentType( "text/html; charset=" + encoding );
+      } catch ( Exception ex ) {
+        LogChannel.GENERAL.logError( "Unable to encode data with encoding : '" + encoding + "'", ex );
+      }
+    }
     this.servletresponse = response;
   }
 

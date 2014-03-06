@@ -149,7 +149,7 @@
 									<!-- Connection list -->
 									<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 										<treecols>
-											<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="name" pen:childrenbinding="children" sortActive="true" sortDirection="ASCENDING"/>
+											<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="displayName" pen:childrenbinding="children" sortActive="true" sortDirection="ASCENDING"/>
 											<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}" pen:binding="type"/>
 											<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}" pen:binding="dateModified"/>
 										</treecols>
@@ -161,7 +161,6 @@
 						</vbox>
 					</hbox>
 				</tabpanel>
-				
 				
 				<!--
 					###############################################################################

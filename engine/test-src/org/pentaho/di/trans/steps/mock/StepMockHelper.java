@@ -3,7 +3,10 @@ package org.pentaho.di.trans.steps.mock;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -65,7 +69,7 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
   public RowSet getMockInputRowSet( final List<Object[]> rows ) {
     final AtomicInteger index = new AtomicInteger( 0 );
     RowSet rowSet = mock( RowSet.class, Mockito.RETURNS_MOCKS );
-    Answer answer = new Answer<Object[]>() {
+    Answer<Object[]> answer = new Answer<Object[]>() {
       @Override
       public Object[] answer( InvocationOnMock invocation ) throws Throwable {
         int i = index.getAndIncrement();
@@ -105,7 +109,7 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
     final LogChannel log = spy( new LogChannel( this.getClass().getName(), true ) );
     log.setLogLevel( channelLogLevel );
     when( logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn( log );
-    doAnswer( new Answer() {
+    doAnswer( new Answer<Object>() {
       @Override
       public Object answer( InvocationOnMock invocation ) throws Throwable {
         Object[] args = invocation.getArguments();

@@ -52,9 +52,9 @@ public class Carte {
   private WebServer webServer;
   private SlaveServerConfig config;
   private boolean allOK;
-  
+
   public Carte( final SlaveServerConfig config ) throws Exception {
-    this(config, null);
+    this( config, null );
   }
 
   public Carte( final SlaveServerConfig config, Boolean joinOverride ) throws Exception {
@@ -121,7 +121,7 @@ public class Carte {
         shouldJoin = joinOverride;
       }
       this.webServer =
-        new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, shouldJoin, 
+        new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, shouldJoin,
             config.getPasswordFile() );
     }
   }
@@ -174,12 +174,12 @@ public class Carte {
 
   public static void runCarte( SlaveServerConfig config ) throws Exception {
     KettleLogStore.init( config.getMaxLogLines(), config.getMaxLogTimeoutMinutes() );
-    
+
     config.setJoining( true );
-    
+
     Carte carte = new Carte( config, false );
     CarteSingleton.setCarte( carte );
-    
+
     carte.getWebServer().join();
   }
 

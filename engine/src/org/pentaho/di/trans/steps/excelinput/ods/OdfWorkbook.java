@@ -23,7 +23,9 @@
 package org.pentaho.di.trans.steps.excelinput.ods;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.odftoolkit.odfdom.doc.OdfDocument;
 import org.odftoolkit.odfdom.doc.OdfSpreadsheetDocument;
@@ -38,6 +40,7 @@ public class OdfWorkbook implements KWorkbook {
   private String filename;
   private String encoding;
   private OdfDocument document;
+  private Map<String, OdfSheet> openSheetsMap = new HashMap<String, OdfSheet>();
 
   public OdfWorkbook( String filename, String encoding ) throws KettleException {
     this.filename = filename;
@@ -66,11 +69,17 @@ public class OdfWorkbook implements KWorkbook {
 
   @Override
   public KSheet getSheet( String sheetName ) {
-    OdfTable table = document.getTableByName( sheetName );
-    if ( table == null ) {
-      return null;
+    OdfSheet sheet = openSheetsMap.get( sheetName );
+    if ( sheet == null ) {
+      OdfTable table = document.getTableByName( sheetName );
+      if ( table == null ) {
+        return null;
+      } else {
+        sheet = new OdfSheet( table );
+        openSheetsMap.put( sheetName, sheet );
+      }
     }
-    return new OdfSheet( table );
+    return sheet;
   }
 
   public String[] getSheetNames() {

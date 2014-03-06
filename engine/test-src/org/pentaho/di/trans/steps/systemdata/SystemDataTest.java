@@ -54,11 +54,11 @@ public class SystemDataTest {
      * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
      * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
      * to each rowset!
-     * 
+     *
      * @param row
      *          The row to put to the destination rowset(s).
      * @throws org.pentaho.di.core.exception.KettleStepException
-     * 
+     *
      */
     @Override
     public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {

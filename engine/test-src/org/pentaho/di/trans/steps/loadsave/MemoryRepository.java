@@ -147,7 +147,6 @@ public class MemoryRepository extends AbstractRepository {
   @Override
   public void init( RepositoryMeta repositoryMeta ) {
     // TODO Auto-generated method stub
-
   }
 
   @Override

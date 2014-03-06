@@ -858,6 +858,11 @@ public class Const {
   public static final String XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
 
   /**
+   * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
+   */
+  public static final String XML_FILE_KETTLE_COMPRESSION_PROVIDERS = "kettle-compression-providers.xml";
+
+  /**
    * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
    */
   public static final String XML_FILE_KETTLE_EXTENSION_POINTS = "kettle-extension-points.xml";
@@ -1375,7 +1380,7 @@ public class Const {
 
   /**
    * Determine the hostname of the machine Kettle is running on
-   * 
+   *
    * @return The hostname
    */
   public static final String getHostnameReal() {
@@ -1413,7 +1418,7 @@ public class Const {
 
   /**
    * Determins the IP address of the machine Kettle is running on.
-   * 
+   *
    * @return The IP address
    */
   public static final String getIPAddress() throws Exception {

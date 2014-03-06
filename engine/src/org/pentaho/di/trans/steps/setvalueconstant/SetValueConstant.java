@@ -49,10 +49,11 @@ public class SetValueConstant extends BaseStep implements StepInterface {
   private SetValueConstantData data;
 
   public SetValueConstant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  //CHECKSTYLE:Indentation:OFF
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (SetValueConstantMeta) smi;
     data = (SetValueConstantData) sdi;
@@ -87,7 +88,7 @@ public class SetValueConstant extends BaseStep implements StepInterface {
             if ( meta.getFieldName()[j].equals( meta.getFieldName()[i] ) ) {
               if ( j != i ) {
                 throw new KettleException( BaseMessages.getString( PKG,
-                    "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
+                  "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
               }
             }
           }
@@ -97,7 +98,7 @@ public class SetValueConstant extends BaseStep implements StepInterface {
           if ( data.getFieldnrs()[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta.getFieldName()[i] ) );
             throw new KettleException( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta
-                .getFieldName()[i] ) );
+              .getFieldName()[i] ) );
           }
 
           if ( meta.isSetEmptyString()[i] ) {

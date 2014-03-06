@@ -1,4 +1,4 @@
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -23,21 +23,19 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.WriterOutputStream;
+import org.pentaho.di.core.compress.CompressionProvider;
+import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -68,20 +66,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String FILE_COMPRESSION_TYPE_NONE =
-    TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE];
-
-  private static final String FILE_COMPRESSION_TYPE_ZIP =
-    TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP];
-
-  private static final String FILE_COMPRESSION_TYPE_GZIP =
-    TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_GZIP];
+      TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE];
 
   public TextFileOutputMeta meta;
 
   public TextFileOutputData data;
 
   public TextFileOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -116,8 +108,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         // set the file name for this row
         //
         if ( data.fileNameFieldIndex < 0 ) {
-          throw new KettleStepException( BaseMessages.getString(
-            PKG, "TextFileOutput.Exception.FileNameFieldNotFound", meta.getFileNameField() ) );
+          throw new KettleStepException( BaseMessages.getString( PKG, "TextFileOutput.Exception.FileNameFieldNotFound",
+              meta.getFileNameField() ) );
         }
 
         data.fileNameMeta = getInputRowMeta().getValueMeta( data.fileNameFieldIndex );
@@ -143,15 +135,15 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.fieldnrs[i] = data.outputRowMeta.indexOfValue( meta.getOutputFields()[i].getName() );
         if ( data.fieldnrs[i] < 0 ) {
-          throw new KettleStepException( "Field ["
-            + meta.getOutputFields()[i].getName() + "] couldn't be found in the input stream!" );
+          throw new KettleStepException( "Field [" + meta.getOutputFields()[i].getName()
+              + "] couldn't be found in the input stream!" );
         }
       }
     }
 
     if ( ( r == null && data.outputRowMeta != null && meta.isFooterEnabled() )
-      || ( r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ( ( getLinesOutput() + 1 ) % meta
-        .getSplitEvery() ) == 0 ) ) {
+        || ( r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ( ( getLinesOutput() + 1 ) % meta
+            .getSplitEvery() ) == 0 ) ) {
       if ( data.outputRowMeta != null ) {
         if ( meta.isFooterEnabled() ) {
           writeHeader();
@@ -286,9 +278,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   private byte[] formatField( ValueMetaInterface v, Object valueData ) throws KettleValueException {
     if ( v.isString() ) {
-      if ( v.isStorageBinaryString()
-        && v.getTrimType() == ValueMetaInterface.TRIM_TYPE_NONE && v.getLength() < 0
-        && Const.isEmpty( v.getStringEncoding() ) ) {
+      if ( v.isStorageBinaryString() && v.getTrimType() == ValueMetaInterface.TRIM_TYPE_NONE && v.getLength() < 0
+          && Const.isEmpty( v.getStringEncoding() ) ) {
         return (byte[]) valueData;
       } else {
         String svalue = ( valueData instanceof String ) ? (String) valueData : v.getString( valueData );
@@ -319,7 +310,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           return tmp.getBytes( v.getStringEncoding() );
         } catch ( UnsupportedEncodingException e ) {
           throw new KettleValueException( "Unable to convert String to Binary with specified string encoding ["
-            + v.getStringEncoding() + "]", e );
+              + v.getStringEncoding() + "]", e );
         }
       }
     } else {
@@ -331,7 +322,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           text = string.getBytes( v.getStringEncoding() );
         } catch ( UnsupportedEncodingException e ) {
           throw new KettleValueException( "Unable to convert String to Binary with specified string encoding ["
-            + v.getStringEncoding() + "]", e );
+              + v.getStringEncoding() + "]", e );
         }
       }
       if ( length > string.length() ) {
@@ -412,7 +403,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           if ( meta.isEnclosureForced() && !meta.isPadded() ) {
             writeEnclosures = true;
           } else if ( !meta.isEnclosureFixDisabled()
-            && containsSeparatorOrEnclosure( str, data.binarySeparator, data.binaryEnclosure ) ) {
+              && containsSeparatorOrEnclosure( str, data.binarySeparator, data.binaryEnclosure ) ) {
             writeEnclosures = true;
           }
         }
@@ -506,14 +497,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             data.writer.write( data.binarySeparator );
           }
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-            || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
-              fieldName.getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
+                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
           data.writer.write( getBinaryString( fieldName ) );
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-            || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
-              fieldName.getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
+                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
         }
@@ -527,14 +518,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           ValueMetaInterface v = r.getValueMeta( i );
 
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-            || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
-              v.getName().getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
+                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
           data.writer.write( getBinaryString( v.getName() ) );
           if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-            || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(
-              v.getName().getBytes(), data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
+                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
             data.writer.write( data.binaryEnclosure );
           }
         }
@@ -552,8 +543,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   public String buildFilename( String filename, boolean ziparchive ) {
-    return meta.buildFilename(
-      filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta );
+    return meta.buildFilename( filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr,
+        ziparchive, meta );
   }
 
   public void openNewFile( String baseFilename ) throws KettleException {
@@ -608,64 +599,51 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           createParentFolder( filename );
         }
 
-        OutputStream outputStream;
+        String compressionType = meta.getFileCompression();
 
-        if ( !Const.isEmpty( meta.getFileCompression() )
-          && !meta.getFileCompression().equals( FILE_COMPRESSION_TYPE_NONE ) ) {
-          if ( meta.getFileCompression().equals( FILE_COMPRESSION_TYPE_ZIP ) ) {
-            if ( log.isDetailed() ) {
-              logDetailed( "Opening output stream in zipped mode" );
-            }
-
-            if ( checkPreviouslyOpened( filename ) ) {
-              data.fos = getOutputStream( filename, getTransMeta(), true );
-            } else {
-              data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
-            }
-            data.zip = new ZipOutputStream( data.fos );
-            // The filename has the ZIP extension and refers to the top-level filename. Thus we
-            // need to add the intended extension to the ZipEntry.
-            File entry = new File( filename + "." + meta.getExtension() );
-            ZipEntry zipentry = new ZipEntry( entry.getName() );
-            zipentry.setComment( "Compressed by Kettle" );
-            data.zip.putNextEntry( zipentry );
-            outputStream = data.zip;
-          } else if ( meta.getFileCompression().equals( FILE_COMPRESSION_TYPE_GZIP ) ) {
-            if ( log.isDetailed() ) {
-              logDetailed( "Opening output stream in gzipped mode" );
-            }
-            if ( checkPreviouslyOpened( filename ) ) {
-              data.fos = getOutputStream( filename, getTransMeta(), true );
-            } else {
-              data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
-            }
-            data.gzip = new GZIPOutputStream( data.fos );
-            outputStream = data.gzip;
-          } else {
-            throw new KettleFileException( "No compression method specified!" );
-          }
-        } else {
-          if ( log.isDetailed() ) {
-            logDetailed( "Opening output stream in nocompress mode" );
-          }
-          if ( checkPreviouslyOpened( filename ) ) {
-            data.fos = getOutputStream( filename, getTransMeta(), true );
-          } else {
-            data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
-          }
-          outputStream = data.fos;
+        // If no file compression is specified, use the "None" provider
+        if ( Const.isEmpty( compressionType ) ) {
+          compressionType = FILE_COMPRESSION_TYPE_NONE;
         }
+
+        CompressionProvider compressionProvider =
+            CompressionProviderFactory.getInstance().getCompressionProviderByName( compressionType );
+
+        if ( compressionProvider == null ) {
+          throw new KettleException( "No compression provider found with name = " + compressionType );
+        }
+
+        if ( !compressionProvider.supportsOutput() ) {
+          throw new KettleException( "Compression provider " + compressionType + " does not support output streams!" );
+        }
+
+        if ( log.isDetailed() ) {
+          logDetailed( "Opening output stream using provider: " + compressionProvider.getName() );
+        }
+
+        if ( checkPreviouslyOpened( filename ) ) {
+          data.fos = getOutputStream( filename, getTransMeta(), true );
+        } else {
+          data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
+        }
+
+        data.out = compressionProvider.createOutputStream( data.fos );
+
+        // The compression output stream may also archive entries. For this we create the filename
+        // (with appropriate extension) and add it as an entry to the output stream. For providers
+        // that do not archive entries, they should use the default no-op implementation.
+        data.out.addEntry( filename + "." + meta.getExtension() );
 
         if ( !Const.isEmpty( meta.getEncoding() ) ) {
           if ( log.isDetailed() ) {
             logDetailed( "Opening output stream in encoding: " + meta.getEncoding() );
           }
-          data.writer = new BufferedOutputStream( outputStream, 5000 );
+          data.writer = new BufferedOutputStream( data.out, 5000 );
         } else {
           if ( log.isDetailed() ) {
             logDetailed( "Opening output stream in default encoding" );
           }
-          data.writer = new BufferedOutputStream( outputStream, 5000 );
+          data.writer = new BufferedOutputStream( data.out, 5000 );
         }
 
         if ( log.isDetailed() ) {
@@ -681,8 +659,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( meta.isAddToResultFiles() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-        new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ), getTransMeta()
-          .getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ), getTransMeta()
+              .getName(), getStepname() );
       if ( resultFile != null ) {
         resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
         addResultFile( resultFile );
@@ -737,14 +715,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         if ( log.isDebug() ) {
           logDebug( "Closing normal file ..." );
         }
-        if ( FILE_COMPRESSION_TYPE_ZIP.equals( meta.getFileCompression() ) ) {
-          data.zip.flush();
-          data.zip.closeEntry();
-          data.zip.finish();
-          data.zip.close();
-        } else if ( FILE_COMPRESSION_TYPE_GZIP.equals( meta.getFileCompression() ) ) {
-          data.gzip.finish();
-        }
+        data.out.close();
+
         if ( data.fos != null ) {
           data.fos.close();
           data.fos = null;
@@ -981,23 +953,22 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       parentfolder = getFileObject( filename ).getParent();
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages
-            .getString( PKG, "TextFileOutput.Log.ParentFolderExist", parentfolder.getName() ) );
+          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderExist", parentfolder.getName() ) );
         }
       } else {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist", parentfolder
-            .getName() ) );
+          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist",
+            parentfolder.getName() ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated", parentfolder
-              .getName() ) );
+            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated",
+              parentfolder.getName() ) );
           }
         } else {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt", parentfolder.getName(), filename ) );
+          throw new KettleException( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",
+              parentfolder.getName(), filename ) );
         }
       }
     } finally {

@@ -1,4 +1,4 @@
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -32,9 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipOutputStream;
 
+import org.pentaho.di.core.compress.CompressionOutputStream;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -56,8 +55,7 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
   public SimpleDateFormat daf;
   public DateFormatSymbols dafs;
 
-  public ZipOutputStream zip;
-  public GZIPOutputStream gzip;
+  public CompressionOutputStream out;
 
   public OutputStream writer;
 

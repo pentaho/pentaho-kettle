@@ -315,6 +315,14 @@ public class FTPSConnection implements FTPListener {
     return this.timeOut;
   }
 
+  public String getUserName() {
+    return userName;
+  }
+
+  public String getHostName() {
+    return hostName;
+  }
+
   public ArrayList<String> getReplies() {
     return replies;
   }

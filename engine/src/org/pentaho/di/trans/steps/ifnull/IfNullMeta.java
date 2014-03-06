@@ -211,7 +211,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldName
+   * @param replaceValue
    *          The replaceValue to set.
    */
   public void setReplaceValue( String[] replaceValue ) {
@@ -302,7 +302,8 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       selectValuesType = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "selectValuesType" ) );
       replaceAllByValue = XMLHandler.getTagValue( stepnode, "replaceAllByValue" );
       replaceAllMask = XMLHandler.getTagValue( stepnode, "replaceAllMask" );
-      setEmptyStringAll = !"N".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "setEmptyStringAll" ) );
+      String setEmptyStringAllString = XMLHandler.getTagValue( stepnode, "setEmptyStringAll" );
+      setEmptyStringAll = !Const.isEmpty( setEmptyStringAllString ) && "Y".equalsIgnoreCase( setEmptyStringAllString );
 
       Node types = XMLHandler.getSubNode( stepnode, "valuetypes" );
       int nrtypes = XMLHandler.countNodes( types, "valuetype" );
@@ -317,7 +318,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
         typereplaceValue[i] = XMLHandler.getTagValue( tnode, "value" );
         typereplaceMask[i] = XMLHandler.getTagValue( tnode, "mask" );
         String typeemptyString = XMLHandler.getTagValue( tnode, "set_type_empty_string" );
-        setTypeEmptyString[i] = Const.isEmpty( typeemptyString ) || "Y".equalsIgnoreCase( typeemptyString );
+        setTypeEmptyString[ i ] = !Const.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase( typeemptyString );
       }
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );

@@ -2013,12 +2013,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                     fieldtype = ValueMetaInterface.TYPE_STRING;
                   }
 
-                  if ( fieldname != null && fieldtype != ValueMetaInterface.TYPE_NONE ) {
-                    ValueMetaInterface field = ValueMetaFactory.createValueMeta( fieldname, fieldtype );
-                    fields.addValueMeta( field );
+                  if ( Const.isEmpty( fieldname ) ) {
+                    stop = true;
                   } else {
-                    if ( fieldname == null ) {
-                      stop = true;
+                    if ( fieldtype != ValueMetaInterface.TYPE_NONE ) {
+                      ValueMetaInterface field = ValueMetaFactory.createValueMeta( fieldname, fieldtype );
+                      fields.addValueMeta( field );
                     }
                   }
                 }

@@ -82,6 +82,6 @@ public class SpoonTest {
 
     KettleEnvironment.init();
 
-    spoon.copySelected( transMeta, steps, Collections.<NotePadMeta> emptyList() );
+    spoon.copySelected( transMeta, steps, Collections.<NotePadMeta>emptyList() );
   }
 }

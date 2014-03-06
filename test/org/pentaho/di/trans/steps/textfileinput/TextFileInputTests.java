@@ -34,10 +34,13 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.pentaho.di.TestFailedException;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
@@ -61,6 +64,16 @@ import org.pentaho.reporting.libraries.base.util.CSVTokenizer;
  * @author sflatley
  */
 public class TextFileInputTests extends TestCase {
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
+    PluginRegistry.init( true );
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+  }
 
   /**
    * Write the file to be used as input (as a temporary file).

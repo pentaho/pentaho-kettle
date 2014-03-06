@@ -62,14 +62,14 @@ public class MappingInputFieldsTest {
     Map<Class<?>, String> classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaString" );
     Plugin p1 =
-        new Plugin( new String[] { "2" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
-            true, classes, null, null, null );
+      new Plugin( new String[] { "2" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
+        true, classes, null, null, null );
 
     classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaInteger" );
     Plugin p2 =
-        new Plugin( new String[] { "5" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
-            true, classes, null, null, null );
+      new Plugin( new String[] { "5" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
+        true, classes, null, null, null );
 
     PluginRegistry.getInstance().registerPlugin( ValueMetaPluginType.class, p1 );
     PluginRegistry.getInstance().registerPlugin( ValueMetaPluginType.class, p2 );

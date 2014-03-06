@@ -22,18 +22,16 @@
 
 package org.pentaho.di.trans.steps.textfileinput;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.compress.CompressionInputStream;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayList;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -73,13 +71,7 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 
   public int filenr;
 
-  public InputStream fr;
-
-  public ZipInputStream zi;
-
-  public GZIPInputStream gzi;
-
-  public InputStream sis;
+  public CompressionInputStream in;
 
   public InputStreamReader isr;
 
@@ -153,8 +145,7 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 
     nrLinesOnPage = 0;
 
-    fr = null;
-    zi = null;
+    in = null;
 
     filterProcessor = null;
     lineStringBuilder = new StringBuilder( 256 );

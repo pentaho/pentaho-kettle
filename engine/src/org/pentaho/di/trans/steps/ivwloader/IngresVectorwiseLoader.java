@@ -30,6 +30,7 @@ import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Scanner;
+
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
@@ -69,7 +70,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   public Thread vwLoadMonitorThread;
 
   public IngresVectorwiseLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -122,7 +123,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // masquerading the password for log
         if ( meta.isUseDynamicVNode() ) {
           logDetailed( "Executing command: " + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]"
-              + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
+            + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
         } else {
           logDetailed( "Executing command: " + cmd );
         }
@@ -185,7 +186,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   private String createLoadCommand() {
     String loadCommand = "";
     loadCommand +=
-        "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, meta.getTableName() ) + " ";
+      "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, meta.getTableName() ) + " ";
 
     // Build list of column names to set
     //
@@ -331,17 +332,17 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     if ( dm != null ) {
       String databaseName = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
       String password =
-          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm.getDatabaseInterface()
-              .getPassword(), "" ) ) );
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm.getDatabaseInterface()
+          .getPassword(), "" ) ) );
       String port = environmentSubstitute( Const.NVL( dm.getDatabasePortNumberString(), "" ) ).replace( "7", "" );
       String username = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getUsername(), "" ) );
       String hostname = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getHostname(), "" ) );
       String schemaTable = dm.getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
       String encoding = environmentSubstitute( Const.NVL( meta.getEncoding(), "" ) );
       String fifoFile =
-          Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getFifoFileName(), "" ) ) );
+        Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getFifoFileName(), "" ) ) );
       String errorFile =
-          Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getErrorFileName(), "" ) ) );
+        Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getErrorFileName(), "" ) ) );
       int maxNrErrors = Const.toInt( environmentSubstitute( Const.NVL( meta.getMaxNrErrors(), "0" ) ), 0 );
 
       if ( meta.isUsingVwload() ) {
@@ -368,7 +369,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // logical portname in JDBC use a 7
 
         sb.append( " @" ).append( hostname ).append( "," ).append( port ).append( "[" ).append( username ).append( "," )
-            .append( password ).append( "]::" ).append( databaseName );
+          .append( password ).append( "]::" ).append( databaseName );
       } else {
         // Database Name
         //
@@ -614,7 +615,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
 
       data.encoding = environmentSubstitute( meta.getEncoding() );
       data.isEncoding = !Const.isEmpty( environmentSubstitute( meta.getEncoding() ) );
@@ -769,7 +770,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           setLinesRejected( results[2] );
         }
         boolean errorResult =
-            ( resultCode != 0 ) || ( results != null && ( !meta.isContinueOnError() && !meta.isUsingVwload() ) );
+          ( resultCode != 0 ) || ( results != null && ( !meta.isContinueOnError() && !meta.isUsingVwload() ) );
         if ( errorResult ) {
           setLinesOutput( 0L );
           logError( "Bulk loader finish unsuccessfully" );
@@ -783,16 +784,24 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       }
     }
 
+    @SuppressWarnings( "resource" )
     private Long[] tryToParseVWloadResultMessage() throws InterruptedException, IOException {
       outputLoggerThread.join();
       Long[] result = new Long[3];
       if ( meta.isUsingVwload() ) {
         String lastLine = outputLogger.getLastLine();
-        Scanner sc = new Scanner( lastLine );
-        sc = sc.useDelimiter( "\\D+" );
-        int i = 0;
-        while ( sc.hasNext() ) {
-          result[i++] = sc.nextBigInteger().longValue();
+        Scanner sc = null;
+        try {
+          sc = new Scanner( lastLine );
+          sc = sc.useDelimiter( "\\D+" );
+          int i = 0;
+          while ( sc.hasNext() ) {
+            result[i++] = sc.nextBigInteger().longValue();
+          }
+        } finally {
+          if ( sc != null ) {
+            sc.close();
+          }
         }
       } else {
         File errorFile = new File( meta.getErrorFileName() );
