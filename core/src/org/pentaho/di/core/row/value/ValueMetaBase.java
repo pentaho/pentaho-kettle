@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -54,6 +55,7 @@ import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GreenplumDatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
+import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
 import org.pentaho.di.core.database.TeradataDatabaseMeta;
@@ -4624,6 +4626,10 @@ public class ValueMetaBase implements ValueMetaInterface {
           if ( getPrecision() != 1 && databaseInterface.supportsTimeStampToDateConversion() ) {
             data = resultSet.getTimestamp( index + 1 );
             break; // Timestamp extends java.util.Date
+          } else if ( databaseInterface instanceof NetezzaDatabaseMeta ) {
+            // PDI-10877 workaround for IBM netezza jdbc 'special' implementation
+            data = getNetezzaDateValueWorkaround( databaseInterface, resultSet, index + 1 );
+            break;
           } else {
             data = resultSet.getDate( index + 1 );
             break;
@@ -4641,6 +4647,23 @@ public class ValueMetaBase implements ValueMetaInterface {
           + index, e );
     }
 
+  }
+
+  // PDI-10877
+  private Object getNetezzaDateValueWorkaround( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
+    throws SQLException, KettleDatabaseException {
+    Object data = null;
+    int type = resultSet.getMetaData().getColumnType( index );
+    switch ( type ) {
+      case Types.TIME: {
+        data = resultSet.getTime( index );
+        break;
+      }
+      default: {
+        data = resultSet.getDate( index );
+      }
+    }
+    return data;
   }
 
   @Override
