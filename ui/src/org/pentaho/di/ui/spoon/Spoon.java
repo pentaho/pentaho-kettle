@@ -3181,7 +3181,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
       Class<? extends SpoonPerspective> cls = activePerspective.getClass();
-      Method m = cls.getMethod( "onFileClose", new Class[0] );
+      Method m = cls.getMethod( "onFileClose", new Class<?>[0] );
       return (Boolean) m.invoke( activePerspective );
     } catch ( Exception e ) {
       // ignore any errors resulting from the hack

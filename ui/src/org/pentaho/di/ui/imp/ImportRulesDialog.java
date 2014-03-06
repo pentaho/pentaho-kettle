@@ -483,7 +483,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
     String compositeClassName = rule.getCompositeClassName();
 
     Class<?> compositeClass;
-    Class<?>[] paramClasses = new Class[] {};
+    Class<?>[] paramClasses = new Class<?>[] {};
     Object[] paramArgs = new Object[] {};
     Constructor<?> compositeConstructor;
     try {
