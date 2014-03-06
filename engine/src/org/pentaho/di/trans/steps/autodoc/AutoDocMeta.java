@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -55,10 +54,6 @@ import org.w3c.dom.Node;
  * @author matt
  * @version 4
  */
-@Step(
-  id = "AutoDoc", name = "AutoDoc.Step.Name", description = "AutoDoc.Step.Description",
-  i18nPackageName = "org.pentaho.di.autodoc", image = "org/pentaho/di/autodoc/autodoc.png",
-  categoryDescription = "Autodoc.Category.PDI-EE" )
 public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, AutoDocOptionsInterface {
   private static Class<?> PKG = AutoDocMeta.class; // for i18n purposes, needed by Translator2!!
 
