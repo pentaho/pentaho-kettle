@@ -1,9 +1,16 @@
 package org.pentaho.di.trans.steps.systemdata;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -15,14 +22,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import java.util.Arrays;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
 /**
  * User: Dzmitry Stsiapanau Date: 1/20/14 Time: 12:12 PM
  */
@@ -33,7 +32,7 @@ public class SystemDataTest {
     Object[] outputRow;
 
     public SystemDataHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-        Trans trans ) {
+      Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     }
 
@@ -77,10 +76,10 @@ public class SystemDataTest {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-        new StepMockHelper<SystemDataMeta, SystemDataData>( "SYSTEM_DATA TEST", SystemDataMeta.class,
-            SystemDataData.class );
+      new StepMockHelper<SystemDataMeta, SystemDataData>( "SYSTEM_DATA TEST", SystemDataMeta.class,
+        SystemDataData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
   }
@@ -102,8 +101,8 @@ public class SystemDataTest {
     types[0] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME ) );
     types[1] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME_REAL ) );
     SystemDataHandler systemData =
-        new SystemDataHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
+      new SystemDataHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans );
     Object[] expectedRow = new Object[] { Const.getHostname(), Const.getHostnameReal() };
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
@@ -112,6 +111,6 @@ public class SystemDataTest {
     systemData.init( systemDataMeta, systemDataData );
     assertFalse( systemData.processRow( systemDataMeta, systemDataData ) );
     Object[] out = systemData.getOutputRow();
-    assertArrayEquals(expectedRow, out);
+    assertArrayEquals( expectedRow, out );
   }
 }

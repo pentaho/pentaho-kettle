@@ -36,12 +36,12 @@ import org.pentaho.metastore.api.IMetaStore;
 
 public class MemoryRepository extends AbstractRepository {
   private final Map<ObjectId, Map<Integer, Map<String, String>>> stepAttributeMap =
-      new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
+    new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
   private final Map<ObjectId, Map<Integer, Map<String, String>>> jobAttributeMap =
-      new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
+    new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
 
   private String getAttribute( Map<ObjectId, Map<Integer, Map<String, String>>> attributeMap, ObjectId id, int nr,
-      String code, String def ) {
+    String code, String def ) {
     String value = null;
     Map<Integer, Map<String, String>> stepMap = attributeMap.get( id );
     if ( stepMap != null ) {
@@ -54,7 +54,7 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   private void setAttribute( Map<ObjectId, Map<Integer, Map<String, String>>> attributeMap, ObjectId id, int nr,
-      String code, String value ) {
+    String code, String value ) {
     Map<Integer, Map<String, String>> stepMap = attributeMap.get( id );
     if ( stepMap == null ) {
       stepMap = new HashMap<Integer, Map<String, String>>();
@@ -151,9 +151,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public boolean
-    exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
-      throws KettleException {
+  public boolean exists( String name, RepositoryDirectoryInterface repositoryDirectory,
+    RepositoryObjectType objectType ) throws KettleException {
     // TODO Auto-generated method stub
     return false;
   }
@@ -173,14 +172,14 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment,
-      ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
+    ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
 
   @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment, Calendar versionDate,
-      ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
+    ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
@@ -206,7 +205,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
-      ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException {
+    ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -225,7 +224,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDirectory,
-      String newName ) throws KettleException {
+    String newName ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -238,7 +237,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public JobMeta loadJob( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor,
-      String revision ) throws KettleException {
+    String revision ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -306,7 +305,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers,
-      String versionLabel ) throws KettleException {
+    String versionLabel ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -441,7 +440,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public RepositoryDirectoryInterface createRepositoryDirectory( RepositoryDirectoryInterface parentDirectory,
-      String directoryPath ) throws KettleException {
+    String directoryPath ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -468,7 +467,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public List<RepositoryElementMetaInterface> getJobAndTransformationObjects( ObjectId id_directory,
-      boolean includeDeleted ) throws KettleException {
+    boolean includeDeleted ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -506,9 +505,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public void
-    saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
-      throws KettleException {
+  public void saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
+    Condition condition ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
@@ -613,21 +611,21 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public void saveDatabaseMetaStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
-      DatabaseMeta database ) throws KettleException {
+    DatabaseMeta database ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, int nr,
-      String idCode, List<DatabaseMeta> databases ) throws KettleException {
+    String idCode, List<DatabaseMeta> databases ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
-      String idCode, DatabaseMeta database ) throws KettleException {
+    String idCode, DatabaseMeta database ) throws KettleException {
     // TODO Auto-generated method stub
 
   }

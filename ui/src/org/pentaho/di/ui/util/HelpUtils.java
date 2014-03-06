@@ -36,10 +36,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ShowHelpDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
-
 public class HelpUtils {
 
-  private static final Class PKG = HelpUtils.class;
+  private static final Class<?> PKG = HelpUtils.class;
 
   public static Button createHelpButton( final Composite parent, final String title, final PluginInterface plugin ) {
     Button button = new Button( parent, SWT.PUSH );
@@ -86,7 +85,8 @@ public class HelpUtils {
       return null;
     }
     if ( isPluginDocumented( plugin ) ) {
-      ShowHelpDialog helpDlg = new ShowHelpDialog( shell, getHelpDialogTitle( plugin ), plugin.getDocumentationUrl(), plugin.getName() );
+      ShowHelpDialog helpDlg = new ShowHelpDialog( shell, getHelpDialogTitle( plugin ),
+        plugin.getDocumentationUrl(), plugin.getName() );
       helpDlg.open();
       return helpDlg;
     } else {

@@ -288,7 +288,7 @@ public class TestUtilities {
 
     return sortRowsStep;
   }
-  
+
   public static String getStringFromInput( InputStream in ) throws IOException {
     StringBuilder sb = new StringBuilder();
     InputStreamReader is = null;

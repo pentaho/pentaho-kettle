@@ -1,14 +1,20 @@
 package org.pentaho.di.trans.steps.switchcase;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.*;
-
-import java.util.*;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
+import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
 
 /**
  * @author nhudak
@@ -17,15 +23,14 @@ public class SwitchCaseMetaTest {
 
   LoadSaveTester loadSaveTester;
 
-  public SwitchCaseMetaTest(){
+  public SwitchCaseMetaTest() {
     //SwitchCaseMeta bean-like attributes
     List<String> attributes = Arrays.asList(
       "fieldname",
       "isContains",
-      "caseValueFormat", "caseValueDecimal", /* "caseValueType",*/ "caseValueGroup",
+      "caseValueFormat", "caseValueDecimal", /* "caseValueType",*/"caseValueGroup",
       "defaultTargetStepname",
-      "caseTargets"
-    );
+      "caseTargets" );
 
     //Non-standard getters & setters
     Map<String, String> getterMap = new HashMap<String, String>();
@@ -43,8 +48,7 @@ public class SwitchCaseMetaTest {
     this.loadSaveTester = new LoadSaveTester( SwitchCaseMeta.class,
       attributes,
       getterMap, setterMap,
-      attrValidatorMap, typeValidatorMap
-    );
+      attrValidatorMap, typeValidatorMap );
 
     FieldLoadSaveValidatorFactory validatorFactory = loadSaveTester.getFieldLoadSaveValidatorFactory();
 
@@ -53,23 +57,25 @@ public class SwitchCaseMetaTest {
 
       @Override
       public SwitchCaseTarget getTestObject() {
-        return new SwitchCaseTarget() {{
-          caseValue = UUID.randomUUID().toString();
-          caseTargetStepname = UUID.randomUUID().toString();
-          caseTargetStep = new StepMeta( caseTargetStepname, targetStepInterface );
-        }};
+        return new SwitchCaseTarget() {
+          {
+            caseValue = UUID.randomUUID().toString();
+            caseTargetStepname = UUID.randomUUID().toString();
+            caseTargetStep = new StepMeta( caseTargetStepname, targetStepInterface );
+          }
+        };
       }
 
       @Override
       public boolean validateTestObject( SwitchCaseTarget testObject, Object actual ) {
-        return testObject.caseValue.equals( ((SwitchCaseTarget) actual).caseValue ) &&
-          testObject.caseTargetStepname.equals( ((SwitchCaseTarget) actual).caseTargetStepname );
+        return testObject.caseValue.equals( ( (SwitchCaseTarget) actual ).caseValue )
+          && testObject.caseTargetStepname.equals( ( (SwitchCaseTarget) actual ).caseTargetStepname );
       }
     };
 
     validatorFactory.registerValidator( validatorFactory.getName( SwitchCaseTarget.class ), targetValidator );
     validatorFactory.registerValidator( validatorFactory.getName( List.class, SwitchCaseTarget.class ),
-      new ListLoadSaveValidator<SwitchCaseTarget>(targetValidator) );
+      new ListLoadSaveValidator<SwitchCaseTarget>( targetValidator ) );
   }
 
   @Test

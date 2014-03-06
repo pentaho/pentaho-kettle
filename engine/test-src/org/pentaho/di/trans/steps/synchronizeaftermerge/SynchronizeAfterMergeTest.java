@@ -90,11 +90,10 @@ public class SynchronizeAfterMergeTest {
 
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta =
-      { 
-        new ValueMeta( "personName", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "key", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "flag", ValueMeta.TYPE_STRING ) };
+    ValueMetaInterface[] valuesMeta = {
+      new ValueMeta( "personName", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "key", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "flag", ValueMeta.TYPE_STRING ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

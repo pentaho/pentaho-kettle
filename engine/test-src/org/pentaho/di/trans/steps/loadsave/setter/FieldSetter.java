@@ -15,5 +15,5 @@ public class FieldSetter<T> implements Setter<T> {
     } catch ( Exception e ) {
       throw new RuntimeException( "Error getting " + field + " on " + obj, e );
     }
-  };
+  }
 }

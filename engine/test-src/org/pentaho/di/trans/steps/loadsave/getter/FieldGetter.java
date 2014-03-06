@@ -41,19 +41,25 @@ public class FieldGetter<T> implements Getter<T> {
 
   @Override
   public boolean equals( Object obj ) {
-    if ( this == obj )
+    if ( this == obj ) {
       return true;
-    if ( obj == null )
+    }
+    if ( obj == null ) {
       return false;
-    if ( getClass() != obj.getClass() )
+    }
+    if ( getClass() != obj.getClass() ) {
       return false;
-    @SuppressWarnings( "rawtypes" )
-    FieldGetter other = (FieldGetter) obj;
+    }
+    FieldGetter<?> other = (FieldGetter<?>) obj;
     if ( field == null ) {
-      if ( other.field != null )
+      if ( other.field != null ) {
         return false;
-    } else if ( !field.equals( other.field ) )
-      return false;
+      }
+    } else {
+      if ( !field.equals( other.field ) ) {
+        return false;
+      }
+    }
     return true;
   }
 
