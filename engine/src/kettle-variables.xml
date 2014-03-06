@@ -283,6 +283,12 @@
 		<variable>KETTLE_DEFAULT_DATE_FORMAT</variable>
 		<default-value></default-value>
 	</kettle-variable>
+
+	<kettle-variable>
+		<description>Defines the default encoding for servlets, leave it empty to use Java default encoding</description>
+		<variable>KETTLE_DEFAULT_SERVLET_ENCODING</variable>
+		<default-value></default-value>
+	</kettle-variable>
 	
 	<kettle-variable>
 		<description>Set this variable to Y when you want the job/transformation fail with an error when the related logging process (e.g. to a database) fails.</description>
