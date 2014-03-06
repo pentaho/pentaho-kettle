@@ -1664,7 +1664,7 @@ public class JobDialog extends Dialog {
     String uiClassName = pluginInterface.getLogTablePluginUIClassname();
 
     Class<?> uiClass;
-    Class<?>[] paramClasses = new Class[] { JobMeta.class, ModifyListener.class, JobDialog.class, };
+    Class<?>[] paramClasses = new Class<?>[] { JobMeta.class, ModifyListener.class, JobDialog.class, };
     Object[] paramArgs = new Object[] { jobMeta, lsMod, this, };
     Constructor<?> uiConstructor;
     try {

@@ -198,7 +198,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     try {
       Class<?> dialogClass;
       Class<?>[] paramClasses =
-        new Class[] { spoon.getShell().getClass(), JobEntryInterface.class, Repository.class, JobMeta.class };
+        new Class<?>[] { spoon.getShell().getClass(), JobEntryInterface.class, Repository.class, JobMeta.class };
       Object[] paramArgs = new Object[] { spoon.getShell(), jobEntryInterface, spoon.getRepository(), jobMeta };
       Constructor<?> dialogConstructor;
 
