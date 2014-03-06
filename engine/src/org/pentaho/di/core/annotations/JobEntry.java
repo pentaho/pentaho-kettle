@@ -64,4 +64,6 @@ public @interface JobEntry {
 
   String forumUrl() default "";
 
+  String classLoaderGroup() default "";
+
 }

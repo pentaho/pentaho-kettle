@@ -138,4 +138,9 @@ public class JobDialogPluginType extends BasePluginType implements PluginTypeInt
   protected String extractForumUrl( Annotation annotation ) {
     return null;
   }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (JobDialogPlugin) annotation ).classLoaderGroup();
+  }
 }

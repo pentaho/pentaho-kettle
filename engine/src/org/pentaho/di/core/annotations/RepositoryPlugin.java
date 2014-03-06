@@ -50,4 +50,5 @@ public @interface RepositoryPlugin {
 
   String i18nPackageName() default "";
 
+  String classLoaderGroup() default "";
 }

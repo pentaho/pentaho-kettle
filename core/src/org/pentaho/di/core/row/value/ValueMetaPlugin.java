@@ -59,4 +59,6 @@ public @interface ValueMetaPlugin {
   String casesUrl() default "";
 
   String forumUrl() default "";
+
+  String classLoaderGroup() default "";
 }

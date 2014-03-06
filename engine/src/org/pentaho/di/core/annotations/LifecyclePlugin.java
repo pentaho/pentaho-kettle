@@ -35,4 +35,6 @@ public @interface LifecyclePlugin {
   String id();
 
   String name() default "";
+
+  String classLoaderGroup() default "";
 }

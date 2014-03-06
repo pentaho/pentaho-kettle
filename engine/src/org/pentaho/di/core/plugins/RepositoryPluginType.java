@@ -182,4 +182,9 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
     return null;
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (RepositoryPlugin) annotation ).classLoaderGroup();
+  }
+
 }

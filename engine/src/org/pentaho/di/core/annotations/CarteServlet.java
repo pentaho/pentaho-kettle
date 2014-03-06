@@ -57,4 +57,5 @@ public @interface CarteServlet {
 
   String i18nPackageName() default "";
 
+  String classLoaderGroup() default "";
 }

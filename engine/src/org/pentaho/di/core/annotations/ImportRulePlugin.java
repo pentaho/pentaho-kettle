@@ -46,4 +46,6 @@ public @interface ImportRulePlugin {
   String description();
 
   String i18nPackageName();
+
+  String classLoaderGroup() default "";
 }

@@ -41,4 +41,6 @@ public @interface DatabaseMetaPlugin {
   String type();
 
   String typeDescription();
+
+  String classLoaderGroup() default "";
 }

@@ -43,4 +43,6 @@ public @interface ExtensionPoint {
   String extensionPointId();
 
   String description();
+
+  String classLoaderGroup() default "";
 }

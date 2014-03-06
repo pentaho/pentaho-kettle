@@ -44,6 +44,7 @@ public class Plugin implements PluginInterface {
   private Class<? extends PluginTypeInterface> pluginType;
   private String imageFile;
   private boolean separateClassLoaderNeeded;
+  private String classLoaderGroup;
   private boolean nativePlugin;
   private Map<Class<?>, String> classMap;
   private List<String> libraries;
@@ -91,6 +92,33 @@ public class Plugin implements PluginInterface {
     String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
     boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
     URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
+    this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, null,
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl );
+  }
+
+  /**
+   * @param ids
+   * @param pluginType
+   * @param mainType
+   * @param category
+   * @param name
+   * @param description
+   * @param imageFile
+   * @param separateClassLoaderNeeded
+   * @param classLoaderGroup
+   * @param nativePlugin
+   * @param classMap
+   * @param libraries
+   * @param errorHelpFile
+   * @param pluginFolder
+   * @param documentationUrl
+   * @param casesUrl
+   * @param forumUrl
+   */
+  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
+    String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+    String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
+    String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
 
     this.ids = ids;
     this.pluginType = pluginType;
@@ -100,6 +128,7 @@ public class Plugin implements PluginInterface {
     this.description = description;
     this.imageFile = imageFile;
     this.separateClassLoaderNeeded = separateClassLoaderNeeded;
+    this.classLoaderGroup = classLoaderGroup;
     this.nativePlugin = nativePlugin;
     this.classMap = classMap;
     this.libraries = libraries;
@@ -108,7 +137,6 @@ public class Plugin implements PluginInterface {
     this.documentationUrl = documentationUrl;
     this.casesUrl = casesUrl;
     this.forumUrl = forumUrl;
-
   }
 
   @Override
@@ -387,6 +415,14 @@ public class Plugin implements PluginInterface {
   @Override
   public void setForumUrl( String forumUrl ) {
     this.forumUrl = forumUrl;
+  }
+
+  public String getClassLoaderGroup() {
+    return classLoaderGroup;
+  }
+
+  public void setClassLoaderGroup( String classLoaderGroup ) {
+    this.classLoaderGroup = classLoaderGroup;
   }
 
 }

@@ -114,4 +114,9 @@ public class PluginRegistryPluginType extends BasePluginType implements PluginTy
     return null;
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (RegistryPlugin) annotation ).classLoaderGroup();
+  }
+
 }

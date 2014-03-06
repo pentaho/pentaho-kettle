@@ -46,4 +46,6 @@ public @interface TransDialogPlugin {
   String description() default "";
 
   String i18nPackageName() default "";
+
+  String classLoaderGroup() default "";
 }

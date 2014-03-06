@@ -49,4 +49,6 @@ public @interface PartitionerPlugin {
   String description() default "";
 
   String i18nPackageName() default "";
+
+  String classLoaderGroup() default "";
 }

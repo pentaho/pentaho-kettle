@@ -150,4 +150,9 @@ public class LogTablePluginType extends BasePluginType implements PluginTypeInte
   protected String extractForumUrl( Annotation annotation ) {
     return null;
   }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (LogTablePlugin) annotation ).classLoaderGroup();
+  }
 }

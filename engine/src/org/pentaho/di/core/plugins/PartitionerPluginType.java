@@ -184,4 +184,9 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
     return null;
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (PartitionerPlugin) annotation ).classLoaderGroup();
+  }
+
 }
