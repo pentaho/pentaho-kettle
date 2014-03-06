@@ -539,7 +539,9 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
   protected abstract String extractForumUrl( java.lang.annotation.Annotation annotation );
 
-  protected abstract String extractClassLoaderGroup( java.lang.annotation.Annotation annotation );
+  protected String extractClassLoaderGroup( java.lang.annotation.Annotation annotation ) {
+    return null;
+  }
 
   /**
    * When set to true the FluginFolder objects created by this type will be instructed to search for additional plugins
