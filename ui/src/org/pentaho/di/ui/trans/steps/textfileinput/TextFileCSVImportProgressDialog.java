@@ -368,6 +368,7 @@ public class TextFileCSVImportProgressDialog {
         field.setDecimalSymbol( conversionMeta.getDecimalSymbol() );
         field.setGroupSymbol( conversionMeta.getGroupingSymbol() );
         field.setLength( conversionMeta.getLength() );
+        field.setPrecision( conversionMeta.getPrecision() );
 
         nrnull[i] = result.getNrNull();
         minstr[i] = result.getMin() == null ? "" : result.getMin().toString();
