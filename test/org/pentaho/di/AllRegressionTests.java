@@ -76,7 +76,7 @@ public class AllRegressionTests {
     suite.addTestSuite( StringEvaluatorTest.class );
     suite.addTestSuite( ParameterSimpleTransTest.class );
     suite.addTestSuite( ValueDataUtilTest.class );
-    suite.addTestSuite( DatabaseTest.class );
+    suite.addTest( new JUnit4TestAdapter( DatabaseTest.class ) );
     suite.addTestSuite( HopTest.class );
     suite.addTestSuite( InjectorTest.class );
     suite.addTestSuite( RowGeneratorTest.class );

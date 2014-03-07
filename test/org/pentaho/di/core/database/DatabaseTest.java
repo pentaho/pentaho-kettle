@@ -22,17 +22,30 @@
 
 package org.pentaho.di.core.database;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -45,7 +58,79 @@ import org.pentaho.di.trans.TransMeta;
  *
  * @author Sven Boden
  */
-public class DatabaseTest extends TestCase {
+public class DatabaseTest {
+
+  LoggingObjectInterface log = new SimpleLoggingObject( "junit", LoggingObjectType.GENERAL, null );
+  DatabaseMeta databaseMysqlMeta = new DatabaseMeta( "junit_db", "Mysql", "JDBC", null, "stub:stub", null, null, null );
+  RowMetaInterface params = Mockito.mock( RowMetaInterface.class );
+  Object[] data = new Object[] {};
+
+  PreparedStatement ps;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    KettleEnvironment.init();
+  }
+
+  @Before
+  public void before() throws SQLException {
+    ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.getMaxRows() ).thenReturn( 13 );
+  }
+
+  /**
+   * Test that mysql fetch size is not set if fetch size more than 
+   * max rows ResultSet can return.
+   * 
+   * @throws KettleDatabaseException
+   * @throws SQLException
+   */
+  @Test
+  public void testOpenQueryFetchSizeNotSet() throws KettleDatabaseException, SQLException {
+    Database db = Mockito.spy( new MockDatabase( log, databaseMysqlMeta, 5 ) );
+    try {
+      db.openQuery( ps, params, data );
+    } catch ( KettleDatabaseException e ) {
+      // it is OK since we do not using real connection
+    }
+    Mockito.verify( ps, Mockito.times( 0 ) ).setFetchSize( Mockito.anyInt() );
+  }
+
+  /**
+   * Test that non-mysql databases can set fetch size.
+   * 
+   * @throws SQLException
+   */
+  @Test
+  public void testOpenQueryFetchSizeSet() throws SQLException {
+    DatabaseMeta databaseMysqlMeta = new DatabaseMeta();
+    Database db = Mockito.spy( new MockDatabase( log, databaseMysqlMeta, 5 ) );
+    try {
+      db.openQuery( ps, params, data );
+    } catch ( KettleDatabaseException e ) {
+      // it is OK since we do not using real connection
+    }
+    Mockito.verify( ps, Mockito.times( 1 ) ).setFetchSize( Mockito.anyInt() );
+  }
+
+  /**
+   * Test that if for mysql variant if max rows more than fetch size 
+   * we do set fetch size
+   * @throws SQLException 
+   */
+  @Test
+  public void testOpenQuerySetMySqlFetchSize() throws SQLException {
+    Database db = Mockito.spy( new MockDatabase( log, databaseMysqlMeta, 5 ) );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.getMaxRows() ).thenReturn( Const.FETCH_SIZE + 1 );
+    try {
+      db.openQuery( ps, params, data );
+    } catch ( KettleDatabaseException e ) {
+      // it is OK since we do not using real connection
+    }
+    Mockito.verify( ps, Mockito.times( 1 ) ).setFetchSize( Mockito.anyInt() );
+  }
+
   public static final String[] databasesXML = {
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>"
         + "<type>H2</type>" + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>"
@@ -98,22 +183,16 @@ public class DatabaseTest extends TestCase {
     return database;
   }
 
-  public void testDatabasePoolingCommit() throws Exception {
-    Database db = setupPoolingDatabaseWOConnect();
-    db.connect();
-    assertTrue( db.isAutoCommit() == db.getConnection().getAutoCommit() );
-    db.disconnect();
-  }
-
+  @Test
   public void testDatabaseCasing() throws Exception {
     String tableName = "mIxCaSiNG";
     Database db = setupDatabase();
 
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = {
-      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER )
-    };
+    ValueMetaInterface[] valuesMeta =
+    { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       valuesMeta[i].setLength( 8 );
@@ -138,6 +217,7 @@ public class DatabaseTest extends TestCase {
     db.disconnect();
   }
 
+  @Test
   public void testQuoting() throws Exception {
     Database database = null;
 
@@ -173,6 +253,7 @@ public class DatabaseTest extends TestCase {
 
   }
 
+  @Test
   public void testBatchCommit() throws Exception {
     String tableName = "CommitTest";
     Database db = setupDatabase();
@@ -234,6 +315,22 @@ public class DatabaseTest extends TestCase {
       db.insertRow( psMocked, true, true );
     }
     db.emptyAndCommit( psMocked, true );
+  }
+
+  class MockDatabase extends Database {
+    DatabaseMetaData md = Mockito.mock( DatabaseMetaData.class );
+    int version;
+
+    public MockDatabase( LoggingObjectInterface parentObject, DatabaseMeta databaseMeta, int version ) {
+      super( parentObject, databaseMeta );
+      this.version = version;
+      Mockito.when( md.getDriverMajorVersion() ).thenReturn( version );
+    }
+
+    @Override
+    public DatabaseMetaData getDatabaseMetaData() throws KettleDatabaseException {
+      return md;
+    }
   }
 
 }
