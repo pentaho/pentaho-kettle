@@ -717,8 +717,27 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
       //
       if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
 
-        logBasic( "TODO" );
-      } else {
+        if ( entry.getKey().equals( "SCHEMA" ) ) {
+          schemaName = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "TABLE" ) ) {
+          tableName = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "LOADACTION" ) ) {
+          loadAction = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "PSQLPATH" ) ) {
+          setPsqlpath( (String) entry.getValue() );
+        } else if ( entry.getKey().equals( "DBNAMEOVERRIDE" ) ) {
+          dbNameOverride = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "ENCLOSURE" ) ) {
+          enclosure = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "DELIMITER" ) ) {
+          delimiter = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "STOPONERROR" ) ) {
+          stopOnError = (Boolean) entry.getValue();
+        } else {
+          throw new RuntimeException( "Unhandled metadata injection of attribute: "
+            + attr.toString() + " - " + attr.getDescription() );
+        }
+      }  else {
         // The data sets...
         //
         if ( attr.getKey().equals( "MAPPINGS" ) ) {
