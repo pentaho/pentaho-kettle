@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="IvyIDEA" name="IvyIDEA">
+      <configuration ivyFile="$MODULE_DIR$/ivy.xml" useProjectSettings="false" useCustomIvySettings="true" ivySettingsFile="$MODULE_DIR$/ivysettings.xml" onlyResolveSelectedConfigs="false">
+        <propertiesSettings>
+          <propertiesFiles includeProjectLevelPropertiesFiles="true">
+            <fileName>$MODULE_DIR$/build.properties</fileName>
+          </propertiesFiles>
+        </propertiesSettings>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/bin" />
+    <output url="file://$MODULE_DIR$/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
@@ -9,17 +20,37 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library" scope="TEST">
-      <library>
+    <orderEntry type="module-library">
+      <library name="IvyIDEA">
         <CLASSES>
-          <root url="file://$MODULE_DIR$/test-lib" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/javassist/javassist/jars/javassist-3.12.1.GA.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-beanutils/commons-beanutils/jars/commons-beanutils-1.8.0.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.5.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-collections/commons-collections/jars/commons-collections-3.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-lang/commons-lang/jars/commons-lang-2.6.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-httpclient/commons-httpclient/jars/commons-httpclient-3.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-vfs/commons-vfs/jars/commons-vfs-20100924-pentaho.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-io/commons-io/jars/commons-io-1.4.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-dbcp/commons-dbcp/jars/commons-dbcp-1.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-pool/commons-pool/jars/commons-pool-1.5.7.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.commons/commons-compress/jars/commons-compress-1.4.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/dom4j/dom4j/jars/dom4j-1.6.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mortbay.jetty/jetty/jars/jetty-6.1.21.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/jug-lgpl/jug-lgpl/jars/jug-lgpl-2.0.0.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/com.jcraft/jsch/jars/jsch-0.1.46.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/ognl/ognl/jars/ognl-2.6.9.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.scannotation/scannotation/jars/scannotation-1.0.2.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/secondstring/secondstring/jars/secondstring-20060615.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.owasp.esapi/esapi/jars/esapi-2.0.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/junit/junit/jars/junit-4.7.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mockito/mockito-all/jars/mockito-all-1.9.5.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/pentaho/metastore/jars/metastore-TRUNK-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Kettle Libs" level="project" />
   </component>
 </module>
 
