@@ -225,7 +225,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
-   * @param fieldInStream
+   * @param keyStream
    *          The fieldInStream to set.
    */
   public void setFieldInStream( String[] keyStream ) {
@@ -482,6 +482,10 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         inputRowMeta.addValueMeta( v );
       } else {
         v = inputRowMeta.searchValueMeta( fieldInStream[i] );
+        if ( v == null ) {
+          continue;
+        }
+        v.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         int paddingType = getPaddingType()[i];
         if ( paddingType == PADDING_LEFT || paddingType == PADDING_RIGHT ) {
           int padLen = Const.toInt( space.environmentSubstitute( getPadLen()[i] ), 0 );

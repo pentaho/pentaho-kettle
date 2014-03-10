@@ -31,12 +31,14 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -177,6 +179,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     rowLimit = "0";
   }
 
+  protected Database getDatabase() {
+    // Added for test purposes
+    return new Database( loggingObject, databaseMeta );
+  }
+
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( databaseMeta == null ) {
@@ -185,7 +192,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     boolean param = false;
 
-    Database db = new Database( loggingObject, databaseMeta );
+    Database db = getDatabase();
     databases = new Database[] { db }; // keep track of it for canceling purposes...
 
     // First try without connecting to the database... (can be S L O W)
@@ -237,6 +244,21 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         throw new KettleStepException( "Unable to get queryfields for SQL: " + Const.CR + sNewSQL, ke );
       } finally {
         db.disconnect();
+      }
+    }
+    if ( isLazyConversionActive() ) {
+      for ( int i = 0; i < row.size(); i++ ) {
+        ValueMetaInterface v = row.getValueMeta( i );
+        try {
+          if ( v.getType() == ValueMetaInterface.TYPE_STRING ) {
+            ValueMetaInterface storageMeta = ValueMetaFactory.cloneValueMeta( v );
+            storageMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+            v.setStorageMetadata( storageMeta );
+            v.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+          }
+        } catch ( KettlePluginException e ) {
+          throw new KettleStepException( "Unable to clone meta for lazy conversion: " + Const.CR + v, e );
+        }
       }
     }
   }
