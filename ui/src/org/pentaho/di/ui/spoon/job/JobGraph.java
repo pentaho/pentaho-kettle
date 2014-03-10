@@ -3614,10 +3614,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         MessageDialogWithToggle md =
           new MessageDialogWithToggle(
             shell, BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Title" ), null, BaseMessages
-            .getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" )
-            + Const.CR
-            + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" )
-            + Const.CR,
+              .getString( PKG, "JobLog.Dialog.SaveChangedFile.Message" )
+              + Const.CR
+              + BaseMessages.getString( PKG, "JobLog.Dialog.SaveChangedFile.Message2" )
+              + Const.CR,
             MessageDialog.QUESTION,
             new String[] {
               BaseMessages.getString( PKG, "System.Button.Yes" ),
@@ -3634,17 +3634,24 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   private JobEntryCopy lastChained = null;
 
-  public void addJobEntryToChain( String typeDesc ) {
+  public void addJobEntryToChain( String typeDesc, boolean shift ) {
     JobMeta jobMeta = spoon.getActiveJob();
     if ( jobMeta == null ) {
       return;
+    }
+
+    //Is the lastChained entry still valid?
+    //
+    if ( lastChained != null && jobMeta.findJobEntry( lastChained.getName(), lastChained.getNr(), false ) == null ) {
+      lastChained = null;
     }
 
     // Where do we add this?
 
     Point p = null;
     if ( lastChained == null ) {
-      p = new Point( 0, 50 );
+      p = jobMeta.getMaximum();
+      p.x -= 100;
     } else {
       p = new Point( lastChained.getLocation().x, lastChained.getLocation().y );
     }
@@ -3654,6 +3661,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     // Which is the new entry?
 
     JobEntryCopy newEntry = spoon.newJobEntry( jobMeta, typeDesc, false );
+    if ( newEntry == null ) {
+      return;
+    }
     newEntry.setLocation( p.x, p.y );
     newEntry.setDrawn();
 
@@ -3663,6 +3673,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     lastChained = newEntry;
     spoon.refreshGraph();
     spoon.refreshTree();
+
+    if ( shift ) {
+      editEntry( newEntry );
+    }
 
   }
 }

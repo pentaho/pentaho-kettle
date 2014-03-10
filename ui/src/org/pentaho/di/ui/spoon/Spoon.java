@@ -2155,7 +2155,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     coreObjectsTree.addMouseListener( new MouseAdapter() {
       @Override
       public void mouseDoubleClick( MouseEvent event ) {
-        doubleClickedInTree( coreObjectsTree );
+        boolean shift = ( event.stateMask & SWT.SHIFT ) != 0;
+        doubleClickedInTree( coreObjectsTree, shift );
       }
     } );
 
@@ -2960,6 +2961,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   private void doubleClickedInTree( Tree tree ) {
+    doubleClickedInTree( tree, false );
+  }
+
+  /**
+   * Reaction to double click
+   *
+   */
+  private void doubleClickedInTree( Tree tree, boolean shift ) {
     TreeSelection[] objects = getTreeObjects( tree );
     if ( objects.length != 1 ) {
       return; // not yet supported, we can do this later when the OSX bug
@@ -3005,13 +3014,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( plugin.getPluginType().equals( StepPluginType.class ) ) {
           TransGraph transGraph = getActiveTransGraph();
           if ( transGraph != null ) {
-            transGraph.addStepToChain( plugin );
+            transGraph.addStepToChain( plugin, shift );
           }
         }
         if ( plugin.getPluginType().equals( JobEntryPluginType.class ) ) {
           JobGraph jobGraph = getActiveJobGraph();
           if ( jobGraph != null ) {
-            jobGraph.addJobEntryToChain( object.getItemText() );
+            jobGraph.addJobEntryToChain( object.getItemText(), shift );
           }
         }
         // newStep( getActiveTransformation() );

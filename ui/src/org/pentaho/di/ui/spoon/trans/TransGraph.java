@@ -4675,17 +4675,24 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private StepMeta lastChained = null;
 
-  public void addStepToChain( PluginInterface stepPlugin ) {
+  public void addStepToChain( PluginInterface stepPlugin, boolean shift ) {
     TransMeta transMeta = spoon.getActiveTransformation();
     if ( transMeta == null ) {
       return;
+    }
+
+    //Is the lastChained entry still valid?
+    //
+    if ( lastChained != null && transMeta.findStep( lastChained.getName() ) == null ) {
+      lastChained = null;
     }
 
     // Where do we add this?
 
     Point p = null;
     if ( lastChained == null ) {
-      p = new Point( 0, 50 );
+      p = transMeta.getMaximum();
+      p.x -= 100;
     } else {
       p = new Point( lastChained.getLocation().x, lastChained.getLocation().y );
     }
@@ -4696,6 +4703,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     try {
       StepMetaInterface stepMetaInterface = (StepMetaInterface) PluginRegistry.getInstance().loadClass( stepPlugin );
+      stepMetaInterface.setDefault();
       StepMeta newStep = new StepMeta( stepPlugin.getName(), stepMetaInterface );
       newStep.setLocation( p.x, p.y );
       newStep.setDraw( true );
@@ -4705,6 +4713,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       lastChained = newStep;
       spoon.refreshGraph();
       spoon.refreshTree();
+
+      if ( shift ) {
+        editStep( newStep );
+      }
 
     } catch ( KettlePluginException e ) {
       LogChannel.GENERAL.logError( "Error chaining step...", e );
