@@ -53,6 +53,7 @@ import org.pentaho.di.trans.steps.tableinput.TableInputTest;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputTest;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
+import org.pentaho.di.trans.steps.webservices.WebServiceTest;
 import org.pentaho.di.ui.dialog.TipsDialogTest;
 
 /**
@@ -75,7 +76,7 @@ public class AllRegressionTests {
     suite.addTestSuite( StringEvaluatorTest.class );
     suite.addTestSuite( ParameterSimpleTransTest.class );
     suite.addTestSuite( ValueDataUtilTest.class );
-    suite.addTestSuite( DatabaseTest.class );
+    suite.addTest( new JUnit4TestAdapter( DatabaseTest.class ) );
     suite.addTestSuite( HopTest.class );
     suite.addTestSuite( InjectorTest.class );
     suite.addTestSuite( RowGeneratorTest.class );
@@ -98,6 +99,7 @@ public class AllRegressionTests {
     suite.addTestSuite( GetXMLDataTest.class );
     suite.addTestSuite( CsvInput1Test.class );
     suite.addTestSuite( CsvInput2Test.class );
+    suite.addTestSuite( WebServiceTest.class );
     suite.addTest( new JUnit4TestAdapter( GPLoadTest.class ) );
     suite.addTest( new JUnit4TestAdapter( TipsDialogTest.class ) );
     suite.addTest( new JUnit4TestAdapter( TransExecutorTest.class ) );
