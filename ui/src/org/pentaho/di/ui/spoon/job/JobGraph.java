@@ -3685,6 +3685,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       editEntry( newEntry );
     }
 
+    jobMeta.unselectAll();
     newEntry.setSelected( true );
   }
 }

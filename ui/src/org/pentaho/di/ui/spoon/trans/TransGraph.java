@@ -4725,6 +4725,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         editStep( newStep );
       }
 
+      transMeta.unselectAll();
       newStep.setSelected( true );
 
     } catch ( KettlePluginException e ) {
