@@ -6435,15 +6435,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
           inf.setLocation( 20, 20 ); // default location at (20,20)
           transMeta.addStep( inf );
-
-          // Save for later:
-          // if openit is false: we drag&drop it onto the canvas!
-          if ( openit ) {
-            addUndoNew( transMeta, new StepMeta[] { inf }, new int[] { transMeta.indexOfStep( inf ) } );
-          }
+          addUndoNew( transMeta, new StepMeta[] { inf }, new int[] { transMeta.indexOfStep( inf ) } );
 
           // Also store it in the pluginHistory list...
           props.increasePluginHistory( stepPlugin.getIds()[0] );
+
           // stepHistoryChanged = true;
 
           refreshTree();

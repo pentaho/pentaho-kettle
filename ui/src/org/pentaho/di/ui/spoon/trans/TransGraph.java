@@ -95,7 +95,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.AreaOwner;
@@ -4708,28 +4707,28 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     // Which is the new step?
 
-    try {
-      StepMetaInterface stepMetaInterface = (StepMetaInterface) PluginRegistry.getInstance().loadClass( stepPlugin );
-      stepMetaInterface.setDefault();
-      StepMeta newStep = new StepMeta( stepPlugin.getName(), stepMetaInterface );
-      newStep.setLocation( p.x, p.y );
-      newStep.setDraw( true );
-      transMeta.addStep( newStep );
-      transMeta.addTransHop( new TransHopMeta( lastChained, newStep ) );
-
-      lastChained = newStep;
-      spoon.refreshGraph();
-      spoon.refreshTree();
-
-      if ( shift ) {
-        editStep( newStep );
-      }
-
-      newStep.setSelected( true );
-
-    } catch ( KettlePluginException e ) {
-      LogChannel.GENERAL.logError( "Error chaining step...", e );
+    StepMeta newStep = spoon.newStep( transMeta, stepPlugin.getName(), stepPlugin.getName(), false, true );
+    if ( newStep == null ) {
+      return;
     }
+    newStep.setLocation( p.x, p.y );
+    newStep.setDraw( true );
+
+    if ( lastChained != null ) {
+      TransHopMeta hop = new TransHopMeta( lastChained, newStep );
+      spoon.newHop( transMeta, hop );
+    }
+
+    lastChained = newStep;
+    spoon.refreshGraph();
+    spoon.refreshTree();
+
+    if ( shift ) {
+      editStep( newStep );
+    }
+
+    transMeta.unselectAll();
+    newStep.setSelected( true );
 
   }
 }

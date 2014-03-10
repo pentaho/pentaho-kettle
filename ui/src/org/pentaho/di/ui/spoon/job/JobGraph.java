@@ -3674,8 +3674,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     newEntry.setLocation( p.x, p.y );
     newEntry.setDrawn();
 
-    jobMeta.addJobEntry( newEntry );
-    jobMeta.addJobHop( new JobHopMeta( lastChained, newEntry ) );
+    if ( lastChained != null ) {
+      spoon.newJobHop( jobMeta, lastChained, newEntry );
+    }
 
     lastChained = newEntry;
     spoon.refreshGraph();
@@ -3685,6 +3686,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       editEntry( newEntry );
     }
 
+    jobMeta.unselectAll();
     newEntry.setSelected( true );
   }
 }
