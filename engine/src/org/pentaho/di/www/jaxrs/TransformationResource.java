@@ -141,6 +141,7 @@ public class TransformationResource {
       trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
       trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
       trans.injectVariables( executionConfiguration.getVariables() );
+      trans.setPreviousResult( executionConfiguration.getPreviousResult() );
 
       trans.prepareExecution( null );
     } catch ( KettleException e ) {
