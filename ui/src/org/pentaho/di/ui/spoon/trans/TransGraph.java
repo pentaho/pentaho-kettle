@@ -4687,6 +4687,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       lastChained = null;
     }
 
+    // If there is exactly one selected step, pick that one as last chained.
+    //
+    List<StepMeta> sel = transMeta.getSelectedSteps();
+    if ( sel.size() == 1 ) {
+      lastChained = sel.get( 0 );
+    }
+
     // Where do we add this?
 
     Point p = null;
@@ -4717,6 +4724,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if ( shift ) {
         editStep( newStep );
       }
+
+      newStep.setSelected( true );
 
     } catch ( KettlePluginException e ) {
       LogChannel.GENERAL.logError( "Error chaining step...", e );

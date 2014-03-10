@@ -3646,6 +3646,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       lastChained = null;
     }
 
+    // If there is exactly one selected step, pick that one as last chained.
+    //
+    List<JobEntryCopy> sel = jobMeta.getSelectedEntries();
+    if ( sel.size() == 1 ) {
+      lastChained = sel.get( 0 );
+    }
+
     // Where do we add this?
 
     Point p = null;
@@ -3678,5 +3685,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       editEntry( newEntry );
     }
 
+    newEntry.setSelected( true );
   }
 }
