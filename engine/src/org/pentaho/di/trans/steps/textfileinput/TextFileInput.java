@@ -1502,7 +1502,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       // If there are missing files, fail if we don't ignore errors
       //
       Result previousResult = getTrans().getPreviousResult();
-      Map<String, ResultFile> resultFiles = previousResult.getResultFiles();
+      Map<String, ResultFile> resultFiles = ( previousResult != null ) ? previousResult.getResultFiles() : null;
 
       if ( ( previousResult == null || resultFiles == null || resultFiles.size() == 0 )
           && data.files.nrOfMissingFiles() > 0 && !meta.isAcceptingFilenames() && !meta.isErrorIgnored() ) {
