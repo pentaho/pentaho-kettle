@@ -154,7 +154,7 @@ public class Splash {
           e.gc.setFont( licFont );
         }
 
-        e.gc.drawText( licenseText, 290, 290, false );
+        e.gc.drawText( licenseText, 290, 290, true );
       }
     } );
 
@@ -230,7 +230,7 @@ public class Splash {
     gc.drawImage( exclamation_image, 304, 243 );
 
     gc.setFont( devWarningFont );
-    gc.drawText( BaseMessages.getString( PKG, "SplashDialog.DevelopmentWarning" ), 335, 241 );
+    gc.drawText( BaseMessages.getString( PKG, "SplashDialog.DevelopmentWarning" ), 335, 241, true );
   }
 
   public void dispose() {
