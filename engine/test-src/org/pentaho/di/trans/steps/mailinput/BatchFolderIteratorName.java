@@ -1,5 +1,9 @@
 package org.pentaho.di.trans.steps.mailinput;
 
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -11,10 +15,6 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.anyInt;
-
 public class BatchFolderIteratorName {
 
   static Folder folder = null;
@@ -23,15 +23,15 @@ public class BatchFolderIteratorName {
   public static void setUp() throws MessagingException {
     folder = mock( Folder.class );
     when( folder.getName() ).thenReturn( "INBOX" );
-    when( folder.getMessages( anyInt(), anyInt() ) ).thenAnswer( new Answer<Message[]>(){
+    when( folder.getMessages( anyInt(), anyInt() ) ).thenAnswer( new Answer<Message[]>() {
       @Override
       public Message[] answer( InvocationOnMock invocation ) throws Throwable {
-        Object args[] = invocation.getArguments();
-        int start = ((Integer)args[0]).intValue();
-        int end = ((Integer)args[1]).intValue();
-        return new Message[end-start+1];
+        Object[] args = invocation.getArguments();
+        int start = ( (Integer) args[0] ).intValue();
+        int end = ( (Integer) args[1] ).intValue();
+        return new Message[end - start + 1];
       }
-    });
+    } );
   }
 
   @Test
@@ -53,6 +53,7 @@ public class BatchFolderIteratorName {
     bfi.next();
     Assert.assertFalse( bfi.hasNext() );
   }
+
   @Test
   public void testBatchSize1() {
     BatchFolderIterator bfi = new BatchFolderIterator( folder, 1, 1, 1 );

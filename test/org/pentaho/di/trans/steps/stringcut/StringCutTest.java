@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -479,7 +478,7 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       valuesMeta[i].setStorageMetadata( createRowMetaInterface().getValueMeta( i ) );
@@ -494,8 +493,8 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
-          new ValueMeta( "field1_1", ValueMeta.TYPE_STRING ), };
+    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "field1_1", ValueMeta.TYPE_STRING ), };
 
     valuesMeta[1].setStorageMetadata( createRowMetaInterface().getValueMeta( 1 ) );
     valuesMeta[1].setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
@@ -515,7 +514,7 @@ public class StringCutTest extends TransformationTestCase {
 
     // Now not used row but it seems to be such result in
     // conversion work with ReplaceString and StringOperations
-    Object[] r2 = new Object[] { "bc", "ghijkl".getBytes(), "b" };
+    // Object[] r2 = new Object[] { "bc", "ghijkl".getBytes(), "b" };
 
     list.add( new RowMetaAndData( rm, r1 ) );
 

@@ -57,7 +57,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.reporting.libraries.base.util.CSVTokenizer;
 
-
 /**
  * This class was a "copy and modification" of Kettle's CsvInput1Test. I added comments as I was learning the
  * architecture of the class.
@@ -101,6 +100,8 @@ public class TextFileInputTests extends TestCase {
         writeInput2( endOfLineCharacters, fout );
         break;
       }
+      default:
+        break;
     }
     fout.close();
 

@@ -1434,7 +1434,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     wUseBatch.setSelection( input.isUseBatch() );
     wBatchSize.setText(
-      input.getBatchSize() == null ? String.valueOf( input.DEFAULT_BATCH_SIZE ) : input.getBatchSize().toString() );
+      input.getBatchSize() == null
+        ? String.valueOf( MailInputMeta.DEFAULT_BATCH_SIZE )
+        : input.getBatchSize().toString() );
     wStartMessage.setText( input.getStart() == null ? "" : input.getStart().toString() );
     wEndMessage.setText( input.getEnd() == null ? "" : input.getEnd().toString() );
     wIgnoreFieldErrors.setSelection( input.isStopOnError() );
@@ -1519,7 +1521,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     in.setUseBatch( wUseBatch.getSelection() );
     Integer batchSize = getInteger( wBatchSize.getText() );
-    in.setBatchSize( batchSize == null ? in.DEFAULT_BATCH_SIZE : batchSize );
+    in.setBatchSize( batchSize == null ? MailInputMeta.DEFAULT_BATCH_SIZE : batchSize );
     in.setStart( wStartMessage.getText() );
     in.setEnd( wEndMessage.getText() );
     in.setStopOnError( wIgnoreFieldErrors.getSelection() );

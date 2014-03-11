@@ -584,7 +584,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
       wErrorMsg.setText( input.getErrorsField() );
     }
     int timeout = Const.toInt( input.getTimeOut(), 0 );
-    wTimeOut.setText(String.valueOf( timeout ));
+    wTimeOut.setText( String.valueOf( timeout ) );
     wSMTPCheck.setSelection( input.isSMTPCheck() );
     if ( input.getDefaultSMTP() != null ) {
       wDefaultSMTP.setText( input.getDefaultSMTP() );

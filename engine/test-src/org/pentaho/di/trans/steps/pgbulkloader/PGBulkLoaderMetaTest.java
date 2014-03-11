@@ -1,6 +1,12 @@
 package org.pentaho.di.trans.steps.pgbulkloader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,8 +19,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
-
-import java.util.List;
 
 /**
  * Created by gmoran on 2/25/14.
@@ -40,7 +44,6 @@ public class PGBulkLoaderMetaTest {
     lm = new PGBulkLoaderMeta();
     ld = new PGBulkLoaderData();
 
-
     PluginRegistry plugReg = PluginRegistry.getInstance();
 
     String loaderPid = plugReg.getPluginId( StepPluginType.class, lm );
@@ -49,7 +52,7 @@ public class PGBulkLoaderMetaTest {
     Trans trans = new Trans( transMeta );
     transMeta.addStep( stepMeta );
 
-    loader = new PGBulkLoader(stepMeta, ld, 1, transMeta, trans);
+    loader = new PGBulkLoader( stepMeta, ld, 1, transMeta, trans );
   }
 
   @Test
@@ -71,11 +74,10 @@ public class PGBulkLoaderMetaTest {
       assertTrue( masterKeys.trim().length() == 0 );
 
     } catch ( KettleException e ) {
-      fail(e.getMessage());
+      fail( e.getMessage() );
     }
 
   }
-
 
   @Test
   public void testChildLevelMetadataEntries() {
@@ -90,7 +92,7 @@ public class PGBulkLoaderMetaTest {
 
       for ( StepInjectionMetaEntry entry : entries ) {
         String key = entry.getKey();
-        if (key.equals( "MAPPINGS" )) {
+        if ( key.equals( "MAPPINGS" ) ) {
           mappingEntry = entry;
           break;
         }
@@ -110,7 +112,7 @@ public class PGBulkLoaderMetaTest {
       assertTrue( childKeys.trim().length() == 0 );
 
     } catch ( KettleException e ) {
-      fail(e.getMessage());
+      fail( e.getMessage() );
     }
 
   }
@@ -124,12 +126,15 @@ public class PGBulkLoaderMetaTest {
 
       for ( StepInjectionMetaEntry entry : entries ) {
         entry.setValueType( lm.findAttribute( entry.getKey() ).getType() );
-        switch (entry.getValueType()){
+        switch ( entry.getValueType() ) {
           case ValueMetaInterface.TYPE_STRING:
             entry.setValue( "new_".concat( entry.getKey() ) );
             break;
           case ValueMetaInterface.TYPE_BOOLEAN:
             entry.setValue( Boolean.TRUE );
+            break;
+          default:
+            break;
         }
 
         if ( !entry.getDetails().isEmpty() ) {
@@ -152,18 +157,16 @@ public class PGBulkLoaderMetaTest {
       assertEquals( "Enclosure not properly injected... ", "new_ENCLOSURE", lm.getEnclosure() );
       assertEquals( "Load action not properly injected... ", "new_LOADACTION", lm.getLoadAction() );
       assertEquals( "PSQL path not properly injected... ", "new_PSQLPATH", lm.getPsqlpath() );
-      assertEquals( "Stop on error not properly injected... ", Boolean.TRUE, lm.isStopOnError());
+      assertEquals( "Stop on error not properly injected... ", Boolean.TRUE, lm.isStopOnError() );
 
       assertEquals( "Field name not properly injected... ", "new_FIELDNAME", lm.getFieldTable()[0] );
       assertEquals( "Stream name not properly injected... ", "new_STREAMNAME", lm.getFieldStream()[0] );
       assertEquals( "Date Mask not properly injected... ", "new_DATEMASK", lm.getDateMask()[0] );
 
     } catch ( KettleException e ) {
-      fail(e.getMessage());
+      fail( e.getMessage() );
     }
 
   }
-
-
 
 }
