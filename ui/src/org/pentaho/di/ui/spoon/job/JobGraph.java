@@ -103,6 +103,7 @@ import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -609,6 +610,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     // Hide the tooltip!
     hideToolTips();
 
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobGraphMouseDoubleClick.id,
+        new JobGraphExtension( this, e, real ) );
+    } catch ( Exception ex ) {
+      LogChannel.GENERAL.logError( "Error calling JobGraphMouseDoubleClick extension point", ex );
+    }
+
     JobEntryCopy jobentry = jobMeta.getJobEntryCopy( real.x, real.y, iconsize );
     if ( jobentry != null ) {
       if ( e.button == 1 ) {
@@ -650,6 +658,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( e.button == 3 ) {
       setMenu( real.x, real.y );
       return;
+    }
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobGraphMouseDown.id,
+        new JobGraphExtension( this, e, real ) );
+    } catch ( Exception ex ) {
+      LogChannel.GENERAL.logError( "Error calling JobGraphMouseDown extension point", ex );
     }
 
     // A single left or middle click on one of the area owners...
@@ -3688,5 +3703,21 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     jobMeta.unselectAll();
     newEntry.setSelected( true );
+  }
+
+  public Spoon getSpoon() {
+    return spoon;
+  }
+
+  public void setSpoon( Spoon spoon ) {
+    this.spoon = spoon;
+  }
+
+  public JobMeta getJobMeta() {
+    return jobMeta;
+  }
+
+  public Job getJob() {
+    return job;
   }
 }

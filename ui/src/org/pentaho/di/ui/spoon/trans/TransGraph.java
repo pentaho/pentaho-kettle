@@ -97,6 +97,8 @@ import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.BasePainter;
 import org.pentaho.di.core.gui.GCInterface;
@@ -720,6 +722,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // Hide the tooltip!
     hideToolTips();
 
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseDoubleClick.id,
+        new TransGraphExtension( this, e, real ) );
+    } catch ( Exception ex ) {
+      LogChannel.GENERAL.logError( "Error calling TransGraphMouseDoubleClick extension point", ex );
+    }
+
     StepMeta stepMeta = transMeta.getStep( real.x, real.y, iconsize );
     if ( stepMeta != null ) {
       if ( e.button == 1 ) {
@@ -779,6 +788,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( e.button == 3 ) {
       setMenu( real.x, real.y );
       return;
+    }
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseDown.id,
+        new TransGraphExtension( this, e, real ) );
+    } catch ( Exception ex ) {
+      LogChannel.GENERAL.logError( "Error calling TransGraphMouseDown extension point", ex );
     }
 
     // A single left or middle click on one of the area owners...
@@ -4730,5 +4746,21 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transMeta.unselectAll();
     newStep.setSelected( true );
 
+  }
+
+  public Spoon getSpoon() {
+    return spoon;
+  }
+
+  public void setSpoon( Spoon spoon ) {
+    this.spoon = spoon;
+  }
+
+  public TransMeta getTransMeta() {
+    return transMeta;
+  }
+
+  public Trans getTrans() {
+    return trans;
   }
 }
