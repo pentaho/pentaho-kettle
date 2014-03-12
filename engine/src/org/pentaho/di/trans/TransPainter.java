@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
@@ -171,6 +172,12 @@ public class TransPainter extends BasePainter {
       vert.setThumb( thumb.y );
     }
 
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransPainterStart.id, this );
+    } catch ( KettleException e ) {
+      LogChannel.GENERAL.logError( "Error in TransPainterStart extension point", e );
+    }
+
     gc.setFont( EFont.NOTE );
 
     // First the notes
@@ -270,6 +277,12 @@ public class TransPainter extends BasePainter {
       gc.setForeground( EColor.BLACK );
       Point screen = real2screen( drop_candidate.x, drop_candidate.y );
       gc.drawRectangle( screen.x, screen.y, iconsize, iconsize );
+    }
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransPainterEnd.id, this );
+    } catch ( KettleException e ) {
+      LogChannel.GENERAL.logError( "Error in TransPainterEnd extension point", e );
     }
 
     if ( !shadow ) {
@@ -1272,4 +1285,67 @@ public class TransPainter extends BasePainter {
     this.showTargetStreamsStep = showTargetStreamsStep;
   }
 
+  public TransMeta getTransMeta() {
+    return transMeta;
+  }
+
+  public void setTransMeta( TransMeta transMeta ) {
+    this.transMeta = transMeta;
+  }
+
+  public TransHopMeta getCandidate() {
+    return candidate;
+  }
+
+  public void setCandidate( TransHopMeta candidate ) {
+    this.candidate = candidate;
+  }
+
+  public List<StepMeta> getMouseOverSteps() {
+    return mouseOverSteps;
+  }
+
+  public void setMouseOverSteps( List<StepMeta> mouseOverSteps ) {
+    this.mouseOverSteps = mouseOverSteps;
+  }
+
+  public Trans getTrans() {
+    return trans;
+  }
+
+  public void setTrans( Trans trans ) {
+    this.trans = trans;
+  }
+
+  public boolean isSlowStepIndicatorEnabled() {
+    return slowStepIndicatorEnabled;
+  }
+
+  public void setSlowStepIndicatorEnabled( boolean slowStepIndicatorEnabled ) {
+    this.slowStepIndicatorEnabled = slowStepIndicatorEnabled;
+  }
+
+  public StepMeta getStartHopStep() {
+    return startHopStep;
+  }
+
+  public Point getEndHopLocation() {
+    return endHopLocation;
+  }
+
+  public StepMeta getEndHopStep() {
+    return endHopStep;
+  }
+
+  public StepMeta getNoInputStep() {
+    return noInputStep;
+  }
+
+  public StreamType getCandidateHopType() {
+    return candidateHopType;
+  }
+
+  public boolean isStartErrorHopStep() {
+    return startErrorHopStep;
+  }
 }
