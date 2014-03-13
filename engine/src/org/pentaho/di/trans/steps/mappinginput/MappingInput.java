@@ -180,7 +180,7 @@ public class MappingInput extends BaseStep implements StepInterface {
   public void setConnectorSteps( StepInterface[] sourceSteps, List<MappingValueRename> valueRenames,
       String mappingStepname ) {
 
-    if ( sourceSteps == null || sourceSteps.length == 0 ) {
+    if ( sourceSteps == null ) {
       throw new IllegalArgumentException( BaseMessages
           .getString( PKG, "MappingInput.Exception.IllegalArgumentSourceStep" ) );
     }
@@ -190,9 +190,11 @@ public class MappingInput extends BaseStep implements StepInterface {
           .getString( PKG, "MappingInput.Exception.IllegalArgumentValueRename" ) );
     }
 
-    if ( mappingStepname == null ) {
-      throw new IllegalArgumentException( BaseMessages
+    if ( sourceSteps.length != 0 ) {
+      if ( mappingStepname == null ) {
+        throw new IllegalArgumentException( BaseMessages
           .getString( PKG, "MappingInput.Exception.IllegalArgumentStepName" ) );
+      }
     }
 
     for ( StepInterface sourceStep : sourceSteps ) {
