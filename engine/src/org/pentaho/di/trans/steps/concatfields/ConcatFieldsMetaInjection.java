@@ -43,34 +43,36 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
 
   private enum Entry {
 
-    TARGET_FIELDNAME( ValueMetaInterface.TYPE_STRING, "The target field name" ), TARGET_LENGTH(
-      ValueMetaInterface.TYPE_STRING, "The length of the target field" ), SEPARATOR(
-      ValueMetaInterface.TYPE_STRING, "The separator" ), ENCLOSURE(
-      ValueMetaInterface.TYPE_STRING, "The enclosure" ),
+    TARGET_FIELDNAME( ValueMetaInterface.TYPE_STRING, "The target field name" ),
+      TARGET_LENGTH( ValueMetaInterface.TYPE_STRING, "The length of the target field" ),
+      SEPARATOR( ValueMetaInterface.TYPE_STRING, "The separator" ),
+      ENCLOSURE( ValueMetaInterface.TYPE_STRING, "The enclosure" ),
 
-      REMOVE_FIELDS( ValueMetaInterface.TYPE_STRING, "Remove selected fields? (Y/N)" ), 
-        FORCE_ENCLOSURE( ValueMetaInterface.TYPE_STRING, "Force the enclosure around fields? (Y/N)" ), 
-        DISABLE_ENCLOSURE_FIX( ValueMetaInterface.TYPE_STRING, "Disable the enclosure fix? (Y/N)" ),
-        HEADER( ValueMetaInterface.TYPE_STRING, "Include header row? (Y/N)" ), FOOTER(
-        ValueMetaInterface.TYPE_STRING, "Include footer row? (Y/N)" ), ENCODING(
-        ValueMetaInterface.TYPE_STRING, "Encoding type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
-        RIGHT_PAD_FIELDS( ValueMetaInterface.TYPE_STRING, "Right pad fields? (Y/N)" ),
-        FAST_DATA_DUMP( ValueMetaInterface.TYPE_STRING, "Fast data dump? (Y/N)"), SPLIT_EVERY(
-        ValueMetaInterface.TYPE_STRING, "Split every ... rows"), ADD_ENDING_LINE(
-        ValueMetaInterface.TYPE_STRING, "Add ending line after last row"),
-        
-      CONCAT_FIELDS( ValueMetaInterface.TYPE_NONE, "The fields to concatenate" ), CONCAT_FIELD(
-        ValueMetaInterface.TYPE_NONE, "One field to concatenate" ), CONCAT_FIELDNAME(
-        ValueMetaInterface.TYPE_STRING, "Field to concatenate" ), CONCAT_TYPE(
-        ValueMetaInterface.TYPE_STRING, "Field type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
-        CONCAT_FORMAT( ValueMetaInterface.TYPE_STRING,"Field format" ), CONCAT_LENGTH(
-        ValueMetaInterface.TYPE_STRING, "Field length" ), CONCAT_PRECISION(
-        ValueMetaInterface.TYPE_STRING, "Field precision" ), CONCAT_CURRENCY(
-        ValueMetaInterface.TYPE_STRING, "Field currency symbol" ), CONCAT_DECIMAL(
-        ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ), CONCAT_GROUP(
-        ValueMetaInterface.TYPE_STRING, "Field grouping symbol" ), CONCAT_TRIM(
-        ValueMetaInterface.TYPE_STRING, "Field trim type (none,left,both,right)"), CONCAT_NULL(
-        ValueMetaInterface.TYPE_STRING, "Value to replace nulls with");
+      REMOVE_FIELDS( ValueMetaInterface.TYPE_STRING, "Remove selected fields? (Y/N)" ),
+      FORCE_ENCLOSURE( ValueMetaInterface.TYPE_STRING, "Force the enclosure around fields? (Y/N)" ),
+      DISABLE_ENCLOSURE_FIX( ValueMetaInterface.TYPE_STRING, "Disable the enclosure fix? (Y/N)" ),
+      HEADER( ValueMetaInterface.TYPE_STRING, "Include header row? (Y/N)" ),
+      FOOTER( ValueMetaInterface.TYPE_STRING, "Include footer row? (Y/N)" ),
+      ENCODING( ValueMetaInterface.TYPE_STRING,
+        "Encoding type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
+      RIGHT_PAD_FIELDS( ValueMetaInterface.TYPE_STRING, "Right pad fields? (Y/N)" ),
+      FAST_DATA_DUMP( ValueMetaInterface.TYPE_STRING, "Fast data dump? (Y/N)" ),
+      SPLIT_EVERY( ValueMetaInterface.TYPE_STRING, "Split every ... rows" ),
+      ADD_ENDING_LINE( ValueMetaInterface.TYPE_STRING, "Add ending line after last row" ),
+
+      CONCAT_FIELDS( ValueMetaInterface.TYPE_NONE, "The fields to concatenate" ),
+      CONCAT_FIELD( ValueMetaInterface.TYPE_NONE, "One field to concatenate" ),
+      CONCAT_FIELDNAME( ValueMetaInterface.TYPE_STRING, "Field to concatenate" ),
+      CONCAT_TYPE( ValueMetaInterface.TYPE_STRING,
+        "Field type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
+      CONCAT_FORMAT( ValueMetaInterface.TYPE_STRING, "Field format" ),
+      CONCAT_LENGTH( ValueMetaInterface.TYPE_STRING, "Field length" ),
+      CONCAT_PRECISION( ValueMetaInterface.TYPE_STRING, "Field precision" ),
+      CONCAT_CURRENCY( ValueMetaInterface.TYPE_STRING, "Field currency symbol" ),
+      CONCAT_DECIMAL( ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ),
+      CONCAT_GROUP( ValueMetaInterface.TYPE_STRING, "Field grouping symbol" ),
+      CONCAT_TRIM( ValueMetaInterface.TYPE_STRING, "Field trim type (none,left,both,right)" ),
+      CONCAT_NULL( ValueMetaInterface.TYPE_STRING, "Value to replace nulls with" );
 
     private int valueType;
     private String description;
@@ -112,8 +114,8 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
     Entry[] topEntries =
       new Entry[] {
         Entry.TARGET_FIELDNAME, Entry.TARGET_LENGTH, Entry.SEPARATOR, Entry.ENCLOSURE,
-        Entry.REMOVE_FIELDS, Entry.FORCE_ENCLOSURE, Entry.DISABLE_ENCLOSURE_FIX, 
-        Entry.HEADER, Entry.FOOTER, Entry.ENCODING, Entry.RIGHT_PAD_FIELDS, 
+        Entry.REMOVE_FIELDS, Entry.FORCE_ENCLOSURE, Entry.DISABLE_ENCLOSURE_FIX,
+        Entry.HEADER, Entry.FOOTER, Entry.ENCODING, Entry.RIGHT_PAD_FIELDS,
         Entry.FAST_DATA_DUMP, Entry.SPLIT_EVERY, Entry.ADD_ENDING_LINE, };
     for ( Entry topEntry : topEntries ) {
       all.add( new StepInjectionMetaEntry( topEntry.name(), topEntry.getValueType(), topEntry.getDescription() ) );
@@ -131,8 +133,8 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
     fieldsEntry.getDetails().add( fieldEntry );
 
     Entry[] fieldsEntries = new Entry[] { Entry.CONCAT_FIELDNAME, Entry.CONCAT_TYPE, Entry.CONCAT_LENGTH,
-    	Entry.CONCAT_FORMAT, Entry.CONCAT_PRECISION, Entry.CONCAT_CURRENCY, Entry.CONCAT_DECIMAL, 
-    	Entry.CONCAT_GROUP,	Entry.CONCAT_TRIM, Entry.CONCAT_NULL, };
+      Entry.CONCAT_FORMAT, Entry.CONCAT_PRECISION, Entry.CONCAT_CURRENCY, Entry.CONCAT_DECIMAL,
+      Entry.CONCAT_GROUP, Entry.CONCAT_TRIM, Entry.CONCAT_NULL, };
     for ( Entry entry : fieldsEntries ) {
       StepInjectionMetaEntry metaEntry =
         new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
@@ -181,7 +183,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
               String concatGroup = null;
               String concatTrim = null;
               String concatNull = null;
-              
+
               List<StepInjectionMetaEntry> entries = lookField.getDetails();
               for ( StepInjectionMetaEntry entry : entries ) {
                 Entry metaEntry = Entry.findEntry( entry.getKey() );
@@ -218,7 +220,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
                     case CONCAT_NULL:
                       concatNull = value;
                       break;
-                   default:
+                    default:
                       break;
                   }
                 }
@@ -241,7 +243,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
           meta.setTargetFieldName( lookValue );
           break;
         case TARGET_LENGTH:
-          meta.setTargetFieldLength( Const.toInt(lookValue , 0) );
+          meta.setTargetFieldLength( Const.toInt( lookValue, 0 ) );
           break;
         case SEPARATOR:
           meta.setSeparator( lookValue );
@@ -274,7 +276,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
           meta.setFastDump( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case SPLIT_EVERY:
-          meta.setSplitEvery( Const.toInt( lookValue , 0 ) );
+          meta.setSplitEvery( Const.toInt( lookValue, 0 ) );
           break;
         case ADD_ENDING_LINE:
           meta.setEndedLine( lookValue );
@@ -288,39 +290,37 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
     //
     if ( concatFields.size() > 0 ) {
       TextFileField[] tff = new TextFileField[concatFields.size()];
-      Iterator<String> iConcatFields=concatFields.iterator();
-      Iterator<String> iConcatTypes=concatTypes.iterator();
-      Iterator<String> iConcatLengths=concatLengths.iterator();
-      Iterator<String> iConcatFormats=concatFormats.iterator();
-      Iterator<String> iConcatPrecisions=concatPrecisions.iterator();
-      Iterator<String> iConcatCurrencies=concatCurrencies.iterator();
-      Iterator<String> iConcatDecimals=concatDecimals.iterator();
-      Iterator<String> iConcatGroups=concatGroups.iterator();
-      Iterator<String> iConcatTrims=concatTrims.iterator();
-      Iterator<String> iConcatNulls=concatNulls.iterator();
+      Iterator<String> iConcatFields = concatFields.iterator();
+      Iterator<String> iConcatTypes = concatTypes.iterator();
+      Iterator<String> iConcatLengths = concatLengths.iterator();
+      Iterator<String> iConcatFormats = concatFormats.iterator();
+      Iterator<String> iConcatPrecisions = concatPrecisions.iterator();
+      Iterator<String> iConcatCurrencies = concatCurrencies.iterator();
+      Iterator<String> iConcatDecimals = concatDecimals.iterator();
+      Iterator<String> iConcatGroups = concatGroups.iterator();
+      Iterator<String> iConcatTrims = concatTrims.iterator();
+      Iterator<String> iConcatNulls = concatNulls.iterator();
 
-      
-      int i=0;
-      while(iConcatFields.hasNext())
-      {
-    	  TextFileField field=new TextFileField();
-    	  field.setName( iConcatFields.next() );
-    	  field.setType( ValueMeta.getType( iConcatTypes.next() ) );
-    	  field.setFormat( iConcatFormats.next() );
-    	  field.setLength( Const.toInt( iConcatLengths.next() , -1 ) );
-    	  field.setPrecision( Const.toInt( iConcatPrecisions.next() , -1 ));
-    	  field.setCurrencySymbol( iConcatCurrencies.next() );
-    	  field.setDecimalSymbol( iConcatDecimals.next() );
-    	  field.setGroupingSymbol( iConcatGroups.next() );
-    	  field.setNullString( iConcatNulls.next() );
-    	  field.setTrimType(ValueMeta.getTrimTypeByDesc(iConcatTrims.next()));
-    	  tff[i] = field;
-    	  i++;
+      int i = 0;
+      while ( iConcatFields.hasNext() ) {
+        TextFileField field = new TextFileField();
+        field.setName( iConcatFields.next() );
+        field.setType( ValueMeta.getType( iConcatTypes.next() ) );
+        field.setFormat( iConcatFormats.next() );
+        field.setLength( Const.toInt( iConcatLengths.next(), -1 ) );
+        field.setPrecision( Const.toInt( iConcatPrecisions.next(), -1 ) );
+        field.setCurrencySymbol( iConcatCurrencies.next() );
+        field.setDecimalSymbol( iConcatDecimals.next() );
+        field.setGroupingSymbol( iConcatGroups.next() );
+        field.setNullString( iConcatNulls.next() );
+        field.setTrimType( ValueMeta.getTrimTypeByDesc( iConcatTrims.next() ) );
+        tff[i] = field;
+        i++;
       }
-      meta.setOutputFields(tff);
+      meta.setOutputFields( tff );
     }
   }
-  
+
   public ConcatFieldsMeta getMeta() {
     return meta;
   }

@@ -268,8 +268,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   public StepDataInterface getStepData() {
     return new ConcatFieldsData();
   }
-  
-    
+
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return new ConcatFieldsMetaInjection( this );
