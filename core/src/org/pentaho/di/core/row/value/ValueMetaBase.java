@@ -1017,7 +1017,21 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      return new Long( getDecimalFormat( false ).parse( string ).longValue() );
+      Number number;
+      if ( lenientStringToNumber ) {
+        number = new Long( getDecimalFormat( false ).parse( string ).longValue() );
+      } else {
+        ParsePosition parsePosition = new ParsePosition( 0 );
+        number = getDecimalFormat( false ).parse( string, parsePosition );
+
+        if ( parsePosition.getIndex() < string.length() ) {
+          throw new KettleValueException( toString()
+            + " : couldn't convert String to number : non-numeric character found at position "
+            + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
+        }
+
+      }
+      return new Long( number.longValue() );
     } catch ( Exception e ) {
       throw new KettleValueException( toString() + " : couldn't convert String to Integer", e );
     }
@@ -1045,7 +1059,20 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      return (BigDecimal) getDecimalFormat( bigNumberFormatting ).parse( string );
+      Number number;
+      if ( lenientStringToNumber ) {
+        number = getDecimalFormat( bigNumberFormatting ).parse( string );
+      } else {
+        ParsePosition parsePosition = new ParsePosition( 0 );
+        number = getDecimalFormat( bigNumberFormatting ).parse( string, parsePosition );
+
+        if ( parsePosition.getIndex() < string.length() ) {
+          throw new KettleValueException( toString()
+            + " : couldn't convert String to number : non-numeric character found at position "
+            + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
+        }
+      }
+      return (BigDecimal) number;
     } catch ( Exception e ) {
       // We added this workaround for PDI-1824
       //
