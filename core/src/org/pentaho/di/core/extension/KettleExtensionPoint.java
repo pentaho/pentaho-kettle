@@ -71,7 +71,10 @@ public enum KettleExtensionPoint {
     StepAfterInitialize( "StepAfterInitialize", "After a step is initialized" ),
 
     StepBeforeStart( "StepBeforeStart", "Right before a step is about to be started" ),
-    StepFinished( "StepFinished", "After a step has finished" );
+    StepFinished( "StepFinished", "After a step has finished" ),
+
+    CarteStartup( "CarteStartup", "Right after the Carte webserver has started and is fully functional" ),
+    CarteShutdown( "CarteShutdown", "Right before the Carte webserver will shut down" );
 
   public String id;
 

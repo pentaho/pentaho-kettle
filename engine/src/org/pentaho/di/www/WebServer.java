@@ -45,6 +45,9 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -91,6 +94,14 @@ public class WebServer {
     // Start the monitoring of the registered slave servers...
     //
     startSlaveMonitoring();
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.CarteStartup.id, this );
+    } catch ( KettleException e ) {
+      // Log error but continue regular operations to make sure Carte continues to run properly
+      //
+      log.logError( "Error calling extension point CarteStartup", e );
+    }
 
     if ( join ) {
       server.join();
@@ -215,6 +226,15 @@ public class WebServer {
   }
 
   public void stopServer() {
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.CarteShutdown.id, this );
+    } catch ( KettleException e ) {
+      // Log error but continue regular operations to make sure Carte can be shut down properly.
+      //
+      log.logError( "Error calling extension point CarteStartup", e );
+    }
+
     try {
       if ( server != null ) {
 
@@ -322,5 +342,53 @@ public class WebServer {
 
   public void setPasswordFile( String passwordFile ) {
     this.passwordFile = passwordFile;
+  }
+
+  public LogChannelInterface getLog() {
+    return log;
+  }
+
+  public void setLog( LogChannelInterface log ) {
+    this.log = log;
+  }
+
+  public TransformationMap getTransformationMap() {
+    return transformationMap;
+  }
+
+  public void setTransformationMap( TransformationMap transformationMap ) {
+    this.transformationMap = transformationMap;
+  }
+
+  public JobMap getJobMap() {
+    return jobMap;
+  }
+
+  public void setJobMap( JobMap jobMap ) {
+    this.jobMap = jobMap;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public void setPort( int port ) {
+    this.port = port;
+  }
+
+  public Timer getSlaveMonitoringTimer() {
+    return slaveMonitoringTimer;
+  }
+
+  public void setSlaveMonitoringTimer( Timer slaveMonitoringTimer ) {
+    this.slaveMonitoringTimer = slaveMonitoringTimer;
+  }
+
+  public void setServer( Server server ) {
+    this.server = server;
+  }
+
+  public void setDetections( List<SlaveServerDetection> detections ) {
+    this.detections = detections;
   }
 }
