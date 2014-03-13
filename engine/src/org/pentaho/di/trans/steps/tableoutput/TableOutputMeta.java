@@ -283,10 +283,10 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   public void setDatabaseMeta( DatabaseMeta database ) {
     this.databaseMeta = database;
   }
-  
-   /**
-   * @return Returns the commitSize.
-   */
+
+  /**
+  * @return Returns the commitSize.
+  */
   public String getCommitSize() {
     return commitSize;
   }
@@ -965,7 +965,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
     // Use default connection missing message
     return null;
   }
-  
+
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return new TableOutputMetaInjection( this );

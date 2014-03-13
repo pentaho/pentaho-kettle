@@ -39,29 +39,30 @@ public class TableOutputMetaInjection implements StepMetaInjectionInterface {
 
   private enum Entry {
 
-    TARGET_SCHEMA( ValueMetaInterface.TYPE_STRING, "The target schema" ), TARGET_TABLE(
-      ValueMetaInterface.TYPE_STRING, "The target table" ), COMMIT_SIZE(
-      ValueMetaInterface.TYPE_STRING, "The commit size" ), TRUNCATE_TABLE(
-      ValueMetaInterface.TYPE_STRING, "Truncate table? (Y/N)" ), SPECIFY_DATABASE_FIELDS(
-      ValueMetaInterface.TYPE_STRING, "Specify database fields? (Y/N)" ), IGNORE_INSERT_ERRORS(
-      ValueMetaInterface.TYPE_STRING, "Ignore insert errors? (Y/N)" ), USE_BATCH_UPDATE(
-      ValueMetaInterface.TYPE_STRING, "Use batch update for inserts? (Y/N)" ),
+    TARGET_SCHEMA( ValueMetaInterface.TYPE_STRING, "The target schema" ),
+      TARGET_TABLE( ValueMetaInterface.TYPE_STRING, "The target table" ),
+      COMMIT_SIZE( ValueMetaInterface.TYPE_STRING, "The commit size" ),
+      TRUNCATE_TABLE( ValueMetaInterface.TYPE_STRING, "Truncate table? (Y/N)" ),
+      SPECIFY_DATABASE_FIELDS( ValueMetaInterface.TYPE_STRING, "Specify database fields? (Y/N)" ),
+      IGNORE_INSERT_ERRORS( ValueMetaInterface.TYPE_STRING, "Ignore insert errors? (Y/N)" ),
+      USE_BATCH_UPDATE( ValueMetaInterface.TYPE_STRING, "Use batch update for inserts? (Y/N)" ),
 
-      PARTITION_OVER_TABLES( ValueMetaInterface.TYPE_STRING, "Partition data over tables? (Y/N)" ), 
-        PARTITIONING_FIELD( ValueMetaInterface.TYPE_STRING, "Partitioning field" ), PARTITION_DATA_PER(
-        ValueMetaInterface.TYPE_STRING, "Partition data per (month/day)" ),
-        
-      TABLE_NAME_DEFINED_IN_FIELD( ValueMetaInterface.TYPE_STRING, "Is the name of the table defined in a field? (Y/N)" ), 
-      	TABLE_NAME_FIELD( ValueMetaInterface.TYPE_STRING, "Field that contains the name of table" ), 
-      	STORE_TABLE_NAME( ValueMetaInterface.TYPE_STRING, "Store the tablename field? (Y/N)" ),
-    	
-      RETURN_AUTO_GENERATED_KEY( ValueMetaInterface.TYPE_STRING, "Return auto-generated key? (Y/N)" ), 
-        AUTO_GENERATED_KEY_FIELD( ValueMetaInterface.TYPE_STRING, "Name of auto-generated key field" ),
+      PARTITION_OVER_TABLES( ValueMetaInterface.TYPE_STRING, "Partition data over tables? (Y/N)" ),
+      PARTITIONING_FIELD( ValueMetaInterface.TYPE_STRING, "Partitioning field" ),
+      PARTITION_DATA_PER( ValueMetaInterface.TYPE_STRING, "Partition data per (month/day)" ),
 
-      DATABASE_FIELDS( ValueMetaInterface.TYPE_NONE, "The database fields" ), DATABASE_FIELD(
-        ValueMetaInterface.TYPE_NONE, "One database field" ), DATABASE_FIELDNAME(
-        ValueMetaInterface.TYPE_STRING, "Table field" ), STREAM_FIELDNAME(
-        ValueMetaInterface.TYPE_STRING, "Stream field" );
+      TABLE_NAME_DEFINED_IN_FIELD( ValueMetaInterface.TYPE_STRING,
+        "Is the name of the table defined in a field? (Y/N)" ),
+      TABLE_NAME_FIELD( ValueMetaInterface.TYPE_STRING, "Field that contains the name of table" ),
+      STORE_TABLE_NAME( ValueMetaInterface.TYPE_STRING, "Store the tablename field? (Y/N)" ),
+
+      RETURN_AUTO_GENERATED_KEY( ValueMetaInterface.TYPE_STRING, "Return auto-generated key? (Y/N)" ),
+      AUTO_GENERATED_KEY_FIELD( ValueMetaInterface.TYPE_STRING, "Name of auto-generated key field" ),
+
+      DATABASE_FIELDS( ValueMetaInterface.TYPE_NONE, "The database fields" ),
+      DATABASE_FIELD( ValueMetaInterface.TYPE_NONE, "One database field" ),
+      DATABASE_FIELDNAME( ValueMetaInterface.TYPE_STRING, "Table field" ),
+      STREAM_FIELDNAME( ValueMetaInterface.TYPE_STRING, "Stream field" );
 
     private int valueType;
     private String description;
@@ -103,9 +104,9 @@ public class TableOutputMetaInjection implements StepMetaInjectionInterface {
     Entry[] topEntries =
       new Entry[] {
         Entry.TARGET_SCHEMA, Entry.TARGET_TABLE, Entry.COMMIT_SIZE, Entry.TRUNCATE_TABLE,
-        Entry.SPECIFY_DATABASE_FIELDS, Entry.IGNORE_INSERT_ERRORS, Entry.USE_BATCH_UPDATE, 
-        Entry.PARTITION_OVER_TABLES, Entry.PARTITIONING_FIELD, Entry.PARTITION_DATA_PER, 
-        Entry.TABLE_NAME_DEFINED_IN_FIELD, Entry.TABLE_NAME_FIELD, Entry.STORE_TABLE_NAME, 
+        Entry.SPECIFY_DATABASE_FIELDS, Entry.IGNORE_INSERT_ERRORS, Entry.USE_BATCH_UPDATE,
+        Entry.PARTITION_OVER_TABLES, Entry.PARTITIONING_FIELD, Entry.PARTITION_DATA_PER,
+        Entry.TABLE_NAME_DEFINED_IN_FIELD, Entry.TABLE_NAME_FIELD, Entry.STORE_TABLE_NAME,
         Entry.RETURN_AUTO_GENERATED_KEY, Entry.AUTO_GENERATED_KEY_FIELD, };
     for ( Entry topEntry : topEntries ) {
       all.add( new StepInjectionMetaEntry( topEntry.name(), topEntry.getValueType(), topEntry.getDescription() ) );
@@ -155,7 +156,7 @@ public class TableOutputMetaInjection implements StepMetaInjectionInterface {
 
               String databaseFieldname = null;
               String streamFieldname = null;
-              
+
               List<StepInjectionMetaEntry> entries = lookField.getDetails();
               for ( StepInjectionMetaEntry entry : entries ) {
                 Entry metaEntry = Entry.findEntry( entry.getKey() );
@@ -168,7 +169,7 @@ public class TableOutputMetaInjection implements StepMetaInjectionInterface {
                     case STREAM_FIELDNAME:
                       streamFieldname = value;
                       break;
-                   default:
+                    default:
                       break;
                   }
                 }
@@ -189,38 +190,38 @@ public class TableOutputMetaInjection implements StepMetaInjectionInterface {
           meta.setCommitSize( lookValue );
           break;
         case TRUNCATE_TABLE:
-          meta.setTruncateTable( "Y".equalsIgnoreCase( lookValue ));
+          meta.setTruncateTable( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case SPECIFY_DATABASE_FIELDS:
-          meta.setSpecifyFields( "Y".equalsIgnoreCase( lookValue ));
+          meta.setSpecifyFields( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case IGNORE_INSERT_ERRORS:
-          meta.setIgnoreErrors( "Y".equalsIgnoreCase( lookValue ));
+          meta.setIgnoreErrors( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case USE_BATCH_UPDATE:
-          meta.setUseBatchUpdate( "Y".equalsIgnoreCase( lookValue ));
+          meta.setUseBatchUpdate( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case PARTITION_OVER_TABLES:
-          meta.setPartitioningEnabled( "Y".equalsIgnoreCase( lookValue ));
+          meta.setPartitioningEnabled( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case PARTITIONING_FIELD:
           meta.setPartitioningField( lookValue );
           break;
         case PARTITION_DATA_PER:
-          meta.setPartitioningDaily( "DAY".equalsIgnoreCase( lookValue ));
-          meta.setPartitioningMonthly( "month".equalsIgnoreCase( lookValue ));
+          meta.setPartitioningDaily( "DAY".equalsIgnoreCase( lookValue ) );
+          meta.setPartitioningMonthly( "month".equalsIgnoreCase( lookValue ) );
           break;
         case TABLE_NAME_DEFINED_IN_FIELD:
-          meta.setTableNameInField( "Y".equalsIgnoreCase( lookValue ));
+          meta.setTableNameInField( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case TABLE_NAME_FIELD:
           meta.setTableNameField( lookValue );
           break;
         case STORE_TABLE_NAME:
-          meta.setTableNameInTable( "Y".equalsIgnoreCase( lookValue ));
+          meta.setTableNameInTable( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case RETURN_AUTO_GENERATED_KEY:
-          meta.setReturningGeneratedKeys( "Y".equalsIgnoreCase( lookValue ));
+          meta.setReturningGeneratedKeys( "Y".equalsIgnoreCase( lookValue ) );
           break;
         case AUTO_GENERATED_KEY_FIELD:
           meta.setGeneratedKeyField( lookValue );
