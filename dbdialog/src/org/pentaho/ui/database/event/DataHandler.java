@@ -732,7 +732,7 @@ public class DataHandler extends AbstractXulEventHandler {
     getControls();
 
     // Name:
-    connectionNameBox.setValue(meta.getName());
+    connectionNameBox.setValue(meta.getDisplayName());
 
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface dInterface = registry.getPlugin(DatabasePluginType.class, meta.getPluginId());

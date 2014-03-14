@@ -838,7 +838,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   @Override
   public String toString() {
-    return getName();
+    return getDisplayName();
   }
 
   /**
