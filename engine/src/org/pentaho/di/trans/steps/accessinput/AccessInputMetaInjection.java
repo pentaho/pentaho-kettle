@@ -294,6 +294,10 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public AccessInputMeta getMeta() {
     return meta;
   }

@@ -229,6 +229,10 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public DataGridMeta getMeta() {
     return meta;
   }

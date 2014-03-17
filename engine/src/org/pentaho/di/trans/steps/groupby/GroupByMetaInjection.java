@@ -267,6 +267,10 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public GroupByMeta getMeta() {
     return meta;
   }

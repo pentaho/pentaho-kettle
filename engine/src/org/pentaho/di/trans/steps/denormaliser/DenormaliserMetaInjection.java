@@ -146,6 +146,10 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
 
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public DenormaliserMeta getMeta() {
     return meta;
   }

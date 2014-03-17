@@ -410,6 +410,10 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public GetXMLDataMeta getMeta() {
     return meta;
   }

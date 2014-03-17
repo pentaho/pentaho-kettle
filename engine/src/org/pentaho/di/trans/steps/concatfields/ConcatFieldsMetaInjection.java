@@ -321,6 +321,10 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public ConcatFieldsMeta getMeta() {
     return meta;
   }

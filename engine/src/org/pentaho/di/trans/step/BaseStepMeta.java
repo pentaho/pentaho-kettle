@@ -824,6 +824,15 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   /**
+   * @return The step metadata itself, not the metadata description.  
+   * For lists it will have 0 entries in case there are no entries.
+   * @throws KettleException
+   */
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
+  /**
    * Find parent entry.
    *
    * @param entries

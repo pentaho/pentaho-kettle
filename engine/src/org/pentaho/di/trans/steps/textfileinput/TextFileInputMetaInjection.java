@@ -571,6 +571,10 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public TextFileInputMeta getMeta() {
     return meta;
   }
