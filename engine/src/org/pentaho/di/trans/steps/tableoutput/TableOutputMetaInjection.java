@@ -28,6 +28,8 @@ import java.util.List;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
+import org.pentaho.di.trans.step.StepInjectionUtil;
+import org.pentaho.di.trans.step.StepMetaInjectionEntryInterface;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
@@ -37,7 +39,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
  */
 public class TableOutputMetaInjection implements StepMetaInjectionInterface {
 
-  private enum Entry {
+  public enum Entry implements StepMetaInjectionEntryInterface {
 
     TARGET_SCHEMA( ValueMetaInterface.TYPE_STRING, "The target schema" ),
       TARGET_TABLE( ValueMetaInterface.TYPE_STRING, "The target table" ),
@@ -209,7 +211,7 @@ public class TableOutputMetaInjection implements StepMetaInjectionInterface {
           break;
         case PARTITION_DATA_PER:
           meta.setPartitioningDaily( "DAY".equalsIgnoreCase( lookValue ) );
-          meta.setPartitioningMonthly( "month".equalsIgnoreCase( lookValue ) );
+          meta.setPartitioningMonthly( "MONTH".equalsIgnoreCase( lookValue ) );
           break;
         case TABLE_NAME_DEFINED_IN_FIELD:
           meta.setTableNameInField( "Y".equalsIgnoreCase( lookValue ) );
@@ -237,6 +239,43 @@ public class TableOutputMetaInjection implements StepMetaInjectionInterface {
       meta.setFieldDatabase( databaseFields.toArray( new String[databaseFields.size()] ) );
       meta.setFieldStream( streamFields.toArray( new String[streamFields.size()] ) );
     }
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    List<StepInjectionMetaEntry> list = new ArrayList<StepInjectionMetaEntry>();
+
+    list.add( StepInjectionUtil.getEntry( Entry.TARGET_SCHEMA, meta.getSchemaName() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.TARGET_TABLE, meta.getTableName() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.COMMIT_SIZE, meta.getCommitSize() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.TRUNCATE_TABLE, meta.truncateTable() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.SPECIFY_DATABASE_FIELDS, meta.specifyFields() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.IGNORE_INSERT_ERRORS, meta.ignoreErrors() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.USE_BATCH_UPDATE, meta.useBatchUpdate() ) );
+
+    list.add( StepInjectionUtil.getEntry( Entry.PARTITION_OVER_TABLES, meta.isPartitioningEnabled() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.PARTITIONING_FIELD, meta.getPartitioningField() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.PARTITION_DATA_PER, meta.isPartitioningDaily()
+      ? "DAY"
+      : meta.isPartitioningMonthly() ? "MONTH" : "" ) );
+
+    list.add( StepInjectionUtil.getEntry( Entry.TABLE_NAME_DEFINED_IN_FIELD, meta.isTableNameInField() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.TABLE_NAME_FIELD, meta.getTableNameField() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.STORE_TABLE_NAME, meta.isTableNameInTable() ) );
+
+    list.add( StepInjectionUtil.getEntry( Entry.RETURN_AUTO_GENERATED_KEY, meta.isReturningGeneratedKeys() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.AUTO_GENERATED_KEY_FIELD, meta.getGeneratedKeyField() ) );
+
+    StepInjectionMetaEntry fieldsEntry = StepInjectionUtil.getEntry( Entry.DATABASE_FIELDS );
+    list.add( fieldsEntry );
+    for ( int i = 0; i < meta.getFieldDatabase().length; i++ ) {
+      StepInjectionMetaEntry fieldEntry = StepInjectionUtil.getEntry( Entry.DATABASE_FIELD );
+      List<StepInjectionMetaEntry> details = fieldEntry.getDetails();
+      details.add( StepInjectionUtil.getEntry( Entry.DATABASE_FIELDNAME, meta.getFieldDatabase()[i] ) );
+      details.add( StepInjectionUtil.getEntry( Entry.STREAM_FIELDNAME, meta.getFieldStream()[i] ) );
+      fieldsEntry.getDetails().add( fieldEntry );
+    }
+
+    return list;
   }
 
   public TableOutputMeta getMeta() {

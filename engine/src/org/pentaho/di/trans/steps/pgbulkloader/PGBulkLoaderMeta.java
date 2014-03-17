@@ -697,7 +697,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     this.stopOnError = value;
   }
 
-
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return this;
   }
@@ -737,7 +736,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
           throw new RuntimeException( "Unhandled metadata injection of attribute: "
             + attr.toString() + " - " + attr.getDescription() );
         }
-      }  else {
+      } else {
         // The data sets...
         //
         if ( attr.getKey().equals( "MAPPINGS" ) ) {
@@ -781,5 +780,8 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
 
 }

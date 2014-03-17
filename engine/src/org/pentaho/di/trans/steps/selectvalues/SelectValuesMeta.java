@@ -958,4 +958,9 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
       }
     }
   }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
 }

@@ -183,6 +183,10 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
     meta.setFieldDefinition( fixedInputFields.toArray( new FixedFileInputField[fixedInputFields.size()] ) );
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public FixedInputMeta getMeta() {
     return meta;
   }
