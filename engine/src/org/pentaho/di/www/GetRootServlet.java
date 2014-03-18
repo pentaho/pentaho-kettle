@@ -43,6 +43,7 @@ public class GetRootServlet extends BaseHttpServlet implements CartePluginInterf
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getRequestURI().equals( CONTEXT_PATH ) ) {
+      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
       return;
     }
 

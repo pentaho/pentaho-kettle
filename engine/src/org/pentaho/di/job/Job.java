@@ -1798,6 +1798,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           + Const.CR + webResult.getMessage() );
       }
       return carteObjectId;
+    } catch ( KettleException ke ) {
+      throw ke;
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
