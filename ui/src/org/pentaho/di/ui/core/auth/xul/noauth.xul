@@ -1,0 +1,16 @@
+<overlay>
+    <hbox id="overlay_real_estate" flex="1">
+
+        <groupbox id="general-settings-box" flex="1">
+            <grid id="method_grid" flex="1">
+                <columns>
+                    <column/>
+                    <column flex="1"/>
+                    <column/>
+                </columns>
+                <rows></rows>
+            </grid>
+        </groupbox>
+
+    </hbox>
+</overlay>
