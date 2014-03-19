@@ -54,10 +54,10 @@ public class MappingInputTest {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-        new StepMockHelper<MappingInputMeta, MappingInputData>( stepName, MappingInputMeta.class,
-            MappingInputData.class );
+      new StepMockHelper<MappingInputMeta, MappingInputData>( stepName, MappingInputMeta.class,
+        MappingInputData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      stepMockHelper.logChannelInterface );
     // when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     setProcessRowEnded( false );
   }
@@ -73,12 +73,12 @@ public class MappingInputTest {
     when( stepMockHelper.transMeta.getSizeRowset() ).thenReturn( 1 );
     MappingInputData mappingInputData = new MappingInputData();
     MappingInput mappingInput =
-        new MappingInput( stepMockHelper.stepMeta, mappingInputData,
-                0, stepMockHelper.transMeta, stepMockHelper.trans );
+      new MappingInput( stepMockHelper.stepMeta, mappingInputData,
+        0, stepMockHelper.transMeta, stepMockHelper.trans );
     mappingInput.init( stepMockHelper.initStepMetaInterface, mappingInputData );
     ValidatorData validatorData = new ValidatorData();
     Validator previousStep =
-        new Validator( stepMockHelper.stepMeta, validatorData, 0, stepMockHelper.transMeta, stepMockHelper.trans );
+      new Validator( stepMockHelper.stepMeta, validatorData, 0, stepMockHelper.transMeta, stepMockHelper.trans );
     when( stepMockHelper.stepMeta.isDoingErrorHandling() ).thenReturn( true );
     StepErrorMeta stepErrorMeta = mock( StepErrorMeta.class );
     when( stepErrorMeta.getTargetStep() ).thenReturn( stepMockHelper.stepMeta );
@@ -96,8 +96,8 @@ public class MappingInputTest {
     try {
       final MappingInputData mappingInputData = new MappingInputData();
       final MappingInput mappingInput =
-          new MappingInput( stepMockHelper.stepMeta, mappingInputData, 0, stepMockHelper.transMeta,
-              stepMockHelper.trans );
+        new MappingInput( stepMockHelper.stepMeta, mappingInputData, 0, stepMockHelper.transMeta,
+          stepMockHelper.trans );
       mappingInput.init( stepMockHelper.initStepMetaInterface, mappingInputData );
       int timeOut = 1000;
       final int junitMaxTimeOut = 40000;
@@ -120,18 +120,16 @@ public class MappingInputTest {
         mappingInput.setConnectorSteps( null, Collections.<MappingValueRename>emptyList(), "" );
       } catch ( IllegalArgumentException ex1 ) {
         try {
-          mappingInput.setConnectorSteps( new StepInterface[0], Collections.<MappingValueRename>emptyList(), "" );
-        } catch ( IllegalArgumentException ex2 ) {
+          mappingInput.setConnectorSteps( new StepInterface[ 0 ], null, "" );
+        } catch ( IllegalArgumentException ex3 ) {
           try {
-            mappingInput.setConnectorSteps( new StepInterface[0], null, "" );
-          } catch ( IllegalArgumentException ex3 ) {
-            try {
-              mappingInput.setConnectorSteps( new StepInterface[0], Collections.<MappingValueRename>emptyList(), null );
-            } catch ( IllegalArgumentException ignored ) {
-              exception = true;
-            }
+            mappingInput.setConnectorSteps( new StepInterface[] { mock( StepInterface.class ) },
+              Collections.<MappingValueRename>emptyList(), null );
+          } catch ( IllegalArgumentException ignored ) {
+            exception = true;
           }
         }
+
       }
       processRow.join( junitMaxTimeOut );
       assertTrue( "not enough IllegalArgumentExceptions", exception );

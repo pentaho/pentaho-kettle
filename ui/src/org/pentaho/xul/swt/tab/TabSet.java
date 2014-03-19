@@ -143,8 +143,10 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
     for ( int i = 0; i < listeners.size(); i++ ) {
       doit &= ( listeners.get( i ) ).tabClose( item );
     }
-    removeItemFromHistory( item );
-    selectLastUsedTab();
+    if ( doit ) {
+      removeItemFromHistory( item );
+      selectLastUsedTab();
+    }
     return doit;
   }
 
