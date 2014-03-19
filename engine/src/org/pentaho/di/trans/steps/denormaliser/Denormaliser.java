@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -60,7 +62,11 @@ public class Denormaliser extends BaseStep implements StepInterface
 
 	private DenormaliserMeta meta;
 	private DenormaliserData data;
-	
+
+  private Map<String, ValueMetaInterface> conversionMetaCache = new HashMap<String,
+    ValueMetaInterface>( );
+
+
 	public Denormaliser(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -323,7 +329,16 @@ public class Denormaliser extends BaseStep implements StepInterface
                         // What was the previous target in the result row?
                         //
                         Object prevTargetData = data.targetResult[idx];
-                        
+
+                        // clone source meta as it can be used by other steps ans set conversion meta
+                        // to convert date to target format
+                        // See PDI-4910 for details
+                        ValueMetaInterface origSourceMeta = sourceMeta;
+                        if ( targetMeta.isDate() ) {
+                          sourceMeta = origSourceMeta.clone();
+                          sourceMeta.setConversionMetadata( getConversionMeta( field.getTargetFormat() ) );
+                        }
+
                         switch(field.getTargetAggregationType())
                         {
                         case DenormaliserTargetField.TYPE_AGGR_SUM:
@@ -381,7 +396,6 @@ public class Denormaliser extends BaseStep implements StepInterface
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_NONE:
                         default:
-                            targetData = targetMeta.convertData(sourceMeta, sourceData);
                             prevTargetData = targetMeta.convertData(sourceMeta, sourceData); // Overwrite the previous
                             break;
                         }
@@ -415,5 +429,24 @@ public class Denormaliser extends BaseStep implements StepInterface
 	  handleLastRow();
 	  data.previous=null;
 	}
+
+  /**
+   * Get the metadata used for conversion to date format
+   * See related PDI-4019
+   * @param mask
+   * @return
+   */
+  private ValueMetaInterface getConversionMeta( String mask ) {
+    ValueMetaInterface meta = null;
+    if ( !Const.isEmpty( mask ) ) {
+      meta = conversionMetaCache.get( mask );
+      if ( meta == null ) {
+        meta = new ValueMetaDate( );
+        meta.setConversionMask( mask );
+        conversionMetaCache.put( mask, meta );
+      }
+    }
+    return meta;
+  }
 	
 }
