@@ -583,8 +583,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       StreamLogger outputLogger = new StreamLogger(log, proc.getInputStream(), "(stdout)");
 
       // kick them off
-      new Thread(errorLogger).start();
-      new Thread(outputLogger).start();
+      Thread errorLoggerThread = new Thread( errorLogger );
+      errorLoggerThread.start();
+      Thread outputLoggerThread = new Thread( outputLogger );
+      outputLoggerThread.start();
 
       proc.waitFor();
       if (log.isDetailed())
@@ -599,6 +601,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
         result.setNrErrors(1);
       }
+
+      //wait until loggers read all data from stdout and stderr
+      errorLoggerThread.join();
+      outputLoggerThread.join();
 
       // close the streams
       // otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
