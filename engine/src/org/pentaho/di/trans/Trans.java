@@ -569,7 +569,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         transMeta = new TransMeta( filename, false );
       }
 
-      this.log = new LogChannel( this );
+      this.log = LogChannel.GENERAL;
 
       transMeta.initializeVariablesFrom( parentVariableSpace );
       initializeVariablesFrom( parentVariableSpace );

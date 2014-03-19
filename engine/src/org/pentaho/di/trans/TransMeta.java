@@ -728,7 +728,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     loopCache = new HashMap<String, Boolean>();
     transformationType = TransformationType.Normal;
 
-    log = new LogChannel( STRING_TRANSMETA );
+    log = LogChannel.GENERAL;
   }
 
   /**

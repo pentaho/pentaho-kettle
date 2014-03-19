@@ -9,9 +9,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
 public class TransTest {
 
@@ -47,6 +51,35 @@ public class TransTest {
     Assert.assertNotNull( databaseMeta );
     Assert.assertEquals( databaseMeta.getName(), "encoded_DBConnection" );
     Assert.assertEquals( databaseMeta.getDisplayName(), "encoded.DBConnection" );
+  }
+
+  /**
+   * PDI-10762 - Trans and TransMeta leak
+   */
+  @Test
+  public void testLoggingObjectIsNotLeakInMeta() {
+    String expected = meta.log.getLogChannelId();
+    meta.clear();
+    String actual = meta.log.getLogChannelId();
+    Assert.assertEquals( "Use same logChannel for empty constructors, or assign General level for clear() calls",
+        expected, actual );
+  }
+
+  /**
+   * PDI-10762 - Trans and TransMeta leak
+   */
+  @Test
+  public void testLoggingObjectIsNotLeakInTrans() throws KettleException {
+    Repository rep = Mockito.mock( Repository.class );
+    RepositoryDirectoryInterface repInt = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.when( rep.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ),
+        Mockito.any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) )
+        .thenReturn( meta );
+    Mockito.when( rep.findDirectory( Mockito.anyString() ) ).thenReturn( repInt );
+
+    Trans trans = new Trans( meta, rep, "junit", "junitDir", "fileName" );
+    Assert.assertEquals( "Log channel General assigned", LogChannel.GENERAL.getLogChannelId(),
+        trans.log.getLogChannelId() );
   }
 
   /**
