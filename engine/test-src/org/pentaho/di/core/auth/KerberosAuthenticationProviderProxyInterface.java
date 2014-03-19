@@ -47,4 +47,6 @@ public interface KerberosAuthenticationProviderProxyInterface {
   public String getDisplayName();
 
   public String getId();
+
+  public void setId( String id );
 }
