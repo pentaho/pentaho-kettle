@@ -50,7 +50,7 @@ public class AuthProviderControllerTest {
     try {
       controller = new AuthProviderController( new SwtXulLoader(), bf, new SwtXulRunner() );
     } catch ( XulException e ) {
-      e.printStackTrace();
+      e.printStackTrace( System.out );
     }
 
     providers = AuthHarness.getProviders( bf );
