@@ -2,15 +2,18 @@
 <ivysettings>
   <properties environment="env" />
   <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local" override="true" />
-  <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]"
-    override="false" />
+  <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]" override="false" />
+  <property name="ivy.shared.default.ivy.pattern" value="[organisation]/[module]/ivy-[revision].xml" override="false" />
+  <property name="ivy.shared.default.artifact.pattern" value="[organisation]/[module]/[type]s/[artifact]-[revision].[ext]" override="false" />
 
   <settings defaultResolver="pentaho-chained-resolver" />
-  <include url="${ivy.default.settings.dir}/ivysettings-public.xml" />
   <include url="${ivy.default.settings.dir}/ivysettings-local.xml" />
+  <include url="${ivy.default.settings.dir}/ivysettings-shared.xml" />
+  <include url="${ivy.default.settings.dir}/ivysettings-public.xml" />
   <resolvers>
     <chain name="pentaho-chained-resolver">
       <resolver ref="local" />
+      <resolver ref="shared" />
       <dual name="pentaho">
         <url name="pentaho-ivy">
           <ivy pattern="http://repo.pentaho.org/artifactory/repo/[organisation]/[module]/[revision]/[module]-[revision].ivy.xml" />
