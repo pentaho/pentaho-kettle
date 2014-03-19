@@ -23,6 +23,7 @@
 package org.pentaho.di.core.auth.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,7 +70,8 @@ public class AuthenticationManagerTest {
 
   @SuppressWarnings( "unchecked" )
   @Test
-  public void testUsernamePasswordProviderConsumer() throws AuthenticationConsumptionException, AuthenticationFactoryException {
+  public void testUsernamePasswordProviderConsumer() throws AuthenticationConsumptionException,
+    AuthenticationFactoryException {
     manager.registerConsumerClass( DelegatingNoAuthConsumer.class );
     manager.registerConsumerClass( DelegatingUsernamePasswordConsumer.class );
     UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider =
@@ -177,7 +179,8 @@ public class AuthenticationManagerTest {
 
   @Test
   @SuppressWarnings( "unchecked" )
-  public void testClassLoaderBridgingPerformer() throws AuthenticationConsumptionException, AuthenticationFactoryException {
+  public void testClassLoaderBridgingPerformer() throws AuthenticationConsumptionException,
+    AuthenticationFactoryException {
     manager.setAuthenticationPerformerFactory( new AuthenticationPerformerFactory() {
 
       @Override
@@ -200,8 +203,14 @@ public class AuthenticationManagerTest {
     manager.registerAuthenticationProvider( kerberosAuthenticationProvider );
     AuthenticationConsumer<Object, KerberosAuthenticationProviderProxyInterface> consumer =
         mock( AuthenticationConsumer.class );
-    manager.getAuthenticationPerformer( Object.class, AuthenticationConsumer.class,
-        kerberosAuthenticationProvider.getId() ).perform( consumer );
+
+    @SuppressWarnings( "rawtypes" )
+    AuthenticationPerformer<Object, AuthenticationConsumer> performer =
+        manager.getAuthenticationPerformer( Object.class, AuthenticationConsumer.class, kerberosAuthenticationProvider
+            .getId() );
+    assertNotNull( performer );
+    performer.perform( consumer );
+
     ArgumentCaptor<KerberosAuthenticationProviderProxyInterface> captor =
         ArgumentCaptor.forClass( KerberosAuthenticationProviderProxyInterface.class );
     verify( consumer ).consume( captor.capture() );
