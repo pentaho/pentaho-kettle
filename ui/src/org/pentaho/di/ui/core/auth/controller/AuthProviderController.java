@@ -83,6 +83,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
       runner.initialize();
 
     } catch ( XulException e ) {
+      e.printStackTrace( System.out );
       success = false;
     }
 
@@ -144,9 +145,6 @@ public class AuthProviderController extends AbstractXulEventHandler {
       // Loads the authorization types into the "Method" combobox
       bf.createBinding( this, "possibleTypes", "method_list", "elements" ).fireSourceChanged();
 
-      // When an authorization entry is selected, select entry in model
-      bf.createBinding( "auth_list", "selectedItem", this.model, "selectedItem" );
-
       // Manage enabling/disabling layout based on item availability in the main authProvider list.
       bf.createBinding( model.getModelObjects(), "children", "remove_button", "disabled", itemCountBinding ).fireSourceChanged();
       bf.createBinding( model.getModelObjects(), "children", "name", "disabled", itemCountBinding ).fireSourceChanged();
@@ -158,6 +156,9 @@ public class AuthProviderController extends AbstractXulEventHandler {
       bf.createBinding( "auth_list", "selectedItem", "remove_button", "!disabled", BindingConvertor.object2Boolean() ).fireSourceChanged();
 
       bf.setBindingType( Binding.Type.BI_DIRECTIONAL );
+
+      // When an authorization entry is selected, select entry in model
+      bf.createBinding( "auth_list", "selectedItem", this.model, "selectedItem" );
 
       // Syncs elements in the model and lists them in the authorization entry list
       Binding listBinding = this.bf.createBinding( this.model.getModelObjects(), "children", "auth_list", "elements" );
@@ -178,9 +179,9 @@ public class AuthProviderController extends AbstractXulEventHandler {
 
 
     } catch ( XulException e ) {
-      e.printStackTrace();
+      e.printStackTrace( System.out );
     } catch ( InvocationTargetException e ) {
-      e.printStackTrace();
+      e.printStackTrace( System.out );
     }
   }
 
@@ -255,6 +256,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
       }
 
     } catch ( XulException e ) {
+      e.printStackTrace( System.out );
       System.out.println( "Error creating file dialog" );
     }
 
