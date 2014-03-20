@@ -19,6 +19,11 @@
 
 package org.pentaho.di.ui.core.auth.model;
 
+import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.binding.BindingException;
+
+import java.lang.reflect.InvocationTargetException;
+
 public abstract interface AuthProvider extends Cloneable
 {
   public abstract String getPrincipal();
@@ -29,11 +34,11 @@ public abstract interface AuthProvider extends Cloneable
 
   public abstract String getOverlay();
 
-  public void bind();
+  public void bind() throws BindingException, XulException, InvocationTargetException;
 
   public void unbind();
 
-  public AuthProvider clone();
+  public AuthProvider clone() throws CloneNotSupportedException;
 
-  public void fireBindingsChanged();
+  public void fireBindingsChanged() throws XulException, InvocationTargetException;
 }

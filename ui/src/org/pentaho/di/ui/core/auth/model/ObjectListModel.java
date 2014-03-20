@@ -22,10 +22,13 @@ package org.pentaho.di.ui.core.auth.model;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
+@SuppressWarnings( {"unchecked", "rawtypes"} )
 public class ObjectListModel extends XulEventSourceAdapter {
-  private AbstractModelList<NamedModelObject> modelObjects = new AbstractModelList();
+  private AbstractModelList<NamedModelObject> modelObjects = new AbstractModelList<NamedModelObject>();
 
   private NamedModelObject selected = null;
+  private NamedModelObject selectedItem;
+  private Object value;
 
   public AbstractModelList<NamedModelObject> getModelObjects() {
     return this.modelObjects;

@@ -10,12 +10,12 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="Username"/>
+                        <label value="${basic.username}"/>
                         <textbox flex="1" id="principal"/>
                         <spacer/>
                     </row>
                     <row>
-                        <label value="Password"/>
+                        <label value="${basic.password}"/>
                         <textbox flex="1" id="password" type="password"/>
                         <spacer/>
                     </row>

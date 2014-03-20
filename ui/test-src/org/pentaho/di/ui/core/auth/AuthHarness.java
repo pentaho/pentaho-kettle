@@ -19,6 +19,7 @@
 
 package org.pentaho.di.ui.core.auth;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.ui.core.auth.controller.AuthProviderController;
 import org.pentaho.di.ui.core.auth.model.BasicAuthProvider;
 import org.pentaho.di.ui.core.auth.model.KerberosAuthProvider;
@@ -38,11 +39,13 @@ public class AuthHarness
   {
     try
     {
-      BindingFactory bf = new SwtBindingFactory();
-      AuthProviderController controller = new AuthProviderController(new SwtXulLoader(), bf, new SwtXulRunner());
-      //controller.setNewOverlay(new NoAuthAuthProvider( bf ));
-      controller.addProviders( getProviders(bf) );
-      controller.open();
+
+      KettleEnvironment.init();
+
+      AuthProviderDialog dialog = new AuthProviderDialog( null );
+      dialog.addProviders( getProviders(dialog.getBindingFactory()) );
+      dialog.show();
+      
     }
     catch (Exception e) {
       System.out.println(e.getMessage());

@@ -19,7 +19,11 @@
 
 package org.pentaho.di.ui.core.auth.model;
 
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulException;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class NamedProvider extends XulEventSourceAdapter implements NamedModelObject<AuthProvider> {
 
@@ -50,7 +54,11 @@ public class NamedProvider extends XulEventSourceAdapter implements NamedModelOb
   {
 
     this.provider = object;
-    provider.fireBindingsChanged();
+    try {
+      provider.fireBindingsChanged();
+    } catch ( Exception e ) {
+      LogChannel.GENERAL.logError( "Binding event error while attempting to select provider.", e );
+    }
   }
 
   public AuthProvider getItem()

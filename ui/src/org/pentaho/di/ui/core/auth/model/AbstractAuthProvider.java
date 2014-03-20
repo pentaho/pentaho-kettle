@@ -22,6 +22,7 @@ package org.pentaho.di.ui.core.auth.model;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingException;
 import org.pentaho.ui.xul.binding.BindingFactory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -53,7 +54,7 @@ public abstract class AbstractAuthProvider extends XulEventSourceAdapter
   }
 
   @Override
-  public void bind() {
+  public void bind() throws BindingException, XulException, InvocationTargetException {
 
     unbind();
     elementBindings = new ArrayList<Binding>();
@@ -80,33 +81,16 @@ public abstract class AbstractAuthProvider extends XulEventSourceAdapter
   }
 
   @Override
-  public void fireBindingsChanged() {
+  public void fireBindingsChanged() throws XulException, InvocationTargetException {
 
     for ( Binding bind : elementBindings ) {
-      try {
-        bind.fireSourceChanged();
-      } catch ( XulException e ) {
-        e.printStackTrace();
-      } catch ( InvocationTargetException e ) {
-        e.printStackTrace();
-      }
+      bind.fireSourceChanged();
     }
-
   }
 
   @Override
-  public AuthProvider clone() {
-
-    AuthProvider provider = null;
-
-    try {
-      provider = (AuthProvider) super.clone();
-      provider.bind();
-    } catch ( CloneNotSupportedException e ) {
-      e.printStackTrace();
-    }
-
-    return provider;
+  public AuthProvider clone() throws CloneNotSupportedException {
+    return (AuthProvider) super.clone();
   }
 
   public String toString() {
