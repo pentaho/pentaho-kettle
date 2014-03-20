@@ -87,7 +87,6 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     hostname = null;
     nbrPackets = "2";
     timeout = defaultTimeOut;
-    setID( -1L );
   }
 
   public JobEntryPing() {

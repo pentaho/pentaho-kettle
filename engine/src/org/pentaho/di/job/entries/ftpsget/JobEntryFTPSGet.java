@@ -155,8 +155,6 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     isaddresult = true;
     createmovefolder = false;
     connectionType = FTPSConnection.CONNECTION_TYPE_FTP;
-
-    setID( -1L );
   }
 
   public JobEntryFTPSGet() {

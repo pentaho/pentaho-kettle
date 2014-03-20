@@ -85,8 +85,6 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     arguments = null;
 
     includeSubfolders = false;
-    setID( -1L );
-
   }
 
   public JobEntryCheckFilesLocked() {

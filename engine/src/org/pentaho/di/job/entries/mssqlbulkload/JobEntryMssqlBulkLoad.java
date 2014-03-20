@@ -130,7 +130,6 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     firetriggers = false;
     keepidentity = false;
     truncate = false;
-    setID( -1L );
   }
 
   public JobEntryMssqlBulkLoad() {

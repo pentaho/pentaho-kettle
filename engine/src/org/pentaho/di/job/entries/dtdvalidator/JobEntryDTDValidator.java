@@ -70,8 +70,6 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
     xmlfilename = null;
     dtdfilename = null;
     dtdintern = false;
-
-    setID( -1L );
   }
 
   public JobEntryDTDValidator() {

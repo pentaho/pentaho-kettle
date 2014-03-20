@@ -76,7 +76,6 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     filename = null;
     failIfFileExists = true;
     addfilenameresult = false;
-    setID( -1L );
   }
 
   public JobEntryCreateFile() {

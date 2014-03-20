@@ -169,8 +169,6 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
     fieldtype = FIELD_TYPE_STRING;
     mask = null;
     successwhenvarset = false;
-
-    setID( -1L );
   }
 
   public JobEntrySimpleEval() {

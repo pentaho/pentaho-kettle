@@ -78,7 +78,6 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
     appendFile = false;
     content = null;
     encoding = null;
-    setID( -1L );
   }
 
   public JobEntryWriteToFile() {

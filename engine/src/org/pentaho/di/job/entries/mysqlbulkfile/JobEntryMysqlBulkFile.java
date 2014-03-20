@@ -99,7 +99,6 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
     iffileexists = 2;
     connection = null;
     addfiletoresult = false;
-    setID( -1L );
   }
 
   public JobEntryMysqlBulkFile() {

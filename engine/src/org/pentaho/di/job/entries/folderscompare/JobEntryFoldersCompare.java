@@ -94,7 +94,6 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
     wildcard = null;
     filename1 = null;
     filename2 = null;
-    setID( -1L );
   }
 
   public void setCompareOnly( String comparevalue ) {

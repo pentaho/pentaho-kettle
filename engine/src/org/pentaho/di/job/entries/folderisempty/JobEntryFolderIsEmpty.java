@@ -80,7 +80,6 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     wildcard = null;
     includeSubfolders = false;
     specifywildcard = false;
-    setID( -1L );
   }
 
   public JobEntryFolderIsEmpty() {

@@ -94,7 +94,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /** Whether the job entry has changed. */
   private boolean changed;
 
-  /** The object id for the job entry */
+  /** The object id for the job entry. Should be unique in most cases. Used to distinguish 
+   * Logging channels for objects. */
   private ObjectId id;
 
   /** The variable bindings for the job entry */

@@ -135,7 +135,6 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
     destinationfolder = null;
     createDestinationFolder = false;
     successWhenNoFile = false;
-    setID( -1L );
   }
 
   public JobEntrySFTPPUT() {

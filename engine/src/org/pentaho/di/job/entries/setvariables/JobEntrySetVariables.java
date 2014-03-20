@@ -95,8 +95,6 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     replaceVars = true;
     variableName = null;
     variableValue = null;
-
-    setID( -1L );
   }
 
   public JobEntrySetVariables() {

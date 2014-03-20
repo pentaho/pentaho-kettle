@@ -65,7 +65,6 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   public JobEntryEval( String n, String scr ) {
     super( n, "" );
     script = scr;
-    setID( -1L );
   }
 
   public JobEntryEval() {

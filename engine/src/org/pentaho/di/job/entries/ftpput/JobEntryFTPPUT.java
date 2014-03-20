@@ -122,7 +122,6 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     socksProxyPort = "1080";
     remoteDirectory = null;
     localDirectory = null;
-    setID( -1L );
     setControlEncoding( DEFAULT_CONTROL_ENCODING );
   }
 

@@ -65,7 +65,6 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 
   public JobEntryDelay( String n ) {
     super( n, "" );
-    setID( -1L );
   }
 
   public JobEntryDelay() {

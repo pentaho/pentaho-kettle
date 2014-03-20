@@ -99,7 +99,6 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
     remoteDirectory = null;
     localDirectory = null;
     connectionType = FTPSConnection.CONNECTION_TYPE_FTP;
-    setID( -1L );
   }
 
   public JobEntryFTPSPUT() {

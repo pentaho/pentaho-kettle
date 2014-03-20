@@ -78,7 +78,6 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
     filename = null;
     detachedfilename = null;
     useDetachedSignature = false;
-    setID( -1L );
   }
 
   public JobEntryPGPVerify() {

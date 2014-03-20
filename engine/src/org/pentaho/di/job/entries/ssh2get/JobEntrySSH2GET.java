@@ -133,7 +133,6 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     createtargetfolder = false;
     cachehostkey = false;
     timeout = 0;
-    setID( -1L );
   }
 
   public JobEntrySSH2GET() {

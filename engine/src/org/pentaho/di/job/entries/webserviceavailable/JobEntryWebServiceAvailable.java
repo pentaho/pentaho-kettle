@@ -63,7 +63,6 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
     url = null;
     connectTimeOut = "0";
     readTimeOut = "0";
-    setID( -1L );
   }
 
   public JobEntryWebServiceAvailable() {

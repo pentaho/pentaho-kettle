@@ -118,8 +118,6 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
     user = null;
     passphrase = null;
     engineid = null;
-
-    setID( -1L );
   }
 
   public JobEntrySNMPTrap() {

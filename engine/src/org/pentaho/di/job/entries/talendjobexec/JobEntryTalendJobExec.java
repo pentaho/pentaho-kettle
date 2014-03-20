@@ -80,8 +80,6 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
 
   public JobEntryTalendJobExec( String n ) {
     super( n, "" );
-    setID( -1L );
-
     filename = null;
   }
 

@@ -71,7 +71,6 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     super( n, "" );
     foldername = null;
     failOfFolderExists = true;
-    setID( -1L );
   }
 
   public JobEntryCreateFolder() {
