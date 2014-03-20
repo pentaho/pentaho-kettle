@@ -20,25 +20,15 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.core.auth.controller;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
+package org.pentaho.di.ui.core.auth.controller;
 
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.ui.core.auth.model.AuthProvider;
-import org.pentaho.di.ui.core.auth.model.BasicAuthProvider;
-import org.pentaho.di.ui.core.auth.model.KerberosAuthProvider;
-import org.pentaho.di.ui.core.auth.model.NamedModelObject;
-import org.pentaho.di.ui.core.auth.model.NamedProvider;
-import org.pentaho.di.ui.core.auth.model.NoAuthAuthProvider;
-import org.pentaho.di.ui.core.auth.model.ObjectListModel;
+import org.pentaho.di.ui.core.auth.model.*;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -47,15 +37,20 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
-@SuppressWarnings( { "unchecked" } )
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
+
+
+@SuppressWarnings( {"unchecked", "rawtypes"} )
 public class AuthProviderController extends AbstractXulEventHandler {
 
-  protected BindingConvertor<NamedModelObject<NamedProvider>, String> selectedItemsNameBinding =
-      new SelectedToStringConvertor();
-  protected BindingConvertor<NamedModelObject<NamedProvider>, Object> selectedItemsItemBinding =
-      new SelectedToItemConvertor();
-  protected BindingConvertor<Collection<NamedModelObject<NamedProvider>>, Boolean> itemCountBinding =
-      new RowCountToBooleanConvertor<NamedModelObject<NamedProvider>>();
+  protected BindingConvertor<NamedModelObject<NamedProvider>, String> selectedItemsNameBinding = new SelectedToStringConvertor();
+  protected BindingConvertor<NamedModelObject<NamedProvider>, Object> selectedItemsItemBinding = new SelectedToItemConvertor();
+  protected BindingConvertor<Collection<NamedModelObject<NamedProvider>>, Boolean> itemCountBinding = new RowCountToBooleanConvertor<NamedModelObject<NamedProvider>>();
 
   private XulDialog xulDialog;
   private BindingFactory bf;
@@ -78,7 +73,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
     this.bf = bf;
   }
 
-  public BindingFactory getBindingFactory() {
+  public BindingFactory getBindingFactory(){
     return bf;
   }
 
@@ -97,7 +92,6 @@ public class AuthProviderController extends AbstractXulEventHandler {
     resourceBundle = res;
 
   }
-
   public void open() {
 
     if ( xulDialog != null ) {
@@ -108,7 +102,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
 
   /**
    * This will change to pull providers from the auth persistencemanager
-   * 
+   *
    * @return Collection<AuthProvider>
    */
   public Collection<AuthProvider> getPossibleTypes() {
@@ -171,19 +165,14 @@ public class AuthProviderController extends AbstractXulEventHandler {
       bf.createBinding( this, "possibleTypes", "method_list", "elements" ).fireSourceChanged();
 
       // Manage enabling/disabling layout based on item availability in the main authProvider list.
-      bf.createBinding( model.getModelObjects(), "children", "remove_button", "disabled", itemCountBinding )
-          .fireSourceChanged();
+      bf.createBinding( model.getModelObjects(), "children", "remove_button", "disabled", itemCountBinding ).fireSourceChanged();
       bf.createBinding( model.getModelObjects(), "children", "name", "disabled", itemCountBinding ).fireSourceChanged();
-      bf.createBinding( model.getModelObjects(), "children", "method_list", "disabled", itemCountBinding )
-          .fireSourceChanged();
+      bf.createBinding( model.getModelObjects(), "children", "method_list", "disabled", itemCountBinding ).fireSourceChanged();
 
       // Manage enabling/disabling layout based on selection in the main authProvider list.
-      bf.createBinding( "auth_list", "selectedItem", "name", "!disabled", BindingConvertor.object2Boolean() )
-          .fireSourceChanged();
-      bf.createBinding( "auth_list", "selectedItem", "method_list", "!disabled", BindingConvertor.object2Boolean() )
-          .fireSourceChanged();
-      bf.createBinding( "auth_list", "selectedItem", "remove_button", "!disabled", BindingConvertor.object2Boolean() )
-          .fireSourceChanged();
+      bf.createBinding( "auth_list", "selectedItem", "name", "!disabled", BindingConvertor.object2Boolean() ).fireSourceChanged();
+      bf.createBinding( "auth_list", "selectedItem", "method_list", "!disabled", BindingConvertor.object2Boolean() ).fireSourceChanged();
+      bf.createBinding( "auth_list", "selectedItem", "remove_button", "!disabled", BindingConvertor.object2Boolean() ).fireSourceChanged();
 
       bf.setBindingType( Binding.Type.BI_DIRECTIONAL );
 
@@ -201,12 +190,12 @@ public class AuthProviderController extends AbstractXulEventHandler {
       bf.createBinding( this, "newOverlay", "method_list", "selectedItem" ).fireSourceChanged();
 
       // Update the method combobox with the appropriate selection for the selected authorization entry
-      bf.createBinding( this.model, "selectedItem", "method_list", "selectedItem", selectedItemsItemBinding )
-          .fireSourceChanged();
+      bf.createBinding( this.model, "selectedItem", "method_list", "selectedItem", selectedItemsItemBinding ).fireSourceChanged();
 
       // Because the programmatic selection of the item in the combobox does not fire events, we need
       // to bind the main authProvider selection to the changing of the overlay
       bf.createBinding( this.model, "selectedItem", this, "newOverlay", selectedItemsItemBinding );
+
 
     } catch ( XulException e ) {
       log.logError( resourceBundle.getString( "error.on_bind" ), e );
@@ -383,7 +372,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
 
   /**
    * Exposed only for junit tests
-   * 
+   *
    * @return ObjectListModel
    */
   ObjectListModel getModel() {
