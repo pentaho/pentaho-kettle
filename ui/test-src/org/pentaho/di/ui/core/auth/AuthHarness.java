@@ -23,32 +23,40 @@
 package org.pentaho.di.ui.core.auth;
 
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.ui.core.auth.controller.AuthProviderController;
 import org.pentaho.di.ui.core.auth.model.BasicAuthProvider;
 import org.pentaho.di.ui.core.auth.model.KerberosAuthProvider;
 import org.pentaho.di.ui.core.auth.model.NamedProvider;
 import org.pentaho.di.ui.core.auth.model.NoAuthAuthProvider;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.swt.SwtBindingFactory;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
+import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthHarness {
-  public static void main( String[] args ) {
-    try {
+public class AuthHarness
+{
+  public static void main(String[] args)
+  {
+    try
+    {
 
       KettleEnvironment.init();
 
       AuthProviderDialog dialog = new AuthProviderDialog( null );
-      dialog.addProviders( getProviders( dialog.getBindingFactory() ) );
+      dialog.addProviders( getProviders(dialog.getBindingFactory()) );
       dialog.show();
-
-    } catch ( Exception e ) {
-      System.out.println( e.getMessage() );
-      e.printStackTrace( System.out );
+      
+    }
+    catch (Exception e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace(System.out);
     }
   }
 
-  public static List<NamedProvider> getProviders( BindingFactory bf ) {
+  public static List<NamedProvider> getProviders(BindingFactory bf) {
 
     List<NamedProvider> providers = new ArrayList<NamedProvider>();
 
