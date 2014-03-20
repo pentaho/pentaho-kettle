@@ -21,16 +21,17 @@
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:pen="http://www.pentaho.org/2008/xul"
         resizable="true"
-        buttonlabelcancel="Cancel"
-        buttonlabelaccept="OK"
+        buttonlabelcancel="${dialog.cancel}"
+        buttonlabelaccept="${dialog.ok}"
         buttons="accept,cancel"
         id="main_dialog"
         width="700"
         height="300"
         buttonalign="right"
-        title="Authorization Provider Manager"
+        title="${dialog.title}"
         ondialogaccept="handler.onAccept()"
         ondialogcancel="handler.onCancel()"
+        onload="handler.init()"
         >
 
     <hbox flex="1" id="outer_container">
@@ -39,7 +40,7 @@
             <hbox>
                 <spacer flex="1"/>
                 <button id="add_button" image="org/pentaho/di/ui/core/auth/resources/Add.png" onclick="handler.addNew()"/>
-                <button id="remove_button" image="org/pentaho/di/ui/core/auth/resources/Remove.png" onclick="handler.remove()"/>
+                <button id="remove_button" pen:disabledimage="org/pentaho/di/ui/core/auth/resources/dRemove.png" image="org/pentaho/di/ui/core/auth/resources/Remove.png" onclick="handler.remove()"/>
             </hbox>
 
             <listbox flex="2" id="auth_list"  disabled="false" seltype="single" pen:binding="name">
@@ -55,11 +56,11 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="Name"/>
+                        <label value="${dialog.name}"/>
                         <textbox flex="1" id="name"/>
                     </row>
                     <row>
-                        <label value="Method"/>
+                        <label value="${dialog.method}"/>
 
                         <menulist label="method" id="method_list">
                             <menupopup>
