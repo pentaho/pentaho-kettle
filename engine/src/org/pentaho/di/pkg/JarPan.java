@@ -22,7 +22,6 @@
 
 package org.pentaho.di.pkg;
 
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.pan.Pan;
 
 /**
@@ -41,7 +40,7 @@ public class JarPan {
 
     try {
       Pan.main( args );
-    } catch ( KettleException ke ) {
+    } catch ( Exception ke ) {
       System.out.println( "ERROR occurred: " + ke.getMessage() );
       System.exit( 2 );
     }
