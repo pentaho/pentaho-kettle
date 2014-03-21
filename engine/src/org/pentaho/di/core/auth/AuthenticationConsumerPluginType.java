@@ -41,7 +41,7 @@ import org.pentaho.di.core.plugins.PluginTypeInterface;
 @PluginMainClassType( AuthenticationConsumerType.class )
 @PluginAnnotationType( AuthenticationConsumerPlugin.class )
 public class AuthenticationConsumerPluginType extends BasePluginType implements PluginTypeInterface {
-  protected static AuthenticationConsumerPluginType pluginType = new AuthenticationConsumerPluginType();;
+  protected static AuthenticationConsumerPluginType pluginType = new AuthenticationConsumerPluginType();
 
   private AuthenticationConsumerPluginType() {
     super( AuthenticationProviderPlugin.class, "AUTHENTICATION_CONSUMER", "AuthenticationConsumer" );
@@ -51,11 +51,11 @@ public class AuthenticationConsumerPluginType extends BasePluginType implements 
   public void registerPlugin( URLClassLoader classLoader, Class<? extends AuthenticationConsumerType> clazz )
     throws KettlePluginException {
     AuthenticationConsumerPlugin pluginAnnotation =
-        (AuthenticationConsumerPlugin) clazz.getAnnotation( AuthenticationConsumerPlugin.class );
+      clazz.getAnnotation( AuthenticationConsumerPlugin.class );
     AuthenticationConsumerPluginType.getInstance().handlePluginAnnotation( clazz, pluginAnnotation,
-        new ArrayList<String>(), false, null );
+      new ArrayList<String>(), false, null );
     PluginRegistry.getInstance().addClassLoader( classLoader,
-        PluginRegistry.getInstance().getPlugin( AuthenticationConsumerPluginType.class, pluginAnnotation.id() ) );
+      PluginRegistry.getInstance().getPlugin( AuthenticationConsumerPluginType.class, pluginAnnotation.id() ) );
   }
 
   public static AuthenticationConsumerPluginType getInstance() {
