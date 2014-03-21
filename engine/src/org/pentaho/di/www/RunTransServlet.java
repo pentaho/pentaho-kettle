@@ -81,6 +81,11 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
 
     response.setStatus( HttpServletResponse.SC_OK );
 
+    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+      response.setCharacterEncoding( encoding );
+      response.setContentType( "text/html; charset=" + encoding );
+    }
     PrintWriter out = response.getWriter();
 
     try {

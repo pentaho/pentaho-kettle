@@ -381,23 +381,23 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Remove the field to split
-    int idx = r.indexOfValue( splitField );
+    int idx = r.indexOfValue( getSplitField() );
     if ( idx < 0 ) { // not found
       throw new RuntimeException( BaseMessages.getString(
-        PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit", splitField ) );
+        PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit", getSplitField() ) );
     }
 
     // Add the new fields at the place of the index --> replace!
-    for ( int i = 0; i < fieldName.length; i++ ) {
+    for ( int i = 0; i < getFieldName().length; i++ ) {
       try {
-        final ValueMetaInterface v = ValueMetaFactory.createValueMeta( fieldName[i], fieldType[i] );
-        v.setLength( fieldLength[i], fieldPrecision[i] );
+        final ValueMetaInterface v = ValueMetaFactory.createValueMeta( getFieldName()[i], getFieldType()[i] );
+        v.setLength( getFieldLength()[i], getFieldPrecision()[i] );
         v.setOrigin( name );
-        v.setConversionMask( fieldFormat[i] );
-        v.setDecimalSymbol( fieldDecimal[i] );
-        v.setGroupingSymbol( fieldGroup[i] );
-        v.setCurrencySymbol( fieldCurrency[i] );
-        v.setTrimType( fieldTrimType[i] );
+        v.setConversionMask( getFieldFormat()[i] );
+        v.setDecimalSymbol( getFieldDecimal()[i] );
+        v.setGroupingSymbol( getFieldGroup()[i] );
+        v.setCurrencySymbol( getFieldCurrency()[i] );
+        v.setTrimType( getFieldTrimType()[i] );
         // TODO when implemented in UI
         // v.setDateFormatLenient(dateFormatLenient);
         // TODO when implemented in UI

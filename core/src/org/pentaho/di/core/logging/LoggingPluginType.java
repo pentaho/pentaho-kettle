@@ -192,4 +192,9 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
   protected String extractForumUrl( Annotation annotation ) {
     return null;
   }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (LoggingPlugin) annotation ).classLoaderGroup();
+  }
 }

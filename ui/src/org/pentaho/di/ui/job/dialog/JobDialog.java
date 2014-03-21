@@ -90,6 +90,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.HelpUtils;
 
 /**
  * Allows you to edit the Job settings. Just pass a JobInfo object.
@@ -1636,10 +1637,8 @@ public class JobDialog extends Dialog {
     try {
       final PluginInterface plugin =
         PluginRegistry.getInstance().getPlugin( JobEntryPluginType.class, jobEntryInterface );
-      if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
-        BaseStepDialog.createHelpButton(
-          shell, "Documentation for job entry " + jobEntryInterface.getName(), plugin );
-      }
+
+      HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
 
       String id = plugin.getIds()[0];
       if ( id != null ) {
@@ -1665,7 +1664,7 @@ public class JobDialog extends Dialog {
     String uiClassName = pluginInterface.getLogTablePluginUIClassname();
 
     Class<?> uiClass;
-    Class<?>[] paramClasses = new Class[] { JobMeta.class, ModifyListener.class, JobDialog.class, };
+    Class<?>[] paramClasses = new Class<?>[] { JobMeta.class, ModifyListener.class, JobDialog.class, };
     Object[] paramArgs = new Object[] { jobMeta, lsMod, this, };
     Constructor<?> uiConstructor;
     try {

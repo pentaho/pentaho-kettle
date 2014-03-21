@@ -1,12 +1,11 @@
 package org.pentaho.di.trans.steps.calculator;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-
-import java.sql.Timestamp;
 
 import junit.framework.TestCase;
 
@@ -19,7 +18,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
-
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -54,11 +52,11 @@ public class CalculatorTest extends TestCase {
 
     Date date = null;
     try {
-      date = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS" ).parse("1970-01-02 00:00:00.100" );
+      date = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS" ).parse( "1970-01-02 00:00:00.100" );
     } catch ( Exception ex ) {
       throw new IllegalArgumentException( ex );
     }
-    Object[] r1  = new Object[] {
+    Object[] r1 = new Object[] {
       Timestamp.valueOf( "1970-01-01 00:00:00.100100" ),
       new Long( 1 ),
       date
@@ -96,10 +94,12 @@ public class CalculatorTest extends TestCase {
         fields[0] = ydx;
         try {
           if ( rm1.getRowMeta().compare( r1, r2, fields ) != 0 ) {
-            fail( "row nr " + idx + " is not equal at field nr " + ydx + "(" + rm1.toString() + ";" + rm2.toString() + ")");
+            fail( "row nr " + idx + " is not equal at field nr "
+              + ydx + "(" + rm1.toString() + ";" + rm2.toString() + ")" );
           }
         } catch ( KettleValueException e ) {
-          fail("row nr " + idx + " is not equal at field nr " + ydx + "(" + rm1.toString() + ";" + rm2.toString() + ")");
+          fail( "row nr " + idx + " is not equal at field nr "
+            + ydx + "(" + rm1.toString() + ";" + rm2.toString() + ")" );
         }
       }
 
@@ -132,7 +132,7 @@ public class CalculatorTest extends TestCase {
     // Generate 1 empty row
     //
     String[] strDummies = {};
-    int[] intDummies = {  };
+    int[] intDummies = {};
 
     rm.setDefault();
     rm.setFieldName( strDummies );
@@ -151,7 +151,7 @@ public class CalculatorTest extends TestCase {
     String calculatorStepname1 = "calculator 1";
     CalculatorMeta calc1 = new CalculatorMeta();
 
-    CalculatorMetaFunction[] calculations = new CalculatorMetaFunction[]{
+    CalculatorMetaFunction[] calculations = new CalculatorMetaFunction[] {
       new CalculatorMetaFunction(
         "timestamp1", //fieldName
         CalculatorMetaFunction.CALC_CONSTANT, //calctype
@@ -198,7 +198,7 @@ public class CalculatorTest extends TestCase {
         "" //String currencySymbol
       )
     };
-    calc1.setCalculation(calculations );
+    calc1.setCalculation( calculations );
     //
     String calculatorPid1 = registry.getPluginId( StepPluginType.class, calc1 );
     StepMeta calcualtorStep1 = new StepMeta( calculatorPid1, calculatorStepname1, calc1 );

@@ -219,4 +219,9 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
     return ( (Step) annotation ).forumUrl();
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (Step) annotation ).classLoaderGroup();
+  }
+
 }

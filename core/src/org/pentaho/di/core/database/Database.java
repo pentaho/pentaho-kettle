@@ -52,6 +52,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -64,6 +65,7 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
+import org.pentaho.di.core.database.util.DatabaseLogExceptionFactory;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -110,6 +112,8 @@ import org.pentaho.di.repository.RepositoryDirectory;
 public class Database implements VariableSpace, LoggingObjectInterface {
   /** for i18n purposes, needed by Translator2!! */
   private static Class<?> PKG = Database.class;
+
+  private static final Map<String, Set<String>> registeredDrivers = new HashMap<String, Set<String>>();
 
   private DatabaseMeta databaseMeta;
 
@@ -230,6 +234,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
+  /**
+   * This implementation is NullPointerException subject, and
+   * may not follow fundamental equals contract.
+   * 
+   * Databases equality is based on {@link DatabaseMeta} equality.
+   */
   @Override
   public boolean equals( Object obj ) {
     Database other = (Database) obj;
@@ -390,6 +400,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       ) {
         try {
           this.connection = ConnectionPoolUtil.getConnection( log, databaseMeta, partitionId );
+          if ( getConnection().getAutoCommit() != isAutoCommit() ) {
+            setAutoCommit( isAutoCommit() );
+          }
         } catch ( Exception e ) {
           throw new KettleDatabaseException( "Error occured while trying to connect to the database", e );
         }
@@ -446,36 +459,49 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *
    * @param classname
    *          for example "org.gjt.mm.mysql.Driver"
-   * @return true if the connect was succesfull, false if something went wrong.
+   * @return true if the connect was successful, false if something went wrong.
    */
   private void connectUsingClass( String classname, String partitionId ) throws KettleDatabaseException {
-    // Install and load the jdbc Driver
-
     // first see if this is a JNDI connection
     if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
       initWithNamedDataSource( environmentSubstitute( databaseMeta.getDatabaseName() ) );
       return;
     }
 
+    // Install and load the jdbc Driver
     PluginInterface plugin =
-      PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+        PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
 
     try {
       synchronized ( java.sql.DriverManager.class ) {
-
         ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( plugin );
         Class<?> driverClass = classLoader.loadClass( classname );
 
-        DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+        // Only need DelegatingDriver for drivers not from our classloader
+        if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
+          String pluginId =
+              PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+          Set<String> registeredDriversFromPlugin = registeredDrivers.get( pluginId );
+          if ( registeredDriversFromPlugin == null ) {
+            registeredDriversFromPlugin = new HashSet<String>();
+            registeredDrivers.put( pluginId, registeredDriversFromPlugin );
+          }
+          // Prevent registering multiple delegating drivers for same class, plugin
+          if ( !registeredDriversFromPlugin.contains( driverClass.getCanonicalName() ) ) {
+            DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
+            registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
+          }
+        } else {
+          // Trigger static register block in driver class
+          Class.forName( classname );
+        }
       }
     } catch ( NoClassDefFoundError e ) {
-      throw new KettleDatabaseException( BaseMessages.getString(
-        PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin
-          .getName() ), e );
+      throw new KettleDatabaseException( BaseMessages.getString( PKG,
+          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( ClassNotFoundException e ) {
-      throw new KettleDatabaseException( BaseMessages.getString(
-        PKG, "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin
-          .getName() ), e );
+      throw new KettleDatabaseException( BaseMessages.getString( PKG,
+          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Exception while loading class", e );
     }
@@ -742,6 +768,57 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     } catch ( Exception e ) {
       if ( databaseMeta.supportsEmptyTransactions() ) {
         throw new KettleDatabaseException( "Error comitting connection", e );
+      }
+    }
+  }
+
+  /**
+   * This methods may be removed in future.
+   * @param logTable
+   * @throws KettleDatabaseException
+   */
+  public void commitLog( LogTableCoreInterface logTable ) throws KettleDatabaseException {
+    this.commitLog( false, logTable );
+  }
+
+  /**
+   * This methods may be removed in future.
+   * @param force
+   * @param logTable
+   * @throws KettleDatabaseException
+   */
+  public void commitLog( boolean force, LogTableCoreInterface logTable ) throws KettleDatabaseException {
+    try {
+      commitInternal( force );
+    } catch ( Exception e ) {
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+        .registerException( log, e, PKG, "Database.Error.UnableToCommitToLogTable",
+              logTable.getActualTableName() );
+    }
+  }
+
+  /**
+   * this is a copy of {@link #commit(boolean)} - but delegates exception handling to caller.
+   * Can be possibly be removed in future.
+   * 
+   * @param force
+   * @throws KettleDatabaseException
+   * @throws SQLException
+   */
+  @Deprecated
+  private void commitInternal( boolean force ) throws KettleDatabaseException, SQLException {
+    if ( !Const.isEmpty( connectionGroup ) && !force ) {
+      return;
+    }
+    if ( getDatabaseMetaData().supportsTransactions() ) {
+      if ( log.isDebug() ) {
+        log.logDebug( "Commit on database connection [" + toString() + "]" );
+      }
+      connection.commit();
+      nrExecutedCommits++;
+    } else {
+      if ( log.isDetailed() ) {
+        log.logDetailed( "No commit possible on database connection [" + toString() + "]" );
       }
     }
   }
@@ -1608,11 +1685,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         log.snap( Metrics.METRIC_DATABASE_SQL_VALUES_STOP, databaseMeta.getName() );
 
         if ( canWeSetFetchSize( pstmt ) ) {
-          int fs = Const.FETCH_SIZE <= pstmt.getMaxRows() ? pstmt.getMaxRows() : Const.FETCH_SIZE;
-
-          if ( databaseMeta.isMySQLVariant()
-            && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
-            pstmt.setFetchSize( Integer.MIN_VALUE );
+          int maxRows = pstmt.getMaxRows();
+          int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+          if ( databaseMeta.isMySQLVariant() ) {
+            setMysqlFetchSize( pstmt, fs, maxRows );
           } else {
             pstmt.setFetchSize( fs );
           }
@@ -1687,11 +1763,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.snap( Metrics.METRIC_DATABASE_SQL_VALUES_STOP, databaseMeta.getName() );
 
       if ( canWeSetFetchSize( ps ) ) {
-        int fs = Const.FETCH_SIZE <= ps.getMaxRows() ? ps.getMaxRows() : Const.FETCH_SIZE;
-        if ( databaseMeta.isMySQLVariant()
-          && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
-          ps.setFetchSize( Integer.MIN_VALUE );
+        int maxRows = ps.getMaxRows();
+        int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+        // mysql have some restriction on fetch size assignment
+        if ( databaseMeta.isMySQLVariant() ) {
+          setMysqlFetchSize( ps, fs, maxRows );
         } else {
+          // other databases seems not.
           ps.setFetchSize( fs );
         }
 
@@ -1723,6 +1801,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     return res;
+  }
+
+  void setMysqlFetchSize( PreparedStatement ps, int fs, int getMaxRows ) throws SQLException, KettleDatabaseException {
+    if ( databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion() == 3 ) {
+      ps.setFetchSize( Integer.MIN_VALUE );
+    } else if ( fs <= getMaxRows ) {
+      // PDI-11373 do not set fetch size more than max rows can returns
+      ps.setFetchSize( fs );
+    }
   }
 
   public RowMetaInterface getTableFields( String tablename ) throws KettleDatabaseException {
@@ -2642,7 +2729,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public Object[] getLookup() throws KettleDatabaseException {
-    return getLookup( prepStatementLookup );
+    return getLookup( prepStatementLookup, false );
   }
 
   public Object[] getLookup( boolean failOnMultipleResults ) throws KettleDatabaseException {
@@ -2650,6 +2737,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public Object[] getLookup( PreparedStatement ps ) throws KettleDatabaseException {
+    // we assume this is external PreparedStatement and we may need to re-create rowMeta
+    // so we just reset it to null and it will be re-created on processRow call
+    rowMeta = null;
     return getLookup( ps, false );
   }
 
@@ -2658,8 +2748,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     try {
       log.snap( Metrics.METRIC_DATABASE_GET_LOOKUP_START, databaseMeta.getName() );
       res = ps.executeQuery();
-
-      rowMeta = getRowInfo( res.getMetaData(), false, false );
 
       Object[] ret = getRow( res );
 
@@ -3143,7 +3231,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public void writeLogRecord( LogTableCoreInterface logTable, LogStatus status, Object subject, Object parent )
-    throws KettleException {
+    throws KettleDatabaseException {
     try {
       RowMetaAndData logRecord = logTable.getLogRecord( status, subject, parent );
       if ( logRecord == null ) {
@@ -3191,50 +3279,51 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unable to write log record to log table "
-        + environmentSubstitute( logTable.getActualTableName() ), e );
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+          .registerException(log, e, PKG, "Database.Error.WriteLogTable",
+          environmentSubstitute( logTable.getActualTableName() ) );
     }
   }
 
-  public void cleanupLogRecords( LogTableCoreInterface logTable ) throws KettleException {
+  public void cleanupLogRecords( LogTableCoreInterface logTable ) throws KettleDatabaseException {
+    double timeout = Const.toDouble( Const.trim( environmentSubstitute( logTable.getTimeoutInDays() ) ), 0.0 );
+    if ( timeout < 0.000001 ) {
+      // The timeout has to be at least a few seconds, otherwise we don't
+      // bother
+      return;
+    }
+
+    String schemaTable =
+        databaseMeta.getQuotedSchemaTableCombination( environmentSubstitute( logTable.getActualSchemaName() ),
+            environmentSubstitute( logTable.getActualTableName() ) );
+
+    if ( schemaTable.isEmpty() ) {
+      //we can't process without table name
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+          .registerException( log, PKG, "DatabaseMeta.Error.LogTableNameNotFound" );
+    }
+
+    LogTableField logField = logTable.getLogDateField();
+    if ( logField == null ) {
+      //can't stand without logField
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+          .registerException(log, PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField" );
+    }
+
+    String sql =
+        "DELETE FROM " + schemaTable + " WHERE " + databaseMeta.quoteField( logField.getFieldName() ) + " < ?";
+    long now = System.currentTimeMillis();
+    long limit = now - Math.round( timeout * 24 * 60 * 60 * 1000 );
+    RowMetaAndData row = new RowMetaAndData();
+    row.addValue( logField.getFieldName(), ValueMetaInterface.TYPE_DATE, new Date( limit ) );
+
     try {
-      double timeout = Const.toDouble( Const.trim( environmentSubstitute( logTable.getTimeoutInDays() ) ), 0.0 );
-      if ( timeout > 0.000001 ) {
-        // The timeout has to be at least a few seconds, otherwise we don't
-        // bother
-        //
-        String schemaTable =
-          databaseMeta.getQuotedSchemaTableCombination(
-            environmentSubstitute( logTable.getActualSchemaName() ), environmentSubstitute( logTable
-              .getActualTableName() ) );
-
-        // The log date field
-        //
-        LogTableField logField = logTable.getLogDateField();
-        if ( logField != null ) {
-          String sql =
-            "DELETE FROM "
-              + schemaTable + " WHERE " + databaseMeta.quoteField( logField.getFieldName() ) + " < ?";
-
-          // Now calculate the date...
-          //
-          long now = System.currentTimeMillis();
-          long limit = now - Math.round( timeout * 24 * 60 * 60 * 1000 );
-          RowMetaAndData row = new RowMetaAndData();
-          row.addValue( logField.getFieldName(), ValueMetaInterface.TYPE_DATE, new Date( limit ) );
-
-          execStatement( sql, row.getRowMeta(), row.getData() );
-
-        } else {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", environmentSubstitute( logTable
-              .getActualTableName() ) ) );
-        }
-      }
+      //fire database
+      execStatement( sql, row.getRowMeta(), row.getData() );
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( BaseMessages.getString(
-        PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", environmentSubstitute( logTable
-          .getActualTableName() ) ), e );
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+          .registerException( log, PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable",
+          environmentSubstitute( logTable.getActualTableName() ) );
     }
   }
 

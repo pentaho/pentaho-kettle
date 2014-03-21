@@ -1,7 +1,11 @@
 package org.pentaho.di.job.entries.evaluatetablecontent;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -153,6 +157,7 @@ public class JobEntryEvalTableContentTest {
 
   @Before
   public void setUp() throws Exception {
+    MockDriver.registerInstance();
     Job job = new Job( null, new JobMeta() );
     entry = new JobEntryEvalTableContent();
 
@@ -169,6 +174,7 @@ public class JobEntryEvalTableContentTest {
 
   @After
   public void tearDown() throws Exception {
+    MockDriver.deregeisterInstances();
   }
 
   @Test

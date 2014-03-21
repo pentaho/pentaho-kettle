@@ -95,6 +95,7 @@ public class VWLoadMocker {
   }
 
   private int execute( String cmd ) {
+    BufferedReader rafR = null;
     try {
       System.out.println( "Start executing command " + cmd );
       int start = cmd.indexOf( "FROM " );
@@ -113,7 +114,7 @@ public class VWLoadMocker {
 
       // RandomAccessFile raf = new RandomAccessFile( fifo, "rws" );
       File raf = new File( fifo );
-      BufferedReader rafR = new BufferedReader( new FileReader( raf ), bufferSize );
+      rafR = new BufferedReader( new FileReader( raf ), bufferSize );
 
       System.out.println( "Start reading from file " + fifo );
       if ( !raf.exists() ) {
@@ -149,6 +150,12 @@ public class VWLoadMocker {
       System.err.println( e );
     } catch ( IOException e ) {
       System.err.println( e );
+    } finally {
+      try {
+        rafR.close();
+      } catch ( IOException e ) {
+        System.err.println( e );
+      }
     }
     return 1;
   }

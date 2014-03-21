@@ -28,6 +28,8 @@ import java.util.List;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
+import org.pentaho.di.trans.step.StepInjectionUtil;
+import org.pentaho.di.trans.step.StepMetaInjectionEntryInterface;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
@@ -37,22 +39,22 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
  */
 public class SortRowsMetaInjection implements StepMetaInjectionInterface {
 
-  private enum Entry {
+  public enum Entry implements StepMetaInjectionEntryInterface {
 
-    SORT_SIZE_ROWS( ValueMetaInterface.TYPE_STRING, "In memory sort size (in rows)" ), SORT_DIRECTORY(
-      ValueMetaInterface.TYPE_STRING, "The sort directory" ), SORT_FILE_PREFIX(
-      ValueMetaInterface.TYPE_STRING, "The sort file prefix" ), FREE_MEMORY_TRESHOLD(
-      ValueMetaInterface.TYPE_STRING, "The free memory treshold (in %)" ), ONLY_PASS_UNIQUE_ROWS(
-      ValueMetaInterface.TYPE_STRING, "Only pass unique rows? (Y/N)" ), COMPRESS_TEMP_FILES(
-      ValueMetaInterface.TYPE_STRING, "Compress temporary files? (Y/N)" ),
+    SORT_SIZE_ROWS( ValueMetaInterface.TYPE_STRING, "In memory sort size (in rows)" ),
+      SORT_DIRECTORY( ValueMetaInterface.TYPE_STRING, "The sort directory" ),
+      SORT_FILE_PREFIX( ValueMetaInterface.TYPE_STRING, "The sort file prefix" ),
+      FREE_MEMORY_TRESHOLD( ValueMetaInterface.TYPE_STRING, "The free memory treshold (in %)" ),
+      ONLY_PASS_UNIQUE_ROWS( ValueMetaInterface.TYPE_STRING, "Only pass unique rows? (Y/N)" ),
+      COMPRESS_TEMP_FILES( ValueMetaInterface.TYPE_STRING, "Compress temporary files? (Y/N)" ),
 
-      FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields to sort" ), FIELD(
-        ValueMetaInterface.TYPE_NONE, "One field to sort" ),
+      FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields to sort" ),
+      FIELD( ValueMetaInterface.TYPE_NONE, "One field to sort" ),
 
-      NAME( ValueMetaInterface.TYPE_STRING, "Field name" ), SORT_ASCENDING(
-        ValueMetaInterface.TYPE_STRING, "Sort ascending? (Y/N)" ), IGNORE_CASE(
-        ValueMetaInterface.TYPE_STRING, "Ignore case? (Y/N)" ), PRESORTED(
-        ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)" );
+      NAME( ValueMetaInterface.TYPE_STRING, "Field name" ),
+      SORT_ASCENDING( ValueMetaInterface.TYPE_STRING, "Sort ascending? (Y/N)" ),
+      IGNORE_CASE( ValueMetaInterface.TYPE_STRING, "Ignore case? (Y/N)" ),
+      PRESORTED( ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)" );
 
     private int valueType;
     private String description;
@@ -214,6 +216,32 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
     meta.setAscending( ascending );
     meta.setCaseSensitive( cases );
     meta.setPreSortedField( presorteds );
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    List<StepInjectionMetaEntry> list = new ArrayList<StepInjectionMetaEntry>();
+
+    list.add( StepInjectionUtil.getEntry( Entry.SORT_SIZE_ROWS, meta.getSortSize() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.SORT_DIRECTORY, meta.getDirectory() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.SORT_FILE_PREFIX, meta.getPrefix() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.FREE_MEMORY_TRESHOLD, meta.getFreeMemoryLimit() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.ONLY_PASS_UNIQUE_ROWS, meta.isOnlyPassingUniqueRows() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.COMPRESS_TEMP_FILES, meta.getCompressFiles() ) );
+
+    StepInjectionMetaEntry fieldsEntry = StepInjectionUtil.getEntry( Entry.FIELDS );
+    list.add( fieldsEntry );
+    for ( int i = 0; i < meta.getFieldName().length; i++ ) {
+      StepInjectionMetaEntry fieldEntry = StepInjectionUtil.getEntry( Entry.FIELD );
+      List<StepInjectionMetaEntry> details = fieldEntry.getDetails();
+      details.add( StepInjectionUtil.getEntry( Entry.NAME, meta.getFieldName()[i] ) );
+      details.add( StepInjectionUtil.getEntry( Entry.SORT_ASCENDING, meta.getAscending()[i] ) );
+      details.add( StepInjectionUtil.getEntry( Entry.IGNORE_CASE, meta.getCaseSensitive()[i] ) );
+      details.add( StepInjectionUtil.getEntry( Entry.PRESORTED, meta.getPreSortedField()[i] ) );
+
+      fieldsEntry.getDetails().add( fieldEntry );
+    }
+
+    return list;
   }
 
   public SortRowsMeta getMeta() {

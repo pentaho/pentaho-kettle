@@ -22,8 +22,8 @@
 
 package org.pentaho.di.www;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -86,7 +86,7 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
     }
 
     PrintWriter out = response.getWriter();
-    BufferedReader in = request.getReader(); // read from the client
+    InputStream in = request.getInputStream(); // read from the client
     if ( log.isDetailed() ) {
       logDetailed( "Encoding: " + request.getCharacterEncoding() );
     }

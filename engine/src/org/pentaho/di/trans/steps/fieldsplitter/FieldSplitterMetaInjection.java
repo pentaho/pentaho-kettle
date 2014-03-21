@@ -252,6 +252,10 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public FieldSplitterMeta getMeta() {
     return meta;
   }

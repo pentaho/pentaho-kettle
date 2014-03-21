@@ -193,6 +193,10 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public PentahoReportingOutputMeta getMeta() {
     return meta;
   }

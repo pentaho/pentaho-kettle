@@ -137,4 +137,10 @@ public class TransDialogPluginType extends BasePluginType implements PluginTypeI
   protected String extractForumUrl( Annotation annotation ) {
     return null;
   }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (TransDialogPlugin) annotation ).classLoaderGroup();
+  }
+
 }

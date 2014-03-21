@@ -97,6 +97,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
   private Label wlCachesize;
   private Text wCachesize;
 
+  private Label wlPreloadCache;
+  private Button wPreloadCache;
+
   private Label wlTk;
   private Text wTk;
 
@@ -316,6 +319,23 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     wCachesize.setLayoutData( fdCachesize );
     wCachesize.setToolTipText( BaseMessages.getString( PKG, "CombinationLookupDialog.Cachesize.ToolTip" ) );
 
+    // Preload Cache
+    wlPreloadCache = new Label( shell, SWT.RIGHT );
+    wlPreloadCache.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.PreloadCache.Label" ) );
+    props.setLook( wlPreloadCache );
+    FormData fdlPreloadCache = new FormData();
+    fdlPreloadCache.top = new FormAttachment( wCachesize, margin );
+    fdlPreloadCache.left = new FormAttachment( wCommit, margin );
+    fdlPreloadCache.right = new FormAttachment( middle + 2 * ( 100 - middle ) / 3, -margin );
+    wlPreloadCache.setLayoutData( fdlPreloadCache );
+    wPreloadCache = new Button( shell, SWT.CHECK );
+    props.setLook( wPreloadCache );
+    FormData fdPreloadCache = new FormData();
+    fdPreloadCache.top = new FormAttachment( wCachesize, margin );
+    fdPreloadCache.left = new FormAttachment( wlPreloadCache, margin );
+    fdPreloadCache.right = new FormAttachment( 100, 0 );
+    wPreloadCache.setLayoutData( fdPreloadCache );
+
     //
     // The Lookup fields: usually the (business) key
     //
@@ -324,7 +344,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     props.setLook( wlKey );
     FormData fdlKey = new FormData();
     fdlKey.left = new FormAttachment( 0, 0 );
-    fdlKey.top = new FormAttachment( wCommit, margin );
+    fdlKey.top = new FormAttachment( wlPreloadCache, margin );
     fdlKey.right = new FormAttachment( 100, 0 );
     wlKey.setLayoutData( fdlKey );
 
@@ -754,6 +774,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       }
     }
 
+    wPreloadCache.setSelection( input.getPreloadCache() );
     wReplace.setSelection( input.replaceFields() );
     wHashcode.setSelection( input.useHash() );
     wHashfield.setEnabled( input.useHash() );
@@ -872,6 +893,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       in.getKeyField()[i] = item.getText( 2 );
     }
 
+    in.setPreloadCache( wPreloadCache.getSelection() );
     in.setUseAutoinc( wAutoinc.getSelection() && wAutoinc.isEnabled() );
     in.setReplaceFields( wReplace.getSelection() );
     in.setUseHash( wHashcode.getSelection() );

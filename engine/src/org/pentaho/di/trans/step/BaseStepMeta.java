@@ -824,6 +824,15 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   /**
+   * @return The step metadata itself, not the metadata description.  
+   * For lists it will have 0 entries in case there are no entries.
+   * @throws KettleException
+   */
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
+  /**
    * Find parent entry.
    *
    * @param entries
@@ -1016,6 +1025,14 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   public boolean[] isReferencedObjectEnabled() {
+    return null;
+  }
+
+  /**
+   * @return A description of the active referenced object in a transformation.  
+   * Null if nothing special needs to be done or if the active metadata isn't different from design.
+   */
+  public String getActiveReferencedObjectDescription() {
     return null;
   }
 

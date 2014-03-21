@@ -51,7 +51,7 @@ public class LoggingBuffer {
     this.bufferSize = bufferSize;
     buffer = Collections.synchronizedList( new LinkedList<BufferLine>() );
     layout = new KettleLogLayout( true );
-    eventListeners = new ArrayList<KettleLoggingEventListener>();
+    eventListeners = Collections.synchronizedList( new ArrayList<KettleLoggingEventListener>() );
   }
 
   /**
@@ -326,8 +326,10 @@ public class LoggingBuffer {
 
   public void addLogggingEvent( KettleLoggingEvent loggingEvent ) {
     doAppend( loggingEvent );
-    for ( KettleLoggingEventListener listener : eventListeners ) {
-      listener.eventAdded( loggingEvent );
+    synchronized ( eventListeners ) {
+      for ( KettleLoggingEventListener listener : eventListeners ) {
+        listener.eventAdded( loggingEvent );
+      }
     }
   }
 

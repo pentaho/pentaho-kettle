@@ -32,7 +32,7 @@ import org.junit.Test;
  */
 public class MailInputMetaTest {
   @Test
-  public void testGetXML () {
+  public void testGetXML() {
     MailInputMeta meta = new MailInputMeta();
     meta.setInputFields( new MailInputField[0] );
     meta.getXML();

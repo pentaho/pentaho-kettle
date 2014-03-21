@@ -88,6 +88,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
   private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static String EMPTY_FIELDS = "<EMPTY>";
+
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
 
@@ -1306,14 +1308,20 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
-        r.getFieldNames();
+        String[] fieldNames = r.getFieldNames();
+        if ( fieldNames != null ) {
 
-        for ( int i = 0; i < r.getFieldNames().length; i++ ) {
-          wXMLField.add( r.getFieldNames()[i] );
-
+          for ( int i = 0; i < fieldNames.length; i++ ) {
+            wXMLField.add( fieldNames[ i ] );
+          }
         }
       }
     } catch ( KettleException ke ) {
+      if ( !Const.isOSX() ) { //see PDI-8871 for details
+        shell.setFocus();
+      }
+      wXMLField.add( EMPTY_FIELDS );
+      wXMLField.setText( EMPTY_FIELDS );
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "GetXMLDataDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "GetXMLDataDialog.FailedToGetFields.DialogMessage" ), ke );

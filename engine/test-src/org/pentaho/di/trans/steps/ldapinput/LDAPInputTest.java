@@ -1,15 +1,17 @@
 package org.pentaho.di.trans.steps.ldapinput;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests LDAP Input Step
@@ -17,7 +19,7 @@ import static org.mockito.Mockito.when;
  * @author nhudak
  */
 public class LDAPInputTest {
-  private static StepMockHelper<LDAPInputMeta,LDAPInputData> stepMockHelper;
+  private static StepMockHelper<LDAPInputMeta, LDAPInputData> stepMockHelper;
 
   @BeforeClass
   public static void setup() {
@@ -29,7 +31,7 @@ public class LDAPInputTest {
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
-  private LDAPInputMeta mockMeta(){
+  private LDAPInputMeta mockMeta() {
     LDAPInputMeta meta = mock( LDAPInputMeta.class );
     return meta;
   }
@@ -49,7 +51,7 @@ public class LDAPInputTest {
     LDAPInputMeta meta = mockMeta();
 
     //Mock fields
-    LDAPInputField[] fields = new LDAPInputField[]{
+    LDAPInputField[] fields = new LDAPInputField[] {
       new LDAPInputField( "dn" ),
       new LDAPInputField( "cn" ),
       new LDAPInputField( "role" )
@@ -60,12 +62,12 @@ public class LDAPInputTest {
 
     //Mock LDAP Connection
     when( meta.getProtocol() ).thenReturn( LdapMockProtocol.getName() );
-    when(meta.getHost()).thenReturn( "host.mock" );
-    when(meta.getDerefAliases()).thenReturn( "never" );
-    when(meta.getReferrals()).thenReturn( "ignore" );
+    when( meta.getHost() ).thenReturn( "host.mock" );
+    when( meta.getDerefAliases() ).thenReturn( "never" );
+    when( meta.getReferrals() ).thenReturn( "ignore" );
     LdapMockProtocol.setup();
 
-    try{
+    try {
       //Run Initialization
       assertTrue( "Input Initialization Failed", ldapInput.init( meta, data ) );
 

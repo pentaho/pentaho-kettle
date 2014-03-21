@@ -225,9 +225,9 @@ public class XulDatabaseDialog {
 
   public void setDatabaseMeta( DatabaseMeta dbMeta ) {
     databaseMeta = dbMeta;
-    databaseMetaObjectId = dbMeta.getObjectId();
     if ( dbMeta != null ) {
-      databaseName = databaseMeta.getName();
+      databaseMetaObjectId = databaseMeta.getObjectId();
+      databaseName = databaseMeta.getDisplayName();
     }
   }
 

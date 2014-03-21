@@ -58,6 +58,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulSettingsManager;
@@ -493,6 +494,10 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
       StepTableDataObject newField = field.createNew( v );
       fields.add( newField );
     }
-
   }
+
+  public void onHelp() {
+    HelpUtils.openHelpDialog( dialogShell, getPlugin() );
+  }
+
 }

@@ -57,4 +57,5 @@ public @interface SpoonPlugin {
 
   String i18nPackageName() default "";
 
+  String classLoaderGroup() default "";
 }

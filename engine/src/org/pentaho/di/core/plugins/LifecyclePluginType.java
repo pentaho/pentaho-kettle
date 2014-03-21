@@ -146,4 +146,8 @@ public class LifecyclePluginType extends BasePluginType implements PluginTypeInt
     return null;
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (LifecyclePlugin) annotation ).classLoaderGroup();
+  }
 }

@@ -42,20 +42,25 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 /**
  * Do nothing. Pass all input data to the next steps.
- *
+ * 
  * @author Matt
  * @since 2-jun-2003
  */
 public class MappingInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MappingInputMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static Class<?> PKG = MappingInputMeta.class; // for i18n purposes, needed by Translator2!!
+  private int timeOut = 60000;
   private MappingInputMeta meta;
 
   private MappingInputData data;
 
   public MappingInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  public void setTimeOut( int timeOut ) {
+    this.timeOut = timeOut;
   }
 
   // ProcessRow is not doing anything
@@ -79,9 +84,9 @@ public class MappingInput extends BaseStep implements StepInterface {
         } catch ( InterruptedException e ) {
           stopAll();
         }
-        if ( totalsleep > 60000 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MappingInput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
+        if ( totalsleep > timeOut ) {
+          throw new KettleException( BaseMessages.getString( PKG,
+              "MappingInput.Exception.UnableToConnectWithParentMapping", "" + ( totalsleep / 1000 ) ) );
         }
       }
 
@@ -109,31 +114,21 @@ public class MappingInput extends BaseStep implements StepInterface {
       //
       data.outputRowMeta = getInputRowMeta().clone();
 
-      if ( meta.isSelectingAndSortingUnspecifiedFields() ) {
-        //
-        // Create a list of the indexes to select to get the right order or fields on the output.
-        //
-        data.fieldNrs = new int[data.outputRowMeta.size()];
-        for ( int i = 0; i < data.outputRowMeta.size(); i++ ) {
-          data.fieldNrs[i] = getInputRowMeta().indexOfValue( data.outputRowMeta.getValueMeta( i ).getName() );
-        }
-      }
-
       // Now change the field names according to the mapping specification...
       // That means that all fields go through unchanged, unless specified.
       //
       for ( MappingValueRename valueRename : data.valueRenames ) {
         ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta( valueRename.getSourceValueName() );
         if ( valueMeta == null ) {
-          throw new KettleStepException( BaseMessages.getString(
-            PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
+          throw new KettleStepException( BaseMessages.getString( PKG, "MappingInput.Exception.UnableToFindMappedValue",
+              valueRename.getSourceValueName() ) );
         }
         valueMeta.setName( valueRename.getTargetValueName() );
 
         valueMeta = getInputRowMeta().searchValueMeta( valueRename.getSourceValueName() );
         if ( valueMeta == null ) {
-          throw new KettleStepException( BaseMessages.getString(
-            PKG, "MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName() ) );
+          throw new KettleStepException( BaseMessages.getString( PKG, "MappingInput.Exception.UnableToFindMappedValue",
+              valueRename.getSourceValueName() ) );
         }
         valueMeta.setName( valueRename.getTargetValueName() );
       }
@@ -149,6 +144,16 @@ public class MappingInput extends BaseStep implements StepInterface {
 
       // Fill the output row meta with the processed fields
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+
+      if ( meta.isSelectingAndSortingUnspecifiedFields() ) {
+        //
+        // Create a list of the indexes to get the right order or fields on the output.
+        //
+        data.fieldNrs = new int[data.outputRowMeta.size()];
+        for ( int i = 0; i < data.outputRowMeta.size(); i++ ) {
+          data.fieldNrs[i] = getInputRowMeta().indexOfValue( data.outputRowMeta.getValueMeta( i ).getName() );
+        }
+      }
     }
 
     // Fill and send the output row
@@ -169,21 +174,34 @@ public class MappingInput extends BaseStep implements StepInterface {
     meta = (MappingInputMeta) smi;
     data = (MappingInputData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      // Add init code here.
-      return true;
-    }
-    return false;
+    return super.init( smi, sdi );
   }
 
   public void setConnectorSteps( StepInterface[] sourceSteps, List<MappingValueRename> valueRenames,
-    String mappingStepname ) {
+      String mappingStepname ) {
 
-    for ( int i = 0; i < sourceSteps.length; i++ ) {
+    if ( sourceSteps == null ) {
+      throw new IllegalArgumentException( BaseMessages
+          .getString( PKG, "MappingInput.Exception.IllegalArgumentSourceStep" ) );
+    }
+
+    if ( valueRenames == null ) {
+      throw new IllegalArgumentException( BaseMessages
+          .getString( PKG, "MappingInput.Exception.IllegalArgumentValueRename" ) );
+    }
+
+    if ( sourceSteps.length != 0 ) {
+      if ( mappingStepname == null ) {
+        throw new IllegalArgumentException( BaseMessages
+          .getString( PKG, "MappingInput.Exception.IllegalArgumentStepName" ) );
+      }
+    }
+
+    for ( StepInterface sourceStep : sourceSteps ) {
 
       // We don't want to add the mapping-to-mapping rowset
       //
-      if ( !sourceSteps[i].isMapping() ) {
+      if ( !sourceStep.isMapping() ) {
         // OK, before we leave, make sure there is a rowset that covers the path to this target step.
         // We need to create a new RowSet and add it to the Input RowSets of the target step
         //
@@ -191,11 +209,12 @@ public class MappingInput extends BaseStep implements StepInterface {
 
         // This is always a single copy, both for source and target...
         //
-        rowSet.setThreadNameFromToCopy( sourceSteps[i].getStepname(), 0, mappingStepname, 0 );
+        rowSet.setThreadNameFromToCopy( sourceStep.getStepname(), 0, mappingStepname, 0 );
 
         // Make sure to connect it to both sides...
         //
-        sourceSteps[i].getOutputRowSets().add( rowSet );
+        sourceStep.getOutputRowSets().add( rowSet );
+        sourceStep.identifyErrorOutput();
         getInputRowSets().add( rowSet );
       }
     }

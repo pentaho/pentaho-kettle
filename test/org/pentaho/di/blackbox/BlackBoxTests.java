@@ -26,17 +26,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,30 +110,31 @@ public class BlackBoxTests {
     File[] files = dir.listFiles();
 
     // recursively process every folder in testfiles/blackbox/tests
-    for ( int i = 0; i < files.length; i++ ) {
-      if ( files[i].isDirectory() ) {
-        processDirectory( files[i] );
+    if ( files != null ) {
+      for ( File file : files ) {
+        if ( file.isDirectory() ) {
+          processDirectory( file );
+        }
       }
-    }
 
-    // now process any transformations or jobs we find
-    for ( int i = 0; i < files.length; i++ ) {
-      if ( files[i].isFile() ) {
-        String name = files[i].getName();
-        if ( name.endsWith( ".ktr" ) && !name.endsWith( "-tmp.ktr" ) ) {
-          // we found a transformation
-          // see if we can find an output file
-          List<File> expected = getExpectedOutputFile( dir, name.substring( 0, name.length() - 4 ) );
+      // now process any transformations or jobs we find
+      for ( File file : files ) {
+        if ( file.isFile() ) {
+          String name = file.getName();
+          if ( name.endsWith( ".ktr" ) && !name.endsWith( "-tmp.ktr" ) ) {
+            // we found a transformation
+            // see if we can find an output file
+            List<File> expected = getExpectedOutputFile( dir, name.substring( 0, name.length() - 4 ) );
 
-          Object[] params = { files[i], expected };
-          allTests.add( params );
-        } else if ( name.endsWith( ".kjb" ) ) {
-          // we found a job
-          System.out.println( "JOBS NOT YET HANDLED: " + name );
+            Object[] params = { file, expected };
+            allTests.add( params );
+          } else if ( name.endsWith( ".kjb" ) ) {
+            // we found a job
+            System.out.println( "JOBS NOT YET HANDLED: " + name );
+          }
         }
       }
     }
-
   }
 
   /**
@@ -143,7 +144,7 @@ public class BlackBoxTests {
    *          The directory to look in
    * @param baseName
    *          Name of the transformation or the job without the extension
-   * @return
+   * @return list of output files
    */
   protected static List<File> getExpectedOutputFile( File dir, String baseName ) {
     List<File> files = new ArrayList<File>();
@@ -186,7 +187,6 @@ public class BlackBoxTests {
     // List<File> expectedFiles
 
     LogChannelInterface log = new LogChannel( "BlackBoxTest [" + transFile.toString() + "]" );
-    Result result = new Result();
 
     if ( !transFile.exists() ) {
       log.logError( "Transformation does not exist: " + getPath( transFile ) );
@@ -198,7 +198,7 @@ public class BlackBoxTests {
       fail( "No expected output files found: " + getPath( transFile ) );
     }
 
-    result = runTrans( transFile.getAbsolutePath(), log );
+    Result result = runTrans( transFile.getAbsolutePath(), log );
 
     // verify all the expected output files...
     //
@@ -214,7 +214,7 @@ public class BlackBoxTests {
         actualFile = actualFile.replaceFirst( ".expected.", ".actual." ); // single file case
         File actual = new File( actualFile );
         if ( result.getResult() ) {
-          fileCompare( expected, actual, log );
+          fileCompare( expected, actual );
         }
       }
     }
@@ -241,7 +241,6 @@ public class BlackBoxTests {
       int pos = 0;
       String line;
       while ( pos < length ) {
-        line = null;
         int eol = logStr.indexOf( "\r\n", pos );
         if ( eol != -1 ) {
           line = logStr.substring( pos, eol );
@@ -257,29 +256,27 @@ public class BlackBoxTests {
             pos = length;
           }
         }
-        if ( line != null ) {
-          // remove the date/time
-          line = line.substring( 22 );
-          // find the subject
-          String subject = "";
-          int idx = line.indexOf( " - " );
-          if ( idx != -1 ) {
-            subject = line.substring( 0, idx );
+        // remove the date/time
+        line = line.substring( 22 );
+        // find the subject
+        String subject = "";
+        int idx = line.indexOf( " - " );
+        if ( idx != -1 ) {
+          subject = line.substring( 0, idx );
+        }
+        // skip the version and build numbers
+        idx = line.indexOf( " : ", idx );
+        if ( idx != -1 ) {
+          String details = line.substring( idx + 3 );
+          // filter out stacktraces
+          if ( details.startsWith( "\tat " ) ) {
+            continue;
           }
-          // skip the version and build numbers
-          idx = line.indexOf( " : ", idx );
-          if ( idx != -1 ) {
-            String details = line.substring( idx + 3 );
-            // filter out stacktraces
-            if ( details.startsWith( "\tat " ) ) {
-              continue;
-            }
-            if ( details.startsWith( "\t... " ) ) {
-              continue;
-            }
-            // force the windows EOL characters
-            stream.write( ( subject + " : " + details + "\r\n" ).getBytes( "UTF-8" ) );
+          if ( details.startsWith( "\t... " ) ) {
+            continue;
           }
+          // force the windows EOL characters
+          stream.write( ( subject + " : " + details + "\r\n" ).getBytes( "UTF-8" ) );
         }
       }
 
@@ -306,126 +303,63 @@ public class BlackBoxTests {
 
   }
 
-  public void fileCompare( File expected, File actual, LogChannelInterface log ) throws IOException {
+  public void fileCompare( File expected, File actual ) throws IOException {
 
-    InputStream expectedStream = new FileInputStream( expected );
-    InputStream actualStream = new FileInputStream( actual );
+    String failure = "Ouput files is not equals: expected file: %1s, actual file: %2s. Different fragments: ";
+    failure = String.format( failure, expected.getCanonicalPath(), actual.getCanonicalPath() );
 
-    // compare the two files
+    Scanner expSc = null;
+    Scanner actSc = null;
 
-    int goldPos = 0;
-    int tmpPos = 0;
-    byte[] goldBuffer = new byte[2048];
-    byte[] tmpBuffer = new byte[2048];
     try {
-      // read the start of both files
-      goldPos = expectedStream.read( goldBuffer );
-      tmpPos = actualStream.read( tmpBuffer );
-      // assume lock-step
-      // if( goldPos != tmpPos )
-      // {
-      // addFailure("Test file pointers are out of step : "+getPath( actual ));
-      // assertEquals( "Test file pointers are out of step : "+getPath( actual ), goldPos, tmpPos );
-      // }
-      int lineno = 1;
-      int charno = 0;
-      int indexGold = 0;
-      int indexTmp = 0;
-      int totalGold = goldPos;
-      int totalTmp = tmpPos;
-      while ( goldPos > 0 && tmpPos > 0 ) {
-        if ( indexGold == goldPos ) {
-          goldPos = expectedStream.read( goldBuffer );
-          if ( goldPos > 0 ) {
-            totalGold += goldPos;
-          }
-          indexGold = 0;
-        }
-        if ( indexTmp == tmpPos ) {
-          tmpPos = actualStream.read( tmpBuffer );
-          if ( tmpPos > 0 ) {
-            totalTmp += tmpPos;
-          }
-          indexTmp = 0;
-        }
-        if ( goldPos < 0 ) {
-          break;
-        }
-        if ( tmpPos < 0 ) {
-          break;
-        }
+      expSc = new Scanner( expected );
+      actSc = new Scanner( actual );
 
-        charno++;
-        if ( goldBuffer[indexGold] != tmpBuffer[indexTmp] ) {
-          int start = indexTmp > 10 ? indexTmp - 10 : 0;
-          int end = indexTmp < tmpBuffer.length - 11 ? indexTmp + 10 : tmpBuffer.length - 1;
-          int offset = indexTmp - start;
-          byte[] bytes = new byte[offset];
-          System.arraycopy( tmpBuffer, start, bytes, 0, bytes.length );
-          String frag = "-->" + new String( bytes );
-          frag += "[" + (char) tmpBuffer[indexTmp] + "]";
-          bytes = new byte[end - start - offset];
-          System.arraycopy( tmpBuffer, start + offset + 1, bytes, 0, bytes.length );
-          frag += new String( bytes );
-          frag += "<--";
-          String exp =
-            goldBuffer[indexGold] < 32 ? "\\" + (char) ( goldBuffer[indexGold] - 'a' ) : ""
-              + (char) goldBuffer[indexGold];
-          String act =
-            tmpBuffer[indexTmp] < 32 ? "\\" + (char) ( tmpBuffer[indexTmp] - 'a' ) : ""
-              + (char) tmpBuffer[indexTmp];
-          String message =
-            "Test files ("
-              + getPath( actual ) + ") differ at: line " + lineno + " char " + charno + " expecting '" + exp
-              + "' but found '" + act + "' - " + frag;
-          addFailure( message );
-          log.logError( "BlackBoxTest", message );
-          fail( message );
-        } else if ( tmpBuffer[indexTmp] == '\n' ) {
-          lineno++;
-          charno = 0;
-        }
-        indexGold++;
-        indexTmp++;
+      int i = 0;
 
+      // seems file is same
+      while ( expSc.hasNext() && actSc.hasNext() ) {
+        i++;
+        String expString = expSc.next();
+        String actString = actSc.next();
+        Assert.assertEquals( failure + "Fragment number" + i + " is not same", expString, actString );
       }
-      if ( totalGold != totalTmp ) {
-        String message =
-          "Comparison files are not same length. "
-            + "Expected=" + expected.getPath() + " (" + totalGold + ") " + "Actual=" + actual.getPath() + " ("
-            + totalTmp + ")";
-        addFailure( message );
-        fail( message );
+
+      // seems is not
+      boolean actRemains = expSc.hasNext();
+      boolean expRemains = actSc.hasNext();
+
+      if ( actRemains || expRemains ) {
+        if ( actRemains ) {
+          fail( failure + " actual file has excessive fragments: " + actSc.next() );
+        } else {
+          fail( failure + " expected file has excessive fragments: " + expSc.next() );
+        }
       }
-    } catch ( Exception e ) {
-      addFailure( "Error trying to compare output files: " + getPath( actual ) );
-      e.printStackTrace();
-      fail( "Error trying to compare output files: " + getPath( actual ) );
     } finally {
-      actualStream.close();
-      expectedStream.close();
+      if ( expSc != null ) {
+        expSc.close();
+      }
+      if ( actSc != null ) {
+        actSc.close();
+      }
     }
   }
 
   public Result runTrans( String fileName, LogChannelInterface log ) throws KettleException {
-    Result result = new Result();
-
     // Bootstrap the Kettle API...
     //
     KettleEnvironment.init();
 
-    Trans trans = null;
-    TransMeta transMeta = new TransMeta();
+    TransMeta transMeta = new TransMeta( fileName );
+    Trans trans = new Trans( transMeta );
+    Result result;
 
     try {
-      transMeta = new TransMeta( fileName );
-      trans = new Trans( transMeta );
       trans.setLogLevel( LogLevel.ERROR );
       result = trans.getResult();
     } catch ( Exception e ) {
       result = trans.getResult();
-      trans = null;
-      transMeta = null;
       String message = "Processing has stopped because of an error: " + getPath( fileName );
       addFailure( message );
       log.logError( message, e );
@@ -455,8 +389,7 @@ public class BlackBoxTests {
         trans.execute( null );
       } catch ( Exception e ) {
         addFailure( "Unable to prepare and initialize this transformation: " + getPath( fileName ) );
-        log.logError( "BlackBoxTest", "Unable to prepare and initialize this transformation: "
-          + getPath( fileName ) );
+        log.logError( "BlackBoxTest", "Unable to prepare and initialize this transformation: " + getPath( fileName ) );
         fail( "Unable to prepare and initialize this transformation: " + getPath( fileName ) );
         return null;
       }

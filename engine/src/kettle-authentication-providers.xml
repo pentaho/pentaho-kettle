@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<authentication-providers>
+  <authentication-provider id="UsernameAndPassword"> 
+    <description>UsernameAndPassword</description>
+    <tooltip>Username And Password</tooltip>
+    <classname>org.pentaho.di.core.auth.UsernamePasswordAuthenticationProvider.UsernamePasswordAuthenticationProviderType</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/>
+  </authentication-provider>
+  <authentication-provider id="Kerberos"> 
+    <description>Kerberos</description>
+    <tooltip>Kerberos</tooltip> 
+    <classname>org.pentaho.di.core.auth.KerberosAuthenticationProvider.KerberosAuthenticationProviderType</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/>
+  </authentication-provider>
+</authentication-providers>

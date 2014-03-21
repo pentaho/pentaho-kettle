@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -902,7 +903,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wCompression.setText( BaseMessages.getString( PKG, "TextFileOutputDialog.Compression.Label" ) );
     props.setLook( wCompression );
 
-    wCompression.setItems( TextFileOutputMeta.fileCompressionTypeCodes );
+    wCompression.setItems( CompressionProviderFactory.getInstance().getCompressionProviderNames() );
     wCompression.addModifyListener( lsMod );
     fdCompression = new FormData();
     fdCompression.left = new FormAttachment( middle, 0 );

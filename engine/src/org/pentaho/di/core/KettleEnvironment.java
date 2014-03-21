@@ -22,6 +22,9 @@
 
 package org.pentaho.di.core;
 
+import org.pentaho.di.core.auth.AuthenticationConsumerPluginType;
+import org.pentaho.di.core.auth.AuthenticationProviderPluginType;
+import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
@@ -106,6 +109,9 @@ public class KettleEnvironment {
       PluginRegistry.addPluginType( KettleLifecyclePluginType.getInstance() );
       PluginRegistry.addPluginType( ImportRulePluginType.getInstance() );
       PluginRegistry.addPluginType( CartePluginType.getInstance() );
+      PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
+      PluginRegistry.addPluginType( AuthenticationProviderPluginType.getInstance() );
+      PluginRegistry.addPluginType( AuthenticationConsumerPluginType.getInstance() );
       PluginRegistry.init();
 
       // Also read the list of variables.

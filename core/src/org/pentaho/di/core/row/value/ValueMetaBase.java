@@ -37,12 +37,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -53,6 +55,7 @@ import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GreenplumDatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
+import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
 import org.pentaho.di.core.database.TeradataDatabaseMeta;
@@ -107,6 +110,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected TimeZone dateFormatTimeZone;
   protected boolean dateFormatLenient;
   protected boolean lenientStringToNumber;
+  protected boolean ignoreTimezone;
 
   protected SimpleDateFormat dateFormat;
   protected boolean dateFormatChanged;
@@ -185,6 +189,10 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.lenientStringToNumber =
       convertStringToBoolean( Const.NVL( System.getProperty(
         Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ), "N" ) );
+    this.ignoreTimezone =
+      convertStringToBoolean( Const.NVL( System.getProperty(
+        Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ), "N" ) );
+
 
     determineSingleByteEncoding();
     setDefaultConversionMask();
@@ -1009,7 +1017,21 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      return new Long( getDecimalFormat( false ).parse( string ).longValue() );
+      Number number;
+      if ( lenientStringToNumber ) {
+        number = new Long( getDecimalFormat( false ).parse( string ).longValue() );
+      } else {
+        ParsePosition parsePosition = new ParsePosition( 0 );
+        number = getDecimalFormat( false ).parse( string, parsePosition );
+
+        if ( parsePosition.getIndex() < string.length() ) {
+          throw new KettleValueException( toString()
+            + " : couldn't convert String to number : non-numeric character found at position "
+            + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
+        }
+
+      }
+      return new Long( number.longValue() );
     } catch ( Exception e ) {
       throw new KettleValueException( toString() + " : couldn't convert String to Integer", e );
     }
@@ -1037,7 +1059,20 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      return (BigDecimal) getDecimalFormat( bigNumberFormatting ).parse( string );
+      Number number;
+      if ( lenientStringToNumber ) {
+        number = getDecimalFormat( bigNumberFormatting ).parse( string );
+      } else {
+        ParsePosition parsePosition = new ParsePosition( 0 );
+        number = getDecimalFormat( bigNumberFormatting ).parse( string, parsePosition );
+
+        if ( parsePosition.getIndex() < string.length() ) {
+          throw new KettleValueException( toString()
+            + " : couldn't convert String to number : non-numeric character found at position "
+            + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
+        }
+      }
+      return (BigDecimal) number;
     } catch ( Exception e ) {
       // We added this workaround for PDI-1824
       //
@@ -2925,7 +2960,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                   break;
                 default:
                   throw new IOException( toString()
-                    + " : Unable to serialize indexe storage type to XML for data type " + getType() );
+                    + " : Unable to serialize index storage type to XML for data type " + getType() );
               }
             } catch ( ClassCastException e ) {
               throw new RuntimeException( toString()
@@ -2965,7 +3000,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.addTagValue( "sort_descending", sortedDescending ) );
     xml.append( XMLHandler.addTagValue( "output_padding", outputPaddingEnabled ) );
     xml.append( XMLHandler.addTagValue( "date_format_lenient", dateFormatLenient ) );
-    xml.append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale.toString() ) );
+    xml.append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale != null ? dateFormatLocale
+      .toString() : null ) );
     xml.append( XMLHandler.addTagValue( "date_format_timezone", dateFormatTimeZone != null ? dateFormatTimeZone
       .getID() : null ) );
     xml.append( XMLHandler.addTagValue( "lenient_string_to_number", lenientStringToNumber ) );
@@ -4685,11 +4721,14 @@ public class ValueMetaBase implements ValueMetaInterface {
           if ( getPrecision() != 1 && databaseInterface.supportsTimeStampToDateConversion() ) {
             data = resultSet.getTimestamp( index + 1 );
             break; // Timestamp extends java.util.Date
+          } else if ( databaseInterface instanceof NetezzaDatabaseMeta ) {
+            // PDI-10877 workaround for IBM netezza jdbc 'special' implementation
+            data = getNetezzaDateValueWorkaround( databaseInterface, resultSet, index + 1 );
+            break;
           } else {
             data = resultSet.getDate( index + 1 );
             break;
           }
-
         default:
           break;
       }
@@ -4702,6 +4741,23 @@ public class ValueMetaBase implements ValueMetaInterface {
         + toStringMeta() + "' from database resultset, index " + index, e );
     }
 
+  }
+
+  // PDI-10877
+  private Object getNetezzaDateValueWorkaround( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
+    throws SQLException, KettleDatabaseException {
+    Object data = null;
+    int type = resultSet.getMetaData().getColumnType( index );
+    switch ( type ) {
+      case Types.TIME: {
+        data = resultSet.getTime( index );
+        break;
+      }
+      default: {
+        data = resultSet.getDate( index );
+      }
+    }
+    return data;
   }
 
   @Override
@@ -4772,21 +4828,36 @@ public class ValueMetaBase implements ValueMetaInterface {
           break;
         case ValueMetaInterface.TYPE_DATE:
           if ( !isNull( data ) ) {
-
+            // Environment variable to disable timezone setting for the database updates
+            // When it is set, timezone will not be taken into account and the value will be converted
+            // into the local java timezone
             if ( getPrecision() == 1 || !databaseMeta.supportsTimeStampToDateConversion() ) {
               // Convert to DATE!
               long dat = getInteger( data ).longValue(); // converts using Date.getTime()
               java.sql.Date ddate = new java.sql.Date( dat );
-              preparedStatement.setDate( index, ddate );
+              if ( ignoreTimezone || this.getDateFormatTimeZone() == null ) {
+                preparedStatement.setDate( index, ddate );
+              } else {
+                preparedStatement.setDate( index, ddate, Calendar.getInstance( this.getDateFormatTimeZone() ) );
+              }
             } else {
               if ( data instanceof java.sql.Timestamp ) {
                 // Preserve ns precision!
                 //
-                preparedStatement.setTimestamp( index, (java.sql.Timestamp) data );
+                if ( ignoreTimezone || this.getDateFormatTimeZone() == null ) {
+                  preparedStatement.setTimestamp( index, (java.sql.Timestamp) data );
+                } else {
+                  preparedStatement.setTimestamp( index, (java.sql.Timestamp) data,
+                    Calendar.getInstance( this.getDateFormatTimeZone() ) );
+                }
               } else {
                 long dat = getInteger( data ).longValue(); // converts using Date.getTime()
                 java.sql.Timestamp sdate = new java.sql.Timestamp( dat );
-                preparedStatement.setTimestamp( index, sdate );
+                if ( ignoreTimezone || this.getDateFormatTimeZone() == null ) {
+                  preparedStatement.setTimestamp( index, sdate );
+                } else {
+                  preparedStatement.setTimestamp( index, sdate, Calendar.getInstance( this.getDateFormatTimeZone() ) );
+                }
               }
             }
           } else {

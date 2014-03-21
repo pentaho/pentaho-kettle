@@ -115,4 +115,9 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
     return null;
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (SpoonPlugin) annotation ).classLoaderGroup();
+  }
+
 }

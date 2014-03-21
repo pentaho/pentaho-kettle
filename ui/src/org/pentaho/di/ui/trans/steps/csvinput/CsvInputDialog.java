@@ -857,6 +857,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
       String filename = transMeta.environmentSubstitute( meta.getFilename() );
       String delimiter = transMeta.environmentSubstitute( meta.getDelimiter() );
+      String enclosure = transMeta.environmentSubstitute( meta.getEnclosure() );
 
       FileObject fileObject = KettleVFS.getFileObject( filename );
       if ( !( fileObject instanceof LocalFile ) ) {
@@ -870,11 +871,12 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
       inputStream = KettleVFS.getInputStream( fileObject );
 
+      String realEncoding = transMeta.environmentSubstitute( meta.getEncoding() );
       InputStreamReader reader;
-      if ( Const.isEmpty( meta.getEncoding() ) ) {
+      if ( Const.isEmpty( realEncoding ) ) {
         reader = new InputStreamReader( inputStream );
       } else {
-        reader = new InputStreamReader( inputStream, meta.getEncoding() );
+        reader = new InputStreamReader( inputStream, realEncoding );
       }
 
       EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
@@ -888,7 +890,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       // Split the string, header or data into parts...
       //
       String[] fieldNames =
-        CsvInput.guessStringsFromLine( log, line, delimiter, meta.getEnclosure(), meta.getEscapeCharacter() );
+        CsvInput.guessStringsFromLine( log, line, delimiter, enclosure, meta.getEscapeCharacter() );
 
       if ( !meta.isHeaderPresent() ) {
         // Don't use field names from the header...

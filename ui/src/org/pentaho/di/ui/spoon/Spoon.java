@@ -83,6 +83,7 @@ import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -167,6 +168,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
+import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -291,6 +293,7 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.di.version.BuildVersion;
@@ -2149,6 +2152,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     addDragSourceToTree( coreObjectsTree );
     addDefaultKeyListeners( coreObjectsTree );
+    coreObjectsTree.addMouseListener( new MouseAdapter() {
+      @Override
+      public void mouseDoubleClick( MouseEvent event ) {
+        boolean shift = ( event.stateMask & SWT.SHIFT ) != 0;
+        doubleClickedInTree( coreObjectsTree, shift );
+      }
+    } );
 
     toolTip = new DefaultToolTip( variableComposite, ToolTip.RECREATE, true );
     toolTip.setRespectMonitorBounds( true );
@@ -2242,8 +2252,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             stepItem.setText( pluginName );
             stepItem.addListener( SWT.Selection, new Listener() {
 
-              public void handleEvent( Event arg0 ) {
-                // System.out.println("Tree item Listener fired");
+              public void handleEvent( Event event ) {
+                System.out.println( "Tree item Listener fired" );
               }
             } );
 
@@ -2279,8 +2289,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           stepItem.setText( pluginName );
           stepItem.addListener( SWT.Selection, new Listener() {
 
-            public void handleEvent( Event arg0 ) {
-              // System.out.println("Tree item Listener fired");
+            public void handleEvent( Event event ) {
+              System.out.println( "Tree item Listener fired" );
             }
           } );
 
@@ -2330,7 +2340,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               stepItem.addListener( SWT.Selection, new Listener() {
 
                 public void handleEvent( Event arg0 ) {
-                  // System.out.println("Tree item Listener fired");
+                  System.out.println( "Tree item Listener fired" );
                 }
               } );
               // if (isPlugin)
@@ -2362,7 +2372,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         specialItem.addListener( SWT.Selection, new Listener() {
 
           public void handleEvent( Event arg0 ) {
-            // System.out.println("Tree item Listener fired");
+            System.out.println( "Tree item Listener fired" );
           }
 
         } );
@@ -2736,6 +2746,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delegates.steps.delStep( transMeta, stepMeta );
   }
 
+  public void helpStep() {
+    final StepMeta stepMeta = (StepMeta) selectionObject;
+    PluginInterface stepPlugin =
+      PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, stepMeta.getStepID() );
+    HelpUtils.openHelpDialog( shell, stepPlugin );
+  }
+
   public void shareObject( String id ) {
     if ( "database-inst-share".equals( id ) ) {
       final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
@@ -2779,6 +2796,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     final JobMeta jobMeta = (JobMeta) selectionObjectParent;
     final JobEntryCopy jobEntry = (JobEntryCopy) selectionObject;
     deleteJobEntryCopies( jobMeta, jobEntry );
+  }
+
+  public void helpJobEntry() {
+    final JobEntryCopy jobEntry = (JobEntryCopy) selectionObject;
+    String jobName = jobEntry.getName();
+    PluginInterface jobEntryPlugin =
+      PluginRegistry.getInstance().findPluginWithName( JobEntryPluginType.class, jobName );
+    HelpUtils.openHelpDialog( shell, jobEntryPlugin );
   }
 
   public void editHop() {
@@ -2936,6 +2961,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   private void doubleClickedInTree( Tree tree ) {
+    doubleClickedInTree( tree, false );
+  }
+
+  /**
+   * Reaction to double click
+   *
+   */
+  private void doubleClickedInTree( Tree tree, boolean shift ) {
     TreeSelection[] objects = getTreeObjects( tree );
     if ( objects.length != 1 ) {
       return; // not yet supported, we can do this later when the OSX bug
@@ -2977,7 +3010,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         JobGraph.editProperties( (JobMeta) selection, this, rep, true );
       }
       if ( selection instanceof PluginInterface ) {
-        newStep( getActiveTransformation() );
+        PluginInterface plugin = (Plugin) selection;
+        if ( plugin.getPluginType().equals( StepPluginType.class ) ) {
+          TransGraph transGraph = getActiveTransGraph();
+          if ( transGraph != null ) {
+            transGraph.addStepToChain( plugin, shift );
+          }
+        }
+        if ( plugin.getPluginType().equals( JobEntryPluginType.class ) ) {
+          JobGraph jobGraph = getActiveJobGraph();
+          if ( jobGraph != null ) {
+            jobGraph.addJobEntryToChain( object.getItemText(), shift );
+          }
+        }
+        // newStep( getActiveTransformation() );
       }
       if ( selection instanceof DatabaseMeta ) {
         delegates.db.editConnection( (DatabaseMeta) selection );
@@ -3144,7 +3190,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
       Class<? extends SpoonPerspective> cls = activePerspective.getClass();
-      Method m = cls.getMethod( "onFileClose", new Class[0] );
+      Method m = cls.getMethod( "onFileClose", new Class<?>[0] );
       return (Boolean) m.invoke( activePerspective );
     } catch ( Exception e ) {
       // ignore any errors resulting from the hack
@@ -3292,16 +3338,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       for ( int i = 0; i < nrErrorHandlers; i++ ) {
         Node stepErrorMetaNode = XMLHandler.getSubNodeByNr( errorHandlingNode, StepErrorMeta.XML_TAG, i );
         StepErrorMeta stepErrorMeta =
-            new StepErrorMeta( transMeta.getParentVariableSpace(), stepErrorMetaNode, transMeta.getSteps() );
+          new StepErrorMeta( transMeta.getParentVariableSpace(), stepErrorMetaNode, transMeta.getSteps() );
 
         // Handle pasting multiple times, need to update source and target step names
         int srcStepPos = stepOldNames.indexOf( stepErrorMeta.getSourceStep().getName() );
         int tgtStepPos = stepOldNames.indexOf( stepErrorMeta.getTargetStep().getName() );
-        StepMeta sourceStep = transMeta.findStep( steps[ srcStepPos ].getName() );
+        StepMeta sourceStep = transMeta.findStep( steps[srcStepPos].getName() );
         if ( sourceStep != null ) {
           sourceStep.setStepErrorMeta( stepErrorMeta );
         }
-        StepMeta targetStep = transMeta.findStep( steps[ tgtStepPos ].getName() );
+        StepMeta targetStep = transMeta.findStep( steps[tgtStepPos].getName() );
         stepErrorMeta.setSourceStep( sourceStep );
         stepErrorMeta.setTargetStep( targetStep );
       }
@@ -6389,15 +6435,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
           inf.setLocation( 20, 20 ); // default location at (20,20)
           transMeta.addStep( inf );
-
-          // Save for later:
-          // if openit is false: we drag&drop it onto the canvas!
-          if ( openit ) {
-            addUndoNew( transMeta, new StepMeta[] { inf }, new int[] { transMeta.indexOfStep( inf ) } );
-          }
+          addUndoNew( transMeta, new StepMeta[] { inf }, new int[] { transMeta.indexOfStep( inf ) } );
 
           // Also store it in the pluginHistory list...
           props.increasePluginHistory( stepPlugin.getIds()[0] );
+
           // stepHistoryChanged = true;
 
           refreshTree();

@@ -77,7 +77,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldInStream
+   * @param keyStream
    *          The fieldInStream to set.
    */
   public void setFieldInStream( String[] keyStream ) {
@@ -231,12 +231,18 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldOutStream.length; i++ ) {
+      ValueMetaInterface v;
       if ( !Const.isEmpty( fieldOutStream[i] ) ) {
-        ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( fieldOutStream[i] ), ValueMeta.TYPE_STRING );
+        v = new ValueMeta( space.environmentSubstitute( fieldOutStream[i] ), ValueMeta.TYPE_STRING );
         v.setLength( 100, -1 );
         v.setOrigin( name );
         inputRowMeta.addValueMeta( v );
+      } else {
+        v = inputRowMeta.searchValueMeta( fieldInStream[i] );
+        if ( v == null ) {
+          continue;
+        }
+        v.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
       }
     }
   }

@@ -22,13 +22,17 @@
 
 package org.pentaho.di;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -284,5 +288,59 @@ public class TestUtilities {
     StepMeta sortRowsStep = new StepMeta( sortRowsStepPid, name, sortRowsMeta );
 
     return sortRowsStep;
+  }
+
+  /**
+   * 65-90 = big, 97-122 - small
+   * 
+   * @param rng
+   * @param characters
+   * @param length
+   * @return
+   */
+  public static String generateString( Random rng, int length ) {
+    char[] text = new char[length];
+    for ( int i = 0; i < length; i++ ) {
+      int ch = -1;
+      double db = rng.nextDouble();
+      if ( rng.nextInt() % 2 == 0 ) {
+        ch = 65 + (int) ( db * 26 );
+      } else {
+        ch = 97 + (int) ( db * 26 );
+      }
+      text[i] = (char) ch;
+    }
+    return new String( text );
+  }
+
+  public static String getStringFromInput( InputStream in ) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    InputStreamReader is = null;
+    BufferedReader br = null;
+    try {
+      is = new InputStreamReader( in );
+      br = new BufferedReader( is );
+      String read = br.readLine();
+      while ( read != null ) {
+        sb.append( read );
+        read = br.readLine();
+      }
+    } finally {
+      if ( is != null ) {
+        try {
+          is.close();
+        } catch ( IOException e ) {
+          // Suppress
+        }
+      }
+      if ( br != null ) {
+        try {
+          br.close();
+        } catch ( IOException e ) {
+          // Suppress
+        }
+      }
+    }
+    return sb.toString();
   }
 }

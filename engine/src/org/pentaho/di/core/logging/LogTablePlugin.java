@@ -47,4 +47,5 @@ public @interface LogTablePlugin {
 
   String description();
 
+  String classLoaderGroup() default "";
 }

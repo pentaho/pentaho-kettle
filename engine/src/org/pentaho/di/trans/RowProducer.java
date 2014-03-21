@@ -78,6 +78,10 @@ public class RowProducer {
     return rowSet.putRowWait( rowMeta, rowData, time, tu );
   }
 
+  /**
+   * Signal that we are done producing rows. 
+   * It will allow the step to which this producer is attached to know that no more rows are forthcoming.
+   */
   public void finished() {
     rowSet.setDone();
   }

@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.trans.steps.mailinput;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.mail.Folder;
@@ -64,7 +63,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.MailConnection;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
@@ -75,6 +73,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.mailinput.MailInputField;
 import org.pentaho.di.trans.steps.mailinput.MailInputMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -417,10 +416,9 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -1371,6 +1369,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
       wListmails.select( 0 ); // Retrieve All Mails
     }
 
+    if ( input.getFirstMails() != null ) {
+      wFirstmails.setText( input.getFirstMails() );
+    }
+
     wIMAPListmails.setText( MailConnectionMeta.getValueImapListDesc( input.getValueImapList() ) );
     if ( input.getFirstIMAPMails() != null ) {
       wIMAPFirstmails.setText( input.getFirstIMAPMails() );
@@ -1431,7 +1433,10 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wFields.optWidth( true );
 
     wUseBatch.setSelection( input.isUseBatch() );
-    wBatchSize.setText( input.getBatchSize() == null ? "" : input.getBatchSize().toString() );
+    wBatchSize.setText(
+      input.getBatchSize() == null
+        ? String.valueOf( MailInputMeta.DEFAULT_BATCH_SIZE )
+        : input.getBatchSize().toString() );
     wStartMessage.setText( input.getStart() == null ? "" : input.getStart().toString() );
     wEndMessage.setText( input.getEnd() == null ? "" : input.getEnd().toString() );
     wIgnoreFieldErrors.setSelection( input.isStopOnError() );
@@ -1472,13 +1477,15 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setPort( wPort.getText() );
 
     // [PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
-    // for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
+    // for backward compatibility: 0 is 'retrieve all', 2 is 'retrieve first...'
     int actualIndex = wListmails.getSelectionIndex();
     in.setRetrievemails( actualIndex > 0 ? 2 : 0 );
 
+    //Set first... emails for POP3
     in.setFirstMails( wFirstmails.getText() );
     in.setProtocol( wProtocol.getText() );
     in.setValueImapList( MailConnectionMeta.getValueImapListByDesc( wIMAPListmails.getText() ) );
+    //Set first... emails for IMAP
     in.setFirstIMAPMails( wIMAPFirstmails.getText() );
     in.setIMAPFolder( wIMAPFolder.getText() );
     // search term
@@ -1513,7 +1520,8 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     }
 
     in.setUseBatch( wUseBatch.getSelection() );
-    in.setBatchSize( getInteger( wBatchSize.getText() ) );
+    Integer batchSize = getInteger( wBatchSize.getText() );
+    in.setBatchSize( batchSize == null ? MailInputMeta.DEFAULT_BATCH_SIZE : batchSize );
     in.setStart( wStartMessage.getText() );
     in.setEnd( wEndMessage.getText() );
     in.setStopOnError( wIgnoreFieldErrors.getSelection() );
@@ -1655,17 +1663,6 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlUseProxy.setEnabled( enableRemoteOpts );
     wUseSSL.setEnabled( enableRemoteOpts );
     wlUseSSL.setEnabled( enableRemoteOpts );
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    java.util.List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
-    }
   }
 
   public void dispose() {

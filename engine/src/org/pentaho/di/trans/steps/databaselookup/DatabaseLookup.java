@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.databaselookup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -90,8 +91,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         lookupRow[lookupIndex] = row[data.keynrs[i]];
 
         // Try to convert type if needed
-        if ( input.getType() != value.getType() ) {
+        if ( input.getType() != value.getType()
+            || ValueMetaInterface.STORAGE_TYPE_BINARY_STRING == input.getStorageType() ) {
           lookupRow[lookupIndex] = value.convertData( input, lookupRow[lookupIndex] );
+          value.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
         lookupIndex++;
       }
@@ -101,14 +104,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         lookupRow[lookupIndex] = row[data.keynrs2[i]];
 
         // Try to convert type if needed
-        if ( input.getType() != value.getType() ) {
+        if ( input.getType() != value.getType()
+            || ValueMetaInterface.STORAGE_TYPE_BINARY_STRING == input.getStorageType() ) {
           lookupRow[lookupIndex] = value.convertData( input, lookupRow[lookupIndex] );
+          value.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
         lookupIndex++;
       }
     }
 
-    Object[] add = null;
+    Object[] add;
     boolean cache_now = false;
     boolean cacheHit = false;
 
@@ -165,7 +170,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       }
     } else {
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.FoundResultsAfterLookup" ) + add );
+        logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.FoundResultsAfterLookup" )
+            + Arrays.toString( add ) );
       }
 
       // Only verify the data types if the data comes from the DB, NOT when we have a cache hit
@@ -247,8 +253,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         Date smallest = samples.get( 1 );
 
         // Everything below the smallest date goes away...
-        for ( int k = 0; k < keys.size(); k++ ) {
-          RowMetaAndData key = keys.get( k );
+        for ( RowMetaAndData key : keys ) {
           TimedRow timedRow = data.look.get( key );
 
           if ( timedRow.getLogDate().compareTo( smallest ) < 0 ) {
@@ -345,9 +350,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (DatabaseLookupMeta) smi;
     data = (DatabaseLookupData) sdi;
-
-    boolean sendToErrorRow = false;
-    String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
     if ( r == null ) { // no more input to be expected...
@@ -515,8 +517,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       }
     } catch ( KettleException e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {
-        sendToErrorRow = true;
-        errorMessage = e.toString();
+        putError( getInputRowMeta(), r, 1, e.getMessage(), null, "DBLOOKUPD001" );
       } else {
         logError( BaseMessages.getString( PKG, "DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing" )
           + e.getMessage() );
@@ -525,11 +526,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         setOutputDone(); // signal end to receiver(s)
         return false;
       }
-      if ( sendToErrorRow ) {
-        // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, errorMessage, null, "DBLOOKUPD001" );
-      }
-
     }
 
     return true;
@@ -621,7 +617,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "DatabaseLookup.Init.ConnectionMissing", getStepname() ) );
         return false;
       }
-      data.db = new Database( this, meta.getDatabaseMeta() );
+      data.db = getDatabase( meta.getDatabaseMeta() );
       data.db.shareVariablesWith( this );
       try {
         if ( getTransMeta().isUsingUniqueConnections() ) {
@@ -682,4 +678,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
+  Database getDatabase( DatabaseMeta meta ) {
+    return new Database( this, meta );
+  }
 }

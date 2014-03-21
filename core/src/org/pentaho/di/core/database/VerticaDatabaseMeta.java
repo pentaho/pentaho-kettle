@@ -79,14 +79,6 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   }
 
   /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
-  /**
    * Generates the SQL statement to add a column to the specified table For this generic type, i set it to the most
    * common possibility.
    *
@@ -152,6 +144,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     int type = v.getType();
     switch ( type ) {
       case ValueMetaInterface.TYPE_DATE:
+      case ValueMetaInterface.TYPE_TIMESTAMP:
         retval += "TIMESTAMP";
         break;
       case ValueMetaInterface.TYPE_BOOLEAN:

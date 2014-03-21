@@ -41,6 +41,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransStoppedListener;
@@ -76,22 +77,27 @@ public class MetaInject extends BaseStep implements StepInterface {
     data = (MetaInjectData) sdi;
 
     // Read the data from all input steps and keep it in memory...
+    // Skip the step from which we stream data.  Keep that available for runtime action.
     //
     data.rowMap = new HashMap<String, List<RowMetaAndData>>();
     for ( String prevStepName : getTransMeta().getPrevStepNames( getStepMeta() ) ) {
-      List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
-      RowSet rowSet = findInputRowSet( prevStepName );
-      Object[] row = getRowFrom( rowSet );
-      while ( row != null ) {
-        RowMetaAndData rd = new RowMetaAndData();
-        rd.setRowMeta( rowSet.getRowMeta() );
-        rd.setData( row );
-        list.add( rd );
+      // Don't read from the streaming source step
+      //
+      if ( !data.streaming || !prevStepName.equalsIgnoreCase( data.streamingSourceStepname ) ) {
+        List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+        RowSet rowSet = findInputRowSet( prevStepName );
+        Object[] row = getRowFrom( rowSet );
+        while ( row != null ) {
+          RowMetaAndData rd = new RowMetaAndData();
+          rd.setRowMeta( rowSet.getRowMeta() );
+          rd.setData( row );
+          list.add( rd );
 
-        row = getRowFrom( rowSet );
-      }
-      if ( !list.isEmpty() ) {
-        data.rowMap.put( prevStepName, list );
+          row = getRowFrom( rowSet );
+        }
+        if ( !list.isEmpty() ) {
+          data.rowMap.put( prevStepName, list );
+        }
       }
     }
 
@@ -250,6 +256,13 @@ public class MetaInject extends BaseStep implements StepInterface {
       } );
       injectTrans.prepareExecution( null );
 
+      // See if we need to stream some data over...
+      // 
+      RowProducer rowProducer = null;
+      if ( data.streaming ) {
+        rowProducer = injectTrans.addRowProducer( data.streamingTargetStepname, 0 );
+      }
+
       // Finally, add the mapping transformation to the active sub-transformations
       // map in the parent transformation
       //
@@ -271,7 +284,25 @@ public class MetaInject extends BaseStep implements StepInterface {
       }
 
       injectTrans.startThreads();
-      while ( !injectTrans.isFinished() && !injectTrans.isStopped() ) {
+
+      if ( data.streaming ) {
+        // Deplete all the rows from the parent transformation into the modified transformation
+        //
+        RowSet rowSet = findInputRowSet( data.streamingSourceStepname );
+        if ( rowSet == null ) {
+          throw new KettleException( "Unable to find step '" + data.streamingSourceStepname + "' to stream data from" );
+        }
+        Object[] row = getRowFrom( rowSet );
+        while ( row != null && !isStopped() ) {
+          rowProducer.putRow( rowSet.getRowMeta(), row );
+          row = getRowFrom( rowSet );
+        }
+        rowProducer.finished();
+      }
+
+      // Wait until the child transformation finished processing...
+      //
+      while ( !injectTrans.isFinished() && !injectTrans.isStopped() && !isStopped() ) {
         copyResult( injectTrans );
 
         // Wait a little bit.
@@ -384,6 +415,14 @@ public class MetaInject extends BaseStep implements StepInterface {
           if ( injectionInterface != null ) {
             data.stepInjectionMap.put( stepMeta.getName(), injectionInterface );
           }
+        }
+
+        // See if we need to stream data from a specific step into the template
+        //
+        if ( meta.getStreamSourceStep() != null && !Const.isEmpty( meta.getStreamTargetStepname() ) ) {
+          data.streaming = true;
+          data.streamingSourceStepname = meta.getStreamSourceStep().getName();
+          data.streamingTargetStepname = meta.getStreamTargetStepname();
         }
 
         return true;

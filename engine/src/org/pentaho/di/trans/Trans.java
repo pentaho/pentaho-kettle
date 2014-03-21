@@ -25,6 +25,7 @@ package org.pentaho.di.trans;
 
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -670,7 +671,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // folks want to test it locally...
     //
     if ( servletPrintWriter == null ) {
-      servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+      String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+      if ( encoding == null ) {
+        servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+      } else {
+        try {
+          servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out, encoding ) );
+        } catch ( UnsupportedEncodingException ex ) {
+          servletPrintWriter = new PrintWriter( new OutputStreamWriter( System.out ) );
+        }
+      }
     }
 
     // Keep track of all the row sets and allocated steps
@@ -1428,13 +1438,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   /**
    * Make attempt to fire all registered listeners if possible.
-   * 
+   *
    * @throws KettleException
    *           if any errors occur during notification
    */
   protected void fireTransFinishedListeners() throws KettleException {
     // PDI-5229 sync added
-    synchronized  ( transListeners ) {
+    synchronized ( transListeners ) {
       if ( transListeners.size() == 0 ) {
         return;
       }
@@ -2258,7 +2268,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
           //
           if ( !transLogTableDatabaseConnection.isAutoCommit() ) {
-            transLogTableDatabaseConnection.commit( true );
+            transLogTableDatabaseConnection.commitLog( true, transLogTable );
           }
 
           // If we need to do periodic logging, make sure to install a timer for this...
@@ -2659,8 +2669,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Commit the operations to prevent locking issues
         //
         if ( !ldb.isAutoCommit() ) {
-          ldb.commit( true );
+          ldb.commitLog( true, transMeta.getTransLogTable() );
         }
+      } catch ( KettleDatabaseException e ) {
+        // PDI-9790 error write to log db is transaction error
+        log.logError( BaseMessages.getString( PKG, "Database.Error.WriteLogTable", logTable ), e );
+        errors.incrementAndGet();
+        //end PDI-9790
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages
           .getString( PKG, "Trans.Exception.ErrorWritingLogRecordToTable", transMeta
@@ -3761,13 +3776,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           }
         }
       }
+    } catch ( KettleException ke ) {
+      throw ke;
     } catch ( Exception e ) {
       throw new KettleException( "There was an error during transformation split", e );
     }
   }
 
   /**
-   * Monitors a clustered transformation every second, 
+   * Monitors a clustered transformation every second,
    * after all the transformations in a cluster schema are running.<br>
    * Now we should verify that they are all running as they should.<br>
    * If a transformation has an error, we should kill them all.<br>
@@ -3791,7 +3808,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   /**
-   * Monitors a clustered transformation every second, 
+   * Monitors a clustered transformation every second,
    * after all the transformations in a cluster schema are running.<br>
    * Now we should verify that they are all running as they should.<br>
    * If a transformation has an error, we should kill them all.<br>
@@ -4245,10 +4262,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
 
       return carteObjectId;
+    } catch ( KettleException ke ) {
+      throw ke;
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
-
   }
 
   /**
@@ -4554,7 +4572,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   /**
-   * Gets a list of the transformation listeners. 
+   * Gets a list of the transformation listeners.
    * Please do not attempt to modify this list externally.
    * Returned list is mutable only for backward compatibility purposes.
    *
@@ -5316,6 +5334,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   public void setServletReponse( HttpServletResponse response ) {
+    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
+    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+      try {
+        response.setCharacterEncoding( encoding );
+        response.setContentType( "text/html; charset=" + encoding );
+      } catch ( Exception ex ) {
+        LogChannel.GENERAL.logError( "Unable to encode data with encoding : '" + encoding + "'", ex );
+      }
+    }
     this.servletresponse = response;
   }
 

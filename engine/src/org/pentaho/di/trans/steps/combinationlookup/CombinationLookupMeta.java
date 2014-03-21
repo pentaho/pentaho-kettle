@@ -99,6 +99,11 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /** Commit size for insert / update */
   private int commitSize;
 
+  /** Preload the cache, defaults to false 
+   * @author nicow2
+   * */
+  private boolean preloadCache = false;
+
   /** Limit the cache size to this! */
   private int cacheSize;
 
@@ -243,6 +248,20 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
+   * @param preloadCache true to preload the cache
+   */
+  public void setPreloadCache( boolean preloadCache ) {
+    this.preloadCache = preloadCache;
+  }
+
+  /**
+   * @return Returns true if preload the cache.
+   */
+  public boolean getPreloadCache() {
+    return preloadCache;
+  }
+
+  /**
    * @return Returns the sequenceFrom.
    */
   public String getSequenceFrom() {
@@ -358,6 +377,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
       cacheSize = Const.toInt( csize, 0 );
 
       replaceFields = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "replace" ) );
+      preloadCache = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preloadCache" ) );
       useHash = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "crc" ) );
 
       hashField = XMLHandler.getTagValue( stepnode, "crcfield" );
@@ -397,6 +417,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     commitSize = 100;
     cacheSize = DEFAULT_CACHE_SIZE;
     replaceFields = false;
+    preloadCache = false;
     useHash = false;
     hashField = "hashcode";
     int nrkeys = 0;
@@ -441,6 +462,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     retval.append( "      " ).append( XMLHandler.addTagValue( "commit", commitSize ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "cache_size", cacheSize ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "replace", replaceFields ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "preloadCache", preloadCache ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "crc", useHash ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "crcfield", hashField ) );
 
@@ -477,6 +499,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
       commitSize = (int) rep.getStepAttributeInteger( id_step, "commit" );
       cacheSize = (int) rep.getStepAttributeInteger( id_step, "cache_size" );
       replaceFields = rep.getStepAttributeBoolean( id_step, "replace" );
+      preloadCache = rep.getStepAttributeBoolean( id_step, "preloadCache" );
       useHash = rep.getStepAttributeBoolean( id_step, "crc" );
       hashField = rep.getStepAttributeString( id_step, "crcfield" );
 
@@ -509,6 +532,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
       rep.saveStepAttribute( id_transformation, id_step, "commit", commitSize );
       rep.saveStepAttribute( id_transformation, id_step, "cache_size", cacheSize );
       rep.saveStepAttribute( id_transformation, id_step, "replace", replaceFields );
+      rep.saveStepAttribute( id_transformation, id_step, "preloadCache", preloadCache );
 
       rep.saveStepAttribute( id_transformation, id_step, "crc", useHash );
       rep.saveStepAttribute( id_transformation, id_step, "crcfield", hashField );
@@ -994,7 +1018,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     if ( useHash() != o.useHash() ) {
       return false;
     }
-    if ( replaceFields() != o.replaceFields() ) {
+    if ( getPreloadCache() != o.getPreloadCache() ) {
       return false;
     }
     if ( ( getSequenceFrom() == null && o.getSequenceFrom() != null )

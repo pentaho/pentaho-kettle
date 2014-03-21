@@ -57,9 +57,11 @@ public class SortRowsData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
   public int sortSize;
   public boolean compressFiles;
-  public boolean[] convertKeysToNative;
+  public int[] convertKeysToNative;
+  public boolean convertAnyKeysToNative;
 
-  public Comparator<RowTempFile> comparator;
+  Comparator<RowTempFile> comparator;
+  Comparator<Object[]> rowComparator;
 
   public int freeCounter;
   public int freeMemoryPct;
@@ -68,7 +70,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface {
   public int memoryReporting;
 
   /*
-   * Group Fields Implemenation haric
+   * Group Fields Implementation heroic
    */
   public Object[] previous;
   public int[] groupnrs;
@@ -83,7 +85,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface {
     dis = new ArrayList<DataInputStream>();
     bufferSizes = new ArrayList<Integer>();
 
-    previous = null; // haric
+    previous = null; // Heroic
   }
 
 }

@@ -49,6 +49,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -284,8 +285,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   }
 
   /**
-   * @return Returns the commitSize.
-   */
+  * @return Returns the commitSize.
+  */
   public String getCommitSize() {
     return commitSize;
   }
@@ -963,6 +964,15 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   public String getMissingDatabaseConnectionInformationMessage() {
     // Use default connection missing message
     return null;
+  }
+
+  @Override
+  public TableOutputMetaInjection getStepMetaInjectionInterface() {
+    return new TableOutputMetaInjection( this );
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
 
 }

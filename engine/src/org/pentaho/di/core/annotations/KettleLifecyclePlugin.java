@@ -44,4 +44,6 @@ public @interface KettleLifecyclePlugin {
    * @return {@code true} if a separate class loader is needed every time this class is instantiated
    */
   boolean isSeparateClassLoaderNeeded() default false;
+
+  String classLoaderGroup() default "";
 }

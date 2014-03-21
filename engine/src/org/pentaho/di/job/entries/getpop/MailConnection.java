@@ -373,7 +373,7 @@ public class MailConnection {
           this.folder = this.store.getDefaultFolder();
         } else {
           // get the default folder
-          this.folder = this.store.getDefaultFolder().getFolder( MailConnectionMeta.INBOX_FOLDER );
+          this.folder = getRecursiveFolder( MailConnectionMeta.INBOX_FOLDER );
         }
 
         if ( this.folder == null ) {
@@ -387,7 +387,7 @@ public class MailConnection {
         // Open specified Folder (for IMAP/MBOX)
         if ( this.protocol == MailConnectionMeta.PROTOCOL_IMAP
           || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
-          this.folder = this.store.getFolder( foldername );
+          this.folder = getRecursiveFolder( foldername );
         }
         if ( this.folder == null || !this.folder.exists() ) {
           throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.InvalidFolder.Label" ) );
@@ -424,6 +424,17 @@ public class MailConnection {
         ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" )
         : BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
     }
+  }
+
+  private Folder getRecursiveFolder( String foldername ) throws MessagingException {
+    Folder dfolder;
+    String[] folderparts = foldername.split( "/" );
+    dfolder = this.getStore().getDefaultFolder();
+    // Open destination folder
+    for ( int i = 0; i < folderparts.length; i++ ) {
+      dfolder = dfolder.getFolder( folderparts[i] );
+    }
+    return dfolder;
   }
 
   /**
@@ -900,17 +911,21 @@ public class MailConnection {
    */
   public void setDestinationFolder( String foldername, boolean createFolder ) throws KettleException {
     try {
+      String[] folderparts = foldername.split( "/" );
+      Folder f = this.getStore().getDefaultFolder();
       // Open destination folder
-      this.destinationIMAPFolder = store.getFolder( foldername );
-      if ( !this.destinationIMAPFolder.exists() ) {
-        if ( createFolder ) {
-          // Create folder
-          this.destinationIMAPFolder.create( Folder.HOLDS_MESSAGES );
-        } else {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MailConnection.Error.FolderNotFound", foldername ) );
+      for ( int i = 0; i < folderparts.length; i++ ) {
+        f = f.getFolder( folderparts[i] );
+        if ( !f.exists() ) {
+          if ( createFolder ) {
+            // Create folder
+            f.create( Folder.HOLDS_MESSAGES );
+          } else {
+            throw new KettleException( BaseMessages.getString(PKG, "MailConnection.Error.FolderNotFound", foldername ) );
+          }
         }
       }
+      this.destinationIMAPFolder = f;
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -1109,7 +1124,7 @@ public class MailConnection {
     Folder dfolder = null;
     try {
       // Open destination folder
-      dfolder = this.store.getFolder( foldername );
+      dfolder = getRecursiveFolder( foldername );
       if ( dfolder.exists() ) {
         retval = true;
       }

@@ -675,6 +675,11 @@ public class Const {
     "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
 
   /**
+   * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
+   */
+  public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
+
+  /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
    * rows (default)
    */
@@ -851,6 +856,16 @@ public class Const {
    * The XML file that contains the list of native Kettle database types (MySQL, Oracle, etc)
    */
   public static final String XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
+
+  /**
+   * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
+   */
+  public static final String XML_FILE_KETTLE_COMPRESSION_PROVIDERS = "kettle-compression-providers.xml";
+
+  /**
+   * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
+   */
+  public static final String XML_FILE_KETTLE_AUTHENTICATION_PROVIDERS = "kettle-authentication-providers.xml";
 
   /**
    * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
@@ -1327,12 +1342,19 @@ public class Const {
     return getOS().toUpperCase().contains( "OS X" );
   }
 
+  private static String cachedHostname;
+
   /**
    * Determine the hostname of the machine Kettle is running on
    *
    * @return The hostname
    */
   public static final String getHostname() {
+
+    if ( cachedHostname != null ) {
+      return cachedHostname;
+    }
+
     String lastHostname = "localhost";
     try {
       Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
@@ -1348,15 +1370,55 @@ public class Const {
           // System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
           // System.out.println("  ip string        : "+in.toString());
           if ( !lastHostname.equalsIgnoreCase( "localhost" ) && !( lastHostname.indexOf( ':' ) >= 0 ) ) {
-            return lastHostname;
+            break;
           }
         }
       }
     } catch ( SocketException e ) {
-      return lastHostname;
+      // Eat exception, just return what you have
     }
 
+    cachedHostname = lastHostname;
+
     return lastHostname;
+  }
+
+  /**
+   * Determine the hostname of the machine Kettle is running on
+   *
+   * @return The hostname
+   */
+  public static final String getHostnameReal() {
+    if ( isWindows() ) {
+      // Windows will always set the 'COMPUTERNAME' variable
+      return System.getenv( "COMPUTERNAME" );
+    } else {
+      // If it is not Windows then it is most likely a Unix-like operating system
+      // such as Solaris, AIX, HP-UX, Linux or MacOS.
+      // Most modern shells (such as Bash or derivatives) sets the
+      // HOSTNAME variable so lets try that first.
+      String hostname = System.getenv( "HOSTNAME" );
+      if ( hostname != null ) {
+        return hostname;
+      } else {
+        BufferedReader br;
+        try {
+          Process pr = Runtime.getRuntime().exec( "hostname" );
+          br = new BufferedReader( new InputStreamReader( pr.getInputStream() ) );
+          String line;
+          if ( ( line = br.readLine() ) != null ) {
+            return line;
+          }
+          pr.waitFor();
+          br.close();
+        } catch ( IOException e ) {
+          return getHostname();
+        } catch ( InterruptedException e ) {
+          return getHostname();
+        }
+      }
+    }
+    return getHostname();
   }
 
   /**

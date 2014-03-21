@@ -70,6 +70,10 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
     populateFolders( "jobentries" );
   }
 
+  protected JobEntryPluginType( Class<? extends Annotation> pluginType, String id, String name ) {
+    super( pluginType, id, name );
+  }
+
   public static JobEntryPluginType getInstance() {
     if ( pluginType == null ) {
       pluginType = new JobEntryPluginType();
@@ -221,4 +225,8 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
     return ( (JobEntry) annotation ).forumUrl();
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (JobEntry) annotation ).classLoaderGroup();
+  }
 }

@@ -43,4 +43,6 @@ public @interface RowDistributionPlugin {
   String name();
 
   String description();
+
+  String classLoaderGroup() default "";
 }

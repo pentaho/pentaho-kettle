@@ -51,11 +51,16 @@ public class Carte {
 
   private WebServer webServer;
   private SlaveServerConfig config;
+  private boolean allOK;
 
   public Carte( final SlaveServerConfig config ) throws Exception {
+    this( config, null );
+  }
+
+  public Carte( final SlaveServerConfig config, Boolean joinOverride ) throws Exception {
     this.config = config;
 
-    boolean allOK = true;
+    allOK = true;
 
     CarteSingleton.setSlaveServerConfig( config );
     LogChannelInterface log = CarteSingleton.getInstance().getLog();
@@ -111,9 +116,13 @@ public class Carte {
     // CarteSingleton.installPurgeTimer(config, log, transformationMap, jobMap);
 
     if ( allOK ) {
+      boolean shouldJoin = config.isJoining();
+      if ( joinOverride != null ) {
+        shouldJoin = joinOverride;
+      }
       this.webServer =
-        new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, config
-          .isJoining(), config.getPasswordFile() );
+        new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, shouldJoin,
+            config.getPasswordFile() );
     }
   }
 
@@ -164,14 +173,14 @@ public class Carte {
   }
 
   public static void runCarte( SlaveServerConfig config ) throws Exception {
-
     KettleLogStore.init( config.getMaxLogLines(), config.getMaxLogTimeoutMinutes() );
 
-    // Join with the process: block
-    //
     config.setJoining( true );
 
-    new Carte( config );
+    Carte carte = new Carte( config, false );
+    CarteSingleton.setCarte( carte );
+
+    carte.getWebServer().join();
   }
 
   public static Trans generateTestTransformation() {

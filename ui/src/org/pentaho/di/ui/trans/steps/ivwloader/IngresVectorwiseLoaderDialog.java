@@ -590,6 +590,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     input.setUseSSV( wUseSSV.getSelection() );
     input.setEscapingSpecialCharacters( wEscapeSpecialChars.getSelection() );
     input.setUsingVwload( wUseVwload.getSelection() );
+    input.setUseAuthentication( wUseAuthentication.getSelection() );
     input.setTruncatingTable( wTruncateTable.getSelection() );
     input.setDelimiter( wDelimiter.getText() );
     input.setEncoding( wCharSet.getText() );

@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,21 +116,23 @@ public class ReplaceString extends BaseStep implements StepInterface {
     return getInputRowMeta().getString( row, data.replaceFieldIndex[index] );
   }
 
-  private synchronized Object[] getOneRow( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
+  synchronized Object[] getOneRow( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
 
     Object[] rowData = RowDataUtil.resizeArray( row, data.outputRowMeta.size() );
     int index = 0;
-
+    Set<Integer> numFieldsAlreadyBeenTransformed = new HashSet<Integer>();
     for ( int i = 0; i < data.numFields; i++ ) {
 
+      RowMetaInterface currentRowMeta =
+          ( numFieldsAlreadyBeenTransformed.contains( data.inStreamNrs[i] ) ) ? data.outputRowMeta : getInputRowMeta();
       String value =
-        replaceString(
-          getInputRowMeta().getString( row, data.inStreamNrs[i] ), data.patterns[i],
+          replaceString( currentRowMeta.getString( rowData, data.inStreamNrs[i] ), data.patterns[i],
           getResolvedReplaceByString( i, row ) );
 
       if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
         // update field value
         rowData[data.inStreamNrs[i]] = value;
+        numFieldsAlreadyBeenTransformed.add( data.inStreamNrs[i] );
       } else {
         // add new field value
         rowData[data.inputFieldsNr + index++] = value;

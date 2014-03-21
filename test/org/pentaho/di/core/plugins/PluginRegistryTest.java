@@ -58,6 +58,13 @@ public class PluginRegistryTest extends TestCase {
     Class<? extends PluginTypeInterface> pluginTypeClass = StepPluginType.class;
     Class<?> pluginClass = TableInputMeta.class;
 
+    List<PluginInterface> inputPluginsAtTestStart =
+        registry.getPluginsByCategory( pluginTypeClass, PLUGIN_INPUT_CATEGORY );
+    int numInputPluginsAtStart = inputPluginsAtTestStart.size();
+    List<PluginInterface> outputPluginsAtTestStart =
+        registry.getPluginsByCategory( pluginTypeClass, PLUGIN_OUTPUT_CATEGORY );
+    int numOutputPluginsAtStart = outputPluginsAtTestStart.size();
+
     try {
       registry.getPluginType( pluginTypeClass );
     } catch ( KettlePluginException kpe ) {
@@ -80,15 +87,14 @@ public class PluginRegistryTest extends TestCase {
       //
       classMap.put( pluginClass, "org.pentaho.di.trans.steps.tableinput.TableInputMeta" );
       tableInputPlugin =
-        new Plugin(
-          new String[] { TABLE_INPUT_PLUGIN_ID, }, pluginTypeClass, StepMetaInterface.class,
-          PLUGIN_INPUT_CATEGORY, TABLE_INPUT_PLUGIN_NAME, TABLE_INPUT_PLUGIN_DESCRIPTION,
-          TABLE_INPUT_PLUGIN_IMAGE_FILE_NAME, false, true, classMap, new ArrayList<String>(), null, // No error help
-                                                                                                    // file
-          null, // pluginFolder
-          null, // documentation URL
-          null, // cases URL
-          null // forum URL
+          new Plugin( new String[] { TABLE_INPUT_PLUGIN_ID, }, pluginTypeClass, StepMetaInterface.class,
+              PLUGIN_INPUT_CATEGORY, TABLE_INPUT_PLUGIN_NAME, TABLE_INPUT_PLUGIN_DESCRIPTION,
+              TABLE_INPUT_PLUGIN_IMAGE_FILE_NAME, false, true, classMap, new ArrayList<String>(), null, // No error help
+                                                                                                        // file
+              null, // pluginFolder
+              null, // documentation URL
+              null, // cases URL
+              null // forum URL
         );
       registry.registerPlugin( pluginTypeClass, tableInputPlugin );
       plugin = registry.getPlugin( pluginTypeClass, pluginClass );
@@ -97,8 +103,7 @@ public class PluginRegistryTest extends TestCase {
     // Verify the plugin has been registered
     PluginInterface verify = registry.getPlugin( pluginTypeClass, TABLE_INPUT_PLUGIN_ID );
     assertNotNull( "A plugin was not found in the plugin registry", verify );
-    assertEquals(
-      "A different plugin then expected was retrieved from the plugin registry", verify, tableInputPlugin );
+    assertEquals( "A different plugin then expected was retrieved from the plugin registry", verify, tableInputPlugin );
 
     pluginClass = TableOutputMeta.class;
     plugin = registry.getPlugin( pluginTypeClass, pluginClass );
@@ -109,15 +114,14 @@ public class PluginRegistryTest extends TestCase {
       classMap = new HashMap<Class<?>, String>();
       classMap.put( TableOutputMeta.class, "org.pentaho.di.trans.steps.tableoutput.TableOutputMeta" );
       tableOutputPlugin =
-        new Plugin(
-          new String[] { TABLE_OUTPUT_PLUGIN_ID, }, pluginTypeClass, StepMetaInterface.class,
-          PLUGIN_OUTPUT_CATEGORY, TABLE_OUTPUT_PLUGIN_NAME, TABLE_OUTPUT_PLUGIN_DESCRIPTION,
-          TABLE_OUTPUT_PLUGIN_IMAGE_FILE_NAME, false, true, classMap, new ArrayList<String>(), null, // No error
-                                                                                                     // help file
-          null, // pluginFolder
-          null, // documentation URL
-          null, // cases URL
-          null // forum URL
+          new Plugin( new String[] { TABLE_OUTPUT_PLUGIN_ID, }, pluginTypeClass, StepMetaInterface.class,
+              PLUGIN_OUTPUT_CATEGORY, TABLE_OUTPUT_PLUGIN_NAME, TABLE_OUTPUT_PLUGIN_DESCRIPTION,
+              TABLE_OUTPUT_PLUGIN_IMAGE_FILE_NAME, false, true, classMap, new ArrayList<String>(), null, // No error
+                                                                                                         // help file
+              null, // pluginFolder
+              null, // documentation URL
+              null, // cases URL
+              null // forum URL
         );
       registry.registerPlugin( pluginTypeClass, tableOutputPlugin );
       plugin = registry.getPlugin( pluginTypeClass, pluginClass );
@@ -126,36 +130,37 @@ public class PluginRegistryTest extends TestCase {
     // Verify the plugin has been registered
     verify = registry.getPlugin( pluginTypeClass, TABLE_OUTPUT_PLUGIN_ID );
     assertNotNull( "A plugin was not found in the plugin registry", verify );
-    assertEquals(
-      "A different plugin then expected was retrieved from the plugin registry", verify, tableOutputPlugin );
+    assertEquals( "A different plugin then expected was retrieved from the plugin registry",
+        verify, tableOutputPlugin );
 
     // Get a list by category...
     //
     List<PluginInterface> inputPlugins = registry.getPluginsByCategory( pluginTypeClass, PLUGIN_INPUT_CATEGORY );
-    assertEquals( "Exactly one plugin expected in the step plugin input category", 1, inputPlugins.size() );
-    assertEquals(
-      "The table input step was expected in the input category", inputPlugins.get( 0 ), tableInputPlugin );
+    assertEquals( "Exactly one plugin expected in the step plugin input category", numInputPluginsAtStart + 1,
+        inputPlugins.size() );
+    assertEquals( "The table input step was expected in the input category", inputPlugins.get( 0 ), tableInputPlugin );
     assertTrue( "Input plugins list should contain the table input step", inputPlugins.contains( tableInputPlugin ) );
     assertFalse( "Input plugins list should not contain the table output step", inputPlugins
-      .contains( tableOutputPlugin ) );
+        .contains( tableOutputPlugin ) );
 
     List<PluginInterface> outputPlugins = registry.getPluginsByCategory( pluginTypeClass, PLUGIN_OUTPUT_CATEGORY );
-    assertEquals( "Exactly one plugin expected in the step plugin output category", 1, outputPlugins.size() );
-    assertEquals(
-      "The table output step was expected in the otuput category", outputPlugins.get( 0 ), tableOutputPlugin );
-    assertTrue( "Output plugins list should contain the table output step", outputPlugins
-      .contains( tableOutputPlugin ) );
+    assertEquals( "Exactly one plugin expected in the step plugin output category", numOutputPluginsAtStart + 1,
+        outputPlugins.size() );
+    assertEquals( "The table output step was expected in the otuput category", outputPlugins.get( 0 ),
+        tableOutputPlugin );
+    assertTrue( "Output plugins list should contain the table output step",
+        outputPlugins.contains( tableOutputPlugin ) );
     assertFalse( "Output plugins list should not contain the table input step", outputPlugins
-      .contains( tableInputPlugin ) );
+        .contains( tableInputPlugin ) );
 
     // List the categories...
     //
     List<String> categories = registry.getCategories( pluginTypeClass );
     assertEquals( "Two categories expected in the step plugin registry", 2, categories.size() );
-    assertTrue( "The input category was expected in the categories list", categories
-      .contains( PLUGIN_INPUT_CATEGORY ) );
-    assertTrue( "The output category was expected in the categories list", categories
-      .contains( PLUGIN_OUTPUT_CATEGORY ) );
+    assertTrue( "The input category was expected in the categories list",
+        categories.contains( PLUGIN_INPUT_CATEGORY ) );
+    assertTrue( "The output category was expected in the categories list",
+        categories.contains( PLUGIN_OUTPUT_CATEGORY ) );
 
     // Now have a little bit of class loading fun: load the main class of the plugin
     //

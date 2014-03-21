@@ -159,13 +159,9 @@ public class MailInput extends BaseStep implements StepInterface {
         break;
     }
     // set FlagTerm?
-    if ( data.usePOP ) {
-      // retrieve messages
-      if ( meta.getRetrievemails() == 1 ) {
-        // New messages
-        data.mailConn.setFlagTermNew();
-      }
-    } else {
+    if ( !data.usePOP ) {
+      //POP3 does not support any flags.
+      //but still use ones for IMAP and maybe for MBOX?      
       switch ( meta.getValueImapList() ) {
         case MailConnectionMeta.VALUE_IMAP_LIST_NEW:
           data.mailConn.setFlagTermNew();
@@ -344,9 +340,15 @@ public class MailInput extends BaseStep implements StepInterface {
         data.mailConn.openFolder( false );
       }
 
-      if ( meta.useBatch() ) { // get data by pieces
+      if ( meta.useBatch() || ( !Const.isEmpty( environmentSubstitute( meta.getFirstMails() ) )
+                                  && Integer.parseInt( environmentSubstitute( meta.getFirstMails() ) ) > 0  ) ) {
+        // get data by pieces
+        Integer batchSize = meta.useBatch() ? meta.getBatchSize()
+            : Integer.parseInt( environmentSubstitute( meta.getFirstMails() ) );
+        Integer start = meta.useBatch() ? data.start : 1;
+        Integer end = meta.useBatch() ? data.end : batchSize;
         data.folderIterator =
-          new BatchFolderIterator( data.mailConn.getFolder(), meta.getBatchSize(), data.start, data.end ); // TODO:args
+          new BatchFolderIterator( data.mailConn.getFolder(), batchSize, start, end ); // TODO:args
 
         if ( data.mailConn.getSearchTerm() != null ) { // add search filter
           data.folderIterator =
@@ -375,106 +377,124 @@ public class MailInput extends BaseStep implements StepInterface {
     meta = (MailInputMeta) smi;
     data = (MailInputData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      if ( !meta.isDynamicFolder() ) {
-        try {
-          // Create the output row meta-data
-          data.outputRowMeta = new RowMeta();
-          meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
-                                                                                                        // metadata
-                                                                                                        // populated
-
-        } catch ( Exception e ) {
-          logError( BaseMessages.getString( PKG, "MailInput.ErrorInit", e.toString() ) );
-          logError( Const.getStackTracker( e ) );
-          return false;
-        }
-      }
-      data.usePOP = meta.getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
-
-      String realserver = environmentSubstitute( meta.getServerName() );
-      if ( meta.getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_MBOX )
-        && StringUtils.startsWith( realserver, "file://" ) ) {
-        realserver = StringUtils.remove( realserver, "file://" );
-      }
-
-      String realusername = environmentSubstitute( meta.getUserName() );
-      String realpassword = environmentSubstitute( meta.getPassword() );
-      int realport = Const.toInt( environmentSubstitute( meta.getPort() ), -1 );
-      String realProxyUsername = environmentSubstitute( meta.getProxyUsername() );
-      if ( !meta.isDynamicFolder() ) {
-        String reallimitrow = environmentSubstitute( meta.getRowLimit() );
-        data.rowlimit = Const.toInt( reallimitrow, 0 );
-      }
-      Date beginDate = null;
-      Date endDate = null;
-      SimpleDateFormat df = new SimpleDateFormat( MailInputMeta.DATE_PATTERN );
-
-      // check search terms
-      // Received Date
-      try {
-        switch ( meta.getConditionOnReceivedDate() ) {
-          case MailConnectionMeta.CONDITION_DATE_EQUAL:
-          case MailConnectionMeta.CONDITION_DATE_GREATER:
-          case MailConnectionMeta.CONDITION_DATE_SMALLER:
-            String realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
-            if ( Const.isEmpty( realBeginDate ) ) {
-              throw new KettleException( BaseMessages.getString(
-                PKG, "MailInput.Error.ReceivedDateSearchTermEmpty" ) );
-            }
-            beginDate = df.parse( realBeginDate );
-            break;
-          case MailConnectionMeta.CONDITION_DATE_BETWEEN:
-            realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
-            if ( Const.isEmpty( realBeginDate ) ) {
-              throw new KettleException( BaseMessages.getString(
-                PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
-            }
-            beginDate = df.parse( realBeginDate );
-            String realEndDate = environmentSubstitute( meta.getReceivedDate2() );
-            if ( Const.isEmpty( realEndDate ) ) {
-              throw new KettleException( BaseMessages.getString(
-                PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
-            }
-            endDate = df.parse( realEndDate );
-            break;
-          default:
-            break;
-        }
-      } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "MailInput.Error.SettingSearchTerms", e.getMessage() ) );
-        setErrors( 1 );
-        stopAll();
-      }
-      try {
-        // create a mail connection object
-        data.mailConn =
-          new MailConnection(
-            log, MailConnectionMeta.getProtocolFromString(
-              meta.getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realusername,
-            realpassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername );
-        // connect
-        data.mailConn.connect();
-        // Need to apply search filters?
-        applySearch( beginDate, endDate );
-
-        if ( !meta.isDynamicFolder() ) {
-          // pass static folder name
-          String realIMAPFolder = environmentSubstitute( meta.getIMAPFolder() );
-          // return folders list
-          // including sub folders if necessary
-          data.folders = getFolders( realIMAPFolder );
-        }
-      } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "MailInput.Error.OpeningConnection", e.getMessage() ) );
-        setErrors( 1 );
-        stopAll();
-      }
-      data.nrFields = meta.getInputFields() != null ? meta.getInputFields().length : 0;
-
-      return true;
+    if ( !super.init( smi, sdi ) ) {
+      return false;
     }
-    return false;
+
+    if ( !meta.isDynamicFolder() ) {
+      try {
+        // Create the output row meta-data
+        data.outputRowMeta = new RowMeta();
+        meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore ); // get the
+                                                                                                      // metadata
+                                                                                                      // populated
+
+      } catch ( Exception e ) {
+        logError( BaseMessages.getString( PKG, "MailInput.ErrorInit", e.toString() ) );
+        logError( Const.getStackTracker( e ) );
+        return false;
+      }
+    }
+    data.usePOP = meta.getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
+
+    String realserver = environmentSubstitute( meta.getServerName() );
+    if ( meta.getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_MBOX )
+      && StringUtils.startsWith( realserver, "file://" ) ) {
+      realserver = StringUtils.remove( realserver, "file://" );
+    }
+
+    String realusername = environmentSubstitute( meta.getUserName() );
+    String realpassword = environmentSubstitute( meta.getPassword() );
+    int realport = Const.toInt( environmentSubstitute( meta.getPort() ), -1 );
+    String realProxyUsername = environmentSubstitute( meta.getProxyUsername() );
+    if ( !meta.isDynamicFolder() ) {
+      //Limit field has absolute priority
+      String reallimitrow = environmentSubstitute( meta.getRowLimit() );
+      int limit = Const.toInt( reallimitrow, 0 );
+      //Limit field has absolute priority
+      if ( limit == 0 ) {
+        limit = getReadFirst( meta.getProtocol() );
+      }
+      data.rowlimit = limit;
+    }
+    Date beginDate = null;
+    Date endDate = null;
+    SimpleDateFormat df = new SimpleDateFormat( MailInputMeta.DATE_PATTERN );
+
+    // check search terms
+    // Received Date
+    try {
+      switch ( meta.getConditionOnReceivedDate() ) {
+        case MailConnectionMeta.CONDITION_DATE_EQUAL:
+        case MailConnectionMeta.CONDITION_DATE_GREATER:
+        case MailConnectionMeta.CONDITION_DATE_SMALLER:
+          String realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
+          if ( Const.isEmpty( realBeginDate ) ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "MailInput.Error.ReceivedDateSearchTermEmpty" ) );
+          }
+          beginDate = df.parse( realBeginDate );
+          break;
+        case MailConnectionMeta.CONDITION_DATE_BETWEEN:
+          realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
+          if ( Const.isEmpty( realBeginDate ) ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
+          }
+          beginDate = df.parse( realBeginDate );
+          String realEndDate = environmentSubstitute( meta.getReceivedDate2() );
+          if ( Const.isEmpty( realEndDate ) ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
+          }
+          endDate = df.parse( realEndDate );
+          break;
+        default:
+          break;
+      }
+    } catch ( Exception e ) {
+      logError( BaseMessages.getString( PKG, "MailInput.Error.SettingSearchTerms", e.getMessage() ) );
+      setErrors( 1 );
+      stopAll();
+    }
+    try {
+      // create a mail connection object
+      data.mailConn =
+        new MailConnection(
+          log, MailConnectionMeta.getProtocolFromString(
+            meta.getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realusername,
+          realpassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername );
+      // connect
+      data.mailConn.connect();
+      // Need to apply search filters?
+      applySearch( beginDate, endDate );
+
+      if ( !meta.isDynamicFolder() ) {
+        // pass static folder name
+        String realIMAPFolder = environmentSubstitute( meta.getIMAPFolder() );
+        // return folders list
+        // including sub folders if necessary
+        data.folders = getFolders( realIMAPFolder );
+      }
+    } catch ( Exception e ) {
+      logError( BaseMessages.getString( PKG, "MailInput.Error.OpeningConnection", e.getMessage() ) );
+      setErrors( 1 );
+      stopAll();
+    }
+    data.nrFields = meta.getInputFields() != null ? meta.getInputFields().length : 0;
+
+    return true;
+  }
+
+  private int getReadFirst( String protocol ) {
+    if ( protocol.equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) ) {
+      return Const.toInt( meta.getFirstMails(), 0 );
+    }
+    if ( protocol.equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) ) {
+      return Const.toInt( meta.getFirstIMAPMails(), 0 );
+    }
+    //and we do not have this option for MBOX on UI.
+    return 0;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {

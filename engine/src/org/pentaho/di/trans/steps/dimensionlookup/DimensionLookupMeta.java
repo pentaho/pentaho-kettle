@@ -1855,7 +1855,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     this.useBatchUpdate = useBatchUpdate;
   }
 
-  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName ) throws KettleDatabaseException {
+  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName )
+    throws KettleDatabaseException {
     // First try without connecting to the database... (can be S L O W)
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     RowMetaInterface extraFields = db.getTableFields( schemaTable );

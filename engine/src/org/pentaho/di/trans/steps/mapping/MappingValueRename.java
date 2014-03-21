@@ -66,10 +66,10 @@ public class MappingValueRename implements Cloneable {
 
   /**
    * @param sourceValueName
-   *          the sourceValueName to set
+   *          the sourceValueName to set. If null set to empty String
    */
   public void setSourceValueName( String sourceValueName ) {
-    this.sourceValueName = sourceValueName;
+    this.sourceValueName = sourceValueName == null ? "" : sourceValueName;
   }
 
   /**
@@ -81,9 +81,9 @@ public class MappingValueRename implements Cloneable {
 
   /**
    * @param targetValueName
-   *          the targetValueName to set
+   *          the targetValueName to set. If null set to empty String.
    */
   public void setTargetValueName( String targetValueName ) {
-    this.targetValueName = targetValueName;
+    this.targetValueName = targetValueName == null ? "" : targetValueName;
   }
 }

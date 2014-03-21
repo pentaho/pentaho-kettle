@@ -269,6 +269,10 @@ public class ParGzipCsvInputMetaInjection implements StepMetaInjectionInterface 
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public ParGzipCsvInputMeta getMeta() {
     return meta;
   }

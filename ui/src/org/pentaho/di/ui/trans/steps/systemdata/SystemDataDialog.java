@@ -49,6 +49,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.systemdata.SystemDataMeta;
+import org.pentaho.di.trans.steps.systemdata.SystemDataTypes;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -138,9 +139,9 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     final int FieldsCols = 2;
     final int FieldsRows = input.getFieldName().length;
 
-    final String[] functionDesc = new String[SystemDataMeta.functions.length - 1];
-    for ( int i = 1; i < SystemDataMeta.functions.length; i++ ) {
-      functionDesc[i - 1] = SystemDataMeta.functions[i].getDescription();
+    final String[] functionDesc = new String[SystemDataTypes.values().length - 1];
+    for ( int i = 1; i < SystemDataTypes.values().length; i++ ) {
+      functionDesc[i - 1] = SystemDataTypes.values()[i].getDescription();
     }
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];

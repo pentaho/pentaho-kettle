@@ -301,6 +301,10 @@ public class ExcelInputMetaInjection implements StepMetaInjectionInterface {
 
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   public ExcelInputMeta getMeta() {
     return meta;
   }

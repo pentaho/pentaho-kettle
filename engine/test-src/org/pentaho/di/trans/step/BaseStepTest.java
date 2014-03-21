@@ -48,17 +48,17 @@ public class BaseStepTest {
   @Test
   public void testStepListenersConcurrentModification() throws InterruptedException {
     //Create a base step
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(mockHelper.logChannelInterface);
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn( mockHelper.logChannelInterface );
     final BaseStep baseStep = new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
 
     //Create thread to dynamically add listeners
     final AtomicBoolean done = new AtomicBoolean( false );
-    Thread addListeners = new Thread(){
+    Thread addListeners = new Thread() {
       @Override
       public void run() {
-        while(!done.get()){
+        while ( !done.get() ) {
           baseStep.addStepListener( mock( StepListener.class ) );
-          synchronized ( done ){
+          synchronized ( done ) {
             done.notify();
           }
         }
@@ -66,12 +66,12 @@ public class BaseStepTest {
     };
 
     //Mark start and stop while listeners are being added
-    try{
+    try {
       addListeners.start();
 
       //Allow a few listeners to be added
-      synchronized ( done ){
-        while(baseStep.getStepListeners().size() < 20){
+      synchronized ( done ) {
+        while ( baseStep.getStepListeners().size() < 20 ) {
           done.wait();
         }
       }
@@ -79,8 +79,8 @@ public class BaseStepTest {
       baseStep.markStart();
 
       //Allow more listeners to be added
-      synchronized ( done ){
-        while(baseStep.getStepListeners().size() < 100){
+      synchronized ( done ) {
+        while ( baseStep.getStepListeners().size() < 100 ) {
           done.wait();
         }
       }

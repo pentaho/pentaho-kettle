@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
@@ -117,6 +118,12 @@ public class JobPainter extends BasePainter {
       drawGrid();
     }
 
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobPainterStart.id, this );
+    } catch ( KettleException e ) {
+      LogChannel.GENERAL.logError( "Error in JobPainterStart extension point", e );
+    }
+
     // First draw the notes...
     gc.setFont( EFont.NOTE );
 
@@ -187,6 +194,12 @@ public class JobPainter extends BasePainter {
       gc.setForeground( EColor.BLACK );
       Point screen = real2screen( drop_candidate.x, drop_candidate.y );
       gc.drawRectangle( screen.x, screen.y, iconsize, iconsize );
+    }
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobPainterEnd.id, this );
+    } catch ( KettleException e ) {
+      LogChannel.GENERAL.logError( "Error in JobPainterEnd extension point", e );
     }
 
     if ( !shadow ) {
@@ -689,6 +702,42 @@ public class JobPainter extends BasePainter {
    */
   public void setTranslationY( float translationY ) {
     this.translationY = translationY;
+  }
+
+  public JobMeta getJobMeta() {
+    return jobMeta;
+  }
+
+  public void setJobMeta( JobMeta jobMeta ) {
+    this.jobMeta = jobMeta;
+  }
+
+  public JobHopMeta getCandidate() {
+    return candidate;
+  }
+
+  public void setCandidate( JobHopMeta candidate ) {
+    this.candidate = candidate;
+  }
+
+  public JobEntryCopy getStartHopEntry() {
+    return startHopEntry;
+  }
+
+  public Point getEndHopLocation() {
+    return endHopLocation;
+  }
+
+  public JobEntryCopy getEndHopEntry() {
+    return endHopEntry;
+  }
+
+  public JobEntryCopy getNoInputEntry() {
+    return noInputEntry;
+  }
+
+  public List<JobEntryCopy> getActiveJobEntries() {
+    return activeJobEntries;
   }
 
 }

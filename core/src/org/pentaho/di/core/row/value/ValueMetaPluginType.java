@@ -195,4 +195,9 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
   protected String extractForumUrl( Annotation annotation ) {
     return ( (ValueMetaPlugin) annotation ).forumUrl();
   }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (ValueMetaPlugin) annotation ).classLoaderGroup();
+  }
 }

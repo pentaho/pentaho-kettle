@@ -12,6 +12,12 @@
 		<default-value>N</default-value>
 	</kettle-variable>
 
+  <kettle-variable>
+    <description>System wide flag to ignore timezone while writing date/timestamp value to the database.</description>
+    <variable>KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
     <kettle-variable>
     	<description>The log size limit for all transformations and jobs that don't have the "log size limit" property set in their respective properties.</description>
 		<variable>KETTLE_LOG_SIZE_LIMIT</variable>
@@ -276,6 +282,18 @@
 		<description>The name of the variable containing an alternative default date format</description>
 		<variable>KETTLE_DEFAULT_DATE_FORMAT</variable>
 		<default-value></default-value>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>Defines the default encoding for servlets, leave it empty to use Java default encoding</description>
+		<variable>KETTLE_DEFAULT_SERVLET_ENCODING</variable>
+		<default-value></default-value>
+	</kettle-variable>
+	
+	<kettle-variable>
+		<description>Set this variable to Y when you want the job/transformation fail with an error when the related logging process (e.g. to a database) fails.</description>
+		<variable>KETTLE_FAIL_ON_LOGGING_ERROR</variable>
+		<default-value>N</default-value>
 	</kettle-variable>
 	
 </kettle-variables>

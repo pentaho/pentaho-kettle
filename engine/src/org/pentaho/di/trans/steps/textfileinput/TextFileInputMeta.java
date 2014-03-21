@@ -792,6 +792,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     retval.dateFormatLocale = (Locale) dateFormatLocale.clone();
+    retval.fileCompression = fileCompression;
 
     return retval;
   }
@@ -1060,7 +1061,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubFolders[i] ) );
     }
     retval.append( "      " ).append( XMLHandler.addTagValue( "type", fileType ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "compression", fileCompression ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "compression",
+      ( fileCompression == null ) ? "None" : fileCompression ) );
     retval.append( "    </file>" ).append( Const.CR );
 
     retval.append( "    <filters>" ).append( Const.CR );
@@ -1208,6 +1210,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       fileType = XMLHandler.getTagValue( stepnode, "file", "type" );
       fileCompression = XMLHandler.getTagValue( stepnode, "file", "compression" );
       if ( fileCompression == null ) {
+        fileCompression = "None";
         if ( YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) ) ) {
           fileCompression = "Zip";
         }
@@ -1392,6 +1395,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       fileType = rep.getStepAttributeString( id_step, "file_type" );
       fileCompression = rep.getStepAttributeString( id_step, "compression" );
       if ( fileCompression == null ) {
+        fileCompression = "None";
         if ( rep.getStepAttributeBoolean( id_step, "file_zipped" ) ) {
           fileCompression = "Zip";
         }
@@ -1508,7 +1512,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "include_subfolders", includeSubFolders[i] );
       }
       rep.saveStepAttribute( id_transformation, id_step, "file_type", fileType );
-      rep.saveStepAttribute( id_transformation, id_step, "compression", fileCompression );
+      rep.saveStepAttribute( id_transformation, id_step, "compression",
+        ( fileCompression == null ) ? "None" : fileCompression );
 
       for ( int i = 0; i < filter.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "filter_position", filter[i].getFilterPosition() );

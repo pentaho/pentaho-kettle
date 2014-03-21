@@ -33,6 +33,9 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -40,10 +43,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -51,17 +57,21 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -76,12 +86,14 @@ import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
+import org.pentaho.di.trans.steps.metainject.MetaInjectOutputField;
 import org.pentaho.di.trans.steps.metainject.SourceStepField;
 import org.pentaho.di.trans.steps.metainject.TargetStepAttribute;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -95,6 +107,21 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   private static Class<?> PKG = MetaInjectMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MetaInjectMeta metaInjectMeta;
+
+  private CTabFolder wTabFolder;
+  private FormData fdTabFolder;
+
+  private CTabItem wFileTab;
+  private ScrolledComposite wFileSComp;
+  private Composite wFileComp;
+
+  private CTabItem wOptionsTab;
+  private ScrolledComposite wOptionsSComp;
+  private Composite wOptionsComp;
+
+  private CTabItem wInjectTab;
+  private ScrolledComposite wInjectSComp;
+  private Composite wInjectComp;
 
   private Group gTransGroup;
 
@@ -139,6 +166,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   //
   private CCombo wSourceStep;
 
+  // The source step output fields...
+  //
+  private Label wlSourceFields;
+  private TableView wSourceFields;
+
   // the target file
   //
   private TextVar wTargetFile;
@@ -146,6 +178,16 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   // don't execute the transformation
   //
   private Button wNoExecution;
+
+  // the streaming source step
+  //
+  private Label wlStreamingSourceStep;
+  private CCombo wStreamingSourceStep;
+
+  // the streaming target step
+  //
+  private Label wlStreamingTargetStep;
+  private CCombo wStreamingTargetStep;
 
   // The tree object to show the options...
   //
@@ -208,15 +250,99 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdStepname.right = new FormAttachment( 100, 0 );
     wStepname.setLayoutData( fdStepname );
 
-    // Show a group with 2 main options: a transformation in the repository
-    // or on file
-    //
+    wTabFolder = new CTabFolder( shell, SWT.BORDER );
+    props.setLook( wTabFolder, Props.WIDGET_STYLE_TAB );
+    wTabFolder.setSimple( false );
+
+    // Some buttons
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    setButtonPositions( new Button[] { wOK, wCancel }, margin, null );
+
+    fdTabFolder = new FormData();
+    fdTabFolder.left = new FormAttachment( 0, 0 );
+    fdTabFolder.top = new FormAttachment( wStepname, margin );
+    fdTabFolder.right = new FormAttachment( 100, 0 );
+    fdTabFolder.bottom = new FormAttachment( wOK, -margin * 2 );
+    wTabFolder.setLayoutData( fdTabFolder );
+
+    addFileTab();
+    addOptionsTab();
+    addInjectTab();
+
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
+
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wOK.addListener( SWT.Selection, lsOK );
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
+
+    wStepname.addSelectionListener( lsDef );
+    wFilename.addSelectionListener( lsDef );
+    wTransname.addSelectionListener( lsDef );
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
+
+    // Set the shell size, based upon previous time...
+    setSize();
+
+    getData();
+    metaInjectMeta.setChanged( changed );
+
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+    return stepname;
+  }
+
+  private void addFileTab() {
+    // ////////////////////////
+    // START OF FILE TAB ///
+    // ////////////////////////
+
+    wFileTab = new CTabItem( wTabFolder, SWT.NONE );
+    wFileTab.setText( BaseMessages.getString( PKG, "MetaInjectDialog.FileTab.TabTitle" ) );
+
+    wFileSComp = new ScrolledComposite( wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+    wFileSComp.setLayout( new FillLayout() );
+
+    wFileComp = new Composite( wFileSComp, SWT.NONE );
+    props.setLook( wFileComp );
+
+    FormLayout fileLayout = new FormLayout();
+    fileLayout.marginWidth = 3;
+    fileLayout.marginHeight = 3;
+    wFileComp.setLayout( fileLayout );
 
     // //////////////////////////////////////////////////
-    // The key creation box
+    // The transformation template box
     // //////////////////////////////////////////////////
     //
-    gTransGroup = new Group( shell, SWT.SHADOW_ETCHED_IN );
+    gTransGroup = new Group( wFileComp, SWT.SHADOW_ETCHED_IN );
     gTransGroup.setText( BaseMessages.getString( PKG, "MetaInjectDialog.TransGroup.Label" ) );
     gTransGroup.setBackground( shell.getBackground() ); // the default looks
     // ugly
@@ -433,27 +559,111 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdTransGroup.right = new FormAttachment( 100, 0 );
     // fdTransGroup.bottom = new FormAttachment(wStepname, 350);
     gTransGroup.setLayoutData( fdTransGroup );
-    Control lastControl = gTransGroup;
 
-    Label wlSourceStep = new Label( shell, SWT.RIGHT );
+    FormData fdFileComp = new FormData();
+    fdFileComp.left = new FormAttachment( 0, 0 );
+    fdFileComp.top = new FormAttachment( 0, 0 );
+    fdFileComp.right = new FormAttachment( 100, 0 );
+    fdFileComp.bottom = new FormAttachment( 100, 0 );
+    wFileComp.setLayoutData( fdFileComp );
+
+    wFileComp.pack();
+    Rectangle bounds = wFileComp.getBounds();
+
+    wFileSComp.setContent( wFileComp );
+    wFileSComp.setExpandHorizontal( true );
+    wFileSComp.setExpandVertical( true );
+    wFileSComp.setMinWidth( bounds.width );
+    wFileSComp.setMinHeight( bounds.height );
+
+    wFileTab.setControl( wFileSComp );
+
+    // ///////////////////////////////////////////////////////////
+    // / END OF FILE TAB
+    // ///////////////////////////////////////////////////////////
+  }
+
+  private void addOptionsTab() {
+    // ////////////////////////
+    // START OF OPTIONS TAB ///
+    // ////////////////////////
+
+    wOptionsTab = new CTabItem( wTabFolder, SWT.NONE );
+    wOptionsTab.setText( BaseMessages.getString( PKG, "MetaInjectDialog.OptionsTab.TabTitle" ) );
+
+    wOptionsSComp = new ScrolledComposite( wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+    wOptionsSComp.setLayout( new FillLayout() );
+
+    wOptionsComp = new Composite( wOptionsSComp, SWT.NONE );
+    props.setLook( wOptionsComp );
+
+    FormLayout fileLayout = new FormLayout();
+    fileLayout.marginWidth = 3;
+    fileLayout.marginHeight = 3;
+    wOptionsComp.setLayout( fileLayout );
+
+    Label wlSourceStep = new Label( wOptionsComp, SWT.RIGHT );
     wlSourceStep.setText( BaseMessages.getString( PKG, "MetaInjectDialog.SourceStep.Label" ) );
     props.setLook( wlSourceStep );
     FormData fdlSourceStep = new FormData();
     fdlSourceStep.left = new FormAttachment( 0, 0 );
     fdlSourceStep.right = new FormAttachment( middle, 0 );
-    fdlSourceStep.top = new FormAttachment( lastControl, 2 * margin );
+    fdlSourceStep.top = new FormAttachment( 0, 0 );
     wlSourceStep.setLayoutData( fdlSourceStep );
-    wSourceStep = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wSourceStep = new CCombo( wOptionsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wSourceStep );
     wSourceStep.addModifyListener( lsMod );
     FormData fdSourceStep = new FormData();
-    fdSourceStep.left = new FormAttachment( wlSourceStep, 2 * margin );
-    fdSourceStep.top = new FormAttachment( lastControl, margin );
+    fdSourceStep.left = new FormAttachment( middle, margin );
+    fdSourceStep.top = new FormAttachment( 0, 0 );
     fdSourceStep.right = new FormAttachment( 100, 0 );
     wSourceStep.setLayoutData( fdSourceStep );
-    lastControl = wSourceStep;
+    wSourceStep.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+        setActive();
+      }
+    } );
+    Control lastControl = wSourceStep;
 
-    Label wlTargetFile = new Label( shell, SWT.RIGHT );
+    wlSourceFields = new Label( wOptionsComp, SWT.RIGHT );
+    wlSourceFields.setText( BaseMessages.getString( PKG, "MetaInjectDialog.Fields.Label" ) );
+    props.setLook( wlSourceFields );
+    FormData fdlFields = new FormData();
+    fdlFields.left = new FormAttachment( 0, 0 );
+    fdlFields.right = new FormAttachment( middle, 0 );
+    fdlFields.top = new FormAttachment( lastControl, margin );
+    wlSourceFields.setLayoutData( fdlFields );
+
+    final int FieldsRows = metaInjectMeta.getSourceOutputFields().size();
+
+    ColumnInfo[] colinf =
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.ColumnInfo.Fieldname" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMeta.getAllTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.ColumnInfo.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
+
+    wSourceFields = new TableView( transMeta, wOptionsComp,
+      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+
+    FormData fdFields = new FormData();
+    fdFields.left = new FormAttachment( middle, margin );
+    fdFields.top = new FormAttachment( lastControl, margin );
+    fdFields.right = new FormAttachment( 100, 0 );
+    fdFields.bottom = new FormAttachment( lastControl, margin + 300 );
+    wSourceFields.setLayoutData( fdFields );
+    lastControl = wSourceFields;
+
+    Label wlTargetFile = new Label( wOptionsComp, SWT.RIGHT );
     wlTargetFile.setText( BaseMessages.getString( PKG, "MetaInjectDialog.TargetFile.Label" ) );
     props.setLook( wlTargetFile );
     FormData fdlTargetFile = new FormData();
@@ -461,7 +671,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdlTargetFile.right = new FormAttachment( middle, 0 );
     fdlTargetFile.top = new FormAttachment( lastControl, margin );
     wlTargetFile.setLayoutData( fdlTargetFile );
-    wTargetFile = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wTargetFile = new TextVar( transMeta, wOptionsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTargetFile );
     wTargetFile.addModifyListener( lsMod );
     FormData fdTargetFile = new FormData();
@@ -471,7 +681,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     wTargetFile.setLayoutData( fdTargetFile );
     lastControl = wTargetFile;
 
-    Label wlNoExecution = new Label( shell, SWT.RIGHT );
+    Label wlNoExecution = new Label( wOptionsComp, SWT.RIGHT );
     wlNoExecution.setText( BaseMessages.getString( PKG, "MetaInjectDialog.NoExecution.Label" ) );
     props.setLook( wlNoExecution );
     FormData fdlNoExecution = new FormData();
@@ -479,7 +689,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdlNoExecution.right = new FormAttachment( middle, 0 );
     fdlNoExecution.top = new FormAttachment( lastControl, margin );
     wlNoExecution.setLayoutData( fdlNoExecution );
-    wNoExecution = new Button( shell, SWT.CHECK );
+    wNoExecution = new Button( wOptionsComp, SWT.CHECK );
     props.setLook( wNoExecution );
     FormData fdNoExecution = new FormData();
     fdNoExecution.left = new FormAttachment( middle, margin );
@@ -488,62 +698,211 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     wNoExecution.setLayoutData( fdNoExecution );
     lastControl = wNoExecution;
 
-    // Some buttons
-    wOK = new Button( shell, SWT.PUSH );
-    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
-    wCancel = new Button( shell, SWT.PUSH );
-    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, null );
-
-    // Now the tree with the field selection etc.
-    //
-    addTree( lastControl );
-
-    // Add listeners
-    lsCancel = new Listener() {
-      public void handleEvent( Event e ) {
-        cancel();
+    wlStreamingSourceStep = new Label( wOptionsComp, SWT.RIGHT );
+    wlStreamingSourceStep.setText( BaseMessages.getString( PKG, "MetaInjectDialog.StreamingSourceStep.Label" ) );
+    props.setLook( wlStreamingSourceStep );
+    FormData fdlStreamingSourceStep = new FormData();
+    fdlStreamingSourceStep.left = new FormAttachment( 0, 0 );
+    fdlStreamingSourceStep.right = new FormAttachment( middle, 0 );
+    fdlStreamingSourceStep.top = new FormAttachment( lastControl, margin );
+    wlStreamingSourceStep.setLayoutData( fdlStreamingSourceStep );
+    wStreamingSourceStep = new CCombo( wOptionsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wStreamingSourceStep );
+    FormData fdStreamingSourceStep = new FormData();
+    fdStreamingSourceStep.left = new FormAttachment( middle, margin );
+    fdStreamingSourceStep.top = new FormAttachment( lastControl, margin );
+    fdStreamingSourceStep.right = new FormAttachment( 100, 0 );
+    wStreamingSourceStep.setLayoutData( fdStreamingSourceStep );
+    wStreamingSourceStep.setItems( transMeta.getStepNames() );
+    wStreamingSourceStep.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+        setActive();
       }
-    };
-    lsOK = new Listener() {
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
+    } );
+    lastControl = wStreamingSourceStep;
 
-    wCancel.addListener( SWT.Selection, lsCancel );
-    wOK.addListener( SWT.Selection, lsOK );
+    wlStreamingTargetStep = new Label( wOptionsComp, SWT.RIGHT );
+    wlStreamingTargetStep.setText( BaseMessages.getString( PKG, "MetaInjectDialog.StreamingTargetStep.Label" ) );
+    props.setLook( wlStreamingTargetStep );
+    FormData fdlStreamingTargetStep = new FormData();
+    fdlStreamingTargetStep.left = new FormAttachment( 0, 0 );
+    fdlStreamingTargetStep.right = new FormAttachment( middle, 0 );
+    fdlStreamingTargetStep.top = new FormAttachment( lastControl, margin );
+    wlStreamingTargetStep.setLayoutData( fdlStreamingTargetStep );
+    wStreamingTargetStep = new CCombo( wOptionsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wStreamingTargetStep );
+    FormData fdStreamingTargetStep = new FormData();
+    fdStreamingTargetStep.left = new FormAttachment( middle, margin );
+    fdStreamingTargetStep.top = new FormAttachment( lastControl, margin );
+    fdStreamingTargetStep.right = new FormAttachment( 100, 0 );
+    wStreamingTargetStep.setLayoutData( fdStreamingTargetStep );
+    lastControl = wStreamingTargetStep;
 
-    lsDef = new SelectionAdapter() {
-      public void widgetDefaultSelected( SelectionEvent e ) {
-        ok();
-      }
-    };
+    FormData fdOptionsComp = new FormData();
+    fdOptionsComp.left = new FormAttachment( 0, 0 );
+    fdOptionsComp.top = new FormAttachment( 0, 0 );
+    fdOptionsComp.right = new FormAttachment( 100, 0 );
+    fdOptionsComp.bottom = new FormAttachment( 100, 0 );
+    wOptionsComp.setLayoutData( fdOptionsComp );
 
-    wStepname.addSelectionListener( lsDef );
-    wFilename.addSelectionListener( lsDef );
-    wTransname.addSelectionListener( lsDef );
+    wOptionsComp.pack();
+    Rectangle bounds = wOptionsComp.getBounds();
 
-    // Detect X or ALT-F4 or something that kills this window...
-    shell.addShellListener( new ShellAdapter() {
-      public void shellClosed( ShellEvent e ) {
-        cancel();
+    wOptionsSComp.setContent( wOptionsComp );
+    wOptionsSComp.setExpandHorizontal( true );
+    wOptionsSComp.setExpandVertical( true );
+    wOptionsSComp.setMinWidth( bounds.width );
+    wOptionsSComp.setMinHeight( bounds.height );
+
+    wOptionsTab.setControl( wOptionsSComp );
+
+    // ///////////////////////////////////////////////////////////
+    // / END OF OPTIONS TAB
+    // ///////////////////////////////////////////////////////////
+  }
+
+  private void addInjectTab() {
+    // ////////////////////////
+    // START OF INJECT TAB ///
+    // ////////////////////////
+
+    wInjectTab = new CTabItem( wTabFolder, SWT.NONE );
+    wInjectTab.setText( BaseMessages.getString( PKG, "MetaInjectDialog.InjectTab.TabTitle" ) );
+
+    wInjectSComp = new ScrolledComposite( wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+    wInjectSComp.setLayout( new FillLayout() );
+
+    wInjectComp = new Composite( wInjectSComp, SWT.NONE );
+    props.setLook( wInjectComp );
+
+    FormLayout fileLayout = new FormLayout();
+    fileLayout.marginWidth = 3;
+    fileLayout.marginHeight = 3;
+    wInjectComp.setLayout( fileLayout );
+
+    wTree = new Tree( wInjectComp, SWT.SINGLE | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER );
+    FormData fdTree = new FormData();
+    fdTree.left = new FormAttachment( 0, 0 );
+    fdTree.top = new FormAttachment( 0, 0 );
+    fdTree.right = new FormAttachment( 100, 0 );
+    fdTree.bottom = new FormAttachment( 100, 0 );
+    wTree.setLayoutData( fdTree );
+
+    ColumnInfo[] colinf =
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetStep" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetDescription" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceStep" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceField" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ), };
+
+    wTree.setHeaderVisible( true );
+    for ( int i = 0; i < colinf.length; i++ ) {
+      ColumnInfo columnInfo = colinf[i];
+      TreeColumn treeColumn = new TreeColumn( wTree, columnInfo.getAllignement() );
+      treeColumn.setText( columnInfo.getName() );
+      treeColumn.setWidth( 200 );
+    }
+
+    wTree.addListener( SWT.MouseDown, new Listener() {
+      public void handleEvent( Event event ) {
+        try {
+          Point point = new Point( event.x, event.y );
+          TreeItem item = wTree.getItem( point );
+          if ( item != null ) {
+            TargetStepAttribute target = treeItemTargetMap.get( item );
+            if ( target != null ) {
+              SourceStepField source = targetSourceMapping.get( target );
+
+              String[] prevStepNames = transMeta.getPrevStepNames( stepMeta );
+              Arrays.sort( prevStepNames );
+
+              Map<String, SourceStepField> fieldMap = new HashMap<String, SourceStepField>();
+              for ( String prevStepName : prevStepNames ) {
+                RowMetaInterface fields = transMeta.getStepFields( prevStepName );
+                for ( ValueMetaInterface field : fields.getValueMetaList() ) {
+                  String key = buildStepFieldKey( prevStepName, field.getName() );
+                  fieldMap.put( key, new SourceStepField( prevStepName, field.getName() ) );
+                }
+              }
+              String[] sourceFields = fieldMap.keySet().toArray( new String[fieldMap.size()] );
+              Arrays.sort( sourceFields );
+
+              EnterSelectionDialog selectSourceField =
+                new EnterSelectionDialog(
+                  shell, sourceFields, "Select source field", "Select the source field (cancel=clear)" );
+              if ( source != null && !Const.isEmpty( source.getStepname() ) ) {
+                String key = buildStepFieldKey( source.getStepname(), source.getField() );
+                int index = Const.indexOfString( key, sourceFields );
+                if ( index >= 0 ) {
+                  selectSourceField.setSelectedNrs( new int[] { index, } );
+                }
+              }
+              String selectedStepField = selectSourceField.open();
+              if ( selectedStepField != null ) {
+                SourceStepField newSource = fieldMap.get( selectedStepField );
+                item.setText( 2, newSource.getStepname() );
+                item.setText( 3, newSource.getField() );
+                targetSourceMapping.put( target, newSource );
+              } else {
+                item.setText( 2, "" );
+                item.setText( 3, "" );
+                targetSourceMapping.remove( target );
+              }
+
+              /*
+               * EnterSelectionDialog selectStep = new EnterSelectionDialog(shell, prevStepNames, "Select source step",
+               * "Select the source step"); if (source!=null && !Const.isEmpty(source.getStepname())) { int index =
+               * Const.indexOfString(source.getStepname(), prevStepNames); if (index>=0) { selectStep.setSelectedNrs(new
+               * int[] {index,}); } } String prevStep = selectStep.open(); if (prevStep!=null) { // OK, now we list the
+               * fields from that step... // RowMetaInterface fields = transMeta.getStepFields(prevStep); String[]
+               * fieldNames = fields.getFieldNames(); Arrays.sort(fieldNames); EnterSelectionDialog selectField = new
+               * EnterSelectionDialog(shell, fieldNames, "Select field", "Select the source field"); if (source!=null &&
+               * !Const.isEmpty(source.getField())) { int index = Const.indexOfString(source.getField(), fieldNames); if
+               * (index>=0) { selectField.setSelectedNrs(new int[] {index,}); } } String fieldName = selectField.open();
+               * if (fieldName!=null) { // Store the selection, update the UI... // item.setText(2, prevStep);
+               * item.setText(3, fieldName); source = new SourceStepField(prevStep, fieldName);
+               * targetSourceMapping.put(target, source); } } else { item.setText(2, ""); item.setText(3, "");
+               * targetSourceMapping.remove(target); }
+               */
+            }
+
+          }
+        } catch ( Exception e ) {
+          new ErrorDialog( shell, "Oops", "Unexpected Error", e );
+        }
       }
     } );
 
-    // Set the shell size, based upon previous time...
-    setSize();
+    FormData fdInjectComp = new FormData();
+    fdInjectComp.left = new FormAttachment( 0, 0 );
+    fdInjectComp.top = new FormAttachment( 0, 0 );
+    fdInjectComp.right = new FormAttachment( 100, 0 );
+    fdInjectComp.bottom = new FormAttachment( 100, 0 );
+    wInjectComp.setLayoutData( fdInjectComp );
 
-    getData();
-    metaInjectMeta.setChanged( changed );
+    wInjectComp.pack();
+    Rectangle bounds = wInjectComp.getBounds();
 
-    shell.open();
-    while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() ) {
-        display.sleep();
-      }
-    }
-    return stepname;
+    wInjectSComp.setContent( wInjectComp );
+    wInjectSComp.setExpandHorizontal( true );
+    wInjectSComp.setExpandVertical( true );
+    wInjectSComp.setMinWidth( bounds.width );
+    wInjectSComp.setMinHeight( bounds.height );
+
+    wInjectTab.setControl( wInjectSComp );
+
+    // ///////////////////////////////////////////////////////////
+    // / END OF INJECT TAB
+    // ///////////////////////////////////////////////////////////
   }
 
   protected void selectTransformationByReference() {
@@ -718,6 +1077,14 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
     wByReference.setEnabled( repository != null && radioByReference.getSelection() && supportsReferences );
     wbByReference.setEnabled( repository != null && radioByReference.getSelection() && supportsReferences );
+
+    boolean outputCapture = !Const.isEmpty( wSourceStep.getText() );
+    wlSourceFields.setEnabled( outputCapture );
+    wSourceFields.setEnabled( outputCapture );
+
+    boolean streaming = !Const.isEmpty( wStreamingSourceStep.getText() );
+    wStreamingTargetStep.setEnabled( streaming );
+    wlStreamingTargetStep.setEnabled( streaming );
   }
 
   protected void setRadioButtons() {
@@ -771,119 +1138,31 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     wSourceStep.setText( Const.NVL( metaInjectMeta.getSourceStepName(), "" ) );
+    int rownr = 0;
+    for ( MetaInjectOutputField field : metaInjectMeta.getSourceOutputFields() ) {
+      int colnr = 1;
+      wSourceFields.setText( field.getName(), colnr++, rownr );
+      wSourceFields.setText( field.getTypeDescription(), colnr++, rownr );
+      wSourceFields.setText( field.getLength() < 0 ? "" : Integer.toString( field.getLength() ), colnr++, rownr );
+      wSourceFields.setText( field.getPrecision() < 0 ? "" : Integer.toString( field.getPrecision() ), colnr++, rownr );
+      rownr++;
+    }
+
     wTargetFile.setText( Const.NVL( metaInjectMeta.getTargetFile(), "" ) );
     wNoExecution.setSelection( metaInjectMeta.isNoExecution() );
+
+    wStreamingSourceStep.setText( Const.NVL(
+      metaInjectMeta.getStreamSourceStep() == null ? null : metaInjectMeta.getStreamSourceStep().getName(), "" ) );
+    wStreamingTargetStep.setText( Const.NVL( metaInjectMeta.getStreamTargetStepname(), "" ) );
 
     setRadioButtons();
 
     refreshTree();
 
+    wTabFolder.setSelection( 0 );
+
     wStepname.selectAll();
     wStepname.setFocus();
-  }
-
-  private void addTree( Control lastControl ) {
-
-    wTree = new Tree( shell, SWT.SINGLE | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER );
-    FormData fdTree = new FormData();
-    fdTree.left = new FormAttachment( 0, 0 );
-    fdTree.right = new FormAttachment( 100, 0 );
-    fdTree.top = new FormAttachment( lastControl, 2 * margin );
-    fdTree.bottom = new FormAttachment( wOK, -2 * margin );
-    wTree.setLayoutData( fdTree );
-
-    ColumnInfo[] colinf =
-      new ColumnInfo[] {
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetStep" ), ColumnInfo.COLUMN_TYPE_TEXT,
-          false, true ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "MetaInjectDialog.Column.TargetDescription" ),
-          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceStep" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "MetaInjectDialog.Column.SourceField" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ), };
-
-    wTree.setHeaderVisible( true );
-    for ( int i = 0; i < colinf.length; i++ ) {
-      ColumnInfo columnInfo = colinf[i];
-      TreeColumn treeColumn = new TreeColumn( wTree, columnInfo.getAllignement() );
-      treeColumn.setText( columnInfo.getName() );
-      treeColumn.setWidth( 200 );
-    }
-
-    wTree.addListener( SWT.MouseDown, new Listener() {
-      public void handleEvent( Event event ) {
-        try {
-          Point point = new Point( event.x, event.y );
-          TreeItem item = wTree.getItem( point );
-          if ( item != null ) {
-            TargetStepAttribute target = treeItemTargetMap.get( item );
-            if ( target != null ) {
-              SourceStepField source = targetSourceMapping.get( target );
-
-              String[] prevStepNames = transMeta.getPrevStepNames( stepMeta );
-              Arrays.sort( prevStepNames );
-
-              Map<String, SourceStepField> fieldMap = new HashMap<String, SourceStepField>();
-              for ( String prevStepName : prevStepNames ) {
-                RowMetaInterface fields = transMeta.getStepFields( prevStepName );
-                for ( ValueMetaInterface field : fields.getValueMetaList() ) {
-                  String key = buildStepFieldKey( prevStepName, field.getName() );
-                  fieldMap.put( key, new SourceStepField( prevStepName, field.getName() ) );
-                }
-              }
-              String[] sourceFields = fieldMap.keySet().toArray( new String[fieldMap.size()] );
-              Arrays.sort( sourceFields );
-
-              EnterSelectionDialog selectSourceField =
-                new EnterSelectionDialog(
-                  shell, sourceFields, "Select source field", "Select the source field (cancel=clear)" );
-              if ( source != null && !Const.isEmpty( source.getStepname() ) ) {
-                String key = buildStepFieldKey( source.getStepname(), source.getField() );
-                int index = Const.indexOfString( key, sourceFields );
-                if ( index >= 0 ) {
-                  selectSourceField.setSelectedNrs( new int[] { index, } );
-                }
-              }
-              String selectedStepField = selectSourceField.open();
-              if ( selectedStepField != null ) {
-                SourceStepField newSource = fieldMap.get( selectedStepField );
-                item.setText( 2, newSource.getStepname() );
-                item.setText( 3, newSource.getField() );
-                targetSourceMapping.put( target, newSource );
-              } else {
-                item.setText( 2, "" );
-                item.setText( 3, "" );
-                targetSourceMapping.remove( target );
-              }
-
-              /*
-               * EnterSelectionDialog selectStep = new EnterSelectionDialog(shell, prevStepNames, "Select source step",
-               * "Select the source step"); if (source!=null && !Const.isEmpty(source.getStepname())) { int index =
-               * Const.indexOfString(source.getStepname(), prevStepNames); if (index>=0) { selectStep.setSelectedNrs(new
-               * int[] {index,}); } } String prevStep = selectStep.open(); if (prevStep!=null) { // OK, now we list the
-               * fields from that step... // RowMetaInterface fields = transMeta.getStepFields(prevStep); String[]
-               * fieldNames = fields.getFieldNames(); Arrays.sort(fieldNames); EnterSelectionDialog selectField = new
-               * EnterSelectionDialog(shell, fieldNames, "Select field", "Select the source field"); if (source!=null &&
-               * !Const.isEmpty(source.getField())) { int index = Const.indexOfString(source.getField(), fieldNames); if
-               * (index>=0) { selectField.setSelectedNrs(new int[] {index,}); } } String fieldName = selectField.open();
-               * if (fieldName!=null) { // Store the selection, update the UI... // item.setText(2, prevStep);
-               * item.setText(3, fieldName); source = new SourceStepField(prevStep, fieldName);
-               * targetSourceMapping.put(target, source); } } else { item.setText(2, ""); item.setText(3, "");
-               * targetSourceMapping.remove(target); }
-               */
-            }
-
-          }
-        } catch ( Exception e ) {
-          new ErrorDialog( shell, "Oops", "Unexpected Error", e );
-        }
-      }
-    } );
   }
 
   protected String buildStepFieldKey( String stepname, String field ) {
@@ -983,6 +1262,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       String[] sourceSteps = injectTransMeta.getStepNames();
       Arrays.sort( sourceSteps );
       wSourceStep.setItems( sourceSteps );
+      wStreamingTargetStep.setItems( sourceSteps );
     }
   }
 
@@ -1040,8 +1320,22 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     metaInjectMeta.setSourceStepName( wSourceStep.getText() );
+    metaInjectMeta.setSourceOutputFields( new ArrayList<MetaInjectOutputField>() );
+    for ( int i = 0; i < wSourceFields.nrNonEmpty(); i++ ) {
+      TableItem item = wSourceFields.getNonEmpty( i );
+      int colIndex = 1;
+      String name = item.getText( colIndex++ );
+      int type = ValueMetaFactory.getIdForValueMeta( item.getText( colIndex++ ) );
+      int length = Const.toInt( item.getText( colIndex++ ), -1 );
+      int precision = Const.toInt( item.getText( colIndex++ ), -1 );
+      metaInjectMeta.getSourceOutputFields().add( new MetaInjectOutputField( name, type, length, precision ) );
+    }
+
     metaInjectMeta.setTargetFile( wTargetFile.getText() );
     metaInjectMeta.setNoExecution( wNoExecution.getSelection() );
+
+    metaInjectMeta.setStreamSourceStep( transMeta.findStep( wStreamingSourceStep.getText() ) );
+    metaInjectMeta.setStreamTargetStepname( wStreamingTargetStep.getText() );
 
     metaInjectMeta.setTargetSourceMapping( targetSourceMapping );
     metaInjectMeta.setChanged( true );

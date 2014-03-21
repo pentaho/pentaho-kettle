@@ -131,4 +131,8 @@ public class RowDistributionPluginType extends BasePluginType implements PluginT
     return null;
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (RowDistributionPlugin) annotation ).classLoaderGroup();
+  }
 }

@@ -169,7 +169,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
       setOutputDone();
 
       try {
-        logBasic( "TeraFast.Log.WatingForFastload" );
+        logBasic( BaseMessages.getString( PKG, "TeraFast.Log.WatingForFastload" ) );
         if ( this.process != null ) {
           final int exitVal = this.process.waitFor();
           if ( exitVal != 0 ) {
@@ -272,7 +272,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
             break;
           default:
             throw new KettleException( BaseMessages.getString(
-              PKG, "GPLoadDataOutput.Exception.TypeNotSupported", valueMeta.getType() ) );
+              PKG, "TeraFast.Exception.TypeNotSupported", valueMeta.getType() ) );
         }
       }
       dataFilePrintStream.print( FastloadControlBuilder.DATAFILE_COLUMN_SEPERATOR );

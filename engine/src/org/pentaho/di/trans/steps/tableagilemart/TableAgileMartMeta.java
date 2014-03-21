@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.tableagilemart;
 
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -31,9 +30,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 
-@Step(
-  id = "TableAgileMart", image = "plugins/steps/MonetDBAgileMartPlugin/icon.png", name = "Table Agile Mart",
-  description = "Table Agile Mart", categoryDescription = "Agile BI" )
 public class TableAgileMartMeta extends TableOutputMeta {
 
   protected long rowLimit = getLongProperty( "AgileBIRowLimit", 100000 ); // have a nice default

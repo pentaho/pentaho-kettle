@@ -303,8 +303,15 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
       }
       for ( int colNr = 0; colNr < rowMeta.size(); colNr++ ) {
         String string;
+        ValueMetaInterface valueMetaInterface;
         try {
-          string = rowMeta.getString( rowData, colNr );
+          valueMetaInterface = rowMeta.getValueMeta( colNr );
+          if ( valueMetaInterface.isStorageBinaryString() ) {
+            Object nativeType = valueMetaInterface.convertBinaryStringToNativeType( (byte[]) rowData[colNr] );
+            string = valueMetaInterface.getStorageMetadata().getString( nativeType );
+          } else {
+            string = rowMeta.getString( rowData, colNr );
+          }
         } catch ( Exception e ) {
           string = "Conversion error: " + e.getMessage();
         }

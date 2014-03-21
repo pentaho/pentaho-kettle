@@ -828,6 +828,10 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     }
   }
 
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
   /**
    * Describe the metadata attributes that can be injected into this step metadata object.
    *

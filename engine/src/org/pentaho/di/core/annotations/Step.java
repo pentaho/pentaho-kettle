@@ -60,6 +60,8 @@ public @interface Step {
    */
   boolean isSeparateClassLoaderNeeded() default false;
 
+  String classLoaderGroup() default "";
+
   String categoryDescription() default "";
 
   String i18nPackageName() default "";
