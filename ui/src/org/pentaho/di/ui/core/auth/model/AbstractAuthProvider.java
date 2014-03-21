@@ -35,7 +35,6 @@ public abstract class AbstractAuthProvider extends XulEventSourceAdapter
   BindingFactory bf;
   private java.util.List<Binding> elementBindings = new ArrayList<Binding>();
 
-
   public AbstractAuthProvider( BindingFactory bf ) {
     this.bf = bf;
   }

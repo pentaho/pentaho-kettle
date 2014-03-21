@@ -19,6 +19,12 @@
 
 package org.pentaho.di.ui.core.auth.controller;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.pentaho.di.ui.core.auth.model.AuthProvider;
 import org.pentaho.di.ui.core.auth.model.BasicAuthProvider;
 import org.pentaho.di.ui.core.auth.model.KerberosAuthProvider;
@@ -36,12 +42,6 @@ import org.pentaho.ui.xul.components.XulFileDialog;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class AuthProviderController extends AbstractXulEventHandler {
 
@@ -177,7 +177,6 @@ public class AuthProviderController extends AbstractXulEventHandler {
       // to bind the main authProvider selection to the changing of the overlay
       bf.createBinding( this.model, "selectedItem", this, "newOverlay", selectedItemsItemBinding );
 
-
     } catch ( XulException e ) {
       e.printStackTrace( System.out );
     } catch ( InvocationTargetException e ) {
@@ -209,11 +208,11 @@ public class AuthProviderController extends AbstractXulEventHandler {
 
     String potentialName = null;
 
-    while ( !good ){
+    while ( !good ) {
       potentialName = name.concat( Integer.toString( ++index ) );
       boolean found = false;
-      for(  NamedModelObject o : model.getModelObjects() ) {
-        if ( o.getName().equalsIgnoreCase( potentialName ) ){
+      for ( NamedModelObject o : model.getModelObjects() ) {
+        if ( o.getName().equalsIgnoreCase( potentialName ) ) {
           found = true;
           break;
         }
@@ -346,7 +345,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
    * Exposed only for junit tests
    * @return ObjectListModel
    */
-  ObjectListModel getModel(){
+  ObjectListModel getModel() {
     return model;
   }
 }

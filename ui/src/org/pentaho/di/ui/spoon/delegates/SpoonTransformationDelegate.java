@@ -737,7 +737,10 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     // Set repository and safe mode information in both the exec config and the metadata
     transMeta.setRepository( spoon.rep );
+    transMeta.setMetaStore( spoon.metaStore );
+
     executionConfiguration.setRepository( spoon.rep );
+
     executionConfiguration.setSafeModeEnabled( safe );
 
     if ( debug ) {

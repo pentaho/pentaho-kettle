@@ -19,13 +19,12 @@
 
 package org.pentaho.di.ui.core.auth.model;
 
-public abstract interface NamedModelObject<T>
-{
+public abstract interface NamedModelObject<T> {
   public abstract String getName();
 
-  public abstract void setName( String paramString);
+  public abstract void setName( String paramString );
 
-  public abstract void setItem(T paramT);
+  public abstract void setItem( T paramT );
 
   public abstract T getItem();
 }

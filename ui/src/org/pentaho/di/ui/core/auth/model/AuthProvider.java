@@ -19,8 +19,7 @@
 
 package org.pentaho.di.ui.core.auth.model;
 
-public abstract interface AuthProvider extends Cloneable
-{
+public abstract interface AuthProvider extends Cloneable {
   public abstract String getPrincipal();
 
   public abstract void setPrincipal( String paramString );

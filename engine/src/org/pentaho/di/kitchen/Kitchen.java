@@ -438,6 +438,9 @@ public class Kitchen {
       job.initializeVariablesFrom( null );
       job.setLogLevel( log.getLogLevel() );
       job.getJobMeta().setInternalKettleVariables( job );
+      job.setRepository( repository );
+      job.getJobMeta().setRepository( repository );
+      job.getJobMeta().setMetaStore( metaStore );
 
       // Map the command line named parameters to the actual named parameters. Skip for
       // the moment any extra command line parameter not known in the job.

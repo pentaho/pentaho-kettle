@@ -19,16 +19,14 @@
 
 package org.pentaho.di.ui.core.auth.model;
 
+import java.util.List;
+
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 
-import java.util.List;
-
-public class KerberosAuthProvider extends BasicAuthProvider
-{
+public class KerberosAuthProvider extends BasicAuthProvider {
   private boolean useKeytab;
   private String keytabFile;
-
 
   public KerberosAuthProvider( BindingFactory bf ) {
     super( bf );
@@ -58,8 +56,7 @@ public class KerberosAuthProvider extends BasicAuthProvider
 
   }
 
-  public String getProviderDescription()
-  {
+  public String getProviderDescription() {
     return "Kerberos";
   }
 
@@ -68,31 +65,30 @@ public class KerberosAuthProvider extends BasicAuthProvider
 
     super.addBindings( bindings, bf );
 
-    Binding b = bf.createBinding(  this, "keytabFile", "keytab", "value" );
+    Binding b = bf.createBinding( this, "keytabFile", "keytab", "value" );
     b.setBindingType( Binding.Type.BI_DIRECTIONAL );
     bindings.add( b );
 
-    b = bf.createBinding(  this, "useKeytab", "useKeytab", "checked" );
+    b = bf.createBinding( this, "useKeytab", "useKeytab", "checked" );
     b.setBindingType( Binding.Type.BI_DIRECTIONAL );
     bindings.add( b );
 
-    b = bf.createBinding("useKeytab", "checked", "keytab", "!disabled" );
+    b = bf.createBinding( "useKeytab", "checked", "keytab", "!disabled" );
     b.setBindingType( Binding.Type.ONE_WAY );
     bindings.add( b );
 
-    b = bf.createBinding("useKeytab", "checked", "browse", "!disabled" );
+    b = bf.createBinding( "useKeytab", "checked", "browse", "!disabled" );
     b.setBindingType( Binding.Type.ONE_WAY );
     bindings.add( b );
 
-    b = bf.createBinding("useKeytab", "checked", "password", "disabled" );
+    b = bf.createBinding( "useKeytab", "checked", "password", "disabled" );
     b.setBindingType( Binding.Type.ONE_WAY );
     bindings.add( b );
 
-    b = bf.createBinding("useKeytab", "checked", "principal", "disabled" );
+    b = bf.createBinding( "useKeytab", "checked", "principal", "disabled" );
     b.setBindingType( Binding.Type.ONE_WAY );
     bindings.add( b );
 
   }
-
 
 }
