@@ -116,10 +116,6 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
   }
 
   private void writeToSalesForce( Object[] rowData ) throws KettleException {
-	String  upsertFieldNameTemp[] = null;
-	String upsertModuleFieldName = null;
-	String fieldToNullFieldName = null;
-
     try {
 
       if ( log.isDetailed() ) {
@@ -141,20 +137,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
           if ( valueMeta.isNull( value ) ) {
             // The value is null
             // We need to keep track of this field
-          	fieldToNullFieldName = meta.getUpdateLookup()[i];
-        	if (!meta.getUseExternalId()[i]) {
-                fieldsToNull.add( fieldToNullFieldName );
-        	} else {
-        		// This is a external id formatted field in the form sobject:extern_id_lookup_field/module_fieldname
-        		// so we want to check if there is a '/' in the field name if so get the string following that 
-        		upsertFieldNameTemp = fieldToNullFieldName.split("\\/");
-        		upsertModuleFieldName = upsertFieldNameTemp[upsertFieldNameTemp.length-1];
-        		if (upsertModuleFieldName.endsWith("__r")) {
-        			upsertModuleFieldName = upsertModuleFieldName.substring(0,upsertModuleFieldName.length()-3) + "__c";
-        		}
-                fieldsToNull.add( upsertModuleFieldName);
-        	}
-
+            fieldsToNull.add( meta.getUpdateLookup()[i] );
           } else {
             if ( valueMeta.isDate() ) {
               // Pass date field converted to UTC, see PDI-10836
