@@ -423,7 +423,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
             boolean is_enclosure =
                 len_encl > 0 && p + len_encl < length
-                    && line.substring( p, p + len_encl ).equalsIgnoreCase( inf.getEnclosure() );
+                    && line.substring( p, p + len_encl ).equalsIgnoreCase( enclosure );
             boolean is_escape =
                 len_esc > 0 && p + len_esc < length
                     && line.substring( p, p + len_esc ).equalsIgnoreCase( inf.getEscapeCharacter() );
@@ -451,7 +451,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
               enclosure_after = false;
               is_enclosure =
                   len_encl > 0 && p + len_encl < length
-                      && line.substring( p, p + len_encl ).equals( inf.getEnclosure() );
+                      && line.substring( p, p + len_encl ).equals( enclosure );
               is_escape =
                   len_esc > 0 && p + len_esc < length
                       && line.substring( p, p + len_esc ).equals( inf.getEscapeCharacter() );
