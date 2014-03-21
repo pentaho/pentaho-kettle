@@ -45,7 +45,7 @@ import org.w3c.dom.Node;
 @PluginMainClassType( AuthenticationProviderType.class )
 @PluginAnnotationType( AuthenticationProviderPlugin.class )
 public class AuthenticationProviderPluginType extends BasePluginType implements PluginTypeInterface {
-  protected static AuthenticationProviderPluginType pluginType = new AuthenticationProviderPluginType();;
+  protected static AuthenticationProviderPluginType pluginType = new AuthenticationProviderPluginType();
 
   private AuthenticationProviderPluginType() {
     super( AuthenticationProviderPlugin.class, "AUTHENTICATION_PROVIDER", "AuthenticationProvider" );
@@ -74,7 +74,7 @@ public class AuthenticationProviderPluginType extends BasePluginType implements 
       }
       if ( inputStream == null ) {
         throw new KettlePluginException( "Unable to find native kettle authentication providers definition file: "
-            + xmlFile );
+          + xmlFile );
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
