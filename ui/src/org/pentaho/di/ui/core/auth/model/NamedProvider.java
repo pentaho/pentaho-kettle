@@ -41,20 +41,17 @@ public class NamedProvider extends XulEventSourceAdapter implements NamedModelOb
 
   }
 
-  public String getName()
-  {
+  public String getName() {
     return this.name;
   }
 
-  public void setName( String name )
-  {
+  public void setName( String name ) {
     String prev = this.name;
     this.name = name;
     firePropertyChange( "name", prev, this.name );
   }
 
-  public void setItem( AuthProvider object )
-  {
+  public void setItem( AuthProvider object ) {
 
     this.provider = object;
     try {
@@ -64,14 +61,12 @@ public class NamedProvider extends XulEventSourceAdapter implements NamedModelOb
     }
   }
 
-  public AuthProvider getItem()
-  {
+  public AuthProvider getItem() {
     return this.provider;
 
   }
 
-  public String toString()
-  {
+  public String toString() {
     return this.name;
   }
 }

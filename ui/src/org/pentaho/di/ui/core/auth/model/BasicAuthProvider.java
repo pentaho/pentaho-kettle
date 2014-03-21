@@ -54,11 +54,11 @@ public class BasicAuthProvider extends AbstractAuthProvider {
   }
 
   @Override
-  protected void addBindings( List<Binding> bindings,  BindingFactory bf ) {
+  protected void addBindings( List<Binding> bindings, BindingFactory bf ) {
 
-      Binding b = bf.createBinding(  this, "password", "password", "value" );
-      b.setBindingType( Binding.Type.BI_DIRECTIONAL );
-      bindings.add( b );
+    Binding b = bf.createBinding( this, "password", "password", "value" );
+    b.setBindingType( Binding.Type.BI_DIRECTIONAL );
+    bindings.add( b );
 
   }
 
