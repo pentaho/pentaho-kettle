@@ -22,14 +22,15 @@
 
 package org.pentaho.di.ui.core.auth.model;
 
-import java.util.List;
-
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
+
+import java.util.List;
 
 public class KerberosAuthProvider extends BasicAuthProvider {
   private boolean useKeytab;
   private String keytabFile;
+
 
   public KerberosAuthProvider( BindingFactory bf ) {
     super( bf );
@@ -93,5 +94,6 @@ public class KerberosAuthProvider extends BasicAuthProvider {
     bindings.add( b );
 
   }
+
 
 }

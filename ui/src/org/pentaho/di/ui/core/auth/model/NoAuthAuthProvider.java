@@ -22,10 +22,10 @@
 
 package org.pentaho.di.ui.core.auth.model;
 
-import java.util.List;
-
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
+
+import java.util.List;
 
 public class NoAuthAuthProvider extends AbstractAuthProvider {
   public NoAuthAuthProvider( BindingFactory bf ) {
