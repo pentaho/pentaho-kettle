@@ -1,24 +1,28 @@
-/*
- * !
- *  * This program is free software; you can redistribute it and/or modify it under the
- *  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- *  * Foundation.
- *  *
- *  * You should have received a copy of the GNU Lesser General Public License along with this
- *  * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- *  * or from the Free Software Foundation, Inc.,
- *  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *  *
- *  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  * See the GNU Lesser General Public License for more details.
- *  *
- *  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+/*! ******************************************************************************
  *
- */
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.core.auth.model;
 
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
 public class NamedProvider extends XulEventSourceAdapter implements NamedModelObject<AuthProvider> {
@@ -47,7 +51,11 @@ public class NamedProvider extends XulEventSourceAdapter implements NamedModelOb
   public void setItem( AuthProvider object ) {
 
     this.provider = object;
-    provider.fireBindingsChanged();
+    try {
+      provider.fireBindingsChanged();
+    } catch ( Exception e ) {
+      LogChannel.GENERAL.logError( "Binding event error while attempting to select provider.", e );
+    }
   }
 
   public AuthProvider getItem() {
