@@ -25,7 +25,7 @@ package org.pentaho.di.ui.core.auth.model;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
-@SuppressWarnings( {"unchecked", "rawtypes"} )
+@SuppressWarnings( { "unchecked", "rawtypes" } )
 public class ObjectListModel extends XulEventSourceAdapter {
   private AbstractModelList<NamedModelObject> modelObjects = new AbstractModelList<NamedModelObject>();
 

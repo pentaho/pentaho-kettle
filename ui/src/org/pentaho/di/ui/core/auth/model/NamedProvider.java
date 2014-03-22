@@ -24,9 +24,6 @@ package org.pentaho.di.ui.core.auth.model;
 
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
-import org.pentaho.ui.xul.XulException;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class NamedProvider extends XulEventSourceAdapter implements NamedModelObject<AuthProvider> {
 
@@ -41,20 +38,17 @@ public class NamedProvider extends XulEventSourceAdapter implements NamedModelOb
 
   }
 
-  public String getName()
-  {
+  public String getName() {
     return this.name;
   }
 
-  public void setName( String name )
-  {
+  public void setName( String name ) {
     String prev = this.name;
     this.name = name;
     firePropertyChange( "name", prev, this.name );
   }
 
-  public void setItem( AuthProvider object )
-  {
+  public void setItem( AuthProvider object ) {
 
     this.provider = object;
     try {
@@ -64,14 +58,12 @@ public class NamedProvider extends XulEventSourceAdapter implements NamedModelOb
     }
   }
 
-  public AuthProvider getItem()
-  {
+  public AuthProvider getItem() {
     return this.provider;
 
   }
 
-  public String toString()
-  {
+  public String toString() {
     return this.name;
   }
 }

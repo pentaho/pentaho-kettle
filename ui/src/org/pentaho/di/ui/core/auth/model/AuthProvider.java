@@ -27,8 +27,7 @@ import org.pentaho.ui.xul.binding.BindingException;
 
 import java.lang.reflect.InvocationTargetException;
 
-public abstract interface AuthProvider extends Cloneable
-{
+public abstract interface AuthProvider extends Cloneable {
   public abstract String getPrincipal();
 
   public abstract void setPrincipal( String paramString );

@@ -27,19 +27,16 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 
 import java.util.List;
 
-public class NoAuthAuthProvider extends AbstractAuthProvider
-{
+public class NoAuthAuthProvider extends AbstractAuthProvider {
   public NoAuthAuthProvider( BindingFactory bf ) {
     super( bf );
   }
 
-  public String getPrincipal()
-  {
+  public String getPrincipal() {
     return null;
   }
 
-  public String getProviderDescription()
-  {
+  public String getProviderDescription() {
     return "NoAuth";
   }
 
