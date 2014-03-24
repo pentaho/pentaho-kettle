@@ -35,14 +35,6 @@ package org.pentaho.di.trans.steps.orabulkloader;
 //
 //
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -59,6 +51,14 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Performs a bulk load to an oracle table.
@@ -124,7 +124,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
   private String substituteRecordTerminator( String terminator ) {
     final StringBuilder in = new StringBuilder();
-    int length = 0;
+    int length;
     boolean escaped = false;
 
     terminator = environmentSubstitute( terminator );
@@ -158,19 +158,19 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
   private String encodeRecordTerminator( String terminator, String encoding ) throws KettleException {
     final String in = substituteRecordTerminator( terminator );
     final StringBuilder out = new StringBuilder();
-    byte[] bytes = null;
+    byte[] bytes;
 
     try {
       // use terminator in hex representation due to character set
       // terminator in hex representation must be in character set
       // of data file
       if ( Const.isEmpty( encoding ) ) {
-        bytes = in.toString().getBytes();
+        bytes = in.getBytes();
       } else {
-        bytes = in.toString().getBytes( encoding );
+        bytes = in.getBytes( encoding );
       }
-      for ( int i = 0; i < bytes.length; i++ ) {
-        final String hex = Integer.toHexString( bytes[i] );
+      for ( byte aByte : bytes ) {
+        final String hex = Integer.toHexString( aByte );
 
         if ( hex.length() == 1 ) {
           out.append( '0' );
@@ -199,7 +199,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
     String loadAction = meta.getLoadAction();
 
-    StringBuffer contents = new StringBuffer( 500 );
+    StringBuilder contents = new StringBuilder( 500 );
     contents.append( "OPTIONS(" ).append( Const.CR );
     contents.append( "  ERRORS=\'" ).append( meta.getMaxErrors() ).append( "\'" ).append( Const.CR );
 
@@ -290,6 +290,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
         case ValueMetaInterface.TYPE_BINARY:
           contents.append( " ENCLOSED BY '<startlob>' AND '<endlob>'" );
           break;
+        case ValueMetaInterface.TYPE_TIMESTAMP:
+          contents.append( " TIMESTAMP 'yyyy-mm-dd hh24:mi:ss.ff'" );
+          break;
         default:
           break;
       }
@@ -302,8 +305,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
   /**
    * Create a control file.
    *
-   * @param filename
-   * @param meta
+   * @param filename path to control file
+   * @param meta step meta
    * @throws KettleException
    */
   public void createControlFile( String filename, Object[] row, OraBulkLoaderMeta meta ) throws KettleException {
@@ -341,7 +344,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
    *           Upon any exception
    */
   public String createCommandLine( OraBulkLoaderMeta meta, boolean password ) throws KettleException {
-    StringBuffer sb = new StringBuffer( 300 );
+    StringBuilder sb = new StringBuilder( 300 );
 
     if ( meta.getSqlldr() != null ) {
       try {
@@ -578,10 +581,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     Trans trans = getTrans();
     preview = trans.isPreview();
 
-    if ( super.init( smi, sdi ) ) {
-      return true;
-    }
-    return false;
+    return super.init( smi, sdi );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {

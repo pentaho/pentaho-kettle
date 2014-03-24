@@ -21,8 +21,9 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-
 import org.junit.Test;
+
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -39,7 +40,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
- * User: Dzmitry Stsiapanau Date: 3/24/14 Time: 1:30 PM
+ * User: Dzmitry Stsiapanau Date: 3/20/2014 Time: 11:51 AM
  */
 public class ValueMetaTimestampTest {
   @Test
@@ -72,5 +73,27 @@ public class ValueMetaTimestampTest {
     assertEquals( vm.compare( earlier, earlier ), 0 );
     assertEquals( vm.compare( earlier, later ), -1 );
     assertEquals( vm.compare( later, earlier ), 1 );
+  }
+
+  @Test
+  public void testConvertStringToTimestamp() throws Exception {
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123456" ),
+      valueMetaTimestamp.convertStringToTimestamp( "2012/4/5 04:03:02.123456" ) );
+    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123" ),
+      valueMetaTimestamp.convertStringToTimestamp( "2012/4/5 04:03:02.123" ) );
+    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123456789" ),
+      valueMetaTimestamp.convertStringToTimestamp( "2012/4/5 04:03:02.123456789" ) );
+  }
+
+  @Test
+  public void testConvertTimestampToString() throws Exception {
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    assertEquals( "2012/04/05 04:03:02.123456000",
+      valueMetaTimestamp.convertTimestampToString( Timestamp.valueOf( "2012-04-05 04:03:02.123456" ) ) );
+    assertEquals( "2012/04/05 04:03:02.123000000",
+      valueMetaTimestamp.convertTimestampToString( Timestamp.valueOf( "2012-04-05 04:03:02.123" ) ) );
+    assertEquals( "2012/04/05 04:03:02.123456789",
+      valueMetaTimestamp.convertTimestampToString( Timestamp.valueOf( "2012-04-05 04:03:02.123456789" ) ) );
   }
 }

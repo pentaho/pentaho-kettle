@@ -22,12 +22,6 @@
 
 package org.pentaho.di.repository.kdr.delegates;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -36,6 +30,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -47,6 +42,13 @@ import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
   public KettleDatabaseRepositoryMetaStoreDelegate( KettleDatabaseRepository repository ) {
@@ -56,8 +58,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   /**
    * Retrieve the ID for a namespace
    *
-   * @param namespace
-   *          The namespace to look up
+   * @param namespace The namespace to look up
    * @return the ID of the namespace
    * @throws KettleException
    */
@@ -289,7 +290,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   public KDBRMetaStoreElementType parseElementType( String namespace, ObjectId namespaceId,
-    RowMetaAndData elementTypeRow ) throws KettleValueException {
+                                                    RowMetaAndData elementTypeRow ) throws KettleValueException {
 
     Long id = elementTypeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE );
     String name = elementTypeRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, null );
@@ -330,7 +331,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   private void addAttributes( IMetaStoreAttribute parentAttribute, ObjectId elementId,
-    LongObjectId parentAttributeId ) throws KettleException {
+                              LongObjectId parentAttributeId ) throws KettleException {
 
     Collection<RowMetaAndData> attributeRows = getElementAttributes( elementId, parentAttributeId );
     for ( RowMetaAndData attributeRow : attributeRows ) {
@@ -363,7 +364,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   /**
    * supported types:
-   *
+   * <p/>
    * <pre>
    * S : String (java.lang.String)
    * D : Date (java.util.Date)
@@ -381,8 +382,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
    *
    * @param value
    * @return The native value
-   * @throws Exception
-   *           in case of conversion trouble
+   * @throws Exception in case of conversion trouble
    */
   public Object parseAttributeValue( String value ) throws Exception {
     if ( Const.isEmpty( value ) || value.length() < 3 ) {
@@ -390,9 +390,11 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
     String valueString = value.substring( 2 );
     char type = value.charAt( 0 );
-    switch ( type ) {
+    switch( type ) {
       case 'S':
         return valueString;
+      case 'T':
+        return new SimpleTimestampFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK ).parse( valueString );
       case 'D':
         return new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK ).parse( valueString );
       case 'N':
@@ -412,6 +414,10 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
     if ( object instanceof String ) {
       return "S:" + object.toString();
+    }
+    if ( object instanceof Timestamp ) {
+      return "T:" + new SimpleTimestampFormat(
+        ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK ).format( (Timestamp) object );
     }
     if ( object instanceof Date ) {
       return "D:" + new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK ).format( (Date) object );
@@ -447,7 +453,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
         .valueOf( elementType.getId() ) );
       table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_NAME, ValueMetaInterface.TYPE_STRING ), element
-          .getName() );
+        .getName() );
 
       repository.connectionDelegate.getDatabase().prepareInsert(
         table.getRowMeta(), KettleDatabaseRepository.TABLE_R_ELEMENT );
@@ -472,7 +478,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   private void insertAttributes( List<IMetaStoreAttribute> children, LongObjectId elementId,
-    LongObjectId parentAttributeId ) throws Exception {
+                                 LongObjectId parentAttributeId ) throws Exception {
     for ( IMetaStoreAttribute child : children ) {
       LongObjectId attributeId =
         repository.connectionDelegate.getNextID(
