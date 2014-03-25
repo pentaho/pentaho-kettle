@@ -15,7 +15,7 @@
     <name>Sampledata</name>
     <server/>
     <type>H2</type>
-    <access>, </access>
+    <access>JNDI</access>
     <database>SampleData</database>
     <port>1521</port>
     <username/>
