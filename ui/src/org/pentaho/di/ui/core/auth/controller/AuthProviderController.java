@@ -1,24 +1,36 @@
-/*
- * !
- *  * This program is free software; you can redistribute it and/or modify it under the
- *  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- *  * Foundation.
- *  *
- *  * You should have received a copy of the GNU Lesser General Public License along with this
- *  * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- *  * or from the Free Software Foundation, Inc.,
- *  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *  *
- *  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  * See the GNU Lesser General Public License for more details.
- *  *
- *  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+/*! ******************************************************************************
  *
- */
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.core.auth.controller;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
+
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.ui.core.auth.model.AuthProvider;
 import org.pentaho.di.ui.core.auth.model.BasicAuthProvider;
 import org.pentaho.di.ui.core.auth.model.KerberosAuthProvider;
@@ -27,8 +39,6 @@ import org.pentaho.di.ui.core.auth.model.NamedProvider;
 import org.pentaho.di.ui.core.auth.model.NoAuthAuthProvider;
 import org.pentaho.di.ui.core.auth.model.ObjectListModel;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulLoader;
-import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -37,65 +47,72 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+@SuppressWarnings( { "unchecked" } )
 public class AuthProviderController extends AbstractXulEventHandler {
 
-  private static String XUL_FILE = "org/pentaho/di/ui/core/auth/xul/authManager.xul";
-
-  protected BindingConvertor<NamedModelObject, String> selectedItemsNameBinding = new SelectedToStringConvertor();
-  protected BindingConvertor<NamedModelObject, Object> selectedItemsItemBinding = new SelectedToItemConvertor();
-  protected BindingConvertor<Collection<NamedModelObject>, Boolean> itemCountBinding = new RowCountToBooleanConvertor();
+  protected BindingConvertor<NamedModelObject<NamedProvider>, String> selectedItemsNameBinding =
+      new SelectedToStringConvertor();
+  protected BindingConvertor<NamedModelObject<NamedProvider>, Object> selectedItemsItemBinding =
+      new SelectedToItemConvertor();
+  protected BindingConvertor<Collection<NamedModelObject<NamedProvider>>, Boolean> itemCountBinding =
+      new RowCountToBooleanConvertor<NamedModelObject<NamedProvider>>();
 
   private XulDialog xulDialog;
   private BindingFactory bf;
-  private XulLoader loader;
-  private XulRunner runner;
   private ObjectListModel model = new ObjectListModel();
 
   AuthProvider activeProvider = null;
 
-  public AuthProviderController( XulLoader loader, BindingFactory bindingFactory, XulRunner runner ) {
-    this.bf = bindingFactory;
-    this.loader = loader;
-    this.runner = runner;
+  private static LogChannelInterface log;
 
+  ResourceBundle resourceBundle;
+
+  public AuthProviderController() {
+
+    log = new LogChannel( "AuthProviderController" );
     setName( "handler" );
 
-    init();
-    bind();
   }
 
-  private boolean init() {
-    boolean success = true;
+  public void setBindingFactory( BindingFactory bf ) {
+    this.bf = bf;
+  }
 
-    try {
+  public BindingFactory getBindingFactory() {
+    return bf;
+  }
 
-      setXulDomContainer( loader.loadXul( XUL_FILE, null ) );
-      bf.setDocument( getXulDomContainer().getDocumentRoot() );
-      getXulDomContainer().addEventHandler( this );
-      runner.addContainer( getXulDomContainer() );
-      xulDialog = ( (XulDialog) getXulDomContainer().getDocumentRoot().getRootElement() );
-      runner.initialize();
+  public void init() {
 
-    } catch ( XulException e ) {
-      e.printStackTrace( System.out );
-      success = false;
+    xulDialog = ( (XulDialog) getXulDomContainer().getDocumentRoot().getRootElement() );
+
+    if ( bf != null ) {
+      bind();
     }
 
-    return success;
+  }
+
+  public void setResourceBundle( ResourceBundle res ) {
+
+    resourceBundle = res;
+
   }
 
   public void open() {
-    xulDialog.show();
+
+    if ( xulDialog != null ) {
+      xulDialog.show();
+    }
+
   }
 
+  /**
+   * This will change to pull providers from the auth persistencemanager
+   * 
+   * @return Collection<AuthProvider>
+   */
   public Collection<AuthProvider> getPossibleTypes() {
-    ArrayList types = new ArrayList();
+    ArrayList<AuthProvider> types = new ArrayList<AuthProvider>();
 
     types.add( new NoAuthAuthProvider( bf ) );
     types.add( new KerberosAuthProvider( bf ) );
@@ -110,7 +127,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
       provider = new NoAuthAuthProvider( bf );
     }
     // Don't use this provider... it is the one that is created to populate
-    // the combobox. Only use it to select the proper overly, then
+    // the combobox. Only use it to select the proper overlay, then
     // bind the provider associated with the NamedObject selected
     // in the main authProvider list.
 
@@ -127,7 +144,15 @@ public class AuthProviderController extends AbstractXulEventHandler {
       // provider may not have been updated and cloned yet.
 
       if ( current.getOverlay().equalsIgnoreCase( provider.getOverlay() ) ) {
-        current.bind();
+
+        try {
+
+          current.bind();
+
+        } catch ( Exception e ) {
+          log.logError( resourceBundle.getString( "error.on_bind" ), e );
+        }
+
       }
     }
 
@@ -146,14 +171,19 @@ public class AuthProviderController extends AbstractXulEventHandler {
       bf.createBinding( this, "possibleTypes", "method_list", "elements" ).fireSourceChanged();
 
       // Manage enabling/disabling layout based on item availability in the main authProvider list.
-      bf.createBinding( model.getModelObjects(), "children", "remove_button", "disabled", itemCountBinding ).fireSourceChanged();
+      bf.createBinding( model.getModelObjects(), "children", "remove_button", "disabled", itemCountBinding )
+          .fireSourceChanged();
       bf.createBinding( model.getModelObjects(), "children", "name", "disabled", itemCountBinding ).fireSourceChanged();
-      bf.createBinding( model.getModelObjects(), "children", "method_list", "disabled", itemCountBinding ).fireSourceChanged();
+      bf.createBinding( model.getModelObjects(), "children", "method_list", "disabled", itemCountBinding )
+          .fireSourceChanged();
 
       // Manage enabling/disabling layout based on selection in the main authProvider list.
-      bf.createBinding( "auth_list", "selectedItem", "name", "!disabled", BindingConvertor.object2Boolean() ).fireSourceChanged();
-      bf.createBinding( "auth_list", "selectedItem", "method_list", "!disabled", BindingConvertor.object2Boolean() ).fireSourceChanged();
-      bf.createBinding( "auth_list", "selectedItem", "remove_button", "!disabled", BindingConvertor.object2Boolean() ).fireSourceChanged();
+      bf.createBinding( "auth_list", "selectedItem", "name", "!disabled", BindingConvertor.object2Boolean() )
+          .fireSourceChanged();
+      bf.createBinding( "auth_list", "selectedItem", "method_list", "!disabled", BindingConvertor.object2Boolean() )
+          .fireSourceChanged();
+      bf.createBinding( "auth_list", "selectedItem", "remove_button", "!disabled", BindingConvertor.object2Boolean() )
+          .fireSourceChanged();
 
       bf.setBindingType( Binding.Type.BI_DIRECTIONAL );
 
@@ -171,21 +201,24 @@ public class AuthProviderController extends AbstractXulEventHandler {
       bf.createBinding( this, "newOverlay", "method_list", "selectedItem" ).fireSourceChanged();
 
       // Update the method combobox with the appropriate selection for the selected authorization entry
-      bf.createBinding( this.model, "selectedItem", "method_list", "selectedItem", selectedItemsItemBinding ).fireSourceChanged();
+      bf.createBinding( this.model, "selectedItem", "method_list", "selectedItem", selectedItemsItemBinding )
+          .fireSourceChanged();
 
       // Because the programmatic selection of the item in the combobox does not fire events, we need
       // to bind the main authProvider selection to the changing of the overlay
       bf.createBinding( this.model, "selectedItem", this, "newOverlay", selectedItemsItemBinding );
 
-
     } catch ( XulException e ) {
-      e.printStackTrace( System.out );
+      log.logError( resourceBundle.getString( "error.on_bind" ), e );
     } catch ( InvocationTargetException e ) {
-      e.printStackTrace( System.out );
+      log.logError( resourceBundle.getString( "error.on_execution" ), e );
     }
   }
 
   public void onAccept() {
+
+    // save model via PersistenceManager here ...
+
     this.xulDialog.hide();
   }
 
@@ -203,17 +236,17 @@ public class AuthProviderController extends AbstractXulEventHandler {
 
   private String generateUniqueName() {
 
-    String name = "Provider";
+    String name = resourceBundle.getString( "uniquename.provider" );
     int index = 0;
     boolean good = false;
 
     String potentialName = null;
 
-    while ( !good ){
+    while ( !good ) {
       potentialName = name.concat( Integer.toString( ++index ) );
       boolean found = false;
-      for(  NamedModelObject o : model.getModelObjects() ) {
-        if ( o.getName().equalsIgnoreCase( potentialName ) ){
+      for ( NamedModelObject<NamedProvider> o : model.getModelObjects() ) {
+        if ( o.getName().equalsIgnoreCase( potentialName ) ) {
           found = true;
           break;
         }
@@ -256,8 +289,7 @@ public class AuthProviderController extends AbstractXulEventHandler {
       }
 
     } catch ( XulException e ) {
-      e.printStackTrace( System.out );
-      System.out.println( "Error creating file dialog" );
+      log.logError( resourceBundle.getString( "error.file_browse" ), e );
     }
 
   }
@@ -276,18 +308,18 @@ public class AuthProviderController extends AbstractXulEventHandler {
 
   }
 
-  private class SelectedToItemConvertor extends BindingConvertor<NamedModelObject, Object> {
+  private class SelectedToItemConvertor extends BindingConvertor<NamedModelObject<NamedProvider>, Object> {
     private SelectedToItemConvertor() {
     }
 
-    public Object sourceToTarget( NamedModelObject value ) {
+    public Object sourceToTarget( NamedModelObject<NamedProvider> value ) {
       if ( value == null ) {
         return null;
       }
       return value.getItem();
     }
 
-    public NamedModelObject targetToSource( Object value ) {
+    public NamedModelObject<NamedProvider> targetToSource( Object value ) {
       if ( model.getSelectedItem() != null ) {
 
         AuthProvider provider = (AuthProvider) value;
@@ -299,7 +331,14 @@ public class AuthProviderController extends AbstractXulEventHandler {
         } else {
           // Clone the provider... the one passed in is the provider used in the method
           // combobox... we don't want that instance in the main list.
-          providerToUse = provider.clone();
+          try {
+
+            providerToUse = provider.clone();
+            providerToUse.bind();
+
+          } catch ( Exception e ) {
+            log.logError( resourceBundle.getString( "error.new_provider" ), e );
+          }
         }
         model.setItem( model.getSelectedItem(), providerToUse );
 
@@ -308,18 +347,18 @@ public class AuthProviderController extends AbstractXulEventHandler {
     }
   }
 
-  private class SelectedToStringConvertor extends BindingConvertor<NamedModelObject, String> {
+  private class SelectedToStringConvertor extends BindingConvertor<NamedModelObject<NamedProvider>, String> {
     private SelectedToStringConvertor() {
     }
 
-    public String sourceToTarget( NamedModelObject value ) {
+    public String sourceToTarget( NamedModelObject<NamedProvider> value ) {
       if ( value == null ) {
         return "";
       }
       return value.getName();
     }
 
-    public NamedModelObject targetToSource( String value ) {
+    public NamedModelObject<NamedProvider> targetToSource( String value ) {
       if ( model.getSelectedItem() != null ) {
         model.setName( value );
       }
@@ -344,9 +383,10 @@ public class AuthProviderController extends AbstractXulEventHandler {
 
   /**
    * Exposed only for junit tests
+   * 
    * @return ObjectListModel
    */
-  ObjectListModel getModel(){
+  ObjectListModel getModel() {
     return model;
   }
 }
