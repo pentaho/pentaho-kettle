@@ -30,8 +30,8 @@ public class ObjectListModel extends XulEventSourceAdapter {
   private AbstractModelList<NamedModelObject> modelObjects = new AbstractModelList<NamedModelObject>();
 
   private NamedModelObject selected = null;
-  private NamedModelObject selectedItem;
-  private Object value;
+  protected NamedModelObject selectedItem;
+  protected Object value;
 
   public AbstractModelList<NamedModelObject> getModelObjects() {
     return this.modelObjects;

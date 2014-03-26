@@ -58,6 +58,7 @@ import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
+import org.pentaho.di.core.database.SQLiteDatabaseMeta;
 import org.pentaho.di.core.database.TeradataDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleEOFException;
@@ -192,7 +193,6 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.ignoreTimezone =
       convertStringToBoolean( Const.NVL( System.getProperty(
         Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ), "N" ) );
-
 
     determineSingleByteEncoding();
     setDefaultConversionMask();
@@ -4585,6 +4585,8 @@ public class ValueMetaBase implements ValueMetaInterface {
             // PDI-6677 - don't call 'length = rm.getColumnDisplaySize(index);'
             length = -1; // keep the length to -1, e.g. for string functions (e.g.
                          // CONCAT see PDI-4812)
+          } else if ( databaseMeta.getDatabaseInterface() instanceof SQLiteDatabaseMeta ) {
+            valtype = ValueMetaInterface.TYPE_STRING;
           } else {
             length = -1;
           }
@@ -4937,8 +4939,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         if ( curPos >= 0 && curPos < stopPos ) {
           quotes++;
         }
-      }
-      while( curPos >= 0 && curPos < stopPos );
+      } while ( curPos >= 0 && curPos < stopPos );
     }
     return quotes;
   }
