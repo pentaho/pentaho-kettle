@@ -3591,10 +3591,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // memory
           // To be able to completely test this, we need to run it as we would normally do in pan
           //
-          trans =
-            new Trans(
-              transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(),
-              transMeta.getFilename() );
+          trans = new Trans(
+            transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(),
+            transMeta.getFilename() );
+
+          trans.setRepository( spoon.getRepository() );
+          trans.setMetaStore( spoon.getMetaStore() );
 
           String spoonLogObjectId = UUID.randomUUID().toString();
           SimpleLoggingObject spoonLoggingObject =
