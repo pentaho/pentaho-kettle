@@ -43,6 +43,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -66,6 +67,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 
   private String foldername;
   private int filescount;
+  private int folderscount;
   private boolean includeSubfolders;
   private boolean specifywildcard;
   private String wildcard;
@@ -180,11 +182,16 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   }
 
   public Result execute( Result previousResult, int nr ) {
+    // see PDI-10270 for details
+    boolean oldBehavior =
+        "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
+
     Result result = previousResult;
     result.setResult( false );
-    result.setNrErrors( 1 );
+    result.setNrErrors( oldBehavior ? 1 : 0 );
 
     filescount = 0;
+    folderscount = 0;
     pattern = null;
 
     if ( !Const.isEmpty( getWildcard() ) ) {
@@ -207,17 +214,19 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
             }
             if ( filescount == 0 ) {
               result.setResult( true );
-              result.setNrErrors( 0 );
+              result.setNrLinesInput( folderscount );
             }
           } else {
             // Not a folder, fail
             log.logError( "[" + realFoldername + "] is not a folder, failing." );
+            result.setNrErrors( 1 );
           }
         } else {
           // No Folder found
           if ( log.isBasic() ) {
             logBasic( "we can not find [" + realFoldername + "] !" );
           }
+          result.setNrErrors( 1 );
         }
       } catch ( Exception e ) {
         logError( "Error checking folder [" + realFoldername + "]", e );
@@ -228,12 +237,13 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
           try {
             folderObject.close();
             folderObject = null;
-          } catch ( IOException ex ) {
+          } catch ( IOException ex ) { /* Ignore */
           }
         }
       }
     } else {
       logError( "No Foldername is defined." );
+      result.setNrErrors( 1 );
     }
 
     return result;
@@ -278,6 +288,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
                 }
               }
             }
+          } else {
+            folderscount++;
           }
         }
         return true;
@@ -291,7 +303,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
           try {
             file_name.close();
             file_name = null;
-          } catch ( IOException ex ) {
+          } catch ( IOException ex ) { /* Ignore */
           }
         }
       }

@@ -136,6 +136,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
+    result.setNrErrors( 0 );
 
     if ( filename != null ) {
       String realFilename = getRealFilename();

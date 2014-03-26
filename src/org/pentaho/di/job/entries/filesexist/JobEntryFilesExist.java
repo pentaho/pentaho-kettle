@@ -164,7 +164,13 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
+    result.setNrErrors( 0 );
     int missingfiles = 0;
+    int nrErrors = 0;
+
+    // see PDI-10270 for details
+    boolean oldBehavior =
+        "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length && !parentJob.isStopped(); i++ ) {
@@ -187,21 +193,26 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
           }
 
         } catch ( Exception e ) {
+          nrErrors++;
           missingfiles++;
-          result.setNrErrors( missingfiles );
           logError( BaseMessages.getString( PKG, "JobEntryFilesExist.ERROR_0004_IO_Exception", e.toString() ), e ); //$NON-NLS-1$
         } finally {
           if ( file != null ) {
             try {
               file.close();
               file = null;
-            } catch ( IOException ex ) {
+            } catch ( IOException ex ) { /* Ignore */
             }
-            ;
           }
         }
       }
 
+    }
+
+    result.setNrErrors( nrErrors );
+
+    if ( oldBehavior ) {
+      result.setNrErrors( missingfiles );
     }
 
     if ( missingfiles == 0 ) {

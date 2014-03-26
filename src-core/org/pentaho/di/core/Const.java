@@ -749,6 +749,13 @@ public class Const {
   public static final String KETTLE_TRANS_PAN_JVM_EXIT_CODE = "KETTLE_TRANS_PAN_JVM_EXIT_CODE";
 
   /**
+   * Compatibility settings for setNrErrors
+   */
+  // see PDI-10270 for details.
+  public static final String KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES =
+      "KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES";
+  
+  /**
    * The XML file that contains the list of native import rules
    */
   public static final String XML_FILE_KETTLE_IMPORT_RULES = "kettle-import-rules.xml";
