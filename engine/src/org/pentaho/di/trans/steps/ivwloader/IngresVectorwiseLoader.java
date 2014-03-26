@@ -51,6 +51,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+
 /**
  * Performs a streaming bulk load to a VectorWise table.
  * 
@@ -281,11 +282,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         throw e;
       }
 
-      try {
-        data.fifoOpener.checkExcn();
-      } catch ( Exception e ) {
-        throw e;
-      }
+      data.fifoOpener.checkExcn();
     }
 
     logDetailed( "Opened fifo file " + data.fifoFilename + " for writing." );
@@ -303,7 +300,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
    *           Upon any exception
    */
   public String createCommandLine( IngresVectorwiseLoaderMeta meta ) throws KettleException {
-    StringBuffer sb = new StringBuffer( 300 );
+    StringBuilder sb = new StringBuilder( 300 );
 
     if ( !Const.isEmpty( meta.getSqlPath() ) ) {
       try {
@@ -393,13 +390,16 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
       // no more input to be expected...
       if ( r == null ) {
-        setOutputDone();
         // only close output after the first row was processed
         // to prevent error (NPE) on empty rows set
         if ( !first ) {
           closeOutput();
         }
 
+        if ( vwLoadMonitorThread != null ) {
+          vwLoadMonitorThread.join();
+        }
+        setOutputDone();
         return false;
       }
 
@@ -804,6 +804,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           }
         }
       } else {
+        if ( meta.getErrorFileName() == null ) {
+          return null;
+        }
         File errorFile = new File( meta.getErrorFileName() );
         if ( !errorFile.exists() ) {
           return null;
