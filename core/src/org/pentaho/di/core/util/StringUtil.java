@@ -127,7 +127,7 @@ public class StringUtil {
       return null;
     }
 
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     String rest = aString;
 
@@ -185,7 +185,7 @@ public class StringUtil {
       return null;
     }
 
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     String rest = aString;
 
@@ -231,17 +231,15 @@ public class StringUtil {
    *          the system properties to use
    * @return the string with the substitution applied.
    */
-  public static final synchronized String environmentSubstitute( String aString,
+  public static final String environmentSubstitute( String aString,
     Map<String, String> systemProperties ) {
     Map<String, String> sysMap = new HashMap<String, String>();
-    synchronized ( sysMap ) {
-      sysMap.putAll( Collections.synchronizedMap( systemProperties ) );
+    sysMap.putAll( Collections.synchronizedMap( systemProperties ) );
 
-      aString = substituteWindows( aString, sysMap );
-      aString = substituteUnix( aString, sysMap );
-      aString = substituteHex( aString );
-      return aString;
-    }
+    aString = substituteWindows( aString, sysMap );
+    aString = substituteUnix( aString, sysMap );
+    aString = substituteHex( aString );
+    return aString;
   }
 
   /**
@@ -355,7 +353,7 @@ public class StringUtil {
   }
 
   public static final String generateRandomString( int length, String prefix, String postfix, boolean uppercase ) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     if ( !Const.isEmpty( prefix ) ) {
       buffer.append( prefix );
