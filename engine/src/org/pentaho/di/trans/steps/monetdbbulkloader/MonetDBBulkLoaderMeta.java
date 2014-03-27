@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,10 @@
 
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -49,49 +48,73 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * Created on 20-feb-2007
  *
  * @author Sven Boden
  */
-public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
-  ProvidesDatabaseConnectionInformation {
+public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionInterface, StepMetaInterface,
+    ProvidesDatabaseConnectionInformation {
   private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** The database connection name **/
+  /**
+   * The database connection name *
+   */
   private String dbConnectionName;
 
-  /** what's the schema for the target? */
+  /**
+   * what's the schema for the target?
+   */
   private String schemaName;
 
-  /** what's the table for the target? */
+  /**
+   * what's the table for the target?
+   */
   private String tableName;
 
-  /** Path to the log file */
+  /**
+   * Path to the log file
+   */
   private String logFile;
 
-  /** database connection */
+  /**
+   * database connection
+   */
   private DatabaseMeta databaseMeta;
 
-  /** Field name of the target table */
+  /**
+   * Field name of the target table
+   */
   private String[] fieldTable;
 
-  /** Field name in the stream */
+  /**
+   * Field name in the stream
+   */
   private String[] fieldStream;
 
-  /** flag to indicate that the format is OK for MonetDB */
+  /**
+   * flag to indicate that the format is OK for MonetDB
+   */
   private boolean[] fieldFormatOk;
 
-  /** Field separator character or string used to delimit fields */
+  /**
+   * Field separator character or string used to delimit fields
+   */
   private String fieldSeparator;
 
-  /** Specifies which character surrounds each field's data. i.e. double quotes, single quotes or something else */
+  /**
+   * Specifies which character surrounds each field's data. i.e. double quotes, single quotes or something else
+   */
   private String fieldEnclosure;
 
   /**
@@ -101,19 +124,29 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
    */
   private String NULLrepresentation;
 
-  /** Encoding to use */
+  /**
+   * Encoding to use
+   */
   private String encoding;
 
-  /** Truncate table? */
+  /**
+   * Truncate table?
+   */
   private boolean truncate = false;
 
-  /** Fully Quote SQL used in the step? */
+  /**
+   * Fully Quote SQL used in the step?
+   */
   private boolean fullyQuoteSQL;
 
-  /** Auto adjust the table structure? */
+  /**
+   * Auto adjust the table structure?
+   */
   private boolean autoSchema = false;
 
-  /** Auto adjust strings that are too long? */
+  /**
+   * Auto adjust strings that are too long?
+   */
   private boolean autoStringWidths = false;
 
   public boolean isAutoStringWidths() {
@@ -173,8 +206,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param database
-   *          The database to set.
+   * @param database The database to set.
    */
   public void setDatabaseMeta( DatabaseMeta database ) {
     this.databaseMeta = database;
@@ -188,8 +220,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param tableName
-   *          The tableName to set.
+   * @param tableName The tableName to set.
    */
   public void setTableName( String tableName ) {
     this.tableName = tableName;
@@ -203,8 +234,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param fieldTable
-   *          The fieldTable to set.
+   * @param fieldTable The fieldTable to set.
    */
   public void setFieldTable( String[] fieldTable ) {
     this.fieldTable = fieldTable;
@@ -218,15 +248,14 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param fieldStream
-   *          The fieldStream to set.
+   * @param fieldStream The fieldStream to set.
    */
   public void setFieldStream( String[] fieldStream ) {
     this.fieldStream = fieldStream;
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+      throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -250,7 +279,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+      throws KettleXMLException {
     try {
       dbConnectionName = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, dbConnectionName );
@@ -303,7 +332,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+          PKG, "MonetDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -356,7 +385,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+      throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       bufferSize = rep.getStepAttributeString( id_step, "buffer_size" );
@@ -400,12 +429,12 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+          PKG, "MonetDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+      throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       // General Settings Tab
@@ -436,19 +465,19 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
-        + id_step, e );
+          PKG, "MonetDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
+          + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+      Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -460,8 +489,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
         if ( !Const.isEmpty( tableName ) ) {
           cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "MonetDBBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "MonetDBBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -470,13 +499,13 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
           // Check fields in table
           String schemaTable =
-            databaseMeta.getQuotedSchemaTableCombination(
-              transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
+              databaseMeta.getQuotedSchemaTableCombination(
+                  transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
             cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "MonetDBBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "MonetDBBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             // How about the fields to insert/dateMask in the table?
@@ -492,9 +521,9 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
                 if ( first ) {
                   first = false;
                   error_message +=
-                    BaseMessages.getString(
-                      PKG, "MonetDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable" )
-                      + Const.CR;
+                      BaseMessages.getString(
+                          PKG, "MonetDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable" )
+                          + Const.CR;
                 }
                 error_found = true;
                 error_message += "\t\t" + field + Const.CR;
@@ -504,13 +533,13 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                  PKG, "MonetDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "MonetDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
             error_message =
-              BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo" );
+                BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo" );
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             remarks.add( cr );
           }
@@ -519,8 +548,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "MonetDBBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "MonetDBBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -533,8 +562,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
               if ( first ) {
                 first = false;
                 error_message +=
-                  BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.MissingFieldsInInput" )
-                    + Const.CR;
+                    BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.MissingFieldsInInput" )
+                        + Const.CR;
               }
               error_found = true;
               error_message += "\t\t" + fieldStream[i] + Const.CR;
@@ -544,20 +573,20 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "MonetDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "MonetDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
         } else {
           error_message =
-            BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
+              BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
           cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleException e ) {
         error_message =
-          BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred" )
-            + e.getMessage();
+            BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred" )
+                + e.getMessage();
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
@@ -572,23 +601,23 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "MonetDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MonetDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "MonetDBBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MonetDBBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public SQLStatement getTableDdl( TransMeta transMeta, String stepname, boolean autoSchema,
-    MonetDBBulkLoaderData data, boolean safeMode ) throws KettleException {
+      MonetDBBulkLoaderData data, boolean safeMode ) throws KettleException {
 
     String name = stepname; // new name might not yet be linked to other steps!
     StepMeta stepMeta =
-      new StepMeta( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.StepMeta.Title" ), name, this );
+        new StepMeta( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.StepMeta.Title" ), name, this );
     RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
     SQLStatement sql = getSQLStatements( transMeta, stepMeta, prev, autoSchema, data, safeMode );
@@ -596,7 +625,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public RowMetaInterface updateFields( TransMeta transMeta, String stepname, MonetDBBulkLoaderData data )
-    throws KettleStepException {
+      throws KettleStepException {
 
     RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
     return updateFields( prev, data );
@@ -626,7 +655,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-    boolean autoSchema, MonetDBBulkLoaderData data, boolean safeMode ) throws KettleStepException {
+      boolean autoSchema, MonetDBBulkLoaderData data, boolean safeMode ) throws KettleStepException {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
@@ -656,8 +685,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             db.connect();
 
             String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination(
-                transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
+                databaseMeta.getQuotedSchemaTableCombination(
+                    transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
             MonetDBDatabaseMeta.safeModeLocal.set( safeMode );
             String cr_table = db.getDDL( schemaTable, tableFields, null, false, null, true );
 
@@ -669,14 +698,14 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             }
           } catch ( KettleException e ) {
             retval.setError( BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.GetSQL.ErrorOccurred" )
-              + e.getMessage() );
+                + e.getMessage() );
           } finally {
             db.disconnect();
             MonetDBDatabaseMeta.safeModeLocal.remove();
           }
         } else {
           retval
-            .setError( BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection" ) );
+              .setError( BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection" ) );
         }
       } else {
         retval.setError( BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.GetSQL.NotReceivingAnyFields" ) );
@@ -689,8 +718,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-    IMetaStore metaStore ) throws KettleStepException {
+      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+      IMetaStore metaStore ) throws KettleStepException {
     if ( prev != null ) {
       /* DEBUG CHECK THIS */
       // Insert dateMask fields : read/write
@@ -698,17 +727,17 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         ValueMetaInterface v = prev.searchValueMeta( fieldStream[i] );
 
         DatabaseImpact ii =
-          new DatabaseImpact(
-            DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-              .getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
-            fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() );
+            new DatabaseImpact(
+                DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+                .getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
+                fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() );
         impact.add( ii );
       }
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+      TransMeta transMeta, Trans trans ) {
     return new MonetDBBulkLoader( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -741,21 +770,21 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             return db.getTableFields( schemaTable );
           } else {
             throw new KettleException( BaseMessages.getString(
-              PKG, "MonetDBBulkLoaderMeta.Exception.TableNotFound" ) );
+                PKG, "MonetDBBulkLoaderMeta.Exception.TableNotFound" ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString(
-            PKG, "MonetDBBulkLoaderMeta.Exception.TableNotSpecified" ) );
+              PKG, "MonetDBBulkLoaderMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString(
-          PKG, "MonetDBBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
+            PKG, "MonetDBBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }
     } else {
       throw new KettleException( BaseMessages.getString(
-        PKG, "MonetDBBulkLoaderMeta.Exception.ConnectionNotDefined" ) );
+          PKG, "MonetDBBulkLoaderMeta.Exception.ConnectionNotDefined" ) );
     }
 
   }
@@ -768,8 +797,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param schemaName
-   *          the schemaName to set
+   * @param schemaName the schemaName to set
    */
   public void setSchemaName( String schemaName ) {
     this.schemaName = schemaName;
@@ -823,8 +851,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param bufferSize
-   *          the bufferSize to set
+   * @param bufferSize the bufferSize to set
    */
   public void setBufferSize( String bufferSize ) {
     this.bufferSize = bufferSize;
@@ -838,8 +865,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param fieldFormatOk
-   *          the fieldFormatOk to set
+   * @param fieldFormatOk the fieldFormatOk to set
    */
   public void setFieldFormatOk( boolean[] fieldFormatOk ) {
     this.fieldFormatOk = fieldFormatOk;
@@ -852,8 +878,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param database
-   *          connection name to set
+   * @param database connection name to set
    */
   public void setDbConnectionName( String dbConnectionName ) {
     this.dbConnectionName = dbConnectionName;
@@ -865,5 +890,102 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   public String getDbConnectionName() {
     return this.dbConnectionName;
   }
+
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return this;
+  }
+
+  /**
+   * Describe the metadata attributes that can be injected into this step metadata object.
+   */
+  public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() {
+    return getStepInjectionMetadataEntries( PKG );
+  }
+
+  public void injectStepMetadataEntries( List<StepInjectionMetaEntry> metadata ) {
+    for ( StepInjectionMetaEntry entry : metadata ) {
+      KettleAttributeInterface attr = findAttribute( entry.getKey() );
+
+      // Set top level attributes...
+      //
+      if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
+
+        if ( entry.getKey().equals( "SCHEMA" ) ) {
+          schemaName = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "TABLE" ) ) {
+          tableName = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "LOGFILE" ) ) {
+          logFile = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "FIELD_SEPARATOR" ) ) {
+          fieldSeparator = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "FIELD_ENCLOSURE" ) ) {
+          fieldEnclosure = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "NULL_REPRESENTATION" ) ) {
+          setNULLrepresentation( (String) entry.getValue() );
+        } else if ( entry.getKey().equals( "ENCODING" ) ) {
+          encoding = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "BUFFER_SIZE" ) ) {
+          bufferSize = (String) entry.getValue();
+        } else if ( entry.getKey().equals( "TRUNCATE" ) ) {
+          truncate = (Boolean) entry.getValue();
+        } else if ( entry.getKey().equals( "FULLY_QUOTE_SQL" ) ) {
+          fullyQuoteSQL = (Boolean) entry.getValue();
+        } else {
+          throw new RuntimeException( "Unhandled metadata injection of attribute: "
+              + attr.toString() + " - " + attr.getDescription() );
+        }
+      } else {
+        // The data sets...
+        //
+        if ( attr.getKey().equals( "MAPPINGS" ) ) {
+          List<StepInjectionMetaEntry> selectMappings = entry.getDetails();
+
+          fieldTable = new String[selectMappings.size()];
+          fieldStream = new String[selectMappings.size()];
+          fieldFormatOk = new boolean[selectMappings.size()];
+
+          for ( int row = 0; row < selectMappings.size(); row++ ) {
+            StepInjectionMetaEntry selectField = selectMappings.get( row );
+
+            List<StepInjectionMetaEntry> fieldAttributes = selectField.getDetails();
+            //CHECKSTYLE:Indentation:OFF
+            for ( int i = 0; i < fieldAttributes.size(); i++ ) {
+              StepInjectionMetaEntry fieldAttribute = fieldAttributes.get( i );
+              KettleAttributeInterface fieldAttr = findAttribute( fieldAttribute.getKey() );
+
+              Object attributeValue = fieldAttribute.getValue();
+
+              if ( attributeValue == null ) {
+                continue;
+              }
+
+              if ( fieldAttr.getKey().equals( "STREAMNAME" ) ) {
+                getFieldStream()[row] = (String) attributeValue;
+              } else if ( fieldAttr.getKey().equals( "FIELDNAME" ) ) {
+                getFieldTable()[row] = (String) attributeValue;
+              } else if ( fieldAttr.getKey().equals( "FIELD_FORMAT_OK" ) ) {
+                getFieldFormatOk()[row] = (Boolean) attributeValue;
+              } else {
+                throw new RuntimeException( "Unhandled metadata injection of attribute: "
+                    + fieldAttr.toString() + " - " + fieldAttr.getDescription() );
+              }
+            }
+          }
+        }
+        if ( !Const.isEmpty( getFieldStream() ) ) {
+          for ( int i = 0; i < getFieldStream().length; i++ ) {
+            logDetailed( "row " + Integer.toString( i ) + ": stream=" + getFieldStream()[i]
+                + " : table=" + getFieldTable()[i] );
+          }
+        }
+
+      }
+    }
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
 
 }
