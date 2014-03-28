@@ -1,6 +1,8 @@
 package org.pentaho.di.core.database;
 
 import org.junit.Test;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 import static org.junit.Assert.assertEquals;
 
@@ -89,5 +91,21 @@ public class HypersonicDatabaseMetaTest {
     assertEquals( expectedSql, sql );
     sql = hypersonicDatabaseMetaUppercase.getTruncateTableStatement( tableName );
     assertEquals( expectedSql, sql );
+  }
+
+  @Test
+  public void testGetFieldDefinition() throws Exception {
+    ValueMetaInterface vm = new ValueMetaString();
+    String sql = hypersonicDatabaseMeta.getFieldDefinition( vm, null, null, false, false, false );
+    String expectedSql = "VARCHAR()";
+    assertEquals( "Check PDI-11461 without length", expectedSql, sql );
+    vm.setLength( DatabaseMeta.CLOB_LENGTH - 1 );
+    sql = hypersonicDatabaseMeta.getFieldDefinition( vm, null, null, false, false, false );
+    expectedSql = "VARCHAR(" + ( DatabaseMeta.CLOB_LENGTH - 1 ) + ")";
+    assertEquals( "Check PDI-11461 with length", expectedSql, sql );
+    vm.setLength( DatabaseMeta.CLOB_LENGTH );
+    sql = hypersonicDatabaseMeta.getFieldDefinition( vm, null, null, false, false, false );
+    expectedSql = "LONGVARCHAR";
+    assertEquals( "Check PDI-11461 with clob/text length", expectedSql, sql );
   }
 }
