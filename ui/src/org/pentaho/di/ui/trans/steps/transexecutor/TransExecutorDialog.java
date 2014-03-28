@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.transexecutor;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -82,6 +79,9 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class TransExecutorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!!
@@ -266,8 +266,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( radioFilename );
     radioFilename.setSelection( false );
     radioFilename.setText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioFile.Label" ) );
-    radioFilename
-      .setToolTipText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioFile.Tooltip", Const.CR ) );
+    radioFilename.setToolTipText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioFile.Tooltip", Const.CR ) );
     FormData fdFileRadio = new FormData();
     fdFileRadio.left = new FormAttachment( 0, 0 );
     fdFileRadio.right = new FormAttachment( 100, 0 );
@@ -377,8 +376,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( radioByReference );
     radioByReference.setSelection( false );
     radioByReference.setText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioRepByReference.Label" ) );
-    radioByReference.setToolTipText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.RadioRepByReference.Tooltip", Const.CR ) );
+    radioByReference.setToolTipText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioRepByReference.Tooltip",
+      Const.CR ) );
     FormData fdRadioByReference = new FormData();
     fdRadioByReference.left = new FormAttachment( 0, 0 );
     fdRadioByReference.right = new FormAttachment( 100, 0 );
@@ -580,8 +579,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         setRadioButtons();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle" ),
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle" ),
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
   }
@@ -603,8 +601,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       FileObject file =
-        vfsFileChooser.open(
-          shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
+        vfsFileChooser.open( shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
           VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
       if ( file == null ) {
         return;
@@ -623,13 +620,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         setRadioButtons();
       }
     } catch ( IOException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle" ), BaseMessages
-          .getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle" ),
+        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage" ), e );
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle" ), BaseMessages
-          .getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle" ),
+        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage" ), e );
     }
   }
 
@@ -653,9 +648,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         spoon.addTransGraph( executorTransMeta );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorShowingTrans.Title" ), BaseMessages
-          .getString( PKG, "TransExecutorDialog.ErrorShowingTrans.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorShowingTrans.Title" ),
+        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorShowingTrans.Message" ), e );
     }
   }
 
@@ -669,17 +663,21 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
         if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "TransExecutorDialog.Exception.NoValidTransExecutorDetailsFound" ) );
+          throw new KettleException( BaseMessages.getString( PKG,
+            "TransExecutorDialog.Exception.NoValidTransExecutorDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "TransExecutorDialog.Exception.UnableToFindRepositoryDirectory)" ) );
+          throw new KettleException( BaseMessages.getString( PKG,
+            "TransExecutorDialog.Exception.UnableToFindRepositoryDirectory)" ) );
         }
         loadRepositoryTrans( realTransname, repdir );
         break;
       case REPOSITORY_BY_REFERENCE:
+        if ( referenceObjectId == null ) {
+          throw new KettleException( BaseMessages.getString( PKG,
+            "TransExecutorDialog.Exception.ReferencedTransformationIdIsNull" ) );
+        }
         executorTransMeta = repository.loadTransformation( referenceObjectId, null ); // load the last version
         executorTransMeta.clearChanged();
         break;
@@ -709,8 +707,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   protected void setRadioButtons() {
     radioFilename.setSelection( specificationMethod == ObjectLocationSpecificationMethod.FILENAME );
     radioByName.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    radioByReference
-      .setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
+    radioByReference.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     setActive();
   }
 
@@ -737,9 +734,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         wTransname.setText( Const.NVL( transExecutorMeta.getTransName(), "" ) );
         break;
       case REPOSITORY_BY_REFERENCE:
-        referenceObjectId = transExecutorMeta.getTransObjectId();
         wByReference.setText( "" );
-        getByReferenceData( transExecutorMeta.getTransObjectId() );
+        if ( transExecutorMeta.getTransObjectId() != null ) {
+          this.referenceObjectId = transExecutorMeta.getTransObjectId();
+          getByReferenceData( transExecutorMeta.getTransObjectId() );
+        }
         break;
       default:
         break;
@@ -766,8 +765,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wGroupTime.setText( Const.NVL( transExecutorMeta.getGroupTime(), "" ) );
     wGroupField.setText( Const.NVL( transExecutorMeta.getGroupField(), "" ) );
 
-    wExecutionResultTarget.setText( transExecutorMeta.getExecutionResultTargetStepMeta() == null
-      ? "" : transExecutorMeta.getExecutionResultTargetStepMeta().getName() );
+    wExecutionResultTarget.setText( transExecutorMeta.getExecutionResultTargetStepMeta() == null ? ""
+      : transExecutorMeta.getExecutionResultTargetStepMeta().getName() );
     wExecutionTimeField.setText( Const.NVL( transExecutorMeta.getExecutionTimeField(), "" ) );
     wExecutionResultField.setText( Const.NVL( transExecutorMeta.getExecutionResultField(), "" ) );
     wExecutionNrErrorsField.setText( Const.NVL( transExecutorMeta.getExecutionNrErrorsField(), "" ) );
@@ -865,21 +864,17 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     parameterColumns =
       new ColumnInfo[] {
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Variable" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Variable" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Field" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Input" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Field" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { }, false ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Input" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
     parameterColumns[1].setUsingVariables( true );
 
     TransExecutorParameters parameters = transExecutorMeta.getParameters();
     wTransExecutorParameters =
-      new TableView(
-        transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, parameterColumns,
+      new TableView( transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, parameterColumns,
         parameters.getVariable().length, lsMod, props );
     props.setLook( wTransExecutorParameters );
     FormData fdTransExecutors = new FormData();
@@ -932,8 +927,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       wTransExecutorParameters.optWidth( true );
 
     } catch ( Exception e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Title" ),
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Title" ),
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Message" ), e );
     }
 
@@ -1036,8 +1030,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
     wlExecutionResultTarget = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionResultTarget );
-    wlExecutionResultTarget.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionResultTarget.Label" ) );
+    wlExecutionResultTarget.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionResultTarget.Label" ) );
     FormData fdlExecutionResultTarget = new FormData();
     fdlExecutionResultTarget.top = new FormAttachment( 0, 0 );
     fdlExecutionResultTarget.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1077,8 +1070,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionResultField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionResultField );
-    wlExecutionResultField
-      .setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionResultField.Label" ) );
+    wlExecutionResultField.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionResultField.Label" ) );
     FormData fdlExecutionResultField = new FormData();
     fdlExecutionResultField.top = new FormAttachment( lastControl, margin );
     fdlExecutionResultField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1098,8 +1090,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionNrErrorsField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionNrErrorsField );
-    wlExecutionNrErrorsField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionNrErrorsField.Label" ) );
+    wlExecutionNrErrorsField
+      .setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionNrErrorsField.Label" ) );
     FormData fdlExecutionNrErrorsField = new FormData();
     fdlExecutionNrErrorsField.top = new FormAttachment( lastControl, margin );
     fdlExecutionNrErrorsField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1119,8 +1111,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLinesReadField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesReadField );
-    wlExecutionLinesReadField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLinesReadField.Label" ) );
+    wlExecutionLinesReadField.setText( BaseMessages
+      .getString( PKG, "TransExecutorDialog.ExecutionLinesReadField.Label" ) );
     FormData fdlExecutionLinesReadField = new FormData();
     fdlExecutionLinesReadField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesReadField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1140,8 +1132,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLinesWrittenField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesWrittenField );
-    wlExecutionLinesWrittenField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLinesWrittenField.Label" ) );
+    wlExecutionLinesWrittenField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionLinesWrittenField.Label" ) );
     FormData fdlExecutionLinesWrittenField = new FormData();
     fdlExecutionLinesWrittenField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesWrittenField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1161,8 +1153,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLinesInputField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesInputField );
-    wlExecutionLinesInputField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLinesInputField.Label" ) );
+    wlExecutionLinesInputField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionLinesInputField.Label" ) );
     FormData fdlExecutionLinesInputField = new FormData();
     fdlExecutionLinesInputField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesInputField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1182,8 +1174,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLinesOutputField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesOutputField );
-    wlExecutionLinesOutputField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLinesOutputField.Label" ) );
+    wlExecutionLinesOutputField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionLinesOutputField.Label" ) );
     FormData fdlExecutionLinesOutputField = new FormData();
     fdlExecutionLinesOutputField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesOutputField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1203,8 +1195,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLinesRejectedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesRejectedField );
-    wlExecutionLinesRejectedField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLinesRejectedField.Label" ) );
+    wlExecutionLinesRejectedField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionLinesRejectedField.Label" ) );
     FormData fdlExecutionLinesRejectedField = new FormData();
     fdlExecutionLinesRejectedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesRejectedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1224,8 +1216,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLinesUpdatedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesUpdatedField );
-    wlExecutionLinesUpdatedField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLinesUpdatedField.Label" ) );
+    wlExecutionLinesUpdatedField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionLinesUpdatedField.Label" ) );
     FormData fdlExecutionLinesUpdatedField = new FormData();
     fdlExecutionLinesUpdatedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesUpdatedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1245,8 +1237,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLinesDeletedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLinesDeletedField );
-    wlExecutionLinesDeletedField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLinesDeletedField.Label" ) );
+    wlExecutionLinesDeletedField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionLinesDeletedField.Label" ) );
     FormData fdlExecutionLinesDeletedField = new FormData();
     fdlExecutionLinesDeletedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLinesDeletedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1266,8 +1258,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionFilesRetrievedField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionFilesRetrievedField );
-    wlExecutionFilesRetrievedField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionFilesRetrievedField.Label" ) );
+    wlExecutionFilesRetrievedField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionFilesRetrievedField.Label" ) );
     FormData fdlExecutionFilesRetrievedField = new FormData();
     fdlExecutionFilesRetrievedField.top = new FormAttachment( lastControl, margin );
     fdlExecutionFilesRetrievedField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1287,8 +1279,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionExitStatusField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionExitStatusField );
-    wlExecutionExitStatusField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionExitStatusField.Label" ) );
+    wlExecutionExitStatusField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionExitStatusField.Label" ) );
     FormData fdlExecutionExitStatusField = new FormData();
     fdlExecutionExitStatusField.top = new FormAttachment( lastControl, margin );
     fdlExecutionExitStatusField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1308,8 +1300,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLogTextField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLogTextField );
-    wlExecutionLogTextField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLogTextField.Label" ) );
+    wlExecutionLogTextField.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLogTextField.Label" ) );
     FormData fdlExecutionLogTextField = new FormData();
     fdlExecutionLogTextField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLogTextField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1329,8 +1320,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     //
     wlExecutionLogChannelIdField = new Label( wInputComposite, SWT.RIGHT );
     props.setLook( wlExecutionLogChannelIdField );
-    wlExecutionLogChannelIdField.setText( BaseMessages.getString(
-      PKG, "TransExecutorDialog.ExecutionLogChannelIdField.Label" ) );
+    wlExecutionLogChannelIdField.setText( BaseMessages.getString( PKG,
+      "TransExecutorDialog.ExecutionLogChannelIdField.Label" ) );
     FormData fdlExecutionLogChannelIdField = new FormData();
     fdlExecutionLogChannelIdField.top = new FormAttachment( lastControl, margin );
     fdlExecutionLogChannelIdField.left = new FormAttachment( 0, 0 ); // First one in the left
@@ -1470,27 +1461,22 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     fdlResultFields.top = new FormAttachment( lastControl, margin );
     wlOutputFields.setLayoutData( fdlResultFields );
 
-    int nrRows =
-      ( transExecutorMeta.getOutputRowsField() != null ? transExecutorMeta.getOutputRowsField().length : 1 );
+    int nrRows = ( transExecutorMeta.getOutputRowsField() != null ? transExecutorMeta.getOutputRowsField().length : 1 );
 
     ColumnInfo[] ciResultFields =
       new ColumnInfo[] {
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Field" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Field" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Type" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Type" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wOutputFields =
-      new TableView( transMeta, wInputComposite, SWT.BORDER
-        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciResultFields, nrRows, lsMod, props );
+      new TableView( transMeta, wInputComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
+        | SWT.H_SCROLL, ciResultFields, nrRows, lsMod, props );
 
     FormData fdResultFields = new FormData();
     fdResultFields.left = new FormAttachment( 0, 0 );
@@ -1515,9 +1501,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private void setFlags() {
     // Enable/disable fields...
     //
-    if ( wlGroupSize == null
-      || wlGroupSize == null || wlGroupField == null || wGroupField == null || wlGroupTime == null
-      || wGroupTime == null ) {
+    if ( wlGroupSize == null || wlGroupSize == null || wlGroupField == null || wGroupField == null
+      || wlGroupTime == null || wGroupTime == null ) {
       return;
     }
     boolean enableSize = Const.toInt( transMeta.environmentSubstitute( wGroupSize.getText() ), -1 ) >= 0;
@@ -1548,9 +1533,9 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     try {
       loadTrans();
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Title" ),
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Title" ),
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Message" ), e );
+      return;
     }
 
     transExecutorMeta.setSpecificationMethod( specificationMethod );
@@ -1647,7 +1632,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     transExecutorMeta.setOutputRowsLength( new int[nrFields] );
     transExecutorMeta.setOutputRowsPrecision( new int[nrFields] );
 
-    //CHECKSTYLE:Indentation:OFF
+    // CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrFields; i++ ) {
       TableItem item = wOutputFields.getNonEmpty( i );
       transExecutorMeta.getOutputRowsField()[i] = item.getText( 1 );
@@ -1716,17 +1701,17 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
       if ( repository == null ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "TransExecutorDialog.Exception.NotConnectedToRepository.Message" ) );
+        throw new KettleException( BaseMessages.getString( PKG,
+          "TransExecutorDialog.Exception.NotConnectedToRepository.Message" ) );
       }
-      RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.JOB );
+      RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
       if ( transInf != null ) {
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString(
-        PKG, "TransExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
-        PKG, "TransExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG,
+        "TransExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,
+        "TransExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 
