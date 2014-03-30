@@ -3,14 +3,11 @@
   <info>
     <name>Getting Started Transformation</name>
     <description>This is a long description.  The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.  </description>
-    <extended_description>This 
-is
-a 
-multi-line description.</extended_description>
+    <extended_description>This &#xa;is&#xa;a &#xa;multi-line description.</extended_description>
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -20,7 +17,7 @@ multi-line description.</extended_description>
 <size_limit_lines/>
 <interval/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
 <perf-log-table><connection/>
 <schema/>
 <table/>
@@ -37,6 +34,11 @@ multi-line description.</extended_description>
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -65,18 +67,13 @@ multi-line description.</extended_description>
     <clusterschemas>
     </clusterschemas>
   <created_user/>
-  <created_date>2011&#47;01&#47;03 18:51:35.867</created_date>
+  <created_date>2011&#x2f;01&#x2f;03 18&#x3a;51&#x3a;35.867</created_date>
   <modified_user>joe</modified_user>
-  <modified_date>2010&#47;04&#47;21 14:58:09.203</modified_date>
+  <modified_date>2010&#x2f;04&#x2f;21 14&#x3a;58&#x3a;09.203</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>Note: This is the example transformation that is built as part of the Getting Started with Pentaho Data Integration guide.
-
-To test this transformation, you will need to:
-
-  - Make sure the Data Integration Server is running
-  - Open the Table Output step and click the SQL button to create the target output table</note>
+      <note>Note&#x3a; This is the example transformation that is built as part of the Getting Started with Pentaho Data Integration guide.&#xa;&#xa;To test this transformation, you will need to&#x3a;&#xa;&#xa;  - Make sure the Data Integration Server is running&#xa;  - Open the Table Output step and click the SQL button to create the target output table</note>
       <xloc>56</xloc>
       <yloc>271</yloc>
       <width>827</width>
@@ -99,13 +96,13 @@ To test this transformation, you will need to:
   </notepads>
   <connection>
     <name>CMS</name>
-    <server>${CMS_HOSTNAME}</server>
+    <server>&#x24;&#x7b;CMS_HOSTNAME&#x7d;</server>
     <type>MYSQL</type>
     <access>Native</access>
-    <database>${CMS_DATABASE}</database>
-    <port>${CMS_PORT}</port>
-    <username>${CMS_USERNAME}</username>
-    <password>${CMS_PASSWORD}</password>
+    <database>&#x24;&#x7b;CMS_DATABASE&#x7d;</database>
+    <port>&#x24;&#x7b;CMS_PORT&#x7d;</port>
+    <username>&#x24;&#x7b;CMS_USERNAME&#x7d;</username>
+    <password>&#x24;&#x7b;CMS_PASSWORD&#x7d;</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -113,7 +110,7 @@ To test this transformation, you will need to:
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>${CMS_PORT}</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>&#x24;&#x7b;CMS_PORT&#x7d;</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
       <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
@@ -121,13 +118,13 @@ To test this transformation, you will need to:
   </connection>
   <connection>
     <name>DWH</name>
-    <server>${DWH_HOSTNAME}</server>
+    <server>&#x24;&#x7b;DWH_HOSTNAME&#x7d;</server>
     <type>MYSQL</type>
     <access>Native</access>
-    <database>${DWH_DATABASE}</database>
-    <port>${DWH_PORT}</port>
-    <username>${DWH_USERNAME}</username>
-    <password>${DWH_PASSWORD}</password>
+    <database>&#x24;&#x7b;DWH_DATABASE&#x7d;</database>
+    <port>&#x24;&#x7b;DWH_PORT&#x7d;</port>
+    <username>&#x24;&#x7b;DWH_USERNAME&#x7d;</username>
+    <password>&#x24;&#x7b;DWH_PASSWORD&#x7d;</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -135,7 +132,7 @@ To test this transformation, you will need to:
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>${DWH_PORT}</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>&#x24;&#x7b;DWH_PORT&#x7d;</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
       <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
@@ -177,7 +174,7 @@ To test this transformation, you will need to:
     <index_tablespace/>
     <attributes>
       <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>com.googlecode.jdbckettle.JDBCKettleDriver</attribute></attribute>
-      <attribute><code>CUSTOM_URL</code><attribute>jdbc:kettle:file:&#47;&#47;&#47;home&#47;matt&#47;jdbcsource.ktr</attribute></attribute>
+      <attribute><code>CUSTOM_URL</code><attribute>jdbc&#x3a;kettle&#x3a;file&#x3a;&#x2f;&#x2f;&#x2f;home&#x2f;matt&#x2f;jdbcsource.ktr</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
@@ -345,7 +342,7 @@ To test this transformation, you will need to:
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>EXTRA_OPTION_POSTGRESQL.sessionTimeZone</code><attribute>GMT+05:30</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_POSTGRESQL.sessionTimeZone</code><attribute>GMT&#x2b;05&#x3a;30</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
@@ -356,25 +353,54 @@ To test this transformation, you will need to:
     </attributes>
   </connection>
   <connection>
-    <name>sampledata</name>
-    <server>localhost</server>
+    <name>Sampledata</name>
+    <server/>
     <type>H2</type>
-    <access>Native</access>
-    <database>sampledata</database>
-    <port>9092</port>
-    <username>sa</username>
-    <password>Encrypted </password>
+    <access>JNDI</access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>9092</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>1521</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
     </attributes>
   </connection>
   <connection>
@@ -382,7 +408,7 @@ To test this transformation, you will need to:
     <server/>
     <type>SQLITE</type>
     <access>Native</access>
-    <database>C:\Temp\pmp.db</database>
+    <database>C&#x3a;&#x5c;Temp&#x5c;pmp.db</database>
     <port>-1</port>
     <username/>
     <password>Encrypted </password>
@@ -449,13 +475,13 @@ To test this transformation, you will need to:
   </connection>
   <connection>
     <name>STG</name>
-    <server>${STG_HOSTNAME}</server>
+    <server>&#x24;&#x7b;STG_HOSTNAME&#x7d;</server>
     <type>MYSQL</type>
     <access>Native</access>
-    <database>${STG_DATABASE}</database>
-    <port>${STG_PORT}</port>
-    <username>${STG_USERNAME}</username>
-    <password>${STG_PASSWORD}</password>
+    <database>&#x24;&#x7b;STG_DATABASE&#x7d;</database>
+    <port>&#x24;&#x7b;STG_PORT&#x7d;</port>
+    <username>&#x24;&#x7b;STG_USERNAME&#x7d;</username>
+    <password>&#x24;&#x7b;STG_PASSWORD&#x7d;</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -463,7 +489,7 @@ To test this transformation, you will need to:
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>${STG_PORT}</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>&#x24;&#x7b;STG_PORT&#x7d;</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
       <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
@@ -495,12 +521,21 @@ To test this transformation, you will need to:
     </attributes>
   </connection>
   <order>
-  <hop> <from>Read Sales Data</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Read Postal Codes</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Lookup Missing Zips</from><to>Prepare Field Layout</to><enabled>Y</enabled> </hop>  <hop> <from>Prepare Field Layout</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Number range</from><to>Write to Database</to><enabled>N</enabled> </hop>  <hop> <from>Value Mapper</from><to>Number range</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Read Sales Data</from><to>Filter rows</to><enabled>Y</enabled> </hop>
+  <hop> <from>Filter rows</from><to>Value Mapper</to><enabled>Y</enabled> </hop>
+  <hop> <from>Read Postal Codes</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>
+  <hop> <from>Filter rows</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>
+  <hop> <from>Lookup Missing Zips</from><to>Prepare Field Layout</to><enabled>Y</enabled> </hop>
+  <hop> <from>Prepare Field Layout</from><to>Value Mapper</to><enabled>Y</enabled> </hop>
+  <hop> <from>Number range</from><to>Write to Database</to><enabled>Y</enabled> </hop>
+  <hop> <from>Value Mapper</from><to>Number range</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Filter rows</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -529,6 +564,7 @@ To test this transformation, you will need to:
     <type>StreamLookup</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -568,6 +604,7 @@ To test this transformation, you will need to:
     <type>NumberRange</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -606,6 +643,7 @@ To test this transformation, you will need to:
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -715,6 +753,9 @@ To test this transformation, you will need to:
         <precision>-2</precision>
         <conversion_mask/>
         <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
         <encoding/>
         <decimal_symbol/>
         <grouping_symbol/>
@@ -733,6 +774,7 @@ To test this transformation, you will need to:
     <type>TextFileInput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -743,7 +785,7 @@ To test this transformation, you will need to:
     <accept_field/>
     <accept_stepname/>
     <separator>,</separator>
-    <enclosure>&quot;</enclosure>
+    <enclosure>&#x22;</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
     <escapechar/>
     <header>Y</header>
@@ -761,11 +803,11 @@ To test this transformation, you will need to:
     <rownum>N</rownum>
     <rownumByFile>N</rownumByFile>
     <rownum_field/>
-    <format>DOS</format>
+    <format>mixed</format>
     <encoding/>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}\files\Zipssortedbycitystate.csv</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;Zipssortedbycitystate.csv</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -780,7 +822,7 @@ To test this transformation, you will need to:
         <name>CITY</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -795,7 +837,7 @@ To test this transformation, you will need to:
         <name>STATE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -810,7 +852,7 @@ To test this transformation, you will need to:
         <name>POSTALCODE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -860,6 +902,7 @@ To test this transformation, you will need to:
     <type>TextFileInput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -870,7 +913,7 @@ To test this transformation, you will need to:
     <accept_field/>
     <accept_stepname/>
     <separator>,</separator>
-    <enclosure>&quot;</enclosure>
+    <enclosure>&#x22;</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
     <escapechar/>
     <header>Y</header>
@@ -888,11 +931,11 @@ To test this transformation, you will need to:
     <rownum>N</rownum>
     <rownumByFile>N</rownumByFile>
     <rownum_field/>
-    <format>DOS</format>
+    <format>mixed</format>
     <encoding/>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}\files\sales_data.csv</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;sales_data.csv</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -906,8 +949,8 @@ To test this transformation, you will need to:
       <field>
         <name>ORDERNUMBER</name>
         <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
+        <format>&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -921,8 +964,8 @@ To test this transformation, you will need to:
       <field>
         <name>QUANTITYORDERED</name>
         <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
+        <format>&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -937,7 +980,7 @@ To test this transformation, you will need to:
         <name>PRICEEACH</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -951,8 +994,8 @@ To test this transformation, you will need to:
       <field>
         <name>ORDERLINENUMBER</name>
         <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
+        <format>&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -966,8 +1009,8 @@ To test this transformation, you will need to:
       <field>
         <name>SALES</name>
         <type>Number</type>
-        <format>#.##</format>
-        <currency>$</currency>
+        <format>&#x23;.&#x23;&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -982,7 +1025,7 @@ To test this transformation, you will need to:
         <name>ORDERDATE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -997,7 +1040,7 @@ To test this transformation, you will need to:
         <name>STATUS</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1011,8 +1054,8 @@ To test this transformation, you will need to:
       <field>
         <name>QTR_ID</name>
         <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
+        <format>&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1026,8 +1069,8 @@ To test this transformation, you will need to:
       <field>
         <name>MONTH_ID</name>
         <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
+        <format>&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1041,8 +1084,8 @@ To test this transformation, you will need to:
       <field>
         <name>YEAR_ID</name>
         <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
+        <format>&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1057,7 +1100,7 @@ To test this transformation, you will need to:
         <name>PRODUCTLINE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1071,8 +1114,8 @@ To test this transformation, you will need to:
       <field>
         <name>MSRP</name>
         <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
+        <format>&#x23;</format>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1087,7 +1130,7 @@ To test this transformation, you will need to:
         <name>PRODUCTCODE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1102,7 +1145,7 @@ To test this transformation, you will need to:
         <name>CUSTOMERNAME</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1117,7 +1160,7 @@ To test this transformation, you will need to:
         <name>PHONE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1132,7 +1175,7 @@ To test this transformation, you will need to:
         <name>ADDRESSLINE1</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1147,7 +1190,7 @@ To test this transformation, you will need to:
         <name>ADDRESSLINE2</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1162,7 +1205,7 @@ To test this transformation, you will need to:
         <name>CITY</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1177,7 +1220,7 @@ To test this transformation, you will need to:
         <name>STATE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1192,7 +1235,7 @@ To test this transformation, you will need to:
         <name>POSTALCODE</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1207,7 +1250,7 @@ To test this transformation, you will need to:
         <name>COUNTRY</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1222,7 +1265,7 @@ To test this transformation, you will need to:
         <name>TERRITORY</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1237,7 +1280,7 @@ To test this transformation, you will need to:
         <name>CONTACTLASTNAME</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1252,7 +1295,7 @@ To test this transformation, you will need to:
         <name>CONTACTFIRSTNAME</name>
         <type>String</type>
         <format/>
-        <currency>$</currency>
+        <currency>&#x24;</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1302,6 +1345,7 @@ To test this transformation, you will need to:
     <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -1329,12 +1373,13 @@ To test this transformation, you will need to:
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <connection>sampledata</connection>
+    <connection>Sampledata</connection>
     <schema/>
     <table>SALES_DATA</table>
     <commit>1000</commit>
@@ -1366,4 +1411,5 @@ To test this transformation, you will need to:
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

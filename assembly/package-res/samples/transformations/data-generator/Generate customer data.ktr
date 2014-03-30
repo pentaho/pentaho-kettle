@@ -5,20 +5,40 @@
     <description/>
     <extended_description/>
     <trans_version/>
-  <filename>&#47;home&#47;matt&#47;workspace&#47;Kettle trunk&#47;samples&#47;transformations&#47;data-generator&#47;Generate customer data.ktr</filename>
+    <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;</directory>
+    <directory>&#x2f;</directory>
+    <parameters>
+    </parameters>
     <log>
-      <read/>
-      <write/>
-      <input/>
-      <output/>
-      <update/>
-      <rejected/>
-      <connection/>
-      <table/>
-      <use_batchid>Y</use_batchid>
-      <use_logfield>N</use_logfield>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>EXECUTING_SERVER</id><enabled>N</enabled><name>EXECUTING_SERVER</name></field><field><id>EXECUTING_USER</id><enabled>N</enabled><name>EXECUTING_USER</name></field><field><id>CLIENT</id><enabled>N</enabled><name>CLIENT</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+<metrics-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>METRICS_DATE</id><enabled>Y</enabled><name>METRICS_DATE</name></field><field><id>METRICS_CODE</id><enabled>Y</enabled><name>METRICS_CODE</name></field><field><id>METRICS_DESCRIPTION</id><enabled>Y</enabled><name>METRICS_DESCRIPTION</name></field><field><id>METRICS_SUBJECT</id><enabled>Y</enabled><name>METRICS_SUBJECT</name></field><field><id>METRICS_TYPE</id><enabled>Y</enabled><name>METRICS_TYPE</name></field><field><id>METRICS_VALUE</id><enabled>Y</enabled><name>METRICS_VALUE</name></field></metrics-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -35,6 +55,9 @@
     <feedback_size>250000</feedback_size>
     <using_thread_priorities>N</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -43,18 +66,49 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2014&#x2f;02&#x2f;27 12&#x3a;46&#x3a;00.726</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2007&#47;04&#47;11 16:04:17.734</modified_date>
+  <modified_date>2007&#x2f;04&#x2f;11 16&#x3a;04&#x3a;17.734</modified_date>
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>Sampledata</name>
+    <server/>
+    <type>H2</type>
+    <access>JNDI</access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Generate Rows</from><to>id</to><enabled>Y</enabled> </hop>  <hop> <from>id</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Modified Java Script Value</from><to>Sorted Merge</to><enabled>Y</enabled> </hop>  <hop> <from>Sorted Merge</from><to>customers-random.txt</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows</from><to>id</to><enabled>Y</enabled> </hop>
+  <hop> <from>id</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>
+  <hop> <from>Modified Java Script Value</from><to>Sorted Merge</to><enabled>Y</enabled> </hop>
+  <hop> <from>Sorted Merge</from><to>customers-random.txt</to><enabled>Y</enabled> </hop>
+  </order>
   <step>
     <name>Generate Rows</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -62,7 +116,11 @@
            </partitioning>
     <fields>
     </fields>
-    <limit>${NR_OF_ROWS}</limit>
+    <limit>&#x24;&#x7b;NR_OF_ROWS&#x7d;</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms/>
+    <row_time_field/>
+    <last_time_field/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>58</xloc>
@@ -76,142 +134,71 @@
     <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>2</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
     <compatible>N</compatible>
+    <optimizationLevel/>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>java;
-
-var name=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(5, &quot;&quot;, &quot;-name&quot;, false);
-var firstname=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(3, &quot;&quot;, &quot;-firstname&quot;, false);
-var zip=10000 + Math.round( Math.random() * 500 )*20;
-var city=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(3, &quot;&quot;, &quot;-city&quot;, false);
-var street=Packages.org.pentaho.di.core.util.StringUtil.generateRandomString(4, &quot;&quot;, &quot;-street&quot;, false);
-var housenr=1 + Math.random() * 200;
-var birthdate = new Date(1950+Math.round( Math.random() * 10 )*4, Math.round( Math.random() * 12 ), Math.round( Math.random() * 31 ));
-
-var states;
-
-if (states == null)
-{
-  states = new Array(
-  &quot;ALABAMA&quot;,&quot;AL&quot;,
-  &quot;ALASKA&quot;,&quot;AK&quot;,
-  &quot;AMERICAN SAMOA&quot;,&quot;AS&quot;,
-  &quot;ARIZONA&quot;,&quot;AZ&quot;,
-  &quot;ARKANSAS&quot;,&quot;AR&quot;,
-  &quot;CALIFORNIA&quot;,&quot;CA&quot;,
-  &quot;COLORADO&quot;,&quot;CO&quot;,
-  &quot;CONNECTICUT&quot;,&quot;CT&quot;,
-  &quot;DELAWARE&quot;,&quot;DE&quot;,
-  &quot;DISTRICT OF COLUMBIA&quot;,&quot;DC&quot;,
-  &quot;FEDERATED STATES OF MICRONESIA&quot;,&quot;FM&quot;,
-  &quot;FLORIDA&quot;,&quot;FL&quot;,
-  &quot;GEORGIA&quot;,&quot;GA&quot;,
-  &quot;GUAM&quot;,&quot;GU&quot;,
-  &quot;HAWAII&quot;,&quot;HI&quot;,
-  &quot;IDAHO&quot;,&quot;ID&quot;,
-  &quot;ILLINOIS&quot;,&quot;IL&quot;,
-  &quot;INDIANA&quot;,&quot;IN&quot;,
-  &quot;IOWA&quot;,&quot;IA&quot;,
-  &quot;KANSAS&quot;,&quot;KS&quot;,
-  &quot;KENTUCKY&quot;,&quot;KY&quot;,
-  &quot;LOUISIANA&quot;,&quot;LA&quot;,
-  &quot;MAINE&quot;,&quot;ME&quot;,
-  &quot;MARSHALL ISLANDS&quot;,&quot;MH&quot;,
-  &quot;MARYLAND&quot;,&quot;MD&quot;,
-  &quot;MASSACHUSETTS&quot;,&quot;MA&quot;,
-  &quot;MICHIGAN&quot;,&quot;MI&quot;,
-  &quot;MINNESOTA&quot;,&quot;MN&quot;,
-  &quot;MISSISSIPPI&quot;,&quot;MS&quot;,
-  &quot;MISSOURI&quot;,&quot;MO&quot;,
-  &quot;MONTANA&quot;,&quot;MT&quot;,
-  &quot;NEBRASKA&quot;,&quot;NE&quot;,
-  &quot;NEVADA&quot;,&quot;NV&quot;,
-  &quot;NEW HAMPSHIRE&quot;,&quot;NH&quot;,
-  &quot;NEW JERSEY&quot;,&quot;NJ&quot;,
-  &quot;NEW MEXICO&quot;,&quot;NM&quot;,
-  &quot;NEW YORK&quot;,&quot;NY&quot;,
-  &quot;NORTH CAROLINA&quot;,&quot;NC&quot;,
-  &quot;NORTH DAKOTA&quot;,&quot;ND&quot;,
-  &quot;NORTHERN MARIANA ISLANDS&quot;,&quot;MP&quot;,
-  &quot;OHIO&quot;,&quot;OH&quot;,
-  &quot;OKLAHOMA&quot;,&quot;OK&quot;,
-  &quot;OREGON&quot;,&quot;OR&quot;,
-  &quot;PALAU&quot;,&quot;PW&quot;,
-  &quot;PENNSYLVANIA&quot;,&quot;PA&quot;,
-  &quot;PUERTO RICO&quot;,&quot;PR&quot;,
-  &quot;RHODE ISLAND&quot;,&quot;RI&quot;,
-  &quot;SOUTH CAROLINA&quot;,&quot;SC&quot;,
-  &quot;SOUTH DAKOTA&quot;,&quot;SD&quot;,
-  &quot;TENNESSEE&quot;,&quot;TN&quot;,
-  &quot;TEXAS&quot;,&quot;TX&quot;,
-  &quot;UTAH&quot;,&quot;UT&quot;,
-  &quot;VERMONT&quot;,&quot;VT&quot;,
-  &quot;VIRGIN ISLANDS&quot;,&quot;VI&quot;,
-  &quot;VIRGINIA&quot;,&quot;VA&quot;,
-  &quot;WASHINGTON&quot;,&quot;WA&quot;,
-  &quot;WEST VIRGINIA&quot;,&quot;WV&quot;,
-  &quot;WISCONSIN&quot;,&quot;WI&quot;,
-  &quot;WYOMING&quot;,&quot;WY&quot;
-)
-}
-
-var stateNr = Math.round( Math.random() * states.length&#47;2 ) * 2;
-var state = states[stateNr];
-var stateCode = states[stateNr+1];
-
-
-</jsScript_script>
+        <jsScript_script>java&#x3b;&#xa;&#xa;var name&#x3d;Packages.org.pentaho.di.core.util.StringUtil.generateRandomString&#x28;5, &#x22;&#x22;, &#x22;-name&#x22;, false&#x29;&#x3b;&#xa;var firstname&#x3d;Packages.org.pentaho.di.core.util.StringUtil.generateRandomString&#x28;3, &#x22;&#x22;, &#x22;-firstname&#x22;, false&#x29;&#x3b;&#xa;var zip&#x3d;10000 &#x2b; Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 500 &#x29;&#x2a;20&#x3b;&#xa;var city&#x3d;Packages.org.pentaho.di.core.util.StringUtil.generateRandomString&#x28;3, &#x22;&#x22;, &#x22;-city&#x22;, false&#x29;&#x3b;&#xa;var street&#x3d;Packages.org.pentaho.di.core.util.StringUtil.generateRandomString&#x28;4, &#x22;&#x22;, &#x22;-street&#x22;, false&#x29;&#x3b;&#xa;var housenr&#x3d;1 &#x2b; Math.random&#x28;&#x29; &#x2a; 200&#x3b;&#xa;var birthdate &#x3d; new Date&#x28;1950&#x2b;Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 10 &#x29;&#x2a;4, Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 12 &#x29;, Math.round&#x28; Math.random&#x28;&#x29; &#x2a; 31 &#x29;&#x29;&#x3b;&#xa;&#xa;var states&#x3b;&#xa;&#xa;if &#x28;states &#x3d;&#x3d; null&#x29;&#xa;&#x7b;&#xa;  states &#x3d; new Array&#x28;&#xa;  &#x22;ALABAMA&#x22;,&#x22;AL&#x22;,&#xa;  &#x22;ALASKA&#x22;,&#x22;AK&#x22;,&#xa;  &#x22;AMERICAN SAMOA&#x22;,&#x22;AS&#x22;,&#xa;  &#x22;ARIZONA&#x22;,&#x22;AZ&#x22;,&#xa;  &#x22;ARKANSAS&#x22;,&#x22;AR&#x22;,&#xa;  &#x22;CALIFORNIA&#x22;,&#x22;CA&#x22;,&#xa;  &#x22;COLORADO&#x22;,&#x22;CO&#x22;,&#xa;  &#x22;CONNECTICUT&#x22;,&#x22;CT&#x22;,&#xa;  &#x22;DELAWARE&#x22;,&#x22;DE&#x22;,&#xa;  &#x22;DISTRICT OF COLUMBIA&#x22;,&#x22;DC&#x22;,&#xa;  &#x22;FEDERATED STATES OF MICRONESIA&#x22;,&#x22;FM&#x22;,&#xa;  &#x22;FLORIDA&#x22;,&#x22;FL&#x22;,&#xa;  &#x22;GEORGIA&#x22;,&#x22;GA&#x22;,&#xa;  &#x22;GUAM&#x22;,&#x22;GU&#x22;,&#xa;  &#x22;HAWAII&#x22;,&#x22;HI&#x22;,&#xa;  &#x22;IDAHO&#x22;,&#x22;ID&#x22;,&#xa;  &#x22;ILLINOIS&#x22;,&#x22;IL&#x22;,&#xa;  &#x22;INDIANA&#x22;,&#x22;IN&#x22;,&#xa;  &#x22;IOWA&#x22;,&#x22;IA&#x22;,&#xa;  &#x22;KANSAS&#x22;,&#x22;KS&#x22;,&#xa;  &#x22;KENTUCKY&#x22;,&#x22;KY&#x22;,&#xa;  &#x22;LOUISIANA&#x22;,&#x22;LA&#x22;,&#xa;  &#x22;MAINE&#x22;,&#x22;ME&#x22;,&#xa;  &#x22;MARSHALL ISLANDS&#x22;,&#x22;MH&#x22;,&#xa;  &#x22;MARYLAND&#x22;,&#x22;MD&#x22;,&#xa;  &#x22;MASSACHUSETTS&#x22;,&#x22;MA&#x22;,&#xa;  &#x22;MICHIGAN&#x22;,&#x22;MI&#x22;,&#xa;  &#x22;MINNESOTA&#x22;,&#x22;MN&#x22;,&#xa;  &#x22;MISSISSIPPI&#x22;,&#x22;MS&#x22;,&#xa;  &#x22;MISSOURI&#x22;,&#x22;MO&#x22;,&#xa;  &#x22;MONTANA&#x22;,&#x22;MT&#x22;,&#xa;  &#x22;NEBRASKA&#x22;,&#x22;NE&#x22;,&#xa;  &#x22;NEVADA&#x22;,&#x22;NV&#x22;,&#xa;  &#x22;NEW HAMPSHIRE&#x22;,&#x22;NH&#x22;,&#xa;  &#x22;NEW JERSEY&#x22;,&#x22;NJ&#x22;,&#xa;  &#x22;NEW MEXICO&#x22;,&#x22;NM&#x22;,&#xa;  &#x22;NEW YORK&#x22;,&#x22;NY&#x22;,&#xa;  &#x22;NORTH CAROLINA&#x22;,&#x22;NC&#x22;,&#xa;  &#x22;NORTH DAKOTA&#x22;,&#x22;ND&#x22;,&#xa;  &#x22;NORTHERN MARIANA ISLANDS&#x22;,&#x22;MP&#x22;,&#xa;  &#x22;OHIO&#x22;,&#x22;OH&#x22;,&#xa;  &#x22;OKLAHOMA&#x22;,&#x22;OK&#x22;,&#xa;  &#x22;OREGON&#x22;,&#x22;OR&#x22;,&#xa;  &#x22;PALAU&#x22;,&#x22;PW&#x22;,&#xa;  &#x22;PENNSYLVANIA&#x22;,&#x22;PA&#x22;,&#xa;  &#x22;PUERTO RICO&#x22;,&#x22;PR&#x22;,&#xa;  &#x22;RHODE ISLAND&#x22;,&#x22;RI&#x22;,&#xa;  &#x22;SOUTH CAROLINA&#x22;,&#x22;SC&#x22;,&#xa;  &#x22;SOUTH DAKOTA&#x22;,&#x22;SD&#x22;,&#xa;  &#x22;TENNESSEE&#x22;,&#x22;TN&#x22;,&#xa;  &#x22;TEXAS&#x22;,&#x22;TX&#x22;,&#xa;  &#x22;UTAH&#x22;,&#x22;UT&#x22;,&#xa;  &#x22;VERMONT&#x22;,&#x22;VT&#x22;,&#xa;  &#x22;VIRGIN ISLANDS&#x22;,&#x22;VI&#x22;,&#xa;  &#x22;VIRGINIA&#x22;,&#x22;VA&#x22;,&#xa;  &#x22;WASHINGTON&#x22;,&#x22;WA&#x22;,&#xa;  &#x22;WEST VIRGINIA&#x22;,&#x22;WV&#x22;,&#xa;  &#x22;WISCONSIN&#x22;,&#x22;WI&#x22;,&#xa;  &#x22;WYOMING&#x22;,&#x22;WY&#x22;&#xa;&#x29;&#xa;&#x7d;&#xa;&#xa;var stateNr &#x3d; Math.round&#x28; Math.random&#x28;&#x29; &#x2a; states.length&#x2f;2 &#x29; &#x2a; 2&#x3b;&#xa;var state &#x3d; states&#x5b;stateNr&#x5d;&#x3b;&#xa;var stateCode &#x3d; states&#x5b;stateNr&#x2b;1&#x5d;&#x3b;&#xa;&#xa;&#xa;</jsScript_script>
       </jsScript>    </jsScripts>    <fields>      <field>        <name>name</name>
         <rename>name</rename>
         <type>String</type>
         <length>30</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>      <field>        <name>firstname</name>
         <rename>firstname</rename>
         <type>String</type>
         <length>30</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>      <field>        <name>zip</name>
         <rename>zip</rename>
         <type>Integer</type>
         <length>5</length>
         <precision>0</precision>
+        <replace>N</replace>
       </field>      <field>        <name>city</name>
         <rename>city</rename>
         <type>String</type>
         <length>30</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>      <field>        <name>birthdate</name>
         <rename>birthdate</rename>
         <type>Date</type>
         <length>-1</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>      <field>        <name>street</name>
         <rename>street</rename>
         <type>String</type>
         <length>30</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>      <field>        <name>housenr</name>
         <rename>housenr</rename>
         <type>Integer</type>
         <length>3</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>      <field>        <name>stateCode</name>
         <rename>stateCode</rename>
         <type>String</type>
         <length>2</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>      <field>        <name>state</name>
         <rename>state</rename>
         <type>String</type>
         <length>40</length>
         <precision>-1</precision>
+        <replace>N</replace>
       </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>388</xloc>
@@ -225,6 +212,7 @@ var stateCode = states[stateNr+1];
     <type>SortedMerge</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -249,33 +237,43 @@ var stateCode = states[stateNr+1];
     <type>TextFileOutput</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <separator>;</separator>
-    <enclosure>&quot;</enclosure>
+    <separator>&#x3b;</separator>
+    <enclosure>&#x22;</enclosure>
     <enclosure_forced>N</enclosure_forced>
+    <enclosure_fix_disabled>Y</enclosure_fix_disabled>
     <header>Y</header>
     <footer>N</footer>
     <format>DOS</format>
     <compression>None</compression>
     <encoding/>
     <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
+    <create_parent_folder>Y</create_parent_folder>
     <file>
-      <name>&#47;tmp&#47;customers-10M</name>
+      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;..&#x2f;..&#x2f;transformations&#x2f;output&#x2f;customers-10M</name>
       <is_command>N</is_command>
+      <servlet_output>N</servlet_output>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>txt</extention>
       <append>N</append>
       <split>N</split>
       <haspartno>N</haspartno>
       <add_date>N</add_date>
       <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <add_to_result_filenames>Y</add_to_result_filenames>
       <pad>N</pad>
       <fast_dump>N</fast_dump>
       <splitevery>0</splitevery>
-      </file>
+    </file>
     <fields>
       <field>
         <name>id</name>
@@ -285,9 +283,10 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>name</name>
         <type>String</type>
@@ -296,9 +295,10 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>firstname</name>
         <type>String</type>
@@ -307,9 +307,10 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>zip</name>
         <type>Integer</type>
@@ -318,9 +319,10 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>city</name>
         <type>String</type>
@@ -329,20 +331,22 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>birthdate</name>
         <type>Date</type>
-        <format>yyyy&#47;MM&#47;dd</format>
+        <format>yyyy&#x2f;MM&#x2f;dd</format>
         <currency/>
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>street</name>
         <type>String</type>
@@ -351,9 +355,10 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>housenr</name>
         <type>Integer</type>
@@ -362,9 +367,10 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>stateCode</name>
         <type>String</type>
@@ -373,9 +379,10 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>state</name>
         <type>String</type>
@@ -384,10 +391,11 @@ var stateCode = states[stateNr+1];
         <decimal/>
         <group/>
         <nullif/>
+        <trim_type>none</trim_type>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>718</xloc>
@@ -401,6 +409,7 @@ var stateCode = states[stateNr+1];
     <type>Sequence</type>
     <description/>
     <distribute>Y</distribute>
+    <custom_distribution/>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -429,4 +438,5 @@ var stateCode = states[stateNr+1];
    <slave-step-copy-partition-distribution>
 </slave-step-copy-partition-distribution>
    <slave_transformation>N</slave_transformation>
+
 </transformation>

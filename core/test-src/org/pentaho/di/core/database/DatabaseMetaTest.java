@@ -1,5 +1,6 @@
 package org.pentaho.di.core.database;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.concurrent.Callable;
@@ -41,5 +42,12 @@ public class DatabaseMetaTest {
       }
     } );
     getFuture.get();
+  }
+
+  @Test
+  public void testDatabaseAccessTypeCode() throws Exception {
+    String expectedJndi = "JNDI";
+    String access = DatabaseMeta.getAccessTypeDesc( DatabaseMeta.getAccessType( expectedJndi ) );
+    assertEquals( expectedJndi, access );
   }
 }
