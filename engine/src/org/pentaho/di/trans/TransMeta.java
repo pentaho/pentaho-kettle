@@ -1345,13 +1345,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param name
    *          the name of the desired database
    * @return the desired database's meta-data, or null if no database is found
-   * @see org.pentaho.di.trans.HasDatabaseInterface#findDatabase(java.lang.String)
    */
   public DatabaseMeta findDatabase( String name ) {
     int i;
     for ( i = 0; i < nrDatabases(); i++ ) {
       DatabaseMeta ci = getDatabase( i );
-      if ( ci.getName().equalsIgnoreCase( name ) ) {
+      if (( ci != null ) && ( ci.getName().equalsIgnoreCase( name ) ) ||
+              ( ci.getDisplayName().equalsIgnoreCase( name ) )) {
         return ci;
       }
     }

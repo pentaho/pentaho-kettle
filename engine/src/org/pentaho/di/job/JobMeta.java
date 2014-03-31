@@ -1523,7 +1523,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public DatabaseMeta findDatabase( String name ) {
     for ( int i = 0; i < nrDatabases(); i++ ) {
       DatabaseMeta ci = getDatabase( i );
-      if ( ci.getName().equalsIgnoreCase( name ) ) {
+      if (( ci != null ) && ( ci.getName().equalsIgnoreCase( name ) ) ||
+              ( ci.getDisplayName().equalsIgnoreCase( name ) )) {
         return ci;
       }
     }
