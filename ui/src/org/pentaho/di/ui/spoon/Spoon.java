@@ -1277,7 +1277,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     cursor_hand.dispose();
     cursor_hourglass.dispose();
 
-    if (destroy && !display.isDisposed()) {
+    if (destroy && ( display != null ) && !display.isDisposed()) {
       try {
         display.dispose();
       } catch (SWTException e) {
@@ -5748,7 +5748,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 continue;
 
               TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
-              tiDb.setText(databaseMeta.getName());
+              tiDb.setText(databaseMeta.getDisplayName());
               if (databaseMeta.isShared())
                 tiDb.setFont(guiResource.getFontBold());
               tiDb.setImage(guiResource.getImageConnection());
@@ -5941,7 +5941,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               if (!filterMatch(databaseMeta.getName()))
                 continue;
               TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
-              tiDb.setText(databaseMeta.getName());
+              tiDb.setText(databaseMeta.getDisplayName());
               if (databaseMeta.isShared())
                 tiDb.setFont(guiResource.getFontBold());
               tiDb.setImage(guiResource.getImageConnection());
