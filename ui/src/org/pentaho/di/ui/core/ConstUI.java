@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.core;
 
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
@@ -39,22 +38,6 @@ import org.pentaho.ui.xul.containers.XulMenupopup;
  *
  */
 public class ConstUI {
-
-  /**
-   * Default font name for the fixed width font
-   */
-  public static final String FONT_FIXED_NAME = "Courier";
-
-  /**
-   * Default font size for the fixed width font
-   */
-  public static final int FONT_FIXED_SIZE = 9;
-
-  /**
-   * Default font type for the fixed width font
-   */
-  public static final int FONT_FIXED_TYPE = SWT.NORMAL;
-
   /**
    * Default icon size
    */

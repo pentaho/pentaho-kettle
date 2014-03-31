@@ -358,7 +358,8 @@ public class EnterOptionsDialog extends Dialog {
     wdFFont.setLayoutData( fddFFont );
     wdFFont.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        fixedFontData = new FontData( ConstUI.FONT_FIXED_NAME, ConstUI.FONT_FIXED_SIZE, ConstUI.FONT_FIXED_TYPE );
+        fixedFontData = new FontData( PropsUI.getInstance().getFixedFont().getName(),
+          PropsUI.getInstance().getFixedFont().getHeight(), PropsUI.getInstance().getFixedFont().getStyle() );
         fixedFont.dispose();
         fixedFont = new Font( display, fixedFontData );
         wFFont.redraw();

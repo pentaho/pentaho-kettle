@@ -100,12 +100,12 @@ public class PropsUI extends Props {
   /**
    * Initialize the properties: load from disk.
    *
-   * @param display
+   * @param d
    *          The Display
    * @param t
    *          The type of properties file.
    */
-  public static final void init( Display d, int t ) {
+  public static void init( Display d, int t ) {
     if ( props == null ) {
       display = d;
       props = new PropsUI( t );
@@ -120,12 +120,12 @@ public class PropsUI extends Props {
   /**
    * Initialize the properties: load from disk.
    *
-   * @param display
+   * @param d
    *          The Display
    * @param filename
    *          the filename to use
    */
-  public static final void init( Display d, String filename ) {
+  public static void init( Display d, String filename ) {
     if ( props == null ) {
       display = d;
       props = new PropsUI( filename );
@@ -142,11 +142,11 @@ public class PropsUI extends Props {
    *
    * @return true if the Kettle properties where loaded.
    */
-  public static final boolean isInitialized() {
+  public static boolean isInitialized() {
     return props != null;
   }
 
-  public static final PropsUI getInstance() {
+  public static PropsUI getInstance() {
     if ( props != null ) {
       return (PropsUI) props;
     }
@@ -205,6 +205,24 @@ public class PropsUI extends Props {
     properties.setProperty( STRING_LOG_FILTER, getLogFilter() );
 
     if ( display != null ) {
+      // Set Default Look for all dialogs and sizes.
+      String prop =
+        BasePropertyHandler.getProperty( "Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default" );
+      try {
+        ResourceBundle bundle = ResourceBundle.getBundle( prop );
+        if ( bundle != null ) {
+          Enumeration<String> enumer = bundle.getKeys();
+          String theKey;
+          while ( enumer.hasMoreElements() ) {
+            theKey = enumer.nextElement();
+            properties.setProperty( theKey, bundle.getString( theKey ) );
+          }
+        }
+      } catch ( Exception ex ) {
+        // don't throw an exception, but log it.
+        ex.printStackTrace();
+      }
+
       fd = getFixedFont();
       properties.setProperty( STRING_FONT_FIXED_NAME, fd.getName() );
       properties.setProperty( STRING_FONT_FIXED_SIZE, "" + fd.getHeight() );
@@ -246,27 +264,7 @@ public class PropsUI extends Props {
       properties.setProperty( STRING_MAX_UNDO, "" + getMaxUndo() );
 
       setSashWeights( getSashWeights() );
-
-      // Set Default Look for all dialogs and sizes.
-      String prop =
-        BasePropertyHandler.getProperty( "Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default" );
-      try {
-        ResourceBundle bundle = ResourceBundle.getBundle( prop );
-        // ResourceBundle bundle = ResourceBundle.getBundle(prop);
-        if ( bundle != null ) {
-          Enumeration<String> enumer = bundle.getKeys();
-          String theKey;
-          while ( enumer.hasMoreElements() ) {
-            theKey = enumer.nextElement();
-            properties.setProperty( theKey, bundle.getString( theKey ) );
-          }
-        }
-      } catch ( Exception ex ) {
-        // don't throw an exception, but log it.
-        ex.printStackTrace();
-      }
     }
-
   }
 
   public void storeScreens() {
@@ -512,17 +510,13 @@ public class PropsUI extends Props {
   }
 
   public FontData getFixedFont() {
-    // Default:?
-    String name = properties.getProperty( STRING_FONT_FIXED_NAME, ConstUI.FONT_FIXED_NAME );
-    String ssize = properties.getProperty( STRING_FONT_FIXED_SIZE );
-    String sstyle = properties.getProperty( STRING_FONT_FIXED_STYLE );
+    FontData def = getDefaultFontData();
 
-    int size = Const.toInt( ssize, ConstUI.FONT_FIXED_SIZE );
-    int style = Const.toInt( sstyle, ConstUI.FONT_FIXED_TYPE );
+    String name = properties.getProperty( STRING_FONT_FIXED_NAME );
+    int size = Const.toInt( properties.getProperty( STRING_FONT_FIXED_SIZE ), def.getHeight() );
+    int style = Const.toInt( properties.getProperty( STRING_FONT_FIXED_STYLE ), def.getStyle() );
 
-    FontData fd = new FontData( name, size, style );
-
-    return fd;
+    return new FontData( name, size, style );
   }
 
   public void setDefaultFont( FontData fd ) {
@@ -534,35 +528,17 @@ public class PropsUI extends Props {
   }
 
   public FontData getDefaultFont() {
-    if ( isOSLookShown() ) {
-      return display.getSystemFont().getFontData()[0];
-    }
-
     FontData def = getDefaultFontData();
 
-    String name = properties.getProperty( STRING_FONT_DEFAULT_NAME );
-    String ssize = properties.getProperty( STRING_FONT_DEFAULT_SIZE );
-    String sstyle = properties.getProperty( STRING_FONT_DEFAULT_STYLE );
-
-    int size = Const.toInt( ssize, def.getHeight() );
-    int style = Const.toInt( sstyle, def.getStyle() );
-
-    if ( name == null || name.length() == 0 ) {
-      name = def.getName();
-      size = def.getHeight();
-      style = def.getStyle();
+    if ( isOSLookShown() ) {
+      return def;
     }
 
-    // Still nothing?
-    if ( name == null || name.length() == 0 ) {
-      name = "Arial";
-      size = 10;
-      style = SWT.NORMAL;
-    }
+    String name = properties.getProperty( STRING_FONT_DEFAULT_NAME, def.getName() );
+    int size = Const.toInt( properties.getProperty( STRING_FONT_DEFAULT_SIZE ), def.getHeight() );
+    int style = Const.toInt( properties.getProperty( STRING_FONT_DEFAULT_STYLE ), def.getStyle() );
 
-    FontData fd = new FontData( name, size, style );
-
-    return fd;
+    return new FontData( name, size, style );
   }
 
   public void setGraphFont( FontData fd ) {
@@ -575,15 +551,11 @@ public class PropsUI extends Props {
     FontData def = getDefaultFontData();
 
     String name = properties.getProperty( STRING_FONT_GRAPH_NAME, def.getName() );
-    String ssize = properties.getProperty( STRING_FONT_GRAPH_SIZE );
-    String sstyle = properties.getProperty( STRING_FONT_GRAPH_STYLE );
 
-    int size = Const.toInt( ssize, def.getHeight() );
-    int style = Const.toInt( sstyle, def.getStyle() );
+    int size = Const.toInt( properties.getProperty( STRING_FONT_GRAPH_SIZE ), def.getHeight() );
+    int style = Const.toInt( properties.getProperty( STRING_FONT_GRAPH_STYLE ), def.getStyle() );
 
-    FontData fd = new FontData( name, size, style );
-
-    return fd;
+    return new FontData( name, size, style );
   }
 
   public void setGridFont( FontData fd ) {
@@ -602,9 +574,7 @@ public class PropsUI extends Props {
     int size = Const.toInt( ssize, def.getHeight() );
     int style = Const.toInt( sstyle, def.getStyle() );
 
-    FontData fd = new FontData( name, size, style );
-
-    return fd;
+    return new FontData( name, size, style );
   }
 
   public void setNoteFont( FontData fd ) {
@@ -623,9 +593,7 @@ public class PropsUI extends Props {
     int size = Const.toInt( ssize, def.getHeight() );
     int style = Const.toInt( sstyle, def.getStyle() );
 
-    FontData fd = new FontData( name, size, style );
-
-    return fd;
+    return new FontData( name, size, style );
   }
 
   public void setBackgroundRGB( RGB c ) {
@@ -638,18 +606,8 @@ public class PropsUI extends Props {
     int r = Const.toInt( properties.getProperty( STRING_BACKGROUND_COLOR_R ), ConstUI.COLOR_BACKGROUND_RED ); // Defaut:
     int g = Const.toInt( properties.getProperty( STRING_BACKGROUND_COLOR_G ), ConstUI.COLOR_BACKGROUND_GREEN );
     int b = Const.toInt( properties.getProperty( STRING_BACKGROUND_COLOR_B ), ConstUI.COLOR_BACKGROUND_BLUE );
-    RGB rgb = new RGB( r, g, b );
 
-    return rgb;
-  }
-
-  /**
-   * @deprecated
-   * @return The background RGB color.
-   */
-  @Deprecated
-  public RGB getBackupgroundRGB() {
-    return getBackgroundRGB();
+    return new RGB( r, g, b );
   }
 
   public void setGraphColorRGB( RGB c ) {
@@ -662,9 +620,8 @@ public class PropsUI extends Props {
     int r = Const.toInt( properties.getProperty( STRING_GRAPH_COLOR_R ), ConstUI.COLOR_GRAPH_RED ); // default White
     int g = Const.toInt( properties.getProperty( STRING_GRAPH_COLOR_G ), ConstUI.COLOR_GRAPH_GREEN );
     int b = Const.toInt( properties.getProperty( STRING_GRAPH_COLOR_B ), ConstUI.COLOR_GRAPH_BLUE );
-    RGB rgb = new RGB( r, g, b );
 
-    return rgb;
+    return new RGB( r, g, b );
   }
 
   public void setTabColorRGB( RGB c ) {
@@ -677,9 +634,8 @@ public class PropsUI extends Props {
     int r = Const.toInt( properties.getProperty( STRING_TAB_COLOR_R ), ConstUI.COLOR_TAB_RED ); // default White
     int g = Const.toInt( properties.getProperty( STRING_TAB_COLOR_G ), ConstUI.COLOR_TAB_GREEN );
     int b = Const.toInt( properties.getProperty( STRING_TAB_COLOR_B ), ConstUI.COLOR_TAB_BLUE );
-    RGB rgb = new RGB( r, g, b );
 
-    return rgb;
+    return new RGB( r, g, b );
   }
 
   public void setIconSize( int size ) {
@@ -884,7 +840,7 @@ public class PropsUI extends Props {
     properties.setProperty( STRING_SHOW_OS_LOOK, show ? YES : NO );
   }
 
-  public static final void setGCFont( GC gc, Device device, FontData fontData ) {
+  public static void setGCFont( GC gc, Device device, FontData fontData ) {
     if ( Const.getOS().startsWith( "Windows" ) ) {
       Font font = new Font( device, fontData );
       gc.setFont( font );
@@ -983,7 +939,7 @@ public class PropsUI extends Props {
   }
 
   /**
-   * @param display
+   * @param d
    *          The display to set.
    */
   public static void setDisplay( Display d ) {
@@ -1033,14 +989,14 @@ public class PropsUI extends Props {
   private int parseStyle( String sStyle ) {
     int style = SWT.DIALOG_TRIM;
     String[] styles = sStyle.split( "," );
-    for ( int i = 0; i < styles.length; i++ ) {
-      if ( "APPLICATION_MODAL".equals( styles[i] ) ) {
+    for ( String style1 : styles ) {
+      if ( "APPLICATION_MODAL".equals( style1 ) ) {
         style |= SWT.APPLICATION_MODAL | SWT.SHEET;
-      } else if ( "RESIZE".equals( styles[i] ) ) {
+      } else if ( "RESIZE".equals( style1 ) ) {
         style |= SWT.RESIZE;
-      } else if ( "MIN".equals( styles[i] ) ) {
+      } else if ( "MIN".equals( style1 ) ) {
         style |= SWT.MIN;
-      } else if ( "MAX".equals( styles[i] ) ) {
+      } else if ( "MAX".equals( style1 ) ) {
         style |= SWT.MAX;
       }
     }
@@ -1123,7 +1079,7 @@ public class PropsUI extends Props {
     properties.setProperty( CANVAS_GRID_SIZE, Integer.toString( gridSize ) );
   }
 
-  public static final void setLocation( GUIPositionInterface guiElement, int x, int y ) {
+  public static void setLocation( GUIPositionInterface guiElement, int x, int y ) {
     if ( x < 0 ) {
       x = 0;
     }
@@ -1133,7 +1089,7 @@ public class PropsUI extends Props {
     guiElement.setLocation( calculateGridPosition( new Point( x, y ) ) );
   }
 
-  public static final Point calculateGridPosition( Point p ) {
+  public static Point calculateGridPosition( Point p ) {
     int gridSize = PropsUI.getInstance().getCanvasGridSize();
     if ( gridSize > 1 ) {
       // Snap to grid...

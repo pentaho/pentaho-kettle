@@ -1828,7 +1828,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     sep3.setLayoutData( fdSep3 );
 
     selectionLabel = new Label( mainComposite, SWT.HORIZONTAL );
-    selectionLabel.setFont( GUIResource.getInstance().getFontMedium() );
     FormData fdsLabel = new FormData();
     fdsLabel.left = new FormAttachment( 0, 0 );
     fdsLabel.top = new FormAttachment( sep3, 5 );
@@ -1851,7 +1850,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionFilter =
       new Text( mainComposite, SWT.SINGLE
         | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL );
-    selectionFilter.setFont( GUIResource.getInstance().getFontSmall() );
     selectionFilter.setToolTipText( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Tooltip" ) );
     FormData fdSelectionFilter = new FormData();
     fdSelectionFilter.top =
@@ -3041,7 +3039,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     tabfolder = new TabSet( tabComp );
     tabfolder.setChangedFont( GUIResource.getInstance().getFontBold() );
-    tabfolder.setUnchangedFont( GUIResource.getInstance().getFontGraph() );
     props.setLook( tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB );
     final CTabFolder cTabFolder = tabfolder.getSwtTabset();
     cTabFolder.addMenuDetectListener( new MenuDetectListener() {
