@@ -145,8 +145,15 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					{
 						TransMeta transMeta = spoon.delegates.trans.getTransformation(path[1]);
 						if (transMeta!=null) {
-							if (path[2].equals(Spoon.STRING_CONNECTIONS))
-								object = new TreeSelection(path[3], transMeta.findDatabase(path[3]), transMeta);
+							if (path[2].equals(Spoon.STRING_CONNECTIONS)) {
+                String dbName = path[3];
+                DatabaseMeta databaseMeta = transMeta.findDatabase( dbName );
+                if (databaseMeta != null) {
+                  dbName = databaseMeta.getName();
+                }
+
+								object = new TreeSelection(path[3], transMeta.findDatabase(dbName), transMeta);
+              }
 							if (path[2].equals(Spoon.STRING_STEPS))
 								object = new TreeSelection(path[3], transMeta.findStep(path[3]), transMeta);
 							if (path[2].equals(Spoon.STRING_HOPS))
