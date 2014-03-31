@@ -22,13 +22,17 @@
 
 package org.pentaho.di.cluster;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -54,6 +58,8 @@ public class MasterSlaveTest extends BaseCluster {
   public void testAll() throws Exception {
     runAllocatePorts();
     final int ITERATIONS = 2;
+
+    runSubtransformationClustered();
 
     for ( int i = 0; i < ITERATIONS; i++ ) {
       runParallelFileReadOnMaster();
@@ -254,6 +260,39 @@ public class MasterSlaveTest extends BaseCluster {
     assertEqualsIgnoreWhitespacesAndCase( "10000", result );
   }
 
+  /**
+   * This test check passing rows to sub-transformation executed on cluster
+   * See PDI-10704 for details
+   * @throws Exception
+   */
+  public void runSubtransformationClustered() throws Exception {
+    TransMeta transMeta =
+      loadTransMetaReplaceSlavesInCluster(
+        clusterGenerator, "test/org/pentaho/di/cluster/test-subtrans-clustered.ktr" );
+    TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
+    Result prevResult = new Result(  );
+    prevResult.setRows( getSampleRows() );
+    config.setPreviousResult( prevResult );
+
+    TransSplitter transSplitter = Trans.executeClustered( transMeta, config );
+    LogChannel logChannel = createLogChannel( "cluster unit test <runSubtransformationClustered>" );
+    long nrErrors = Trans.monitorClusteredTransformation( logChannel, transSplitter, null, 1 );
+    assertEquals( 0L, nrErrors );
+
+    String result = loadFileContent( transMeta, "${java.io.tmpdir}/test-subtrans-clustered.txt" );
+    assertEqualsIgnoreWhitespacesAndCase( "10", result );
+  }
+
+  private static List<RowMetaAndData> getSampleRows() {
+    List<RowMetaAndData> result = new ArrayList<RowMetaAndData>(  );
+    for (int i = 0; i < 10; i++) {
+      RowMetaAndData row = new RowMetaAndData(  );
+      row.addValue( "test", ValueMetaInterface.TYPE_INTEGER, 1L );
+      result.add( row );
+    }
+    return result;
+  }
+
   private static TransMeta loadTransMetaReplaceSlavesInCluster( ClusterGenerator clusterGenerator,
     String testFilename ) throws KettleException {
     TransMeta transMeta = new TransMeta( testFilename );
@@ -273,5 +312,7 @@ public class MasterSlaveTest extends BaseCluster {
 
     return transMeta;
   }
+
+
 
 }
