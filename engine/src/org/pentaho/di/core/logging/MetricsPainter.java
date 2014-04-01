@@ -59,13 +59,17 @@ public class MetricsPainter {
   }
 
   public MetricsPainter( GCInterface gc, int barHeight ) {
-    this.gc = gc;
+    this.setGc( gc );
     this.barHeight = barHeight;
   }
 
   public List<MetricsDrawArea> paint( List<MetricsDuration> durations ) {
-    int width = gc.getArea().x - 4;
-    int height = gc.getArea().y - 4;
+    if ( durations == null || durations.isEmpty() ) {
+      throw new IllegalArgumentException();
+    }
+
+    int width = getGc().getArea().x - 4;
+    int height = getGc().getArea().y - 4;
 
     List<MetricsDrawArea> areas = new ArrayList<MetricsDrawArea>();
     // First determine the period
@@ -75,31 +79,36 @@ public class MetricsPainter {
       return areas; // nothing to do;
     }
     double pixelsPerMs = (double) width / ( (double) ( periodEnd - periodStart ) );
-
-    // Draw some lines in the background.
-    //
     long periodInMs = periodEnd - periodStart;
+
+    drawTimeScaleLine( height, pixelsPerMs, periodInMs );
+
+    drawDurations( durations, areas, pixelsPerMs );
+
+    return areas;
+  }
+
+  void drawTimeScaleLine( int height, double pixelsPerMs, long periodInMs ) {
     int log10 = (int) Math.log10( periodInMs ) + 1;
-
     int timeLineDistance = (int) Math.pow( 10, log10 - 1 ) / 2;
+    int incrementUnit = Math.max( timeLineDistance, 1 );
 
-    for ( int time = timeLineDistance; time < periodInMs; time += timeLineDistance ) {
+    for ( int time = timeLineDistance; time <= periodInMs; time += incrementUnit ) {
       int x = (int) ( time * pixelsPerMs );
-      gc.setForeground( EColor.LIGHTGRAY );
-      gc.drawLine( x, 0, x, height );
+      getGc().setForeground( EColor.LIGHTGRAY );
+      getGc().drawLine( x, 0, x, height );
       String marker = Integer.toString( time );
-      Point point = gc.textExtent( marker );
-      gc.setForeground( EColor.DARKGRAY );
-      gc.drawText( marker, x - ( point.x / 2 ), 0, true );
+      Point point = getGc().textExtent( marker );
+      getGc().setForeground( EColor.DARKGRAY );
+      getGc().drawText( marker, x - ( point.x / 2 ), 0, true );
     }
+  }
 
+  private void drawDurations( List<MetricsDuration> durations, List<MetricsDrawArea> areas, double pixelsPerMs ) {
+    // set top indent
     int y = 20;
 
-    // Draw the durations...
-    //
-    for ( int i = 0; i < durations.size(); i++ ) {
-      MetricsDuration duration = durations.get( i );
-
+    for ( MetricsDuration duration : durations ) {
       Long realDuration = duration.getEndDate().getTime() - duration.getDate().getTime();
 
       // How many pixels does it take to drawn this duration?
@@ -107,38 +116,35 @@ public class MetricsPainter {
       int durationWidth = (int) ( realDuration * pixelsPerMs );
       int x = 2 + (int) ( ( duration.getDate().getTime() - periodStart ) * pixelsPerMs );
 
-      gc.setBackground( EColor.BACKGROUND );
-      gc.setForeground( EColor.LIGHTBLUE );
-      gc.fillGradientRectangle( x, y, durationWidth, barHeight, false );
-      gc.setForeground( EColor.BLACK );
-      gc.drawRectangle( x, y, durationWidth, barHeight );
+      getGc().setBackground( EColor.BACKGROUND );
+      getGc().setForeground( EColor.LIGHTBLUE );
+      getGc().fillGradientRectangle( x, y, durationWidth, barHeight, false );
+      getGc().setForeground( EColor.BLACK );
+      getGc().drawRectangle( x, y, durationWidth, barHeight );
       areas.add( new MetricsDrawArea( new Rectangle( x, y, durationWidth, barHeight ), duration ) );
 
       LoggingObjectInterface loggingObject =
         LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
 
       String message =
-        duration.getDescription()
-          + " - " + loggingObject.getObjectName() + " : " + duration.getDuration() + "ms";
+        duration.getDescription() + " - " + loggingObject.getObjectName() + " : " + duration.getDuration() + "ms";
       if ( duration.getCount() > 1 ) {
         message += " " + duration.getCount() + " calls, avg=" + ( duration.getDuration() / duration.getCount() );
       }
 
-      gc.setFont( EFont.GRAPH );
-      gc.textExtent( message );
-      gc.drawText( message, x + 3, y + 4, true );
+      getGc().setFont( EFont.GRAPH );
+      getGc().textExtent( message );
+      getGc().drawText( message, x + 3, y + 4, true );
 
       y += barHeight + 5;
     }
-    return areas;
   }
 
   private void determinePeriod( List<MetricsDuration> durations ) {
     periodStart = null;
     periodEnd = null;
 
-    for ( int i = 0; i < durations.size(); i++ ) {
-      MetricsDuration duration = durations.get( i );
+    for ( MetricsDuration duration : durations ) {
       long periodStartTime = duration.getDate().getTime();
       if ( periodStart == null || periodStartTime < periodStart ) {
         periodStart = periodStartTime;
@@ -148,5 +154,15 @@ public class MetricsPainter {
         periodEnd = periodEndTime;
       }
     }
+  }
+
+  // Method is defined as package-protected in order to be accessible by unit tests
+  GCInterface getGc() {
+    return gc;
+  }
+
+  // Method is defined as package-protected in order to be accessible by unit tests
+  void setGc( GCInterface gc ) {
+    this.gc = gc;
   }
 }
