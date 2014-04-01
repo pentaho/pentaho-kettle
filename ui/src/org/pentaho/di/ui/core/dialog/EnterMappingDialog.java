@@ -1,8 +1,8 @@
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,9 @@
 package org.pentaho.di.ui.core.dialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -49,18 +52,65 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
+
 /**
  * Shows a user 2 lists of strings and allows the linkage of values between values in the 2 lists
- *
+ * 
  * @author Matt
  * @since 23-03-2006
  */
 public class EnterMappingDialog extends Dialog {
   private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
+  public class GuessPair {
+    private int _srcIndex = -1;
+    private int _targetIndex = -1;
+    private boolean _found = false;
+
+    public GuessPair() {
+    	_found = false;
+    }
+        
+    public GuessPair(int src) {
+    	_srcIndex = src;
+    	_found = false;
+    }
+    public GuessPair(int src, int target, boolean found) {
+    	_srcIndex = src;
+    	_targetIndex = target;
+    	_found = found;
+    }
+    public GuessPair(int src, int target) {
+    	_srcIndex = src;
+    	_targetIndex = target;
+    	_found = true;
+    }
+    public int getTargetIndex() {
+    	return _targetIndex;
+    }
+    public void setTargetIndex(int targetIndex) {
+    	_found = true;
+    	_targetIndex = targetIndex;
+    }
+    
+    public int getSrcIndex() {
+    	return _srcIndex;
+    }
+    
+    public void setSrcIndex(int srcIndex) {
+    	_srcIndex = srcIndex;
+    }
+    public boolean getFound() {
+    	return _found;
+	  }
+  }
+
   public static final String STRING_ORIGIN_SEPARATOR = "            (";
 
   private Label wlSource;
+  
+  public static final String  STRING_SFORCE_EXTERNALID_SEPARATOR = "/";
 
   private List wSource;
 
@@ -425,28 +475,56 @@ public class EnterMappingDialog extends Dialog {
 
   private void guess() {
     // Guess the target for all the sources...
-    for ( int i = 0; i < sourceList.length; i++ ) {
-      int idx = Const.indexOfString( sourceList[i], wSource.getItems() );
+	String [] sortedSourceList = Arrays.copyOf(sourceList, sourceList.length);
+
+	// Sort Longest to Shortest string - makes matching better
+	Arrays.sort(sortedSourceList,new Comparator<String>() {
+				public int compare(String s1,String s2) {
+					return s2.length() - s1.length();
+				}
+			});
+	// Look for matches using longest field name to shortest
+	ArrayList<GuessPair> pList = new ArrayList<GuessPair>();
+	for ( int i = 0; i < sourceList.length; i++ ) {
+      int idx = Const.indexOfString( sortedSourceList[i], wSource.getItems() );
       if ( idx >= 0 ) {
-        wSource.select( idx );
-        if ( findTarget() ) {
-          add();
-        }
+        pList.add(findTargetPair(idx));
       }
     }
+	// Now add them in order or source field list
+    Collections.sort(pList,new Comparator<GuessPair>() {
+			public int compare(GuessPair s1,GuessPair s2) {
+				return s1.getSrcIndex() - s2.getSrcIndex() ;
+			}
+	  });
+    for ( GuessPair p : pList) {
+    	if (p.getFound()) {
+            SourceToTargetMapping mapping = new SourceToTargetMapping( p.getSrcIndex(),p.getTargetIndex());
+            mappings.add( mapping );
+    	}
+    }
+    refreshMappings();
   }
 
   private boolean findTarget() {
+	  int sourceIndex = wSource.getSelectionIndex();
+	  GuessPair p = findTargetPair(sourceIndex);
+	  if (p.getFound()) {
+          wTarget.setSelection( p.getTargetIndex());
+	  }
+	  return p.getFound();
+  }
+
+  private GuessPair findTargetPair(int sourceIndex) {
     // Guess, user selects an entry in the list on the left.
     // Find a comparable entry in the target list...
-    boolean found = false;
+    GuessPair result = new GuessPair(sourceIndex);
 
-    int sourceIndex = wSource.getSelectionIndex();
     if ( sourceIndex < 0 ) {
-      return false;
+      return result;  // Not Found
     }
 
-    // Skip eventhing after the bracket...
+    // Skip everything after the bracket...
     String sourceStr = wSource.getItem( sourceIndex ).toUpperCase();
 
     int indexOfBracket = sourceStr.indexOf( EnterMappingDialog.STRING_ORIGIN_SEPARATOR );
@@ -454,23 +532,32 @@ public class EnterMappingDialog extends Dialog {
     if ( indexOfBracket >= 0 ) {
       sourceString = sourceStr.substring( 0, indexOfBracket );
     }
-
     int length = sourceString.length();
     boolean first = true;
 
-    while ( !found && ( length >= 2 || first ) ) {
+    boolean found = false;
+    while ( !found && ( length >= ((int)(sourceString.length() * 0.85)) || first ) ) {
       first = false;
 
       for ( int i = 0; i < wTarget.getItemCount() && !found; i++ ) {
-        if ( wTarget.getItem( i ).toUpperCase().indexOf( sourceString.substring( 0, length ) ) >= 0 ) {
-          wTarget.setSelection( i );
+    	String test = wTarget.getItem(i).toUpperCase();
+    	// Clean up field names in the form of OBJECT:LOOKUPFIELD/OBJECTNAME
+    	if (test.contains(EnterMappingDialog.STRING_SFORCE_EXTERNALID_SEPARATOR) ) {
+    		String tmp[] = test.split(EnterMappingDialog.STRING_SFORCE_EXTERNALID_SEPARATOR);
+    		test = tmp[tmp.length-1];
+    		if (test.endsWith("__R")) {
+    			test = test.substring(0,test.length()-3) + "__C";
+    		}
+    	}
+        if ( test.indexOf( sourceString.substring( 0, length ) ) >= 0 ) {
+          result.setSrcIndex(sourceIndex);
+          result.setTargetIndex(i);
           found = true;
         }
       }
       length--;
     }
-
-    return found;
+    return result;
   }
 
   private boolean findSource() {
