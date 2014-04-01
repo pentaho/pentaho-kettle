@@ -4536,6 +4536,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return the repository
    */
   public Repository getRepository() {
+
+    if ( repository == null ) {
+      // Does the transmeta have a repo?
+      // This is a valid case, when a non-repo trans is attempting to retrieve
+      // a transformation in the repository.
+      if ( transMeta != null ) {
+        return transMeta.getRepository();
+      }
+    }
     return repository;
   }
 
