@@ -188,7 +188,20 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   public int compare( Object data1, Object data2 ) throws KettleValueException {
     Timestamp timestamp1 = getTimestamp( data1 );
     Timestamp timestamp2 = getTimestamp( data2 );
-    return timestamp1.compareTo( timestamp2 );
+    if ( timestamp1 == null ) {
+      if ( timestamp2 == null ) {
+        return 0;
+      } else {
+        return -1;
+      }
+    } else {
+      if ( timestamp2 == null ) {
+        return 1;
+      } else {
+        return timestamp1.compareTo( timestamp2 );
+      }
+    }
+
   }
 
   protected Timestamp convertBigNumberToTimestamp( BigDecimal bd ) {
@@ -463,9 +476,11 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     int index, Object data ) throws KettleDatabaseException {
 
     try {
-
-      preparedStatement.setTimestamp( index, getTimestamp( data ) );
-
+      if ( data != null ) {
+        preparedStatement.setTimestamp( index, getTimestamp( data ) );
+      } else {
+        preparedStatement.setNull( index, java.sql.Types.TIMESTAMP );
+      }
     } catch ( Exception e ) {
       throw new KettleDatabaseException( toStringMeta()
         + " : Unable to set value on prepared statement on index " + index, e );
