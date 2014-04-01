@@ -9,13 +9,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+
+import static org.mockito.Mockito.*;
 
 public class TransTest {
 
   int count = 10000;
   Trans trans;
+  TransMeta meta;
 
   @BeforeClass
   public static void beforeClass() throws KettleException {
@@ -24,11 +28,27 @@ public class TransTest {
 
   @Before
   public void beforeTest() throws KettleException {
-    TransMeta meta = new TransMeta();
+    meta = new TransMeta();
     trans = new Trans( meta );
     trans.setLog( Mockito.mock( LogChannelInterface.class ) );
     trans.prepareExecution( null );
     trans.startThreads();
+  }
+
+  @Test
+  public void testFindDatabaseWithEncodedConnectionName() {
+    DatabaseMeta dbMeta1 = new DatabaseMeta( "encoded_DBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
+    dbMeta1.setDisplayName( "encoded.DBConnection" );
+    meta.addDatabase( dbMeta1 );
+
+    DatabaseMeta dbMeta2 = new DatabaseMeta( "normalDBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
+    dbMeta2.setDisplayName( "normalDBConnection" );
+    meta.addDatabase( dbMeta2 );
+
+    DatabaseMeta databaseMeta = meta.findDatabase( dbMeta1.getDisplayName() );
+    Assert.assertNotNull( databaseMeta );
+    Assert.assertEquals( databaseMeta.getName(), "encoded_DBConnection" );
+    Assert.assertEquals( databaseMeta.getDisplayName(), "encoded.DBConnection" );
   }
 
   /**
