@@ -329,9 +329,9 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
                 line.append( data.nullrepresentation );
               } else {
                 if ( value.booleanValue() ) {
-                  line.append( "Y" );
+                  line.append( true );
                 } else {
-                  line.append( "N" );
+                  line.append( false );
                 }
               }
               break;
