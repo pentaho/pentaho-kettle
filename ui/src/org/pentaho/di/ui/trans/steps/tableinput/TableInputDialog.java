@@ -93,6 +93,11 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
   private TextVar wLimit;
   private FormData fdlLimit, fdLimit;
 
+  private Label wlRowSetSize;
+  private TextVar wRowSetSize;
+  private FormData fdlRowSetSize, fdRowSetSize;
+
+  
   private Label wlEachRow;
   private Button wEachRow;
   private FormData fdlEachRow, fdEachRow;
@@ -201,6 +206,26 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     fdLimit.bottom = new FormAttachment( wOK, -2 * margin );
     wLimit.setLayoutData( fdLimit );
 
+    // RowSetSize input ...
+    wlRowSetSize = new Label( shell, SWT.RIGHT );
+    wlRowSetSize.setText(BaseMessages.getString( PKG, "TableInputDialog.RowSetSizeSize" ) );
+    props.setLook( wlRowSetSize );
+    fdlRowSetSize = new FormData();
+    fdlRowSetSize.left = new FormAttachment( 0, 0 );
+    fdlRowSetSize.right = new FormAttachment( middle, -margin );
+    fdlRowSetSize.bottom = new FormAttachment( wLimit, -2 * margin );
+    wlRowSetSize.setLayoutData( fdlRowSetSize );
+    wRowSetSize = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wRowSetSize );
+    wRowSetSize.addModifyListener( lsMod );
+    fdRowSetSize = new FormData();
+    fdRowSetSize.left = new FormAttachment( middle, 0 );
+    fdRowSetSize.right = new FormAttachment( 95, 0 );
+    fdRowSetSize.bottom = new FormAttachment( wLimit, -2 * margin );
+    wRowSetSize.setLayoutData( fdRowSetSize );
+    
+    
+    
     // Execute for each row?
     wlEachRow = new Label( shell, SWT.RIGHT );
     wlEachRow.setText( BaseMessages.getString( PKG, "TableInputDialog.ExecuteForEachRow" ) );
@@ -208,14 +233,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     fdlEachRow = new FormData();
     fdlEachRow.left = new FormAttachment( 0, 0 );
     fdlEachRow.right = new FormAttachment( middle, -margin );
-    fdlEachRow.bottom = new FormAttachment( wLimit, -margin );
+    fdlEachRow.bottom = new FormAttachment( wRowSetSize, -margin );
     wlEachRow.setLayoutData( fdlEachRow );
     wEachRow = new Button( shell, SWT.CHECK );
     props.setLook( wEachRow );
     fdEachRow = new FormData();
     fdEachRow.left = new FormAttachment( middle, 0 );
     fdEachRow.right = new FormAttachment( 100, 0 );
-    fdEachRow.bottom = new FormAttachment( wLimit, -margin );
+    fdEachRow.bottom = new FormAttachment( wRowSetSize, -margin );
     wEachRow.setLayoutData( fdEachRow );
     SelectionAdapter lsSelMod = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
@@ -465,6 +490,9 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
+	if ( input.getRowSetSize() != null) {
+		wRowSetSize.setText(input.getRowSetSize());
+	}
     if ( input.getSQL() != null ) {
       wSQL.setText( input.getSQL() );
     }
@@ -522,6 +550,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     meta.setExecuteEachInputRow( wEachRow.getSelection() );
     meta.setVariableReplacementActive( wVariables.getSelection() );
     meta.setLazyConversionActive( wLazyConversion.getSelection() );
+    meta.setRowSetSize(wRowSetSize.getText());
   }
 
   private void ok() {
