@@ -538,9 +538,8 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     try {
 
-      StringUtil.telnetHost( hostname, nrPort, realConnectionTimeOut );
-
-      if (!testOK) errMsg = BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.CanNotGetAddress", hostname );
+      SocketUtil.connectToHost(hostname, nrPort, realConnectionTimeOut);
+      testOK = true;           // no exception means: it connected
 
     } catch (Exception e) {
       errMsg = e.getMessage();

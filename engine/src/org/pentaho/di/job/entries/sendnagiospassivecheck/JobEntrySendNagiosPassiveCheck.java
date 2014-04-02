@@ -522,7 +522,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 			ns.withConnectionTimeout(realConnectionTimeOut);
 			ns.withResponseTimeout(realResponseTimeOut);
 			ns.withEncryption(encr);
-			if(Const.isEmpty(realPassword)) {
+			if(!Const.isEmpty(realPassword)) {
 				ns.withPassword(realPassword);
 			}else {
 				ns.withNoPassword();
@@ -551,7 +551,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 			result.setResult(true);
 			
 		} catch(Exception e){
-			log.logError(toString(), BaseMessages.getString(PKG, "JobEntrySendNagiosPassiveCheck.ErrorGetting", e.toString())); 
+			log.logError(BaseMessages.getString(PKG, "JobEntrySendNagiosPassiveCheck.ErrorGetting", e.toString()));
 		}
 
 		return result;
