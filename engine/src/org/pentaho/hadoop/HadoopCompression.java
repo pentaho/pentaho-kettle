@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,7 +38,12 @@ public class HadoopCompression {
 
   public static final int IO_COMPRESSION_CODEC_SNAPPY_DEFAULT_BUFFERSIZE = 256 * 1024;
 
-  private static final String HADOOP_CONFIG_UTIL_CLASS = "org.apache.hadoop.hive.jdbc.HadoopConfigurationUtil";
+  private static final String HADOOP_CONFIG_UTIL_CLASS_PROPERTY = "hadoop.config.util.class";
+  
+  private static final String[] HADOOP_CONFIG_UTIL_CLASS = {
+    "org.apache.hadoop.hive.jdbc.HadoopConfigurationUtil",
+    "org.pentaho.hadoop.hive.jdbc.HadoopConfigurationUtil",
+  };
 
   private static final String GET_ACTIVE_CONFIGURATION_METHOD = "getActiveConfiguration";
 
@@ -57,9 +62,27 @@ public class HadoopCompression {
    * </p>
    */
   private static Object getActiveSnappyShim() throws Exception {
-    Class<?> hadoopConfigUtilClass = Class.forName(HADOOP_CONFIG_UTIL_CLASS);
+    Class<?> hadoopConfigUtilClass = null;
+    String hadoopConfigUtilClassName = System.getProperty(HADOOP_CONFIG_UTIL_CLASS_PROPERTY);
+    if(hadoopConfigUtilClassName != null) {
+      hadoopConfigUtilClass = Class.forName(hadoopConfigUtilClassName);
+    }
+    else {
+      for(int i=0; hadoopConfigUtilClass == null && i<HADOOP_CONFIG_UTIL_CLASS.length;i++) {
+        try {
+          hadoopConfigUtilClass = Class.forName(HADOOP_CONFIG_UTIL_CLASS[i]);
+        }
+        catch(ClassNotFoundException cnfe) {
+          // Nothing to do here but try again
+        }
+      }
+      if(hadoopConfigUtilClass == null) {
+        throw new Exception("No Hadoop Configuration Utilities class found, unable to get active Snappy shim");
+      }
+    }
+   
     Method getActiveConfiguration = hadoopConfigUtilClass.getMethod(GET_ACTIVE_CONFIGURATION_METHOD);
-    Object hadoopConfiguration = getActiveConfiguration.invoke(null);
+    Object hadoopConfiguration = getActiveConfiguration.invoke(hadoopConfigUtilClass.newInstance());
     Method getSnappyShim = hadoopConfiguration.getClass().getMethod(GET_SNAPPY_SHIM);
     return getSnappyShim.invoke(hadoopConfiguration);
   }
