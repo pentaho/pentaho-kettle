@@ -22,17 +22,6 @@
 
 package org.pentaho.di.job.entries.trans;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -80,6 +69,15 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.*;
 
 /**
  * This is the job entry that defines a transformation to be run.
@@ -165,8 +163,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @deprecated use getFilename() instead
    * @return the filename
+   * @deprecated use getFilename() instead
    */
   @Deprecated
   public String getFileName() {
@@ -226,7 +224,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     //
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
-        .getCode() ) );
+        .getCode() )
+    );
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "trans_object_id", transObjectId == null ? null : transObjectId.toString() ) );
     // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same
@@ -278,7 +277,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       for ( int i = 0; i < arguments.length; i++ ) {
         // This is a very very bad way of making an XML file, don't use it (or
         // copy it). Sven Boden
-        retval.append( "      " ).append( XMLHandler.addTagValue( "argument" + i, arguments[i] ) );
+        retval.append( "      " ).append( XMLHandler.addTagValue( "argument" + i, arguments[ i ] ) );
       }
     }
 
@@ -291,9 +290,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         // This is a better way of making the XML file than the arguments.
         retval.append( "            " ).append( XMLHandler.openTag( "parameter" ) );
 
-        retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[i] ) );
-        retval.append( "            " ).append( XMLHandler.addTagValue( "stream_name", parameterFieldNames[i] ) );
-        retval.append( "            " ).append( XMLHandler.addTagValue( "value", parameterValues[i] ) );
+        retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[ i ] ) );
+        retval.append( "            " ).append( XMLHandler.addTagValue( "stream_name", parameterFieldNames[ i ] ) );
+        retval.append( "            " ).append( XMLHandler.addTagValue( "value", parameterValues[ i ] ) );
 
         retval.append( "            " ).append( XMLHandler.closeTag( "parameter" ) );
       }
@@ -322,7 +321,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
-    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
+                       Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
 
@@ -370,11 +369,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       while ( XMLHandler.getTagValue( entrynode, "argument" + argnr ) != null ) {
         argnr++;
       }
-      arguments = new String[argnr];
+      arguments = new String[ argnr ];
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
-        arguments[a] = XMLHandler.getTagValue( entrynode, "argument" + a );
+        arguments[ a ] = XMLHandler.getTagValue( entrynode, "argument" + a );
       }
 
       Node parametersNode = XMLHandler.getSubNode( entrynode, "parameters" );
@@ -384,16 +383,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
       int nrParameters = XMLHandler.countNodes( parametersNode, "parameter" );
 
-      parameters = new String[nrParameters];
-      parameterFieldNames = new String[nrParameters];
-      parameterValues = new String[nrParameters];
+      parameters = new String[ nrParameters ];
+      parameterFieldNames = new String[ nrParameters ];
+      parameterValues = new String[ nrParameters ];
 
       for ( int i = 0; i < nrParameters; i++ ) {
         Node knode = XMLHandler.getSubNodeByNr( parametersNode, "parameter", i );
 
-        parameters[i] = XMLHandler.getTagValue( knode, "name" );
-        parameterFieldNames[i] = XMLHandler.getTagValue( knode, "stream_name" );
-        parameterValues[i] = XMLHandler.getTagValue( knode, "value" );
+        parameters[ i ] = XMLHandler.getTagValue( knode, "name" );
+        parameterFieldNames[ i ] = XMLHandler.getTagValue( knode, "stream_name" );
+        parameterValues[ i ] = XMLHandler.getTagValue( knode, "value" );
       }
     } catch ( KettleException e ) {
       throw new KettleXMLException( "Unable to load job entry of type 'trans' from XML node", e );
@@ -403,7 +402,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   // Load the jobentry from repository
   //
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-    List<SlaveServer> slaveServers ) throws KettleException {
+                       List<SlaveServer> slaveServers ) throws KettleException {
     try {
       String method = rep.getJobEntryAttributeString( id_jobentry, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
@@ -439,24 +438,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
-      arguments = new String[argnr];
+      arguments = new String[ argnr ];
 
       // Read all arguments...
       for ( int a = 0; a < argnr; a++ ) {
-        arguments[a] = rep.getJobEntryAttributeString( id_jobentry, a, "argument" );
+        arguments[ a ] = rep.getJobEntryAttributeString( id_jobentry, a, "argument" );
       }
 
       // How many arguments?
       int parameternr = rep.countNrJobEntryAttributes( id_jobentry, "parameter_name" );
-      parameters = new String[parameternr];
-      parameterFieldNames = new String[parameternr];
-      parameterValues = new String[parameternr];
+      parameters = new String[ parameternr ];
+      parameterFieldNames = new String[ parameternr ];
+      parameterValues = new String[ parameternr ];
 
       // Read all parameters ...
       for ( int a = 0; a < parameternr; a++ ) {
-        parameters[a] = rep.getJobEntryAttributeString( id_jobentry, a, "parameter_name" );
-        parameterFieldNames[a] = rep.getJobEntryAttributeString( id_jobentry, a, "parameter_stream_name" );
-        parameterValues[a] = rep.getJobEntryAttributeString( id_jobentry, a, "parameter_value" );
+        parameters[ a ] = rep.getJobEntryAttributeString( id_jobentry, a, "parameter_name" );
+        parameterFieldNames[ a ] = rep.getJobEntryAttributeString( id_jobentry, a, "parameter_stream_name" );
+        parameterValues[ a ] = rep.getJobEntryAttributeString( id_jobentry, a, "parameter_value" );
       }
 
       passingAllParameters = rep.getJobEntryAttributeBoolean( id_jobentry, "pass_all_parameters", true );
@@ -501,18 +500,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       // Save the arguments...
       if ( arguments != null ) {
         for ( int i = 0; i < arguments.length; i++ ) {
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "argument", arguments[i] );
+          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "argument", arguments[ i ] );
         }
       }
 
       // Save the parameters...
       if ( parameters != null ) {
         for ( int i = 0; i < parameters.length; i++ ) {
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_name", parameters[i] );
+          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_name", parameters[ i ] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_stream_name", Const.NVL(
-            parameterFieldNames[i], "" ) );
+            parameterFieldNames[ i ], "" ) );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_value", Const.NVL(
-            parameterValues[i], "" ) );
+            parameterValues[ i ], "" ) );
         }
       }
 
@@ -553,14 +552,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
    *
-   * @param result
-   *          The result of the previous execution
-   * @param nr
-   *          the job entry number
-   * @param rep
-   *          the repository connection to use
-   * @param parentJob
-   *          the parent job
+   * @param result The result of the previous execution
+   * @param nr     the job entry number
    * @return The Result of the execution.
    */
   public Result execute( Result result, int nr ) throws KettleException {
@@ -619,7 +612,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     // Open the transformation...
     //
-    switch ( specificationMethod ) {
+    switch( specificationMethod ) {
       case FILENAME:
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString(
@@ -664,9 +657,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     //
     String[] args = null;
     if ( args1 != null ) {
-      args = new String[args1.length];
+      args = new String[ args1.length ];
       for ( int idx = 0; idx < args1.length; idx++ ) {
-        args[idx] = environmentSubstitute( args1[idx] );
+        args[ idx ] = environmentSubstitute( args1[ idx ] );
       }
     }
 
@@ -692,23 +685,23 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       NamedParams namedParam = new NamedParamsDefault();
       if ( parameters != null ) {
         for ( int idx = 0; idx < parameters.length; idx++ ) {
-          if ( !Const.isEmpty( parameters[idx] ) ) {
+          if ( !Const.isEmpty( parameters[ idx ] ) ) {
             // We have a parameter
             //
-            namedParam.addParameterDefinition( parameters[idx], "", "Job entry runtime" );
-            if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
+            namedParam.addParameterDefinition( parameters[ idx ], "", "Job entry runtime" );
+            if ( Const.isEmpty( Const.trim( parameterFieldNames[ idx ] ) ) ) {
               // There is no field name specified.
               //
-              String value = Const.NVL( environmentSubstitute( parameterValues[idx] ), "" );
-              namedParam.setParameterValue( parameters[idx], value );
+              String value = Const.NVL( environmentSubstitute( parameterValues[ idx ] ), "" );
+              namedParam.setParameterValue( parameters[ idx ], value );
             } else {
               // something filled in, in the field column...
               //
               String value = "";
               if ( resultRow != null ) {
-                value = resultRow.getString( parameterFieldNames[idx], "" );
+                value = resultRow.getString( parameterFieldNames[ idx ], "" );
               }
-              namedParam.setParameterValue( parameters[idx], value );
+              namedParam.setParameterValue( parameters[ idx ], value );
             }
           }
         }
@@ -743,9 +736,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
             args = null;
             if ( resultRow != null ) {
-              args = new String[resultRow.size()];
+              args = new String[ resultRow.size() ];
               for ( int i = 0; i < resultRow.size(); i++ ) {
-                args[i] = resultRow.getString( i, null );
+                args[ i ] = resultRow.getString( i, null );
               }
             }
           } else {
@@ -766,19 +759,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
             if ( parameters != null ) {
               for ( int idx = 0; idx < parameters.length; idx++ ) {
-                if ( !Const.isEmpty( parameters[idx] ) ) {
+                if ( !Const.isEmpty( parameters[ idx ] ) ) {
                   // We have a parameter
-                  if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
-                    namedParam.setParameterValue( parameters[idx], Const.NVL(
-                      environmentSubstitute( parameterValues[idx] ), "" ) );
+                  if ( Const.isEmpty( Const.trim( parameterFieldNames[ idx ] ) ) ) {
+                    namedParam.setParameterValue( parameters[ idx ], Const.NVL(
+                      environmentSubstitute( parameterValues[ idx ] ), "" ) );
                   } else {
                     String fieldValue = "";
 
                     if ( resultRow != null ) {
-                      fieldValue = resultRow.getString( parameterFieldNames[idx], "" );
+                      fieldValue = resultRow.getString( parameterFieldNames[ idx ], "" );
                     }
                     // Get the value from the input stream
-                    namedParam.setParameterValue( parameters[idx], Const.NVL( fieldValue, "" ) );
+                    namedParam.setParameterValue( parameters[ idx ], Const.NVL( fieldValue, "" ) );
                   }
                 }
               }
@@ -789,9 +782,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             // Only put the first Row on the arguments
             args = null;
             if ( resultRow != null ) {
-              args = new String[resultRow.size()];
+              args = new String[ resultRow.size() ];
               for ( int i = 0; i < resultRow.size(); i++ ) {
-                args[i] = resultRow.getString( i, null );
+                args[ i ] = resultRow.getString( i, null );
               }
             }
           }
@@ -800,19 +793,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             // Copy the input the parameters
             if ( parameters != null ) {
               for ( int idx = 0; idx < parameters.length; idx++ ) {
-                if ( !Const.isEmpty( parameters[idx] ) ) {
+                if ( !Const.isEmpty( parameters[ idx ] ) ) {
                   // We have a parameter
-                  if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
-                    namedParam.setParameterValue( parameters[idx], Const.NVL(
-                      environmentSubstitute( parameterValues[idx] ), "" ) );
+                  if ( Const.isEmpty( Const.trim( parameterFieldNames[ idx ] ) ) ) {
+                    namedParam.setParameterValue( parameters[ idx ], Const.NVL(
+                      environmentSubstitute( parameterValues[ idx ] ), "" ) );
                   } else {
                     String fieldValue = "";
 
                     if ( resultRow != null ) {
-                      fieldValue = resultRow.getString( parameterFieldNames[idx], "" );
+                      fieldValue = resultRow.getString( parameterFieldNames[ idx ], "" );
                     }
                     // Get the value from the input stream
-                    namedParam.setParameterValue( parameters[idx], Const.NVL( fieldValue, "" ) );
+                    namedParam.setParameterValue( parameters[ idx ], Const.NVL( fieldValue, "" ) );
                   }
                 }
               }
@@ -827,19 +820,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         for ( int idx = 0; idx < parameterNames.length; idx++ ) {
           // Grab the parameter value set in the Trans job entry
           //
-          String thisValue = namedParam.getParameterValue( parameterNames[idx] );
+          String thisValue = namedParam.getParameterValue( parameterNames[ idx ] );
           if ( !Const.isEmpty( thisValue ) ) {
             // Set the value as specified by the user in the job entry
             //
-            transMeta.setParameterValue( parameterNames[idx], thisValue );
+            transMeta.setParameterValue( parameterNames[ idx ], thisValue );
           } else {
             // See if the parameter had a value set in the parent job...
             // This value should pass down to the transformation if that's what we opted to do.
             //
             if ( isPassingAllParameters() ) {
-              String parentValue = parentJob.getParameterValue( parameterNames[idx] );
+              String parentValue = parentJob.getParameterValue( parameterNames[ idx ] );
               if ( !Const.isEmpty( parentValue ) ) {
-                transMeta.setParameterValue( parameterNames[idx], parentValue );
+                transMeta.setParameterValue( parameterNames[ idx ], parentValue );
               }
             }
           }
@@ -1063,7 +1056,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             //
             trans.execute( args );
 
-            // Wait until we're done with it...            
+            // Wait until we're done with it...
             //TODO is it possible to implement Observer pattern to avoid Thread.sleep here?
             while ( !trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0 ) {
               try {
@@ -1076,7 +1069,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
             if ( parentJob.isStopped() || trans.getErrors() != 0 ) {
               trans.stopAll();
-              //trans.waitUntilFinished();
               result.setNrErrors( 1 );
             }
             Result newResult = trans.getResult();
@@ -1093,7 +1085,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               ResultFile resultFile =
                 new ResultFile(
                   ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject( realLogFilename, this ), parentJob
-                    .getJobname(), toString() );
+                  .getJobname(), toString()
+                );
               result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             }
           } catch ( KettleException e ) {
@@ -1146,11 +1139,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return getTransMeta( rep, null, space );
   }
 
-  public TransMeta getTransMeta( Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public TransMeta getTransMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     try {
       TransMeta transMeta = null;
-      switch ( specificationMethod ) {
+      switch( specificationMethod ) {
         case FILENAME:
           String filename = space.environmentSubstitute( getFilename() );
           logBasic( "Loading transformation from XML file [" + filename + "]" );
@@ -1175,6 +1167,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           }
           break;
         case REPOSITORY_BY_REFERENCE:
+          if ( transObjectId == null ) {
+            throw new KettleException( BaseMessages.getString( PKG,
+              "JobTrans.Exception.ReferencedTransformationIdIsNull" ) );
+          }
+
           if ( rep != null ) {
             // Load the last revision
             //
@@ -1228,8 +1225,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param directoryPath
-   *          The directoryPath to set.
+   * @param directoryPath The directoryPath to set.
    */
   public void setDirectoryPath( String directoryPath ) {
     this.directoryPath = directoryPath;
@@ -1243,15 +1239,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param clustering
-   *          the clustering to set
+   * @param clustering the clustering to set
    */
   public void setClustering( boolean clustering ) {
     this.clustering = clustering;
   }
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     Repository repository, IMetaStore metaStore ) {
     if ( setLogfile ) {
       andValidator().validate( this, "logfile", remarks, putValidators( notBlankValidator() ) );
     }
@@ -1280,28 +1275,21 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   /**
    * We're going to load the transformation meta data referenced here. Then we're going to give it a new filename,
    * modify that filename in this entries. The parent caller will have made a copy of it, so it should be OK to do so.
-   *
+   * <p/>
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
    *
-   * @param space
-   *          The variable space to resolve (environment) variables with.
-   * @param definitions
-   *          The map containing the filenames and content
-   * @param namingInterface
-   *          The resource naming interface allows the object to be named appropriately
-   * @param repository
-   *          The repository to load resources from
-   * @param metaStore
-   *          the metaStore to load external metadata from
-   *
+   * @param space           The variable space to resolve (environment) variables with.
+   * @param definitions     The map containing the filenames and content
+   * @param namingInterface The resource naming interface allows the object to be named appropriately
+   * @param repository      The repository to load resources from
+   * @param metaStore       the metaStore to load external metadata from
    * @return The filename for this object. (also contained in the definitions map)
-   * @throws KettleException
-   *           in case something goes wrong during the export
+   * @throws KettleException in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
+                                 ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
@@ -1353,8 +1341,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param remoteSlaveServerName
-   *          the remote slave server name to set
+   * @param remoteSlaveServerName the remote slave server name to set
    */
   public void setRemoteSlaveServerName( String remoteSlaveServerName ) {
     this.remoteSlaveServerName = remoteSlaveServerName;
@@ -1368,8 +1355,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param waitingToFinish
-   *          the waitingToFinish to set
+   * @param waitingToFinish the waitingToFinish to set
    */
   public void setWaitingToFinish( boolean waitingToFinish ) {
     this.waitingToFinish = waitingToFinish;
@@ -1383,8 +1369,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param followingAbortRemotely
-   *          the followingAbortRemotely to set
+   * @param followingAbortRemotely the followingAbortRemotely to set
    */
   public void setFollowingAbortRemotely( boolean followingAbortRemotely ) {
     this.followingAbortRemotely = followingAbortRemotely;
@@ -1406,8 +1391,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param passingAllParameters
-   *          the passingAllParameters to set
+   * @param passingAllParameters the passingAllParameters to set
    */
   public void setPassingAllParameters( boolean passingAllParameters ) {
     this.passingAllParameters = passingAllParameters;
@@ -1425,8 +1409,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param transObjectId
-   *          the transObjectId to set
+   * @param transObjectId the transObjectId to set
    */
   public void setTransObjectId( ObjectId transObjectId ) {
     this.transObjectId = transObjectId;
@@ -1440,8 +1423,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   /**
-   * @param specificationMethod
-   *          the specificationMethod to set
+   * @param specificationMethod the specificationMethod to set
    */
   public void setSpecificationMethod( ObjectLocationSpecificationMethod specificationMethod ) {
     this.specificationMethod = specificationMethod;
@@ -1454,8 +1436,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   /**
    * Look up the references after import
    *
-   * @param repository
-   *          the repository to reference.
+   * @param repository the repository to reference.
    */
   public void lookupRepositoryReferences( Repository repository ) throws KettleException {
     // The correct reference is stored in the trans name and directory attributes...
@@ -1484,14 +1465,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   /**
    * Load the referenced object
    *
-   * @param index
-   *          the referenced object index to load (in case there are multiple references)
-   * @param rep
-   *          the repository
-   * @param metaStore
-   *          metaStore
-   * @param space
-   *          the variable space to use
+   * @param index     the referenced object index to load (in case there are multiple references)
+   * @param rep       the repository
+   * @param metaStore metaStore
+   * @param space     the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
    */

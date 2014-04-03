@@ -1,3 +1,4 @@
+package org.pentaho.di.shared;
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -20,18 +21,15 @@
  *
  ******************************************************************************/
 
-import java.io.File;
-import java.util.List;
-
 import junit.framework.TestCase;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.shared.SharedObjectsMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.util.PentahoDefaults;
+
+import java.io.File;
+import java.util.List;
 
 public class TestSharedObjectsMetaStore extends TestCase {
 
