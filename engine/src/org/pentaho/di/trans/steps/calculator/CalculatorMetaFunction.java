@@ -328,7 +328,7 @@ public class CalculatorMetaFunction implements Cloneable {
     // REMOVE TAB FROM string A
     calcDefaultResultType[ CalculatorMetaFunction.CALC_REMOVE_TAB ] = ValueMetaInterface.TYPE_STRING;
     // GET ONLY DIGITS FROM string A
-    calcDefaultResultType[ CalculatorMetaFunction.CALC_GET_ONLY_DIGITS ] = ValueMetaInterface.TYPE_INTEGER;
+    calcDefaultResultType[ CalculatorMetaFunction.CALC_GET_ONLY_DIGITS ] = ValueMetaInterface.TYPE_STRING;
     // REMOVE DIGITS FROM string A
     calcDefaultResultType[ CalculatorMetaFunction.CALC_REMOVE_DIGITS ] = ValueMetaInterface.TYPE_STRING;
     // LENGTH OF string A
