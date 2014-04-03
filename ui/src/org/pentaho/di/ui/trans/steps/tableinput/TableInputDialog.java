@@ -491,7 +491,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
    */
   public void getData() {
 	if ( input.getRowSetSize() != null) {
-		wRowSetSize.setText(input.getRowSetSize());
+		wRowSetSize.setText(Const.NVL( input.getRowSetSize(), "" ) );
 	}
     if ( input.getSQL() != null ) {
       wSQL.setText( input.getSQL() );
@@ -550,7 +550,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     meta.setExecuteEachInputRow( wEachRow.getSelection() );
     meta.setVariableReplacementActive( wVariables.getSelection() );
     meta.setLazyConversionActive( wLazyConversion.getSelection() );
-    meta.setRowSetSize(wRowSetSize.getText());
+    meta.setRowSetSize(Const.NVL(wRowSetSize.getText(),null));
   }
 
   private void ok() {
