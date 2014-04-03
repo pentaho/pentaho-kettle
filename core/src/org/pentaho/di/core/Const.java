@@ -359,8 +359,8 @@ public class Const {
   public static final String XML_ENCODING = "UTF-8";
 
   /** The possible extensions a transformation XML file can have. */
-  public static final String[] STRING_TRANS_AND_JOB_FILTER_EXT = new String[] {
-    "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
+  public static final String[] STRING_TRANS_AND_JOB_FILTER_EXT = new String[] { "*.ktr;*.kjb;*.xml", "*.ktr;*.xml",
+    "*.kjb;*.xml", "*.xml", "*.*" };
 
   /** The discriptions of the possible extensions a transformation XML file can have. */
   private static String[] STRING_TRANS_AND_JOB_FILTER_NAMES;
@@ -423,19 +423,17 @@ public class Const {
    * All the internal transformation variables
    */
   public static final String[] INTERNAL_TRANS_VARIABLES = new String[] {
-    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
-    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
-    Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
-
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
   };
 
   /**
    * All the internal job variables
    */
-  public static final String[] INTERNAL_JOB_VARIABLES = new String[] {
-    Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,
-    Const.INTERNAL_VARIABLE_JOB_NAME, Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
-    Const.INTERNAL_VARIABLE_JOB_RUN_ID, Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };
+  public static final String[] INTERNAL_JOB_VARIABLES = new String[] { Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
+    Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, Const.INTERNAL_VARIABLE_JOB_NAME,
+    Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, Const.INTERNAL_VARIABLE_JOB_RUN_ID,
+    Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };
 
   /** The transformation filename directory */
   public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
@@ -672,8 +670,7 @@ public class Const {
    * converted into 192 or 192.168 depending on the decimal symbol). The default (N) will be to throw an error if
    * non-numeric symbols are found in the string.
    */
-  public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION =
-    "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
+  public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION = "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
 
   /**
    * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
@@ -1460,10 +1457,9 @@ public class Const {
     Boolean errorOccured = false;
     // System.out.println("os = "+os+", ip="+ip);
 
-    if ( os.equalsIgnoreCase( "Windows NT" )
-      || os.equalsIgnoreCase( "Windows 2000" ) || os.equalsIgnoreCase( "Windows XP" )
-      || os.equalsIgnoreCase( "Windows 95" ) || os.equalsIgnoreCase( "Windows 98" )
-      || os.equalsIgnoreCase( "Windows Me" ) || os.startsWith( "Windows" ) ) {
+    if ( os.equalsIgnoreCase( "Windows NT" ) || os.equalsIgnoreCase( "Windows 2000" )
+        || os.equalsIgnoreCase( "Windows XP" ) || os.equalsIgnoreCase( "Windows 95" )
+        || os.equalsIgnoreCase( "Windows 98" ) || os.equalsIgnoreCase( "Windows Me" ) || os.startsWith( "Windows" ) ) {
       try {
         // System.out.println("EXEC> nbtstat -a "+ip);
 
@@ -1503,7 +1499,6 @@ public class Const {
         stdInput.close();
       } catch ( Exception e ) {
         errorOccured = true;
-
       }
     } else if ( os.equalsIgnoreCase( "Solaris" ) ) {
       try {
@@ -1523,7 +1518,6 @@ public class Const {
         stdInput.close();
       } catch ( Exception e ) {
         errorOccured = true;
-
       }
     } else if ( os.equalsIgnoreCase( "HP-UX" ) ) {
       try {
@@ -1543,7 +1537,6 @@ public class Const {
         stdInput.close();
       } catch ( Exception e ) {
         errorOccured = true;
-
       }
     }
     // should do something if we got an error processing!
@@ -2474,12 +2467,10 @@ public class Const {
   public static String[] getTransformationAndJobFilterNames() {
     if ( STRING_TRANS_AND_JOB_FILTER_NAMES == null ) {
       STRING_TRANS_AND_JOB_FILTER_NAMES =
-        new String[] {
-          BaseMessages.getString( PKG, "Const.FileFilter.TransformationJob" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+          new String[] { BaseMessages.getString( PKG, "Const.FileFilter.TransformationJob" ),
+            BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
+            BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
+            BaseMessages.getString( PKG, "Const.FileFilter.XML" ), BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
     }
     return STRING_TRANS_AND_JOB_FILTER_NAMES;
   }
@@ -2487,10 +2478,8 @@ public class Const {
   public static String[] getTransformationFilterNames() {
     if ( STRING_TRANS_FILTER_NAMES == null ) {
       STRING_TRANS_FILTER_NAMES =
-        new String[] {
-          BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+          new String[] { BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
+            BaseMessages.getString( PKG, "Const.FileFilter.XML" ), BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
     }
     return STRING_TRANS_FILTER_NAMES;
   }
@@ -2498,10 +2487,8 @@ public class Const {
   public static String[] getJobFilterNames() {
     if ( STRING_JOB_FILTER_NAMES == null ) {
       STRING_JOB_FILTER_NAMES =
-        new String[] {
-          BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+          new String[] { BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
+            BaseMessages.getString( PKG, "Const.FileFilter.XML" ), BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
     }
     return STRING_JOB_FILTER_NAMES;
   }
