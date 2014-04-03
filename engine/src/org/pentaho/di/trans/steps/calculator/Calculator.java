@@ -79,25 +79,26 @@ public class Calculator extends BaseStep implements StepInterface {
 
     if ( first ) {
       first = false;
-      data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      data.setOutputRowMeta( getInputRowMeta().clone() );
+      meta.getFields( data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore );
 
       // get all metadata, including source rows and temporary fields.
-      data.calcRowMeta = meta.getAllFields( getInputRowMeta() );
+      data.setCalcRowMeta( meta.getAllFields( getInputRowMeta() ) );
 
-      data.fieldIndexes = new FieldIndexes[meta.getCalculation().length];
+      data.setFieldIndexes( new FieldIndexes[meta.getCalculation().length] );
       List<Integer> tempIndexes = new ArrayList<Integer>();
 
       // Calculate the indexes of the values and arguments in the target data or temporary data
       // We do this in advance to save time later on.
       //
+      //CHECKSTYLE:Indentation:OFF
       for ( int i = 0; i < meta.getCalculation().length; i++ ) {
         CalculatorMetaFunction function = meta.getCalculation()[i];
-        data.fieldIndexes[i] = new FieldIndexes();
+        data.getFieldIndexes()[i] = new FieldIndexes();
 
         if ( !Const.isEmpty( function.getFieldName() ) ) {
-          data.fieldIndexes[i].indexName = data.calcRowMeta.indexOfValue( function.getFieldName() );
-          if ( data.fieldIndexes[i].indexName < 0 ) {
+          data.getFieldIndexes()[i].indexName = data.getCalcRowMeta().indexOfValue( function.getFieldName() );
+          if ( data.getFieldIndexes()[i].indexName < 0 ) {
             // Nope: throw an exception
             throw new KettleStepException( BaseMessages.getString(
               PKG, "Calculator.Error.UnableFindField", function.getFieldName(), "" + ( i + 1 ) ) );
@@ -109,31 +110,31 @@ public class Calculator extends BaseStep implements StepInterface {
 
         if ( !Const.isEmpty( function.getFieldA() ) ) {
           if ( function.getCalcType() != CalculatorMetaFunction.CALC_CONSTANT ) {
-            data.fieldIndexes[i].indexA = data.calcRowMeta.indexOfValue( function.getFieldA() );
-            if ( data.fieldIndexes[i].indexA < 0 ) {
+            data.getFieldIndexes()[i].indexA = data.getCalcRowMeta().indexOfValue( function.getFieldA() );
+            if ( data.getFieldIndexes()[i].indexA < 0 ) {
               // Nope: throw an exception
               throw new KettleStepException( "Unable to find the first argument field '"
                 + function.getFieldName() + " for calculation #" + ( i + 1 ) );
             }
           } else {
-            data.fieldIndexes[i].indexA = -1;
+            data.getFieldIndexes()[i].indexA = -1;
           }
         } else {
           throw new KettleStepException( "There is no first argument specified for calculated field #" + ( i + 1 ) );
         }
 
         if ( !Const.isEmpty( function.getFieldB() ) ) {
-          data.fieldIndexes[i].indexB = data.calcRowMeta.indexOfValue( function.getFieldB() );
-          if ( data.fieldIndexes[i].indexB < 0 ) {
+          data.getFieldIndexes()[i].indexB = data.getCalcRowMeta().indexOfValue( function.getFieldB() );
+          if ( data.getFieldIndexes()[i].indexB < 0 ) {
             // Nope: throw an exception
             throw new KettleStepException( "Unable to find the second argument field '"
               + function.getFieldName() + " for calculation #" + ( i + 1 ) );
           }
         }
-        data.fieldIndexes[i].indexC = -1;
+        data.getFieldIndexes()[i].indexC = -1;
         if ( !Const.isEmpty( function.getFieldC() ) ) {
-          data.fieldIndexes[i].indexC = data.calcRowMeta.indexOfValue( function.getFieldC() );
-          if ( data.fieldIndexes[i].indexC < 0 ) {
+          data.getFieldIndexes()[i].indexC = data.getCalcRowMeta().indexOfValue( function.getFieldC() );
+          if ( data.getFieldIndexes()[i].indexC < 0 ) {
             // Nope: throw an exception
             throw new KettleStepException( "Unable to find the third argument field '"
               + function.getFieldName() + " for calculation #" + ( i + 1 ) );
@@ -141,14 +142,14 @@ public class Calculator extends BaseStep implements StepInterface {
         }
 
         if ( function.isRemovedFromResult() ) {
-          tempIndexes.add( Integer.valueOf( getInputRowMeta().size() + i ) );
+          tempIndexes.add( getInputRowMeta().size() + i );
         }
       }
 
       // Convert temp indexes to int[]
-      data.tempIndexes = new int[tempIndexes.size()];
-      for ( int i = 0; i < data.tempIndexes.length; i++ ) {
-        data.tempIndexes[i] = tempIndexes.get( i ).intValue();
+      data.setTempIndexes( new int[tempIndexes.size()] );
+      for ( int i = 0; i < data.getTempIndexes().length; i++ ) {
+        data.getTempIndexes()[i] = tempIndexes.get( i );
       }
     }
 
@@ -156,12 +157,10 @@ public class Calculator extends BaseStep implements StepInterface {
       logRowlevel( BaseMessages.getString( PKG, "Calculator.Log.ReadRow" )
         + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
     }
-    boolean sendToErrorRow = false;
-    String errorMessage = null;
 
     try {
       Object[] row = calcFields( getInputRowMeta(), r );
-      putRow( data.outputRowMeta, row ); // copy row to possible alternate rowset(s).
+      putRow( data.getOutputRowMeta(), row ); // copy row to possible alternate rowset(s).
 
       if ( log.isRowLevel() ) {
         logRowlevel( "Wrote row #" + getLinesWritten() + " : " + getInputRowMeta().getString( r ) );
@@ -173,15 +172,10 @@ public class Calculator extends BaseStep implements StepInterface {
       }
     } catch ( KettleException e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {
-        sendToErrorRow = true;
-        errorMessage = e.toString();
+        putError( getInputRowMeta(), r, 1, e.toString(), null, "CALC001" );
       } else {
         logError( BaseMessages.getString( PKG, "Calculator.ErrorInStepRunning" + " : " + e.getMessage() ) );
         throw new KettleStepException( BaseMessages.getString( PKG, "Calculator.ErrorInStepRunning" ), e );
-      }
-      if ( sendToErrorRow ) {
-        // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, errorMessage, null, "CALC001" );
       }
     }
     return true;
@@ -198,12 +192,12 @@ public class Calculator extends BaseStep implements StepInterface {
    */
   private Object[] calcFields( RowMetaInterface inputRowMeta, Object[] r ) throws KettleValueException {
     // First copy the input data to the new result...
-    Object[] calcData = RowDataUtil.resizeArray( r, data.calcRowMeta.size() );
+    Object[] calcData = RowDataUtil.resizeArray( r, data.getCalcRowMeta().size() );
 
     for ( int i = 0, index = inputRowMeta.size() + i; i < meta.getCalculation().length; i++, index++ ) {
       CalculatorMetaFunction fn = meta.getCalculation()[i];
       if ( !Const.isEmpty( fn.getFieldName() ) ) {
-        ValueMetaInterface targetMeta = data.calcRowMeta.getValueMeta( index );
+        ValueMetaInterface targetMeta = data.getCalcRowMeta().getValueMeta( index );
 
         // Get the metadata & the data...
         // ValueMetaInterface metaTarget = data.calcRowMeta.getValueMeta(i);
@@ -211,25 +205,25 @@ public class Calculator extends BaseStep implements StepInterface {
         ValueMetaInterface metaA = null;
         Object dataA = null;
 
-        if ( data.fieldIndexes[i].indexA >= 0 ) {
-          metaA = data.calcRowMeta.getValueMeta( data.fieldIndexes[i].indexA );
-          dataA = calcData[data.fieldIndexes[i].indexA];
+        if ( data.getFieldIndexes()[i].indexA >= 0 ) {
+          metaA = data.getCalcRowMeta().getValueMeta( data.getFieldIndexes()[ i ].indexA );
+          dataA = calcData[ data.getFieldIndexes()[i].indexA];
         }
 
         ValueMetaInterface metaB = null;
         Object dataB = null;
 
-        if ( data.fieldIndexes[i].indexB >= 0 ) {
-          metaB = data.calcRowMeta.getValueMeta( data.fieldIndexes[i].indexB );
-          dataB = calcData[data.fieldIndexes[i].indexB];
+        if ( data.getFieldIndexes()[i].indexB >= 0 ) {
+          metaB = data.getCalcRowMeta().getValueMeta( data.getFieldIndexes()[ i ].indexB );
+          dataB = calcData[ data.getFieldIndexes()[i].indexB];
         }
 
         ValueMetaInterface metaC = null;
         Object dataC = null;
 
-        if ( data.fieldIndexes[i].indexC >= 0 ) {
-          metaC = data.calcRowMeta.getValueMeta( data.fieldIndexes[i].indexC );
-          dataC = calcData[data.fieldIndexes[i].indexC];
+        if ( data.getFieldIndexes()[i].indexC >= 0 ) {
+          metaC = data.getCalcRowMeta().getValueMeta( data.getFieldIndexes()[ i ].indexC );
+          dataC = calcData[ data.getFieldIndexes()[i].indexC];
         }
 
         int calcType = fn.getCalcType();
@@ -598,7 +592,7 @@ public class Calculator extends BaseStep implements StepInterface {
         //
         if ( calcData[index] != null ) {
           if ( targetMeta.getType() != resultType ) {
-            ValueMetaInterface resultMeta = null;
+            ValueMetaInterface resultMeta;
             try {
               resultMeta = ValueMetaFactory.createValueMeta( "result", resultType );
             } catch ( Exception exception ) {
@@ -622,17 +616,13 @@ public class Calculator extends BaseStep implements StepInterface {
     // OK, now we should refrain from adding the temporary fields to the result.
     // So we remove them.
     //
-    return RowDataUtil.removeItems( calcData, data.tempIndexes );
+    return RowDataUtil.removeItems( calcData, data.getTempIndexes() );
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (CalculatorMeta) smi;
     data = (CalculatorData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      return true;
-    }
-    return false;
+    return super.init( smi, sdi );
   }
-
 }
