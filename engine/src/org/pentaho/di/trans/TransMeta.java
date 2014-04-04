@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -38,15 +37,14 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
-import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -56,7 +54,6 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
-import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -67,21 +64,14 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.UndoInterface;
-import org.pentaho.di.core.listeners.ContentChangedListener;
-import org.pentaho.di.core.listeners.FilenameChangedListener;
-import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
-import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -90,21 +80,16 @@ import org.pentaho.di.core.logging.MetricsLogTable;
 import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
-import org.pentaho.di.core.parameters.DuplicateParamException;
-import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -112,11 +97,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.HasRepositoryInterface;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -150,9 +132,8 @@ import org.w3c.dom.Node;
  * @since 20-jun-2003
  * @author Matt Casters
  */
-public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>,
-  Cloneable, UndoInterface, HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface,
-  HasSlaveServersInterface, NamedParams, RepositoryElementInterface, LoggingObjectInterface, AttributesInterface {
+public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>,
+    Cloneable, ResourceExportInterface, RepositoryElementInterface, LoggingObjectInterface {
 
   /** The package name, used for internationalization of messages. */
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
@@ -168,9 +149,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** A constant specifying the repository element type as a Transformation. */
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.TRANSFORMATION;
 
-  /** The list of databases associated with the transformation. */
-  protected List<DatabaseMeta> databases;
-
   /** The list of steps associated with the transformation. */
 
   protected List<StepMeta> steps;
@@ -178,14 +156,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The list of hops associated with the transformation. */
   protected List<TransHopMeta> hops;
 
-  /** The list of notes associated with the transformation. */
-  protected List<NotePadMeta> notes;
-
   /** The list of dependencies associated with the transformation. */
   protected List<TransDependency> dependencies;
-
-  /** The list of slave servers associated with the transformation. */
-  protected List<SlaveServer> slaveServers;
 
   /** The list of cluster schemas associated with the transformation. */
   protected List<ClusterSchema> clusterSchemas;
@@ -193,35 +165,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The list of partition schemas associated with the transformation. */
   private List<PartitionSchema> partitionSchemas;
 
-  /** The repository directory associated with the transformation. */
-  private RepositoryDirectoryInterface directory;
-
-  /** The name of the transformation. */
-  protected String name;
-
-  /** The description of the transformation. */
-  protected String description;
-
-  /** The extended description of the transformation. */
-  protected String extended_description;
-
   /** The version string for the transformation. */
   protected String trans_version;
 
   /** The status of the transformation. */
   protected int trans_status;
 
-  /** The filename associated with the transformation. */
-  protected String filename;
-
   /** The transformation logging table associated with the transformation. */
   protected TransLogTable transLogTable;
 
   /** The performance logging table associated with the transformation. */
   protected PerformanceLogTable performanceLogTable;
-
-  /** The channel logging table associated with the transformation. */
-  protected ChannelLogTable channelLogTable;
 
   /** The step logging table associated with the transformation. */
   protected StepLogTable stepLogTable;
@@ -264,28 +218,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   protected Hashtable<String, Counter> counters;
 
   /** Indicators for changes in steps, databases, hops, and notes. */
-  protected boolean changed_steps, changed_databases, changed_hops, changed_notes;
-
-  /** The list of actions supporting the "undo" operation. */
-  protected List<TransAction> undo;
-
-  /** The maximum number of actions to keep to support the "undo" operation. */
-  protected int max_undo;
-
-  /** The current index into the undo/redo action list. */
-  protected int undo_position;
+  protected boolean changed_steps, changed_hops;
 
   /** The database cache. */
   protected DBCache dbCache;
-
-  /** The object ID for the transformation. */
-  protected ObjectId id;
-
-  /** The names of the users who created and last modified the transformation. */
-  protected String createdUser, modifiedUser;
-
-  /** The dates the transformation was created and last modified. */
-  protected Date createdDate, modifiedDate;
 
   /** The time (in nanoseconds) to wait when the input buffer is empty. */
   protected int sleepTimeEmpty;
@@ -327,23 +263,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   protected boolean usingThreadPriorityManagment;
 
-  /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
-  protected String sharedObjectsFile;
-
-  /** The last load of the shared objects file by this TransMet object. */
-  protected SharedObjects sharedObjects;
-
-  /** The variable bindings for the transformation. */
-  protected VariableSpace variables = new Variables();
-
   /** The slave-step-copy/partition distribution. Only used for slave transformations in a clustering environment. */
   protected SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution;
 
   /** Just a flag indicating that this is a slave transformation - internal use only, no GUI option. */
   protected boolean slaveTransformation;
-
-  /** The repository to reference in the one-off case that it is needed. */
-  protected Repository repository;
 
   /** Whether the transformation is capturing step performance snap shots. */
   protected boolean capturingStepPerformanceSnapShots;
@@ -360,27 +284,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The loop cache. */
   protected Map<String, Boolean> loopCache;
 
-  /** The list of name changed listeners. */
-  protected List<NameChangedListener> nameChangedListeners;
-
-  /** The list of filename changed listeners. */
-  protected List<FilenameChangedListener> filenameChangedListeners;
-
-  /** The named parameters. */
-  protected NamedParams namedParams = new NamedParamsDefault();
-
   /** The log channel interface. */
   protected LogChannelInterface log;
-
-  /** The log level. */
-  protected LogLevel logLevel = DefaultLogLevel.getLogLevel();
-
-  /** The container object id. */
-  protected String containerObjectId;
-
-  protected IMetaStore metaStore;
-
-  protected Map<String, Map<String, String>> attributesMap;
 
   /**
    * The TransformationType enum describes the various types of transformations in terms of execution, including Normal,
@@ -472,18 +377,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   protected TransformationType transformationType;
 
   // //////////////////////////////////////////////////////////////////////////
-
-  /** A constant indicating a Change action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_CHANGE = 1;
-
-  /** A constant indicating a New action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_NEW = 2;
-
-  /** A constant indicating a Delete action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_DELETE = 3;
-
-  /** A constant indicating a Position Change action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_POSITION = 4;
 
   /** A list of localized strings corresponding to string descriptions of the undo/redo actions. */
   public static final String[] desc_type_undo =
@@ -767,56 +660,28 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Get the database ID in the repository for this object.
-   *
-   * @return the database ID in the repository for this object.
-   */
-  public ObjectId getObjectId() {
-    return id;
-  }
-
-  /**
-   * Set the database ID for this object in the repository.
-   *
-   * @param id
-   *          the database ID for this object in the repository.
-   */
-  public void setObjectId( ObjectId id ) {
-    this.id = id;
-  }
-
-  /**
    * Clears the transformation's meta-data, including the lists of databases, steps, hops, notes, dependencies,
    * partition schemas, slave servers, and cluster schemas. Logging information and timeouts are reset to defaults, and
    * recent connection info is cleared.
    */
+  @Override
   public void clear() {
     setObjectId( null );
-    databases = new ArrayList<DatabaseMeta>();
     steps = new ArrayList<StepMeta>();
     hops = new ArrayList<TransHopMeta>();
-    notes = new ArrayList<NotePadMeta>();
     dependencies = new ArrayList<TransDependency>();
     partitionSchemas = new ArrayList<PartitionSchema>();
-    slaveServers = new ArrayList<SlaveServer>();
     clusterSchemas = new ArrayList<ClusterSchema>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
 
-    setName( null );
-    description = null;
     trans_status = -1;
     trans_version = null;
-    extended_description = null;
-    setFilename( null );
 
     transLogTable = TransLogTable.getDefault( this, this, steps );
     performanceLogTable = PerformanceLogTable.getDefault( this, this );
-    channelLogTable = ChannelLogTable.getDefault( this, this );
     stepLogTable = StepLogTable.getDefault( this, this );
     metricsLogTable = MetricsLogTable.getDefault( this, this );
-
-    attributesMap = new HashMap<String, Map<String, String>>();
 
     sizeRowset = Const.ROWS_IN_ROWSET;
     sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
@@ -836,20 +701,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     counters = new Hashtable<String, Counter>();
     resultRows = null;
 
-    clearUndo();
-    clearChanged();
-
-    createdUser = "-";
-    createdDate = new Date();
-
-    modifiedUser = "-";
-    modifiedDate = new Date();
+    super.clear();
 
     // LOAD THE DATABASE CACHE!
     dbCache = DBCache.getInstance();
-
-    // Default directory: root
-    directory = new RepositoryDirectory();
 
     resultRows = new ArrayList<RowMetaAndData>();
     resultFiles = new ArrayList<ResultFile>();
@@ -874,67 +729,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     transformationType = TransformationType.Normal;
 
     log = new LogChannel( STRING_TRANSMETA );
-  }
-
-  /**
-   * Clears the list of undo actions. Also resets the undo position (index).
-   */
-  public void clearUndo() {
-    undo = new ArrayList<TransAction>();
-    undo_position = -1;
-  }
-
-  /**
-   * Gets the list of databases associated with the transformation.
-   *
-   * @return the list of databases associated with the transformation
-   * @see org.pentaho.di.trans.HasDatabaseInterface#getDatabases()
-   */
-  public List<DatabaseMeta> getDatabases() {
-    return databases;
-  }
-
-  /**
-   * Sets the databases associated with the transformation.
-   *
-   * @param databases
-   *          the new databases
-   * @see org.pentaho.di.trans.HasDatabaseInterface#setDatabases(java.util.ArrayList)
-   */
-  public void setDatabases( List<DatabaseMeta> databases ) {
-    Collections.sort( databases, DatabaseMeta.comparator );
-    this.databases = databases;
-  }
-
-  /**
-   * Adds the specified database (via database meta-data) to the list of associated databases for the transformation.
-   *
-   * @param databaseMeta
-   *          the database meta to add
-   * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public void addDatabase( DatabaseMeta databaseMeta ) {
-    databases.add( databaseMeta );
-    Collections.sort( databases, DatabaseMeta.comparator );
-  }
-
-  /**
-   * Adds the specified database (via database meta-data) to the list of associated databases for the transformation, or
-   * replaces the database if it already exists in the list
-   *
-   * @param databaseMeta
-   *          the database meta to add or replace
-   * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public void addOrReplaceDatabase( DatabaseMeta databaseMeta ) {
-    int index = databases.indexOf( databaseMeta );
-    if ( index < 0 ) {
-      addDatabase( databaseMeta );
-    } else {
-      DatabaseMeta previous = getDatabase( index );
-      previous.replaceMeta( databaseMeta );
-    }
-    changed_databases = true;
   }
 
   /**
@@ -981,17 +775,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Add a new note to the transformation. Also marks that the transformation's notes have changed.
-   *
-   * @param ni
-   *          The note to be added.
-   */
-  public void addNote( NotePadMeta ni ) {
-    notes.add( ni );
-    changed_notes = true;
-  }
-
-  /**
    * Add a new dependency to the transformation.
    *
    * @param td
@@ -999,19 +782,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void addDependency( TransDependency td ) {
     dependencies.add( td );
-  }
-
-  /**
-   * Adds a database association to the transformation at the given index
-   *
-   * @param p
-   *          the index into the database list
-   * @param ci
-   *          the database meta-data
-   * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(int, org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public void addDatabase( int p, DatabaseMeta ci ) {
-    databases.add( p, ci );
   }
 
   /**
@@ -1044,20 +814,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Add a new note to the transformation on a certain location (i.e. the specified index). Also marks that the
-   * transformation's notes have changed.
-   *
-   * @param p
-   *          The index into the notes list
-   * @param ni
-   *          The note to be added.
-   */
-  public void addNote( int p, NotePadMeta ni ) {
-    notes.add( p, ni );
-    changed_notes = true;
-  }
-
-  /**
    * Add a new dependency to the transformation on a certain location (i.e. the specified index).
    *
    * @param p
@@ -1067,18 +823,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void addDependency( int p, TransDependency td ) {
     dependencies.add( p, td );
-  }
-
-  /**
-   * Gets the database at the specified index.
-   *
-   * @param i
-   *          the index into the database list
-   * @return the database meta-data object at the specified index
-   * @see org.pentaho.di.trans.HasDatabaseInterface#getDatabase(int)
-   */
-  public DatabaseMeta getDatabase( int i ) {
-    return databases.get( i );
   }
 
   /**
@@ -1113,17 +857,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Retrieves notepad information on a certain location (i.e. the specified index).
-   *
-   * @param i
-   *          The index into the notes list.
-   * @return The notepad information.
-   */
-  public NotePadMeta getNote( int i ) {
-    return notes.get( i );
-  }
-
-  /**
    * Retrieves a dependency on a certain location (i.e. the specified index).
    *
    * @param i
@@ -1132,21 +865,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public TransDependency getDependency( int i ) {
     return dependencies.get( i );
-  }
-
-  /**
-   * Removes the database at the specified index. Also marks that the transformation's databases have changed.
-   *
-   * @param i
-   *          the index at which to remove the database
-   * @see org.pentaho.di.trans.HasDatabaseInterface#removeDatabase(int)
-   */
-  public void removeDatabase( int i ) {
-    if ( i < 0 || i >= databases.size() ) {
-      return;
-    }
-    databases.remove( i );
-    changed_databases = true;
   }
 
   /**
@@ -1182,53 +900,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Removes a note from the transformation on a certain location (i.e. the specified index). Also marks that the
-   * transformation's notes have changed.
-   *
-   * @param i
-   *          The index into the notes list
-   */
-  public void removeNote( int i ) {
-    if ( i < 0 || i >= notes.size() ) {
-      return;
-    }
-    notes.remove( i );
-    changed_notes = true;
-  }
-
-  /**
-   * Raises a note to the "top" of the list by removing the note at the specified index and re-inserting it at the end.
-   * Also marks that the transformation's notes have changed.
-   *
-   * @param p
-   *          the index into the notes list.
-   */
-  public void raiseNote( int p ) {
-    // if valid index and not last index
-    if ( ( p >= 0 ) && ( p < notes.size() - 1 ) ) {
-      NotePadMeta note = notes.remove( p );
-      notes.add( note );
-      changed_notes = true;
-    }
-  }
-
-  /**
-   * Lowers a note to the "bottom" of the list by removing the note at the specified index and re-inserting it at the
-   * front. Also marks that the transformation's notes have changed.
-   *
-   * @param p
-   *          the index into the notes list.
-   */
-  public void lowerNote( int p ) {
-    // if valid index and not first index
-    if ( ( p > 0 ) && ( p < notes.size() ) ) {
-      NotePadMeta note = notes.remove( p );
-      notes.add( 0, note );
-      changed_notes = true;
-    }
-  }
-
-  /**
    * Removes a dependency from the transformation on a certain location (i.e. the specified index).
    *
    * @param i
@@ -1249,16 +920,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the number of databases associated with the transformation.
-   *
-   * @return the number of databases associated with the transformation
-   * @see org.pentaho.di.trans.HasDatabaseInterface#nrDatabases()
-   */
-  public int nrDatabases() {
-    return databases.size();
-  }
-
-  /**
    * Gets the number of steps in the transformation.
    *
    * @return The number of steps in the transformation.
@@ -1274,15 +935,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public int nrTransHops() {
     return hops.size();
-  }
-
-  /**
-   * Gets the number of notes in the transformation.
-   *
-   * @return The number of notes in the transformation.
-   */
-  public int nrNotes() {
-    return notes.size();
   }
 
   /**
@@ -1337,25 +989,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     return list;
-  }
-
-  /**
-   * Find a database (associated with the transformation) by name
-   *
-   * @param name
-   *          the name of the desired database
-   * @return the desired database's meta-data, or null if no database is found
-   */
-  public DatabaseMeta findDatabase( String name ) {
-    int i;
-    for ( i = 0; i < nrDatabases(); i++ ) {
-      DatabaseMeta ci = getDatabase( i );
-      if (( ci != null ) && ( ci.getName().equalsIgnoreCase( name ) ) ||
-              ( ci.getDisplayName().equalsIgnoreCase( name ) )) {
-        return ci;
-      }
-    }
-    return null;
   }
 
   /**
@@ -1990,32 +1623,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Find the note that is located on a certain point on the canvas.
-   *
-   * @param x
-   *          the x-coordinate of the point queried
-   * @param y
-   *          the y-coordinate of the point queried
-   * @return The note information if a note is located at the point. Otherwise, if nothing was found: null.
-   */
-  public NotePadMeta getNote( int x, int y ) {
-    int i, s;
-    s = notes.size();
-    for ( i = s - 1; i >= 0; i-- ) // Back to front because drawing goes from start to end
-    {
-      NotePadMeta ni = notes.get( i );
-      Point loc = ni.getLocation();
-      Point p = new Point( loc.x, loc.y );
-      if ( x >= p.x
-        && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y
-        && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
-        return ni;
-      }
-    }
-    return null;
-  }
-
-  /**
    * Determines whether or not a certain step is part of a hop.
    *
    * @param stepMeta
@@ -2627,29 +2234,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Finds the location (index) of the specified database.
-   *
-   * @param ci
-   *          the database queried
-   * @return the index of the database, or -1 if nothing was found
-   * @see org.pentaho.di.trans.HasDatabaseInterface#indexOfDatabase(org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public int indexOfDatabase( DatabaseMeta ci ) {
-    return databases.indexOf( ci );
-  }
-
-  /**
-   * Finds the location (index) of the specified note.
-   *
-   * @param ni
-   *          The note queried
-   * @return The location of the note, or -1 if nothing was found.
-   */
-  public int indexOfNote( NotePadMeta ni ) {
-    return notes.indexOf( ni );
-  }
-
-  /**
    * Gets the file type. For TransMeta, this returns a value corresponding to Transformation
    *
    * @return the file type
@@ -2736,7 +2320,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", name ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "description", description ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "extended_description", extended_description ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "extended_description", extendedDescription ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trans_version", trans_version ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trans_type", transformationType.getCode() ) );
 
@@ -3448,7 +3032,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         // extended description
         //
-        extended_description = XMLHandler.getTagValue( infonode, "extended_description" );
+        extendedDescription = XMLHandler.getTagValue( infonode, "extended_description" );
 
         // trans version
         //
@@ -3858,57 +3442,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Get the name of the transformation.
-   *
-   * @return The name of the transformation
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Set the name of the transformation.
-   *
-   * @param newName
-   *          The new name of the transformation
-   */
-  public void setName( String newName ) {
-    fireNameChangedListeners( this.name, newName );
-    this.name = newName;
-    setInternalNameKettleVariable( variables );
-  }
-
-  /**
-   * Builds a name for the transformation. If no name is yet set, create the name from the filename.
-   */
-  public void nameFromFilename() {
-    if ( !Const.isEmpty( filename ) ) {
-      setName( Const.createName( filename ) );
-    }
-  }
-
-  /**
-   * Get the filename (if any) of the transformation.
-   *
-   * @return The filename of the transformation.
-   */
-  public String getFilename() {
-    return filename;
-  }
-
-  /**
-   * Set the filename of the transformation.
-   *
-   * @param fname
-   *          The new filename of the transformation.
-   */
-  public void setFilename( String fname ) {
-    fireFilenameChangedListeners( this.filename, fname );
-    this.filename = fname;
-    setInternalFilenameKettleVariables( variables );
-  }
-
-  /**
    * Checks if a step has been used in a hop or not.
    *
    * @param stepMeta
@@ -3925,29 +3458,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Sets whether the transformation has changed.
-   *
-   * @param ch
-   *          true if you want to mark the transformation as changed, false otherwise
-   */
-  public void setChanged( boolean ch ) {
-    if ( ch ) {
-      setChanged();
-      fireContentChangedListeners();
-    } else {
-      clearChanged();
-    }
-  }
-
-  /**
    * Clears the different changed flags of the transformation.
    *
    */
+  @Override
   public void clearChanged() {
-    clearChangedDatabases();
     changed_steps = false;
     changed_hops = false;
-    changed_notes = false;
 
     for ( int i = 0; i < nrSteps(); i++ ) {
       getStep( i ).setChanged( false );
@@ -3958,9 +3475,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     for ( int i = 0; i < nrTransHops(); i++ ) {
       getTransHop( i ).setChanged( false );
     }
-    for ( int i = 0; i < nrNotes(); i++ ) {
-      getNote( i ).setChanged( false );
-    }
     for ( int i = 0; i < partitionSchemas.size(); i++ ) {
       partitionSchemas.get( i ).setChanged( false );
     }
@@ -3969,38 +3483,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     super.clearChanged();
-  }
-
-  /**
-   * Clears the flags for whether the transformation's databases have changed.
-   *
-   */
-  public void clearChangedDatabases() {
-    changed_databases = false;
-
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      getDatabase( i ).setChanged( false );
-    }
-  }
-
-  /**
-   * Checks for whether the transformation's connections have changed.
-   *
-   * @return true if the transformation's connections have changed, false otherwise
-   * @see org.pentaho.di.trans.HasDatabaseInterface#haveConnectionsChanged()
-   */
-  public boolean haveConnectionsChanged() {
-    if ( changed_databases ) {
-      return true;
-    }
-
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      DatabaseMeta ci = getDatabase( i );
-      if ( ci.hasChanged() ) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -4045,26 +3527,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Checks whether or not any of the notes have been changed.
-   *
-   * @return true if the notes have been changed, false otherwise
-   */
-  public boolean haveNotesChanged() {
-    if ( changed_notes ) {
-      return true;
-    }
-
-    for ( int i = 0; i < nrNotes(); i++ ) {
-      NotePadMeta ni = getNote( i );
-      if ( ni.hasChanged() ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
    * Checks whether or not any of the partitioning schemas have been changed.
    *
    * @return true if the partitioning schemas have been changed, false otherwise
@@ -4101,21 +3563,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *
    * @return true if the transformation has changed, false otherwise
    */
+  @Override
   public boolean hasChanged() {
     if ( super.hasChanged() ) {
-      return true;
-    }
-
-    if ( haveConnectionsChanged() ) {
       return true;
     }
     if ( haveStepsChanged() ) {
       return true;
     }
     if ( haveHopsChanged() ) {
-      return true;
-    }
-    if ( haveNotesChanged() ) {
       return true;
     }
     if ( havePartitionSchemasChanged() ) {
@@ -4275,21 +3731,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets an array of all the selected notes.
-   *
-   * @return An array of all the selected notes.
-   */
-  public List<NotePadMeta> getSelectedNotes() {
-    List<NotePadMeta> selection = new ArrayList<NotePadMeta>();
-    for ( NotePadMeta note : notes ) {
-      if ( note.isSelected() ) {
-        selection.add( note );
-      }
-    }
-    return selection;
-  }
-
-  /**
    * Gets an array of all the selected step names.
    *
    * @return An array of all the selected step names.
@@ -4317,186 +3758,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     for ( int i = 0; i < steps.size(); i++ ) {
       retval[i] = indexOfStep( steps.get( i ) );
     }
-
-    return retval;
-  }
-
-  /**
-   * Gets an array of the locations of an array of notes.
-   *
-   * @param notes
-   *          An array of notes
-   * @return an array of the locations of an array of notes
-   */
-  public int[] getNoteIndexes( List<NotePadMeta> notes ) {
-    int[] retval = new int[notes.size()];
-
-    for ( int i = 0; i < notes.size(); i++ ) {
-      retval[i] = indexOfNote( notes.get( i ) );
-    }
-
-    return retval;
-  }
-
-  /**
-   * Gets the maximum number of undo operations possible.
-   *
-   * @return The maximum number of undo operations that are allowed.
-   */
-  public int getMaxUndo() {
-    return max_undo;
-  }
-
-  /**
-   * Sets the maximum number of undo operations that are allowed.
-   *
-   * @param mu
-   *          The maximum number of undo operations that are allowed.
-   */
-  public void setMaxUndo( int mu ) {
-    max_undo = mu;
-    while ( undo.size() > mu && undo.size() > 0 ) {
-      undo.remove( 0 );
-    }
-  }
-
-  /**
-   * Adds an undo operation to the undo list.
-   *
-   * @param from
-   *          array of objects representing the old state
-   * @param to
-   *          array of objectes representing the new state
-   * @param pos
-   *          An array of object locations
-   * @param prev
-   *          An array of points representing the old positions
-   * @param curr
-   *          An array of points representing the new positions
-   * @param type_of_change
-   *          The type of change that's being done to the transformation.
-   * @param nextAlso
-   *          indicates that the next undo operation needs to follow this one.
-   */
-  public void addUndo( Object[] from, Object[] to, int[] pos, Point[] prev, Point[] curr, int type_of_change,
-    boolean nextAlso ) {
-    // First clean up after the current position.
-    // Example: position at 3, size=5
-    // 012345
-    // ^
-    // remove 34
-    // Add 4
-    // 01234
-
-    while ( undo.size() > undo_position + 1 && undo.size() > 0 ) {
-      int last = undo.size() - 1;
-      undo.remove( last );
-    }
-
-    TransAction ta = new TransAction();
-    switch ( type_of_change ) {
-      case TYPE_UNDO_CHANGE:
-        ta.setChanged( from, to, pos );
-        break;
-      case TYPE_UNDO_DELETE:
-        ta.setDelete( from, pos );
-        break;
-      case TYPE_UNDO_NEW:
-        ta.setNew( from, pos );
-        break;
-      case TYPE_UNDO_POSITION:
-        ta.setPosition( from, pos, prev, curr );
-        break;
-      default:
-        break;
-    }
-    ta.setNextAlso( nextAlso );
-    undo.add( ta );
-    undo_position++;
-
-    if ( undo.size() > max_undo ) {
-      undo.remove( 0 );
-      undo_position--;
-    }
-  }
-
-  /**
-   * Gets the previous undo operation and change the undo pointer.
-   *
-   * @return The undo transaction to be performed.
-   */
-  public TransAction previousUndo() {
-    if ( undo.isEmpty() || undo_position < 0 ) {
-      return null; // No undo left!
-    }
-
-    TransAction retval = undo.get( undo_position );
-
-    undo_position--;
-
-    return retval;
-  }
-
-  /**
-   * Views current undo action. This method does not change the undo position.
-   *
-   * @return The current undo transaction
-   */
-  public TransAction viewThisUndo() {
-    if ( undo.isEmpty() || undo_position < 0 ) {
-      return null; // No undo left!
-    }
-
-    TransAction retval = undo.get( undo_position );
-
-    return retval;
-  }
-
-  /**
-   * Views previous undo action. This method does not change the undo position.
-   *
-   * @return The previous undo transaction
-   */
-  public TransAction viewPreviousUndo() {
-    if ( undo.isEmpty() || undo_position - 1 < 0 ) {
-      return null; // No undo left!
-    }
-
-    TransAction retval = undo.get( undo_position - 1 );
-
-    return retval;
-  }
-
-  /**
-   * Gets the next undo transaction on the list. This method changes the undo pointer.
-   *
-   * @return The next undo transaction (for redo)
-   */
-  public TransAction nextUndo() {
-    int size = undo.size();
-    if ( size == 0 || undo_position >= size - 1 ) {
-      return null; // no redo left...
-    }
-
-    undo_position++;
-
-    TransAction retval = undo.get( undo_position );
-
-    return retval;
-  }
-
-  /**
-   * Gets the next undo transaction on the list. This method does not change the undo position.
-   *
-   * @return The next undo transaction (for redo)
-   */
-  public TransAction viewNextUndo() {
-    int size = undo.size();
-    if ( size == 0 || undo_position >= size - 1 ) {
-      return null; // no redo left...
-    }
-
-    TransAction retval = undo.get( undo_position + 1 );
 
     return retval;
   }
@@ -4678,11 +3939,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /** The previous count. */
   private long prevCount;
-
-  /** The object version. */
-  private ObjectRevision objectVersion;
-
-  private List<ContentChangedListener> contentChangedListeners;
 
   /**
    * Puts the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
@@ -5335,26 +4591,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the repository directory.
-   *
-   * @return Returns the repository directory.
-   */
-  public RepositoryDirectoryInterface getRepositoryDirectory() {
-    return directory;
-  }
-
-  /**
-   * Sets the repository directory.
-   *
-   * @param directory
-   *          The directory to set.
-   */
-  public void setRepositoryDirectory( RepositoryDirectoryInterface directory ) {
-    this.directory = directory;
-    setInternalKettleVariables();
-  }
-
-  /**
    * Gets the repository directory path and name of the transformation.
    *
    * @return The repository directory path plus the name of the transformation
@@ -5589,120 +4825,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void setDbCache( DBCache dbCache ) {
     this.dbCache = dbCache;
-  }
-
-  /**
-   * Gets the date the transformation was created.
-   *
-   * @return the date the transformation was created.
-   */
-  public Date getCreatedDate() {
-    return createdDate;
-  }
-
-  /**
-   * Sets the date the transformation was created.
-   *
-   * @param createdDate
-   *          The creation date to set.
-   */
-  public void setCreatedDate( Date createdDate ) {
-    this.createdDate = createdDate;
-  }
-
-  /**
-   * Sets the user by whom the transformation was created.
-   *
-   * @param createdUser
-   *          The user to set.
-   */
-  public void setCreatedUser( String createdUser ) {
-    this.createdUser = createdUser;
-  }
-
-  /**
-   * Gets the user by whom the transformation was created.
-   *
-   * @return the user by whom the transformation was created.
-   */
-  public String getCreatedUser() {
-    return createdUser;
-  }
-
-  /**
-   * Sets the date the transformation was modified.
-   *
-   * @param modifiedDate
-   *          The modified date to set.
-   */
-  public void setModifiedDate( Date modifiedDate ) {
-    this.modifiedDate = modifiedDate;
-  }
-
-  /**
-   * Gets the date the transformation was modified.
-   *
-   * @return the date the transformation was modified.
-   */
-  public Date getModifiedDate() {
-    return modifiedDate;
-  }
-
-  /**
-   * Sets the user who last modified the transformation.
-   *
-   * @param modifiedUser
-   *          The user name to set.
-   */
-  public void setModifiedUser( String modifiedUser ) {
-    this.modifiedUser = modifiedUser;
-  }
-
-  /**
-   * Gets the user who last modified the transformation.
-   *
-   * @return the user who last modified the transformation.
-   */
-  public String getModifiedUser() {
-    return modifiedUser;
-  }
-
-  /**
-   * Gets the description of the transformation.
-   *
-   * @return The description of the transformation.
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Sets the description of the transformation.
-   *
-   * @param n
-   *          The description of the transformation to set.
-   */
-  public void setDescription( String n ) {
-    description = n;
-  }
-
-  /**
-   * Sets the extended description of the transformation.
-   *
-   * @param n
-   *          The extended description of the transformation to set.
-   */
-  public void setExtendedDescription( String n ) {
-    extended_description = n;
-  }
-
-  /**
-   * Gets the extended description of the transformation.
-   *
-   * @return The extended description of the transformation.
-   */
-  public String getExtendedDescription() {
-    return extended_description;
   }
 
   /**
@@ -6243,23 +5365,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Add a new slave server to the transformation if that didn't exist yet. Otherwise, replace it.
-   *
-   * @param slaveServer
-   *          The slave server to be added.
-   */
-  public void addOrReplaceSlaveServer( SlaveServer slaveServer ) {
-    int index = slaveServers.indexOf( slaveServer );
-    if ( index < 0 ) {
-      slaveServers.add( slaveServer );
-    } else {
-      SlaveServer previous = slaveServers.get( index );
-      previous.replaceMeta( slaveServer );
-    }
-    setChanged();
-  }
-
-  /**
    * Add a new cluster schema to the transformation if that didn't exist yet. Otherwise, replace it.
    *
    * @param clusterSchema
@@ -6274,25 +5379,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       previous.replaceMeta( clusterSchema );
     }
     setChanged();
-  }
-
-  /**
-   * Gets the shared objects file.
-   *
-   * @return the shared objects file
-   */
-  public String getSharedObjectsFile() {
-    return sharedObjectsFile;
-  }
-
-  /**
-   * Sets the shared objects file.
-   *
-   * @param sharedObjectsFile
-   *          the new shared objects file
-   */
-  public void setSharedObjectsFile( String sharedObjectsFile ) {
-    this.sharedObjectsFile = sharedObjectsFile;
   }
 
   /**
@@ -6355,46 +5441,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Find a slave server with the given name. This method performs a case-insensitive search of the slave servers by
-   * name. If no slave server is found, null is returned
-   *
-   * @param serverString
-   *          the name of the slave server to find
-   * @return the slave server with the specified name, or null if no slave server is found
-   */
-  public SlaveServer findSlaveServer( String serverString ) {
-    return SlaveServer.findSlaveServer( slaveServers, serverString );
-  }
-
-  /**
-   * Gets the slave server names.
-   *
-   * @return a String array containing the slave server names
-   */
-  public String[] getSlaveServerNames() {
-    return SlaveServer.getSlaveServerNames( slaveServers );
-  }
-
-  /**
-   * Gets a list of the slave servers.
-   *
-   * @return a list of SlaveServers.
-   */
-  public List<SlaveServer> getSlaveServers() {
-    return slaveServers;
-  }
-
-  /**
-   * Sets the list of slave servers.
-   *
-   * @param slaveServers
-   *          the list of SlaveServers to set
-   */
-  public void setSlaveServers( List<SlaveServer> slaveServers ) {
-    this.slaveServers = slaveServers;
-  }
-
-  /**
    * Check a step to see if there are no multiple steps to read from. If so, check to see if the receiving rows are all
    * the same in layout. We only want to ONLY use the DBCache for this to prevent GUI stalls.
    *
@@ -6431,15 +5477,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Sets the internal kettle variables.
    *
-   * @see org.pentaho.di.core.EngineMetaInterface#setInternalKettleVariables()
-   */
-  public void setInternalKettleVariables() {
-    setInternalKettleVariables( variables );
-  }
-
-  /**
-   * Sets the internal kettle variables.
-   *
    * @param var
    *          the new internal kettle variables
    */
@@ -6470,15 +5507,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the internal name kettle variable.
-   *
+   * 
    * @param var
    *          the new internal name kettle variable
    */
-  private void setInternalNameKettleVariable( VariableSpace var ) {
+  protected void setInternalNameKettleVariable( VariableSpace var ) {
     // The name of the transformation
     //
     var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL( name, "" ) );
   }
+
 
   /**
    * Sets the internal filename kettle variables.
@@ -6486,7 +5524,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param var
    *          the new internal filename kettle variables
    */
-  private void setInternalFilenameKettleVariables( VariableSpace var ) {
+  protected void setInternalFilenameKettleVariables( VariableSpace var ) {
     // If we have a filename that's defined, set variables. If not, clear them.
     //
     if ( !Const.isEmpty( filename ) ) {
@@ -6511,174 +5549,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "" );
     }
 
-  }
-
-  /**
-   * Copies variables from the specified variable space into this transformation's variable space.
-   *
-   * @param space
-   *          the variable space from which to copy
-   * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void copyVariablesFrom( VariableSpace space ) {
-    variables.copyVariablesFrom( space );
-  }
-
-  /**
-   * Resolves the given string against environment variables by performing substitution. The resolved string is
-   * returned.
-   *
-   * @param aString
-   *          the string to resolve
-   * @return the string after been resolved against environment variables
-   * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
-   */
-  public String environmentSubstitute( String aString ) {
-    return variables.environmentSubstitute( aString );
-  }
-
-  /**
-   * Resolves the given strings against environment variables by performing substitution. The array of resolved strings
-   * is returned.
-   *
-   * @param aString
-   *          the string array to resolve
-   * @return the array strings after having been resolved against environment variables
-   * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
-   */
-  public String[] environmentSubstitute( String[] aString ) {
-    return variables.environmentSubstitute( aString );
-  }
-
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
-    return variables.fieldSubstitute( aString, rowMeta, rowData );
-  }
-
-  /**
-   * Gets the parent variable space.
-   *
-   * @return the parent variable space
-   * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
-   */
-  public VariableSpace getParentVariableSpace() {
-    return variables.getParentVariableSpace();
-  }
-
-  /**
-   * Sets the parent variable space.
-   *
-   * @param parent
-   *          the new parent variable space
-   * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(
-   *   org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void setParentVariableSpace( VariableSpace parent ) {
-    variables.setParentVariableSpace( parent );
-  }
-
-  /**
-   * Gets the value for a variable with the specified name. If the variable has no value assigned, the specified default
-   * value is returned
-   *
-   * @param variableName
-   *          the variable name
-   * @param defaultValue
-   *          the default value
-   * @return the variable value (or default value if the variable is unassigned)
-   * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
-   */
-  public String getVariable( String variableName, String defaultValue ) {
-    return variables.getVariable( variableName, defaultValue );
-  }
-
-  /**
-   * Gets the value for a variable with the specified name.
-   *
-   * @param variableName
-   *          the variable name
-   * @return the variable's value
-   * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
-   */
-  public String getVariable( String variableName ) {
-    return variables.getVariable( variableName );
-  }
-
-  /**
-   * Returns a boolean representation of the specified variable after performing any necessary substitution. Truth
-   * values include case-insensitive versions of "Y", "YES", "TRUE" or "1".
-   *
-   * @param variableName
-   *          the name of the variable to interrogate
-   * @boolean defaultValue the value to use if the specified variable is unassigned.
-   * @return a boolean representation of the specified variable after performing any necessary substitution
-   * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
-   */
-  public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
-      String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
-      }
-    }
-    return defaultValue;
-  }
-
-  /**
-   * Initialize variables from the specified variable space.
-   *
-   * @param parent
-   *          the parent variable space
-   * @see org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(
-   *   org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void initializeVariablesFrom( VariableSpace parent ) {
-    variables.initializeVariablesFrom( parent );
-  }
-
-  /**
-   * Gets an array of variable names.
-   *
-   * @return the string array of variable names
-   * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
-   */
-  public String[] listVariables() {
-    return variables.listVariables();
-  }
-
-  /**
-   * Sets the specified variable to the specified value
-   *
-   * @param variableName
-   *          the variable name
-   * @param variableValue
-   *          the variable value
-   * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
-   */
-  public void setVariable( String variableName, String variableValue ) {
-    variables.setVariable( variableName, variableValue );
-  }
-
-  /**
-   * Share variables with the specified variable space.
-   *
-   * @param space
-   *          the variable space with which to share variables
-   * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void shareVariablesWith( VariableSpace space ) {
-    variables = space;
-  }
-
-  /**
-   * Inject variables from a properties map.
-   *
-   * @param prop
-   *          the properties Map from which to inject variables
-   * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
-   */
-  public void injectVariables( Map<String, String> prop ) {
-    variables.injectVariables( prop );
   }
 
   /**
@@ -6938,25 +5808,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the repository.
-   *
-   * @return the repository
-   */
-  public Repository getRepository() {
-    return repository;
-  }
-
-  /**
-   * Sets the repository.
-   *
-   * @param repository
-   *          the repository to set
-   */
-  public void setRepository( Repository repository ) {
-    this.repository = repository;
-  }
-
-  /**
    * Checks whether the transformation is capturing step performance snapshots.
    *
    * @return true if the transformation is capturing step performance snapshots, false otherwise
@@ -7014,25 +5865,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the shared objects.
-   *
-   * @return the shared objects
-   */
-  public SharedObjects getSharedObjects() {
-    return sharedObjects;
-  }
-
-  /**
-   * Sets the shared objects.
-   *
-   * @param sharedObjects
-   *          the SharedObjects to set
-   */
-  public void setSharedObjects( SharedObjects sharedObjects ) {
-    this.sharedObjects = sharedObjects;
-  }
-
-  /**
    * Clears the step fields and loop caches.
    */
   public void clearCaches() {
@@ -7055,277 +5887,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Adds a listener for "name changed" events.
-   *
-   * @param listener
-   *          the listener to add
-   */
-  public void addNameChangedListener( NameChangedListener listener ) {
-    if ( nameChangedListeners == null ) {
-      nameChangedListeners = new ArrayList<NameChangedListener>();
-    }
-    nameChangedListeners.add( listener );
-  }
-
-  /**
-   * Removes the specified NameChangedListener.
-   *
-   * @param listener
-   *          the listener
-   */
-  public void removeNameChangedListener( NameChangedListener listener ) {
-    nameChangedListeners.remove( listener );
-  }
-
-  /**
-   * Adds a listener for "filename changed" events.
-   *
-   * @param listener
-   *          the listener to add
-   */
-  public void addFilenameChangedListener( FilenameChangedListener listener ) {
-    if ( filenameChangedListeners == null ) {
-      filenameChangedListeners = new ArrayList<FilenameChangedListener>();
-    }
-    filenameChangedListeners.add( listener );
-  }
-
-  /**
-   * Removes the specified FilenameChangedListener.
-   *
-   * @param listener
-   *          the listener
-   */
-  public void removeFilenameChangedListener( FilenameChangedListener listener ) {
-    filenameChangedListeners.remove( listener );
-  }
-
-  public void addContentChangedListener( ContentChangedListener listener ) {
-    if ( contentChangedListeners == null ) {
-      contentChangedListeners = new ArrayList<ContentChangedListener>();
-    }
-    contentChangedListeners.add( listener );
-  }
-
-  public void removeContentChangedListener( ContentChangedListener listener ) {
-    contentChangedListeners.remove( listener );
-  }
-
-  /**
-   * Checks whether the specified name has changed (i.e. is different from the specified old name). If both names are
-   * null, false is returned. If the old name is null and the new new name is non-null, true is returned. Otherwise, if
-   * the name strings are equal then true is returned; false is returned if the name strings are not equal.
-   *
-   * @param oldName
-   *          the old name
-   * @param newName
-   *          the new name
-   * @return true if the names have changed, false otherwise
-   */
-  private boolean nameChanged( String oldName, String newName ) {
-    if ( oldName == null && newName == null ) {
-      return false;
-    }
-    if ( oldName == null && newName != null ) {
-      return true;
-    }
-    return oldName.equals( newName );
-  }
-
-  /**
-   * Fires the filename changed listeners if the filename has changed.
-   *
-   * @param oldFilename
-   *          the old filename
-   * @param newFilename
-   *          the new filename
-   */
-  private void fireFilenameChangedListeners( String oldFilename, String newFilename ) {
-    if ( nameChanged( oldFilename, newFilename ) ) {
-      if ( filenameChangedListeners != null ) {
-        for ( FilenameChangedListener listener : filenameChangedListeners ) {
-          listener.filenameChanged( this, oldFilename, newFilename );
-        }
-      }
-    }
-  }
-
-  /**
-   * Fires the name changed listeners if the name has changed
-   *
-   * @param oldName
-   *          the old name
-   * @param newName
-   *          the new name
-   */
-  private void fireNameChangedListeners( String oldName, String newName ) {
-    if ( nameChanged( oldName, newName ) ) {
-      if ( nameChangedListeners != null ) {
-        for ( NameChangedListener listener : nameChangedListeners ) {
-          listener.nameChanged( this, oldName, newName );
-        }
-      }
-    }
-  }
-
-  /**
-   * Fire content changed listeners.
-   */
-  protected void fireContentChangedListeners() {
-    if ( contentChangedListeners != null ) {
-      for ( ContentChangedListener listener : contentChangedListeners ) {
-        listener.contentChanged( this );
-      }
-    }
-  }
-
-  /**
-   * Activates the parameters.
-   *
-   * @see org.pentaho.di.core.parameters.NamedParams#activateParameters()
-   */
-  public void activateParameters() {
-    String[] keys = listParameters();
-
-    for ( String key : keys ) {
-      String value;
-      try {
-        value = getParameterValue( key );
-      } catch ( UnknownParamException e ) {
-        value = "";
-      }
-
-      String defValue;
-      try {
-        defValue = getParameterDefault( key );
-      } catch ( UnknownParamException e ) {
-        defValue = "";
-      }
-
-      if ( Const.isEmpty( value ) ) {
-        setVariable( key, Const.NVL( defValue, "" ) );
-      } else {
-        setVariable( key, Const.NVL( value, "" ) );
-      }
-    }
-  }
-
-  /**
-   * Adds the parameter definition.
-   *
-   * @param key
-   *          the key
-   * @param defaultValue
-   *          the default value
-   * @param description
-   *          the description
-   * @throws DuplicateParamException
-   *           the duplicate param exception
-   * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
-   *      java.lang.String)
-   */
-  public void addParameterDefinition( String key, String defaultValue, String description )
-    throws DuplicateParamException {
-    namedParams.addParameterDefinition( key, defaultValue, description );
-  }
-
-  /**
-   * Gets the parameter description.
-   *
-   * @param key
-   *          the key
-   * @return the parameter description
-   * @throws UnknownParamException
-   *           the unknown param exception
-   * @see org.pentaho.di.core.parameters.NamedParams#getParameterDescription(java.lang.String)
-   */
-  public String getParameterDescription( String key ) throws UnknownParamException {
-    return namedParams.getParameterDescription( key );
-  }
-
-  /**
-   * Gets the parameter default.
-   *
-   * @param key
-   *          the key
-   * @return the parameter default
-   * @throws UnknownParamException
-   *           the unknown param exception
-   * @see org.pentaho.di.core.parameters.NamedParams#getParameterDefault(java.lang.String)
-   */
-  public String getParameterDefault( String key ) throws UnknownParamException {
-    return namedParams.getParameterDefault( key );
-  }
-
-  /**
-   * Gets the parameter value.
-   *
-   * @param key
-   *          the name of the parameter
-   * @return the parameter value
-   * @throws UnknownParamException
-   *           if no such parameter exists
-   * @see org.pentaho.di.core.parameters.NamedParams#getParameterValue(java.lang.String)
-   */
-  public String getParameterValue( String key ) throws UnknownParamException {
-    return namedParams.getParameterValue( key );
-  }
-
-  /**
-   * Gets an array of parameter names.
-   *
-   * @return an array of parameter names.
-   * @see org.pentaho.di.core.parameters.NamedParams#listParameters()
-   */
-  public String[] listParameters() {
-    return namedParams.listParameters();
-  }
-
-  /**
-   * Sets the specified parameter to the specified value.
-   *
-   * @param key
-   *          the name of the parameter
-   * @param value
-   *          the value to set
-   * @throws UnknownParamException
-   *           if no such parameter exists
-   * @see org.pentaho.di.core.parameters.NamedParams#setParameterValue(java.lang.String, java.lang.String)
-   */
-  public void setParameterValue( String key, String value ) throws UnknownParamException {
-    namedParams.setParameterValue( key, value );
-  }
-
-  /**
-   * Erases all parameters (both name and value)
-   *
-   * @see org.pentaho.di.core.parameters.NamedParams#eraseParameters()
-   */
-  public void eraseParameters() {
-    namedParams.eraseParameters();
-  }
-
-  /**
-   * Clears the parameters' values.
-   *
-   * @see org.pentaho.di.core.parameters.NamedParams#clearParameters()
-   */
-  public void clearParameters() {
-    namedParams.clearParameters();
-  }
-
-  /**
-   * Copy parameters from the specified parameters.
-   *
-   * @param params
-   *          the parameters from which to copy
-   * @see org.pentaho.di.core.parameters.NamedParams#copyParametersFrom(org.pentaho.di.core.parameters.NamedParams)
-   */
-  public void copyParametersFrom( NamedParams params ) {
-    namedParams.copyParametersFrom( params );
-  }
-
-  /**
    * Gets the repository element type.
    *
    * @return the repository element type
@@ -7333,28 +5894,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public RepositoryObjectType getRepositoryElementType() {
     return REPOSITORY_ELEMENT_TYPE;
-  }
-
-  /**
-   * Sets the object revision.
-   *
-   * @param objectRevision
-   *          the new object revision
-   * @see org.pentaho.di.repository.RepositoryElementInterface#setObjectRevision(
-   *   org.pentaho.di.repository.ObjectRevision)
-   */
-  public void setObjectRevision( ObjectRevision objectRevision ) {
-    this.objectVersion = objectRevision;
-  }
-
-  /**
-   * Gets the object revision.
-   *
-   * @return the object revision
-   * @see org.pentaho.di.repository.RepositoryElementInterface#getObjectRevision()
-   */
-  public ObjectRevision getObjectRevision() {
-    return objectVersion;
   }
 
   /**
@@ -7377,26 +5916,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the object name.
-   *
-   * @return the object name
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectName()
-   */
-  public String getObjectName() {
-    return getName();
-  }
-
-  /**
-   * Gets the object copy.
-   *
-   * @return the object copy
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectCopy()
-   */
-  public String getObjectCopy() {
-    return null;
-  }
-
-  /**
    * Gets the object type.
    *
    * @return the object type
@@ -7404,37 +5923,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public LoggingObjectType getObjectType() {
     return LoggingObjectType.TRANSMETA;
-  }
-
-  /**
-   * Gets the interface to the parent log object. For TransMeta, this method always returns null.
-   *
-   * @return null
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
-   */
-  public LoggingObjectInterface getParent() {
-    return null; // TODO, we could also keep a link to the parent and job metadata
-  }
-
-  /**
-   * Gets the log level for the transformation.
-   *
-   * @return the log level
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
-   */
-  public LogLevel getLogLevel() {
-    return logLevel;
-  }
-
-  /**
-   * Sets the log level for the transformation.
-   *
-   * @param logLevel
-   *          the new log level
-   */
-  public void setLogLevel( LogLevel logLevel ) {
-    this.logLevel = logLevel;
-    log.setLogLevel( logLevel );
   }
 
   /**
@@ -7457,19 +5945,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the database names.
-   *
-   * @return an array of database names
-   */
-  public String[] getDatabaseNames() {
-    String[] names = new String[databases.size()];
-    for ( int i = 0; i < names.length; i++ ) {
-      names[i] = databases.get( i ).getName();
-    }
-    return names;
-  }
-
-  /**
    * Gets the performance log table for the transformation.
    *
    * @return the performance log table for the transformation
@@ -7486,25 +5961,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void setPerformanceLogTable( PerformanceLogTable performanceLogTable ) {
     this.performanceLogTable = performanceLogTable;
-  }
-
-  /**
-   * Gets the channel log table for the transformation.
-   *
-   * @return the channel log table for the transformation
-   */
-  public ChannelLogTable getChannelLogTable() {
-    return channelLogTable;
-  }
-
-  /**
-   * Sets the channel log table for the transformation.
-   *
-   * @param channelLogTable
-   *          the channel log table to set
-   */
-  public void setChannelLogTable( ChannelLogTable channelLogTable ) {
-    this.channelLogTable = channelLogTable;
   }
 
   /**
@@ -7561,35 +6017,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Checks whether the transformation can be saved. For TransMeta, this method always returns true
-   *
-   * @return true
-   * @see org.pentaho.di.core.EngineMetaInterface#canSave()
-   */
-  public boolean canSave() {
-    return true;
-  }
-
-  /**
-   * Gets the container object ID.
-   *
-   * @return the container object ID to set
-   */
-  public String getContainerObjectId() {
-    return containerObjectId;
-  }
-
-  /**
-   * Sets the carte object ID.
-   *
-   * @param containerObjectId
-   *          the container object ID to set
-   */
-  public void setCarteObjectId( String containerObjectId ) {
-    this.containerObjectId = containerObjectId;
-  }
-
-  /**
    * Utility method to write the XML of this transformation to a file, mostly for testing purposes.
    *
    * @param filename
@@ -7614,15 +6041,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
       }
     }
-  }
-
-  /**
-   * Gets the registration date for the transformation. For TransMeta, this method always returns null.
-   *
-   * @return null
-   */
-  public Date getRegistrationDate() {
-    return null;
   }
 
   /**
@@ -7688,14 +6106,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     log.setForcingSeparateLogging( forcingSeparateLogging );
   }
 
-  public IMetaStore getMetaStore() {
-    return metaStore;
-  }
-
-  public void setMetaStore( IMetaStore metaStore ) {
-    this.metaStore = metaStore;
-  }
-
   /**
    * This method needs to be called to store those objects which are used and referenced in the transformation metadata
    * but not saved in the XML serialization. For example, the Kettle data service definition is referenced by name but
@@ -7708,44 +6118,5 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
 
-  }
-
-  @Override
-  public void setAttributesMap( Map<String, Map<String, String>> attributesMap ) {
-    this.attributesMap = attributesMap;
-  }
-
-  @Override
-  public Map<String, Map<String, String>> getAttributesMap() {
-    return attributesMap;
-  }
-
-  @Override
-  public void setAttribute( String groupName, String key, String value ) {
-    Map<String, String> attributes = getAttributes( groupName );
-    if ( attributes == null ) {
-      attributes = new HashMap<String, String>();
-      attributesMap.put( groupName, attributes );
-    }
-    attributes.put( key, value );
-  }
-
-  @Override
-  public void setAttributes( String groupName, Map<String, String> attributes ) {
-    attributesMap.put( groupName, attributes );
-  }
-
-  @Override
-  public Map<String, String> getAttributes( String groupName ) {
-    return attributesMap.get( groupName );
-  }
-
-  @Override
-  public String getAttribute( String groupName, String key ) {
-    Map<String, String> attributes = attributesMap.get( groupName );
-    if ( attributes == null ) {
-      return null;
-    }
-    return attributes.get( key );
   }
 }
