@@ -22,6 +22,16 @@
 
 package org.pentaho.di.core.database.util;
 
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DataSourceNamingException;
 import org.pentaho.di.core.database.DataSourceProviderInterface;
@@ -29,12 +39,6 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.i18n.BaseMessages;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Provides default implementation for looking data sources up in JNDI.
@@ -121,6 +125,47 @@ public class DatabaseUtil implements DataSourceProviderInterface {
     }
     throw new NamingException( BaseMessages.getString( PKG, "DatabaseUtil.DSNotFound", dsName ) );
   }
+
+  public static void closeSilently( Connection[] connections ) {
+    if ( connections == null || connections.length == 0 ) {
+      return;
+    }
+    for ( Connection conn : connections ) {
+      closeSilently( conn );
+    }
+  }
+
+  public static void closeSilently( Connection conn ) {
+    if ( conn == null ) {
+      return;
+    }
+    try {
+      conn.close();
+    } catch ( Throwable e ) {
+      // omit
+    }
+  }
+
+  public static void closeSilently( Statement[] statements ) {
+    if ( statements == null || statements.length == 0 ) {
+      return;
+    }
+    for ( Statement st : statements ) {
+      closeSilently( st );
+    }
+  }
+
+  public static void closeSilently( Statement st ) {
+    if ( st == null ) {
+      return;
+    }
+    try {
+      st.close();
+    } catch ( Throwable e ) {
+      // omit
+    }
+  }
+
 
   /**
    * Implementation of DatasourceProviderInterface.
