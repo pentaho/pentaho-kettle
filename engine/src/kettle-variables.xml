@@ -296,4 +296,10 @@
 		<default-value>N</default-value>
 	</kettle-variable>
 	
+	<kettle-variable>
+		<description>Set this variable to Y to precede log lines with the mapping step name and the mapping itself.</description>
+		<variable>KETTLE_LOG_MARK_MAPPINGS</variable>
+		<default-value>N</default-value>
+	</kettle-variable>
+	
 </kettle-variables>

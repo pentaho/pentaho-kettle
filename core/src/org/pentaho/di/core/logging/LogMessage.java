@@ -22,7 +22,13 @@
 
 package org.pentaho.di.core.logging;
 
+import static org.pentaho.di.core.Const.KETTLE_LOG_MARK_MAPPINGS;
+
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.pentaho.di.core.util.EnvUtil;
 
 public class LogMessage implements LogMessageInterface {
   private String logChannelId;
@@ -72,10 +78,56 @@ public class LogMessage implements LogMessageInterface {
     // Derive the subject from the registry
     //
     LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject( logChannelId );
+    boolean detailedLogTurnOn = "Y".equals( EnvUtil.getSystemProperty( KETTLE_LOG_MARK_MAPPINGS ) ) ? true : false;
     if ( loggingObject != null ) {
-      subject = loggingObject.getObjectName();
+      if ( !detailedLogTurnOn ) {
+        subject = loggingObject.getObjectName();
+      } else {
+        subject = getDetailedSubject( loggingObject );
+      }
       copy = loggingObject.getObjectCopy();
     }
+  }
+
+  /**
+   * @param loggingObject
+   * @return
+   */
+  private String getDetailedSubject( LoggingObjectInterface loggingObject ) {
+
+    List<String> subjects = getSubjectTree( loggingObject );
+    return subjects.size() > 1 ? formatDetailedSubject( subjects ) : subjects.get( 0 );
+  }
+
+  /**
+   * @param loggingObject
+   */
+  private List<String> getSubjectTree( LoggingObjectInterface loggingObject ) {
+    List<String> subjects = new ArrayList<String>();
+    while ( loggingObject != null ) {
+      subjects.add( loggingObject.getObjectName() );
+      loggingObject = loggingObject.getParent();
+    }
+    return subjects;
+  }
+
+  /**
+   * @param string
+   * @param subjects
+   * @return
+   */
+  private String formatDetailedSubject( List<String> subjects ) {
+
+    StringBuffer string = new StringBuffer();
+
+    int currentStep = 0;
+    int rootStep = subjects.size() - 1;
+
+    for ( int i = rootStep - 1; i > currentStep; i-- ) {
+      string.append( "[" ).append( subjects.get( i ) ).append( "]" ).append( "." );
+    }
+    string.append( subjects.get( currentStep ) );
+    return string.toString();
   }
 
   @Override
