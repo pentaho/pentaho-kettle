@@ -22,13 +22,9 @@
 
 package org.pentaho.di.core.logging;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.pentaho.di.core.Const;
+
+import java.util.*;
 
 /**
  * This class keeps the last N lines in a buffer
@@ -286,6 +282,10 @@ public class LoggingBuffer {
     return buffer.iterator();
   }
 
+  /**
+   * It looks like this method is not used in the project.
+   */
+  @Deprecated
   public String dump() {
     StringBuffer buf = new StringBuffer( 50000 );
     synchronized ( buffer ) {
