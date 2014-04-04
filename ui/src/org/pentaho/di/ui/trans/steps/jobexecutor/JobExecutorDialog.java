@@ -64,6 +64,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
@@ -553,7 +554,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
   protected void selectJobByReference() {
     if ( repository != null ) {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository, true, false );
+      SelectObjectDialog sod = getSelectObjectDialog( shell, repository, false, true );
       sod.open();
       RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
       if ( repositoryObject != null ) {
@@ -565,9 +566,9 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     }
   }
 
-  private void selectRepositoryJob() {
+  void selectRepositoryJob() {
     try {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository );
+      SelectObjectDialog sod = getSelectObjectDialog( shell, repository, false, true );
       String transName = sod.open();
       RepositoryDirectoryInterface repdir = sod.getDirectory();
       if ( transName != null && repdir != null ) {
@@ -1723,4 +1724,10 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     }
   }
 
+  SelectObjectDialog getSelectObjectDialog( Shell parent, Repository rep, boolean showTransformations,
+      boolean showJobs ) {
+    return new SelectObjectDialog( parent, rep, showTransformations, showJobs );
+  }
 }
+
+

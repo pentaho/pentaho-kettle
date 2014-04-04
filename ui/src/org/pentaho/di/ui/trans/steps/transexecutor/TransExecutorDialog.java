@@ -60,6 +60,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
@@ -551,7 +552,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
   protected void selectTransByReference() {
     if ( repository != null ) {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository, true, false );
+      SelectObjectDialog sod = getSelectObjectDialog( shell, repository, true, false );
       sod.open();
       RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
       if ( repositoryObject != null ) {
@@ -563,9 +564,9 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     }
   }
 
-  private void selectRepositoryTrans() {
+  void selectRepositoryTrans() {
     try {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository );
+      SelectObjectDialog sod = getSelectObjectDialog( shell, repository, true, false );
       String transName = sod.open();
       RepositoryDirectoryInterface repdir = sod.getDirectory();
       if ( transName != null && repdir != null ) {
@@ -1713,6 +1714,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         "TransExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,
         "TransExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
+  }
+
+  SelectObjectDialog getSelectObjectDialog( Shell parent, Repository rep, boolean showTransformations,
+      boolean showJobs ) {
+    return new SelectObjectDialog( parent, rep, showTransformations, showJobs );
   }
 
 }
