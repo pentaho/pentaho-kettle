@@ -251,6 +251,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
         UpInsRows, lsMod, props );
 
+    // START MEMORY PRESERVE GROUP
+
     fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
     fdReturn.top = new FormAttachment( wlReturn, margin );
@@ -287,7 +289,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     fdlIntegerPair.top = new FormAttachment( wPreserveMemory, margin );
     fdlIntegerPair.right = new FormAttachment( middle, -margin );
     wlIntegerPair.setLayoutData( fdlIntegerPair );
-    wIntegerPair = new Button( shell, SWT.CHECK );
+    wIntegerPair = new Button( shell, SWT.RADIO );
+    wIntegerPair.setEnabled( false );
     props.setLook( wIntegerPair );
     fdIntegerPair = new FormData();
     fdIntegerPair.left = new FormAttachment( middle, 0 );
@@ -308,7 +311,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     fdlSortedList.top = new FormAttachment( wIntegerPair, margin );
     fdlSortedList.right = new FormAttachment( middle, -margin );
     wlSortedList.setLayoutData( fdlSortedList );
-    wSortedList = new Button( shell, SWT.CHECK );
+    wSortedList = new Button( shell, SWT.RADIO );
+    wSortedList.setEnabled( false );
     props.setLook( wSortedList );
     fdSortedList = new FormData();
     fdSortedList.left = new FormAttachment( middle, 0 );
@@ -320,6 +324,17 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         input.setChanged();
       }
     } );
+    // PDI-2107 preserve memory should be enabled to have this options on.
+    wPreserveMemory.addListener( SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent( Event event ) {
+        boolean selection = wPreserveMemory.getSelection();
+        wSortedList.setEnabled( selection );
+        wIntegerPair.setEnabled( selection );
+      }
+    } );
+
+    // END MEMORY PRESERVE
 
     // THE BUTTONS
     wOK = new Button( shell, SWT.PUSH );
@@ -509,7 +524,16 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
     StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get( 0 );
     wStep.setText( Const.NVL( infoStream.getStepname(), "" ) );
-    wPreserveMemory.setSelection( input.isMemoryPreservationActive() );
+
+    boolean isPreserveMemory = input.isMemoryPreservationActive();
+    wPreserveMemory.setSelection( isPreserveMemory );
+    if ( isPreserveMemory ) {
+      wSortedList.setEnabled( true );
+      wIntegerPair.setEnabled( true );
+    }
+    // PDI-2107 usually this is sorted list or integer pair
+    // for backward compatibility they can be set both
+    // but user will be forced to choose only one option later.
     wSortedList.setSelection( input.isUsingSortedList() );
     wIntegerPair.setSelection( input.isUsingIntegerPair() );
 
