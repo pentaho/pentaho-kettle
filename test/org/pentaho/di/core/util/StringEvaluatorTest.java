@@ -25,6 +25,7 @@ package org.pentaho.di.core.util;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +71,8 @@ public class StringEvaluatorTest extends TestCase {
 
     assertEquals( "Not a date detected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_DATE );
     Date minDate = result.getConversionMeta().getDate( result.getMin() );
-    assertEquals( minDate.getTime(), 1262280896000L );
+    Date expectedMinDate = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" ).parse( "2009/12/31 12:34:56" );
+    assertEquals( minDate.getTime(), expectedMinDate.getTime() );
 
     int nrEmpty = result.getNrNull();
     assertEquals( nrEmpty, 0 );
@@ -155,8 +157,8 @@ public class StringEvaluatorTest extends TestCase {
   }
 
   public void testCustomDateFormats() {
-    List<String> dates = Arrays.asList( new String[] { "MM/dd/yyyy" } );
-    List<String> numbers = Arrays.asList( new String[] { "#,##0.###" } );
+    List<String> dates = Arrays.asList( "MM/dd/yyyy" );
+    List<String> numbers = Arrays.asList( "#,##0.###" );
 
     StringEvaluator eval = new StringEvaluator( true, numbers, dates );
     String[] goodDateValues = new String[] { "01/01/2000", "02/02/2000", "03/03/2000" };
