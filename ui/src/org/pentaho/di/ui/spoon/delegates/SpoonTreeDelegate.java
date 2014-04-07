@@ -145,8 +145,15 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					{
 						TransMeta transMeta = spoon.delegates.trans.getTransformation(path[1]);
 						if (transMeta!=null) {
-							if (path[2].equals(Spoon.STRING_CONNECTIONS))
-								object = new TreeSelection(path[3], transMeta.findDatabase(path[3]), transMeta);
+							if (path[2].equals(Spoon.STRING_CONNECTIONS)) {
+                String dbName = path[3];
+                DatabaseMeta databaseMeta = transMeta.findDatabase( dbName );
+                if (databaseMeta != null) {
+                  dbName = databaseMeta.getName();
+                }
+
+								object = new TreeSelection(dbName, databaseMeta, transMeta);
+              }
 							if (path[2].equals(Spoon.STRING_STEPS))
 								object = new TreeSelection(path[3], transMeta.findStep(path[3]), transMeta);
 							if (path[2].equals(Spoon.STRING_HOPS))
@@ -162,8 +169,15 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					if (path[0].equals(Spoon.STRING_JOBS)) // The name of a job
 					{
 						JobMeta jobMeta = spoon.delegates.jobs.getJob(path[1]);
-						if (jobMeta != null && path[2].equals(Spoon.STRING_CONNECTIONS))
-							object = new TreeSelection(path[3], jobMeta.findDatabase(path[3]), jobMeta);
+						if (jobMeta != null && path[2].equals(Spoon.STRING_CONNECTIONS)) {
+              String dbName = path[3];
+              DatabaseMeta databaseMeta = jobMeta.findDatabase( dbName );
+              if (databaseMeta != null) {
+                dbName = databaseMeta.getName();
+              }
+
+  						object = new TreeSelection(dbName, databaseMeta, jobMeta);
+            }
 						if (jobMeta != null && path[2].equals(Spoon.STRING_JOB_ENTRIES))
 							object = new TreeSelection(path[3], jobMeta.findJobEntry(path[3]), jobMeta);
 						if (jobMeta != null && path[2].equals(Spoon.STRING_SLAVES))
