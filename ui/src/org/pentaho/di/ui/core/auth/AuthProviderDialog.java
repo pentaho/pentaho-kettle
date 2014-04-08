@@ -51,7 +51,7 @@ public class AuthProviderDialog {
 
   private LogChannelInterface log;
 
-  private AuthProviderController controller = new AuthProviderController(  );
+  private AuthProviderController controller = new AuthProviderController();
   private XulDomContainer container;
 
   private static final Class<?> CLZ = AuthProviderDialog.class;
@@ -68,7 +68,6 @@ public class AuthProviderDialog {
     }
 
   };
-
 
   public AuthProviderDialog( Shell shell ) {
 
@@ -90,12 +89,11 @@ public class AuthProviderDialog {
       controller.setResourceBundle( resourceBundle );
       container.addEventHandler( controller );
 
-
       try {
         runner.initialize();
       } catch ( XulException e ) {
-        SpoonFactory.getInstance().messageBox(
-          e.getLocalizedMessage(), resourceBundle.getString( "error.on_initialization" ), false, Const.ERROR );
+        SpoonFactory.getInstance().messageBox( e.getLocalizedMessage(),
+            resourceBundle.getString( "error.on_initialization" ), false, Const.ERROR );
         log.logError( resourceBundle.getString( "error.on_initialization" ), e );
       }
     } catch ( XulException e ) {

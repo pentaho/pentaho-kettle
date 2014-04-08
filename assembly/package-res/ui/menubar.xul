@@ -169,6 +169,7 @@
               command="spoon.ripDBWizard()" />
           </menupopup>
         </menu>
+        <menuitem id="authentication" label="${Spoon.Menu.Authentication}" command="spoon.showAuthenticationOptions()" />
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
       </menupopup>
