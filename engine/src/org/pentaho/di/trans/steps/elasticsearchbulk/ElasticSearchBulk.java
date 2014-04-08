@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.elasticsearchbulk;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +37,8 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequest.OpType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.client.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -51,6 +50,7 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -258,9 +258,10 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    * @param rowMeta
    * @param row
    * @throws IOException
+   * @throws KettleValueException 
    */
   private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row )
-    throws IOException {
+    throws IOException, KettleValueException {
     XContentBuilder jsonBuilder = XContentFactory.jsonBuilder().startObject();
 
     for ( int i = 0; i < rowMeta.size(); i++ ) {
@@ -271,13 +272,20 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
       String name = hasFields ? columnsToJson.get( valueMeta.getName() ) : valueMeta.getName();
       Object value = row[i];
-      if ( value instanceof Date && value.getClass() != Date.class ) {
-        Date subDate = (Date) value;
-        // create a genuine Date object, or jsonBuilder will not recognize it
-        value = new Date( subDate.getTime() );
-      }
       if ( StringUtils.isNotBlank( name ) ) {
-        jsonBuilder.field( name, value );
+      	if (rowMeta.getValueMeta(i).isString()) {
+      		jsonBuilder.field( name, rowMeta.getValueMeta(i).getString(value));
+      	} else if (rowMeta.getValueMeta(i).isDate()) {
+      		jsonBuilder.field( name, rowMeta.getValueMeta(i).getDate(value));
+      	} else if (rowMeta.getValueMeta(i).isBoolean()) {
+      		jsonBuilder.field( name, rowMeta.getValueMeta(i).getBoolean(value));
+      	} else if (rowMeta.getValueMeta(i).isBigNumber()) {
+      		jsonBuilder.field( name, rowMeta.getValueMeta(i).getBigNumber(value));
+      	} else if (rowMeta.getValueMeta(i).isNumber()) {
+      		jsonBuilder.field( name, rowMeta.getValueMeta(i).getNumber(value));
+      	} else {
+      		jsonBuilder.field( name, value );
+      	}
       }
     }
 
@@ -393,16 +401,16 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       for ( BulkItemResponse item : response ) {
         if ( item.isFailed() ) {
           // log
-          logDetailed( item.failureMessage() );
+          logDetailed( item.getFailureMessage() );
           errorsInBatch++;
           if ( getStepMeta().isDoingErrorHandling() ) {
-            rejectRow( item.itemId(), item.failureMessage() );
+            rejectRow( item.getItemId(), item.getFailureMessage() );
           }
         } else if ( useOutput ) {
           if ( idOutFieldName != null ) {
-            addIdToRow( item.getId(), item.itemId() );
+            addIdToRow( item.getId(), item.getItemId() );
           }
-          echoRow( item.itemId() );
+          echoRow( item.getItemId() );
         }
       }
     }
