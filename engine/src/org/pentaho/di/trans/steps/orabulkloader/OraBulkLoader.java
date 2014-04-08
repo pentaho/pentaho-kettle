@@ -38,6 +38,7 @@ package org.pentaho.di.trans.steps.orabulkloader;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -420,7 +421,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     DatabaseMeta dm = meta.getDatabaseMeta();
     if ( dm != null ) {
       String user = Const.NVL( dm.getUsername(), "" );
-      String pass = Const.NVL( dm.getPassword(), "" );
+      String pass =
+        Const.NVL( Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( dm.getPassword() ) ), "" );
       if ( !password ) {
         pass = "******";
       }
