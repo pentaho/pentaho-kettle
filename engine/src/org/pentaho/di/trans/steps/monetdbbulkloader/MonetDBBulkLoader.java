@@ -527,32 +527,36 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
     data = (MonetDBBulkLoaderData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      data.quote = meta.getFieldEnclosure();
-      data.separator = meta.getFieldSeparator();
-      if ( meta.getNULLrepresentation() == null ) {
+      data.quote = environmentSubstitute( meta.getFieldEnclosure() );
+      data.separator = environmentSubstitute( meta.getFieldSeparator() );
+
+      String nulls = environmentSubstitute( meta.getNULLrepresentation() );
+      if ( nulls == null ) {
         data.nullrepresentation = new String();
       } else {
-        data.nullrepresentation = meta.getNULLrepresentation();
+        data.nullrepresentation = nulls;
       }
       data.newline = Const.CR;
 
+      String encoding = environmentSubstitute( meta.getEncoding() );
+
       data.monetDateMeta = new ValueMeta( "dateMeta", ValueMetaInterface.TYPE_DATE );
       data.monetDateMeta.setConversionMask( "yyyy/MM/dd" );
-      data.monetDateMeta.setStringEncoding( meta.getEncoding() );
+      data.monetDateMeta.setStringEncoding( encoding );
 
       data.monetTimestampMeta = new ValueMeta( "timestampMeta", ValueMetaInterface.TYPE_DATE );
       data.monetTimestampMeta.setConversionMask( "yyyy/MM/dd HH:mm:ss" );
-      data.monetTimestampMeta.setStringEncoding( meta.getEncoding() );
+      data.monetTimestampMeta.setStringEncoding( encoding );
 
       data.monetTimeMeta = new ValueMeta( "timeMeta", ValueMetaInterface.TYPE_DATE );
       data.monetTimeMeta.setConversionMask( "HH:mm:ss" );
-      data.monetTimeMeta.setStringEncoding( meta.getEncoding() );
+      data.monetTimeMeta.setStringEncoding( encoding );
 
       data.monetNumberMeta = new ValueMeta( "numberMeta", ValueMetaInterface.TYPE_NUMBER );
       data.monetNumberMeta.setConversionMask( "#.#" );
       data.monetNumberMeta.setGroupingSymbol( "," );
       data.monetNumberMeta.setDecimalSymbol( "." );
-      data.monetNumberMeta.setStringEncoding( meta.getEncoding() );
+      data.monetNumberMeta.setStringEncoding( encoding );
 
       data.bufferSize = Const.toInt( environmentSubstitute( meta.getBufferSize() ), 100000 );
 
@@ -563,7 +567,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
       // Make sure our database connection settings are consistent with our dialog settings by
       // altering the connection with an updated answer depending on the dialog setting.
-      meta.getDatabaseMeta().setQuoteAllFields( meta.isFullyQuoteSQL() );
+      meta.getDatabaseMeta().setQuoteAllFields(  meta.isFullyQuoteSQL() );
 
       // Support parameterized database connection names
       String connectionName = meta.getDbConnectionName();
@@ -666,7 +670,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
    * @param database to connect to
    */
   protected static void executeSql( String query, String host, int port, String user, String password, String db )
-    throws Exception {
+      throws Exception {
     MapiSocket mserver = null;
     try {
       mserver = getMonetDBConnection( host, port, user, password, db );
