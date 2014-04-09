@@ -1637,7 +1637,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     jobExecutorMeta.setGroupField( wGroupField.getText() );
     jobExecutorMeta.setGroupTime( wGroupTime.getText() );
 
-    jobExecutorMeta.setExecutionResultTargetStepMeta( transMeta.findStep( wExecutionResultTarget.getText() ) );
+    jobExecutorMeta.setExecutionResultTargetStep( wExecutionResultTarget.getText()  );
     jobExecutorMeta.setExecutionTimeField( wExecutionTimeField.getText() );
     jobExecutorMeta.setExecutionResultField( wExecutionResultField.getText() );
     jobExecutorMeta.setExecutionNrErrorsField( wExecutionNrErrorsField.getText() );
@@ -1653,12 +1653,12 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     jobExecutorMeta.setExecutionLogTextField( wExecutionLogTextField.getText() );
     jobExecutorMeta.setExecutionLogChannelIdField( wExecutionLogChannelIdField.getText() );
 
-    jobExecutorMeta.setResultFilesTargetStepMeta( transMeta.findStep( wResultFilesTarget.getText() ) );
+    jobExecutorMeta.setResultFilesTargetStep( wResultFilesTarget.getText()  );
     jobExecutorMeta.setResultFilesFileNameField( wResultFileNameField.getText() );
 
     // Result row info
     //
-    jobExecutorMeta.setResultRowsTargetStepMeta( transMeta.findStep( wResultRowsTarget.getText() ) );
+    jobExecutorMeta.setResultRowsTargetStep( wResultRowsTarget.getText()  );
     int nrFields = wResultRowsFields.nrNonEmpty();
     jobExecutorMeta.setResultRowsField( new String[nrFields] );
     jobExecutorMeta.setResultRowsType( new int[nrFields] );
