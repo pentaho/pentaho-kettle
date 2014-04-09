@@ -239,6 +239,7 @@ import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PrintSpool;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.auth.AuthProviderDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.core.dialog.CheckResultDialog;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -9094,5 +9095,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } catch ( Exception e ) {
       LogChannel.GENERAL.logError( "Error closing Spoon", e );
     }
+  }
+
+  public void showAuthenticationOptions() {
+    AuthProviderDialog authProviderDialog = new AuthProviderDialog( shell );
+    authProviderDialog.show();
   }
 }

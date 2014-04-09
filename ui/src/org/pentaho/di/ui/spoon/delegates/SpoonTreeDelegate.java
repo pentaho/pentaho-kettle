@@ -149,7 +149,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
                 if ( path[2].equals( Spoon.STRING_CONNECTIONS ) ) {
                   String dbName = path[3];
                   DatabaseMeta databaseMeta = transMeta.findDatabase( dbName );
-                  if (databaseMeta != null) {
+                  if ( databaseMeta != null ) {
                     dbName = databaseMeta.getName();
                   }
 
@@ -177,7 +177,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               if ( jobMeta != null && path[2].equals( Spoon.STRING_CONNECTIONS ) ) {
                 String dbName = path[3];
                 DatabaseMeta databaseMeta = jobMeta.findDatabase( dbName );
-                if (databaseMeta != null) {
+                if ( databaseMeta != null ) {
                   dbName = databaseMeta.getName();
                 }
 
