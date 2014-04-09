@@ -80,7 +80,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   public String getCopyCommand( RowMetaInterface rm, Object[] r ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
 
-    String loadAction = meta.getLoadAction();
+    String loadAction = environmentSubstitute( meta.getLoadAction() );
 
     StringBuffer contents = new StringBuffer( 500 );
 
@@ -128,8 +128,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     contents.append( " FROM STDIN" ); // FIFO file
 
     // The "FORMAT" clause
-    contents.append( " WITH CSV DELIMITER AS '" ).append( meta.getDelimiter() ).append( "' QUOTE AS '" ).append(
-      meta.getEnclosure() ).append( "'" );
+    contents.append( " WITH CSV DELIMITER AS '" ).append( environmentSubstitute( meta.getDelimiter() ) )
+        .append( "' QUOTE AS '" ).append(
+      environmentSubstitute( meta.getEnclosure() ) ).append( "'" );
     contents.append( ";" ).append( Const.CR );
 
     return contents.toString();
