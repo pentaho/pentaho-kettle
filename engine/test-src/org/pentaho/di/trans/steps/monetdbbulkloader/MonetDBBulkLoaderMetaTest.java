@@ -80,8 +80,8 @@ public class MonetDBBulkLoaderMetaTest {
       List<StepInjectionMetaEntry> entries =
           loader.getStepMeta().getStepMetaInterface().getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
 
-      String masterKeys = "SCHEMA TABLE LOGFILE FIELD_SEPARATOR FIELD_ENCLOSURE NULL_REPRESENTATION ENCODING TRUNCATE " +
-          "FULLY_QUOTE_SQL BUFFER_SIZE MAPPINGS ";
+      String masterKeys = "SCHEMA TABLE LOGFILE FIELD_SEPARATOR FIELD_ENCLOSURE NULL_REPRESENTATION ENCODING TRUNCATE "
+          + "FULLY_QUOTE_SQL BUFFER_SIZE MAPPINGS ";
 
       for ( StepInjectionMetaEntry entry : entries ) {
         String key = entry.getKey();

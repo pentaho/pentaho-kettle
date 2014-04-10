@@ -255,7 +255,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-      throws KettleXMLException {
+    throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -279,7 +279,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
   }
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-      throws KettleXMLException {
+    throws KettleXMLException {
     try {
       dbConnectionName = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, dbConnectionName );
@@ -385,7 +385,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-      throws KettleException {
+    throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       bufferSize = rep.getStepAttributeString( id_step, "buffer_size" );
@@ -434,7 +434,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
   }
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-      throws KettleException {
+    throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       // General Settings Tab
@@ -625,7 +625,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
   }
 
   public RowMetaInterface updateFields( TransMeta transMeta, String stepname, MonetDBBulkLoaderData data )
-      throws KettleStepException {
+    throws KettleStepException {
 
     RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
     return updateFields( prev, data );
