@@ -247,7 +247,7 @@
 		<variable>KETTLE_REDIRECT_STDERR</variable>
 		<default-value>N</default-value>
 	</kettle-variable>
-	
+
 	<kettle-variable>
 		<description>Set this variable to Y to redirect stdout to Kettle logging.</description>
 		<variable>KETTLE_REDIRECT_STDOUT</variable>
@@ -301,5 +301,18 @@
 		<variable>KETTLE_LOG_MARK_MAPPINGS</variable>
 		<default-value>N</default-value>
 	</kettle-variable>
+	
+	<kettle-variable>
+		<description>Set this variable to Y to set the minimum to NULL if NULL is within an aggregate. Otherwise by default NULL is ignored by the MIN aggregate and MIN is set to the minimum value that is not NULL. See also the variable KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO.</description>
+		<variable>KETTLE_AGGREGATION_MIN_NULL_IS_VALUED</variable>
+		<default-value>N</default-value>
+	</kettle-variable>
+	
+	<kettle-variable>
+		<description>Set this variable to Y to return 0 when all values within an aggregate are NULL. Otherwise by default a NULL is returned when all values are NULL.</description>
+		<variable>KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO</variable>
+		<default-value>N</default-value>
+	</kettle-variable>
+	
 	
 </kettle-variables>

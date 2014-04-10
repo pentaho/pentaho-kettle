@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +45,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.i18n.BaseMessages;
@@ -70,6 +70,9 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   private GroupByData data;
 
+  private boolean allNullsAreZero = false;
+  private boolean minNullIsValued = false;
+
   public GroupBy( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -85,6 +88,11 @@ public class GroupBy extends BaseStep implements StepInterface {
     Object[] r = getRow(); // get row!
 
     if ( first ) {
+      String val = getVariable( Const.KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO, "N" );
+      allNullsAreZero = ValueMetaBase.convertStringToBoolean( val );
+      val = getVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
+      minNullIsValued = ValueMetaBase.convertStringToBoolean( val );
+
       // What is the output looking like?
       //
       data.inputRowMeta = getInputRowMeta();
@@ -410,16 +418,18 @@ public class GroupBy extends BaseStep implements StepInterface {
     return data.inputRowMeta.compare( previous, r, data.groupnrs ) == 0;
   }
 
-  // Calculate the aggregates in the row...
+  /**
+   * used for junits in GroupByAggregationNullsTest
+   * @param r
+   * @throws KettleValueException
+   */
   @SuppressWarnings( "unchecked" )
-  private void calcAggregate( Object[] r ) throws KettleValueException {
+  void calcAggregate( Object[] r ) throws KettleValueException {
     for ( int i = 0; i < data.subjectnrs.length; i++ ) {
       Object subj = r[data.subjectnrs[i]];
       ValueMetaInterface subjMeta = data.inputRowMeta.getValueMeta( data.subjectnrs[i] );
       Object value = data.agg[i];
       ValueMetaInterface valueMeta = data.aggMeta.getValueMeta( i );
-
-      // System.out.println("  calcAggregate value, i="+i+", agg.size()="+agg.size()+", subj="+subj+", value="+value);
 
       switch ( meta.getAggregateType()[i] ) {
         case GroupByMeta.TYPE_GROUP_SUM:
@@ -442,7 +452,8 @@ public class GroupBy extends BaseStep implements StepInterface {
             data.counts[i]++;
             double n = data.counts[i];
             double x = subjMeta.getNumber( subj );
-            double sum = (Double) value;
+            // for standard deviation null is exact 0
+            double sum = value == null ? new Double( 0 ) : (Double) value;
             double mean = data.mean[i];
 
             double delta = x - mean;
@@ -464,6 +475,8 @@ public class GroupBy extends BaseStep implements StepInterface {
             Object obj = subjMeta.convertToNormalStorageType( subj );
             if ( !data.distinctObjs[i].contains( obj ) ) {
               data.distinctObjs[i].add( obj );
+              // null is exact 0, or we will not be able to ++.
+              value = value == null ? new Long( 0 ) : value;
               data.agg[i] = (Long) value + 1;
             }
           }
@@ -476,7 +489,11 @@ public class GroupBy extends BaseStep implements StepInterface {
         case GroupByMeta.TYPE_GROUP_COUNT_ANY:
           data.counts[i]++;
           break;
-        case GroupByMeta.TYPE_GROUP_MIN:
+        case GroupByMeta.TYPE_GROUP_MIN: {
+          if ( subj == null && !minNullIsValued ) {
+            // PDI-10250 do not compare null
+            break;
+          }
           if ( subjMeta.isSortedDescending() ) {
             // Account for negation in ValueMeta.compare() - See PDI-2302
             if ( subjMeta.compare( value, valueMeta, subj ) < 0 ) {
@@ -488,6 +505,7 @@ public class GroupBy extends BaseStep implements StepInterface {
             }
           }
           break;
+        }
         case GroupByMeta.TYPE_GROUP_MAX:
           if ( subjMeta.isSortedDescending() ) {
             // Account for negation in ValueMeta.compare() - See PDI-2302
@@ -549,8 +567,11 @@ public class GroupBy extends BaseStep implements StepInterface {
     }
   }
 
-  // Initialize a group..
-  private void newAggregate( Object[] r ) {
+  /**
+   * used for junits in GroupByAggregationNullsTest
+   * @param r
+   */
+  void newAggregate( Object[] r ) {
     // Put all the counters at 0
     for ( int i = 0; i < data.counts.length; i++ ) {
       data.counts[i] = 0;
@@ -564,7 +585,8 @@ public class GroupBy extends BaseStep implements StepInterface {
       ValueMetaInterface subjMeta = data.inputRowMeta.getValueMeta( data.subjectnrs[i] );
       Object v = null;
       ValueMetaInterface vMeta = null;
-      switch ( meta.getAggregateType()[i] ) {
+      int aggType = meta.getAggregateType()[i];
+      switch ( aggType ) {
         case GroupByMeta.TYPE_GROUP_SUM:
         case GroupByMeta.TYPE_GROUP_AVERAGE:
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM:
@@ -572,18 +594,6 @@ public class GroupBy extends BaseStep implements StepInterface {
           vMeta =
             new ValueMeta( meta.getAggregateField()[i], subjMeta.isNumeric()
               ? subjMeta.getType() : ValueMetaInterface.TYPE_NUMBER );
-          switch ( subjMeta.getType() ) {
-            case ValueMetaInterface.TYPE_BIGNUMBER:
-              v = new BigDecimal( "0" );
-              break;
-            case ValueMetaInterface.TYPE_INTEGER:
-              v = new Long( 0L );
-              break;
-            case ValueMetaInterface.TYPE_NUMBER:
-            default:
-              v = new Double( 0.0 );
-              break;
-          }
           break;
         case GroupByMeta.TYPE_GROUP_MEDIAN:
         case GroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -592,13 +602,11 @@ public class GroupBy extends BaseStep implements StepInterface {
           break;
         case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
           vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER );
-          v = new Double( 0.0 );
           break;
         case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
         case GroupByMeta.TYPE_GROUP_COUNT_ANY:
         case GroupByMeta.TYPE_GROUP_COUNT_ALL:
           vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER );
-          v = new Long( 0L );
           break;
         case GroupByMeta.TYPE_GROUP_FIRST:
         case GroupByMeta.TYPE_GROUP_LAST:
@@ -624,14 +632,12 @@ public class GroupBy extends BaseStep implements StepInterface {
       }
 
       if ( ( subjMeta != null )
-        && ( meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ALL
-        && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_DISTINCT
-        && meta.getAggregateType()[i] != GroupByMeta.TYPE_GROUP_COUNT_ANY ) ) {
+        && ( aggType != GroupByMeta.TYPE_GROUP_COUNT_ALL
+        && aggType != GroupByMeta.TYPE_GROUP_COUNT_DISTINCT
+        && aggType != GroupByMeta.TYPE_GROUP_COUNT_ANY ) ) {
         vMeta.setLength( subjMeta.getLength(), subjMeta.getPrecision() );
       }
-      if ( v != null ) {
-        data.agg[i] = v;
-      }
+      data.agg[i] = v;
       data.aggMeta.addValueMeta( vMeta );
     }
 
@@ -671,7 +677,12 @@ public class GroupBy extends BaseStep implements StepInterface {
     return;
   }
 
-  private Object[] getAggregateResult() throws KettleValueException {
+  /**
+   * Used for junits in GroupByAggregationNullsTest
+   * @return
+   * @throws KettleValueException
+   */
+  Object[] getAggregateResult() throws KettleValueException {
     Object[] result = new Object[data.subjectnrs.length];
 
     if ( data.subjectnrs != null ) {
@@ -720,10 +731,15 @@ public class GroupBy extends BaseStep implements StepInterface {
           default:
             break;
         }
+        if ( ag == null && allNullsAreZero ) {
+          // PDI-10250, 6960 seems all rows for min function was nulls...
+          // get output subject meta based on original subject meta calculation
+          ValueMetaInterface vm = data.aggMeta.getValueMeta( i );
+          ag = ValueDataUtil.getZeroForValueMetaType( vm );
+        }
         result[i] = ag;
       }
     }
-
     return result;
 
   }
@@ -845,5 +861,21 @@ public class GroupBy extends BaseStep implements StepInterface {
   public void batchComplete() throws KettleException {
     handleLastOfGroup();
     data.newBatch = true;
+  }
+
+  /**
+   * Used for junits in GroupByAggregationNullsTest
+   * @param allNullsAreZero the allNullsAreZero to set
+   */
+  void setAllNullsAreZero( boolean allNullsAreZero ) {
+    this.allNullsAreZero = allNullsAreZero;
+  }
+
+  /**
+   * Used for junits in GroupByAggregationNullsTest
+   * @param minNullIsValued the minNullIsValued to set
+   */
+  void setMinNullIsValued( boolean minNullIsValued ) {
+    this.minNullIsValued = minNullIsValued;
   }
 }

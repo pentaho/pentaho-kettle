@@ -33,12 +33,14 @@ import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -51,7 +53,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Denormalises data based on key-value pairs
- *
+ * 
  * @author Matt
  * @since 17-jan-2006
  */
@@ -60,12 +62,13 @@ public class Denormaliser extends BaseStep implements StepInterface {
 
   private DenormaliserMeta meta;
   private DenormaliserData data;
+  private boolean allNullsAreZero = false;
+  private boolean minNullIsValued = false;
 
-  private Map<String, ValueMetaInterface> conversionMetaCache = new HashMap<String,
-      ValueMetaInterface>( );
+  private Map<String, ValueMetaInterface> conversionMetaCache = new HashMap<String, ValueMetaInterface>();
 
   public Denormaliser( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (DenormaliserMeta) getStepMeta().getStepMetaInterface();
@@ -74,104 +77,37 @@ public class Denormaliser extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // get row!
-    if ( r == null ) { // no more input to be expected...
 
+    if ( r == null ) {
+      // no more input to be expected...
       handleLastRow();
       setOutputDone();
       return false;
     }
 
     if ( first ) {
-      data.inputRowMeta = getInputRowMeta();
-      data.outputRowMeta = data.inputRowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
-
-      data.keyFieldNr = data.inputRowMeta.indexOfValue( meta.getKeyField() );
-      if ( data.keyFieldNr < 0 ) {
-        logError( BaseMessages.getString( PKG, "Denormaliser.Log.KeyFieldNotFound", meta.getKeyField() ) );
-        setErrors( 1 );
-        stopAll();
+      // perform all allocations
+      if ( !processFirstRow() ) {
+        // we failed on first row....
         return false;
       }
 
-      Map<Integer, Integer> subjects = new Hashtable<Integer, Integer>();
-      data.fieldNameIndex = new int[meta.getDenormaliserTargetField().length];
-      for ( int i = 0; i < meta.getDenormaliserTargetField().length; i++ ) {
-        DenormaliserTargetField field = meta.getDenormaliserTargetField()[i];
-        int idx = data.inputRowMeta.indexOfValue( field.getFieldName() );
-        if ( idx < 0 ) {
-          logError( BaseMessages.getString( PKG, "Denormaliser.Log.UnpivotFieldNotFound", field.getFieldName() ) );
-          setErrors( 1 );
-          stopAll();
-          return false;
-        }
-        data.fieldNameIndex[i] = idx;
-        subjects.put( Integer.valueOf( idx ), Integer.valueOf( idx ) );
-
-        // See if by accident, the value fieldname isn't the same as the key fieldname.
-        // This is not supported of-course and given the complexity of the step, you can miss:
-        if ( data.fieldNameIndex[i] == data.keyFieldNr ) {
-          logError( BaseMessages
-            .getString( PKG, "Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName() ) );
-          setErrors( 1 );
-          stopAll();
-          return false;
-        }
-
-        // Fill a hashtable with the key strings and the position(s) of the field(s) in the row to take.
-        // Store the indexes in a List so that we can accommodate multiple key/value pairs...
-        //
-        String keyValue = environmentSubstitute( field.getKeyValue() );
-        List<Integer> indexes = data.keyValue.get( keyValue );
-        if ( indexes == null ) {
-          indexes = new ArrayList<Integer>( 2 );
-        }
-        indexes.add( Integer.valueOf( i ) ); // Add the index to the list...
-        data.keyValue.put( keyValue, indexes ); // store the list
-      }
-
-      Set<Integer> subjectSet = subjects.keySet();
-      data.fieldNrs = subjectSet.toArray( new Integer[subjectSet.size()] );
-
-      data.groupnrs = new int[meta.getGroupField().length];
-      for ( int i = 0; i < meta.getGroupField().length; i++ ) {
-        data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
-        if ( data.groupnrs[i] < 0 ) {
-          logError( BaseMessages
-            .getString( PKG, "Denormaliser.Log.GroupingFieldNotFound", meta.getGroupField()[i] ) );
-          setErrors( 1 );
-          stopAll();
-          return false;
-        }
-      }
-
-      List<Integer> removeList = new ArrayList<Integer>();
-      removeList.add( Integer.valueOf( data.keyFieldNr ) );
-      for ( int i = 0; i < data.fieldNrs.length; i++ ) {
-        removeList.add( data.fieldNrs[i] );
-      }
-      Collections.sort( removeList );
-
-      data.removeNrs = new int[removeList.size()];
-      for ( int i = 0; i < removeList.size(); i++ ) {
-        data.removeNrs[i] = removeList.get( i );
-      }
-
+      newGroup( r ); // Create a new result row (init)
+      deNormalise( data.inputRowMeta, r );
       data.previous = r; // copy the row to previous
-      newGroup(); // Create a new result row (init)
 
+      // we don't need feedback here
       first = false;
+
+      // ok, we done with first row
+      return true;
     }
 
-    // System.out.println("Check for same group...");
-
     if ( !sameGroup( data.inputRowMeta, data.previous, r ) ) {
-      // System.out.println("Different group!");
 
       Object[] outputRowData = buildResult( data.inputRowMeta, data.previous );
       putRow( data.outputRowMeta, outputRowData ); // copy row to possible alternate rowset(s).
-      // System.out.println("Wrote row: "+data.previous);
-      newGroup(); // Create a new group aggregate (init)
+      newGroup( r ); // Create a new group aggregate (init)
       deNormalise( data.inputRowMeta, r );
     } else {
       deNormalise( data.inputRowMeta, r );
@@ -188,6 +124,86 @@ public class Denormaliser extends BaseStep implements StepInterface {
     return true;
   }
 
+  private boolean processFirstRow() throws KettleStepException {
+    String val = getVariable( Const.KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO, "N" );
+    this.allNullsAreZero = ValueMetaBase.convertStringToBoolean( val );
+    val = getVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
+    this.minNullIsValued = ValueMetaBase.convertStringToBoolean( val );
+    data.inputRowMeta = getInputRowMeta();
+    data.outputRowMeta = data.inputRowMeta.clone();
+    meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+
+    data.keyFieldNr = data.inputRowMeta.indexOfValue( meta.getKeyField() );
+    if ( data.keyFieldNr < 0 ) {
+      logError( BaseMessages.getString( PKG, "Denormaliser.Log.KeyFieldNotFound", meta.getKeyField() ) );
+      setErrors( 1 );
+      stopAll();
+      return false;
+    }
+
+    Map<Integer, Integer> subjects = new Hashtable<Integer, Integer>();
+    data.fieldNameIndex = new int[meta.getDenormaliserTargetField().length];
+    for ( int i = 0; i < meta.getDenormaliserTargetField().length; i++ ) {
+      DenormaliserTargetField field = meta.getDenormaliserTargetField()[i];
+      int idx = data.inputRowMeta.indexOfValue( field.getFieldName() );
+      if ( idx < 0 ) {
+        logError( BaseMessages.getString( PKG, "Denormaliser.Log.UnpivotFieldNotFound", field.getFieldName() ) );
+        setErrors( 1 );
+        stopAll();
+        return false;
+      }
+      data.fieldNameIndex[i] = idx;
+      subjects.put( Integer.valueOf( idx ), Integer.valueOf( idx ) );
+
+      // See if by accident, the value fieldname isn't the same as the key fieldname.
+      // This is not supported of-course and given the complexity of the step, you can miss:
+      if ( data.fieldNameIndex[i] == data.keyFieldNr ) {
+        logError( BaseMessages.getString( PKG, "Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName() ) );
+        setErrors( 1 );
+        stopAll();
+        return false;
+      }
+
+      // Fill a hashtable with the key strings and the position(s) of the field(s) in the row to take.
+      // Store the indexes in a List so that we can accommodate multiple key/value pairs...
+      //
+      String keyValue = environmentSubstitute( field.getKeyValue() );
+      List<Integer> indexes = data.keyValue.get( keyValue );
+      if ( indexes == null ) {
+        indexes = new ArrayList<Integer>( 2 );
+      }
+      indexes.add( Integer.valueOf( i ) ); // Add the index to the list...
+      data.keyValue.put( keyValue, indexes ); // store the list
+    }
+
+    Set<Integer> subjectSet = subjects.keySet();
+    data.fieldNrs = subjectSet.toArray( new Integer[subjectSet.size()] );
+
+    data.groupnrs = new int[meta.getGroupField().length];
+    for ( int i = 0; i < meta.getGroupField().length; i++ ) {
+      data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
+      if ( data.groupnrs[i] < 0 ) {
+        logError( BaseMessages.getString( PKG, "Denormaliser.Log.GroupingFieldNotFound", meta.getGroupField()[i] ) );
+        setErrors( 1 );
+        stopAll();
+        return false;
+      }
+    }
+
+    List<Integer> removeList = new ArrayList<Integer>();
+    removeList.add( Integer.valueOf( data.keyFieldNr ) );
+    for ( int i = 0; i < data.fieldNrs.length; i++ ) {
+      removeList.add( data.fieldNrs[i] );
+    }
+    Collections.sort( removeList );
+
+    data.removeNrs = new int[removeList.size()];
+    for ( int i = 0; i < removeList.size(); i++ ) {
+      data.removeNrs[i] = removeList.get( i );
+    }
+    return true;
+  }
+
   private void handleLastRow() throws KettleException {
     // Don't forget the last set of rows...
     if ( data.previous != null ) {
@@ -198,7 +214,15 @@ public class Denormaliser extends BaseStep implements StepInterface {
     }
   }
 
-  private Object[] buildResult( RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
+  /**
+   * Used for junits in DenormaliserAggregationsTest
+   * 
+   * @param rowMeta
+   * @param rowData
+   * @return
+   * @throws KettleValueException
+   */
+  Object[] buildResult( RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     // Deleting objects: we need to create a new object array
     // It's useless to call RowDataUtil.resizeArray
     //
@@ -243,17 +267,26 @@ public class Denormaliser extends BaseStep implements StepInterface {
           }
           if ( field.getTargetType() != ValueMetaInterface.TYPE_INTEGER ) {
             resultValue =
-              data.outputRowMeta.getValueMeta( outputIndex ).convertData(
-                new ValueMeta( "num_values_aggregation", ValueMetaInterface.TYPE_INTEGER ), resultValue );
+                data.outputRowMeta.getValueMeta( outputIndex ).convertData(
+                    new ValueMeta( "num_values_aggregation", ValueMetaInterface.TYPE_INTEGER ), resultValue );
           }
           break;
         default:
           break;
       }
+      if ( resultValue == null && allNullsAreZero ) {
+        // PDI-9662 seems all rows for min function was nulls...
+        resultValue = getZero( outputIndex );
+      }
       outputRowData[outputIndex++] = resultValue;
     }
 
     return outputRowData;
+  }
+
+  private Object getZero( int field ) throws KettleValueException {
+    ValueMetaInterface vm = data.outputRowMeta.getValueMeta( field );
+    return ValueDataUtil.getZeroForValueMetaType( vm );
   }
 
   // Is the row r of the same group as previous?
@@ -262,15 +295,31 @@ public class Denormaliser extends BaseStep implements StepInterface {
     return rowMeta.compare( previous, rowData, data.groupnrs ) == 0;
   }
 
-  /** Initialize a new group... */
-  private void newGroup() {
+  /**
+   * Initialize a new group...
+   * 
+   * @throws KettleException
+   */
+  private void newGroup( Object[] r ) throws KettleException {
     // There is no need anymore to take care of the meta-data.
     // That is done once in DenormaliserMeta.getFields()
     //
     data.targetResult = new Object[meta.getDenormaliserTargetFields().length];
 
-    for ( int i = 0; i < meta.getDenormaliserTargetFields().length; i++ ) {
-      data.targetResult[i] = null;
+    DenormaliserTargetField[] fields = meta.getDenormaliserTargetField();
+    for ( int i = 0; i < fields.length; i++ ) {
+      if ( fields[i].getTargetAggregationType() == DenormaliserTargetField.TYPE_AGGR_MIN ) {
+        // we assign for minimal value first value came. See PDI-9662
+        String fName = fields[i].getFieldName();
+        int index = data.inputRowMeta.indexOfValue( fName );
+        if ( index < 0 ) {
+          // this will never happens!
+          throw new KettleException( "Can't initialize default value for min aggregation" );
+        }
+        data.targetResult[i] = r[index];
+      } else {
+        data.targetResult[i] = null;
+      }
 
       data.counters[i] = 0L; // set to 0
       data.sum[i] = null;
@@ -280,105 +329,115 @@ public class Denormaliser extends BaseStep implements StepInterface {
   /**
    * This method de-normalizes a single key-value pair. It looks up the key and determines the value name to store it
    * in. It converts it to the right type and stores it in the result row.
-   *
+   * 
+   * Used for junits in DenormaliserAggregationsTest
+   * 
    * @param r
    * @throws KettleValueException
    */
-  private void deNormalise( RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
+  void deNormalise( RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.keyFieldNr );
     Object valueData = rowData[data.keyFieldNr];
+
     String key = valueMeta.getCompatibleString( valueData );
-    if ( !Const.isEmpty( key ) ) {
-      // Get all the indexes for the given key value...
-      //
-      List<Integer> indexes = data.keyValue.get( key );
-      if ( indexes != null ) { // otherwise we're not interested.
-        for ( int i = 0; i < indexes.size(); i++ ) {
-          Integer keyNr = indexes.get( i );
-          if ( keyNr != null ) {
-            // keyNr is the field in DenormaliserTargetField[]
-            //
-            int idx = keyNr.intValue();
-            DenormaliserTargetField field = meta.getDenormaliserTargetField()[idx];
+    if ( Const.isEmpty( key ) ) {
+      return;
+    }
+    // Get all the indexes for the given key value...
+    //
+    List<Integer> indexes = data.keyValue.get( key );
+    if ( indexes == null ) { // otherwise we're not interested.
+      return;
+    }
 
-            // This is the value we need to de-normalise, convert, aggregate.
-            //
-            ValueMetaInterface sourceMeta = rowMeta.getValueMeta( data.fieldNameIndex[idx] );
-            Object sourceData = rowData[data.fieldNameIndex[idx]];
-            Object targetData;
-            // What is the target value metadata??
-            //
-            ValueMetaInterface targetMeta =
-              data.outputRowMeta.getValueMeta( data.inputRowMeta.size() - data.removeNrs.length + idx );
-            // What was the previous target in the result row?
-            //
-            Object prevTargetData = data.targetResult[idx];
-
-            // clone source meta as it can be used by other steps ans set conversion meta
-            // to convert date to target format
-            // See PDI-4910 for details
-            ValueMetaInterface origSourceMeta = sourceMeta;
-            if ( targetMeta.isDate() ) {
-              sourceMeta = origSourceMeta.clone();
-              sourceMeta.setConversionMetadata( getConversionMeta( field.getTargetFormat() ) );
-            }
-
-            switch ( field.getTargetAggregationType() ) {
-              case DenormaliserTargetField.TYPE_AGGR_SUM:
-                targetData = targetMeta.convertData( sourceMeta, sourceData );
-                if ( prevTargetData != null ) {
-                  prevTargetData = ValueDataUtil.plus( targetMeta, prevTargetData, targetMeta, targetData );
-                } else {
-                  prevTargetData = targetData;
-                }
-                break;
-              case DenormaliserTargetField.TYPE_AGGR_MIN:
-                if ( sourceMeta.compare( sourceData, targetMeta, prevTargetData ) < 0 ) {
-                  prevTargetData = targetMeta.convertData( sourceMeta, sourceData );
-                }
-                break;
-              case DenormaliserTargetField.TYPE_AGGR_MAX:
-                if ( sourceMeta.compare( sourceData, targetMeta, prevTargetData ) > 0 ) {
-                  prevTargetData = targetMeta.convertData( sourceMeta, sourceData );
-                }
-                break;
-              case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL:
-                prevTargetData = ++data.counters[idx];
-                break;
-              case DenormaliserTargetField.TYPE_AGGR_AVERAGE:
-                targetData = targetMeta.convertData( sourceMeta, sourceData );
-                if ( !sourceMeta.isNull( sourceData ) ) {
-                  prevTargetData = data.counters[idx]++;
-                  if ( data.sum[idx] == null ) {
-                    data.sum[idx] = targetData;
-                  } else {
-                    data.sum[idx] = ValueDataUtil.plus( targetMeta, data.sum[idx], targetMeta, targetData );
-                  }
-                  // data.sum[idx] = (Integer)data.sum[idx] + (Integer)sourceData;
-                }
-                break;
-              case DenormaliserTargetField.TYPE_AGGR_CONCAT_COMMA:
-                String separator = ",";
-
-                targetData = targetMeta.convertData( sourceMeta, sourceData );
-                if ( prevTargetData != null ) {
-                  prevTargetData = prevTargetData + separator + targetData;
-                } else {
-                  prevTargetData = targetData;
-                }
-                break;
-              case DenormaliserTargetField.TYPE_AGGR_NONE:
-              default:
-                prevTargetData = targetMeta.convertData( sourceMeta, sourceData ); // Overwrite the previous
-                break;
-            }
-
-            // Update the result row too
-            //
-            data.targetResult[idx] = prevTargetData;
-          }
-        }
+    for ( Integer keyNr : indexes ) {
+      if ( keyNr == null ) {
+        continue;
       }
+      // keyNr is the field in DenormaliserTargetField[]
+      //
+      int idx = keyNr.intValue();
+      DenormaliserTargetField field = meta.getDenormaliserTargetField()[idx];
+
+      // This is the value we need to de-normalise, convert, aggregate.
+      //
+      ValueMetaInterface sourceMeta = rowMeta.getValueMeta( data.fieldNameIndex[idx] );
+      Object sourceData = rowData[data.fieldNameIndex[idx]];
+      Object targetData;
+      // What is the target value metadata??
+      //
+      ValueMetaInterface targetMeta =
+          data.outputRowMeta.getValueMeta( data.inputRowMeta.size() - data.removeNrs.length + idx );
+      // What was the previous target in the result row?
+      //
+      Object prevTargetData = data.targetResult[idx];
+
+      // clone source meta as it can be used by other steps ans set conversion meta
+      // to convert date to target format
+      // See PDI-4910 for details
+      ValueMetaInterface origSourceMeta = sourceMeta;
+      if ( targetMeta.isDate() ) {
+        sourceMeta = origSourceMeta.clone();
+        sourceMeta.setConversionMetadata( getConversionMeta( field.getTargetFormat() ) );
+      }
+
+      switch ( field.getTargetAggregationType() ) {
+        case DenormaliserTargetField.TYPE_AGGR_SUM:
+          targetData = targetMeta.convertData( sourceMeta, sourceData );
+          if ( prevTargetData != null ) {
+            prevTargetData = ValueDataUtil.sum( targetMeta, prevTargetData, targetMeta, targetData );
+          } else {
+            prevTargetData = targetData;
+          }
+          break;
+        case DenormaliserTargetField.TYPE_AGGR_MIN:
+          if ( sourceData == null && !minNullIsValued ) {
+            // PDI-9662 do not compare null
+            break;
+          }
+          if ( sourceMeta.compare( sourceData, targetMeta, prevTargetData ) < 0 ) {
+            prevTargetData = targetMeta.convertData( sourceMeta, sourceData );
+          }
+          break;
+        case DenormaliserTargetField.TYPE_AGGR_MAX:
+          if ( sourceMeta.compare( sourceData, targetMeta, prevTargetData ) > 0 ) {
+            prevTargetData = targetMeta.convertData( sourceMeta, sourceData );
+          }
+          break;
+        case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL:
+          prevTargetData = ++data.counters[idx];
+          break;
+        case DenormaliserTargetField.TYPE_AGGR_AVERAGE:
+          targetData = targetMeta.convertData( sourceMeta, sourceData );
+          if ( !sourceMeta.isNull( sourceData ) ) {
+            prevTargetData = data.counters[idx]++;
+            if ( data.sum[idx] == null ) {
+              data.sum[idx] = targetData;
+            } else {
+              data.sum[idx] = ValueDataUtil.plus( targetMeta, data.sum[idx], targetMeta, targetData );
+            }
+            // data.sum[idx] = (Integer)data.sum[idx] + (Integer)sourceData;
+          }
+          break;
+        case DenormaliserTargetField.TYPE_AGGR_CONCAT_COMMA:
+          String separator = ",";
+
+          targetData = targetMeta.convertData( sourceMeta, sourceData );
+          if ( prevTargetData != null ) {
+            prevTargetData = prevTargetData + separator + targetData;
+          } else {
+            prevTargetData = targetData;
+          }
+          break;
+        case DenormaliserTargetField.TYPE_AGGR_NONE:
+        default:
+          prevTargetData = targetMeta.convertData( sourceMeta, sourceData ); // Overwrite the previous
+          break;
+      }
+
+      // Update the result row too
+      //
+      data.targetResult[idx] = prevTargetData;
     }
   }
 
@@ -402,8 +461,8 @@ public class Denormaliser extends BaseStep implements StepInterface {
   }
 
   /**
-   * Get the metadata used for conversion to date format
-   * See related PDI-4019
+   * Get the metadata used for conversion to date format See related PDI-4019
+   * 
    * @param mask
    * @return
    */
@@ -412,12 +471,32 @@ public class Denormaliser extends BaseStep implements StepInterface {
     if ( !Const.isEmpty( mask ) ) {
       meta = conversionMetaCache.get( mask );
       if ( meta == null ) {
-        meta = new ValueMetaDate( );
+        meta = new ValueMetaDate();
         meta.setConversionMask( mask );
         conversionMetaCache.put( mask, meta );
       }
     }
     return meta;
+  }
+
+  /**
+   * Used for junits in DenormaliserAggregationsTest
+   * 
+   * @param allNullsAreZero
+   *          the allNullsAreZero to set
+   */
+  void setAllNullsAreZero( boolean allNullsAreZero ) {
+    this.allNullsAreZero = allNullsAreZero;
+  }
+
+  /**
+   * Used for junits in DenormaliserAggregationsTest
+   * 
+   * @param minNullIsValued
+   *          the minNullIsValued to set
+   */
+  void setMinNullIsValued( boolean minNullIsValued ) {
+    this.minNullIsValued = minNullIsValued;
   }
 
 }
