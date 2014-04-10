@@ -350,7 +350,7 @@
     <rownum>N</rownum>
     <rownumByFile>N</rownumByFile>
     <rownum_field/>
-    <format>DOS</format>
+    <format>mixed</format>
     <encoding/>
     <file>
       <name>${Internal.Transformation.Filename.Directory}&#47;testfile.txt</name>

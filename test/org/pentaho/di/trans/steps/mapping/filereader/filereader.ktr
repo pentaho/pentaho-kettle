@@ -103,7 +103,7 @@
     <rownum>N</rownum>
     <rownumByFile>N</rownumByFile>
     <rownum_field/>
-    <format>DOS</format>
+    <format>mixed</format>
     <encoding/>
     <file>
       <name>${FILENAME}</name>
