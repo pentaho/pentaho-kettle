@@ -463,7 +463,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       // first write the COPY INTO command...
       //
 
-      String nullRep = meta.getNULLrepresentation();
+      String nullRep = environmentSubstitute( meta.getNULLrepresentation() );
       if ( nullRep == null ) {
         nullRep = new String( data.nullrepresentation );
       }
