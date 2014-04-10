@@ -94,14 +94,11 @@ public class MetricsUtil {
 
   public static List<MetricsDuration> getAllDurations( String parentLogChannelId ) {
     List<MetricsDuration> durations = new ArrayList<MetricsDuration>();
-
-    // System.out.println("-------------------------------------------");
-    //
+    
     List<String> logChannelIds = LoggingRegistry.getInstance().getLogChannelChildren( parentLogChannelId );
     for ( String logChannelId : logChannelIds ) {
       LoggingObjectInterface object = LoggingRegistry.getInstance().getLoggingObject( logChannelId );
       if ( object != null ) {
-        // System.out.println(object.getObjectName());
         durations.addAll( getDurations( logChannelId ) );
       }
     }
