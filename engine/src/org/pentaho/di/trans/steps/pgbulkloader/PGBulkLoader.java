@@ -80,7 +80,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   public String getCopyCommand( RowMetaInterface rm, Object[] r ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
 
-    String loadAction = meta.getLoadAction();
+    String loadAction = environmentSubstitute( meta.getLoadAction() );
 
     StringBuffer contents = new StringBuffer( 500 );
 
@@ -128,8 +128,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     contents.append( " FROM STDIN" ); // FIFO file
 
     // The "FORMAT" clause
-    contents.append( " WITH CSV DELIMITER AS '" ).append( meta.getDelimiter() ).append( "' QUOTE AS '" ).append(
-      meta.getEnclosure() ).append( "'" );
+    contents.append( " WITH CSV DELIMITER AS '" ).append( environmentSubstitute( meta.getDelimiter() ) )
+        .append( "' QUOTE AS '" ).append(
+      environmentSubstitute( meta.getEnclosure() ) ).append( "'" );
     contents.append( ";" ).append( Const.CR );
 
     return contents.toString();
@@ -197,12 +198,12 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       String dns = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
       sb.append( " " );
 
-      String overrideName = meta.getDbNameOverride();
+      String overrideName = environmentSubstitute( meta.getDbNameOverride() );
       if ( Const.isEmpty( Const.rtrim( overrideName ) ) ) {
         sb.append( environmentSubstitute( dns ) );
       } else {
         // if the database name override is filled in, do that one.
-        sb.append( environmentSubstitute( overrideName ) );
+        sb.append( overrideName );
       }
     } else {
       throw new KettleException( "No connection specified" );
@@ -433,14 +434,17 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     meta = (PGBulkLoaderMeta) smi;
     data = (PGBulkLoaderData) sdi;
 
+    String enclosure = environmentSubstitute( meta.getEnclosure() );
+    String separator = environmentSubstitute( meta.getDelimiter() );
+
     if ( super.init( smi, sdi ) ) {
-      if ( meta.getEnclosure() != null ) {
-        data.quote = meta.getEnclosure().getBytes();
+      if ( enclosure != null ) {
+        data.quote = enclosure.getBytes();
       } else {
         data.quote = new byte[] {};
       }
-      if ( meta.getDelimiter() != null ) {
-        data.separator = meta.getDelimiter().getBytes();
+      if ( separator != null ) {
+        data.separator = separator.getBytes();
       } else {
         data.separator = new byte[] {};
       }

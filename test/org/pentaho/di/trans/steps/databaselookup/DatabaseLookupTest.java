@@ -186,7 +186,7 @@ public class DatabaseLookupTest {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "int_gield", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "int_field", ValueMeta.TYPE_INTEGER, 8, 0 ),
       new ValueMeta( "RET_CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
       new ValueMeta( "RET_STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
 
