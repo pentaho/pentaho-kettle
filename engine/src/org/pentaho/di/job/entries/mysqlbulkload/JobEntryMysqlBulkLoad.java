@@ -102,7 +102,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     localinfile = true;
     connection = null;
     addfiletoresult = false;
-    setID( -1L );
   }
 
   public JobEntryMysqlBulkLoad() {

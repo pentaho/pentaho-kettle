@@ -74,7 +74,6 @@ public class JobEntryTelnet extends JobEntryBase implements Cloneable, JobEntryI
     hostname = null;
     port = String.valueOf( DEFAULT_PORT );
     timeout = String.valueOf( DEFAULT_TIME_OUT );
-    setID( -1L );
   }
 
   public JobEntryTelnet() {

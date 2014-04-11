@@ -126,7 +126,6 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     maximumTimeout = DEFAULT_MAXIMUM_TIMEOUT;
     checkCycleTime = DEFAULT_CHECK_CYCLE_TIME;
     successOnTimeout = false;
-    setID( -1L );
   }
 
   public JobEntryWaitForSQL() {

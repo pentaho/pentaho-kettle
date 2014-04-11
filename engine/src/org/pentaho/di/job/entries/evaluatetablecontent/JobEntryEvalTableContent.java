@@ -117,7 +117,6 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
     schemaname = null;
     tablename = null;
     connection = null;
-    setID( -1L );
   }
 
   public JobEntryEvalTableContent() {

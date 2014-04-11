@@ -101,7 +101,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     add_result_filesname = false;
     destination_is_a_file = false;
     create_destination_folder = false;
-    setID( -1L );
   }
 
   public JobEntryCopyFiles() {

@@ -78,7 +78,6 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
     super( n, "" );
     sql = null;
     connection = null;
-    setID( -1L );
   }
 
   public JobEntrySQL() {

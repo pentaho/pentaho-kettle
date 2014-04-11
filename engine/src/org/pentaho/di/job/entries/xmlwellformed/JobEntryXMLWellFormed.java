@@ -108,8 +108,6 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
     include_subfolders = false;
     nr_errors_less_than = "10";
     success_condition = SUCCESS_IF_NO_ERRORS;
-
-    setID( -1L );
   }
 
   public JobEntryXMLWellFormed() {

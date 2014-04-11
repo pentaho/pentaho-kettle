@@ -93,7 +93,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
     success_condition = SUCCESS_IF_NO_ERRORS;
     limit_folders = "10";
-    setID( -1L );
   }
 
   public JobEntryDeleteFolders() {

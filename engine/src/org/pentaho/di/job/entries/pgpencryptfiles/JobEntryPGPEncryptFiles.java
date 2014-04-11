@@ -157,7 +157,6 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     AddDateBeforeExtension = false;
     iffileexists = "do_nothing";
     asciiMode = false;
-    setID( -1L );
   }
 
   public JobEntryPGPEncryptFiles() {

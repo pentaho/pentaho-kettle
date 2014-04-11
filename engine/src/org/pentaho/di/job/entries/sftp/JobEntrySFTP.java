@@ -115,7 +115,6 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     proxyPort = null;
     proxyUsername = null;
     proxyPassword = null;
-    setID( -1L );
   }
 
   public JobEntrySFTP() {

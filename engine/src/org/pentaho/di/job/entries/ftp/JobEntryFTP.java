@@ -212,7 +212,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     isaddresult = true;
     createmovefolder = false;
 
-    setID( -1L );
     setControlEncoding( DEFAULT_CONTROL_ENCODING );
   }
 

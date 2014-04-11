@@ -87,7 +87,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     arguments = null;
 
     includeSubfolders = false;
-    setID( -1L );
   }
 
   public JobEntryDeleteFiles() {

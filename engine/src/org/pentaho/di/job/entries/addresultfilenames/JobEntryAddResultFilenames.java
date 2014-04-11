@@ -87,7 +87,6 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     arguments = null;
 
     includeSubfolders = false;
-    setID( -1L );
   }
 
   public JobEntryAddResultFilenames() {

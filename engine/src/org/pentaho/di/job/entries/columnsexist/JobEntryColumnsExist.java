@@ -71,7 +71,6 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
     schemaname = null;
     tablename = null;
     connection = null;
-    setID( -1L );
   }
 
   public JobEntryColumnsExist() {

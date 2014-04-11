@@ -64,7 +64,6 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
   public JobEntryFilesExist( String n ) {
     super( n, "" );
     filename = null;
-    setID( -1L );
   }
 
   public JobEntryFilesExist() {

@@ -132,7 +132,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     createMoveToDirectory = false;
     includingSubFolders = true;
     storedSourcePathDepth = "1";
-    setID( -1L );
   }
 
   public JobEntryZipFile() {

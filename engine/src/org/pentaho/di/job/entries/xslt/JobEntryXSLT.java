@@ -133,7 +133,6 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
       outputPropertyName[i] = "outputprop" + i;
       outputPropertyValue[i] = "outputprop";
     }
-    setID( -1L );
   }
 
   public void allocate( int nrParameters, int outputProps ) {

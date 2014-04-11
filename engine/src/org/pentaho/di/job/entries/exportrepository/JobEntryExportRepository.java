@@ -140,7 +140,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
     add_result_filesname = false;
     nr_errors_less_than = "10";
     success_condition = SUCCESS_IF_NO_ERRORS;
-    setID( -1L );
   }
 
   public JobEntryExportRepository() {

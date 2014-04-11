@@ -74,8 +74,6 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
     datePattern = SyslogDefs.DEFAULT_DATE_FORMAT;
     addTimestamp = true;
     addHostname = true;
-
-    setID( -1L );
   }
 
   public JobEntrySyslog() {

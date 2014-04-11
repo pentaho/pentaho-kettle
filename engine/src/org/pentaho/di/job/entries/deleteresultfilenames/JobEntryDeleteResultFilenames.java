@@ -77,7 +77,6 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
     wildcardexclude = null;
     wildcard = null;
     specifywildcard = false;
-    setID( -1L );
   }
 
   public JobEntryDeleteResultFilenames() {
