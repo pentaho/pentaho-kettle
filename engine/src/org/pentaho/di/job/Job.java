@@ -660,107 +660,103 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
 
     JobExecutionExtension extension = new JobExecutionExtension( this, prevResult, jobEntryCopy, true );
-    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobBeforeJobEntryExecution.id, extension );
 
     if ( extension.result != null ) {
       prevResult = extension.result;
     }
 
-    if ( !extension.executeEntry ) {
-      newResult = prevResult;
-    } else {
-      if ( log.isDetailed() ) {
-        log.logDetailed( "exec("
-          + nr + ", " + ( prev_result != null ? prev_result.getNrErrors() : 0 ) + ", "
-          + ( jobEntryCopy != null ? jobEntryCopy.toString() : "null" ) + ")" );
-      }
+    if (log.isDetailed()) {
+      log.logDetailed("exec("
+          + nr + ", " + (prev_result != null ? prev_result.getNrErrors() : 0) + ", "
+          + (jobEntryCopy != null ? jobEntryCopy.toString() : "null") + ")");
+    }
 
-      // Which entry is next?
-      JobEntryInterface jobEntryInterface = jobEntryCopy.getEntry();
-      jobEntryInterface.getLogChannel().setLogLevel( logLevel );
+    // Which entry is next?
+    JobEntryInterface jobEntryInterface = jobEntryCopy.getEntry();
+    jobEntryInterface.getLogChannel().setLogLevel(logLevel);
 
-      // Track the fact that we are going to launch the next job entry...
-      JobEntryResult jerBefore =
+    // Track the fact that we are going to launch the next job entry...
+    JobEntryResult jerBefore =
         new JobEntryResult(
-          null, null, BaseMessages.getString( PKG, "Job.Comment.JobStarted" ), reason, jobEntryCopy.getName(),
-          jobEntryCopy.getNr(), environmentSubstitute( jobEntryCopy.getEntry().getFilename() ) );
-      jobTracker.addJobTracker( new JobTracker( jobMeta, jerBefore ) );
+            null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(),
+            jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
+    jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
 
-      ClassLoader cl = Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader( jobEntryInterface.getClass().getClassLoader() );
-      // Execute this entry...
-      JobEntryInterface cloneJei = (JobEntryInterface) jobEntryInterface.clone();
-      ( (VariableSpace) cloneJei ).copyVariablesFrom( this );
-      cloneJei.setRepository( rep );
-      if ( rep != null ) {
-        cloneJei.setMetaStore( rep.getMetaStore() );
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(jobEntryInterface.getClass().getClassLoader());
+    // Execute this entry...
+    JobEntryInterface cloneJei = (JobEntryInterface) jobEntryInterface.clone();
+    ((VariableSpace) cloneJei).copyVariablesFrom(this);
+    cloneJei.setRepository(rep);
+    if (rep != null) {
+      cloneJei.setMetaStore(rep.getMetaStore());
+    }
+    cloneJei.setParentJob(this);
+    final long start = System.currentTimeMillis();
+
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobBeforeJobEntryExecution.id, extension );
+    cloneJei.getLogChannel().logDetailed("Starting job entry");
+    for (JobEntryListener jobEntryListener : jobEntryListeners) {
+      jobEntryListener.beforeExecution(this, jobEntryCopy, cloneJei);
+    }
+    if (interactive) {
+      if (jobEntryCopy.isTransformation()) {
+        getActiveJobEntryTransformations().put(jobEntryCopy, (JobEntryTrans) cloneJei);
       }
-      cloneJei.setParentJob( this );
-      final long start = System.currentTimeMillis();
-
-      cloneJei.getLogChannel().logDetailed( "Starting job entry" );
-      for ( JobEntryListener jobEntryListener : jobEntryListeners ) {
-        jobEntryListener.beforeExecution( this, jobEntryCopy, cloneJei );
+      if (jobEntryCopy.isJob()) {
+        getActiveJobEntryJobs().put(jobEntryCopy, (JobEntryJob) cloneJei);
       }
-      if ( interactive ) {
-        if ( jobEntryCopy.isTransformation() ) {
-          getActiveJobEntryTransformations().put( jobEntryCopy, (JobEntryTrans) cloneJei );
-        }
-        if ( jobEntryCopy.isJob() ) {
-          getActiveJobEntryJobs().put( jobEntryCopy, (JobEntryJob) cloneJei );
-        }
+    }
+    log.snap(Metrics.METRIC_JOBENTRY_START, cloneJei.toString());
+    newResult = cloneJei.execute(prevResult, nr);
+    log.snap(Metrics.METRIC_JOBENTRY_STOP, cloneJei.toString());
+
+    final long end = System.currentTimeMillis();
+    if (interactive) {
+      if (jobEntryCopy.isTransformation()) {
+        getActiveJobEntryTransformations().remove(jobEntryCopy);
       }
-      log.snap( Metrics.METRIC_JOBENTRY_START, cloneJei.toString() );
-      newResult = cloneJei.execute( prevResult, nr );
-      log.snap( Metrics.METRIC_JOBENTRY_STOP, cloneJei.toString() );
-
-      final long end = System.currentTimeMillis();
-      if ( interactive ) {
-        if ( jobEntryCopy.isTransformation() ) {
-          getActiveJobEntryTransformations().remove( jobEntryCopy );
-        }
-        if ( jobEntryCopy.isJob() ) {
-          getActiveJobEntryJobs().remove( jobEntryCopy );
-        }
+      if (jobEntryCopy.isJob()) {
+        getActiveJobEntryJobs().remove(jobEntryCopy);
       }
+    }
 
-      if ( cloneJei instanceof JobEntryTrans ) {
-        String throughput = newResult.getReadWriteThroughput( (int) ( ( end - start ) / 1000 ) );
-        if ( throughput != null ) {
-          log.logMinimal( throughput );
-        }
+    if (cloneJei instanceof JobEntryTrans) {
+      String throughput = newResult.getReadWriteThroughput((int) ((end - start) / 1000));
+      if (throughput != null) {
+        log.logMinimal(throughput);
       }
-      for ( JobEntryListener jobEntryListener : jobEntryListeners ) {
-        jobEntryListener.afterExecution( this, jobEntryCopy, cloneJei, newResult );
-      }
+    }
+    for (JobEntryListener jobEntryListener : jobEntryListeners) {
+      jobEntryListener.afterExecution(this, jobEntryCopy, cloneJei, newResult);
+    }
 
-      Thread.currentThread().setContextClassLoader( cl );
-      addErrors( (int) newResult.getNrErrors() );
+    Thread.currentThread().setContextClassLoader(cl);
+    addErrors((int) newResult.getNrErrors());
 
-      // Also capture the logging text after the execution...
-      //
-      LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
-      StringBuffer logTextBuffer = loggingBuffer.getBuffer( cloneJei.getLogChannel().getLogChannelId(), false );
-      newResult.setLogText( logTextBuffer.toString() + newResult.getLogText() );
+    // Also capture the logging text after the execution...
+    //
+    LoggingBuffer loggingBuffer = KettleLogStore.getAppender();
+    StringBuffer logTextBuffer = loggingBuffer.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
+    newResult.setLogText(logTextBuffer.toString() + newResult.getLogText());
 
-      // Save this result as well...
-      //
-      JobEntryResult jerAfter =
+    // Save this result as well...
+    //
+    JobEntryResult jerAfter =
         new JobEntryResult(
-          newResult, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(
-            PKG, "Job.Comment.JobFinished" ), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
-          environmentSubstitute( jobEntryCopy.getEntry().getFilename() ) );
-      jobTracker.addJobTracker( new JobTracker( jobMeta, jerAfter ) );
-      synchronized ( jobEntryResults ) {
-        jobEntryResults.add( jerAfter );
+            newResult, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(
+            PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
+            environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
+    jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
+    synchronized (jobEntryResults) {
+      jobEntryResults.add(jerAfter);
 
-        // Only keep the last X job entry results in memory
-        //
-        if ( maxJobEntriesLogged > 0 ) {
-          while ( jobEntryResults.size() > maxJobEntriesLogged ) {
-            // Remove the oldest.
-            jobEntryResults.removeFirst();
-          }
+      // Only keep the last X job entry results in memory
+      //
+      if (maxJobEntriesLogged > 0) {
+        while (jobEntryResults.size() > maxJobEntriesLogged) {
+          // Remove the oldest.
+          jobEntryResults.removeFirst();
         }
       }
     }
