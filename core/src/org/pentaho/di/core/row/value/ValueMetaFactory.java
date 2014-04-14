@@ -43,7 +43,14 @@ public class ValueMetaFactory {
   }
 
   public static ValueMetaInterface cloneValueMeta(ValueMetaInterface source, int targetType) throws KettlePluginException {
-    ValueMetaInterface target = createValueMeta(source.getName(), targetType, source.getLength(), source.getPrecision());
+    ValueMetaInterface target = null;
+
+    // If we're Cloneable and not changing types, call clone()
+    if ( source instanceof Cloneable && source.getType() == targetType ) {
+      target = source.clone();
+    } else {
+      target = createValueMeta( source.getName(), targetType, source.getLength(), source.getPrecision() );
+    }
     target.setConversionMask(source.getConversionMask());
     target.setDecimalSymbol(source.getDecimalSymbol());
     target.setGroupingSymbol(source.getGroupingSymbol());
