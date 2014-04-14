@@ -39,6 +39,7 @@ public class AuthenticationPersistenceManager {
 
   public static AuthenticationManager getAuthenticationManager() {
     AuthenticationManager manager = new AuthenticationManager();
+    manager.registerAuthenticationProvider( new NoAuthenticationAuthenticationProvider() );
 
     // TODO: Register providers from metastore
 
