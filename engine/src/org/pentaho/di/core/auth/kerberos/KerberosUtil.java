@@ -96,37 +96,20 @@ public class KerberosUtil {
 
   private static Map<String, String> getLoginConfigOptsKerberosUser() {
     Map<String, String> result = new HashMap<String, String>( LOGIN_CONFIG_BASE );
-    result.put( "useTicketCache", Boolean.TRUE.toString() );
+    result.put( "useTicketCache", Boolean.FALSE.toString() );
     // Attempt to renew tickets
-    result.put( "renewTGT", Boolean.TRUE.toString() );
-    // Set the ticket cache if it was defined externally
-    String ticketCache = System.getenv( "KRB5CCNAME" );
-    if ( ticketCache != null ) {
-      result.put( "ticketCache", ticketCache );
-    }
+    result.put( "renewTGT", Boolean.FALSE.toString() );
     return Collections.unmodifiableMap( result );
   }
 
   private static Map<String, String> getLoginConfigOptsKerberosNoPassword() {
     Map<String, String> result = new HashMap<String, String>( LOGIN_CONFIG_OPTS_KERBEROS_USER );
+    result.put( "useTicketCache", Boolean.TRUE.toString() );
+    result.put( "renewTGT", Boolean.TRUE.toString() );
     // Never prompt for passwords
     result.put( "doNotPrompt", Boolean.TRUE.toString() );
     return result;
   }
-
-  /**
-   * The Login Configuration entry to use for authenticating with Kerberos.
-   */
-  private static final AppConfigurationEntry[] CONFIG_ENTRY_PENTAHO_KERBEROS_USER_NOPASS =
-      new AppConfigurationEntry[] { new AppConfigurationEntry( Krb5LoginModule.class.getName(),
-          LoginModuleControlFlag.REQUIRED, LOGIN_CONFIG_OPTS_KERBEROS_USER_NOPASS ) };
-
-  /**
-   * Static configuration to use when KERBEROS_USER mode is enabled.
-   */
-  public static final AppConfigurationEntry[] CONFIG_ENTRIES_KERBEROS_USER =
-      new AppConfigurationEntry[] { new AppConfigurationEntry( Krb5LoginModule.class.getName(),
-          LoginModuleControlFlag.REQUIRED, LOGIN_CONFIG_OPTS_KERBEROS_USER ) };
 
   /**
    * Login Configuration options for KERBEROS_KEYTAB mode.
@@ -161,6 +144,11 @@ public class KerberosUtil {
 
   public LoginContext getLoginContextFromUsernamePassword( final String principal, final String password )
     throws LoginException {
+    Map<String, String> opts = new HashMap<String, String>( LOGIN_CONFIG_OPTS_KERBEROS_USER );
+    opts.put( "principal", principal );
+    AppConfigurationEntry[] appConfigurationEntries =
+        new AppConfigurationEntry[] { new AppConfigurationEntry( Krb5LoginModule.class.getName(),
+            LoginModuleControlFlag.REQUIRED, opts ) };
     return new LoginContext( KERBEROS_APP_NAME, new Subject(), new CallbackHandler() {
 
       @Override
@@ -175,11 +163,16 @@ public class KerberosUtil {
           }
         }
       }
-    }, new PentahoLoginConfiguration( CONFIG_ENTRIES_KERBEROS_USER ) );
+    }, new PentahoLoginConfiguration( appConfigurationEntries ) );
   }
 
   public LoginContext getLoginContextFromKerberosCache( String principal ) throws LoginException {
+    Map<String, String> opts = new HashMap<String, String>( LOGIN_CONFIG_OPTS_KERBEROS_USER_NOPASS );
+    opts.put( "principal", principal );
+    AppConfigurationEntry[] appConfigurationEntries =
+        new AppConfigurationEntry[] { new AppConfigurationEntry( Krb5LoginModule.class.getName(),
+            LoginModuleControlFlag.REQUIRED, opts ) };
     return new LoginContext( KERBEROS_APP_NAME, new Subject(), null, new PentahoLoginConfiguration(
-        CONFIG_ENTRY_PENTAHO_KERBEROS_USER_NOPASS ) );
+        appConfigurationEntries ) );
   }
 }
