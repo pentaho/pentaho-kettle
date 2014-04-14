@@ -160,6 +160,9 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       case ValueMetaInterface.TYPE_STRING:
         retval += ( length < 1 ) ? "VARCHAR" : "VARCHAR(" + length + ")";
         break;
+      case ValueMetaInterface.TYPE_BINARY:
+        retval += ( length < 1 ) ? "VARBINARY" : "VARBINARY(" + length + ")";
+        break;
       default:
         retval += " UNKNOWN";
         break;
@@ -327,4 +330,22 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   public boolean supportsTimeStampToDateConversion() {
     return false;
   }
+
+  /*
+   * @return false as the database does not support BLOB data type
+   */
+  @Override
+  public boolean supportsGetBlob() {
+    return false;
+  }
+
+  /**
+   * @return Handles the special case of Vertica where the display size returned is twice the precision. In that case,
+   *         the length is the precision.
+   */
+  @Override
+  public boolean isDisplaySizeTwiceThePrecision() {
+    return true;
+  }
+
 }
