@@ -43,9 +43,19 @@ public class KettleLogStore {
 
 	private Timer logCleanerTimer;
 	
-	private static AtomicBoolean initialized = new AtomicBoolean(false); 
-		
-	/**
+	private static AtomicBoolean initialized = new AtomicBoolean(false);
+
+  private static LogChannelInterfaceFactory logChannelInterfaceFactory = new LogChannelFactory();
+
+  public static LogChannelInterfaceFactory getLogChannelInterfaceFactory() {
+    return logChannelInterfaceFactory;
+  }
+
+  public static void setLogChannelInterfaceFactory( LogChannelInterfaceFactory logChannelInterfaceFactory ) {
+    KettleLogStore.logChannelInterfaceFactory = logChannelInterfaceFactory;
+  }
+
+  /**
 	 * Create the central log store with optional limitation to the size
 	 * 
 	 * @param maxSize the maximum size
