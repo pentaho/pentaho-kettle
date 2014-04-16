@@ -1,6 +1,4 @@
-
-<!-- saved from url=(0178)https://raw.githubusercontent.com/malsmith/pentaho-kettle/f3b57c22ea0fada4693a9bff2215c72195b2a9ec/ui/src/org/pentaho/di/ui/trans/steps/salesforceinput/SalesforceInputDialog.java -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">/*! ******************************************************************************
+/*! ******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -98,7 +96,7 @@ import com.sforce.soap.partner.sobject.SObject;
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
 
-  private static Class&lt;?&gt; PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'.000'Z";
   private String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -659,12 +657,12 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           public void widgetSelected( SelectionEvent e ) {
             wReadFrom.setText( calendar.getYear()
               + "-"
-              + ( ( calendar.getMonth() + 1 ) &lt; 10
+              + ( ( calendar.getMonth() + 1 ) < 10
                 ? "0" + ( calendar.getMonth() + 1 ) : ( calendar.getMonth() + 1 ) ) + "-"
-              + ( calendar.getDay() &lt; 10 ? "0" + calendar.getDay() : calendar.getDay() ) + " "
-              + ( time.getHours() &lt; 10 ? "0" + time.getHours() : time.getHours() ) + ":"
-              + ( time.getMinutes() &lt; 10 ? "0" + time.getMinutes() : time.getMinutes() ) + ":"
-              + ( time.getMinutes() &lt; 10 ? "0" + time.getMinutes() : time.getMinutes() ) );
+              + ( calendar.getDay() < 10 ? "0" + calendar.getDay() : calendar.getDay() ) + " "
+              + ( time.getHours() < 10 ? "0" + time.getHours() : time.getHours() ) + ":"
+              + ( time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes() ) + ":"
+              + ( time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes() ) );
 
             dialog.close();
           }
@@ -718,12 +716,12 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           public void widgetSelected( SelectionEvent e ) {
             wReadTo.setText( calendarto.getYear()
               + "-"
-              + ( ( calendarto.getMonth() + 1 ) &lt; 10 ? "0" + ( calendarto.getMonth() + 1 ) : ( calendarto
+              + ( ( calendarto.getMonth() + 1 ) < 10 ? "0" + ( calendarto.getMonth() + 1 ) : ( calendarto
                 .getMonth() + 1 ) ) + "-"
-              + ( calendarto.getDay() &lt; 10 ? "0" + calendarto.getDay() : calendarto.getDay() ) + " "
-              + ( timeto.getHours() &lt; 10 ? "0" + timeto.getHours() : timeto.getHours() ) + ":"
-              + ( timeto.getMinutes() &lt; 10 ? "0" + timeto.getMinutes() : timeto.getMinutes() ) + ":"
-              + ( timeto.getSeconds() &lt; 10 ? "0" + timeto.getSeconds() : timeto.getSeconds() ) );
+              + ( calendarto.getDay() < 10 ? "0" + calendarto.getDay() : calendarto.getDay() ) + " "
+              + ( timeto.getHours() < 10 ? "0" + timeto.getHours() : timeto.getHours() ) + ":"
+              + ( timeto.getMinutes() < 10 ? "0" + timeto.getMinutes() : timeto.getMinutes() ) + ":"
+              + ( timeto.getSeconds() < 10 ? "0" + timeto.getSeconds() : timeto.getSeconds() ) );
             dialogto.close();
           }
         } );
@@ -1401,8 +1399,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         // We are connected, so let's query
         MessageElement[] fields = connection.getElements();
         int nrFields = fields.length;
-        List&lt;String&gt; fieldNames = new ArrayList&lt;String&gt;();
-        for ( int i = 0; i &lt; nrFields; i++ ) {
+        List<String> fieldNames = new ArrayList<String>();
+        for ( int i = 0; i < nrFields; i++ ) {
           addFields( "", fieldNames, fields[i] );
         }
         fieldsName = fieldNames.toArray( new String[fieldNames.size()] );
@@ -1411,7 +1409,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
         Field[] fields = connection.getObjectFields( realModule );
         fieldsName = new String[fields.length];
-        for ( int i = 0; i &lt; fields.length; i++ ) {
+        for ( int i = 0; i < fields.length; i++ ) {
           Field field = fields[i];
           fieldsName[i] = field.getName();
           addField( field );
@@ -1442,7 +1440,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     }
   }
 
-  private void addFields( String prefix, List&lt;String&gt; fieldNames, MessageElement field ) {
+  private void addFields( String prefix, List<String> fieldNames, MessageElement field ) {
     String fieldname = prefix + field.getName();
 
     Object value = field.getObjectValue();
@@ -1476,7 +1474,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       fieldPrecision );
   }
 
-  private void addField( String fieldName, List&lt;String&gt; fieldNames, String firstValue ) {
+  private void addField( String fieldName, List<String> fieldNames, String firstValue ) {
     fieldNames.add( fieldName );
 
     // Try to guess field type
@@ -1609,7 +1607,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "SalesforceInputDialog.Log.GettingFieldsInfo" ) );
     }
-    for ( int i = 0; i &lt; in.getInputFields().length; i++ ) {
+    for ( int i = 0; i < in.getInputFields().length; i++ ) {
       SalesforceInputField field = in.getInputFields()[i];
 
       if ( field != null ) {
@@ -1621,7 +1619,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             PKG, "System.Combo.No" );
         String type = field.getTypeDesc();
         String format = field.getFormat();
-		int lengthInt = field.getLength();
+        int lengthInt = field.getLength();
         String length = lengthInt == 18 || lengthInt > 30000 ? "" + lengthInt : "" + lengthInt*4;
         String prec = "" + field.getPrecision();
         String curr = field.getCurrencySymbol();
@@ -1736,7 +1734,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     in.allocate( nrFields );
 
-    for ( int i = 0; i &lt; nrFields; i++ ) {
+    for ( int i = 0; i < nrFields; i++ ) {
       SalesforceInputField field = new SalesforceInputField();
 
       TableItem item = wFields.getNonEmpty( i );
@@ -1774,7 +1772,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogTitle" ),
         BaseMessages.getString( PKG, "SalesforceInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
-      if ( previewSize &gt; 0 ) {
+      if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
           new TransPreviewProgressDialog(
             shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
@@ -1784,7 +1782,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           Trans trans = progressDialog.getTrans();
           String loggingText = progressDialog.getLoggingText();
 
-          if ( trans.getResult() != null && trans.getResult().getNrErrors() &gt; 0 ) {
+          if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
               new EnterTextDialog(
                 shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
@@ -1827,7 +1825,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
         // retrieve modules list
         String[] modules = connection.getAllAvailableObjects( true );
-        if ( modules != null && modules.length &gt; 0 ) {
+        if ( modules != null && modules.length > 0 ) {
           // populate Combo
           wModule.setItems( modules );
         }
@@ -1873,7 +1871,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     // Go back from position to last CR: how many positions?
     int colnr = 0;
-    while ( posnr &gt; 0 && scr.charAt( posnr - 1 ) != '\n' && scr.charAt( posnr - 1 ) != '\r' ) {
+    while ( posnr > 0 && scr.charAt( posnr - 1 ) != '\n' && scr.charAt( posnr - 1 ) != '\r' ) {
       posnr--;
       colnr++;
     }
@@ -1892,4 +1890,3 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlPosition.setVisible( enableCondition );
   }
 }
-</pre></body></html>
