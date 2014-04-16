@@ -598,6 +598,12 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
     try {
 
+      // sheet name shouldn't exceed 31 character
+      if ( data.realSheetname != null && data.realSheetname.length() > 31 ) {
+        throw new KettleException(
+          BaseMessages.getString( PKG, "ExcelWriterStep.Exception.MaxSheetName", data.realSheetname ) );
+      }
+
       // clear style cache
       int numOfFields =
         meta.getOutputFields() != null && meta.getOutputFields().length > 0 ? meta.getOutputFields().length : 0;
@@ -888,7 +894,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           prepareNextOutputFile();
         } catch ( KettleException e ) {
           e.printStackTrace();
-          logError( "Couldn't prepare output file " + meta.getFileName() );
+          logError( "Couldn't prepare output file " + environmentSubstitute( meta.getFileName() ) );
           setErrors( 1L );
           stopAll();
 
