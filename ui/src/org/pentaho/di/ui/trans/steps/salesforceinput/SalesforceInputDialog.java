@@ -1313,8 +1313,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
   }
 
   private void setEnableInclModule() {
-    wInclModuleField.setEnabled( wInclModule.getSelection() &amp;&amp; !wspecifyQuery.getSelection() );
-    wlInclModuleField.setEnabled( wInclModule.getSelection() &amp;&amp; !wspecifyQuery.getSelection() );
+    wInclModuleField.setEnabled( wInclModule.getSelection() && !wspecifyQuery.getSelection() );
+    wlInclModuleField.setEnabled( wInclModule.getSelection() && !wspecifyQuery.getSelection() );
   }
 
   private void setEnableInclRownum() {
@@ -1446,7 +1446,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     String fieldname = prefix + field.getName();
 
     Object value = field.getObjectValue();
-    if ( value != null &amp;&amp; value instanceof SObject ) {
+    if ( value != null && value instanceof SObject ) {
       SObject sobject = (SObject) value;
       for ( MessageElement element : sobject.get_any() ) {
         addFields( fieldname + ".", fieldNames, element );
@@ -1461,12 +1461,12 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     String fieldLength = null;
     String fieldPrecision = null;
-    if ( !fieldType.equals( "boolean" ) &amp;&amp; !fieldType.equals( "datetime" ) &amp;&amp; !fieldType.equals( "date" ) ) {
+    if ( !fieldType.equals( "boolean" ) && !fieldType.equals( "datetime" ) && !fieldType.equals( "date" ) ) {
       int length = field.getLength();
 	  if(length == 18 || length > 30000)
-	  fieldLength = Integer.toString( field.getLength() );
+	  fieldLength = Integer.toString( length );
 	  else
-	  fieldLength = Integer.toString( field.getLength()*4 );
+	  fieldLength = Integer.toString( length*4 );
 	  
       fieldPrecision = Integer.toString( field.getPrecision() );
     }
@@ -1541,7 +1541,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
   private void updateRecordsFilter() {
     boolean activeFilter =
-      ( !wspecifyQuery.getSelection() &amp;&amp; SalesforceConnectionUtils.getRecordsFilterByDesc( wRecordsFilter
+      ( !wspecifyQuery.getSelection() && SalesforceConnectionUtils.getRecordsFilterByDesc( wRecordsFilter
         .getText() ) != SalesforceConnectionUtils.RECORDS_FILTER_ALL );
 
     wlReadFrom.setEnabled( activeFilter );
@@ -1647,10 +1647,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         if ( format != null ) {
           item.setText( 5, format );
         }
-        if ( length != null &amp;&amp; !"-1".equals( length ) ) {
+        if ( length != null && !"-1".equals( length ) ) {
           item.setText( 6, length );
         }
-        if ( prec != null &amp;&amp; !"-1".equals( prec ) ) {
+        if ( prec != null && !"-1".equals( prec ) ) {
           item.setText( 7, prec );
         }
         if ( curr != null ) {
@@ -1784,7 +1784,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
           Trans trans = progressDialog.getTrans();
           String loggingText = progressDialog.getLoggingText();
 
-          if ( trans.getResult() != null &amp;&amp; trans.getResult().getNrErrors() &gt; 0 ) {
+          if ( trans.getResult() != null && trans.getResult().getNrErrors() &gt; 0 ) {
             EnterTextDialog etd =
               new EnterTextDialog(
                 shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
@@ -1827,7 +1827,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
         // retrieve modules list
         String[] modules = connection.getAllAvailableObjects( true );
-        if ( modules != null &amp;&amp; modules.length &gt; 0 ) {
+        if ( modules != null && modules.length &gt; 0 ) {
           // populate Combo
           wModule.setItems( modules );
         }
@@ -1873,7 +1873,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
     // Go back from position to last CR: how many positions?
     int colnr = 0;
-    while ( posnr &gt; 0 &amp;&amp; scr.charAt( posnr - 1 ) != '\n' &amp;&amp; scr.charAt( posnr - 1 ) != '\r' ) {
+    while ( posnr &gt; 0 && scr.charAt( posnr - 1 ) != '\n' && scr.charAt( posnr - 1 ) != '\r' ) {
       posnr--;
       colnr++;
     }
@@ -1885,7 +1885,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
   private void enableCondition() {
     boolean enableCondition =
       !wspecifyQuery.getSelection()
-        &amp;&amp; SalesforceConnectionUtils.getRecordsFilterByDesc( wRecordsFilter.getText() )
+        && SalesforceConnectionUtils.getRecordsFilterByDesc( wRecordsFilter.getText() )
           == SalesforceConnectionUtils.RECORDS_FILTER_ALL;
     wlCondition.setVisible( enableCondition );
     wCondition.setVisible( enableCondition );
