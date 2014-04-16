@@ -320,9 +320,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Bad files destination directory
   private Label wlWarnDestDir;
   private Button wbbWarnDestDir; // Browse: add file or directory
-  private Button wbvWarnDestDir; // Variable
-  private Text wWarnDestDir;
-  private FormData fdlWarnDestDir, fdbBadDestDir, fdbvWarnDestDir, fdBadDestDir;
+  private TextVar wWarnDestDir;
+  private FormData fdlWarnDestDir, fdbBadDestDir, fdBadDestDir;
   private Label wlWarnExt;
   private Text wWarnExt;
   private FormData fdlWarnDestExt, fdWarnDestExt;
@@ -330,9 +329,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Error messages files destination directory
   private Label wlErrorDestDir;
   private Button wbbErrorDestDir; // Browse: add file or directory
-  private Button wbvErrorDestDir; // Variable
-  private Text wErrorDestDir;
-  private FormData fdlErrorDestDir, fdbErrorDestDir, fdbvErrorDestDir, fdErrorDestDir;
+  private TextVar wErrorDestDir;
+  private FormData fdlErrorDestDir, fdbErrorDestDir, fdErrorDestDir;
   private Label wlErrorExt;
   private Text wErrorExt;
   private FormData fdlErrorDestExt, fdErrorDestExt;
@@ -340,9 +338,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Line numbers files destination directory
   private Label wlLineNrDestDir;
   private Button wbbLineNrDestDir; // Browse: add file or directory
-  private Button wbvLineNrDestDir; // Variable
-  private Text wLineNrDestDir;
-  private FormData fdlLineNrDestDir, fdbLineNrDestDir, fdbvLineNrDestDir, fdLineNrDestDir;
+  private TextVar wLineNrDestDir;
+  private FormData fdlLineNrDestDir, fdbLineNrDestDir, fdLineNrDestDir;
   private Label wlLineNrExt;
   private Text wLineNrExt;
   private FormData fdlLineNrDestExt, fdLineNrDestExt;
@@ -1803,21 +1800,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdbBadDestDir.top = new FormAttachment( previous, margin * 4 );
     wbbWarnDestDir.setLayoutData( fdbBadDestDir );
 
-    wbvWarnDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbvWarnDestDir );
-    wbvWarnDestDir.setText( BaseMessages.getString( PKG, "System.Button.Variable" ) );
-    wbvWarnDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.VariableToDir" ) );
-    fdbvWarnDestDir = new FormData();
-    fdbvWarnDestDir.right = new FormAttachment( wbbWarnDestDir, -margin );
-    fdbvWarnDestDir.top = new FormAttachment( previous, margin * 4 );
-    wbvWarnDestDir.setLayoutData( fdbvWarnDestDir );
-
     wWarnExt = new Text( wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wWarnExt );
     wWarnExt.addModifyListener( lsMod );
     fdWarnDestExt = new FormData();
-    fdWarnDestExt.left = new FormAttachment( wbvWarnDestDir, -150 );
-    fdWarnDestExt.right = new FormAttachment( wbvWarnDestDir, -margin );
+    fdWarnDestExt.left = new FormAttachment( wbbWarnDestDir, -150 );
+    fdWarnDestExt.right = new FormAttachment( wbbWarnDestDir, -margin );
     fdWarnDestExt.top = new FormAttachment( previous, margin * 4 );
     wWarnExt.setLayoutData( fdWarnDestExt );
 
@@ -1829,7 +1817,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdlWarnDestExt.right = new FormAttachment( wWarnExt, -margin );
     wlWarnExt.setLayoutData( fdlWarnDestExt );
 
-    wWarnDestDir = new Text( wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wWarnDestDir = new TextVar( transMeta, wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wWarnDestDir );
     wWarnDestDir.addModifyListener( lsMod );
     fdBadDestDir = new FormData();
@@ -1840,14 +1828,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Listen to the Browse... button
     wbbWarnDestDir
-        .addSelectionListener( DirectoryDialogButtonListenerFactory.getSelectionAdapter( shell, wWarnDestDir ) );
-
-    // Listen to the Variable... button
-    wbvWarnDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter( shell, wWarnDestDir,
-      transMeta ) );
+      .addSelectionListener(
+        DirectoryDialogButtonListenerFactory.getSelectionAdapter( shell, wWarnDestDir.getTextWidget() ) );
 
     // Whenever something changes, set the tooltip to the expanded version of the directory:
-    wWarnDestDir.addModifyListener( getModifyListenerTooltipText( wWarnDestDir ) );
+    wWarnDestDir.addModifyListener( getModifyListenerTooltipText( wWarnDestDir.getTextWidget() ) );
 
     // Error lines files directory + extension
     previous = wWarnDestDir;
@@ -1871,16 +1856,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdbErrorDestDir.top = new FormAttachment( previous, margin );
     wbbErrorDestDir.setLayoutData( fdbErrorDestDir );
 
-    wbvErrorDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbvErrorDestDir );
-    wbvErrorDestDir.setText( BaseMessages.getString( PKG, "System.Button.Variable" ) );
-    wbvErrorDestDir.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.VariableToDir" ) );
-    fdbvErrorDestDir = new FormData();
-    fdbvErrorDestDir.right = new FormAttachment( wbbErrorDestDir, -margin );
-    fdbvErrorDestDir.left = new FormAttachment( wbvWarnDestDir, 0, SWT.LEFT );
-    fdbvErrorDestDir.top = new FormAttachment( previous, margin );
-    wbvErrorDestDir.setLayoutData( fdbvErrorDestDir );
-
     wErrorExt = new Text( wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wErrorExt );
     wErrorExt.addModifyListener( lsMod );
@@ -1898,7 +1873,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdlErrorDestExt.right = new FormAttachment( wErrorExt, -margin );
     wlErrorExt.setLayoutData( fdlErrorDestExt );
 
-    wErrorDestDir = new Text( wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wErrorDestDir = new TextVar( transMeta, wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wErrorDestDir );
     wErrorDestDir.addModifyListener( lsMod );
     fdErrorDestDir = new FormData();
@@ -1909,16 +1884,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Listen to the Browse... button
     wbbErrorDestDir.addSelectionListener( DirectoryDialogButtonListenerFactory.getSelectionAdapter( shell,
-        wErrorDestDir ) );
-
-    // Listen to the Variable... button
-    wbvErrorDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter( shell, wErrorDestDir,
-        transMeta ) );
+        wErrorDestDir.getTextWidget() ) );
 
     // Whenever something changes, set the tooltip to the expanded version of the directory:
-    wErrorDestDir.addModifyListener( getModifyListenerTooltipText( wErrorDestDir ) );
+    wErrorDestDir.addModifyListener( getModifyListenerTooltipText( wErrorDestDir.getTextWidget() ) );
 
-    // Data Error lines files directory + extention
+    // Data Error lines files directory + extension
     previous = wErrorDestDir;
 
     // LineNrDestDir line
@@ -1940,16 +1911,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdbLineNrDestDir.top = new FormAttachment( previous, margin );
     wbbLineNrDestDir.setLayoutData( fdbLineNrDestDir );
 
-    wbvLineNrDestDir = new Button( wErrorComp, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbvLineNrDestDir );
-    wbvLineNrDestDir.setText( BaseMessages.getString( PKG, "System.Button.Variable" ) );
-    wbvLineNrDestDir.setToolTipText( "System.Tooltip.VariableToDir" );
-    fdbvLineNrDestDir = new FormData();
-    fdbvLineNrDestDir.right = new FormAttachment( wbbLineNrDestDir, -margin );
-    fdbvLineNrDestDir.left = new FormAttachment( wbvErrorDestDir, 0, SWT.LEFT );
-    fdbvLineNrDestDir.top = new FormAttachment( previous, margin );
-    wbvLineNrDestDir.setLayoutData( fdbvLineNrDestDir );
-
     wLineNrExt = new Text( wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wLineNrExt );
     wLineNrExt.addModifyListener( lsMod );
@@ -1967,7 +1928,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdlLineNrDestExt.right = new FormAttachment( wLineNrExt, -margin );
     wlLineNrExt.setLayoutData( fdlLineNrDestExt );
 
-    wLineNrDestDir = new Text( wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wLineNrDestDir = new TextVar( transMeta, wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wLineNrDestDir );
     wLineNrDestDir.addModifyListener( lsMod );
     fdLineNrDestDir = new FormData();
@@ -1978,14 +1939,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // Listen to the Browse... button
     wbbLineNrDestDir.addSelectionListener( DirectoryDialogButtonListenerFactory.getSelectionAdapter( shell,
-        wLineNrDestDir ) );
-
-    // Listen to the Variable... button
-    wbvLineNrDestDir.addSelectionListener( VariableButtonListenerFactory.getSelectionAdapter( shell, wLineNrDestDir,
-        transMeta ) );
+        wLineNrDestDir.getTextWidget() ) );
 
     // Whenever something changes, set the tooltip to the expanded version of the directory:
-    wLineNrDestDir.addModifyListener( getModifyListenerTooltipText( wLineNrDestDir ) );
+    wLineNrDestDir.addModifyListener( getModifyListenerTooltipText( wLineNrDestDir.getTextWidget() ) );
 
     fdErrorComp = new FormData();
     fdErrorComp.left = new FormAttachment( 0, 0 );
@@ -2193,21 +2150,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wlWarnExt.setEnabled( wErrorIgnored.getSelection() );
     wWarnExt.setEnabled( wErrorIgnored.getSelection() );
     wbbWarnDestDir.setEnabled( wErrorIgnored.getSelection() );
-    wbvWarnDestDir.setEnabled( wErrorIgnored.getSelection() );
 
     wlErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
     wErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
     wlErrorExt.setEnabled( wErrorIgnored.getSelection() );
     wErrorExt.setEnabled( wErrorIgnored.getSelection() );
     wbbErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
-    wbvErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
 
     wlLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
     wLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
     wlLineNrExt.setEnabled( wErrorIgnored.getSelection() );
     wLineNrExt.setEnabled( wErrorIgnored.getSelection() );
     wbbLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
-    wbvLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
 
     wlNrHeader.setEnabled( wHeader.getSelection() );
     wNrHeader.setEnabled( wHeader.getSelection() );
