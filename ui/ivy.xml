@@ -36,6 +36,7 @@
     <dependency org="jfree"                 name="jfreechart"          rev="1.0.13"           transitive="false"/>
     <dependency org="rhino"                 name="js"                  rev="1.7R3"            transitive="false"/>            
     
-    <dependency org="junit"                 name="junit"               rev="4.7" conf="test->default"  transitive="false"/>          
+    <dependency org="junit"                 name="junit"               rev="4.7"   conf="test->default"  transitive="false"/>
+    <dependency org="org.mockito"           name="mockito-all"         rev="1.9.5" conf="test->default"  transitive="false"/>
   </dependencies>
 </ivy-module>
