@@ -2184,8 +2184,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
         newName.append( '_' );
       } else {
         // allow protectors
-        for ( char protector : protectors) {
-          if (c == protector) {
+        for ( char protector : protectors ) {
+          if ( c == protector ) {
             newName.append( c );
           }
         }
