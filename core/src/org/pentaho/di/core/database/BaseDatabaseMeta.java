@@ -2173,13 +2173,22 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   public String getSafeFieldname( String fieldname ) {
     StringBuffer newName = new StringBuffer( fieldname.length() );
 
-    // alpha numerics only
+    char[] protectors = getFieldnameProtector().toCharArray();
+
+    // alpha numerics , underscores, field protectors only
     for ( int idx = 0; idx < fieldname.length(); idx++ ) {
       char c = fieldname.charAt( idx );
-      if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) || ( c >= '0' && c <= '9' ) ) {
+      if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) || ( c >= '0' && c <= '9' ) || ( c == '_' ) ) {
         newName.append( c );
       } else if ( c == ' ' ) {
         newName.append( '_' );
+      } else {
+        // allow protectors
+        for ( char protector : protectors) {
+          if (c == protector) {
+            newName.append( c );
+          }
+        }
       }
       // else {
       // swallow this character
