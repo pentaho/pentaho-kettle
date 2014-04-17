@@ -155,12 +155,15 @@ public class SocketRepository {
    *           in case there is an error
    */
   public synchronized void closeAll() {
-    for ( Iterator<SocketRepositoryEntry> iterator = socketMap.values().iterator(); iterator.hasNext(); ) {
-      SocketRepositoryEntry entry = iterator.next();
+    for ( Iterator<Map.Entry<Integer, SocketRepositoryEntry>> iterator = socketMap.entrySet().iterator();
+          iterator.hasNext(); ) {
+      Map.Entry<Integer, SocketRepositoryEntry> repositoryEntry = iterator.next();
+      SocketRepositoryEntry entry = repositoryEntry.getValue();
       ServerSocket serverSocket = entry.getServerSocket();
       try {
         if ( serverSocket != null ) {
           serverSocket.close();
+          iterator.remove();
         }
       } catch ( IOException e ) {
         log.logError( "Carte socket repository : Failed to close socket during shutdown", e );
