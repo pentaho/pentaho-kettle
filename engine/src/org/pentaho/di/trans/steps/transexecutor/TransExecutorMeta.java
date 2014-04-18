@@ -369,8 +369,9 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
     executionResultTargetStep = rep.getStepAttributeString( id_step, "execution_result_target_step" );
     executionTimeField = rep.getStepAttributeString( id_step, "execution_time_field" );
-    executionNrErrorsField = rep.getStepAttributeString( id_step, "execution_result_field" );
-    executionLinesReadField = rep.getStepAttributeString( id_step, "execution_errors_field" );
+    executionResultField = rep.getStepAttributeString( id_step, "execution_result_field" );
+    executionNrErrorsField = rep.getStepAttributeString( id_step, "execution_errors_field" );
+    executionLinesReadField = rep.getStepAttributeString( id_step, "execution_lines_read_field" );
     executionLinesWrittenField = rep.getStepAttributeString( id_step, "execution_lines_written_field" );
     executionLinesInputField = rep.getStepAttributeString( id_step, "execution_lines_input_field" );
     executionLinesOutputField = rep.getStepAttributeString( id_step, "execution_lines_output_field" );
