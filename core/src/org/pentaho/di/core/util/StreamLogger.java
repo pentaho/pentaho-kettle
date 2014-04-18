@@ -1,8 +1,8 @@
-/*******************************************************************************
+/*! ******************************************************************************
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,39 +30,51 @@ import java.io.InputStreamReader;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
+public class StreamLogger implements Runnable {
+  private InputStream is;
 
+  private String type;
 
-public class StreamLogger implements Runnable
-{
-    private InputStream is;
+  private LogChannelInterface log;
 
-    private String      type;
+  private Boolean errorStream;
 
-	private LogChannelInterface	log;
+  private String lastLine;
 
-    public StreamLogger(LogChannelInterface log, InputStream is, String type)
-    {
-    	this.log = log;
-        this.is = is;
-        this.type = type;
+  public StreamLogger( LogChannelInterface log, InputStream is, String type ) {
+    this( log, is, type, false );
+  }
+
+  public StreamLogger( LogChannelInterface log, InputStream is, String type, Boolean errorStream ) {
+    this.log = log;
+    this.is = is;
+    this.type = type;
+    this.errorStream = errorStream;
+  }
+
+  @Override
+  public void run() {
+    try {
+      InputStreamReader isr = new InputStreamReader( is );
+      BufferedReader br = new BufferedReader( isr );
+      String line = null;
+      while ( ( line = br.readLine() ) != null ) {
+        lastLine = line;
+        if ( errorStream ) {
+          log.logError( type + " " + line );
+        } else {
+          log.logBasic( type + " " + line );
+        }
+
+      }
+    } catch ( IOException ioe ) {
+      log.logError( type + " " + Const.getStackTracker( ioe ) );
     }
 
-    @Override
-    public void run()
-    {
-        try
-        {
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            String line = null;
-            while ((line = br.readLine()) != null)
-            {
-                log.logBasic(type + " " + line); 
-            }
-        }
-        catch (IOException ioe)
-        {
-            log.logError(type + " " + Const.getStackTracker(ioe)); 
-        }
-    }
+  }
+
+  public String getLastLine() {
+    return lastLine;
+  }
+
 }
