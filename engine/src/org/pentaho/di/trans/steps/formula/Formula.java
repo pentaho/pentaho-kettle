@@ -31,6 +31,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -38,6 +39,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.reporting.libraries.formula.LibFormulaErrorValue;
 import org.pentaho.reporting.libraries.formula.parser.FormulaParser;
 
 /**
@@ -142,48 +144,36 @@ public class Formula extends BaseStep implements StepInterface {
             data.formulas[i] = data.createFormula( meta.getFormula()[i].getFormula() );
           }
 
-          Object value = null;
+          // this is main part of all this step: calculate formula
           Object formulaResult = data.formulas[i].evaluate();
+          if ( formulaResult instanceof LibFormulaErrorValue ) {
+            // inspect why it is happens to get clear error message.
+            throw new KettleException( "Error calculate formula. Formula "
+                + fn.getFormula() + " output field: " + fn.getFieldName() + ", error is: " + formulaResult.toString() );
+          }
 
           // Calculate the return type on the first row...
-          //
+          // for most cases we can try to convert data on a fly.
           if ( data.returnType[i] < 0 ) {
             if ( formulaResult instanceof String ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_STRING;
-              if ( fn.getValueType() != ValueMetaInterface.TYPE_STRING ) {
-                throw new KettleValueException( "Please specify a String type for field ["
-                  + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
-              }
-            } else if ( formulaResult instanceof Number ) {
-              data.returnType[i] = FormulaData.RETURN_TYPE_NUMBER;
-              if ( fn.getValueType() != ValueMetaInterface.TYPE_NUMBER ) {
-                throw new KettleValueException( "Please specify a Number type for field ["
-                  + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
-              }
+              fn.setNeedDataConversion( fn.getValueType() != ValueMetaInterface.TYPE_STRING );
             } else if ( formulaResult instanceof Integer ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_INTEGER;
-              if ( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER ) {
-                throw new KettleValueException( "Please specify an Integer type for field ["
-                  + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
-              }
+              fn.setNeedDataConversion( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER );
             } else if ( formulaResult instanceof Long ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_LONG;
-              if ( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER ) {
-                throw new KettleValueException( "Please specify an Integer type for field ["
-                  + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
-              }
+              fn.setNeedDataConversion( fn.getValueType() != ValueMetaInterface.TYPE_INTEGER );
             } else if ( formulaResult instanceof Date ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_DATE;
-              if ( fn.getValueType() != ValueMetaInterface.TYPE_DATE ) {
-                throw new KettleValueException( "Please specify a Date type for field ["
-                  + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
-              }
+              fn.setNeedDataConversion( fn.getValueType() != ValueMetaInterface.TYPE_DATE );
             } else if ( formulaResult instanceof BigDecimal ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_BIGDECIMAL;
-              if ( fn.getValueType() != ValueMetaInterface.TYPE_BIGNUMBER ) {
-                throw new KettleValueException( "Please specify a BigNumber type for field ["
-                  + fn.getFieldName() + "] as a result of formula [" + fn.getFormula() + "]" );
-              }
+              fn.setNeedDataConversion( fn.getValueType() != ValueMetaInterface.TYPE_BIGNUMBER );
+            } else if ( formulaResult instanceof Number ) {
+              data.returnType[i] = FormulaData.RETURN_TYPE_NUMBER;
+              fn.setNeedDataConversion( fn.getValueType() != ValueMetaInterface.TYPE_NUMBER );
+            // this types we will not make attempt to auto-convert
             } else if ( formulaResult instanceof byte[] ) {
               data.returnType[i] = FormulaData.RETURN_TYPE_BYTE_ARRAY;
               if ( fn.getValueType() != ValueMetaInterface.TYPE_BINARY ) {
@@ -200,29 +190,54 @@ public class Formula extends BaseStep implements StepInterface {
               data.returnType[i] = FormulaData.RETURN_TYPE_STRING;
             }
           }
+          Object value = null;
+          int realIndex = ( data.replaceIndex[i] < 0 ) ? tempIndex++ : data.replaceIndex[i];
 
           switch ( data.returnType[i] ) {
             case FormulaData.RETURN_TYPE_STRING:
-              if ( formulaResult != null ) {
-                value = formulaResult.toString();
-              } else {
+              if ( formulaResult == null ) {
                 value = null;
+              }
+              if ( fn.isNeedDataConversion() ) {
+                value = convertDataToTargetValueMeta( realIndex, formulaResult );
+              } else {
+                value = formulaResult.toString();
               }
               break;
             case FormulaData.RETURN_TYPE_NUMBER:
-              value = new Double( ( (Number) formulaResult ).doubleValue() );
+              if ( fn.isNeedDataConversion() ) {
+                value = convertDataToTargetValueMeta( realIndex, formulaResult );
+              } else {
+                value = new Double( ( (Number) formulaResult ).doubleValue() );
+              }
               break;
             case FormulaData.RETURN_TYPE_INTEGER:
-              value = new Long( ( (Integer) formulaResult ).intValue() );
+              if ( fn.isNeedDataConversion() ) {
+                value = convertDataToTargetValueMeta( realIndex, formulaResult );
+              } else {
+                value = new Long( ( (Integer) formulaResult ).intValue() );
+              }
               break;
             case FormulaData.RETURN_TYPE_LONG:
-              value = formulaResult;
+              if ( fn.isNeedDataConversion() ) {
+                value = convertDataToTargetValueMeta( realIndex, formulaResult );
+              } else {
+                value = formulaResult;
+              }
               break;
             case FormulaData.RETURN_TYPE_DATE:
-              value = formulaResult;
+              if ( fn.isNeedDataConversion() ) {
+                value = convertDataToTargetValueMeta( realIndex, formulaResult );
+              } else {
+                value = formulaResult;
+              }
               break;
             case FormulaData.RETURN_TYPE_BIGDECIMAL:
-              value = formulaResult;
+              if ( fn.isNeedDataConversion() ) {
+                value = convertDataToTargetValueMeta( realIndex, formulaResult );
+              } else {
+                value = formulaResult;
+              }
               break;
             case FormulaData.RETURN_TYPE_BYTE_ARRAY:
               value = formulaResult;
@@ -230,17 +245,9 @@ public class Formula extends BaseStep implements StepInterface {
             case FormulaData.RETURN_TYPE_BOOLEAN:
               value = formulaResult;
               break;
-            default:
-              value = null;
-          }
+          } //if none case is caught - null is returned.
 
-          // We're done, store it in the row with all the data, including the temporary data...
-          //
-          if ( data.replaceIndex[i] < 0 ) {
-            outputRowData[tempIndex++] = value;
-          } else {
-            outputRowData[data.replaceIndex[i]] = value;
-          }
+          outputRowData[realIndex] = value;
         }
       }
 
@@ -248,6 +255,16 @@ public class Formula extends BaseStep implements StepInterface {
     } catch ( Throwable e ) {
       throw new KettleValueException( e );
     }
+  }
+
+  private Object convertDataToTargetValueMeta( int i, Object formulaResult ) throws KettleException {
+    if ( formulaResult == null ) {
+      return formulaResult;
+    }
+    ValueMetaInterface target = data.outputRowMeta.getValueMeta( i );
+    ValueMetaInterface actual = ValueMetaFactory.guessValueMetaInterface( formulaResult );
+    Object value = target.convertData( actual, formulaResult );
+    return value;
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {

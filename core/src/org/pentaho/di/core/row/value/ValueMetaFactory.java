@@ -22,7 +22,9 @@
 
 package org.pentaho.di.core.row.value;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -159,5 +161,52 @@ public class ValueMetaFactory {
     }
 
     return list;
+  }
+
+  /**
+   * <p>This method makes attempt to guess kettle value meta interface based on Object class.
+   * This may be the case when we somehow obtain an Object as a result of any calculation,
+   * and we are trying to assign some ValueMeta for it.</p>
+   * 
+   * <p>As an example - we have target value meta Number (which is java Double under the hood)
+   * and value as a BigDecimal.<br />
+   * This BigDecimal can be converted to a Double value.<br /> 
+   * we have {@link ValueMetaInterface#convertData(ValueMetaInterface, Object)} call for this
+   * where is ValueMetaInterface object is our target value meta, Object is a BigDecimal - so
+   * we need to pass ValueMetaBigNumber as a first parameter, value Object as a second and
+   * as the result we will have target Double (ValueMetaNumber) value so we can safely 
+   * put it into output rowset.</p>
+   * 
+   * <p>Something similar we had for ValueMetaBase.getValueFromSQLType(...) to guess value meta
+   * for java sql type.</p>
+   * 
+   * <p>Currently this method does not have support for plugin value meta. Hope if this approach
+   * will be found usable this may be implemented later.</p>
+   * 
+   * @param object object to guess applicable ValueMetaInterface.
+   * @return
+   * @see ValueMetaInterface if the kettle value meta is recognized, null otherwise.
+   */
+  public static ValueMetaInterface guessValueMetaInterface( Object object ) {
+    if ( object instanceof Number ) {
+      // this is numeric object
+      if ( object instanceof BigDecimal ) {
+        return new ValueMetaBigNumber();
+      } else if ( object instanceof Double ) {
+        return new ValueMetaNumber();
+      } else if ( object instanceof Long ) {
+        return new ValueMetaInteger();
+      }
+    } else if ( object instanceof String ) {
+      return new ValueMetaString();
+    } else if ( object instanceof Date ) {
+      return new ValueMetaDate();
+    } else if ( object instanceof Boolean ) {
+      return new ValueMetaBoolean();
+    } else if ( object instanceof byte[] ) {
+      return new ValueMetaBinary();
+    }
+    // ask someone else
+    return null;
   }
 }
