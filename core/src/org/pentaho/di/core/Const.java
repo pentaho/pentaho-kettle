@@ -154,7 +154,7 @@ public class Const {
   /**
    * Path to the users home directory (keep this entry above references to getKettleDirectory())
    *
-   * @deprecated Use {@link Const.getUserHomeDirectory()} instead.
+   * @deprecated Use {@link Const#getUserHomeDirectory()} instead.
    */
   @Deprecated
   public static final String USER_HOME_DIRECTORY = NVL( System.getProperty( "KETTLE_HOME" ), System
@@ -902,6 +902,11 @@ public class Const {
   public static final String KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO = "KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO";
 
   /**
+   * The name of the variable containing an alternative default timestamp format
+   */
+  public static final String KETTLE_DEFAULT_TIMESTAMP_FORMAT = "KETTLE_DEFAULT_TIMESTAMP_FORMAT";
+
+  /**
    * Compatibility settings for setNrErrors
    */
   // see PDI-10270 for details.
@@ -1084,7 +1089,7 @@ public class Const {
   /**
    * Left trim: remove spaces to the left of a String.
    *
-   * @param str
+   * @param source
    *          The String to left trim
    * @return The left trimmed String
    */
@@ -1103,7 +1108,7 @@ public class Const {
   /**
    * Right trim: remove spaces to the right of a string
    *
-   * @param str
+   * @param source
    *          The string to right trim
    * @return The trimmed string.
    */
@@ -2252,7 +2257,7 @@ public class Const {
    * Check if the string array supplied is empty. A String array is empty when it is null or when the number of elements
    * is 0
    *
-   * @param string
+   * @param strings
    *          The string array to check
    * @return true if the string array supplied is empty
    */

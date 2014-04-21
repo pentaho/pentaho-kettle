@@ -1,16 +1,20 @@
 <kettle-variables>
 
-    <kettle-variable>
-    	<description>Do not show the developer version warning dialog at Spoon startup?</description>
-		<variable>KETTLE_HIDE_DEVELOPMENT_VERSION_WARNING</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>Do not show the developer version warning dialog at Spoon startup?</description>
+    <variable>KETTLE_HIDE_DEVELOPMENT_VERSION_WARNING</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
 
-    <kettle-variable>
-    	<description>System wide flag to allow lenient string to number conversion for backward compatibility. If this setting is set to "Y", an string starting with digits will be converted successfully into a number. (example: 192.168.1.1 will be converted into 192 or 192.168 or 192168 depending on the decimal and grouping symbol). The default (N) will be to throw an error if non-numeric symbols are found in the string.</description>
-		<variable>KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>System wide flag to allow lenient string to number conversion for backward compatibility. If this
+      setting is set to "Y", an string starting with digits will be converted successfully into a number. (example:
+      192.168.1.1 will be converted into 192 or 192.168 or 192168 depending on the decimal and grouping symbol). The
+      default (N) will be to throw an error if non-numeric symbols are found in the string.
+    </description>
+    <variable>KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
 
   <kettle-variable>
     <description>System wide flag to ignore timezone while writing date/timestamp value to the database.</description>
@@ -18,301 +22,339 @@
     <default-value>N</default-value>
   </kettle-variable>
 
-    <kettle-variable>
-    	<description>The log size limit for all transformations and jobs that don't have the "log size limit" property set in their respective properties.</description>
-		<variable>KETTLE_LOG_SIZE_LIMIT</variable>
-		<default-value>0</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The log size limit for all transformations and jobs that don't have the "log size limit" property set
+      in their respective properties.
+    </description>
+    <variable>KETTLE_LOG_SIZE_LIMIT</variable>
+    <default-value>0</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The transformation log database connection default for all transformations.</description>
-		<variable>KETTLE_TRANS_LOG_DB</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The transformation log database connection default for all transformations.</description>
+    <variable>KETTLE_TRANS_LOG_DB</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The transformation logging schema default for all transformations</description>
-		<variable>KETTLE_TRANS_LOG_SCHEMA</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The transformation logging schema default for all transformations</description>
+    <variable>KETTLE_TRANS_LOG_SCHEMA</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The transformation logging table default for all transformations</description>
-		<variable>KETTLE_TRANS_LOG_TABLE</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The transformation logging table default for all transformations</description>
+    <variable>KETTLE_TRANS_LOG_TABLE</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The job log database connection default for all jobs</description>
-		<variable>KETTLE_JOB_LOG_DB</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The job log database connection default for all jobs</description>
+    <variable>KETTLE_JOB_LOG_DB</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The job logging schema default for all jobs</description>
-		<variable>KETTLE_JOB_LOG_SCHEMA</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The job logging schema default for all jobs</description>
+    <variable>KETTLE_JOB_LOG_SCHEMA</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The job logging table default for all jobs</description>
-		<variable>KETTLE_JOB_LOG_TABLE</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The job logging table default for all jobs</description>
+    <variable>KETTLE_JOB_LOG_TABLE</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The transformation performance log schema default for all transformations</description>
-		<variable>KETTLE_TRANS_PERFORMANCE_LOG_DB</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The transformation performance log schema default for all transformations</description>
+    <variable>KETTLE_TRANS_PERFORMANCE_LOG_DB</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The transformation performance log database connection default for all transformations</description>
-		<variable>KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The transformation performance log database connection default for all transformations</description>
+    <variable>KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The transformation performance log table default for all transformations</description>
-		<variable>KETTLE_TRANS_PERFORMANCE_LOG_TABLE</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The transformation performance log table default for all transformations</description>
+    <variable>KETTLE_TRANS_PERFORMANCE_LOG_TABLE</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The job entry log database default for all jobs</description>
-		<variable>KETTLE_JOBENTRY_LOG_DB</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The job entry log database default for all jobs</description>
+    <variable>KETTLE_JOBENTRY_LOG_DB</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The job entry log schema default for all jobs</description>
-		<variable>KETTLE_JOBENTRY_LOG_SCHEMA</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The job entry log schema default for all jobs</description>
+    <variable>KETTLE_JOBENTRY_LOG_SCHEMA</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The job entry log table default for all jobs</description>
-		<variable>KETTLE_JOBENTRY_LOG_TABLE</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The job entry log table default for all jobs</description>
+    <variable>KETTLE_JOBENTRY_LOG_TABLE</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The steps log database default for all transformations</description>
-		<variable>KETTLE_STEP_LOG_DB</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The steps log database default for all transformations</description>
+    <variable>KETTLE_STEP_LOG_DB</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The steps log schema default for all transformations</description>
-		<variable>KETTLE_STEP_LOG_SCHEMA</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The steps log schema default for all transformations</description>
+    <variable>KETTLE_STEP_LOG_SCHEMA</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The steps log table default for all transformations</description>
-		<variable>KETTLE_STEP_LOG_TABLE</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The steps log table default for all transformations</description>
+    <variable>KETTLE_STEP_LOG_TABLE</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The log channel log database default for all transformations and jobs</description>
-		<variable>KETTLE_CHANNEL_LOG_DB</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The log channel log database default for all transformations and jobs</description>
+    <variable>KETTLE_CHANNEL_LOG_DB</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The log channel log schema default for all transformations and jobs</description>
-		<variable>KETTLE_CHANNEL_LOG_SCHEMA</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The log channel log schema default for all transformations and jobs</description>
+    <variable>KETTLE_CHANNEL_LOG_SCHEMA</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The log channel log table default for all transformations and jobs</description>
-		<variable>KETTLE_CHANNEL_LOG_TABLE</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The log channel log table default for all transformations and jobs</description>
+    <variable>KETTLE_CHANNEL_LOG_TABLE</variable>
+  </kettle-variable>
 
-        <kettle-variable>
-                <description>The metrics log database default for all transformations and jobs</description>
-                <variable>KETTLE_METRICS_LOG_DB</variable>
-        </kettle-variable>
+  <kettle-variable>
+    <description>The metrics log database default for all transformations and jobs</description>
+    <variable>KETTLE_METRICS_LOG_DB</variable>
+  </kettle-variable>
 
-        <kettle-variable>
-                <description>The metrics log schema default for all transformations and jobs</description>
-                <variable>KETTLE_METRICS_LOG_SCHEMA</variable>
-        </kettle-variable>
+  <kettle-variable>
+    <description>The metrics log schema default for all transformations and jobs</description>
+    <variable>KETTLE_METRICS_LOG_SCHEMA</variable>
+  </kettle-variable>
 
-        <kettle-variable>
-                <description>The metrics log table default for all transformations and jobs</description>
-                <variable>KETTLE_METRICS_LOG_TABLE</variable>
-        </kettle-variable>
+  <kettle-variable>
+    <description>The metrics log table default for all transformations and jobs</description>
+    <variable>KETTLE_METRICS_LOG_TABLE</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The location of the shared object file (xml) for transformations and jobs</description>
-		<variable>KETTLE_SHARED_OBJECTS</variable>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The location of the shared object file (xml) for transformations and jobs</description>
+    <variable>KETTLE_SHARED_OBJECTS</variable>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>NULL vs Empty String. If this setting is set to Y, an empty string and null are different. Otherwise they are not.</description>
-		<variable>KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>NULL vs Empty String. If this setting is set to Y, an empty string and null are different. Otherwise
+      they are not.
+    </description>
+    <variable>KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all rows (default)</description>
-		<variable>KETTLE_MAX_LOG_SIZE_IN_LINES</variable>
-		<default-value>5000</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all rows
+      (default)
+    </description>
+    <variable>KETTLE_MAX_LOG_SIZE_IN_LINES</variable>
+    <default-value>5000</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The maximum age (in minutes) of a log line while being kept internally by Kettle. Set to 0 to keep all rows indefinitely (default)</description>
-		<variable>KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES</variable>
-		<default-value>1440</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The maximum age (in minutes) of a log line while being kept internally by Kettle. Set to 0 to keep all
+      rows indefinitely (default)
+    </description>
+    <variable>KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES</variable>
+    <default-value>1440</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The maximum number of job trackers kept in memory</description>
-		<variable>KETTLE_MAX_JOB_TRACKER_SIZE</variable>
-		<default-value>5000</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The maximum number of job trackers kept in memory</description>
+    <variable>KETTLE_MAX_JOB_TRACKER_SIZE</variable>
+    <default-value>5000</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The maximum number of job entry results kept in memory for logging purposes. </description>
-		<variable>KETTLE_MAX_JOB_ENTRIES_LOGGED</variable>
-		<default-value>5000</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The maximum number of job entry results kept in memory for logging purposes.</description>
+    <variable>KETTLE_MAX_JOB_ENTRIES_LOGGED</variable>
+    <default-value>5000</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The maximum number of logging registry entries kept in memory for logging purposes.</description>
-		<variable>KETTLE_MAX_LOGGING_REGISTRY_SIZE</variable>
-		<default-value>10000</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The maximum number of logging registry entries kept in memory for logging purposes.</description>
+    <variable>KETTLE_MAX_LOGGING_REGISTRY_SIZE</variable>
+    <default-value>10000</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>A comma delimited list of classes to scan for plugin annotations</description>
-		<variable>KETTLE_PLUGIN_CLASSES</variable>
-		<default-value/>
-	</kettle-variable>
+  <kettle-variable>
+    <description>A comma delimited list of classes to scan for plugin annotations</description>
+    <variable>KETTLE_PLUGIN_CLASSES</variable>
+    <default-value/>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>A comma delimited list of packages to scan for plugin annotations (warning: slow!!)</description>
-		<variable>KETTLE_PLUGIN_PACKAGES</variable>
-		<default-value/>
-	</kettle-variable>
+  <kettle-variable>
+    <description>A comma delimited list of packages to scan for plugin annotations (warning: slow!!)</description>
+    <variable>KETTLE_PLUGIN_PACKAGES</variable>
+    <default-value/>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The maximum number of step performance snapshots to keep in memory. Set to 0 to keep all snapshots indefinitely (default)</description>
-		<variable>KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT</variable>
-		<default-value>0</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The maximum number of step performance snapshots to keep in memory. Set to 0 to keep all snapshots
+      indefinitely (default)
+    </description>
+    <variable>KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT</variable>
+    <default-value>0</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The name of the variable that optionally contains an alternative rowset get timeout (in ms). This only makes a difference for extremely short lived transformations.</description>
-		<variable>KETTLE_ROWSET_GET_TIMEOUT</variable>
-		<default-value>50</default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>The name of the variable that optionally contains an alternative rowset put timeout (in ms). This only makes a difference for extremely short lived transformations.</description>
-		<variable>KETTLE_ROWSET_PUT_TIMEOUT</variable>
-		<default-value>50</default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>The name of the environment variable that will contain the alternative location of the kettle-steps.xml file.  You can use this to customize the list of available internal steps outside of the codebase.</description>
-		<variable>KETTLE_CORE_STEPS_FILE</variable>
-		<default-value></default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>The name of the environment variable that will contain the alternative location of the kettle-job-entries.xml file.</description>
-		<variable>KETTLE_CORE_JOBENTRIES_FILE</variable>
-		<default-value></default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>Experimental! Set this variable to Y if you want to test a more efficient batching row set. Use at your own risk.</description>
-		<variable>KETTLE_BATCHING_ROWSET</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>This environment variable will set a time-out after which waiting, completed or stopped transformations and jobs will be automatically cleaned up.  The default value is 1440 (one day).</description>
-		<variable>KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES</variable>
-		<default-value>1440</default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>Set this variable to an integer that will be returned as the Pan JVM exit code.</description>
-		<variable>KETTLE_TRANS_PAN_JVM_EXIT_CODE</variable>
-		<default-value></default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The name of the variable that optionally contains an alternative rowset get timeout (in ms). This only
+      makes a difference for extremely short lived transformations.
+    </description>
+    <variable>KETTLE_ROWSET_GET_TIMEOUT</variable>
+    <default-value>50</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>Set this variable to Y to disable standard Kettle logging to the console. (stdout)</description>
-		<variable>KETTLE_DISABLE_CONSOLE_LOGGING</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The name of the variable that optionally contains an alternative rowset put timeout (in ms). This only
+      makes a difference for extremely short lived transformations.
+    </description>
+    <variable>KETTLE_ROWSET_PUT_TIMEOUT</variable>
+    <default-value>50</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<variable>PENTAHO_METASTORE_FOLDER</variable>
-		<description>You can specify an alternative location for the Pentaho client Metastore. This location defaults to $HOME/.pentaho/metastore when this variable is not set or empty.</description>
-		<default-value></default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The name of the environment variable that will contain the alternative location of the kettle-steps.xml
+      file. You can use this to customize the list of available internal steps outside of the codebase.
+    </description>
+    <variable>KETTLE_CORE_STEPS_FILE</variable>
+    <default-value></default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>Set this variable to Y to redirect stderr to Kettle logging.</description>
-		<variable>KETTLE_REDIRECT_STDERR</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>The name of the environment variable that will contain the alternative location of the
+      kettle-job-entries.xml file.
+    </description>
+    <variable>KETTLE_CORE_JOBENTRIES_FILE</variable>
+    <default-value></default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>Set this variable to Y to redirect stdout to Kettle logging.</description>
-		<variable>KETTLE_REDIRECT_STDOUT</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>Experimental! Set this variable to Y if you want to test a more efficient batching row set. Use at your
+      own risk.
+    </description>
+    <variable>KETTLE_BATCHING_ROWSET</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>Set this variable to point to the Simple JNDI folder containing a jdbc.properties file (default is simple-jndi).</description>
-		<variable>KETTLE_JNDI_ROOT</variable>
-		<default-value></default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>This environment variable will set a time-out after which waiting, completed or stopped transformations
+      and jobs will be automatically cleaned up. The default value is 1440 (one day).
+    </description>
+    <variable>KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES</variable>
+    <default-value>1440</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The name of the variable containing an alternative default number format</description>
-		<variable>KETTLE_DEFAULT_NUMBER_FORMAT</variable>
-		<default-value></default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>Set this variable to an integer that will be returned as the Pan JVM exit code.</description>
+    <variable>KETTLE_TRANS_PAN_JVM_EXIT_CODE</variable>
+    <default-value></default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The name of the variable containing an alternative default bignumber format</description>
-		<variable>KETTLE_DEFAULT_BIGNUMBER_FORMAT</variable>
-		<default-value></default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <description>Set this variable to Y to disable standard Kettle logging to the console. (stdout)</description>
+    <variable>KETTLE_DISABLE_CONSOLE_LOGGING</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>The name of the variable containing an alternative default integer format</description>
-		<variable>KETTLE_DEFAULT_INTEGER_FORMAT</variable>
-		<default-value></default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>The name of the variable containing an alternative default date format</description>
-		<variable>KETTLE_DEFAULT_DATE_FORMAT</variable>
-		<default-value></default-value>
-	</kettle-variable>
+  <kettle-variable>
+    <variable>PENTAHO_METASTORE_FOLDER</variable>
+    <description>You can specify an alternative location for the Pentaho client Metastore. This location defaults to
+      $HOME/.pentaho/metastore when this variable is not set or empty.
+    </description>
+    <default-value></default-value>
+  </kettle-variable>
 
-	<kettle-variable>
-		<description>Defines the default encoding for servlets, leave it empty to use Java default encoding</description>
-		<variable>KETTLE_DEFAULT_SERVLET_ENCODING</variable>
-		<default-value></default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>Set this variable to Y when you want the job/transformation fail with an error when the related logging process (e.g. to a database) fails.</description>
-		<variable>KETTLE_FAIL_ON_LOGGING_ERROR</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>Set this variable to Y to precede log lines with the mapping step name and the mapping itself.</description>
-		<variable>KETTLE_LOG_MARK_MAPPINGS</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>Set this variable to Y to set the minimum to NULL if NULL is within an aggregate. Otherwise by default NULL is ignored by the MIN aggregate and MIN is set to the minimum value that is not NULL. See also the variable KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO.</description>
-		<variable>KETTLE_AGGREGATION_MIN_NULL_IS_VALUED</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
-	
-	<kettle-variable>
-		<description>Set this variable to Y to return 0 when all values within an aggregate are NULL. Otherwise by default a NULL is returned when all values are NULL.</description>
-		<variable>KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO</variable>
-		<default-value>N</default-value>
-	</kettle-variable>
-	
-	
+  <kettle-variable>
+    <description>Set this variable to Y to redirect stderr to Kettle logging.</description>
+    <variable>KETTLE_REDIRECT_STDERR</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to Y to redirect stdout to Kettle logging.</description>
+    <variable>KETTLE_REDIRECT_STDOUT</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to point to the Simple JNDI folder containing a jdbc.properties file (default is
+      simple-jndi).
+    </description>
+    <variable>KETTLE_JNDI_ROOT</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The name of the variable containing an alternative default number format</description>
+    <variable>KETTLE_DEFAULT_NUMBER_FORMAT</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The name of the variable containing an alternative default bignumber format</description>
+    <variable>KETTLE_DEFAULT_BIGNUMBER_FORMAT</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The name of the variable containing an alternative default integer format</description>
+    <variable>KETTLE_DEFAULT_INTEGER_FORMAT</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The name of the variable containing an alternative default date format</description>
+    <variable>KETTLE_DEFAULT_DATE_FORMAT</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The name of the variable containing an alternative default timestamp format</description>
+    <variable>KETTLE_DEFAULT_TIMESTAMP_FORMAT</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Defines the default encoding for servlets, leave it empty to use Java default encoding</description>
+    <variable>KETTLE_DEFAULT_SERVLET_ENCODING</variable>
+    <default-value></default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to Y when you want the job/transformation fail with an error when the related logging
+      process (e.g. to a database) fails.
+    </description>
+    <variable>KETTLE_FAIL_ON_LOGGING_ERROR</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to Y to precede log lines with the mapping step name and the mapping itself.
+    </description>
+    <variable>KETTLE_LOG_MARK_MAPPINGS</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to Y to set the minimum to NULL if NULL is within an aggregate. Otherwise by default
+      NULL is ignored by the MIN aggregate and MIN is set to the minimum value that is not NULL. See also the variable
+      KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO.
+    </description>
+    <variable>KETTLE_AGGREGATION_MIN_NULL_IS_VALUED</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to Y to return 0 when all values within an aggregate are NULL. Otherwise by default a
+      NULL is returned when all values are NULL.
+    </description>
+    <variable>KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
 </kettle-variables>

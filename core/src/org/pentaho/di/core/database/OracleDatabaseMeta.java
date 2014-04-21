@@ -364,6 +364,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        if ( supportsTimestampDataType() ) {
+          retval.append( "TIMESTAMP" );
+        } else {
+          retval.append( "DATE" );
+        }
+        break;
       case ValueMetaInterface.TYPE_DATE:
         retval.append( "DATE" );
         break;
@@ -481,7 +488,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    *          a connected database
    * @param schemaName
    * @param tableName
-   * @param idxFields
+   * @param idx_fields
    * @return true if the index exists, false if it doesn't.
    * @throws KettleDatabaseException
    */
@@ -595,13 +602,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    * Returns an empty string as most databases do not support tablespaces. Subclasses can override this method to
    * generate the DDL.
    *
-   * @param VariableSpace
+   * @param variables
    *          variables needed for variable substitution.
-   * @param DatabaseMeta
+   * @param databaseMeta
    *          databaseMeta needed for it's quoteField method. Since we are doing variable substitution we need to meta
    *          so that we can act on the variable substitution first and then the creation of the entire string that will
    *          be retuned.
-   * @param String
+   * @param tablespace
    *          tablespaceName name of the tablespace.
    *
    * @return String the TABLESPACE tablespaceName section of an Oracle CREATE DDL statement.

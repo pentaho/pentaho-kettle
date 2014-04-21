@@ -22,6 +22,12 @@
 
 package org.pentaho.di.trans.steps.orabulkloader;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,14 +35,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * Does the opening of the output "stream". It's either a file or inter process communication which is transparant to
@@ -64,7 +65,7 @@ public class OraBulkDataOutput {
   public void open( VariableSpace space, Process sqlldrProcess ) throws KettleException {
     String loadMethod = meta.getLoadMethod();
     try {
-      OutputStream os = null;
+      OutputStream os;
 
       if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals( loadMethod ) ) {
         os = sqlldrProcess.getOutputStream();
@@ -130,8 +131,8 @@ public class OraBulkDataOutput {
     outbuf.setLength( 0 );
 
     // Write the data to the output
-    ValueMetaInterface v = null;
-    int number = 0;
+    ValueMetaInterface v;
+    int number;
     for ( int i = 0; i < fieldNumbers.length; i++ ) {
       if ( i != 0 ) {
         outbuf.append( "," );
@@ -146,7 +147,7 @@ public class OraBulkDataOutput {
         switch ( v.getType() ) {
           case ValueMetaInterface.TYPE_STRING:
             String s = mi.getString( row, number );
-            if ( s.indexOf( enclosure ) >= 0 ) {
+            if ( s.contains( enclosure ) ) {
               s = createEscapedString( s, enclosure );
             }
             outbuf.append( enclosure );
@@ -186,7 +187,7 @@ public class OraBulkDataOutput {
           case ValueMetaInterface.TYPE_BOOLEAN:
             Boolean b = mi.getBoolean( row, number );
             outbuf.append( enclosure );
-            if ( b.booleanValue() ) {
+            if ( b ) {
               outbuf.append( "Y" );
             } else {
               outbuf.append( "N" );
@@ -198,6 +199,12 @@ public class OraBulkDataOutput {
             outbuf.append( "<startlob>" );
             outbuf.append( byt );
             outbuf.append( "<endlob>" );
+            break;
+          case ValueMetaInterface.TYPE_TIMESTAMP:
+            Timestamp timestamp = (Timestamp) mi.getDate( row, number );
+            outbuf.append( enclosure );
+            outbuf.append( timestamp.toString() );
+            outbuf.append( enclosure );
             break;
           default:
             throw new KettleException( "Unsupported type" );

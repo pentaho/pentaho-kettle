@@ -22,6 +22,17 @@
 
 package org.pentaho.di.core.row.value;
 
+import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -32,18 +43,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.pentaho.di.compatibility.Value;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleEOFException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import java.util.Locale;
 
 public class ValueMetaTimestamp extends ValueMetaDate {
 
@@ -116,59 +119,59 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     if ( object == null ) {
       return null;
     }
-    switch ( type ) {
+    switch( type ) {
       case TYPE_TIMESTAMP:
-        switch ( storageType ) {
+        switch( storageType ) {
           case STORAGE_TYPE_NORMAL:
             return (Timestamp) object;
           case STORAGE_TYPE_BINARY_STRING:
             return (Timestamp) convertBinaryStringToNativeType( (byte[]) object );
           case STORAGE_TYPE_INDEXED:
-            return (Timestamp) index[( (Integer) object ).intValue()];
+            return (Timestamp) index[ ( (Integer) object ).intValue() ];
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
       case TYPE_STRING:
-        switch ( storageType ) {
+        switch( storageType ) {
           case STORAGE_TYPE_NORMAL:
             return convertStringToTimestamp( (String) object );
           case STORAGE_TYPE_BINARY_STRING:
             return convertStringToTimestamp( (String) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertStringToTimestamp( (String) index[( (Integer) object ).intValue()] );
+            return convertStringToTimestamp( (String) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
       case TYPE_NUMBER:
-        switch ( storageType ) {
+        switch( storageType ) {
           case STORAGE_TYPE_NORMAL:
             return convertNumberToTimestamp( (Double) object );
           case STORAGE_TYPE_BINARY_STRING:
             return convertNumberToTimestamp( (Double) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertNumberToTimestamp( (Double) index[( (Integer) object ).intValue()] );
+            return convertNumberToTimestamp( (Double) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
       case TYPE_INTEGER:
-        switch ( storageType ) {
+        switch( storageType ) {
           case STORAGE_TYPE_NORMAL:
             return convertIntegerToTimestamp( (Long) object );
           case STORAGE_TYPE_BINARY_STRING:
             return convertIntegerToTimestamp( (Long) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertIntegerToTimestamp( (Long) index[( (Integer) object ).intValue()] );
+            return convertIntegerToTimestamp( (Long) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
       case TYPE_BIGNUMBER:
-        switch ( storageType ) {
+        switch( storageType ) {
           case STORAGE_TYPE_NORMAL:
             return convertBigNumberToTimestamp( (BigDecimal) object );
           case STORAGE_TYPE_BINARY_STRING:
             return convertBigNumberToTimestamp( (BigDecimal) convertBinaryStringToNativeType( (byte[]) object ) );
           case STORAGE_TYPE_INDEXED:
-            return convertBigNumberToTimestamp( (BigDecimal) index[( (Integer) object ).intValue()] );
+            return convertBigNumberToTimestamp( (BigDecimal) index[ ( (Integer) object ).intValue() ] );
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -241,14 +244,19 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     if ( Const.isEmpty( string ) ) {
       return null;
     }
-
+    Timestamp returnValue;
     try {
-      return Timestamp.valueOf( string );
+      returnValue = Timestamp.valueOf( string );
     } catch ( IllegalArgumentException e ) {
-      throw new KettleValueException( toString()
-        + " : couldn't convert string [" + string
-        + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
+      try {
+        returnValue = (Timestamp) getDateFormat().parse( string );
+      } catch ( ParseException ex ) {
+        throw new KettleValueException( toString()
+          + " : couldn't convert string [" + string
+          + "] to a timestamp, expecting format [yyyy-mm-dd hh:mm:ss.ffffff]", e );
+      }
     }
+    return returnValue;
   }
 
   protected synchronized String convertTimestampToString( Timestamp timestamp ) throws KettleValueException {
@@ -257,21 +265,17 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return null;
     }
 
-    String dateTime = getDateFormat().format( timestamp );
-    dateTime += "." + new DecimalFormat( "000000000" ).format( timestamp.getNanos() );
-    // return timestamp.toString();
-
-    return dateTime;
+    return getDateFormat().format( timestamp );
   }
 
   @Override
   public Object convertDataFromString( String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull,
-    int trim_type ) throws KettleValueException {
+                                       int trim_type ) throws KettleValueException {
     // null handling and conversion of value to null
     //
     String null_value = nullIf;
     if ( null_value == null ) {
-      switch ( convertMeta.getType() ) {
+      switch( convertMeta.getType() ) {
         case Value.VALUE_TYPE_BOOLEAN:
           null_value = Const.NULL_BOOLEAN;
           break;
@@ -341,7 +345,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
     // Trimming
     StringBuffer strpol;
-    switch ( trim_type ) {
+    switch( trim_type ) {
       case ValueMetaInterface.TRIM_TYPE_LEFT:
         strpol = new StringBuffer( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
@@ -389,17 +393,14 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   /**
    * Convert the specified data to the data type specified in this object.
    *
-   * @param meta2
-   *          the metadata of the object to be converted
-   * @param data2
-   *          the data of the object to be converted
+   * @param meta2 the metadata of the object to be converted
+   * @param data2 the data of the object to be converted
    * @return the object in the data type of this value metadata object
-   * @throws KettleValueException
-   *           in case there is a data conversion error
+   * @throws KettleValueException in case there is a data conversion error
    */
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
-    switch ( meta2.getType() ) {
+    switch( meta2.getType() ) {
       case TYPE_STRING:
         return convertStringToTimestamp( meta2.getString( data2 ) );
       case TYPE_INTEGER:
@@ -429,7 +430,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   @Override
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name, ResultSetMetaData rm,
-    int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
+                                                 int index, boolean ignoreLength, boolean lazyConversion )
+    throws KettleDatabaseException {
 
     try {
       int type = rm.getColumnType( index );
@@ -473,7 +475,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   @Override
   public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement,
-    int index, Object data ) throws KettleDatabaseException {
+                                         int index, Object data ) throws KettleDatabaseException {
 
     try {
       if ( data != null ) {
@@ -509,13 +511,13 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       return (byte[]) object; // shortcut it directly for better performance.
     }
 
-    switch ( storageType ) {
+    switch( storageType ) {
       case STORAGE_TYPE_NORMAL:
         return convertStringToBinaryString( getString( object ) );
       case STORAGE_TYPE_BINARY_STRING:
         return convertStringToBinaryString( (String) convertBinaryStringToNativeType( (byte[]) object ) );
       case STORAGE_TYPE_INDEXED:
-        return convertStringToBinaryString( getString( index[( (Integer) object ).intValue()] ) );
+        return convertStringToBinaryString( getString( index[ ( (Integer) object ).intValue() ] ) );
       default:
         throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
     }
@@ -529,7 +531,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       outputStream.writeBoolean( object == null );
 
       if ( object != null ) {
-        switch ( storageType ) {
+        switch( storageType ) {
           case STORAGE_TYPE_NORMAL:
             // Handle Content -- only when not NULL
             Timestamp timestamp = (Timestamp) object;
@@ -573,7 +575,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
         return null; // done
       }
 
-      switch ( storageType ) {
+      switch( storageType ) {
         case STORAGE_TYPE_NORMAL:
           // Handle Content -- only when not NULL
           long time = inputStream.readLong();
@@ -600,4 +602,43 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
   }
 
+  @Override
+  public synchronized SimpleDateFormat getDateFormat() {
+    if ( conversionMetadata != null ) {
+      return new SimpleTimestampFormat( conversionMetadata.getDateFormat().toPattern() );
+    }
+
+    if ( dateFormat == null || dateFormatChanged ) {
+      // This may not become static as the class is not thread-safe!
+      dateFormat = new SimpleTimestampFormat( new SimpleDateFormat().toPattern() );
+
+      String mask;
+      if ( Const.isEmpty( conversionMask ) ) {
+        mask = DEFAULT_TIMESTAMP_FORMAT_MASK;
+      } else {
+        mask = conversionMask;
+      }
+
+      // Do we have a locale?
+      //
+      if ( dateFormatLocale == null || dateFormatLocale.equals( Locale.getDefault() ) ) {
+        dateFormat = new SimpleTimestampFormat( mask );
+      } else {
+        dateFormat = new SimpleTimestampFormat( mask, dateFormatLocale );
+      }
+
+      // Do we have a time zone?
+      //
+      if ( dateFormatTimeZone != null ) {
+        dateFormat.setTimeZone( dateFormatTimeZone );
+      }
+
+      // Set the conversion leniency as well
+      //
+      dateFormat.setLenient( dateFormatLenient );
+
+      dateFormatChanged = false;
+    }
+    return dateFormat;
+  }
 }
