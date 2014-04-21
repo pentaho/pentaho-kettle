@@ -115,4 +115,9 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
     fileWriterMap = new HashMap<String, OutputStream>();
   }
+
+  List<String> getPreviouslyOpenedFiles() {
+    return previouslyOpenedFiles;
+  }
+
 }
