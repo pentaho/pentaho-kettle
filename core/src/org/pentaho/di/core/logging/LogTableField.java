@@ -41,18 +41,23 @@ public class LogTableField implements Cloneable {
 
   @Override
   public boolean equals( Object obj ) {
-    if ( this == obj )
+    if ( this == obj ) {
       return true;
-    if ( obj == null )
+    }
+    if ( obj == null ) {
       return false;
-    if ( getClass() != obj.getClass() )
+    }
+    if ( getClass() != obj.getClass() ) {
       return false;
+    }
     LogTableField other = (LogTableField) obj;
     if ( id == null ) {
-      if ( other.id != null )
+      if ( other.id != null ) {
         return false;
-    } else if ( !id.equals( other.id ) )
+      }
+    } else if ( !id.equals( other.id ) ) {
       return false;
+    }
     return true;
   }
 
@@ -85,7 +90,8 @@ public class LogTableField implements Cloneable {
    * @param subject
    * @param description
    */
-  public LogTableField( String id, boolean enabled, String fieldName, Object subject, String name, String description ) {
+  public LogTableField( String id, boolean enabled, String fieldName,
+      Object subject, String name, String description ) {
     this.id = id;
     this.enabled = enabled;
     this.fieldName = fieldName;
