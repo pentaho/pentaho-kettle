@@ -44,14 +44,18 @@ public class FormulaMetaFunction implements Cloneable {
   private String replaceField;
 
   /**
+   * This value will be discovered on runtime and need not to be persisted into xml or rep.
+   */
+  private transient boolean needDataConversion = false;
+
+  /**
+   * 
    * @param fieldName
-   * @param calcType
-   * @param fieldA
-   * @param fieldB
-   * @param fieldC
+   * @param formula
    * @param valueType
    * @param valueLength
    * @param valuePrecision
+   * @param replaceField
    */
   public FormulaMetaFunction( String fieldName, String formula, int valueType, int valueLength,
     int valuePrecision, String replaceField ) {
@@ -214,5 +218,19 @@ public class FormulaMetaFunction implements Cloneable {
    */
   public void setReplaceField( String replaceField ) {
     this.replaceField = replaceField;
+  }
+
+  /**
+   * @return the needDataConversion
+   */
+  public boolean isNeedDataConversion() {
+    return needDataConversion;
+  }
+
+  /**
+   * @param needDataConversion the needDataConversion to set
+   */
+  public void setNeedDataConversion( boolean needDataConversion ) {
+    this.needDataConversion = needDataConversion;
   }
 }
