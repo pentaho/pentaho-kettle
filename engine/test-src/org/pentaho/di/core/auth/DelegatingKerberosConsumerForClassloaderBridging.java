@@ -36,8 +36,7 @@ public class DelegatingKerberosConsumerForClassloaderBridging implements
   }
 
   @Override
-  public Object consume( KerberosAuthenticationProviderProxyInterface authenticationProvider )
-    throws AuthenticationConsumptionException {
+  public Object consume( KerberosAuthenticationProviderProxyInterface authenticationProvider ) throws AuthenticationConsumptionException {
     return delegate.consume( authenticationProvider );
   }
 }

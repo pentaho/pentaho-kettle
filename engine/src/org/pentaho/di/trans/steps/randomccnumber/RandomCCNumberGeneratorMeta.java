@@ -154,8 +154,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     this.fieldCCLength = fieldType;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -261,8 +260,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "cctype" );
 
@@ -282,8 +280,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < fieldCCType.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "cctype", fieldCCType[i] );

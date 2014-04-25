@@ -104,8 +104,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
     return sb.toString();
   }
 
-  public boolean execute( MonetDBBulkLoaderMeta meta, boolean wait )
-    throws KettleException {
+  public boolean execute( MonetDBBulkLoaderMeta meta, boolean wait ) throws KettleException {
     if ( log.isDetailed() ) {
       logDetailed( "Started execute" );
     }
@@ -670,8 +669,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
    *
    * @param database to connect to
    */
-  protected static void executeSql( String query, String host, int port, String user, String password, String db )
-      throws Exception {
+  protected static void executeSql( String query, String host, int port, String user, String password, String db ) throws Exception {
     MapiSocket mserver = null;
     try {
       mserver = getMonetDBConnection( host, port, user, password, db );

@@ -181,8 +181,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
 
       String method = XMLHandler.getTagValue( stepnode, SPECIFICATION_METHOD );
@@ -232,8 +231,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       String method = rep.getStepAttributeString( id_step, SPECIFICATION_METHOD );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
@@ -274,8 +272,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, SPECIFICATION_METHOD,
         specificationMethod == null ? null : specificationMethod.getCode() );
@@ -592,8 +589,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return loadTransformationMeta( this, rep, metaStore, space );
   }
 

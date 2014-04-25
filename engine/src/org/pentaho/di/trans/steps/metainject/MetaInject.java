@@ -365,8 +365,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     return null;
   }
 
-  private void setEntryValue( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source )
-    throws KettleValueException {
+  private void setEntryValue( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source ) throws KettleValueException {
     // A standard attribute, a single row of data...
     //
     Object value = null;

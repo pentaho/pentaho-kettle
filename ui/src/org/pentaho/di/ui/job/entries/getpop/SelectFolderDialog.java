@@ -170,8 +170,7 @@ public class SelectFolderDialog extends Dialog {
     return true;
   }
 
-  private void buildFoldersTree( Folder folder, TreeItem parentTreeItem, boolean topfolder )
-    throws MessagingException {
+  private void buildFoldersTree( Folder folder, TreeItem parentTreeItem, boolean topfolder ) throws MessagingException {
     if ( ( folder.getType() & Folder.HOLDS_FOLDERS ) != 0 ) {
       Folder[] f = folder.list();
       for ( int i = 0; i < f.length; i++ ) {

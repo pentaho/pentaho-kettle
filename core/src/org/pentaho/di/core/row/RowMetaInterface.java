@@ -504,8 +504,7 @@ public interface RowMetaInterface extends Cloneable {
    * @throws KettleValueException
    *           the kettle value exception
    */
-  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 )
-    throws KettleValueException;
+  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 ) throws KettleValueException;
 
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending

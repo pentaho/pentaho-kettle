@@ -80,8 +80,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   private XulTextbox location;
 
-  public SpoonBrowser( Composite parent, final Spoon spoon, final String stringUrl, boolean isURL )
-    throws SWTError {
+  public SpoonBrowser( Composite parent, final Spoon spoon, final String stringUrl, boolean isURL ) throws SWTError {
     this( parent, spoon, stringUrl, isURL, true, null );
   }
 

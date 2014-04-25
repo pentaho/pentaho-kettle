@@ -176,6 +176,5 @@ public interface VariableSpace {
    * @throws KettleValueException
    *           In case there is a String conversion error
    */
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException;
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException;
 }

@@ -92,8 +92,7 @@ public class LdapProtocol {
     return "LDAP";
   }
 
-  protected void setupEnvironment( Map<String, String> env, String username, String password )
-    throws KettleException {
+  protected void setupEnvironment( Map<String, String> env, String username, String password ) throws KettleException {
     env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory" );
     env.put( "java.naming.ldap.derefAliases", derefAliases );
     env.put( Context.REFERRAL, referral );

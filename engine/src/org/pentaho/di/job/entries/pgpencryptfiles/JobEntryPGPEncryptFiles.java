@@ -1422,8 +1422,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     return success_condition;
   }
 
-  public void doJob( int actionType, FileObject sourcefile, String userID, FileObject destinationfile )
-    throws KettleException {
+  public void doJob( int actionType, FileObject sourcefile, String userID, FileObject destinationfile ) throws KettleException {
 
     switch ( actionType ) {
       case JobEntryPGPEncryptFiles.ACTION_TYPE_SIGN:

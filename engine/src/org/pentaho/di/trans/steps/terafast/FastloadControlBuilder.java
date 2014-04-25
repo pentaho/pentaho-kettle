@@ -93,8 +93,7 @@ public class FastloadControlBuilder {
    * @throws IllegalArgumentException
    *           if input is invalid.
    */
-  public FastloadControlBuilder logon( final String dbhost, final String user, final String password )
-    throws IllegalArgumentException {
+  public FastloadControlBuilder logon( final String dbhost, final String user, final String password ) throws IllegalArgumentException {
     Assert.assertNotBlank( dbhost, "DB host must not be blank" );
     Assert.assertNotBlank( user, "User must not be blank" );
     Assert.assertNotNull( password, "Password must not be null" );
@@ -240,8 +239,7 @@ public class FastloadControlBuilder {
    * @throws IllegalArgumentException
    *           if table is invalid.
    */
-  public FastloadControlBuilder beginLoading( final String schemaName, final String table )
-    throws IllegalArgumentException {
+  public FastloadControlBuilder beginLoading( final String schemaName, final String table ) throws IllegalArgumentException {
     Assert.assertNotBlank( table );
     this.builder.append( "BEGIN LOADING " );
     this.builder.append( table );

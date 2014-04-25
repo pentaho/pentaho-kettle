@@ -190,8 +190,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     this.sql = sql;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     parameterField = null;
     parameterType = null;
     outerJoin = false;
@@ -355,8 +354,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       rowLimit = (int) rep.getStepAttributeInteger( id_step, "rowlimit" );
@@ -379,8 +377,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "rowlimit", rowLimit );

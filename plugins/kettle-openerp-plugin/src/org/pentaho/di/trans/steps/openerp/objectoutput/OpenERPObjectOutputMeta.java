@@ -134,8 +134,7 @@ import org.w3c.dom.Node;
 
 	@Override
 	public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep,
-			List<DatabaseMeta> databases)
-	throws KettleException {
+			List<DatabaseMeta> databases) throws KettleException {
 		try {
 			this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
 			this.modelName = rep.getStepAttributeString(idStep, "modelName");
@@ -201,8 +200,7 @@ import org.w3c.dom.Node;
 
 	}
 
-	private void readData(final Node stepnode, final List < ? extends SharedObjectInterface > databases)
-	throws KettleXMLException {
+	private void readData(final Node stepnode, final List < ? extends SharedObjectInterface > databases) throws KettleXMLException {
 		try {
 			this.databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			this.modelName = XMLHandler.getTagValue(stepnode, "modelName");

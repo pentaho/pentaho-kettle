@@ -785,8 +785,7 @@ public class RowMeta implements RowMetaInterface {
    * @throws KettleValueException
    */
   @Override
-  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 )
-    throws KettleValueException {
+  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 ) throws KettleValueException {
     int len = ( fieldnrs1.length < fieldnrs2.length ) ? fieldnrs1.length : fieldnrs2.length;
     for ( int i = 0; i < len; i++ ) {
       ValueMetaInterface valueMeta = getValueMeta( fieldnrs1[i] );

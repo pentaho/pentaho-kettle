@@ -411,8 +411,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @throws KettleDatabaseException
    */
   @Override
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i )
-    throws KettleDatabaseException {
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
     Object data = null;
 
     try {

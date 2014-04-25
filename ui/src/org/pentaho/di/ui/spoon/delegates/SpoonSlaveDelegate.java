@@ -65,8 +65,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
     tabfolder.setSelected( idx );
   }
 
-  public void delSlaveServer( HasSlaveServersInterface hasSlaveServersInterface, SlaveServer slaveServer )
-    throws KettleException {
+  public void delSlaveServer( HasSlaveServersInterface hasSlaveServersInterface, SlaveServer slaveServer ) throws KettleException {
 
     Repository rep = spoon.getRepository();
 

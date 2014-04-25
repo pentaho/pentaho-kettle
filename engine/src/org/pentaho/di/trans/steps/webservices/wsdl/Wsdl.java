@@ -78,8 +78,7 @@ public final class Wsdl implements java.io.Serializable {
     this( wsdlURI, serviceQName, portName, null, null );
   }
 
-  public Wsdl( URI wsdlURI, QName serviceQName, String portName, String username, String password )
-    throws AuthenticationException {
+  public Wsdl( URI wsdlURI, QName serviceQName, String portName, String username, String password ) throws AuthenticationException {
 
     this.wsdlURI = wsdlURI;
     try {
@@ -151,8 +150,7 @@ public final class Wsdl implements java.io.Serializable {
     this( wsdlLocator, serviceQName, portName, null, null );
   }
 
-  public Wsdl( WSDLLocator wsdlLocator, QName serviceQName, String portName, String username, String password )
-    throws AuthenticationException {
+  public Wsdl( WSDLLocator wsdlLocator, QName serviceQName, String portName, String username, String password ) throws AuthenticationException {
 
     // load and parse the WSDL
     try {
@@ -376,8 +374,7 @@ public final class Wsdl implements java.io.Serializable {
     }
   }
 
-  private Definition readWsdl( WSDLReader wsdlReader, String uri, String username, String password )
-    throws WSDLException, KettleException, AuthenticationException {
+  private Definition readWsdl( WSDLReader wsdlReader, String uri, String username, String password ) throws WSDLException, KettleException, AuthenticationException {
 
     try {
       HTTPProtocol http = new HTTPProtocol();

@@ -14,8 +14,7 @@ import org.junit.Test;
 
 public class DatabaseMetaTest {
   @Test
-  public void testGetDatabaseInterfacesMapWontReturnNullIfCalledSimultaneouslyWithClear()
-    throws InterruptedException, ExecutionException {
+  public void testGetDatabaseInterfacesMapWontReturnNullIfCalledSimultaneouslyWithClear() throws InterruptedException, ExecutionException {
     final AtomicBoolean done = new AtomicBoolean( false );
     ExecutorService executorService = Executors.newCachedThreadPool();
     executorService.submit( new Runnable() {

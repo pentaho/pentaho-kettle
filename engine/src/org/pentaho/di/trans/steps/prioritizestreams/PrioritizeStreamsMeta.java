@@ -63,8 +63,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -105,8 +104,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     // Default: nothing changes to rowMeta
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       Node steps = XMLHandler.getSubNode( stepnode, "steps" );
       int nrsteps = XMLHandler.countNodes( steps, "step" );
@@ -146,8 +144,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       int nrsteps = rep.countNrStepAttributes( id_step, "step_name" );
@@ -162,8 +159,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < stepName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "step_name", stepName[i] );

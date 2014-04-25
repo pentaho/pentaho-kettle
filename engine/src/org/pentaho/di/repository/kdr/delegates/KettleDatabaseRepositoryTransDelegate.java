@@ -122,8 +122,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       quote( KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP ), lookupkey, key );
   }
 
-  public synchronized ObjectId getDependencyID( ObjectId id_transformation, ObjectId id_database, String tablename )
-    throws KettleException {
+  public synchronized ObjectId getDependencyID( ObjectId id_transformation, ObjectId id_database, String tablename ) throws KettleException {
 
     String[] lookupkey =
       new String[] {
@@ -1071,8 +1070,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     }
   }
 
-  public TransDependency loadTransDependency( ObjectId id_dependency, List<DatabaseMeta> databases )
-    throws KettleException {
+  public TransDependency loadTransDependency( ObjectId id_dependency, List<DatabaseMeta> databases ) throws KettleException {
     TransDependency transDependency = new TransDependency();
 
     try {
@@ -1095,8 +1093,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     }
   }
 
-  public void saveTransDependency( TransDependency transDependency, ObjectId id_transformation )
-    throws KettleException {
+  public void saveTransDependency( TransDependency transDependency, ObjectId id_transformation ) throws KettleException {
     try {
       ObjectId id_database =
         transDependency.getDatabase() == null ? null : transDependency.getDatabase().getObjectId();
@@ -1236,8 +1233,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     return retval;
   }
 
-  public String[] getTransformationsWithIDList( List<Object[]> list, RowMetaInterface rowMeta )
-    throws KettleException {
+  public String[] getTransformationsWithIDList( List<Object[]> list, RowMetaInterface rowMeta ) throws KettleException {
     String[] transList = new String[list.size()];
     for ( int i = 0; i < list.size(); i++ ) {
       long id_transformation =
@@ -1473,8 +1469,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     return id;
   }
 
-  public boolean getTransAttributeBoolean( ObjectId id_transformation, int nr, String code )
-    throws KettleException {
+  public boolean getTransAttributeBoolean( ObjectId id_transformation, int nr, String code ) throws KettleException {
     return repository.connectionDelegate.getTransAttributeBoolean( id_transformation, nr, code );
   }
 
@@ -1568,8 +1563,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     }
   }
 
-  private void saveTransAttributesMap( ObjectId transformationId, Map<String, Map<String, String>> attributesMap )
-    throws KettleException {
+  private void saveTransAttributesMap( ObjectId transformationId, Map<String, Map<String, String>> attributesMap ) throws KettleException {
 
     for ( final String groupName : attributesMap.keySet() ) {
       Map<String, String> attributes = attributesMap.get( groupName );
@@ -1583,8 +1577,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     }
   }
 
-  private Map<String, Map<String, String>> loadTransAttributesMap( ObjectId transformationId )
-    throws KettleException {
+  private Map<String, Map<String, String>> loadTransAttributesMap( ObjectId transformationId ) throws KettleException {
     Map<String, Map<String, String>> attributesMap = new HashMap<String, Map<String, String>>();
 
     List<Object[]> attributeRows =

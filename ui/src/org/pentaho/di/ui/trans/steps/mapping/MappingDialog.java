@@ -1137,8 +1137,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
   }
 
-  public RowMetaInterface getFieldsFromStep( String stepname, boolean getTransformationStep, boolean mappingInput )
-    throws KettleException {
+  public RowMetaInterface getFieldsFromStep( String stepname, boolean getTransformationStep, boolean mappingInput ) throws KettleException {
     if ( !( mappingInput ^ getTransformationStep ) ) {
       if ( Const.isEmpty( stepname ) ) {
         // If we don't have a specified stepname we return the input row
@@ -1628,8 +1627,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
    * @param targetStepname The target step to verify
    * @throws KettleException
    */
-  private void enableMappingButton( final Button button, boolean input, String sourceStepname, String targetStepname )
-    throws KettleException {
+  private void enableMappingButton( final Button button, boolean input, String sourceStepname, String targetStepname ) throws KettleException {
     if ( input ) {
       return; // nothing to do
     }

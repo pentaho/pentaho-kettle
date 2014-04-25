@@ -267,8 +267,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    * @deprecated
    */
   @Deprecated
-  public StepMeta( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
-    throws KettleXMLException, KettlePluginLoaderException {
+  public StepMeta( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters ) throws KettleXMLException, KettlePluginLoaderException {
     this( stepnode, databases, (IMetaStore) null );
   }
 
@@ -906,8 +905,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @SuppressWarnings( "deprecation" )
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
 
     // Compatibility with previous release...
     //

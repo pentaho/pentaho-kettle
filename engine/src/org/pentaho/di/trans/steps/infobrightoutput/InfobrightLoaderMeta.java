@@ -150,8 +150,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
 
   // @SuppressWarnings("unchecked")
   @Override
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
     try {
       dataFormat = Enum.valueOf( DataFormat.class, XMLHandler.getTagValue( stepnode, TAG_DATA_FORMAT ) );
@@ -168,8 +167,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     try {
       dataFormat = Enum.valueOf( DataFormat.class, rep.getStepAttributeString( id_step, TAG_DATA_FORMAT ) );
@@ -189,8 +187,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute( id_transformation, id_step, TAG_DATA_FORMAT, dataFormat.toString() );
     rep.saveStepAttribute( id_transformation, id_step, TAG_AGENT_PORT, agentPort );

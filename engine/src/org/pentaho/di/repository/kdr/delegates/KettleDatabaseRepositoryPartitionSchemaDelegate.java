@@ -199,8 +199,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
       KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, table, partitionSchema.getObjectId() );
   }
 
-  public synchronized ObjectId insertPartition( ObjectId id_partition_schema, String partition_id )
-    throws KettleException {
+  public synchronized ObjectId insertPartition( ObjectId id_partition_schema, String partition_id ) throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextPartitionID();
 
     RowMetaAndData table = new RowMetaAndData();

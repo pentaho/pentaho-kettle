@@ -48,8 +48,7 @@ public class AuthenticationConsumerPluginType extends BasePluginType implements 
     populateFolders( "authentication" );
   }
 
-  public void registerPlugin( URLClassLoader classLoader, Class<? extends AuthenticationConsumerType> clazz )
-    throws KettlePluginException {
+  public void registerPlugin( URLClassLoader classLoader, Class<? extends AuthenticationConsumerType> clazz ) throws KettlePluginException {
     AuthenticationConsumerPlugin pluginAnnotation =
       clazz.getAnnotation( AuthenticationConsumerPlugin.class );
     AuthenticationConsumerPluginType.getInstance().handlePluginAnnotation( clazz, pluginAnnotation,

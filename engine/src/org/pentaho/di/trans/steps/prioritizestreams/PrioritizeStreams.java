@@ -142,8 +142,7 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
    * @throws KettleRowException
    *           in case there is a compatibility error.
    */
-  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta )
-    throws KettleRowException {
+  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta ) throws KettleRowException {
     if ( referenceRowMeta != null && compareRowMeta != null ) {
       BaseStep.safeModeChecking( referenceRowMeta, compareRowMeta );
     }

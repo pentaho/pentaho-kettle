@@ -430,8 +430,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   @Override
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name, ResultSetMetaData rm,
-                                                 int index, boolean ignoreLength, boolean lazyConversion )
-    throws KettleDatabaseException {
+                                                 int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
 
     try {
       int type = rm.getColumnType( index );
@@ -459,8 +458,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   }
 
   @Override
-  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
-    throws KettleDatabaseException {
+  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws KettleDatabaseException {
 
     try {
 

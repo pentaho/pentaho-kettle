@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -108,7 +108,7 @@ import org.w3c.dom.Node;
  *
  */
 public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMeta>, XMLInterface,
-    ResourceExportInterface, RepositoryElementInterface, LoggingObjectInterface {
+  ResourceExportInterface, RepositoryElementInterface, LoggingObjectInterface {
 
   private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -702,8 +702,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    * @throws KettleXMLException
    */
   @Deprecated
-  public JobMeta( VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter )
-    throws KettleXMLException {
+  public JobMeta( VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
     this( parentSpace, fname, rep, null, prompter );
   }
 
@@ -785,8 +784,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    *          The prompter to use in case a shared object gets overwritten
    * @throws KettleXMLException
    */
-  public JobMeta( Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter )
-    throws KettleXMLException {
+  public JobMeta( Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter ) throws KettleXMLException {
     loadXML( jobnode, rep, ignoreRepositorySharedObjects, prompter );
   }
 
@@ -864,8 +862,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    * @throws KettleXMLException
    *           the kettle xml exception
    */
-  public void loadXML( Node jobnode, String fname, Repository rep, OverwritePrompter prompter )
-    throws KettleXMLException {
+  public void loadXML( Node jobnode, String fname, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
     loadXML( jobnode, fname, rep, false, prompter );
   }
 
@@ -2071,8 +2068,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     this.batchIdPassed = batchIdPassed;
   }
 
-  public List<SQLStatement> getSQLStatements( Repository repository, ProgressMonitorListener monitor )
-    throws KettleException {
+  public List<SQLStatement> getSQLStatements( Repository repository, ProgressMonitorListener monitor ) throws KettleException {
     return getSQLStatements( repository, null, monitor );
   }
 
@@ -2536,8 +2532,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   }
 
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     String resourceName = null;
     try {
       // Handle naming for both repository and XML bases resources...

@@ -81,8 +81,7 @@ public class TestUtilities {
    *          set 2 of rows to compare
    * @throws TestFailedException
    */
-  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2 )
-    throws TestFailedException {
+  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2 ) throws TestFailedException {
 
     // we call this passing in -1 as the fileNameColumn
     checkRows( rows1, rows2, -1 );
@@ -99,8 +98,7 @@ public class TestUtilities {
    *          Number of the column containing the filename. This is only checked for being non-null (some systems maybe
    *          canonize names differently than we input).
    */
-  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2, int fileNameColumn )
-    throws TestFailedException {
+  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2, int fileNameColumn ) throws TestFailedException {
 
     int idx = 1;
     if ( rows1.size() != rows2.size() ) {

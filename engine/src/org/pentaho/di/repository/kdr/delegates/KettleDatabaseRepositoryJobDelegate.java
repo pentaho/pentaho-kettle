@@ -101,8 +101,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
    * @throws KettleException
    *           in case some IO error occurs.
    */
-  public void saveJob( JobMeta jobMeta, String versionComment, ProgressMonitorListener monitor, boolean overwrite )
-    throws KettleException {
+  public void saveJob( JobMeta jobMeta, String versionComment, ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     try {
 
       // Before saving the job, see if it's not locked by someone else...
@@ -313,8 +312,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
    *          The directory in which the job resides.
    * @throws KettleException
    */
-  public JobMeta loadJobMeta( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor )
-    throws KettleException {
+  public JobMeta loadJobMeta( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor ) throws KettleException {
 
     JobMeta jobMeta = new JobMeta();
     synchronized ( repository ) {
@@ -619,8 +617,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
    * @throws KettleException
    *           Upon any error.
    */
-  public void insertJobParameter( ObjectId id_job, long nr, String key, String defValue, String description )
-    throws KettleException {
+  public void insertJobParameter( ObjectId id_job, long nr, String key, String defValue, String description ) throws KettleException {
     repository.connectionDelegate.insertJobAttribute(
       id_job, nr, KettleDatabaseRepository.JOB_ATTRIBUTE_PARAM_KEY, 0, key != null ? key : "" );
     repository.connectionDelegate.insertJobAttribute(
@@ -968,8 +965,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
   }
 
   public synchronized ObjectId insertJobHop( ObjectId id_job, ObjectId id_jobentry_copy_from,
-    ObjectId id_jobentry_copy_to, boolean enabled, boolean evaluation, boolean unconditional )
-    throws KettleException {
+    ObjectId id_jobentry_copy_to, boolean enabled, boolean evaluation, boolean unconditional ) throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextJobHopID();
 
     RowMetaAndData table = new RowMetaAndData();
@@ -1018,8 +1014,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
     return repository.connectionDelegate.getJobAttributeBoolean( id_job, nr, code );
   }
 
-  public synchronized void moveJob( String jobname, ObjectId id_directory_from, ObjectId id_directory_to )
-    throws KettleException {
+  public synchronized void moveJob( String jobname, ObjectId id_directory_from, ObjectId id_directory_to ) throws KettleException {
     String sql =
       "UPDATE "
         + quoteTable( KettleDatabaseRepository.TABLE_R_JOB ) + " SET "
@@ -1040,8 +1035,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
     repository.connectionDelegate.getDatabase().execStatement( sql, par.getRowMeta(), par.getData() );
   }
 
-  public synchronized void renameJob( ObjectId id_job, RepositoryDirectoryInterface newParentDir, String newname )
-    throws KettleException {
+  public synchronized void renameJob( ObjectId id_job, RepositoryDirectoryInterface newParentDir, String newname ) throws KettleException {
     if ( newParentDir != null || newname != null ) {
       RowMetaAndData table = new RowMetaAndData();
 
@@ -1076,8 +1070,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
     }
   }
 
-  private void saveJobAttributesMap( ObjectId jobId, Map<String, Map<String, String>> attributesMap )
-    throws KettleException {
+  private void saveJobAttributesMap( ObjectId jobId, Map<String, Map<String, String>> attributesMap ) throws KettleException {
     for ( final String groupName : attributesMap.keySet() ) {
       Map<String, String> attributes = attributesMap.get( groupName );
       for ( final String key : attributes.keySet() ) {

@@ -49,8 +49,7 @@ public interface RowDistributionInterface {
    *          The step to distribute the rows in
    * @throws KettleStepException
    */
-  public void distributeRow( RowMetaInterface rowMeta, Object[] row, StepInterface stepInterface )
-    throws KettleStepException;
+  public void distributeRow( RowMetaInterface rowMeta, Object[] row, StepInterface stepInterface ) throws KettleStepException;
 
   /**
    * Which mini-icon needs to be shown on the hop?

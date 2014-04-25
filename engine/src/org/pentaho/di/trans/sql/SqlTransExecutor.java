@@ -100,8 +100,7 @@ public class SqlTransExecutor {
    *
    * @throws KettleException
    */
-  public SqlTransExecutor( String sqlQuery, List<TransDataService> services, Map<String, String> parameters )
-    throws KettleException {
+  public SqlTransExecutor( String sqlQuery, List<TransDataService> services, Map<String, String> parameters ) throws KettleException {
     this( sqlQuery, services, parameters, null, 0 );
   }
 

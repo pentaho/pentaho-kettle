@@ -713,8 +713,7 @@ public class XMLHandler {
    *          true to defer node expansion, false to not defer.
    * @return the Document if all went well, null if an error occurred!
    */
-  public static final Document loadXMLString( String string, Boolean namespaceAware, Boolean deferNodeExpansion )
-    throws KettleXMLException {
+  public static final Document loadXMLString( String string, Boolean namespaceAware, Boolean deferNodeExpansion ) throws KettleXMLException {
     DocumentBuilderFactory dbf;
     DocumentBuilder db;
     Document doc;

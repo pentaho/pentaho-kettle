@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -3026,8 +3026,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     return num2str( format, decimalSymbol, groupingSymbol, null );
   }
 
-  public Value num2str( String format, String decimalSymbol, String groupingSymbol, String currencySymbol )
-    throws KettleValueException {
+  public Value num2str( String format, String decimalSymbol, String groupingSymbol, String currencySymbol ) throws KettleValueException {
     if ( isNull() ) {
       setType( VALUE_TYPE_STRING );
     } else {
@@ -3167,8 +3166,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     return str2num( pattern, decimal, grouping, null );
   }
 
-  public Value str2num( String pattern, String decimal, String grouping, String currency )
-    throws KettleValueException {
+  public Value str2num( String pattern, String decimal, String grouping, String currency ) throws KettleValueException {
     // 0 : pattern
     // 1 : Decimal separator
     // 2 : Grouping separator

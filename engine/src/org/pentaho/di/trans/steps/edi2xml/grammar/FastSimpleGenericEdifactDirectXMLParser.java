@@ -166,8 +166,7 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
     throw new MismatchedTokenException( ttype, input );
   }
 
-  public Object recoverFromMismatchedSet( IntStream input, RecognitionException e, BitSet follow )
-    throws RecognitionException {
+  public Object recoverFromMismatchedSet( IntStream input, RecognitionException e, BitSet follow ) throws RecognitionException {
     throw e;
   }
 
@@ -444,8 +443,7 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
   // C:\\workspace-sts\\Kettle trunk -
   // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:96:1:
   // data_element : ss data_element_payload ;
-  public final FastSimpleGenericEdifactDirectXMLParser.data_element_return data_element()
-    throws RecognitionException {
+  public final FastSimpleGenericEdifactDirectXMLParser.data_element_return data_element() throws RecognitionException {
     FastSimpleGenericEdifactDirectXMLParser.data_element_return retval =
       new FastSimpleGenericEdifactDirectXMLParser.data_element_return();
     retval.start = input.LT( 1 );
@@ -493,8 +491,7 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
   // C:\\workspace-sts\\Kettle trunk -
   // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:98:1:
   // data_element_payload : ( composite_data_item ds )* composite_data_item ;
-  public final FastSimpleGenericEdifactDirectXMLParser.data_element_payload_return data_element_payload()
-    throws RecognitionException {
+  public final FastSimpleGenericEdifactDirectXMLParser.data_element_payload_return data_element_payload() throws RecognitionException {
     FastSimpleGenericEdifactDirectXMLParser.data_element_payload_return retval =
       new FastSimpleGenericEdifactDirectXMLParser.data_element_payload_return();
     retval.start = input.LT( 1 );
@@ -579,8 +576,7 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
   // C:\\workspace-sts\\Kettle trunk -
   // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:102:1:
   // composite_data_item : composite_data_item_val ;
-  public final FastSimpleGenericEdifactDirectXMLParser.composite_data_item_return composite_data_item()
-    throws RecognitionException {
+  public final FastSimpleGenericEdifactDirectXMLParser.composite_data_item_return composite_data_item() throws RecognitionException {
     FastSimpleGenericEdifactDirectXMLParser.composite_data_item_return retval =
       new FastSimpleGenericEdifactDirectXMLParser.composite_data_item_return();
     retval.start = input.LT( 1 );
@@ -631,8 +627,7 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
   // C:\\workspace-sts\\Kettle trunk -
   // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:1:
   // composite_data_item_val : ( txt |);
-  public final FastSimpleGenericEdifactDirectXMLParser.composite_data_item_val_return composite_data_item_val()
-    throws RecognitionException {
+  public final FastSimpleGenericEdifactDirectXMLParser.composite_data_item_val_return composite_data_item_val() throws RecognitionException {
     FastSimpleGenericEdifactDirectXMLParser.composite_data_item_val_return retval =
       new FastSimpleGenericEdifactDirectXMLParser.composite_data_item_val_return();
     retval.start = input.LT( 1 );
@@ -834,8 +829,7 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
   // C:\\workspace-sts\\Kettle trunk -
   // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:115:1:
   // tag_index_id : tag_index_id_val ;
-  public final FastSimpleGenericEdifactDirectXMLParser.tag_index_id_return tag_index_id()
-    throws RecognitionException {
+  public final FastSimpleGenericEdifactDirectXMLParser.tag_index_id_return tag_index_id() throws RecognitionException {
     FastSimpleGenericEdifactDirectXMLParser.tag_index_id_return retval =
       new FastSimpleGenericEdifactDirectXMLParser.tag_index_id_return();
     retval.start = input.LT( 1 );
@@ -884,8 +878,7 @@ public class FastSimpleGenericEdifactDirectXMLParser extends Parser {
   // C:\\workspace-sts\\Kettle trunk -
   // restruct\\engine\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:1:
   // tag_index_id_val : ( txt |);
-  public final FastSimpleGenericEdifactDirectXMLParser.tag_index_id_val_return tag_index_id_val()
-    throws RecognitionException {
+  public final FastSimpleGenericEdifactDirectXMLParser.tag_index_id_val_return tag_index_id_val() throws RecognitionException {
     FastSimpleGenericEdifactDirectXMLParser.tag_index_id_val_return retval =
       new FastSimpleGenericEdifactDirectXMLParser.tag_index_id_val_return();
     retval.start = input.LT( 1 );

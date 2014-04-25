@@ -755,8 +755,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
     return retval;
   }
 
-  private void connectRep( LogChannelInterface log, String realrepName, String realusername, String realpassword )
-    throws Exception {
+  private void connectRep( LogChannelInterface log, String realrepName, String realusername, String realpassword ) throws Exception {
     this.repsinfo = new RepositoriesMeta();
     try {
       this.repsinfo.readData();

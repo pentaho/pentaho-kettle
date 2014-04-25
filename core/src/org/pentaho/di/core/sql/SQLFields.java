@@ -40,13 +40,11 @@ public class SQLFields {
 
   private boolean distinct;
 
-  public SQLFields( String tableAlias, RowMetaInterface serviceFields, String fieldsClause )
-    throws KettleSQLException {
+  public SQLFields( String tableAlias, RowMetaInterface serviceFields, String fieldsClause ) throws KettleSQLException {
     this( tableAlias, serviceFields, fieldsClause, false );
   }
 
-  public SQLFields( String tableAlias, RowMetaInterface serviceFields, String fieldsClause, boolean orderClause )
-    throws KettleSQLException {
+  public SQLFields( String tableAlias, RowMetaInterface serviceFields, String fieldsClause, boolean orderClause ) throws KettleSQLException {
     this( tableAlias, serviceFields, fieldsClause, orderClause, null );
   }
 

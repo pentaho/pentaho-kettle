@@ -1285,8 +1285,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface {
     super.stopAll();
   }
 
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
     if ( child == null ) {
       stopRunningImpl( stepMetaInterface, stepDataInterface );
     } else {
@@ -1294,8 +1293,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface {
     }
   }
 
-  public void stopRunningImpl( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunningImpl( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
     super.stopRunning( stepMetaInterface, stepDataInterface );
   }
 

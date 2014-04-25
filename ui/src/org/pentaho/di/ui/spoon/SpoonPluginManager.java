@@ -117,8 +117,7 @@ public class SpoonPluginManager {
     return instance;
   }
 
-  public void applyPluginsForContainer( final String category, final XulDomContainer container )
-    throws XulException {
+  public void applyPluginsForContainer( final String category, final XulDomContainer container ) throws XulException {
     List<SpoonPluginInterface> plugins = pluginCategoryMap.get( category );
     if ( plugins != null ) {
       for ( SpoonPluginInterface sp : plugins ) {

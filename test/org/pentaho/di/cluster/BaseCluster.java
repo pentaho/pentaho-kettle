@@ -54,8 +54,7 @@ public class BaseCluster extends TestCase {
     return config;
   }
 
-  public TransMeta loadAndModifyTestTransformation( ClusterGenerator clusterGenerator, String filename )
-    throws KettleException {
+  public TransMeta loadAndModifyTestTransformation( ClusterGenerator clusterGenerator, String filename ) throws KettleException {
     TransMeta transMeta = new TransMeta( filename );
 
     // Add the slave servers

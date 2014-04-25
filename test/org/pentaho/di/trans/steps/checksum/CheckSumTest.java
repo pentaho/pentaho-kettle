@@ -133,8 +133,7 @@ public class CheckSumTest extends TestCase {
    *          String to calculate checksum for
    * @return RowListener with results.
    */
-  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, String input )
-    throws Exception {
+  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, String input ) throws Exception {
     Trans trans = buildHexadecimalChecksumTrans( checkSumType, compatibilityMode );
 
     trans.prepareExecution( null );

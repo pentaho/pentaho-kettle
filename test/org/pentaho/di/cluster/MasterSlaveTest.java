@@ -270,7 +270,7 @@ public class MasterSlaveTest extends BaseCluster {
       loadTransMetaReplaceSlavesInCluster(
         clusterGenerator, "test/org/pentaho/di/cluster/test-subtrans-clustered.ktr" );
     TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
-    Result prevResult = new Result(  );
+    Result prevResult = new Result();
     prevResult.setRows( getSampleRows() );
     config.setPreviousResult( prevResult );
 
@@ -284,9 +284,9 @@ public class MasterSlaveTest extends BaseCluster {
   }
 
   private static List<RowMetaAndData> getSampleRows() {
-    List<RowMetaAndData> result = new ArrayList<RowMetaAndData>(  );
-    for (int i = 0; i < 10; i++) {
-      RowMetaAndData row = new RowMetaAndData(  );
+    List<RowMetaAndData> result = new ArrayList<RowMetaAndData>();
+    for ( int i = 0; i < 10; i++ ) {
+      RowMetaAndData row = new RowMetaAndData();
       row.addValue( "test", ValueMetaInterface.TYPE_INTEGER, 1L );
       result.add( row );
     }
@@ -312,7 +312,5 @@ public class MasterSlaveTest extends BaseCluster {
 
     return transMeta;
   }
-
-
 
 }

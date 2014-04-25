@@ -110,8 +110,7 @@ public class PaloCellOutputMeta extends BaseStepMeta
     }
 
     private void readData(final Node stepnode,
-            final List < ? extends SharedObjectInterface > databases)
-            throws KettleXMLException {
+            final List < ? extends SharedObjectInterface > databases) throws KettleXMLException {
         try {
             databaseMeta = DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue(stepnode, "connection"));
             this.cube = XMLHandler.getTagValue(stepnode, "cube");

@@ -1209,8 +1209,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return true;
   }
 
-  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     this.copyVariablesFrom( space );
     TransMeta transMeta = getTransMeta( repository, metaStore, this );
 
@@ -1289,8 +1288,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    * @throws KettleException in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+                                 ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
     //
@@ -1472,8 +1470,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return getTransMeta( rep, metaStore, space );
   }
 

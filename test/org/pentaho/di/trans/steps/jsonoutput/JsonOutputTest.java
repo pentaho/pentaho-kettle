@@ -240,8 +240,7 @@ public class JsonOutputTest {
    * @return
    * @throws Exception
    */
-  public String test( boolean compatibilityMode, String jsonBlock, String amount, String nbrRowsInBlock )
-    throws Exception {
+  public String test( boolean compatibilityMode, String jsonBlock, String amount, String nbrRowsInBlock ) throws Exception {
     KettleEnvironment.init();
 
     // Create a new transformation...

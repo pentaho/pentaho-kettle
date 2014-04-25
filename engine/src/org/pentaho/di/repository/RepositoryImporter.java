@@ -478,8 +478,7 @@ public class RepositoryImporter implements IRepositoryImporter {
    * @throws KettleException
    *           in case there is an unexpected error
    */
-  private boolean importTransformation( Node transnode, RepositoryImportFeedbackInterface feedback )
-    throws KettleException {
+  private boolean importTransformation( Node transnode, RepositoryImportFeedbackInterface feedback ) throws KettleException {
     //
     // Load transformation from XML into a directory, possibly created!
     //

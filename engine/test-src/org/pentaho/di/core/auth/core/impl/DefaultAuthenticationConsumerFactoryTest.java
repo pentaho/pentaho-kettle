@@ -28,14 +28,12 @@ import org.pentaho.di.core.auth.core.AuthenticationFactoryException;
 
 public class DefaultAuthenticationConsumerFactoryTest {
   @Test( expected = AuthenticationFactoryException.class )
-  public void testDefaultAuthenticationConsumerFactoryFailsWithMultipleConstructors()
-    throws AuthenticationFactoryException {
+  public void testDefaultAuthenticationConsumerFactoryFailsWithMultipleConstructors() throws AuthenticationFactoryException {
     new DefaultAuthenticationConsumerFactory( TwoConstructorConsumer.class );
   }
 
   @Test( expected = AuthenticationFactoryException.class )
-  public void testDefaultAuthenticationConsumerFactoryFailsWithWrongConstructorArgCount()
-    throws AuthenticationFactoryException {
+  public void testDefaultAuthenticationConsumerFactoryFailsWithWrongConstructorArgCount() throws AuthenticationFactoryException {
     new DefaultAuthenticationConsumerFactory( TwoConstructorArgConsumer.class );
   }
 

@@ -140,8 +140,7 @@ public class NameResourceTest {
    *
    *           Legacy: namingResource(String, String, String, FileNamingType) New: namingResource(FileObject, TransMeta)
    */
-  private void testNamingResourceLegacyAndNew( String fileName, String extension, String fileMask )
-    throws Exception {
+  private void testNamingResourceLegacyAndNew( String fileName, String extension, String fileMask ) throws Exception {
 
     // Create a new transformation.
     TransMeta transMeta = new TransMeta();

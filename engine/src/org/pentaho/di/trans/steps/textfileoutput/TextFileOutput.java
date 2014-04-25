@@ -990,8 +990,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     return KettleVFS.getFileObject( vfsFilename, space );
   }
 
-  protected OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append )
-    throws KettleFileException {
+  protected OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append ) throws KettleFileException {
     return KettleVFS.getOutputStream( vfsFilename, space, append );
   }
 

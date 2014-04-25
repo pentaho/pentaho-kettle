@@ -84,7 +84,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     .getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSS" );
 
   public static final String DEFAULT_TIMESTAMP_FORMAT_MASK = Const.NVL( EnvUtil
-      .getSystemProperty( Const.KETTLE_DEFAULT_TIMESTAMP_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSSSSSSSS" );
+    .getSystemProperty( Const.KETTLE_DEFAULT_TIMESTAMP_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSSSSSSSS" );
 
   public static final String XML_META_TAG = "value-meta";
   public static final String XML_DATA_TAG = "value-data";
@@ -4395,8 +4395,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @SuppressWarnings( "fallthrough" )
   @Override
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name,
-    java.sql.ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion )
-    throws KettleDatabaseException {
+    java.sql.ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
     try {
       int length = -1;
       int precision = -1;
@@ -4684,8 +4683,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    *           in case something goes wrong.
    */
   @Override
-  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
-    throws KettleDatabaseException {
+  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws KettleDatabaseException {
     try {
       Object data = null;
 
@@ -4749,8 +4747,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   // PDI-10877
-  private Object getNetezzaDateValueWorkaround( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
-    throws SQLException, KettleDatabaseException {
+  private Object getNetezzaDateValueWorkaround( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws SQLException, KettleDatabaseException {
     Object data = null;
     int type = resultSet.getMetaData().getColumnType( index );
     switch ( type ) {
@@ -4947,4 +4944,3 @@ public class ValueMetaBase implements ValueMetaInterface {
     return quotes;
   }
 }
-

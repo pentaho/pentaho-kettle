@@ -482,8 +482,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
   /**
    * This inserts new record into a junk dimension
    */
-  public Long combiInsert( RowMetaInterface rowMeta, Object[] row, Long val_key, Long val_crc )
-    throws KettleDatabaseException {
+  public Long combiInsert( RowMetaInterface rowMeta, Object[] row, Long val_key, Long val_crc ) throws KettleDatabaseException {
     String debug = "Combination insert";
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
     try {
@@ -735,8 +734,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
    * @throws KettleValueException If something went wrong while adding the data to the cache
    * @throws KettleConfigException If the step configuration is incomplete
    */
-  private void preloadCache( RowMetaInterface hashRowMeta )
-    throws KettleDatabaseException, KettleValueException, KettleConfigException {
+  private void preloadCache( RowMetaInterface hashRowMeta ) throws KettleDatabaseException, KettleValueException, KettleConfigException {
     // fast exit if no preload cache or no cache
     if ( meta.getPreloadCache() && meta.getCacheSize() >= 0 ) {
       if ( hashRowMeta == null ) {

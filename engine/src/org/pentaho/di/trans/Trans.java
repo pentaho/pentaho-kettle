@@ -554,8 +554,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException
    *           if any error occurs during loading, parsing, or creation of the transformation
    */
-  public Trans( VariableSpace parentVariableSpace, Repository rep, String name, String dirname, String filename )
-    throws KettleException {
+  public Trans( VariableSpace parentVariableSpace, Repository rep, String name, String dirname, String filename ) throws KettleException {
     this();
     try {
       if ( rep != null ) {
@@ -4357,8 +4356,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -4773,8 +4771,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
    *      java.lang.String)
    */
-  public void addParameterDefinition( String key, String defValue, String description )
-    throws DuplicateParamException {
+  public void addParameterDefinition( String key, String defValue, String description ) throws DuplicateParamException {
     namedParams.addParameterDefinition( key, defValue, description );
   }
 

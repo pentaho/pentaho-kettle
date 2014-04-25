@@ -149,8 +149,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     this.createparentfolder = createparentfolder;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -185,8 +184,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       filenamefield = XMLHandler.getTagValue( stepnode, "filenamefield" );
       targetfilenamefield = XMLHandler.getTagValue( stepnode, "targetfilenamefield" );
@@ -204,8 +202,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filenamefield = rep.getStepAttributeString( id_step, "filenamefield" );
       targetfilenamefield = rep.getStepAttributeString( id_step, "targetfilenamefield" );
@@ -222,8 +219,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filenamefield", filenamefield );
       rep.saveStepAttribute( id_transformation, id_step, "targetfilenamefield", targetfilenamefield );

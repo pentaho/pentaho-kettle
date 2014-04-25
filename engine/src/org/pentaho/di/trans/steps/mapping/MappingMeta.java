@@ -130,8 +130,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     }
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       String method = XMLHandler.getTagValue( stepnode, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
@@ -289,8 +288,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     String method = rep.getStepAttributeString( id_step, "specification_method" );
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
     String transId = rep.getStepAttributeString( id_step, "trans_object_id" );
@@ -359,8 +357,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       rep.getStepAttributeBoolean( id_step, 0, "allow_multiple_output", outputMappings.size() > 1 );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "specification_method", specificationMethod == null
       ? null : specificationMethod.getCode() );
     rep.saveStepAttribute( id_transformation, id_step, "trans_object_id", transObjectId == null
@@ -913,8 +910,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
 
   @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // Try to load the transformation from repository or file.
       // Modify this recursively too...
@@ -1129,8 +1125,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return loadMappingMeta( this, rep, metaStore, space );
   }
 

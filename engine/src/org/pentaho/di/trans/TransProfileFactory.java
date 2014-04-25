@@ -212,8 +212,7 @@ public class TransProfileFactory {
     return transMeta;
   }
 
-  private RowMetaInterface getTableFields( LoggingObjectInterface parentLoggingObject )
-    throws KettleDatabaseException {
+  private RowMetaInterface getTableFields( LoggingObjectInterface parentLoggingObject ) throws KettleDatabaseException {
     Database database = new Database( parentLoggingObject, databaseMeta );
     try {
       database.connect();

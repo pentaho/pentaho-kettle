@@ -35,8 +35,7 @@ public class DelegatingUsernamePasswordConsumer implements
   }
 
   @Override
-  public Object consume( UsernamePasswordAuthenticationProvider authenticationProvider )
-    throws AuthenticationConsumptionException {
+  public Object consume( UsernamePasswordAuthenticationProvider authenticationProvider ) throws AuthenticationConsumptionException {
     return delegate.consume( authenticationProvider );
   }
 }

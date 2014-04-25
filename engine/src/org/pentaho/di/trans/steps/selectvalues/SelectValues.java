@@ -73,8 +73,7 @@ public class SelectValues extends BaseStep implements StepInterface {
    *          The row to manipulate
    * @return true if everything went well, false if we need to stop because of an error!
    */
-  private synchronized Object[] selectValues( RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  private synchronized Object[] selectValues( RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     if ( data.firstselect ) {
       data.firstselect = false;
 
@@ -245,8 +244,7 @@ public class SelectValues extends BaseStep implements StepInterface {
    * @return true if everything went well, false if we need to stop because of an error!
    * @throws KettleValueException
    */
-  private synchronized Object[] metadataValues( RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  private synchronized Object[] metadataValues( RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     if ( data.firstmetadata ) {
       data.firstmetadata = false;
 

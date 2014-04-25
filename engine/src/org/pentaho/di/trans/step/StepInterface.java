@@ -118,8 +118,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
    *          The interface to the step data containing the connections, resultsets, open files, etc.
    *
    */
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException;
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException;
 
   /**
    * @return true if the step is running after having been initialized

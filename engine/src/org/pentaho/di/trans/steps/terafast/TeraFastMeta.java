@@ -302,8 +302,7 @@ public class TeraFastMeta extends AbstractStepMeta {
    */
   @Override
   public void getFields( final RowMetaInterface inputRowMeta, final String name, final RowMetaInterface[] info,
-    final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore )
-    throws KettleStepException {
+    final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 

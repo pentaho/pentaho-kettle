@@ -7820,8 +7820,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     loadLastUsedFile( lastUsedFile, repositoryName, true );
   }
 
-  private void loadLastUsedFile( LastUsedFile lastUsedFile, String repositoryName, boolean trackIt )
-    throws KettleException {
+  private void loadLastUsedFile( LastUsedFile lastUsedFile, String repositoryName, boolean trackIt ) throws KettleException {
     boolean useRepository = repositoryName != null;
     // Perhaps we need to connect to the repository?
     //

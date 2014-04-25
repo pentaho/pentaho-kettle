@@ -342,8 +342,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     this.valueCompareField = valueCompareField;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -414,8 +413,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     inputRowMeta.addValueMeta( nrErrorsRight );
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       referenceConnection =
         DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "reference_connection" ) );
@@ -491,8 +489,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     nrErrorsRightJoinField = "nrErrorsRightJoin";
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       referenceConnection = rep.loadDatabaseMetaFromStepAttribute( id_step, "reference_connection_id", databases );
@@ -521,8 +518,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute(
         id_transformation, id_step, "reference_connection_id", referenceConnection );

@@ -398,8 +398,7 @@ public class ValueDataUtil {
     return checksum;
   }
 
-  public static Object plus( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object plus( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -448,8 +447,7 @@ public class ValueDataUtil {
     }
   }
 
-  public static Object sum( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object sum( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null && dataB == null ) {
       return null;
     }
@@ -463,8 +461,7 @@ public class ValueDataUtil {
     return plus( metaA, dataA, metaB, dataB );
   }
 
-  public static Object loadFileContentInBinary( ValueMetaInterface metaA, Object dataA )
-    throws KettleValueException {
+  public static Object loadFileContentInBinary( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
     if ( dataA == null ) {
       return null;
     }
@@ -496,8 +493,7 @@ public class ValueDataUtil {
     }
   }
 
-  public static Object minus( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object minus( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -514,8 +510,7 @@ public class ValueDataUtil {
     }
   }
 
-  public static Object multiply( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object multiply( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -584,8 +579,7 @@ public class ValueDataUtil {
     return s.toString();
   }
 
-  public static Object divide( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object divide( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -646,8 +640,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object percent1( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object percent1( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -677,8 +670,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object percent2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object percent2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -709,8 +701,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object percent3( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object percent3( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -773,8 +764,7 @@ public class ValueDataUtil {
    * @return
    * @throws KettleValueException
    */
-  public static Object combination2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object combination2( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -840,8 +830,7 @@ public class ValueDataUtil {
    * @return The rounded value
    * @throws KettleValueException
    */
-  public static Object round( ValueMetaInterface metaA, Object dataA, int roundingMode )
-    throws KettleValueException {
+  public static Object round( ValueMetaInterface metaA, Object dataA, int roundingMode ) throws KettleValueException {
     if ( dataA == null ) {
       return null;
     }
@@ -874,8 +863,7 @@ public class ValueDataUtil {
    * @return The rounded value
    * @throws KettleValueException
    */
-  public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     return round( metaA, dataA, metaB, dataB, BigDecimal.ROUND_HALF_EVEN );
   }
 
@@ -970,8 +958,7 @@ public class ValueDataUtil {
     }
   }
 
-  public static Object nvl( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object nvl( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_STRING:
         if ( dataA == null ) {
@@ -1059,8 +1046,7 @@ public class ValueDataUtil {
     }
   }
 
-  public static Object addDays( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object addDays( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
 
     Calendar cal = Calendar.getInstance();
     cal.setTime( metaA.getDate( dataA ) );
@@ -1069,8 +1055,7 @@ public class ValueDataUtil {
     return cal.getTime();
   }
 
-  public static Object addHours( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object addHours( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
 
     Calendar cal = Calendar.getInstance();
     cal.setTime( metaA.getDate( dataA ) );
@@ -1079,8 +1064,7 @@ public class ValueDataUtil {
     return cal.getTime();
   }
 
-  public static Object addMinutes( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object addMinutes( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
 
     Calendar cal = Calendar.getInstance();
     cal.setTime( metaA.getDate( dataA ) );
@@ -1089,8 +1073,7 @@ public class ValueDataUtil {
     return cal.getTime();
   }
 
-  public static Object addMonths( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
-    throws KettleValueException {
+  public static Object addMonths( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
 
     if ( dataA != null && dataB != null ) {
       Calendar cal = Calendar.getInstance();

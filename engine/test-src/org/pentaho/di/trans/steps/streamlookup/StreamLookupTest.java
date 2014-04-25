@@ -158,8 +158,7 @@ public class StreamLookupTest {
     return meta;
   }
 
-  private void doTest( boolean memoryPreservationActive, boolean binaryLookupStream, boolean binaryDataStream )
-    throws KettleException {
+  private void doTest( boolean memoryPreservationActive, boolean binaryLookupStream, boolean binaryDataStream ) throws KettleException {
     StreamLookup step = new StreamLookup( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.initStepDataInterface );
     step.getInputRowSets().add( mockLookupRowSet( binaryLookupStream ) );

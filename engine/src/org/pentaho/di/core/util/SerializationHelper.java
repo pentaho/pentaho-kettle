@@ -405,8 +405,7 @@ public class SerializationHelper {
    * @param id_step
    * @throws KettleException
    */
-  public static void saveJobRep( Object object, Repository rep, ObjectId id_job, ObjectId id_job_entry )
-    throws KettleException {
+  public static void saveJobRep( Object object, Repository rep, ObjectId id_job, ObjectId id_job_entry ) throws KettleException {
     StringBuffer sb = new StringBuffer( 1024 );
     write( object, 0, sb );
     rep.saveJobEntryAttribute( id_job, id_job_entry, "job-xml", sb.toString() );
@@ -422,8 +421,7 @@ public class SerializationHelper {
    * @param databases
    * @throws KettleException
    */
-  public static void readJobRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public static void readJobRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       String jobXML = rep.getJobEntryAttributeString( id_step, "job-xml" );
       ByteArrayInputStream bais = new ByteArrayInputStream( jobXML.getBytes() );
@@ -448,8 +446,7 @@ public class SerializationHelper {
    * @param id_step
    * @throws KettleException
    */
-  public static void saveStepRep( Object object, Repository rep, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public static void saveStepRep( Object object, Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     StringBuffer sb = new StringBuffer( 1024 );
     write( object, 0, sb );
     rep.saveStepAttribute( id_transformation, id_step, "step-xml", sb.toString() );
@@ -466,8 +463,7 @@ public class SerializationHelper {
    * @param counters
    * @throws KettleException
    */
-  public static void readStepRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public static void readStepRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       String stepXML = rep.getStepAttributeString( id_step, "step-xml" );
       ByteArrayInputStream bais = new ByteArrayInputStream( stepXML.getBytes() );

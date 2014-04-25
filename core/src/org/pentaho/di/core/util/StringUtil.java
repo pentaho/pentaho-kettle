@@ -288,8 +288,7 @@ public class StringUtil {
    * @throws KettleValueException
    *           In case there is a String conversion error
    */
-  public static String substituteField( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public static String substituteField( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     Map<String, String> variables = new HashMap<String, String>();
     for ( int i = 0; i < rowMeta.size(); i++ ) {
       variables.put( rowMeta.getValueMeta( i ).getName(), rowMeta.getString( rowData, i ) );
@@ -390,8 +389,7 @@ public class StringUtil {
     }
   }
 
-  public static double str2num( String pattern, String decimal, String grouping, String currency, String value )
-    throws KettleValueException {
+  public static double str2num( String pattern, String decimal, String grouping, String currency, String value ) throws KettleValueException {
     // 0 : pattern
     // 1 : Decimal separator
     // 2 : Grouping separator

@@ -67,8 +67,7 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
     this.saxParser.parse( filename, this );
   }
 
-  public void startElement( String uri, String localName, String qName, Attributes attributes )
-    throws SAXException {
+  public void startElement( String uri, String localName, String qName, Attributes attributes ) throws SAXException {
     if ( STRING_REPOSITORY.equals( qName ) || STRING_TRANSFORMATIONS.equals( qName ) || STRING_JOBS.equals( qName ) ) {
       add = false;
     } else {

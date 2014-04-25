@@ -94,7 +94,7 @@ public class MetricsUtil {
 
   public static List<MetricsDuration> getAllDurations( String parentLogChannelId ) {
     List<MetricsDuration> durations = new ArrayList<MetricsDuration>();
-    
+
     List<String> logChannelIds = LoggingRegistry.getInstance().getLogChannelChildren( parentLogChannelId );
     for ( String logChannelId : logChannelIds ) {
       LoggingObjectInterface object = LoggingRegistry.getInstance().getLoggingObject( logChannelId );

@@ -185,8 +185,7 @@ public class LDAPConnection {
     return ( GetPagingSize() > 0 );
   }
 
-  public void search( String searchBase, String filter, int limitRows, String[] attributeReturned, int searchScope )
-    throws KettleException {
+  public void search( String searchBase, String filter, int limitRows, String[] attributeReturned, int searchScope ) throws KettleException {
 
     // Set the Search base.This is the place where the search will
     setSearchBase( searchBase );
@@ -333,8 +332,7 @@ public class LDAPConnection {
     }
   }
 
-  public int add( String dn, String[] attributes, String[] values, String multValuedSeparator, boolean checkEntry )
-    throws KettleException {
+  public int add( String dn, String[] attributes, String[] values, String multValuedSeparator, boolean checkEntry ) throws KettleException {
     try {
       Attributes attrs = buildAttributes( dn, attributes, values, multValuedSeparator );
       // We had all attributes
@@ -365,8 +363,7 @@ public class LDAPConnection {
    *          : multi-valued attributes separator
    * @throws KettleException
    */
-  public void insert( String dn, String[] attributes, String[] values, String multValuedSeparator )
-    throws KettleException {
+  public void insert( String dn, String[] attributes, String[] values, String multValuedSeparator ) throws KettleException {
     try {
 
       Attributes attrs = buildAttributes( dn, attributes, values, multValuedSeparator );

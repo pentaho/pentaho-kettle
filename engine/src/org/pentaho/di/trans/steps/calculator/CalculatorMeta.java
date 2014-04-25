@@ -72,8 +72,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     calculation = new CalculatorMetaFunction[nrCalcs];
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     int nrCalcs = XMLHandler.countNodes( stepnode, CalculatorMetaFunction.XML_TAG );
     allocate( nrCalcs );
     for ( int i = 0; i < nrCalcs; i++ ) {
@@ -120,8 +119,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     calculation = new CalculatorMetaFunction[0];
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     int nrCalcs = rep.countNrStepAttributes( id_step, "field_name" );
     allocate( nrCalcs );
     for ( int i = 0; i < nrCalcs; i++ ) {
@@ -129,8 +127,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     for ( int i = 0; i < calculation.length; i++ ) {
       calculation[i].saveRep( rep, metaStore, id_transformation, id_step, i );
     }

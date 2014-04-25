@@ -92,8 +92,7 @@ implements StepMetaInterface {
     }
 
     private void readData(final Node stepnode,
-            final List <? extends SharedObjectInterface> databases)
-            throws KettleXMLException {
+            final List <? extends SharedObjectInterface> databases) throws KettleXMLException {
         try {
             this.databaseMeta = DatabaseMeta.findDatabase(
                     databases, XMLHandler.getTagValue(stepnode, "connection"));

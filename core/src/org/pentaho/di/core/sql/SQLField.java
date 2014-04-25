@@ -67,13 +67,11 @@ public class SQLField {
     this.valueMeta = valueMeta;
   }
 
-  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields )
-    throws KettleSQLException {
+  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields ) throws KettleSQLException {
     this( tableAlias, fieldClause, serviceFields, false );
   }
 
-  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField )
-    throws KettleSQLException {
+  public SQLField( String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField ) throws KettleSQLException {
     this( tableAlias, fieldClause, serviceFields, orderField, null );
   }
 

@@ -13,8 +13,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
-import static org.mockito.Mockito.*;
-
 public class TransTest {
 
   int count = 10000;

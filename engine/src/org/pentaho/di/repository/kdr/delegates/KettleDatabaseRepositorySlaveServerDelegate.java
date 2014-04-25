@@ -59,8 +59,7 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
     saveSlaveServer( slaveServer, null, false );
   }
 
-  public void saveSlaveServer( SlaveServer slaveServer, ObjectId id_transformation, boolean isUsedByTransformation )
-    throws KettleException {
+  public void saveSlaveServer( SlaveServer slaveServer, ObjectId id_transformation, boolean isUsedByTransformation ) throws KettleException {
 
     try {
       saveSlaveServer( slaveServer, id_transformation, isUsedByTransformation, false );

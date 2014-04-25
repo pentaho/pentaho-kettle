@@ -137,8 +137,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
   }
 
   private synchronized List<ExportFeedback> exportAllObjectsInternal( ProgressMonitorListener monitorOuter,
-      String xmlFilename, RepositoryDirectoryInterface root, String exportType, boolean feedback )
-    throws KettleException {
+      String xmlFilename, RepositoryDirectoryInterface root, String exportType, boolean feedback ) throws KettleException {
     this.feedbackList.clear();
 
     // deal with monitor
@@ -397,8 +396,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
     }
   }
 
-  private String calcRepositoryDirectory( KettleFileRepository fileRep, FileObject fileObject )
-    throws FileSystemException {
+  private String calcRepositoryDirectory( KettleFileRepository fileRep, FileObject fileObject ) throws FileSystemException {
     String path = fileObject.getParent().getName().getPath();
     String baseDirectory = fileRep.getRepositoryMeta().getBaseDirectory();
     // Double check!

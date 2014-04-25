@@ -180,8 +180,7 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
   }
 
   private List<RepositoryElementMetaInterface> getRepositoryObjects( Repository repository,
-    RepositoryDirectoryInterface directory, boolean subdirs, String nameMask, String excludeNameMask )
-    throws KettleException {
+    RepositoryDirectoryInterface directory, boolean subdirs, String nameMask, String excludeNameMask ) throws KettleException {
     List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
     List<RepositoryElementMetaInterface> objects = new ArrayList<RepositoryElementMetaInterface>();
     if ( meta.getObjectTypeSelection().areTransformationsSelected() ) {

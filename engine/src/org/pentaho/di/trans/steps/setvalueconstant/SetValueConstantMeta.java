@@ -67,8 +67,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -163,8 +162,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     return usevar;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       usevar = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usevar" ) );
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
@@ -213,8 +211,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     usevar = false;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       usevar = rep.getStepAttributeBoolean( id_step, "usevar" );
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
@@ -231,8 +228,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "usevar", usevar );
       for ( int i = 0; i < fieldName.length; i++ ) {

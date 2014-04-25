@@ -925,8 +925,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
   }
 
-  protected void splitTrans( final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration )
-    throws KettleException {
+  protected void splitTrans( final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration ) throws KettleException {
     try {
       final TransSplitter transSplitter = new TransSplitter( transMeta );
 

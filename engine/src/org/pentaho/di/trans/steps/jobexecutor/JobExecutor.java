@@ -437,8 +437,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
     if ( data.executorJob != null ) {
       data.executorJob.stopAll();
     }

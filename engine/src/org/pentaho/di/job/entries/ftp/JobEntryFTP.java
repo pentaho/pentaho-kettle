@@ -1240,8 +1240,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return normalizedPath;
   }
 
-  private void addFilenameToResultFilenames( Result result, Job parentJob, String filename )
-    throws KettleException {
+  private void addFilenameToResultFilenames( Result result, Job parentJob, String filename ) throws KettleException {
     if ( isaddresult ) {
       FileObject targetFile = null;
       try {

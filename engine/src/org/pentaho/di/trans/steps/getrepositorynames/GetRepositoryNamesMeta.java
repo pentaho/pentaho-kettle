@@ -222,8 +222,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     return retval.toString();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
 
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
@@ -249,8 +248,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrfiles = rep.countNrStepAttributes( id_step, "directory" );
       String objectTypeString = rep.getStepAttributeString( id_step, "object_type" );
@@ -276,8 +274,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "object_type", objectTypeSelection.toString() );
       rep.saveStepAttribute( id_transformation, id_step, "rownum", includeRowNumber );

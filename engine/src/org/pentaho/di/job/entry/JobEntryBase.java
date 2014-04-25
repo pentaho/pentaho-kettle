@@ -419,8 +419,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @throws KettleXMLException
    *           if any errors occur during the loading of the XML
    */
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers )
-    throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers ) throws KettleXMLException {
     try {
       setName( XMLHandler.getTagValue( entrynode, "name" ) );
       setDescription( XMLHandler.getTagValue( entrynode, "description" ) );
@@ -606,8 +605,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @throws KettleException
    *           if any errors occur during the generation of SQL statements
    */
-  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return new ArrayList<SQLStatement>();
   }
 
@@ -670,8 +668,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -874,8 +871,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     return null;
   }
 
@@ -1368,8 +1364,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return null;
   }
 

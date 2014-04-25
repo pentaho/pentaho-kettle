@@ -54,8 +54,7 @@ public class AuthenticationManager {
   }
 
   public <ReturnType, CreateArgType, ConsumedType> void registerConsumerFactory(
-      AuthenticationConsumerFactory<ReturnType, CreateArgType, ConsumedType> factory )
-    throws AuthenticationFactoryException {
+      AuthenticationConsumerFactory<ReturnType, CreateArgType, ConsumedType> factory ) throws AuthenticationFactoryException {
     if ( !factory.getConsumedType().isInterface()
         && !AuthenticationProvider.class.isAssignableFrom( factory.getConsumedType() ) ) {
       throw new AuthenticationFactoryException( BaseMessages.getString( PKG, "AuthenticationManager.ConsumedTypeError",
@@ -70,8 +69,7 @@ public class AuthenticationManager {
   }
 
   public <ReturnType, ConsumedType> void registerConsumerClass(
-      Class<? extends AuthenticationConsumer<? extends ReturnType, ? extends ConsumedType>> consumerClass )
-    throws AuthenticationFactoryException {
+      Class<? extends AuthenticationConsumer<? extends ReturnType, ? extends ConsumedType>> consumerClass ) throws AuthenticationFactoryException {
     registerConsumerFactory( new DefaultAuthenticationConsumerFactory( consumerClass ) );
   }
 

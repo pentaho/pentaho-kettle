@@ -216,8 +216,7 @@ public final class PluginPropertyHandler {
      * @throws IllegalArgumentException
      *           if repository is null.
      */
-    public ReadFromRepository( final Repository repository, final IMetaStore metaStore, final ObjectId stepId )
-      throws IllegalArgumentException {
+    public ReadFromRepository( final Repository repository, final IMetaStore metaStore, final ObjectId stepId ) throws IllegalArgumentException {
       super();
       Assert.assertNotNull( repository, "Repository cannot be null" );
       this.repository = repository;

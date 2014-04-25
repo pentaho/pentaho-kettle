@@ -493,8 +493,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    * @throws KettleDatabaseException
    */
   @Override
-  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields )
-    throws KettleDatabaseException {
+  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
 
     String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination( schemaName, tableName );
 

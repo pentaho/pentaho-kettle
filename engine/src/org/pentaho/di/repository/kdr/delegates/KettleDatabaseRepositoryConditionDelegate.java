@@ -117,8 +117,7 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
     }
   }
 
-  public synchronized ObjectId insertCondition( ObjectId id_condition_parent, Condition condition )
-    throws KettleException {
+  public synchronized ObjectId insertCondition( ObjectId id_condition_parent, Condition condition ) throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextConditionID();
 
     String tablename = KettleDatabaseRepository.TABLE_R_CONDITION;
@@ -219,8 +218,7 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
     return id_value;
   }
 
-  public synchronized ObjectId lookupValue( String name, String type, String value_str, boolean isnull )
-    throws KettleException {
+  public synchronized ObjectId lookupValue( String name, String type, String value_str, boolean isnull ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
     table.addValue(
       new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING ), name );

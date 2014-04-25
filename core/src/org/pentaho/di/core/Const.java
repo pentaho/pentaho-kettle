@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -942,16 +942,16 @@ public class Const {
    */
   public static final String KETTLE_LOG_MARK_MAPPINGS = "KETTLE_LOG_MARK_MAPPINGS";
 
-   /**
-   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
-   * overflow while rounding
-   * 
-   * @param f
-   *          The value to round
-   * @param places
-   *          The number of decimal places
-   * @return The rounded floating point value
-   */
+  /**
+  * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
+  * overflow while rounding
+  * 
+  * @param f
+  *          The value to round
+  * @param places
+  *          The number of decimal places
+  * @return The rounded floating point value
+  */
 
   public static final double round( double f, int places ) {
     return round( f, places, java.math.BigDecimal.ROUND_HALF_EVEN );

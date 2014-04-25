@@ -72,8 +72,7 @@ public class SymmetricCryptoMeta {
    * @throws CryptoException
    *           when the type could not be found or referenced.
    */
-  public static final SymmetricCryptoInterface getSymmetricCryptoInterface( String cryptoname )
-    throws CryptoException {
+  public static final SymmetricCryptoInterface getSymmetricCryptoInterface( String cryptoname ) throws CryptoException {
     return findSymmetricCryptoInterface( cryptoname );
 
   }
@@ -88,8 +87,7 @@ public class SymmetricCryptoMeta {
    * @throws CryptoException
    *           when the type could not be found or referenced.
    */
-  private static final synchronized SymmetricCryptoInterface findSymmetricCryptoInterface( String cryptograhname )
-    throws CryptoException {
+  private static final synchronized SymmetricCryptoInterface findSymmetricCryptoInterface( String cryptograhname ) throws CryptoException {
     SymmetricCryptoInterface[] di = getSymmetricCryptoInterfaces();
     for ( int i = 0; i < di.length; i++ ) {
       if ( di[i].getAlgorithm().equalsIgnoreCase( cryptograhname ) ) {

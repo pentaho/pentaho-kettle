@@ -44,8 +44,7 @@ public class ExtensionPointHandler {
    * @throws KettleException
    *           In case something goes wrong in the plugin and we need to stop what we're doing.
    */
-  public static void callExtensionPoint( final LogChannelInterface log, final String id, final Object object )
-    throws KettleException {
+  public static void callExtensionPoint( final LogChannelInterface log, final String id, final Object object ) throws KettleException {
     PluginRegistry registry = PluginRegistry.getInstance();
     List<PluginInterface> extensionPointPlugins = registry.getPlugins( ExtensionPointPluginType.class );
     for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {

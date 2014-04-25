@@ -106,8 +106,7 @@ public class MappingParameters implements Cloneable {
     return xml.toString();
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     for ( int i = 0; i < variable.length; i++ ) {
       rep.saveStepAttribute( id_transformation, id_step, i, "mapping_parameter_variable", variable[i] );
       rep.saveStepAttribute( id_transformation, id_step, i, "mapping_parameter_input", input[i] );

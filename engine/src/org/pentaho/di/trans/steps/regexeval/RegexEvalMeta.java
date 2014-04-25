@@ -337,8 +337,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldTrimType = fieldTrimType;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       script = XMLHandler.getTagValue( stepnode, "script" );
       matcher = XMLHandler.getTagValue( stepnode, "matcher" );
@@ -477,8 +476,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     return v;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -524,8 +522,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       script = rep.getStepAttributeString( id_step, "script" );
       matcher = rep.getStepAttributeString( id_step, "matcher" );
@@ -565,8 +562,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "script", script );
       for ( int i = 0; i < fieldName.length; i++ ) {

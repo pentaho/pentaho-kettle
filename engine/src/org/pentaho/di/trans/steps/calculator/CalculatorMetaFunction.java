@@ -519,8 +519,7 @@ public class CalculatorMetaFunction implements Cloneable {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_name", fieldName );
     rep.saveStepAttribute( id_transformation, id_step, nr, "calc_type", getCalcTypeDesc() );
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_a", fieldA );

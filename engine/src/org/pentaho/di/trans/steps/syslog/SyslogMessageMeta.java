@@ -65,8 +65,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -214,8 +213,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       messagefieldname = XMLHandler.getTagValue( stepnode, "messagefieldname" );
       port = XMLHandler.getTagValue( stepnode, "port" );
@@ -232,8 +230,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
       messagefieldname = rep.getStepAttributeString( id_step, "messagefieldname" );
@@ -251,8 +248,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "messagefieldname", messagefieldname );
       rep.saveJobEntryAttribute( id_transformation, id_step, "port", port );

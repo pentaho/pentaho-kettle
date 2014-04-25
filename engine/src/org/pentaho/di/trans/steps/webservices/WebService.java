@@ -141,8 +141,7 @@ public class WebService extends BaseStep implements StepInterface {
     }
   }
 
-  public boolean processRow( StepMetaInterface metaInterface, StepDataInterface dataInterface )
-    throws KettleException {
+  public boolean processRow( StepMetaInterface metaInterface, StepDataInterface dataInterface ) throws KettleException {
     meta = (WebServiceMeta) metaInterface;
 
     // if a URL is not specified, throw an exception
@@ -290,8 +289,7 @@ public class WebService extends BaseStep implements StepInterface {
    *          indicates if the we are to use the namespace prefix when writing the WS field name
    * @throws KettleException
    */
-  private void addParametersToXML( StringBuffer xml, List<String> names, boolean qualifyWSField )
-    throws KettleException {
+  private void addParametersToXML( StringBuffer xml, List<String> names, boolean qualifyWSField ) throws KettleException {
 
     // Add the row parameters...
     //
@@ -352,8 +350,7 @@ public class WebService extends BaseStep implements StepInterface {
     }
   }
 
-  private synchronized void requestSOAP( Object[] rowData, RowMetaInterface rowMeta )
-    throws KettleException {
+  private synchronized void requestSOAP( Object[] rowData, RowMetaInterface rowMeta ) throws KettleException {
     initWsdlEnv();
     PostMethod vHttpMethod = null;
     try {

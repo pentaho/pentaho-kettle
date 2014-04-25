@@ -80,8 +80,7 @@ public class LogMessageTest {
   }
 
   @Test
-  public void testWhenLogMarkMappingTurnOnAndNoSubMappingUsed_DetailedSubjectContainsOnlySimpleSubject()
-    throws Exception {
+  public void testWhenLogMarkMappingTurnOnAndNoSubMappingUsed_DetailedSubjectContainsOnlySimpleSubject() throws Exception {
     turnOnLogMarkMapping();
 
     simpleLogChannelId = LoggingRegistry.getInstance().registerLoggingSource( getLoggingObjectWithOneParent() );

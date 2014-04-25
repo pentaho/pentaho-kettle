@@ -822,8 +822,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     return result;
   }
 
-  private void downloadFiles( FTPSConnection connection, String folder, Pattern pattern, Result result )
-    throws KettleException {
+  private void downloadFiles( FTPSConnection connection, String folder, Pattern pattern, Result result ) throws KettleException {
 
     List<FTPFile> fileList = connection.getFileList( folder );
     if ( isDetailed() ) {

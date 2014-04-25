@@ -111,8 +111,7 @@ public class SimpleFileSelection extends SelectionAdapter {
    * @throws IllegalArgumentException
    *           if shell or text variable is null.
    */
-  public SimpleFileSelection( final Shell shell, final TextVar textVar, final String... filterNames )
-    throws IllegalArgumentException {
+  public SimpleFileSelection( final Shell shell, final TextVar textVar, final String... filterNames ) throws IllegalArgumentException {
     this( shell, textVar, new String[] { DEFAULT_FILTER_EXTENSION }, filterNames );
   }
 

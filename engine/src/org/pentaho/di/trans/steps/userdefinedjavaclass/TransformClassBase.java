@@ -521,8 +521,7 @@ public abstract class TransformClassBase {
     parent.stopAllImpl();
   }
 
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
     parent.stopRunningImpl( stepMetaInterface, stepDataInterface );
   }
 

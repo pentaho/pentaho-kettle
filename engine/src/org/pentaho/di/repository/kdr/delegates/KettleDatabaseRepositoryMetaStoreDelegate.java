@@ -22,6 +22,13 @@
 
 package org.pentaho.di.repository.kdr.delegates;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -41,13 +48,6 @@ import org.pentaho.metastore.api.IMetaStoreAttribute;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
@@ -81,8 +81,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
   }
 
-  public synchronized LongObjectId getElementTypeId( LongObjectId namespaceId, String elementTypeName )
-    throws KettleException {
+  public synchronized LongObjectId getElementTypeId( LongObjectId namespaceId, String elementTypeName ) throws KettleException {
     return repository.connectionDelegate.getIDWithValue(
       quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
       quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ),
@@ -91,8 +90,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
       new ObjectId[] { namespaceId, } );
   }
 
-  public synchronized LongObjectId getElementId( LongObjectId elementTypeId, String elementName )
-    throws KettleException {
+  public synchronized LongObjectId getElementId( LongObjectId elementTypeId, String elementName ) throws KettleException {
     return repository.connectionDelegate.getIDWithValue(
       quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
       quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ),
@@ -175,8 +173,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     return attrs;
   }
 
-  public Collection<RowMetaAndData> getElementAttributes( ObjectId elementId, ObjectId parentAttributeId )
-    throws KettleDatabaseException, KettleValueException {
+  public Collection<RowMetaAndData> getElementAttributes( ObjectId elementId, ObjectId parentAttributeId ) throws KettleDatabaseException, KettleValueException {
     List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
 
     String sql =
@@ -261,8 +258,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     return idType;
   }
 
-  public ObjectId updateElementType( ObjectId namespaceId, ObjectId elementTypeId, IMetaStoreElementType type )
-    throws KettleException {
+  public ObjectId updateElementType( ObjectId namespaceId, ObjectId elementTypeId, IMetaStoreElementType type ) throws KettleException {
 
     RowMetaAndData table = new RowMetaAndData();
 
@@ -290,7 +286,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   public KDBRMetaStoreElementType parseElementType( String namespace, ObjectId namespaceId,
-                                                    RowMetaAndData elementTypeRow ) throws KettleValueException {
+    RowMetaAndData elementTypeRow ) throws KettleValueException {
 
     Long id = elementTypeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE );
     String name = elementTypeRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, null );
@@ -314,8 +310,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
       + quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ) + " = ? ", namespaceId );
   }
 
-  public KDBRMetaStoreElement parseElement( IMetaStoreElementType elementType, RowMetaAndData elementRow )
-    throws KettleException {
+  public KDBRMetaStoreElement parseElement( IMetaStoreElementType elementType, RowMetaAndData elementRow ) throws KettleException {
 
     Long elementId = elementRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT );
     String name = elementRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_NAME, null );
@@ -331,7 +326,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   private void addAttributes( IMetaStoreAttribute parentAttribute, ObjectId elementId,
-                              LongObjectId parentAttributeId ) throws KettleException {
+    LongObjectId parentAttributeId ) throws KettleException {
 
     Collection<RowMetaAndData> attributeRows = getElementAttributes( elementId, parentAttributeId );
     for ( RowMetaAndData attributeRow : attributeRows ) {
@@ -343,8 +338,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
   }
 
-  private KDBRMetaStoreAttribute parseAttribute( ObjectId elementId, RowMetaAndData attributeRow )
-    throws KettleException {
+  private KDBRMetaStoreAttribute parseAttribute( ObjectId elementId, RowMetaAndData attributeRow ) throws KettleException {
     try {
       Long attributeId =
         attributeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE );
@@ -390,7 +384,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
     String valueString = value.substring( 2 );
     char type = value.charAt( 0 );
-    switch( type ) {
+    switch ( type ) {
       case 'S':
         return valueString;
       case 'T':
@@ -435,8 +429,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     throw new KettleException( "Can't encode object of class : " + object.getClass().getName() );
   }
 
-  public ObjectId insertElement( IMetaStoreElementType elementType, IMetaStoreElement element )
-    throws MetaStoreException {
+  public ObjectId insertElement( IMetaStoreElementType elementType, IMetaStoreElement element ) throws MetaStoreException {
     try {
 
       LongObjectId elementId =
@@ -453,7 +446,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
         .valueOf( elementType.getId() ) );
       table.addValue(
         new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_NAME, ValueMetaInterface.TYPE_STRING ), element
-        .getName() );
+          .getName() );
 
       repository.connectionDelegate.getDatabase().prepareInsert(
         table.getRowMeta(), KettleDatabaseRepository.TABLE_R_ELEMENT );
@@ -478,7 +471,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   private void insertAttributes( List<IMetaStoreAttribute> children, LongObjectId elementId,
-                                 LongObjectId parentAttributeId ) throws Exception {
+    LongObjectId parentAttributeId ) throws Exception {
     for ( IMetaStoreAttribute child : children ) {
       LongObjectId attributeId =
         repository.connectionDelegate.getNextID(
