@@ -33,7 +33,7 @@ public class MarketplaceController extends AbstractXulEventHandler {
   }
 
   public static void showMarketPlaceDialog() {
-    MarketplaceDialog marketplaceDialog = new MarketplaceDialog(Spoon.getInstance().getShell());
+    MarketplaceDialog marketplaceDialog = new MarketplaceDialog( Spoon.getInstance().getShell() );
     marketplaceDialog.open();
   }
 
