@@ -32,106 +32,83 @@ import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
 
-public class Log4jPipedAppender implements Appender
-{
-    private Layout layout;
-    private Filter filter;
+public class Log4jPipedAppender implements Appender {
+  private Layout layout;
+  private Filter filter;
 
-    private String  name;
+  private String name;
 
-    private PipedOutputStream pipedOutputStream;
+  private PipedOutputStream pipedOutputStream;
 
-    public Log4jPipedAppender()
-    {
-        pipedOutputStream = new PipedOutputStream();
+  public Log4jPipedAppender() {
+    pipedOutputStream = new PipedOutputStream();
+  }
+
+  public void addFilter( Filter filter ) {
+    this.filter = filter;
+  }
+
+  public Filter getFilter() {
+    return filter;
+  }
+
+  public void clearFilters() {
+    filter = null;
+  }
+
+  public void close() {
+    try {
+      pipedOutputStream.close();
+    } catch ( IOException e ) {
+      System.out.println( "Unable to close piped output stream: " + e.getMessage() );
     }
+  }
 
-    public void addFilter(Filter filter)
-    {
-        this.filter = filter;
+  public void doAppend( LoggingEvent event ) {
+    String line = layout.format( event ) + Const.CR;
+    try {
+      pipedOutputStream.write( line.getBytes() );
+    } catch ( IOException e ) {
+      System.out.println( "Unable to write to piped output stream : " + e.getMessage() );
     }
+  }
 
-    public Filter getFilter()
-    {
-        return filter;
-    }
+  public void setName( String name ) {
+    this.name = name;
+  }
 
-    public void clearFilters()
-    {
-        filter=null;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void close()
-    {
-        try
-        {
-            pipedOutputStream.close();
-        }
-        catch(IOException e)
-        {
-            System.out.println("Unable to close piped output stream: "+e.getMessage());
-        }
-    }
+  public void setErrorHandler( ErrorHandler arg0 ) {
+  }
 
-    public void doAppend(LoggingEvent event)
-    {
-        String line = layout.format(event)+Const.CR;
-        try
-        {
-            pipedOutputStream.write(line.getBytes());
-        }
-        catch(IOException e)
-        {
-            System.out.println("Unable to write to piped output stream : "+e.getMessage());
-        }
-    }
+  public ErrorHandler getErrorHandler() {
+    return null;
+  }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+  public void setLayout( Layout layout ) {
+    this.layout = layout;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public Layout getLayout() {
+    return layout;
+  }
 
-    public void setErrorHandler(ErrorHandler arg0)
-    {
-    }
+  public boolean requiresLayout() {
+    return true;
+  }
 
-    public ErrorHandler getErrorHandler()
-    {
-        return null;
-    }
+  public PipedOutputStream getPipedOutputStream() {
+    return pipedOutputStream;
+  }
 
-    public void setLayout(Layout layout)
-    {
-        this.layout = layout;
-    }
+  public void setPipedOutputStream( PipedOutputStream pipedOutputStream ) {
+    this.pipedOutputStream = pipedOutputStream;
+  }
 
-    public Layout getLayout()
-    {
-        return layout;
-    }
-
-    public boolean requiresLayout()
-    {
-        return true;
-    }
-
-    public PipedOutputStream getPipedOutputStream()
-    {
-        return pipedOutputStream;
-    }
-
-    public void setPipedOutputStream(PipedOutputStream pipedOutputStream)
-    {
-        this.pipedOutputStream = pipedOutputStream;
-    }
-
-    public void setFilter(Filter filter)
-    {
-        this.filter = filter;
-    }
+  public void setFilter( Filter filter ) {
+    this.filter = filter;
+  }
 }

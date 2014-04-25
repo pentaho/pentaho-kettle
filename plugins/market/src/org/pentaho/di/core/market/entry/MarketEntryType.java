@@ -29,21 +29,22 @@ package org.pentaho.di.core.market.entry;
  */
 public enum MarketEntryType {
   Step,
-  JobEntry,
-  Partitioner,
-  SpoonPlugin,
-  Database,
-  Repository,
-  ImportRule,
-  Mixed,
-  Platform,
-  HadoopShim,
-  General,
-  ;
+    JobEntry,
+    Partitioner,
+    SpoonPlugin,
+    Database,
+    Repository,
+    ImportRule,
+    Mixed,
+    Platform,
+    HadoopShim,
+    General;
 
-  public static MarketEntryType getMarketEntryType(String code) {
-    for (MarketEntryType type : values()) {
-      if (type.name().equalsIgnoreCase(code)) return type;
+  public static MarketEntryType getMarketEntryType( String code ) {
+    for ( MarketEntryType type : values() ) {
+      if ( type.name().equalsIgnoreCase( code ) ) {
+        return type;
+      }
     }
     return null;
   }
