@@ -23,14 +23,16 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
 import java.io.File;
@@ -67,6 +69,15 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
  * User: Dzmitry Stsiapanau Date: 10/18/13 Time: 2:23 PM
  */
 public class TextFileOutputTest {
+
+  /**
+   * 
+   */
+  private static final String EMPTY_FILE_NAME = "Empty File";
+  /**
+   * 
+   */
+  private static final String EMPTY_STRING = "";
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -130,20 +141,21 @@ public class TextFileOutputTest {
   private static final String TEST_PREVIOUS_DATA = "testPreviousData\n";
 
   private StepMockHelper<TextFileOutputMeta, TextFileOutputData> stepMockHelper;
-  private TextFileField textFileField = new TextFileField( "Name", 2, "", 10, 20, "", "", "", "" );
-  private TextFileField textFileField2 = new TextFileField( "Surname", 2, "", 10, 20, "", "", "", "" );
+  private TextFileField textFileField = new TextFileField( "Name", 2, EMPTY_STRING, 10, 20, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
+  private TextFileField textFileField2 = new TextFileField( "Surname", 2, EMPTY_STRING, 10, 20, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
   private TextFileField[] textFileFields = new TextFileField[] { textFileField, textFileField2 };
   private Object[] row = new Object[] { "some data", "another data" };
   private Object[] row2 = new Object[] { "some data2", "another data2" };
   private List<Object[]> emptyRows = new ArrayList<Object[]>();
   private List<Object[]> rows = new ArrayList<Object[]>();
   private List<String> contents = new ArrayList<String>();
+  private TextFileOutput textFileOutput;
   {
     rows.add( row );
     rows.add( row2 );
 
-    contents.add( "" );
-    contents.add( "" );
+    contents.add( EMPTY_STRING );
+    contents.add( EMPTY_STRING );
     contents.add( END_LINE );
     contents.add( END_LINE );
     contents.add( null );
@@ -158,7 +170,7 @@ public class TextFileOutputTest {
     contents.add( RESULT_ROWS );
     contents.add( RESULT_ROWS + END_LINE );
     contents.add( RESULT_ROWS + END_LINE );
-    contents.add( "" );
+    contents.add( EMPTY_STRING );
     contents.add( TEST_PREVIOUS_DATA );
     contents.add( END_LINE );
     contents.add( TEST_PREVIOUS_DATA + END_LINE );
@@ -256,6 +268,40 @@ public class TextFileOutputTest {
         }
       }
     }
+  }
+
+  /**
+   * Tests the RULE#1: If 'Do not create file at start' checkbox is cheked AND 'Add landing line of file' is NOT set AND
+   * transformation does not pass any rows to the file input step, then NO output file should be created.
+   * @throws KettleException
+   */
+  @Test
+  public void testNoOpenFileCall_IfRule_1() throws KettleException {
+
+    TextFileField tfFieldMock = mock( TextFileField.class );
+    TextFileField[] textFileFields = { tfFieldMock };
+
+    when( stepMockHelper.initStepMetaInterface.getEndedLine() ).thenReturn( EMPTY_STRING );
+    when( stepMockHelper.initStepMetaInterface.getOutputFields() ).thenReturn( textFileFields );
+    when( stepMockHelper.initStepMetaInterface.isDoNotOpenNewFileInit() ).thenReturn( true );
+
+    when( stepMockHelper.processRowsStepMetaInterface.getEndedLine() ).thenReturn( EMPTY_STRING );
+    when( stepMockHelper.processRowsStepMetaInterface.getFileName() ).thenReturn( EMPTY_FILE_NAME );
+    when( stepMockHelper.processRowsStepMetaInterface.isDoNotOpenNewFileInit() ).thenReturn( true );
+    when( stepMockHelper.processRowsStepMetaInterface.getOutputFields() ).thenReturn( textFileFields );
+
+    when( stepMockHelper.processRowsStepDataInterface.getPreviouslyOpenedFiles() ).thenReturn( new ArrayList<String>() );
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    TextFileOutput textFileoutputSpy = spy( textFileOutput );
+    doNothing().when( textFileoutputSpy ).openNewFile( EMPTY_FILE_NAME );
+    textFileoutputSpy.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+
+    textFileoutputSpy.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.initStepDataInterface );
+    verify( textFileoutputSpy, never() ).openNewFile( EMPTY_FILE_NAME );
+    verify( textFileoutputSpy, never() ).writeEndedLine();
+    verify( textFileoutputSpy ).setOutputDone();
   }
 
   private File helpTestInit( Boolean fileExists, Boolean dataReceived, Boolean isDoNotOpenNewFileInit,
