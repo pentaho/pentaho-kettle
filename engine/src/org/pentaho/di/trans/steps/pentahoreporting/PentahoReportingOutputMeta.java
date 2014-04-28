@@ -111,8 +111,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     parameterFieldMap = new HashMap<String, String>();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -173,8 +172,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
     try {
       inputFileField = rep.getStepAttributeString( idStep, "file_input_field" );
       outputFileField = rep.getStepAttributeString( idStep, "file_output_field" );
@@ -197,8 +195,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
       rep.saveStepAttribute( idTransformation, idStep, "file_input_field", inputFileField );
       rep.saveStepAttribute( idTransformation, idStep, "file_output_field", outputFileField );

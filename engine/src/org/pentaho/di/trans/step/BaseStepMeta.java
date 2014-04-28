@@ -284,8 +284,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @deprecated
    */
   @Deprecated
-  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev )
-    throws KettleStepException {
+  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev ) throws KettleStepException {
     // default: this doesn't require any SQL statements to be executed!
     return new SQLStatement( stepMeta.getName(), null, null );
   }
@@ -453,8 +452,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     return null;
   }
 
@@ -1056,8 +1054,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     return null;
   }
 
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     // Provided for v4 API compatibility
     return null;
   }
@@ -1067,8 +1064,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
@@ -1084,13 +1080,11 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   @Deprecated
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters ) throws KettleXMLException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
@@ -1099,8 +1093,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
   }
 

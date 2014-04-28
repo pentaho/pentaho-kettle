@@ -130,8 +130,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getBestRowIdentifier( String arg0, String arg1, String arg2, int arg3, boolean arg4 )
-    throws SQLException {
+  public ResultSet getBestRowIdentifier( String arg0, String arg1, String arg2, int arg3, boolean arg4 ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMeta( "SCOPE", ValueMetaInterface.TYPE_INTEGER ) );
     rowMeta.addValueMeta( new ValueMeta( "COLUMN_NAME", ValueMetaInterface.TYPE_STRING ) );
@@ -281,8 +280,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getCrossReference( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5 )
-    throws SQLException {
+  public ResultSet getCrossReference( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5 ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
     rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
@@ -388,8 +386,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getIndexInfo( String arg0, String arg1, String arg2, boolean arg3, boolean arg4 )
-    throws SQLException {
+  public ResultSet getIndexInfo( String arg0, String arg1, String arg2, boolean arg3, boolean arg4 ) throws SQLException {
     return new RowsResultSet( new RowMeta(), new ArrayList<Object[]>() ); // empty set
   }
 
@@ -644,8 +641,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getTables( String catalog, String schemaPattern, String tableNamePattern, String[] types )
-    throws SQLException {
+  public ResultSet getTables( String catalog, String schemaPattern, String tableNamePattern, String[] types ) throws SQLException {
 
     if ( !Const.isEmpty( types ) && Const.indexOfString( "TABLE", types ) < 0 ) {
       System.out.println( "-------------> Requesting table types: " + Arrays.toString( types ) );
@@ -715,8 +711,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getUDTs( String catalog, String schemaPattern, String typeNamePattern, int[] types )
-    throws SQLException {
+  public ResultSet getUDTs( String catalog, String schemaPattern, String typeNamePattern, int[] types ) throws SQLException {
     return new RowsResultSet( new RowMeta(), new ArrayList<Object[]>() );
   }
 

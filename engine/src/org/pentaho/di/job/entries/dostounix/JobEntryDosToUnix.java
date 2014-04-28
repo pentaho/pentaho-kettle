@@ -660,8 +660,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     return entrystatus;
   }
 
-  private boolean convertOneFile( FileObject file, int convertion, Result result, Job parentJob )
-    throws KettleException {
+  private boolean convertOneFile( FileObject file, int convertion, Result result, Job parentJob ) throws KettleException {
     boolean retval = false;
     try {
       // We deal with a file..

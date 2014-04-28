@@ -133,7 +133,7 @@ import org.w3c.dom.Node;
  * @author Matt Casters
  */
 public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>,
-    Cloneable, ResourceExportInterface, RepositoryElementInterface, LoggingObjectInterface {
+  Cloneable, ResourceExportInterface, RepositoryElementInterface, LoggingObjectInterface {
 
   /** The package name, used for internationalization of messages. */
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
@@ -1706,8 +1706,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor )
-    throws KettleStepException {
+  public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
     clearStepFieldsCachce();
     setRepositoryOnMappingSteps();
     return getStepFields( stepMeta, null, monitor );
@@ -1726,8 +1725,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getStepFields( StepMeta stepMeta, StepMeta targetStep, ProgressMonitorListener monitor )
-    throws KettleStepException {
+  public RowMetaInterface getStepFields( StepMeta stepMeta, StepMeta targetStep, ProgressMonitorListener monitor ) throws KettleStepException {
     RowMetaInterface row = new RowMeta();
 
     if ( stepMeta == null ) {
@@ -1863,8 +1861,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor )
-    throws KettleStepException {
+  public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
     clearStepFieldsCachce();
 
     RowMetaInterface row = new RowMeta();
@@ -1940,8 +1937,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getThisStepFields( StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row )
-    throws KettleStepException {
+  public RowMetaInterface getThisStepFields( StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row ) throws KettleStepException {
     return getThisStepFields( stepMeta, nextStep, row, null );
   }
 
@@ -2605,8 +2601,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
    */
-  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
-    throws KettleXMLException, KettleMissingPluginsException {
+  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
     this( fname, rep, setInternalVariables, parentVariableSpace, null );
   }
 
@@ -2840,8 +2835,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, String fname, IMetaStore metaStore, Repository rep,
-    boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter )
-    throws KettleXMLException, KettleMissingPluginsException {
+    boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
 
     KettleMissingPluginsException missingPluginsException =
       new KettleMissingPluginsException( BaseMessages.getString(
@@ -4100,8 +4094,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException
    *           if any errors occur during analysis
    */
-  public void analyseImpact( List<DatabaseImpact> impact, ProgressMonitorListener monitor )
-    throws KettleStepException {
+  public void analyseImpact( List<DatabaseImpact> impact, ProgressMonitorListener monitor ) throws KettleStepException {
     if ( monitor != null ) {
       monitor
         .beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.DeterminingImpactTask.Title" ), nrSteps() );
@@ -4140,8 +4133,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
   @SuppressWarnings( "deprecation" )
   private void compatibleAnalyseImpactStep( List<DatabaseImpact> impact, StepMetaInterface stepint,
-    TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, RowMetaInterface inform )
-    throws KettleStepException {
+    TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, RowMetaInterface inform ) throws KettleStepException {
     stepint.analyseImpact( impact, transMeta, stepMeta, prev, null, null, inform );
   }
 
@@ -5451,8 +5443,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleRowException
    *           in case we detect a row mixing violation
    */
-  public void checkRowMixingStatically( StepMeta stepMeta, ProgressMonitorListener monitor )
-    throws KettleRowException {
+  public void checkRowMixingStatically( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleRowException {
     int nrPrevious = findNrPrevSteps( stepMeta );
     if ( nrPrevious > 1 ) {
       RowMetaInterface referenceRow = null;
@@ -5516,7 +5507,6 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     //
     var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL( name, "" ) );
   }
-
 
   /**
    * Sets the internal filename kettle variables.
@@ -5659,8 +5649,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
 
     try {
       // Handle naming for both repository and XML bases resources...

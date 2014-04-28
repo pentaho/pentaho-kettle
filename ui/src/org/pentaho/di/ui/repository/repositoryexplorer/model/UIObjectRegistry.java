@@ -109,8 +109,7 @@ public class UIObjectRegistry {
     }
   }
 
-  public UIJob constructUIJob( RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep )
-    throws UIObjectCreationException {
+  public UIJob constructUIJob( RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep ) throws UIObjectCreationException {
     try {
       Constructor<?> constructor =
         jobClass.getConstructor(
@@ -157,8 +156,7 @@ public class UIObjectRegistry {
     }
   }
 
-  public UIDatabaseConnection constructUIDatabaseConnection( DatabaseMeta dbmeta, Repository rep )
-    throws UIObjectCreationException {
+  public UIDatabaseConnection constructUIDatabaseConnection( DatabaseMeta dbmeta, Repository rep ) throws UIObjectCreationException {
     try {
       Constructor<?> constructor = dbConnClass.getConstructor( DatabaseMeta.class, Repository.class );
       if ( constructor != null ) {

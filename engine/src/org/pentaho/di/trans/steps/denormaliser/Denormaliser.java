@@ -290,8 +290,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
   }
 
   // Is the row r of the same group as previous?
-  private boolean sameGroup( RowMetaInterface rowMeta, Object[] previous, Object[] rowData )
-    throws KettleValueException {
+  private boolean sameGroup( RowMetaInterface rowMeta, Object[] previous, Object[] rowData ) throws KettleValueException {
     return rowMeta.compare( previous, rowData, data.groupnrs ) == 0;
   }
 

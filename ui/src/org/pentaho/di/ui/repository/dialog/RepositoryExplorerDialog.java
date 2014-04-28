@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration

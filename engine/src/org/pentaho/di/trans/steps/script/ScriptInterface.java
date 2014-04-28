@@ -100,8 +100,7 @@ public interface ScriptInterface extends StepInterface {
 
   void stopAll();
 
-  void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException;
+  void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException;
 
   void cleanup();
 

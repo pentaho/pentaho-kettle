@@ -118,8 +118,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    * @exception KettleXMLException
    *              if an error occurs
    */
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
 
     int nrStats = XMLHandler.countNodes( stepnode, UnivariateStatsMetaFunction.XML_TAG );
 
@@ -213,8 +212,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    * @exception KettleException
    *              if an error occurs
    */
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
 
     for ( int i = 0; i < m_stats.length; i++ ) {
       m_stats[i].saveRep( rep, metaStore, id_transformation, id_step, i );

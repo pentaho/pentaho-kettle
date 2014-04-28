@@ -52,8 +52,7 @@ public class KettleFileSystemConfigBuilderFactory {
    * @return A FileSystemConfigBuilder that can translate Kettle variables into VFS config parameters
    * @throws IOException
    */
-  public static IKettleFileSystemConfigBuilder getConfigBuilder( VariableSpace varSpace, String scheme )
-    throws IOException {
+  public static IKettleFileSystemConfigBuilder getConfigBuilder( VariableSpace varSpace, String scheme ) throws IOException {
     IKettleFileSystemConfigBuilder result = null;
 
     // Attempt to load the Config Builder from a variable: vfs.config.parser = class

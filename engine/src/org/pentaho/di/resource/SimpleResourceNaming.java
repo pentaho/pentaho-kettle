@@ -57,8 +57,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
     this.fileSystemPrefix = fileSystemPrefix;
   }
 
-  public String nameResource( FileObject fileObject, VariableSpace space, boolean includeFileName )
-    throws FileSystemException {
+  public String nameResource( FileObject fileObject, VariableSpace space, boolean includeFileName ) throws FileSystemException {
     if ( includeFileName ) {
       return handleDataFile( fileObject.getName().getBaseName(), fileObject.getParent().getURL().toString(), "" );
     } else {

@@ -31,7 +31,6 @@ import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.BufferChangedListener;
 
 /**
  * @deprecated please use the centralized CentralLogStore to get your log lines from.
@@ -41,154 +40,135 @@ import org.pentaho.di.core.logging.BufferChangedListener;
  *
  */
 @Deprecated
-public class Log4jStringAppender implements Appender
-{
-    private Layout layout;
-    private Filter filter;
+public class Log4jStringAppender implements Appender {
+  private Layout layout;
+  private Filter filter;
 
-    private String  name;
+  private String name;
 
-    private StringBuffer buffer;
+  private StringBuffer buffer;
 
-    private int nrLines;
+  private int nrLines;
 
-    private int maxNrLines;
+  private int maxNrLines;
 
-    private List<BufferChangedListener> bufferChangedListeners;
+  private List<BufferChangedListener> bufferChangedListeners;
 
-    public Log4jStringAppender()
-    {
-        buffer = new StringBuffer();
-        nrLines = 0;
-        maxNrLines = -1;
-        bufferChangedListeners=new ArrayList<BufferChangedListener>();
+  public Log4jStringAppender() {
+    buffer = new StringBuffer();
+    nrLines = 0;
+    maxNrLines = -1;
+    bufferChangedListeners = new ArrayList<BufferChangedListener>();
+  }
+
+  public String toString() {
+    return buffer.toString();
+  }
+
+  public void addFilter( Filter filter ) {
+    this.filter = filter;
+  }
+
+  public Filter getFilter() {
+    return filter;
+  }
+
+  public void clearFilters() {
+    filter = null;
+  }
+
+  public void close() {
+  }
+
+  public void doAppend( LoggingEvent event ) {
+    String line = layout.format( event ) + Const.CR;
+    buffer.append( line );
+
+    // See if we don't have too many lines on board...
+    nrLines++;
+    if ( maxNrLines > 0 && nrLines > maxNrLines ) {
+      buffer.delete( 0, line.length() );
+      nrLines--;
     }
 
-    public String toString() {
-    	return buffer.toString();
+    for ( BufferChangedListener listener : bufferChangedListeners ) {
+      listener.contentWasAdded( buffer, line, nrLines );
     }
+  }
 
-    public void addFilter(Filter filter)
-    {
-        this.filter = filter;
-    }
+  public void setName( String name ) {
+    this.name = name;
+  }
 
-    public Filter getFilter()
-    {
-        return filter;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void clearFilters()
-    {
-        filter=null;
-    }
+  public void setErrorHandler( ErrorHandler arg0 ) {
+  }
 
-    public void close()
-    {
-    }
+  public ErrorHandler getErrorHandler() {
+    return null;
+  }
 
-    public void doAppend(LoggingEvent event)
-    {
-        String line = layout.format(event)+Const.CR;
-        buffer.append(line);
+  public void setLayout( Layout layout ) {
+    this.layout = layout;
+  }
 
-        // See if we don't have too many lines on board...
-        nrLines++;
-        if (maxNrLines>0 && nrLines>maxNrLines)
-        {
-        	buffer.delete(0, line.length());
-        	nrLines--;
-        }
+  public Layout getLayout() {
+    return layout;
+  }
 
-        for (BufferChangedListener listener : bufferChangedListeners)
-        {
-        	listener.contentWasAdded(buffer, line, nrLines);
-        }
-    }
+  public boolean requiresLayout() {
+    return true;
+  }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+  public void setFilter( Filter filter ) {
+    this.filter = filter;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public StringBuffer getBuffer() {
+    return buffer;
+  }
 
-    public void setErrorHandler(ErrorHandler arg0)
-    {
-    }
+  public void setBuffer( StringBuffer buffer ) {
+    this.buffer = buffer;
+  }
 
-    public ErrorHandler getErrorHandler()
-    {
-        return null;
-    }
+  /**
+   * @return the maximum number of lines that this buffer contains, 0 or lower means: no limit
+   */
+  public int getMaxNrLines() {
+    return maxNrLines;
+  }
 
-    public void setLayout(Layout layout)
-    {
-        this.layout = layout;
-    }
+  /**
+   * @param maxNrLines the maximum number of lines that this buffer should contain, 0 or lower means: no limit
+   */
+  public void setMaxNrLines( int maxNrLines ) {
+    this.maxNrLines = maxNrLines;
+  }
 
-    public Layout getLayout()
-    {
-        return layout;
-    }
+  /**
+   * @return the nrLines
+   */
+  public int getNrLines() {
+    return nrLines;
+  }
 
-    public boolean requiresLayout()
-    {
-        return true;
-    }
+  public void addBufferChangedListener( BufferChangedListener bufferChangedListener ) {
+    bufferChangedListeners.add( bufferChangedListener );
+  }
 
-    public void setFilter(Filter filter)
-    {
-        this.filter = filter;
-    }
+  public void removeBufferChangedListener( BufferChangedListener bufferChangedListener ) {
+    bufferChangedListeners.remove( bufferChangedListener );
+  }
 
-    public StringBuffer getBuffer()
-    {
-        return buffer;
-    }
+  /**
+   * @param nrLines the nrLines to set
+   */
+  public void setNrLines( int nrLines ) {
+    this.nrLines = nrLines;
+  }
 
-    public void setBuffer(StringBuffer buffer)
-    {
-        this.buffer = buffer;
-    }
-
-	/**
-	 * @return the maximum number of lines that this buffer contains, 0 or lower means: no limit
-	 */
-	public int getMaxNrLines() {
-		return maxNrLines;
-	}
-
-	/**
-	 * @param maxNrLines the maximum number of lines that this buffer should contain, 0 or lower means: no limit
-	 */
-	public void setMaxNrLines(int maxNrLines) {
-		this.maxNrLines = maxNrLines;
-	}
-
-	/**
-	 * @return the nrLines
-	 */
-	public int getNrLines() {
-		return nrLines;
-	}
-
-	public void addBufferChangedListener(BufferChangedListener bufferChangedListener) {
-		bufferChangedListeners.add(bufferChangedListener);
-	}
-	
-	public void removeBufferChangedListener(BufferChangedListener bufferChangedListener) {
-		bufferChangedListeners.remove(bufferChangedListener);
-	}
-
-	/**
-	 * @param nrLines the nrLines to set
-	 */
-	public void setNrLines(int nrLines) {
-		this.nrLines = nrLines;
-	}
-	
 }

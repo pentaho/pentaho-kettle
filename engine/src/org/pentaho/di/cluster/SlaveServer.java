@@ -598,8 +598,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   // Method is defined as package-protected in order to be accessible by unit tests
-  GetMethod buildExecuteServiceMethod( String service, Map<String, String> headerValues )
-    throws UnsupportedEncodingException {
+  GetMethod buildExecuteServiceMethod( String service, Map<String, String> headerValues ) throws UnsupportedEncodingException {
     GetMethod method = new GetMethod( constructUrl( service ) );
 
     for ( String key : headerValues.keySet() ) {
@@ -678,8 +677,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return detections;
   }
 
-  public SlaveServerTransStatus getTransStatus( String transName, String carteObjectId, int startLogLineNr )
-    throws Exception {
+  public SlaveServerTransStatus getTransStatus( String transName, String carteObjectId, int startLogLineNr ) throws Exception {
     String xml =
       execService( GetTransStatusServlet.CONTEXT_PATH
         + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" )
@@ -687,8 +685,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return SlaveServerTransStatus.fromXML( xml );
   }
 
-  public SlaveServerJobStatus getJobStatus( String jobName, String carteObjectId, int startLogLineNr )
-    throws Exception {
+  public SlaveServerJobStatus getJobStatus( String jobName, String carteObjectId, int startLogLineNr ) throws Exception {
     String xml =
       execService( GetJobStatusServlet.CONTEXT_PATH
         + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + Const.NVL( carteObjectId, "" )
@@ -758,8 +755,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return WebResult.fromXMLString( xml );
   }
 
-  public synchronized WebResult deAllocateServerSockets( String transName, String clusteredRunId )
-    throws Exception {
+  public synchronized WebResult deAllocateServerSockets( String transName, String clusteredRunId ) throws Exception {
     String xml =
       execService( CleanupTransServlet.CONTEXT_PATH
         + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + Const.NVL( clusteredRunId, "" )
@@ -873,8 +869,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -975,8 +970,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
    * @return xml with row metadata and data
    * @throws Exception
    */
-  public String sniffStep( String transName, String stepName, String copyNr, int lines, String type )
-    throws Exception {
+  public String sniffStep( String transName, String stepName, String copyNr, int lines, String type ) throws Exception {
     return execService( SniffStepServlet.CONTEXT_PATH
         + "/?trans=" + URLEncoder.encode( transName, "UTF-8" ) + "&step="
         + URLEncoder.encode( stepName, "UTF-8" ) + "&copynr=" + copyNr + "&type=" + type + "&lines=" + lines

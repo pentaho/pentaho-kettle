@@ -88,8 +88,7 @@ public class CsvInputUnicodeTest {
     doTest( UTF8, UTF8, TEST_DATA );
   }
 
-  private void doTest( final String fileEncoding, final String stepEncoding, final String testData )
-    throws Exception {
+  private void doTest( final String fileEncoding, final String stepEncoding, final String testData ) throws Exception {
     String testFilePath = createTestFile( fileEncoding, testData );
 
     CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding );

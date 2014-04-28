@@ -123,8 +123,7 @@ public class ConnectionPoolUtil {
     log.logBasic( BaseMessages.getString( PKG, "Database.CreatedConnectionPool", databaseMeta.getName() ) );
   }
 
-  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId )
-    throws Exception {
+  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId ) throws Exception {
     return getConnection( log, dbMeta, partitionId, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize() );
   }
 

@@ -309,8 +309,7 @@ public interface JobEntryInterface {
    *           if any errors occur during the loading of the XML
    */
   @Deprecated
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep )
-    throws KettleXMLException;
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep ) throws KettleXMLException;
 
   /**
    * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing the
@@ -544,8 +543,7 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           if any errors occur during the generation of SQL statements
    */
-  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space )
-    throws KettleException;
+  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException;
 
   /**
    * Get the name of the class that implements the dialog for the job entry JobEntryBase provides a default
@@ -656,8 +654,7 @@ public interface JobEntryInterface {
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException;
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
 
   /**
    * Checks whether the job entry defines one or more references to a repository object
@@ -716,7 +713,6 @@ public interface JobEntryInterface {
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException;
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
 
 }

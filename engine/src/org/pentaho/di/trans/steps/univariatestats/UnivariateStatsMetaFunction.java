@@ -222,8 +222,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
    * @exception KettleException
    *              if an error occurs
    */
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr ) throws KettleException {
 
     rep.saveStepAttribute( id_transformation, id_step, nr, "source_field_name", m_sourceFieldName );
     rep.saveStepAttribute( id_transformation, id_step, nr, "N", m_n );

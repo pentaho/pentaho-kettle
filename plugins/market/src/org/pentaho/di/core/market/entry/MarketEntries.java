@@ -44,22 +44,22 @@ public class MarketEntries extends ArrayList<MarketEntry> {
 
   public MarketEntries() {
     Marketplaces marketplaces = new Marketplaces();
-    for (Marketplace marketplace : marketplaces) {
+    for ( Marketplace marketplace : marketplaces ) {
       try {
         // Read the content from the given URL...
         //
-        Document doc = XMLHandler.loadXMLFile(KettleVFS.getInputStream(marketplace.getEntriesUrl()));
-        Node marketNode = XMLHandler.getSubNode(doc, "market");
-        List<Node> entryNodes = XMLHandler.getNodes(marketNode, MarketEntry.XML_TAG);
-        for (Node entryNode : entryNodes) {
-          MarketEntry entry = new MarketEntry(entryNode);
-          if (entry.getType() != null && entry.getType() != MarketEntryType.Platform) {
-            add(new MarketEntry(entryNode));
+        Document doc = XMLHandler.loadXMLFile( KettleVFS.getInputStream( marketplace.getEntriesUrl() ) );
+        Node marketNode = XMLHandler.getSubNode( doc, "market" );
+        List<Node> entryNodes = XMLHandler.getNodes( marketNode, MarketEntry.XML_TAG );
+        for ( Node entryNode : entryNodes ) {
+          MarketEntry entry = new MarketEntry( entryNode );
+          if ( entry.getType() != null && entry.getType() != MarketEntryType.Platform ) {
+            add( new MarketEntry( entryNode ) );
           }
         }
-      } catch (Exception e) {
-        new ErrorDialog(Spoon.getInstance().getShell(), BaseMessages.getString(MARKET_PKG, "Market.error"), BaseMessages.getString(MARKET_PKG, "MarketEntry.read.error",
-            marketplace.getName(), marketplace.getEntriesUrl()), e);
+      } catch ( Exception e ) {
+        new ErrorDialog( Spoon.getInstance().getShell(), BaseMessages.getString( MARKET_PKG, "Market.error" ), BaseMessages.getString( MARKET_PKG, "MarketEntry.read.error",
+          marketplace.getName(), marketplace.getEntriesUrl() ), e );
       }
     }
   }

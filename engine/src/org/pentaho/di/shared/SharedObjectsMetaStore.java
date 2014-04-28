@@ -90,8 +90,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public IMetaStoreElementType getElementTypeByName( String namespace, String elementTypeName )
-    throws MetaStoreException {
+  public IMetaStoreElementType getElementTypeByName( String namespace, String elementTypeName ) throws MetaStoreException {
     for ( IMetaStoreElementType elementType : getElementTypes( namespace ) ) {
       if ( elementType.getName() != null && elementType.getName().equalsIgnoreCase( elementTypeName ) ) {
         return elementType;
@@ -118,8 +117,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType )
-    throws MetaStoreException {
+  public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType ) throws MetaStoreException {
     List<IMetaStoreElement> list = new ArrayList<IMetaStoreElement>();
     for ( SharedObjectInterface sharedObject : sharedObjects.getObjectsMap().values() ) {
       // The databases...
@@ -132,8 +130,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public List<String> getElementIds( String namespace, IMetaStoreElementType elementType )
-    throws MetaStoreException {
+  public List<String> getElementIds( String namespace, IMetaStoreElementType elementType ) throws MetaStoreException {
     List<String> ids = new ArrayList<String>();
     for ( IMetaStoreElement element : getElements( namespace, elementType ) ) {
       ids.add( element.getId() );
@@ -142,8 +139,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public IMetaStoreElement getElement( String namespace, IMetaStoreElementType elementType, String elementId )
-    throws MetaStoreException {
+  public IMetaStoreElement getElement( String namespace, IMetaStoreElementType elementType, String elementId ) throws MetaStoreException {
     for ( IMetaStoreElement element : getElements( namespace, elementType ) ) {
       if ( element.getId().equals( elementId ) ) {
         return element;
@@ -153,8 +149,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public IMetaStoreElement getElementByName( String namespace, IMetaStoreElementType elementType, String name )
-    throws MetaStoreException {
+  public IMetaStoreElement getElementByName( String namespace, IMetaStoreElementType elementType, String name ) throws MetaStoreException {
     for ( IMetaStoreElement element : getElements( namespace, elementType ) ) {
       if ( ( element.getName().equalsIgnoreCase( name ) ) ) {
         return element;
@@ -164,8 +159,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public void createElement( String namespace, IMetaStoreElementType elementType, IMetaStoreElement element )
-    throws MetaStoreException, MetaStoreElementExistException {
+  public void createElement( String namespace, IMetaStoreElementType elementType, IMetaStoreElement element ) throws MetaStoreException, MetaStoreElementExistException {
     try {
       IMetaStoreElement exists = getElementByName( namespace, elementType, element.getId() );
       if ( exists != null ) {
@@ -188,8 +182,7 @@ public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStor
   }
 
   @Override
-  public void deleteElement( String namespace, IMetaStoreElementType elementType, String elementId )
-    throws MetaStoreException {
+  public void deleteElement( String namespace, IMetaStoreElementType elementType, String elementId ) throws MetaStoreException {
     try {
       if ( elementType.getName().equals( databaseElementType.getName() ) ) {
         sharedObjects.removeObject( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement( this, getElement(

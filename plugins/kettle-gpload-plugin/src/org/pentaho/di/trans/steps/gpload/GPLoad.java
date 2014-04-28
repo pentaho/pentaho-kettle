@@ -442,8 +442,7 @@ public class GPLoad extends BaseStep implements StepInterface {
    * @return
    * @throws KettleException
    */
-  private String getPath( String pathToFile, String exceptionMessage, boolean checkExistenceOfFile )
-    throws KettleException {
+  private String getPath( String pathToFile, String exceptionMessage, boolean checkExistenceOfFile ) throws KettleException {
 
     // Make sure the path is not empty
     if ( Const.isEmpty( pathToFile ) ) {

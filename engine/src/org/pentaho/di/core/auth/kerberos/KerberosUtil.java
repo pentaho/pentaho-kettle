@@ -142,8 +142,7 @@ public class KerberosUtil {
     return new LoginContext( KERBEROS_APP_NAME, subject, null, new PentahoLoginConfiguration( configEntries ) );
   }
 
-  public LoginContext getLoginContextFromUsernamePassword( final String principal, final String password )
-    throws LoginException {
+  public LoginContext getLoginContextFromUsernamePassword( final String principal, final String password ) throws LoginException {
     Map<String, String> opts = new HashMap<String, String>( LOGIN_CONFIG_OPTS_KERBEROS_USER );
     opts.put( "principal", principal );
     AppConfigurationEntry[] appConfigurationEntries =

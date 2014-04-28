@@ -42,8 +42,7 @@ public class ValueMetaFactory {
 
   public static PluginRegistry pluginRegistry = PluginRegistry.getInstance();
 
-  public static ValueMetaInterface createValueMeta( String name, int type, int length, int precision )
-    throws KettlePluginException {
+  public static ValueMetaInterface createValueMeta( String name, int type, int length, int precision ) throws KettlePluginException {
     PluginInterface stringPlugin = pluginRegistry.getPlugin( ValueMetaPluginType.class, String.valueOf( type ) );
     if ( stringPlugin == null ) {
       throw new KettlePluginException( "Unable to locate value meta plugin of type (id) " + type );
@@ -66,8 +65,7 @@ public class ValueMetaFactory {
     return cloneValueMeta( source, source.getType() );
   }
 
-  public static ValueMetaInterface cloneValueMeta( ValueMetaInterface source, int targetType )
-    throws KettlePluginException {
+  public static ValueMetaInterface cloneValueMeta( ValueMetaInterface source, int targetType ) throws KettlePluginException {
     ValueMetaInterface target = null;
 
     // If we're Cloneable and not changing types, call clone()

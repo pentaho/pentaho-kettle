@@ -254,8 +254,7 @@ public class Validation implements Cloneable {
     allowedValues = allowed.toArray( new String[allowed.size()] );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int i )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int i ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_name", fieldName );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_validation_name", name );
 

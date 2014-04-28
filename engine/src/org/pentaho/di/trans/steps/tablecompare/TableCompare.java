@@ -210,8 +210,7 @@ public class TableCompare extends BaseStep implements StepInterface {
   }
 
   private Object[] compareTables( RowMetaInterface rowMeta, Object[] r, String referenceSchema,
-    String referenceTable, String compareSchema, String compareTable, String keyFields, String excludeFields )
-    throws KettleException {
+    String referenceTable, String compareSchema, String compareTable, String keyFields, String excludeFields ) throws KettleException {
     long nrErrors = 0L;
     long nrLeftErrors = 0L;
     long nrRightErrors = 0L;

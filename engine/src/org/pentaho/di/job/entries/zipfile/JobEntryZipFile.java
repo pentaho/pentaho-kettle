@@ -823,8 +823,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     return new File( filename );
   }
 
-  private boolean checkContainsFile( String realSourceDirectoryOrFile, FileObject[] filelist, boolean isDirectory )
-    throws FileSystemException {
+  private boolean checkContainsFile( String realSourceDirectoryOrFile, FileObject[] filelist, boolean isDirectory ) throws FileSystemException {
     boolean retval = false;
     for ( int i = 0; i < filelist.length; i++ ) {
       FileObject file = filelist[i];

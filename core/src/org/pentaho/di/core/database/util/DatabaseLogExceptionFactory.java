@@ -78,8 +78,7 @@ public class DatabaseLogExceptionFactory {
   private static class ThrowableBehaviour implements LogExceptionBehaviourInterface {
 
     @Override
-    public void registerException( LogChannelInterface log, Class<?> packageClass, String key, String... parameters )
-      throws KettleDatabaseException {
+    public void registerException( LogChannelInterface log, Class<?> packageClass, String key, String... parameters ) throws KettleDatabaseException {
       throw new KettleDatabaseException( BaseMessages.getString( packageClass, key, parameters ) );
     }
 

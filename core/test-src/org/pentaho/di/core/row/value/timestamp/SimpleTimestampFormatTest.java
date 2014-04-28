@@ -21,9 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value.timestamp;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -35,7 +33,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * User: Dzmitry Stsiapanau Date: 3/17/14 Time: 4:46 PM
@@ -129,7 +129,7 @@ public class SimpleTimestampFormatTest {
     SimpleTimestampFormat stf = new SimpleTimestampFormat( tdb.getString( "PATTERN." + patternName ) );
     String localeForErrorMSG = Locale.getDefault( Locale.Category.FORMAT ).toLanguageTag();
     parseUnit( "TIMESTAMP.NINE." + patternName, stf, localeForErrorMSG,
-      timestampThreePrecision );  //ThreePrecision only for Kettle
+      timestampThreePrecision ); //ThreePrecision only for Kettle
     parseUnit( "TIMESTAMP.THREE." + patternName, stf, localeForErrorMSG, timestampThreePrecision );
     parseUnit( "TIMESTAMP.ZERO." + patternName, stf, localeForErrorMSG, timestampWithoutPrecision );
     parseUnit( "TIMESTAMP.DOT." + patternName, stf, localeForErrorMSG, timestampWithoutPrecisionWithDot );
@@ -137,13 +137,12 @@ public class SimpleTimestampFormatTest {
     parseUnit( "DATE.ZERO." + patternName, stf, localeForErrorMSG, dateWithoutPrecision );
   }
 
-
   private void checkParseKettleLong() throws ParseException {
     String patternName = "KETTLE.LONG";
     SimpleTimestampFormat stf = new SimpleTimestampFormat( tdb.getString( "PATTERN." + patternName ) );
     String localeForErrorMSG = Locale.getDefault( Locale.Category.FORMAT ).toLanguageTag();
     parseUnit( "TIMESTAMP.NINE." + patternName, stf, localeForErrorMSG,
-      timestampFourPrecision );  //FourPrecision only for Kettle long
+      timestampFourPrecision ); //FourPrecision only for Kettle long
     parseUnit( "TIMESTAMP.THREE." + patternName, stf, localeForErrorMSG, timestampThreePrecision );
     parseUnit( "TIMESTAMP.ZERO." + patternName, stf, localeForErrorMSG, timestampWithoutPrecision );
     parseUnit( "TIMESTAMP.DOT." + patternName, stf, localeForErrorMSG, timestampWithoutPrecisionWithDot );
@@ -175,7 +174,7 @@ public class SimpleTimestampFormatTest {
     parseUnit( "DATE.ZERO." + patternName, stf, localeForErrorMSG, dateWithoutPrecision );
   }
 
-  private void checkParseLocalTimestamp() throws ParseException {
+  protected void checkParseLocalTimestamp() throws ParseException {
     String patternName = "LOCALE.TIMESTAMP";
     SimpleTimestampFormat stf = new SimpleTimestampFormat( tdb.getString( "PATTERN." + patternName ) );
     String localeForErrorMSG = Locale.getDefault( Locale.Category.FORMAT ).toLanguageTag();
@@ -187,11 +186,10 @@ public class SimpleTimestampFormatTest {
     parseUnit( "DATE.ZERO." + patternName, stf, localeForErrorMSG, dateWithoutPrecision );
   }
 
-  private void parseUnit( String patternName, SimpleTimestampFormat stf, String localeForErrorMSG, Date date )
-    throws ParseException {
+  private void parseUnit( String patternName, SimpleTimestampFormat stf, String localeForErrorMSG, Date date ) throws ParseException {
     if ( date instanceof Timestamp ) {
       assertEquals( localeForErrorMSG + "=locale localized pattern= " + stf.toLocalizedPattern(),
-        (Timestamp) date, ( (Timestamp) stf.parse( tdb.getString( patternName ) ) ) );
+        date, ( stf.parse( tdb.getString( patternName ) ) ) );
     } else {
       assertEquals( localeForErrorMSG + "=locale localized pattern= " + stf.toLocalizedPattern(),
         date, ( stf.parse( tdb.getString( patternName ) ) ) );

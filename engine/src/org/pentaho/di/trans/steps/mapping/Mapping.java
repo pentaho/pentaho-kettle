@@ -617,8 +617,7 @@ public class Mapping extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
     if ( data.mappingTrans != null ) {
       data.mappingTrans.stopAll();
     }

@@ -241,8 +241,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    * @param row
    * @param requestBuilder
    */
-  private void addSourceFromJsonString( Object[] row, IndexRequestBuilder requestBuilder )
-    throws KettleStepException {
+  private void addSourceFromJsonString( Object[] row, IndexRequestBuilder requestBuilder ) throws KettleStepException {
     Object jsonString = row[jsonFieldIdx];
     if ( jsonString instanceof byte[] ) {
       requestBuilder.setSource( (byte[]) jsonString );
@@ -259,8 +258,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    * @param row
    * @throws IOException
    */
-  private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row )
-    throws IOException {
+  private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row ) throws IOException {
     XContentBuilder jsonBuilder = XContentFactory.jsonBuilder().startObject();
 
     for ( int i = 0; i < rowMeta.size(); i++ ) {

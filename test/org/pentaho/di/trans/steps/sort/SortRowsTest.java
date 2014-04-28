@@ -510,8 +510,7 @@ public class SortRowsTest {
     this.checkStringSortCorrect( ret, caseSen, asc );
   }
 
-  private void checkStringSortCorrect( List<RowMetaAndData> list, boolean caseSensitive, boolean asc )
-    throws KettleValueException {
+  private void checkStringSortCorrect( List<RowMetaAndData> list, boolean caseSensitive, boolean asc ) throws KettleValueException {
     List<String> actual = new ArrayList<String>();
     List<String> expected = new ArrayList<String>();
 

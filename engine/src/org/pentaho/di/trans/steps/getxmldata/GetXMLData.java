@@ -76,8 +76,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  protected boolean setDocument( String StringXML, FileObject file, boolean IsInXMLField, boolean readurl )
-    throws KettleException {
+  protected boolean setDocument( String StringXML, FileObject file, boolean IsInXMLField, boolean readurl ) throws KettleException {
 
     this.prevRow = buildEmptyRow(); // pre-allocate previous row
 

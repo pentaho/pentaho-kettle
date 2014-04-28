@@ -393,13 +393,11 @@ public class ThinUtil {
     return index;
   }
 
-  public static int findNextBracket( String sql, char skipChar, char nextChar, int index )
-    throws KettleSQLException {
+  public static int findNextBracket( String sql, char skipChar, char nextChar, int index ) throws KettleSQLException {
     return findNextBracket( sql, skipChar, nextChar, index, false );
   }
 
-  public static int findNextBracket( String sql, char skipChar, char nextChar, int index, boolean escape )
-    throws KettleSQLException {
+  public static int findNextBracket( String sql, char skipChar, char nextChar, int index, boolean escape ) throws KettleSQLException {
 
     int counter = 0;
     for ( int i = index; i < sql.length(); i++ ) {
@@ -449,8 +447,7 @@ public class ThinUtil {
     return count;
   }
 
-  public static List<String> splitClause( String fieldClause, char splitChar, char... skipChars )
-    throws KettleSQLException {
+  public static List<String> splitClause( String fieldClause, char splitChar, char... skipChars ) throws KettleSQLException {
     List<String> strings = new ArrayList<String>();
     int startIndex = 0;
     for ( int index = 0; index < fieldClause.length(); index++ ) {
@@ -495,8 +492,7 @@ public class ThinUtil {
     return fieldClause.length();
   }
 
-  public static String findClause( String sqlString, String startClause, String... endClauses )
-    throws KettleSQLException {
+  public static String findClause( String sqlString, String startClause, String... endClauses ) throws KettleSQLException {
     if ( Const.isEmpty( sqlString ) ) {
       return null;
     }

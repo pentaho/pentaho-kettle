@@ -147,8 +147,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 
 	@Override
 	public void readRep(Repository rep, IMetaStore metaStore, ObjectId idStep,
-			List<DatabaseMeta> databases)
-	throws KettleException {
+			List<DatabaseMeta> databases) throws KettleException {
 		try {
 			this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
 			this.modelName = rep.getStepAttributeString(idStep, "modelName");
@@ -225,8 +224,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 
 	}
 
-	private void readData(final Node stepnode, final List < ? extends SharedObjectInterface > databases)
-	throws KettleXMLException {
+	private void readData(final Node stepnode, final List < ? extends SharedObjectInterface > databases) throws KettleXMLException {
 		try {
 			this.databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			this.modelName = XMLHandler.getTagValue(stepnode, "modelName");

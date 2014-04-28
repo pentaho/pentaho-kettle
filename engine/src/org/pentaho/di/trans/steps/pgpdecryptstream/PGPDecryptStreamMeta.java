@@ -164,8 +164,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     this.passhrase = passhrase;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -205,8 +204,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       gpglocation = XMLHandler.getTagValue( stepnode, "gpglocation" );
       passhrase = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "passhrase" ) );
@@ -220,8 +218,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       gpglocation = rep.getStepAttributeString( id_step, "gpglocation" );
       passhrase = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "passhrase" ) );
@@ -236,8 +233,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "gpglocation", gpglocation );
       rep.saveStepAttribute( id_transformation, id_step, "passhrase", Encr

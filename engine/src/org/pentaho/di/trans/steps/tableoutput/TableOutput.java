@@ -437,8 +437,7 @@ public class TableOutput extends BaseStep implements StepInterface {
     return outputRowData;
   }
 
-  private void processBatchException( String errorMessage, int[] updateCounts, List<Exception> exceptionsList )
-    throws KettleException {
+  private void processBatchException( String errorMessage, int[] updateCounts, List<Exception> exceptionsList ) throws KettleException {
     // There was an error with the commit
     // We should put all the failing rows out there...
     //

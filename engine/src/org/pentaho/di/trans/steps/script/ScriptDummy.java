@@ -168,8 +168,7 @@ public class ScriptDummy implements StepInterface {
   public void stopAll() {
   }
 
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
   }
 
   public void cleanup() {
@@ -192,8 +191,7 @@ public class ScriptDummy implements StepInterface {
     return null;
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return null;
   }
 

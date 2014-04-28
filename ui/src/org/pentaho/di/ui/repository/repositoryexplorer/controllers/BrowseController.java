@@ -692,8 +692,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     event.setAccepted( result );
   }
 
-  protected void moveFiles( List<UIRepositoryObject> objects, UIRepositoryDirectory targetDirectory )
-    throws Exception {
+  protected void moveFiles( List<UIRepositoryObject> objects, UIRepositoryDirectory targetDirectory ) throws Exception {
     // Perform move
     for ( UIRepositoryObject o : objects ) {
       o.move( targetDirectory );

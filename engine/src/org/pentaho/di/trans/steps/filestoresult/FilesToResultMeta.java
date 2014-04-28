@@ -97,8 +97,7 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -126,14 +125,12 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
     fileType = ResultFile.FILE_TYPE_GENERAL;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     filenameField = rep.getStepAttributeString( id_step, "filename_field" );
     fileType = ResultFile.getType( rep.getStepAttributeString( id_step, "file_type" ) );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "filename_field", filenameField );
     rep.saveStepAttribute( id_transformation, id_step, "file_type", ResultFile.getTypeCode( fileType ) );
   }

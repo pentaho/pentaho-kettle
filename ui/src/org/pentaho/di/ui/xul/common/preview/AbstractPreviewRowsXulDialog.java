@@ -209,8 +209,7 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
    */
   protected abstract void initializeXul() throws XulException;
 
-  protected void initializeXul( XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent )
-    throws XulException {
+  protected void initializeXul( XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent ) throws XulException {
 
     bf = bindingFactory;
     this.runner = runner;

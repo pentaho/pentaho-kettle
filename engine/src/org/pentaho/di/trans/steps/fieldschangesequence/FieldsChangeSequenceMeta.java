@@ -88,8 +88,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     this.resultfieldName = resultfieldName;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -187,8 +186,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       start = rep.getStepAttributeString( id_step, "start" );
       increment = rep.getStepAttributeString( id_step, "increment" );
@@ -205,8 +203,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "start", start );
       rep.saveStepAttribute( id_transformation, id_step, "increment", increment );

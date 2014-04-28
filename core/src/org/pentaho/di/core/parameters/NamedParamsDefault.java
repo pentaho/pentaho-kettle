@@ -70,8 +70,7 @@ public class NamedParamsDefault implements NamedParams {
   }
 
   @Override
-  public void addParameterDefinition( String key, String defValue, String description )
-    throws DuplicateParamException {
+  public void addParameterDefinition( String key, String defValue, String description ) throws DuplicateParamException {
 
     if ( params.get( key ) == null ) {
       OneNamedParam oneParam = new OneNamedParam();

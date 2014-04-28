@@ -120,8 +120,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
   }
 
   @Override
-  public Socket createSocket( String host, int port, InetAddress client_host, int client_port )
-    throws IOException, UnknownHostException {
+  public Socket createSocket( String host, int port, InetAddress client_host, int client_port ) throws IOException, UnknownHostException {
     return factory.createSocket( host, port, client_host, client_port );
   }
 
@@ -131,8 +130,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
   }
 
   @Override
-  public Socket createSocket( InetAddress host, int port, InetAddress client_host, int client_port )
-    throws IOException, UnknownHostException {
+  public Socket createSocket( InetAddress host, int port, InetAddress client_host, int client_port ) throws IOException, UnknownHostException {
     return factory.createSocket( host, port, client_host, client_port );
   }
 

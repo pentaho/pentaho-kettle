@@ -457,8 +457,7 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     return retval;
   }
 
-  private synchronized ObjectId insertDatabaseAttribute( ObjectId id_database, String code, String value_str )
-    throws KettleException {
+  private synchronized ObjectId insertDatabaseAttribute( ObjectId id_database, String code, String value_str ) throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextDatabaseAttributeID();
 
     RowMetaAndData table = new RowMetaAndData();

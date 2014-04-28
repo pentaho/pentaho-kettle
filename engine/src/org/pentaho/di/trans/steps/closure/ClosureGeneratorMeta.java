@@ -64,8 +64,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     super();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -74,8 +73,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       parentIdFieldName = XMLHandler.getTagValue( stepnode, "parent_id_field" );
       childIdFieldName = XMLHandler.getTagValue( stepnode, "child_id_field" );
@@ -129,8 +127,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       parentIdFieldName = rep.getStepAttributeString( id_step, "parent_id_field" );
       childIdFieldName = rep.getStepAttributeString( id_step, "child_id_field" );
@@ -141,8 +138,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "parent_id_field", parentIdFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "child_id_field", childIdFieldName );

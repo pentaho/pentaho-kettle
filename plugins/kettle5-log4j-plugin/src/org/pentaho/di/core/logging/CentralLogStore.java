@@ -35,12 +35,12 @@ public class CentralLogStore {
    * @param maxSize the maximum size
    * @param maxLogTimeoutMinutes The maximum time that a log line times out in Minutes.
    */
-  private CentralLogStore(int maxSize, int maxLogTimeoutMinutes) {
-    KettleLogStore.init(maxSize, maxLogTimeoutMinutes);
+  private CentralLogStore( int maxSize, int maxLogTimeoutMinutes ) {
+    KettleLogStore.init( maxSize, maxLogTimeoutMinutes );
   }
 
-  public void replaceLogCleaner(final int maxLogTimeoutMinutes) {
-    KettleLogStore.getInstance().replaceLogCleaner(maxLogTimeoutMinutes);
+  public void replaceLogCleaner( final int maxLogTimeoutMinutes ) {
+    KettleLogStore.getInstance().replaceLogCleaner( maxLogTimeoutMinutes );
   }
 
   /**
@@ -49,104 +49,110 @@ public class CentralLogStore {
    * @param maxSize the maximum size
    * @param maxLogTimeoutHours The maximum time that a log line times out in hours.
    */
-  public static void init(int maxSize, int maxLogTimeoutMinutes) {
-    KettleLogStore.init(maxSize, maxLogTimeoutMinutes);
+  public static void init( int maxSize, int maxLogTimeoutMinutes ) {
+    KettleLogStore.init( maxSize, maxLogTimeoutMinutes );
   }
 
   public static void init() {
     KettleLogStore.init();
   }
 
-    /**
-     * @return the number (sequence, 1..N) of the last log line.
-     * If no records are present in the buffer, 0 is returned.
-     */
-    public static int getLastBufferLineNr() {
-      return KettleLogStore.getLastBufferLineNr();
+  /**
+   * @return the number (sequence, 1..N) of the last log line.
+   * If no records are present in the buffer, 0 is returned.
+   */
+  public static int getLastBufferLineNr() {
+    return KettleLogStore.getLastBufferLineNr();
+  }
+
+  /**
+   *
+   * Get all the log lines pertaining to the specified parent log channel id (including all children)
+   *
+   * @param parentLogChannelId the parent log channel ID to grab
+   * @param includeGeneral include general log lines
+   * @param from
+   * @param to
+   * @return the log lines found
+   */
+  public static List<LoggingEvent> getLogBufferFromTo( String parentLogChannelId, boolean includeGeneral, int from, int to ) {
+    List<KettleLoggingEvent> events = KettleLogStore.getLogBufferFromTo( parentLogChannelId, includeGeneral, from, to );
+    return convertKettleLoggingEventsToLog4jLoggingEvents( events );
+  }
+
+  private static List<LoggingEvent> convertKettleLoggingEventsToLog4jLoggingEvents( List<KettleLoggingEvent> events ) {
+    LogWriter logWriter = LogWriter.getInstance();
+    // Copy the events over for compatibility
+    List<LoggingEvent> list = new ArrayList<LoggingEvent>();
+    for ( KettleLoggingEvent event : events ) {
+      LoggingEvent loggingEvent = new LoggingEvent(
+        logWriter.getPentahoLogger().getClass().getName(),
+        logWriter.getPentahoLogger(), // Category is deprecated
+        event.getTimeStamp(),
+        convertKettleLogLevelToLog4jLevel( event.getLevel() ),
+        event.getMessage(),
+        null,
+        null,
+        null,
+        null,
+        null );
+      list.add( loggingEvent );
     }
 
-    /**
-     *
-     * Get all the log lines pertaining to the specified parent log channel id (including all children)
-     *
-     * @param parentLogChannelId the parent log channel ID to grab
-     * @param includeGeneral include general log lines
-     * @param from
-     * @param to
-     * @return the log lines found
-     */
-    public static List<LoggingEvent> getLogBufferFromTo(String parentLogChannelId, boolean includeGeneral, int from, int to) {
-      List<KettleLoggingEvent> events = KettleLogStore.getLogBufferFromTo(parentLogChannelId, includeGeneral, from, to);
-      return convertKettleLoggingEventsToLog4jLoggingEvents(events);
+    return list;
+
+  }
+
+  private static Level convertKettleLogLevelToLog4jLevel( LogLevel level ) {
+    switch ( level ) {
+      case BASIC:
+        return Level.INFO;
+      case DETAILED:
+        return Level.INFO;
+      case DEBUG:
+        return Level.DEBUG;
+      case ROWLEVEL:
+        return Level.DEBUG;
+      case MINIMAL:
+        return Level.INFO;
+      case ERROR:
+        return Level.ERROR;
+      case NOTHING:
+        return Level.OFF;
+      default:
+        return Level.INFO;
     }
+  }
 
+  /**
+   * Get all the log lines for the specified parent log channel id (including all children)
+   *
+   * @param channelId channel IDs to grab
+   * @param includeGeneral include general log lines
+   * @param from
+   * @param to
+   * @return
+   */
+  public static List<LoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral, int from, int to ) {
+    return convertKettleLoggingEventsToLog4jLoggingEvents( KettleLogStore.getLogBufferFromTo( channelId, includeGeneral, from, to ) );
+  }
 
-    private static List<LoggingEvent> convertKettleLoggingEventsToLog4jLoggingEvents(List<KettleLoggingEvent> events) {
-      LogWriter logWriter = LogWriter.getInstance();
-      // Copy the events over for compatibility
-      List<LoggingEvent> list = new ArrayList<LoggingEvent>();
-      for (KettleLoggingEvent event : events) {
-        LoggingEvent loggingEvent = new LoggingEvent(
-            logWriter.getPentahoLogger().getClass().getName(),
-            logWriter.getPentahoLogger(), // Category is deprecated
-            event.getTimeStamp(),
-            convertKettleLogLevelToLog4jLevel(event.getLevel()),
-            event.getMessage(),
-            null,
-            null,
-            null,
-            null,
-            null
-          );
-        list.add(loggingEvent);
-      }
+  /*
+   * This method will no longer be available in the Kettle 5 API
+   *
+   * @return The appender that represents the central logging store.  It is capable of giving back log rows in an incremental fashion, etc.
+   *
+  public static Log4jBufferAppender getAppender() {
+    return getInstance().appender;
+  }
+  */
 
-      return list;
-
-    }
-
-    private static Level convertKettleLogLevelToLog4jLevel(LogLevel level) {
-      switch(level) {
-        case BASIC: return Level.INFO;
-        case DETAILED: return Level.INFO;
-        case DEBUG: return Level.DEBUG;
-        case ROWLEVEL: return Level.DEBUG;
-        case MINIMAL: return Level.INFO;
-        case ERROR: return Level.ERROR;
-        case NOTHING: return Level.OFF;
-        default: return Level.INFO;
-      }
-    }
-
-    /**
-     * Get all the log lines for the specified parent log channel id (including all children)
-     *
-     * @param channelId channel IDs to grab
-     * @param includeGeneral include general log lines
-     * @param from
-     * @param to
-     * @return
-     */
-    public static List<LoggingEvent> getLogBufferFromTo(List<String> channelId, boolean includeGeneral, int from, int to) {
-      return convertKettleLoggingEventsToLog4jLoggingEvents(KettleLogStore.getLogBufferFromTo(channelId, includeGeneral, from, to));
-    }
-
-    /*
-     * This method will no longer be available in the Kettle 5 API
-     *
-     * @return The appender that represents the central logging store.  It is capable of giving back log rows in an incremental fashion, etc.
-     *
-    public static Log4jBufferAppender getAppender() {
-      return getInstance().appender;
-    }
-    */
-
-    /**
-     * Discard all the lines for the specified log channel id AND all the children.
-     *
-     * @param parentLogChannelId the parent log channel id to be removed along with all its children.
-     */
-  public static void discardLines(String parentLogChannelId, boolean includeGeneralMessages) {
-    KettleLogStore.discardLines(parentLogChannelId, includeGeneralMessages);
+  /**
+   * Discard all the lines for the specified log channel id AND all the children.
+   *
+   * @param parentLogChannelId the parent log channel id to be removed along with all its children.
+   */
+  public static void discardLines( String parentLogChannelId, boolean includeGeneralMessages ) {
+    KettleLogStore.discardLines( parentLogChannelId, includeGeneralMessages );
   }
 }

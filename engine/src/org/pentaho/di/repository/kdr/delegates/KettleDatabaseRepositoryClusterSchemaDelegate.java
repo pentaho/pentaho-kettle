@@ -57,8 +57,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
       quote( KettleDatabaseRepository.FIELD_CLUSTER_NAME ), name );
   }
 
-  public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers )
-    throws KettleException {
+  public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers ) throws KettleException {
     ClusterSchema clusterSchema = new ClusterSchema();
     RowMetaAndData row = getClusterSchema( id_cluster_schema );
 

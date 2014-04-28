@@ -161,8 +161,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     }
   }
 
-  private void addJsonField( ObjectNode jo, JsonOutputField outputField, ValueMetaInterface v, Object[] row, int i )
-    throws KettleValueException {
+  private void addJsonField( ObjectNode jo, JsonOutputField outputField, ValueMetaInterface v, Object[] row, int i ) throws KettleValueException {
     if ( data.inputRowMeta.isNull( row, data.fieldIndexes[i] ) ) {
       jo.put( outputField.getElementName(), (String) null );
     } else {

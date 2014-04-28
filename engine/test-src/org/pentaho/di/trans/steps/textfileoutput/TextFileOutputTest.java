@@ -296,8 +296,7 @@ public class TextFileOutputTest {
   }
 
   private List<Throwable> doOutput( TextFileField[] textFileField, List<Object[]> rows, String pathToFile,
-    String endedLine, Boolean isHeaderEnabled, Boolean isDoNotOpenNewFileInit, Boolean append )
-    throws KettleException {
+    String endedLine, Boolean isHeaderEnabled, Boolean isDoNotOpenNewFileInit, Boolean append ) throws KettleException {
     TextFileOutputData textFileOutputData = new TextFileOutputData();
     TextFileOutput textFileOutput =
       new TextFileOutputTestHandler(

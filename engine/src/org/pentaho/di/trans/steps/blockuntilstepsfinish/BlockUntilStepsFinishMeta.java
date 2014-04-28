@@ -64,8 +64,7 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -168,8 +167,7 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       int nrsteps = rep.countNrStepAttributes( id_step, "step_name" );
@@ -185,8 +183,7 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < stepName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "step_name", stepName[i] );

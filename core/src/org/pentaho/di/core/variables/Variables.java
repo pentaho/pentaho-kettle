@@ -182,8 +182,7 @@ public class Variables implements VariableSpace {
    *           In case there is a String conversion error
    */
   @Override
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     if ( aString == null || aString.length() == 0 ) {
       return aString;
     }

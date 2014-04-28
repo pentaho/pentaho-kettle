@@ -135,8 +135,7 @@ public class PluginRegistry {
     }
   }
 
-  public synchronized void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
-    throws KettlePluginException {
+  public synchronized void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin ) throws KettlePluginException {
 
     boolean changed = false; // Is this an add or an update?
 
@@ -342,8 +341,7 @@ public class PluginRegistry {
    * @return the instantiated class.
    * @throws KettlePluginException
    */
-  public <T> T loadClass( Class<? extends PluginTypeInterface> pluginType, Object object, Class<T> classType )
-    throws KettlePluginException {
+  public <T> T loadClass( Class<? extends PluginTypeInterface> pluginType, Object object, Class<T> classType ) throws KettlePluginException {
     PluginInterface plugin = getPlugin( pluginType, object );
     if ( plugin == null ) {
       return null;
@@ -363,8 +361,7 @@ public class PluginRegistry {
    * @return the instantiated class.
    * @throws KettlePluginException
    */
-  public <T> T loadClass( Class<? extends PluginTypeInterface> pluginType, String pluginId, Class<T> classType )
-    throws KettlePluginException {
+  public <T> T loadClass( Class<? extends PluginTypeInterface> pluginType, String pluginId, Class<T> classType ) throws KettlePluginException {
     PluginInterface plugin = getPlugin( pluginType, pluginId );
     if ( plugin == null ) {
       return null;
@@ -803,8 +800,7 @@ public class PluginRegistry {
    * @return a row buffer containing plugin information for the given plugin type
    * @throws KettlePluginException
    */
-  public RowBuffer getPluginInformation( Class<? extends PluginTypeInterface> pluginType )
-    throws KettlePluginException {
+  public RowBuffer getPluginInformation( Class<? extends PluginTypeInterface> pluginType ) throws KettlePluginException {
     RowBuffer rowBuffer = new RowBuffer( getPluginInformationRowMeta() );
     for ( PluginInterface plugin : getPlugins( pluginType ) ) {
 
@@ -1039,8 +1035,7 @@ public class PluginRegistry {
     return listeners.get( clazz );
   }
 
-  public PluginTypeInterface getPluginType( Class<? extends PluginTypeInterface> pluginTypeClass )
-    throws KettlePluginException {
+  public PluginTypeInterface getPluginType( Class<? extends PluginTypeInterface> pluginTypeClass ) throws KettlePluginException {
     try {
       // All these plugin type interfaces are singletons...
       // So we should call a static getInstance() method...

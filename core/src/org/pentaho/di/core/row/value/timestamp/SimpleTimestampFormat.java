@@ -38,6 +38,8 @@ import java.util.Locale;
  */
 public class SimpleTimestampFormat extends SimpleDateFormat {
 
+  private static final long serialVersionUID = -848077738238548608L;
+
   /**
    * Cached nanosecond positions in specified pattern.
    */
@@ -106,7 +108,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * @throws NullPointerException if the given newFormatSymbols is null
    * @see #getDateFormatSymbols
    */
-  @Override public void setDateFormatSymbols( DateFormatSymbols newFormatSymbols ) {
+  @Override
+  public void setDateFormatSymbols( DateFormatSymbols newFormatSymbols ) {
     patternNanosecond = newFormatSymbols.getLocalPatternChars().charAt( PATTERN_MILLISECOND_POSITION );
     super.setDateFormatSymbols( newFormatSymbols );
   }
@@ -203,7 +206,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * @return the formatted date-time string.
    * @throws NullPointerException if the given {@code timestamp} is {@code null}.
    */
-  @Override public StringBuffer format( Date timestamp, StringBuffer toAppendTo, FieldPosition pos ) {
+  @Override
+  public StringBuffer format( Date timestamp, StringBuffer toAppendTo, FieldPosition pos ) {
     if ( compatibleToSuperPattern ) {
       return super.format( timestamp, toAppendTo, pos );
     }
@@ -258,7 +262,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * See <code>SimpleDateFormat</code> description. This is dummy method to deprecate using parent implementation for
    * <code>Timestamp</code> until it is not fully implemented.
    */
-  @Override public AttributedCharacterIterator formatToCharacterIterator( Object obj ) {
+  @Override
+  public AttributedCharacterIterator formatToCharacterIterator( Object obj ) {
     if ( obj instanceof Timestamp ) {
       throw new IllegalArgumentException(
         "This functionality for Timestamp object has not been implemented yet" );
@@ -294,7 +299,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * @return A <code>Date</code> parsed from the string. In case of error, returns null.
    * @throws NullPointerException if <code>text</code> or <code>pos</code> is null.
    */
-  @Override public Date parse( String text, ParsePosition pos ) {
+  @Override
+  public Date parse( String text, ParsePosition pos ) {
     String timestampFormatDate;
     Date tempDate;
     if ( compatibleToSuperPattern ) {
@@ -337,7 +343,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    *
    * @return a pattern string describing this date format.
    */
-  @Override public String toPattern() {
+  @Override
+  public String toPattern() {
     return originalPattern;
   }
 
@@ -346,15 +353,15 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    *
    * @return a localized pattern string describing this date format.
    */
-  @Override public String toLocalizedPattern() {
+  @Override
+  public String toLocalizedPattern() {
     if ( compatibleToSuperPattern ) {
       return super.toLocalizedPattern();
     } else {
       StringBuffer pattern =
         new StringBuffer( super.toLocalizedPattern() );
       int placeholderPosition = replaceHolder( pattern, true );
-      for ( int i = placeholderPosition;
-            i <= endNanosecondPatternPosition - startNanosecondPatternPosition + placeholderPosition; i++ ) {
+      for ( int i = placeholderPosition; i <= endNanosecondPatternPosition - startNanosecondPatternPosition + placeholderPosition; i++ ) {
         pattern.insert( i, patternNanosecond );
       }
       return pattern.toString();
@@ -369,7 +376,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * @throws NullPointerException     if the given pattern is null
    * @throws IllegalArgumentException if the given pattern is invalid
    */
-  @Override public void applyPattern( String pattern ) {
+  @Override
+  public void applyPattern( String pattern ) {
     DateFormatSymbols formatSymbols = super.getDateFormatSymbols();
     init( pattern, formatSymbols, false );
   }
@@ -381,7 +389,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * @throws NullPointerException     if the given pattern is null
    * @throws IllegalArgumentException if the given pattern is invalid
    */
-  @Override public void applyLocalizedPattern( String pattern ) {
+  @Override
+  public void applyLocalizedPattern( String pattern ) {
     DateFormatSymbols formatSymbols = super.getDateFormatSymbols();
     init( pattern, formatSymbols, true );
   }
@@ -396,7 +405,8 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * @return A <code>Date</code> parsed from the string.
    * @throws java.text.ParseException if the beginning of the specified string cannot be parsed.
    */
-  @Override public Date parse( String source ) throws ParseException {
+  @Override
+  public Date parse( String source ) throws ParseException {
     return super.parse( source );
   }
 
@@ -417,9 +427,9 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
    * @return A <code>Date</code> parsed from the string. In case of error, returns null.
    * @throws NullPointerException if <code>pos</code> is null.
    */
-  @Override public Object parseObject( String source, ParsePosition pos ) {
+  @Override
+  public Object parseObject( String source, ParsePosition pos ) {
     return parse( source, pos );
   }
-
 
 }

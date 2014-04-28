@@ -1211,8 +1211,7 @@ public interface ValueMetaInterface extends Cloneable {
    * @throws KettleDatabaseException
    *           in case something goes wrong.
    */
-  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
-    throws KettleDatabaseException;
+  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws KettleDatabaseException;
 
   /**
    * Set a value on a JDBC prepared statement on the specified position

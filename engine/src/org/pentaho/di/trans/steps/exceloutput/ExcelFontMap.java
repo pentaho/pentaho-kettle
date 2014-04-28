@@ -230,8 +230,7 @@ public class ExcelFontMap {
     return retval;
   }
 
-  public static WritableCellFormat getOrientation( int stepValue, WritableCellFormat cellFormat )
-    throws WriteException {
+  public static WritableCellFormat getOrientation( int stepValue, WritableCellFormat cellFormat ) throws WriteException {
     if ( stepValue != ExcelOutputMeta.FONT_ORIENTATION_HORIZONTAL ) {
       switch ( stepValue ) {
         case ExcelOutputMeta.FONT_ORIENTATION_MINUS_45:

@@ -1578,8 +1578,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -1894,8 +1893,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
    * java.lang.String)
    */
-  public void addParameterDefinition( String key, String defValue, String description )
-    throws DuplicateParamException {
+  public void addParameterDefinition( String key, String defValue, String description ) throws DuplicateParamException {
     namedParams.addParameterDefinition( key, defValue, description );
   }
 

@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -567,8 +567,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @throws KettleDatabaseException
    *           when the type could not be found or referenced.
    */
-  private static final DatabaseInterface findDatabaseInterface( String databaseTypeDesc )
-    throws KettleDatabaseException {
+  private static final DatabaseInterface findDatabaseInterface( String databaseTypeDesc ) throws KettleDatabaseException {
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface plugin = registry.getPlugin( DatabasePluginType.class, databaseTypeDesc );
     if ( plugin == null ) {
@@ -688,7 +687,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public String getName() {
     return databaseInterface.getName();
   }
-
 
   public void setDisplayName( String displayName ) {
     databaseInterface.setDisplayName( displayName );
@@ -2573,8 +2571,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   @Override
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -2847,13 +2844,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return databaseInterface.isMySQLVariant();
   }
 
-  public Long getNextBatchId( Database ldb, String schemaName, String tableName, String fieldName )
-    throws KettleDatabaseException {
+  public Long getNextBatchId( Database ldb, String schemaName, String tableName, String fieldName ) throws KettleDatabaseException {
     return databaseInterface.getNextBatchId( this, ldb, schemaName, tableName, fieldName );
   }
 
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i )
-    throws KettleDatabaseException {
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
     return databaseInterface.getValueFromResultSet( rs, val, i );
   }
 

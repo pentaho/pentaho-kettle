@@ -21,23 +21,21 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-import org.junit.Test;
-
-
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 /**
  * User: Dzmitry Stsiapanau Date: 3/20/2014 Time: 11:51 AM
@@ -47,9 +45,10 @@ public class ValueMetaTimestampTest {
   public void testSetPreparedStatementValue() throws Exception {
     ValueMetaTimestamp vm = new ValueMetaTimestamp();
     PreparedStatement ps = mock( PreparedStatement.class );
-    doAnswer( new Answer() {
-      @Override public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-        Object ts = invocationOnMock.getArguments()[ 1 ];
+    doAnswer( new Answer<Object>() {
+      @Override
+      public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+        Object ts = invocationOnMock.getArguments()[1];
         return ts.toString();
       }
     } ).when( ps ).setTimestamp( anyInt(), (Timestamp) anyObject() );

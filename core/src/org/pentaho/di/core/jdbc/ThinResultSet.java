@@ -91,8 +91,7 @@ public class ThinResultSet implements ResultSet {
   private String sqlObjectId;
   private AtomicBoolean stopped;
 
-  public ThinResultSet( ThinStatement statement, String urlString, String username, String password, String sql )
-    throws SQLException {
+  public ThinResultSet( ThinStatement statement, String urlString, String username, String password, String sql ) throws SQLException {
     this.statement = statement;
     this.connection = (ThinConnection) statement.getConnection();
 

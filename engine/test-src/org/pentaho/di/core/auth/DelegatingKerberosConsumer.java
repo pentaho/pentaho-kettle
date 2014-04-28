@@ -34,8 +34,7 @@ public class DelegatingKerberosConsumer implements
   }
 
   @Override
-  public Object consume( KerberosAuthenticationProvider authenticationProvider )
-    throws AuthenticationConsumptionException {
+  public Object consume( KerberosAuthenticationProvider authenticationProvider ) throws AuthenticationConsumptionException {
     return delegate.consume( authenticationProvider );
   }
 }

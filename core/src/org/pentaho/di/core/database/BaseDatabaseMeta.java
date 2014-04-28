@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -1566,8 +1566,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    * @throws KettleDatabaseException
    */
   @Override
-  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields )
-    throws KettleDatabaseException {
+  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
 
     String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination( schemaName, tableName );
 
@@ -1935,13 +1934,11 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
     return releaseSavepoint;
   }
 
-  public Long getNextBatchIdUsingSequence( String sequenceName, String schemaName, DatabaseMeta dbm, Database ldb )
-    throws KettleDatabaseException {
+  public Long getNextBatchIdUsingSequence( String sequenceName, String schemaName, DatabaseMeta dbm, Database ldb ) throws KettleDatabaseException {
     return ldb.getNextSequenceValue( schemaName, sequenceName, null );
   }
 
-  public Long getNextBatchIdUsingAutoIncSQL( String autoIncSQL, DatabaseMeta dbm, Database ldb )
-    throws KettleDatabaseException {
+  public Long getNextBatchIdUsingAutoIncSQL( String autoIncSQL, DatabaseMeta dbm, Database ldb ) throws KettleDatabaseException {
     Long rtn = null;
     PreparedStatement stmt = ldb.prepareSQL( autoIncSQL, true );
     try {
@@ -2084,8 +2081,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    * @throws KettleDatabaseException
    */
   @Override
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i )
-    throws KettleDatabaseException {
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
 
     return val.getValueFromResultSet( this, rs, i );
 
@@ -2110,8 +2106,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   }
 
   @Override
-  public String getSQLValue( ValueMetaInterface valueMeta, Object valueData, String dateFormat )
-    throws KettleValueException {
+  public String getSQLValue( ValueMetaInterface valueMeta, Object valueData, String dateFormat ) throws KettleValueException {
 
     StringBuilder ins = new StringBuilder();
 

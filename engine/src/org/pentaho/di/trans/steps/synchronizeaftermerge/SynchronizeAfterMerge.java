@@ -522,8 +522,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
     }
   }
 
-  private void processBatchException( String errorMessage, int[] updateCounts, List<Exception> exceptionsList )
-    throws KettleException {
+  private void processBatchException( String errorMessage, int[] updateCounts, List<Exception> exceptionsList ) throws KettleException {
     // There was an error with the commit
     // We should put all the failing rows out there...
     //

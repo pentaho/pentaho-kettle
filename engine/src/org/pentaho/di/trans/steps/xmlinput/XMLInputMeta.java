@@ -241,8 +241,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
     this.rowNumberField = rowNumberField;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -431,8 +430,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       includeFilename = rep.getStepAttributeBoolean( id_step, "include" );
       filenameField = rep.getStepAttributeString( id_step, "include_field" );
@@ -488,8 +486,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "include_field", filenameField );
@@ -716,8 +713,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

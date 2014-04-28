@@ -876,8 +876,7 @@ public interface DatabaseInterface extends Cloneable {
    * @return
    * @throws KettleDatabaseException
    */
-  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idxFields )
-    throws KettleDatabaseException;
+  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idxFields ) throws KettleDatabaseException;
 
   /**
    * @return true if the database supports sequences with a maximum value option. The default is true.
@@ -1039,8 +1038,7 @@ public interface DatabaseInterface extends Cloneable {
    * @return next batch ID
    * @throws KettleDatabaseException
    */
-  Long getNextBatchId( DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName )
-    throws KettleDatabaseException;
+  Long getNextBatchId( DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName ) throws KettleDatabaseException;
 
   /**
    * Returns the tablespace DDL fragment for a "Data" tablespace. In most databases that use tablespaces this is where
@@ -1083,8 +1081,7 @@ public interface DatabaseInterface extends Cloneable {
    * @return The correctly converted Kettle data type corresponding to the valueMeta description.
    * @throws KettleDatabaseException
    */
-  public Object getValueFromResultSet( ResultSet resultSet, ValueMetaInterface valueMeta, int index )
-    throws KettleDatabaseException;
+  public Object getValueFromResultSet( ResultSet resultSet, ValueMetaInterface valueMeta, int index ) throws KettleDatabaseException;
 
   /**
    * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to
@@ -1111,8 +1108,7 @@ public interface DatabaseInterface extends Cloneable {
    * @throws KettleValueException
    *           in case there is a data conversion error.
    */
-  public String getSQLValue( ValueMetaInterface valueMeta, Object valueData, String dateFormat )
-    throws KettleValueException;
+  public String getSQLValue( ValueMetaInterface valueMeta, Object valueData, String dateFormat ) throws KettleValueException;
 
   /**
    * @return true if this database only supports metadata retrieval on a result set, never on a statement (even if the

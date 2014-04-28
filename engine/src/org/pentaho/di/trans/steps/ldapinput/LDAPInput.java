@@ -280,8 +280,7 @@ public class LDAPInput extends BaseStep implements StepInterface {
     return outputRowData;
   }
 
-  private Object getAttributeValue( LDAPInputField field, Attribute attr, int i, Object outputRowData )
-    throws Exception {
+  private Object getAttributeValue( LDAPInputField field, Attribute attr, int i, Object outputRowData ) throws Exception {
 
     if ( field.getType() == ValueMetaInterface.TYPE_BINARY ) {
       // It's a binary field

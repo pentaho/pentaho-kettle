@@ -43,8 +43,7 @@ public class SQLCondition {
   private String conditionClause;
   private SQLFields selectFields;
 
-  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields )
-    throws KettleSQLException {
+  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields ) throws KettleSQLException {
     this( tableAlias, conditionSql, serviceFields, null );
   }
 
@@ -111,8 +110,7 @@ public class SQLCondition {
     return -1;
   }
 
-  private Condition splitConditionByOperator( String clause, Condition parentCondition, int parentOperator )
-    throws KettleSQLException {
+  private Condition splitConditionByOperator( String clause, Condition parentCondition, int parentOperator ) throws KettleSQLException {
     if ( parentCondition == null ) {
       parentCondition = new Condition();
     } else {

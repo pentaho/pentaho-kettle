@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -2014,8 +2014,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @throws KettleRowException
    *           the kettle row exception
    */
-  public static void safeModeChecking( RowMetaInterface referenceRowMeta, RowMetaInterface rowMeta )
-    throws KettleRowException {
+  public static void safeModeChecking( RowMetaInterface referenceRowMeta, RowMetaInterface rowMeta ) throws KettleRowException {
     // See if the row we got has the same layout as the reference row.
     // First check the number of fields
     //
@@ -3173,8 +3172,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *           in case something goes wrong
    *
    */
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
   }
 
   /**
@@ -3512,8 +3510,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 

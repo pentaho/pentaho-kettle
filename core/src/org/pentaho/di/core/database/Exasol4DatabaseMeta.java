@@ -363,8 +363,7 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    * @throws KettleDatabaseException
    */
   @Override
-  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields )
-    throws KettleDatabaseException {
+  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
 
     // no explicit index handling, indexes are not exposed in exasol. Assume
     // all indexes are there!

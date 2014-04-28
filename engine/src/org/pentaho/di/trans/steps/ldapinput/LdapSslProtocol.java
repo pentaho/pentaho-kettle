@@ -71,8 +71,7 @@ public class LdapSslProtocol extends LdapProtocol {
   }
 
   @Override
-  protected void setupEnvironment( Map<String, String> env, String username, String password )
-    throws KettleException {
+  protected void setupEnvironment( Map<String, String> env, String username, String password ) throws KettleException {
     super.setupEnvironment( env, username, password );
     configureSslEnvironment( env );
     configureSocketFactory( trustAllCertificates, trustStorePath, trustStorePassword );

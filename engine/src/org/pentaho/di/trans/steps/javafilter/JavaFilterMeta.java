@@ -78,8 +78,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
   public void allocate( int nrCalcs ) {
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
     targetStreams.get( 0 ).setSubject( XMLHandler.getTagValue( stepnode, "send_true_to" ) );
@@ -118,8 +117,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
     condition = "true";
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
     targetStreams.get( 0 ).setSubject( rep.getStepAttributeString( id_step, "send_true_to" ) );
@@ -135,8 +133,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
     rep.saveStepAttribute( id_transformation, id_step, "send_true_to", targetStreams.get( 0 ).getStepname() );

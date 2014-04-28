@@ -332,8 +332,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
 
       Node general = XMLHandler.getSubNode( stepnode, Dom.TAG_GENERAL );
@@ -530,8 +529,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return StringUtils.join( args, "_" );
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       setIndex( rep.getStepAttributeString( id_step, joinRepAttr( Dom.TAG_GENERAL, Dom.TAG_INDEX ) ) );
@@ -596,8 +594,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
       rep

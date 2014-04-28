@@ -138,8 +138,7 @@ public class GlobalMessages extends AbstractMessageHandler {
    * @throws MissingResourceException
    *           in case both resource bundles couldn't be found.
    */
-  public static ResourceBundle getBundle( String packageName, Class<?> resourceClass )
-    throws MissingResourceException {
+  public static ResourceBundle getBundle( String packageName, Class<?> resourceClass ) throws MissingResourceException {
     ResourceBundle bundle;
     try {
       // First try to load the bundle in the default locale
@@ -166,8 +165,7 @@ public class GlobalMessages extends AbstractMessageHandler {
     return getBundle( locale, packageName, GlobalMessages.getInstance().getClass() );
   }
 
-  public static ResourceBundle getBundle( Locale locale, String packageName, Class<?> resourceClass )
-    throws MissingResourceException {
+  public static ResourceBundle getBundle( Locale locale, String packageName, Class<?> resourceClass ) throws MissingResourceException {
     String filename = buildHashKey( locale, packageName );
     filename = "/" + filename.replace( '.', '/' ) + ".properties";
     InputStream inputStream = null;
@@ -205,8 +203,7 @@ public class GlobalMessages extends AbstractMessageHandler {
     }
   }
 
-  protected String findString( String packageName, Locale locale, String key, Object[] parameters )
-    throws MissingResourceException {
+  protected String findString( String packageName, Locale locale, String key, Object[] parameters ) throws MissingResourceException {
     return findString( packageName, locale, key, parameters, GlobalMessages.getInstance().getClass() );
   }
 
