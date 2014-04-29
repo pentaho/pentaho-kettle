@@ -1590,12 +1590,13 @@ public class TextFileInput extends BaseStep implements StepInterface {
   private void initErrorHandling() {
     List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<FileErrorHandler>( 2 );
     if ( meta.getLineNumberFilesDestinationDirectory() != null ) {
-      dataErrorLineHandlers.add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(), meta
-          .getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta.getEncoding(), this ) );
+      dataErrorLineHandlers
+        .add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(), environmentSubstitute( meta
+          .getLineNumberFilesDestinationDirectory() ), meta.getLineNumberFilesExtension(), meta.getEncoding(), this ) );
     }
     if ( meta.getErrorFilesDestinationDirectory() != null ) {
-      dataErrorLineHandlers.add( new FileErrorHandlerMissingFiles( getTrans().getCurrentDate(), meta
-          .getErrorFilesDestinationDirectory(), meta.getErrorLineFilesExtension(), meta.getEncoding(), this ) );
+      dataErrorLineHandlers.add( new FileErrorHandlerMissingFiles( getTrans().getCurrentDate(), environmentSubstitute(
+        meta.getErrorFilesDestinationDirectory() ), meta.getErrorLineFilesExtension(), meta.getEncoding(), this ) );
     }
     data.dataErrorLineHandler = new CompositeFileErrorHandler( dataErrorLineHandlers );
   }
