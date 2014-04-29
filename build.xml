@@ -896,6 +896,16 @@
         </checkstyle>
       </sequential>
     </for>
+    <for list="${plugin.list}" param="plugin" trim="true">
+      <sequential>
+        <checkstyle config="${checkstyle.config.file}" failonviolation="false">
+          <property key="samedir" value="${checkstyle.dir}"/>
+          <fileset dir="plugins/@{plugin}/src" includes="**/*.java"/>
+          <fileset dir="plugins/@{plugin}/test-src" includes="**/*.java" erroronmissingdir="false"/>
+          <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/@{plugin}-checkstyle-result.xml"/>
+        </checkstyle>
+      </sequential>
+    </for>
   </target>
 
   <!--
