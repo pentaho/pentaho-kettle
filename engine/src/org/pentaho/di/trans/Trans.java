@@ -573,8 +573,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       transMeta.initializeVariablesFrom( parentVariableSpace );
       initializeVariablesFrom( parentVariableSpace );
-      transMeta.copyParametersFrom( this );
-      transMeta.activateParameters();
+      // PDI-3064 do not erase parameters from meta!
+      // instead of this - copy parameters to actual transformation
+      this.copyParametersFrom( transMeta );
+      this.activateParameters();
+
       this.setDefaultLogCommitSize();
 
       // Get a valid transactionId in case we run database transactional.

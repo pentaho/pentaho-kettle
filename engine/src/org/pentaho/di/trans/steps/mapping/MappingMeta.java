@@ -628,8 +628,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
           // OK, load the meta-data from file...
           //
           // Don't set internal variables: they belong to the parent thread!
-          //
-          mappingTransMeta = new TransMeta( realFilename, metaStore, rep, true, space, null );
+          // PDI-3064 do not share with parent variable space
+          mappingTransMeta = new TransMeta( realFilename, metaStore, rep, true, null, null );
           mappingTransMeta.getLogChannel().logDetailed(
             "Loading Mapping from repository",
             "Mapping transformation was loaded from XML file [" + realFilename + "]" );
