@@ -519,9 +519,11 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 				ValueMetaInterface v=info[0].searchValueMeta(returnValueField[i]);
 				if (v!=null)
 				{
-					v.setName(returnValueNewName[i]);
-					v.setOrigin(name);
-					row.addValueMeta(v);
+					ValueMetaInterface copy = v.clone(); // avoid renaming other value meta - SP-790
+                    copy.setName( returnValueNewName[i] );
+			        copy.setOrigin( name );
+			        row.addValueMeta( copy );
+
 				}
 			}
 		}
