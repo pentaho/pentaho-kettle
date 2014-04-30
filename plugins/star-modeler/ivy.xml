@@ -24,7 +24,7 @@
     <dependency org="commons-vfs" name="commons-vfs" rev="20100924-pentaho" transitive="false"/>
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.metadata.revision}" changing="true"/>
+    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" changing="true"/>
     
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>
             
