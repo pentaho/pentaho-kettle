@@ -629,31 +629,36 @@ public class TransExecutionConfiguration implements Cloneable {
       String username = XMLHandler.getTagValue( repNode, "login" );
       String password = Encr.decryptPassword( XMLHandler.getTagValue( repNode, "password" ) );
 
-      // Verify that the repository exists on the slave server...
-      //
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
       try {
         repositoriesMeta.readData();
       } catch ( Exception e ) {
-        throw new KettleException( "Unable to get a list of repositories to locate repository '"
-          + repositoryName + "'" );
+        throw new KettleException( "Unable to get a list of repositories to locate repository '" + repositoryName + "'" );
       }
-      RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
-      if ( repositoryMeta == null ) {
-        log.logBasic( "I couldn't find the repository with name '" + repositoryName + "'" );
-        return;
-      }
-      Repository rep =
-        PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
-      rep.init( repositoryMeta );
+      connectRepository( repositoriesMeta, repositoryName, username, password );
+    }
+  }
 
-      try {
-        rep.connect( username, password );
-        setRepository( rep );
-      } catch ( Exception e ) {
-        log.logBasic( "Unable to connect to the repository with name '" + repositoryName + "'" );
-        return;
-      }
+  public Repository connectRepository( RepositoriesMeta repositoriesMeta, String repositoryName, String username, String password ) throws KettleException {
+    RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
+    if ( repositoryMeta == null ) {
+      log.logBasic( "I couldn't find the repository with name '" + repositoryName + "'" );
+      return null;
+    }
+    Repository rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
+    if ( rep == null ) {
+      log.logBasic( "Unable to load repository plugin for '" + repositoryName + "'" );
+      return null;
+    }
+    rep.init( repositoryMeta );
+
+    try {
+      rep.connect( username, password );
+      setRepository( rep );
+      return rep;
+    } catch ( Exception e ) {
+      log.logBasic( "Unable to connect to the repository with name '" + repositoryName + "'" );
+      return null;
     }
   }
 
