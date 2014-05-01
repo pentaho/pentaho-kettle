@@ -672,6 +672,10 @@ public abstract class BasePluginType implements PluginTypeInterface {
       new Plugin(
         ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
         nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl, forumUrl );
+    ParentFirst parentFirstAnnotation = clazz.getAnnotation( ParentFirst.class );
+    if ( parentFirstAnnotation != null ) {
+      registry.addParentClassLoaderPatterns( plugin, parentFirstAnnotation.patterns() );
+    }
     registry.registerPlugin( this.getClass(), plugin );
 
     if ( libraries != null && libraries.size() > 0 ) {
