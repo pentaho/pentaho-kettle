@@ -678,6 +678,13 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
 
   /**
+   * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for
+   * details.
+   */
+  public static final String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
+      "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
+
+  /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
    * rows (default)
    */
@@ -1364,7 +1371,7 @@ public class Const {
 
   /**
    * Determine the hostname of the machine Kettle is running on
-   * 
+   *
    * @return The hostname
    */
   public static final String getHostnameReal() {
@@ -1402,7 +1409,7 @@ public class Const {
 
   /**
    * Determins the IP address of the machine Kettle is running on.
-   * 
+   *
    * @return The IP address
    */
   public static final String getIPAddress() throws Exception {
