@@ -28,10 +28,19 @@ import org.mockito.Mockito;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Properties;
+
 /**
  * User: RFellows Date: 3/4/13
  */
 public class BaseDatabaseMetaTest {
+
+  @Test
+  public void testPreserveReservedCase() {
+    BaseDatabaseMeta meta = mock( BaseDatabaseMeta.class, Mockito.CALLS_REAL_METHODS );
+    meta.setAttributes( new Properties() );
+    assertTrue( "Default value of 'preserve reserved words case' attribute is FALSE", meta.preserveReservedCase() );
+  }
 
   @Test
   public void testGetSafeFieldname_space() throws Exception {

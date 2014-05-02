@@ -1128,7 +1128,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public boolean preserveReservedCase() {
-    String usePool = attributes.getProperty( ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, "N" );
+    String usePool = attributes.getProperty( ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, "Y" );
     return "Y".equalsIgnoreCase( usePool );
   }
 
