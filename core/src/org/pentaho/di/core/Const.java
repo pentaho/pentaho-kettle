@@ -680,6 +680,13 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
 
   /**
+   * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for
+   * details.
+   */
+  public static final String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
+      "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
+
+  /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
    * rows (default)
    */
@@ -933,7 +940,7 @@ public class Const {
 
   /**
    * The name of the local client MetaStore
-   * 
+   *
    */
   public static final String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
 
@@ -945,7 +952,7 @@ public class Const {
   /**
   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
   * overflow while rounding
-  * 
+  *
   * @param f
   *          The value to round
   * @param places

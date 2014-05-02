@@ -357,4 +357,13 @@
     <variable>KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO</variable>
     <default-value>N</default-value>
   </kettle-variable>
+  
+  <kettle-variable>
+	<description>Set this variable to Y for backward compatibility for the Text File Output step. Setting this to Y will add
+	  no header row at all when the append option is enabled, regardless if the file is existing or not.</description>
+	<variable>KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER</variable>
+	<default-value>N</default-value>
+  </kettle-variable>
+	
 </kettle-variables>
+
