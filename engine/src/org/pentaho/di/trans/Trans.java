@@ -5344,9 +5344,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   public void setServletReponse( HttpServletResponse response ) {
     String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+    if ( !Const.isEmpty( encoding.trim() ) ) {
       try {
-        response.setCharacterEncoding( encoding );
+        response.setCharacterEncoding( encoding.trim() );
         response.setContentType( "text/html; charset=" + encoding );
       } catch ( Exception ex ) {
         LogChannel.GENERAL.logError( "Unable to encode data with encoding : '" + encoding + "'", ex );
