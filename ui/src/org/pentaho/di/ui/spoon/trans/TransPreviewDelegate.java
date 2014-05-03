@@ -305,10 +305,17 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         String string;
         ValueMetaInterface valueMetaInterface;
         try {
-          valueMetaInterface = rowMeta.getValueMeta( colNr );
+          valueMetaInterface = rowMeta.getValueMeta( colNr ).clone();
           if ( valueMetaInterface.isStorageBinaryString() ) {
-            Object nativeType = valueMetaInterface.convertBinaryStringToNativeType( (byte[]) rowData[colNr] );
-            string = valueMetaInterface.getStorageMetadata().getString( nativeType );
+            string = valueMetaInterface.getString( (byte[]) rowData[colNr] );
+          } else if ( valueMetaInterface.isStorageIndexed() ) {
+            //Object nativeType = valueMetaInterface.getIndex()[ ( (Integer) rowData[ colNr ] ) ];
+            Object data = rowData[ colNr ];
+            if ( valueMetaInterface.getIndex() == null ) {
+              string = ( data == null ) ? null : ( (Integer) data ).toString();
+            } else {
+              string = valueMetaInterface.getString( data );
+            }
           } else {
             string = rowMeta.getString( rowData, colNr );
           }
