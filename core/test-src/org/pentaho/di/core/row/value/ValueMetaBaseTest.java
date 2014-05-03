@@ -7,23 +7,25 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.BeforeClass;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
+import org.pentaho.di.core.database.Vertica5DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class ValueMetaBaseTest {
 
+  private static final String TEST_NAME = "TEST_NAME";
   // Get PKG from class under test
   private static Class<?> PKG = ( new ValueMetaBase() {
     public Class<?> getPackage() {
@@ -95,6 +97,50 @@ public class ValueMetaBaseTest {
     obj.getValueFromResultSet( databaseInterface, resultSet, 1 );
     // for jdbc Time type getTime method called
     Mockito.verify( resultSet, Mockito.times( 1 ) ).getTime( Mockito.anyInt() );
+  }
+
+  @Test
+  public void testGetBinaryWithLength_WhenBinarySqlTypesOfVertica() throws Exception {
+    final int binaryColumnIndex = 1;
+    final int varbinaryColumnIndex = 2;
+    final int expectedBinarylength = 1;
+    final int expectedVarBinarylength = 80;
+
+    ValueMetaBase obj = new ValueMetaBase();
+    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
+    dbMeta.setDatabaseInterface( databaseInterface );
+
+    ResultSet resultSet = Mockito.mock( ResultSet.class );
+    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+
+    Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
+    Mockito.when( metaData.getColumnType( binaryColumnIndex ) ).thenReturn( Types.BINARY );
+    Mockito.when( metaData.getPrecision( binaryColumnIndex ) ).thenReturn( expectedBinarylength );
+    Mockito.when( metaData.getColumnDisplaySize( binaryColumnIndex ) ).thenReturn( expectedBinarylength * 2 );
+
+    Mockito.when( metaData.getColumnType( varbinaryColumnIndex ) ).thenReturn( Types.BINARY );
+    Mockito.when( metaData.getPrecision( varbinaryColumnIndex ) ).thenReturn( expectedVarBinarylength );
+    Mockito.when( metaData.getColumnDisplaySize( varbinaryColumnIndex ) ).thenReturn( expectedVarBinarylength * 2 );
+
+    // get value meta for binary type
+    ValueMetaInterface binaryValueMeta =
+        obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, binaryColumnIndex, false, false );
+    assertNotNull( binaryValueMeta );
+    assertTrue( TEST_NAME.equals( binaryValueMeta.getName() ) );
+    assertTrue( ValueMetaInterface.TYPE_BINARY == binaryValueMeta.getType() );
+    assertTrue( expectedBinarylength == binaryValueMeta.getLength() );
+    assertFalse( binaryValueMeta.isLargeTextField() );
+
+    // get value meta for varbinary type
+    ValueMetaInterface varbinaryValueMeta =
+        obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
+    assertNotNull( varbinaryValueMeta );
+    assertTrue( TEST_NAME.equals( varbinaryValueMeta.getName() ) );
+    assertTrue( ValueMetaInterface.TYPE_BINARY == varbinaryValueMeta.getType() );
+    assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
+    assertFalse( varbinaryValueMeta.isLargeTextField() );
+
   }
 
   @Test
