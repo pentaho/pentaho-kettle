@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <step>
+    <name>Data Grid 3</name>
+    <type>DataGrid</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>StringIndex</name>
+        <type>String</type>
+        <storage_type/>
+        <index_name/>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>BooleanIndex</name>
+        <type>Boolean</type>
+        <storage_type/>
+        <index_name/>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>TimestampIndex</name>
+        <type>Timestamp</type>
+        <storage_type/>
+        <index_name/>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <data>
+      <line> <item>string1</item><item>true</item><item>2012-12-12 10&#x3a;10&#x3a;10.123456789</item> </line>
+      <line> <item>string2</item><item>false</item><item>2012-12-12 10&#x3a;10&#x3a;10.123456780</item> </line>
+      <line> <item>string3</item><item/><item>2012-12-12 10&#x3a;10&#x3a;10.123456700</item> </line>
+    </data>
+    <info_step>
+    </info_step>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>108</xloc>
+      <yloc>97</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>

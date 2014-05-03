@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <step>
+    <name>Data Grid 4</name>
+    <type>DataGrid</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>BigNumberIndex</name>
+        <type>BigNumber</type>
+        <storage_type/>
+        <index_name/>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>BinaryIndex</name>
+        <type>Binary</type>
+        <storage_type/>
+        <index_name/>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>DateIndex</name>
+        <type>Date</type>
+        <storage_type/>
+        <index_name/>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <data>
+      <line> <item>123456789.123456789</item><item>1q2w3e</item><item>2012&#x2f;12&#x2f;12 10&#x3a;10&#x3a;10.000</item> </line>
+      <line> <item>987654321.987564321</item><item>1a2s3d</item><item>2012&#x2f;12&#x2f;12 10&#x3a;10&#x3a;10.001</item> </line>
+      <line> <item>123456789.987654321</item><item>1z2x3c</item><item>2012&#x2f;12&#x2f;12 10&#x3a;10&#x3a;10.002</item> </line>
+    </data>
+    <info_step>
+    </info_step>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>252</xloc>
+      <yloc>105</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>

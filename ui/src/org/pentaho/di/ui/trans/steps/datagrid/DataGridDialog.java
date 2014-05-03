@@ -23,7 +23,11 @@
 package org.pentaho.di.ui.trans.steps.datagrid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -50,13 +54,18 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -72,6 +81,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
   private CTabFolder wTabFolder;
   private CTabItem wMetaTab, wDataTab;
   private Composite wMetaComp, wDataComp;
+  private Set<String> infoStepName = new HashSet<String>();
 
   private TableView wFields;
   private TableView wData;
@@ -83,7 +93,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
   public DataGridDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
     input = (DataGridMeta) in;
-
+    infoStepName.addAll( input.getInfoStepName() );
     dataGridMeta = (DataGridMeta) input.clone();
   }
 
@@ -160,6 +170,12 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         new ColumnInfo(
           BaseMessages.getString( PKG, "DataGridDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
           ValueMetaFactory.getValueMetaNames() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DataGridDialog.StorageType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMetaInterface.storageTypeCodes ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "DataGridDialog.Index.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          getIndexFromPreviousStep() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "DataGridDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
           Const.getDateFormats() ),
@@ -316,6 +332,41 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     return stepname;
   }
 
+  private String[] getIndexFromPreviousStep() {
+    final List<String> indexes = new ArrayList<String>();
+    List<StepMeta> steps = transMeta.findPreviousSteps( transMeta.findStep( stepname ), true );
+    for ( StepMeta stepMeta : steps ) {
+      if ( stepMeta != null ) {
+        try {
+          infoStepName.add( stepMeta.getName() );
+          RowMetaInterface row = transMeta.getStepFields( stepMeta );
+          Map<String, Integer> lookupFields = new HashMap<String, Integer>();
+          // Remember these fields...
+          for ( int i = 0; i < row.size(); i++ ) {
+            ValueMetaInterface valueMetaInterface = row.getValueMeta( i );
+            lookupFields.put( valueMetaInterface.getName(), i );
+          }
+
+          // Something was changed in the row.
+          //
+          final Map<String, Integer> fields = new HashMap<String, Integer>();
+
+          // Add the currentMeta fields...
+          fields.putAll( lookupFields );
+
+          Set<String> keySet = fields.keySet();
+          indexes.addAll( keySet );
+
+        } catch ( KettleException e ) {
+          logError( "It was not possible to retrieve the list of fields for step [" + stepMeta.getName() + "]!" );
+        }
+      }
+    }
+    String[] fieldNames = indexes.toArray( new String[ indexes.size() ] );
+    Const.sortStrings( fieldNames );
+    return fieldNames;
+  }
+
   private void addDataGrid( boolean refresh ) {
 
     if ( refresh ) {
@@ -386,6 +437,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 
         item.setText( col++, input.getFieldName()[i] );
         String type = input.getFieldType()[i];
+        String storageType = input.getFieldStorageType()[ i ];
+        String indexFieldName = input.getFieldIndexName()[ i ];
         String format = input.getFieldFormat()[i];
         String length = input.getFieldLength()[i] < 0 ? "" : ( "" + input.getFieldLength()[i] );
         String prec = input.getFieldPrecision()[i] < 0 ? "" : ( "" + input.getFieldPrecision()[i] );
@@ -395,6 +448,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         String decim = input.getDecimal()[i];
 
         item.setText( col++, Const.NVL( type, "" ) );
+        item.setText( col++, Const.NVL( storageType, "" ) );
+        item.setText( col++, Const.NVL( indexFieldName, "" ) );
         item.setText( col++, Const.NVL( format, "" ) );
         item.setText( col++, Const.NVL( length, "" ) );
         item.setText( col++, Const.NVL( prec, "" ) );
@@ -408,7 +463,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 
       }
     }
-
+    infoStepName.addAll( input.getInfoStepName() );
     wFields.setRowNums();
     wFields.optWidth( true );
 
@@ -450,6 +505,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
       int col = 1;
       meta.getFieldName()[i] = item.getText( col++ );
       meta.getFieldType()[i] = item.getText( col++ );
+      meta.getFieldStorageType()[ i ] = item.getText( col++ );
+      meta.getFieldIndexName()[ i ] = item.getText( col++ );
       meta.getFieldFormat()[i] = item.getText( col++ );
       String slength = item.getText( col++ );
       String sprec = item.getText( col++ );
@@ -474,6 +531,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
         meta.getFieldType()[i] = "String";
       }
     }
+    meta.setInfoStepName( infoStepName );
+    meta.searchInfoAndTargetSteps( transMeta.getSteps() );
   }
 
   private void getDataInfo( DataGridMeta meta ) {
