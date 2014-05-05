@@ -2872,6 +2872,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     String d = dd.open();
     if ( d != null ) {
       stepMeta.setDescription( d );
+      stepMeta.setChanged();
+      spoon.setShellText();
     }
   }
 
