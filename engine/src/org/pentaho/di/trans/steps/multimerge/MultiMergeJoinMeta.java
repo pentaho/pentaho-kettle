@@ -202,7 +202,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
         keyFields[i] = rep.getStepAttributeString( id_step, i, "keys" );
       }
 
-      long nInputStreams = rep.getStepAttributeInteger( id_step, "number_imput" );
+      long nInputStreams = rep.getStepAttributeInteger( id_step, "number_input" );
       for ( int i = 0; i < nInputStreams; i++ ) {
         getStepIOMeta().addStream(
           new Stream( StreamType.INFO, null, BaseMessages.getString(
