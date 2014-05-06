@@ -1689,6 +1689,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     String des = dd.open();
     if ( des != null ) {
       jobEntry.setDescription( des );
+      jobEntry.setChanged();
+      spoon.setShellText();
     }
   }
 
