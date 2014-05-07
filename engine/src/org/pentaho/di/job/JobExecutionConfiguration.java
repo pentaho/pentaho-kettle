@@ -467,22 +467,29 @@ public class JobExecutionConfiguration implements Cloneable {
       String repositoryName = XMLHandler.getTagValue(repNode, "name");
       String username = XMLHandler.getTagValue(repNode, "login");
       String password = Encr.decryptPassword(XMLHandler.getTagValue(repNode, "password"));
+      connectRepository( repositoryName, username, password );
+    }
 
-      // Verify that the repository exists on the slave server...
-      //
-      RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
-      try {
-        repositoriesMeta.readData();
-      } catch (Exception e) {
-        throw new KettleException("Unable to get a list of repositories to locate repository '" + repositoryName + "'");
-      }
+  }
+
+  public Repository connectRepository( String repositoryName, String username, String password ) throws KettleException {
+    // Verify that the repository exists on the slave server...
+    //
+    RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+    try {
+      repositoriesMeta.readData();
+    } catch (Exception e) {
+      throw new KettleException("Unable to get a list of repositories to locate repository '" + repositoryName + "'");
+    }
+    return connectRepository(repositoriesMeta, repositoryName, username, password);
+  }
+
+  public Repository connectRepository( RepositoriesMeta repositoriesMeta, String repositoryName, String username, String password ) throws KettleException {
       RepositoryMeta repositoryMeta = repositoriesMeta.findRepository(repositoryName);
       if (repositoryMeta == null) {
         log.logBasic("I couldn't find the repository with name '" + repositoryName + "'");
-        return;
+        return null;
       }
-
-      //        	Repository rep = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, PluginClassType.MainClassType);
 
       Repository rep = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta,
           Repository.class);
@@ -490,16 +497,13 @@ public class JobExecutionConfiguration implements Cloneable {
 
       try {
         rep.connect(username, password);
+        log.logBasic( "Connected to " + repositoryName + " as " + username );
+        setRepository( rep );
+        return rep;
       } catch (Exception e) {
         log.logBasic("Unable to connect to the repository with name '" + repositoryName + "'");
-        return;
+        return null;
       }
-
-      // Confirmed access:
-      //
-      repository = rep;
-    }
-
   }
 
   public String[] getArgumentStrings() {
