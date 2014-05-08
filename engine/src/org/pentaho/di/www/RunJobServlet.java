@@ -152,9 +152,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       logBasic(message);
 
       try {
-        // Execute the transformation...
-        //
-        job.start();
+        runJob( job );
 
         WebResult webResult = new WebResult(WebResult.STRING_OK, "Job started", carteObjectId);
         out.println(webResult.getXML());
@@ -168,6 +166,12 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
       out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker(ex))));
     }
+  }
+
+  protected void runJob( Job job ) {
+    // Execute the transformation...
+    //
+    job.start();
   }
 
   private JobMeta loadJob(Repository repository, String job) throws KettleException {
