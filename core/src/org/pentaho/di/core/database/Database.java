@@ -2295,6 +2295,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         valueMetaClass.getValueFromSQLType( databaseMeta, name, rm, i, ignoreLength, lazyConversion );
       if ( v != null ) {
         valueMeta = v;
+        break;
       }
     }
 
