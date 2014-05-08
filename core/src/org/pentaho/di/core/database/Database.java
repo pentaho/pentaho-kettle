@@ -2249,7 +2249,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         throw new KettleDatabaseException( "No result set metadata available to retrieve row metadata!" );
       }
 
-      rowMeta = new RowMeta();
+      RowMetaInterface rowMeta = new RowMeta();
 
       try {
         int nrcols = rm.getColumnCount();
@@ -2311,6 +2311,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         valueMetaClass.getValueFromSQLType( databaseMeta, name, rm, i, ignoreLength, lazyConversion );
       if ( v != null ) {
         valueMeta = v;
+        break;
       }
     }
 
