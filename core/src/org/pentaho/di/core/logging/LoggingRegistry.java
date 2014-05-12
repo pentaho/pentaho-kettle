@@ -36,7 +36,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.EnvUtil;
 
 public class LoggingRegistry {
-  private static LoggingRegistry registry;
+  private static LoggingRegistry registry = new LoggingRegistry();
   private Map<String, LoggingObjectInterface> map;
   private Map<String, List<String>> childrenMap;
   private Date lastModificationTime;
@@ -54,10 +54,6 @@ public class LoggingRegistry {
   }
 
   public static LoggingRegistry getInstance() {
-    if ( registry != null ) {
-      return registry;
-    }
-    registry = new LoggingRegistry();
     return registry;
   }
 
@@ -206,6 +202,22 @@ public class LoggingRegistry {
       }
     }
     return out.toString();
+  }
+
+  /**
+   * For junit testing purposes
+   * @return ro items map
+   */
+  Map<String, LoggingObjectInterface> dumpItems() {
+    return Collections.unmodifiableMap( this.map );
+  }
+
+  /**
+   * For junit testing purposes
+   * @return ro parent-child relations map
+   */
+  Map<String, List<String>> dumpChildren() {
+    return Collections.unmodifiableMap( this.childrenMap );
   }
 
   public void removeIncludingChildren( String logChannelId ) {
