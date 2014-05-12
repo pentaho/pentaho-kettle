@@ -32,15 +32,46 @@ import org.pentaho.di.trans.step.StepDataInterface;
  *
  */
 public class CalculatorData extends BaseStepData implements StepDataInterface {
-  public RowMetaInterface outputRowMeta;
-  public RowMetaInterface calcRowMeta;
+  private RowMetaInterface outputRowMeta;
+  private RowMetaInterface calcRowMeta;
 
-  public Calculator.FieldIndexes[] fieldIndexes;
+  private Calculator.FieldIndexes[] fieldIndexes;
 
-  public int[] tempIndexes;
+  private int[] tempIndexes;
 
   public CalculatorData() {
     super();
   }
 
+  public RowMetaInterface getOutputRowMeta() {
+    return outputRowMeta;
+  }
+
+  public void setOutputRowMeta( RowMetaInterface outputRowMeta ) {
+    this.outputRowMeta = outputRowMeta;
+  }
+
+  public RowMetaInterface getCalcRowMeta() {
+    return calcRowMeta;
+  }
+
+  public void setCalcRowMeta( RowMetaInterface calcRowMeta ) {
+    this.calcRowMeta = calcRowMeta;
+  }
+
+  public Calculator.FieldIndexes[] getFieldIndexes() {
+    return fieldIndexes;
+  }
+
+  public void setFieldIndexes( Calculator.FieldIndexes[] fieldIndexes ) {
+    this.fieldIndexes = fieldIndexes;
+  }
+
+  public int[] getTempIndexes() {
+    return tempIndexes;
+  }
+
+  public void setTempIndexes( int[] tempIndexes ) {
+    this.tempIndexes = tempIndexes;
+  }
 }
