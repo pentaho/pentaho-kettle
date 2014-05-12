@@ -33,6 +33,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+
   @Override
   public int[] getAccessTypeList() {
     return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -476,5 +477,11 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public boolean supportsRepository() {
     return true;
+  }
+
+  @Override
+  public void addDefaultOptions() {
+    addExtraOption( getPluginId(), "defaultFetchSize", "500" );
+    addExtraOption( getPluginId(), "useCursorFetch", "true" );
   }
 }

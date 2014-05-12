@@ -502,21 +502,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    *
    */
   public void addOptions() {
-    PluginInterface mySqlPlugin = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "MYSQL" );
-    PluginInterface infoBrightPlugin =
-      PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, new InfobrightDatabaseMeta() );
-
-    String mySQL = mySqlPlugin.getIds()[0];
-
-    addExtraOption( mySQL, "defaultFetchSize", "500" );
-    addExtraOption( mySQL, "useCursorFetch", "true" );
-
-    String infoBright = infoBrightPlugin.getIds()[0];
-
-    addExtraOption( infoBright, "characterEncoding", "UTF-8" );
-
-    // Modern databases support this, try it by default...
-    //
+    databaseInterface.addDefaultOptions();
     setSupportsBooleanDataType( true );
     setSupportsTimestampDataType( true );
   }
@@ -1493,8 +1479,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
 
     if ( !isPartitioned()
-      && !( getDatabaseInterface() instanceof SAPR3DatabaseMeta
-      || getDatabaseInterface() instanceof GenericDatabaseMeta ) ) {
+      && getDatabaseInterface().getRequiresDatabaseNameWhenNotPartitioned() ) {
       if ( getDatabaseName() == null || getDatabaseName().length() == 0 ) {
         remarks.add( "Please specify the name of the database" );
       }

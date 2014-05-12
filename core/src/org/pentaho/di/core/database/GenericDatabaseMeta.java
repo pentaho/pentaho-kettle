@@ -259,4 +259,9 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     return "insert into " + schemaTable + "(" + versionField + ") values (1)";
   }
 
+  @Override
+  public boolean getRequiresDatabaseNameWhenNotPartitioned() {
+    return false;
+  }
+
 }

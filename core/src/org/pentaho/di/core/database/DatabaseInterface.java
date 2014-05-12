@@ -1136,4 +1136,14 @@ public interface DatabaseInterface extends Cloneable {
    * @return a String safe for usage as a column name without the need for quoting
    */
   public String getSafeFieldname( String fieldname );
+
+  /**
+   * @return true if the database requires the database name if it's not partitioned
+   */
+  public boolean getRequiresDatabaseNameWhenNotPartitioned();
+
+  /**
+   * Set default options for this database
+   */
+  public void addDefaultOptions();
 }
