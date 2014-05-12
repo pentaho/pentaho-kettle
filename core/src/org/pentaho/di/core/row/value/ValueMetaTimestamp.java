@@ -333,14 +333,13 @@ public class ValueMetaTimestamp extends ValueMetaDate {
             return null;
           }
         }
-      } else {
+      }
         // Verify if there are only spaces in the polled value...
         // We consider that empty as well...
         //
         if ( Const.onlySpaces( pol ) ) {
           return null;
         }
-      }
     }
 
     // Trimming
