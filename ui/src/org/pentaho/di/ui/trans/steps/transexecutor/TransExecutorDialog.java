@@ -1472,7 +1472,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
           ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
-        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Precision" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wOutputFields =
