@@ -2263,7 +2263,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
           @Override
           public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
-            return Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) );
+            // Reverse the sort list
+            return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
           }
         } );
       } catch ( Exception e ) {
