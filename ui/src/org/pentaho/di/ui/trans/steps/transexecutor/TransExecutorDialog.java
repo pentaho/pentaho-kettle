@@ -614,7 +614,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       if ( fname != null ) {
 
         loadFileTrans( fname );
-        wFilename.setText( executorTransMeta.getFilename() );
+        wFilename.setText( fname );
         wTransname.setText( Const.NVL( executorTransMeta.getName(), "" ) );
         wDirectory.setText( "" );
         specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
