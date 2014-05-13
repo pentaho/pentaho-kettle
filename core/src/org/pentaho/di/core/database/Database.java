@@ -2218,7 +2218,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         throw new KettleDatabaseException("No result set metadata available to retrieve row metadata!");
       }
 
-      rowMeta = new RowMeta();
+      RowMetaInterface rowMeta = new RowMeta();
       
       try {
         int nrcols = rm.getColumnCount();
@@ -2249,7 +2249,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         Collections.sort(valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
           @Override
           public int compare(ValueMetaInterface o1, ValueMetaInterface o2) {
-            return Integer.valueOf(o1.getType()).compareTo(Integer.valueOf(o2.getType()));
+            return ( Integer.valueOf(o1.getType()).compareTo(Integer.valueOf(o2.getType())) ) * -1;
           }
         });
       } catch(Exception e) {
@@ -2280,6 +2280,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       ValueMetaInterface v = valueMetaClass.getValueFromSQLType(databaseMeta, name, rm, i, ignoreLength, lazyConversion);
       if (v!=null) {
         valueMeta = v;
+        break;
       }
     }
     
