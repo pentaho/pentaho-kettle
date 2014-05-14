@@ -25,6 +25,19 @@
   
 
   <import file="build-res/subfloor-pkg.xml" />
+	
+  <macrodef name="ivy-resolve">
+    <attribute name="ivyfile" default="${ivyfile}" />
+    <attribute name="conf" default="default" />
+    <attribute name="directory"/>
+    <sequential>
+      <mkdir dir="@{directory}" />
+      <ivy:resolve file="@{ivyfile}" conf="@{conf}" />
+      <ivy:retrieve conf="@{conf}" pattern="@{directory}/[module]-[revision](-[classifier]).[ext]" />
+    </sequential>
+  </macrodef>
+	
+  <property name="pdf.docs.dir" value="${approot.stage.dir}/docs/English" />
 
   <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,package" description="Builds and packages the application"/>
   	
@@ -34,7 +47,14 @@
 
   <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
 
-  <target name="assemble" depends="resolve-swtlibs,create-sampledb-from-sql,subfloor-pkg.assemble"
+  <!-- - - - - - - - - - - - - - - - - - 
+    target: resolve-pdf-docs
+  - - - - - - - - - - - - - - - - - -->
+  <target name="resolve-pdf-docs" depends="install-ivy">
+    <ivy-resolve conf="pdf-docs" directory="${pdf.docs.dir}" />
+  </target>
+	
+  <target name="assemble" depends="resolve-swtlibs,resolve-pdf-docs,create-sampledb-from-sql,subfloor-pkg.assemble"
           description="copy jar files to distribution directory">
     <echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->

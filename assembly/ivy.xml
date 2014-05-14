@@ -5,6 +5,7 @@
     <conf name="default" />
     <conf name="test" visibility="private" />
     <conf name="swtlibs"/>
+    <conf name="pdf-docs" />
     <conf name="plugins"/>
     <conf name="launcher" />
   </configurations>
@@ -72,7 +73,62 @@
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-charts" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
-       
+    
+    
+ 	<!-- PDF Documentation for bundling -->
+	<dependency org="pentaho-doc" name="bigdata_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="bigdata_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="components" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="components" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="config_pdi_server" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="config_pdi_server" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="getting_started_with_instaview" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="getting_started_with_instaview" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="getting_started_with_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="getting_started_with_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_client_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_client_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_graphical" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_graphical" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_graphical_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_graphical_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_overview_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_overview_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_admin_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_admin_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_embed_extend_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_embed_extend_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_user_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_user_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_whats_new" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_whats_new" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="reporting_embedders_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="reporting_embedders_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="supported_components" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="supported_components" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="workflows" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="workflows" type="pdf" />
+	</dependency>
+    
+     
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
     <dependency org="org.eclipse"          name="swtlibs"               rev="3.7" conf="swtlibs->default" transitive="false">
       <artifact name="swtlibs" type="zip"/>
