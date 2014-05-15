@@ -296,7 +296,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private String transactionId;
 
   /** Whether the transformation is preparing for execution. */
-  private boolean preparing;
+  private volatile boolean preparing;
 
   /** Whether the transformation is initializing. */
   private boolean initializing;

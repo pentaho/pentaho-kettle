@@ -316,7 +316,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
     long time = new Date().getTime();
     long msSinceLastUpdate = time - lastUpdateView;
-    if ( transGraph.trans != null && msSinceLastUpdate > UPDATE_TIME_VIEW ) {
+    if ( transGraph.trans != null && !transGraph.trans.isPreparing() && msSinceLastUpdate > UPDATE_TIME_VIEW ) {
       lastUpdateView = time;
 
       nrSteps = transGraph.trans.nrSteps();
