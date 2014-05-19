@@ -82,4 +82,11 @@ public class SimpleMappingData extends BaseStepData implements StepDataInterface
     inputRenameList = new ArrayList<MappingValueRename>();
   }
 
+  public Trans getMappingTrans() {
+    return mappingTrans;
+  }
+
+  public void setMappingTrans( Trans mappingTrans ) {
+    this.mappingTrans = mappingTrans;
+  }
 }

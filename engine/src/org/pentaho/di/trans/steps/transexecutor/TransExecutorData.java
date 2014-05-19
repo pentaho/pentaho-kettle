@@ -36,10 +36,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 18-mar-2013
- *
+ * 
  */
 public class TransExecutorData extends BaseStepData implements StepDataInterface {
   public Trans executorTrans;
+
   public TransMeta executorTransMeta;
   public RowMetaInterface inputRowMeta;
   public RowMetaInterface executionResultsOutputRowMeta;
@@ -62,4 +63,11 @@ public class TransExecutorData extends BaseStepData implements StepDataInterface
     super();
   }
 
+  public Trans getExecutorTrans() {
+    return executorTrans;
+  }
+
+  public void setExecutorTrans( Trans executorTrans ) {
+    this.executorTrans = executorTrans;
+  }
 }
