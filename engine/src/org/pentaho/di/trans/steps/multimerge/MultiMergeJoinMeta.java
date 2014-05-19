@@ -236,7 +236,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
       List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
 
-      rep.saveStepAttribute( id_transformation, id_step, "number_inputs", infoStreams.size() );
+      rep.saveStepAttribute( id_transformation, id_step, "number_input", infoStreams.size() );
       for ( int i = 0; i < infoStreams.size(); i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, "step" + i, infoStreams.get( i ).getStepname() );
       }
