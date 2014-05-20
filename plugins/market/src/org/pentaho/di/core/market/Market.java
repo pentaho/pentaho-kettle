@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.market;
 
@@ -80,7 +80,7 @@ public class Market implements SpoonPluginInterface {
 
   /**
    * Determines the location of the marketplaces file
-   *
+   * 
    * @return the name of the marketplaces file
    */
   public static final String getMarketplacesFile() {
@@ -111,8 +111,9 @@ public class Market implements SpoonPluginInterface {
 
   /**
    * Find the plugin object related to a pluginId.
-   *
-   * @param pluginId id of plugin
+   * 
+   * @param pluginId
+   *          id of plugin
    * @return plugin object
    */
   private static PluginInterface getPluginObject( String pluginId ) {
@@ -125,10 +126,9 @@ public class Market implements SpoonPluginInterface {
   }
 
   /**
-   * This method determines the installed version of a plugin. If the plugin
-   * doesn't define a version correctly, it returns "Unknown". This method makes
-   * the assumption that the plugin id also equals the plugin folder name.
-   *
+   * This method determines the installed version of a plugin. If the plugin doesn't define a version correctly, it
+   * returns "Unknown". This method makes the assumption that the plugin id also equals the plugin folder name.
+   * 
    * @param pluginId
    *          the plugin id related to the version.
    */
@@ -181,7 +181,7 @@ public class Market implements SpoonPluginInterface {
 
   /**
    * Builds and returns the path to the plugins folder.
-   *
+   * 
    * @param marketEntry
    * @return String the path to the plugins folder.
    */
@@ -200,15 +200,15 @@ public class Market implements SpoonPluginInterface {
 
   /**
    * Installs or uninstalls the MarketEntry.
-   *
+   * 
    * @param marketEntry
    *          The market entry to install/uninstall.
    * @param isInstalled
-   *          Boolean indicating if the plugin is installed. If so then it is
-   *          uninstalled. Otherwise it is installed.
+   *          Boolean indicating if the plugin is installed. If so then it is uninstalled. Otherwise it is installed.
    * @throws KettleException
    */
-  public static void installUninstall( final MarketEntry marketEntry, boolean isInstalled, ProgressMonitorDialog monitorDialog ) throws KettleException {
+  public static void installUninstall( final MarketEntry marketEntry, boolean isInstalled,
+      ProgressMonitorDialog monitorDialog ) throws KettleException {
     if ( isInstalled ) {
       Market.uninstall( marketEntry, monitorDialog, true );
     } else {
@@ -217,17 +217,16 @@ public class Market implements SpoonPluginInterface {
   }
 
   /**
-   * Installs the passed MarketEntry into the folder built by
-   * buildPluginsFolderPath(marketEntry).
-   *
-   * A warning dialog box is displayed if the plugin folder already exists. If
-   * the user chooses to install then the plugin folder is deleted and then
-   * recreated.
-   *
+   * Installs the passed MarketEntry into the folder built by buildPluginsFolderPath(marketEntry).
+   * 
+   * A warning dialog box is displayed if the plugin folder already exists. If the user chooses to install then the
+   * plugin folder is deleted and then recreated.
+   * 
    * @param marketEntry
    * @throws KettleException
    */
-  public static void install( final MarketEntry marketEntry, ProgressMonitorDialog monitorDialog ) throws KettleException {
+  public static void install( final MarketEntry marketEntry, ProgressMonitorDialog monitorDialog )
+    throws KettleException {
     String parentFolderName = buildPluginsFolderPath( marketEntry );
 
     // Until plugin dependencies are implemented, check that the pentaho-big-data-plugin directory exists
@@ -236,8 +235,8 @@ public class Market implements SpoonPluginInterface {
 
       File bdPluginFolder = new File( parentFolderName ).getParentFile();
       if ( bdPluginFolder == null || !bdPluginFolder.exists() ) {
-        throw new KettleException(
-          BaseMessages.getString( PKG, "Marketplaces.Dialog.PluginNotInstalled.message", "Pentaho Big Data Plugin" )
+        throw new KettleException( BaseMessages.getString( PKG, "Marketplaces.Dialog.PluginNotInstalled.message",
+            "Pentaho Big Data Plugin" )
             + ". You must install the Pentaho Big Data plugin before you can install a Hadoop Shim" );
       }
     }
@@ -247,7 +246,8 @@ public class Market implements SpoonPluginInterface {
     if ( pluginFolder.exists() ) {
       monitorDialog.close();
       MessageBox mb = new MessageBox( Spoon.getInstance().getShell(), SWT.NO | SWT.YES | SWT.ICON_WARNING );
-      mb.setMessage( BaseMessages.getString( PKG, "Marketplace.Dialog.PromptOverwritePlugin.Message", pluginFolder.getAbsolutePath() ) );
+      mb.setMessage( BaseMessages.getString( PKG, "Marketplace.Dialog.PromptOverwritePlugin.Message", pluginFolder
+          .getAbsolutePath() ) );
       mb.setText( BaseMessages.getString( PKG, "Marketplace.Dialog.PromptOverwritePlugin.Title" ) );
       int answer = SWT.NO;
       answer = mb.open();
@@ -303,9 +303,8 @@ public class Market implements SpoonPluginInterface {
   }
 
   /**
-   * Unzips the plugin to the file system The passed MarkeyEntry has the URL of
-   * the zip file.
-   *
+   * Unzips the plugin to the file system The passed MarkeyEntry has the URL of the zip file.
+   * 
    * @param folderName
    * @param marketEntry
    * @throws KettleException
@@ -383,11 +382,12 @@ public class Market implements SpoonPluginInterface {
 
   /**
    * Uninstalls the passed MarketEntry.
-   *
+   * 
    * @param marketEntry
    * @throws KettleException
    */
-  public static void uninstall( final MarketEntry marketEntry, final ProgressMonitorDialog monitorDialog, boolean refresh ) throws KettleException {
+  public static void uninstall( final MarketEntry marketEntry, final ProgressMonitorDialog monitorDialog,
+      boolean refresh ) throws KettleException {
 
     String parentFolderName = buildPluginsFolderPath( marketEntry );
     File pluginFolder = new File( parentFolderName + File.separator + marketEntry.getId() );
@@ -432,7 +432,8 @@ public class Market implements SpoonPluginInterface {
     }
   }
 
-  public static void uninstallMarketInSeparateClassLoader( final File path, final ProgressMonitorDialog monitorDialog ) throws Exception {
+  public static void uninstallMarketInSeparateClassLoader( final File path, final ProgressMonitorDialog monitorDialog )
+    throws Exception {
     try {
       Spoon.getInstance().getMainSpoonContainer().removeOverlay( "org/pentaho/di/core/market/spoon_overlays.xul" );
       uninstall( new MarketEntry( "market", MarketEntryType.Mixed ), monitorDialog, false );
@@ -455,7 +456,8 @@ public class Market implements SpoonPluginInterface {
     }
   }
 
-  public static void upgradeMarketInSeparateClassLoader( final File path, final String packageUrl, final ProgressMonitorDialog monitorDialog ) throws Exception {
+  public static void upgradeMarketInSeparateClassLoader( final File path, final String packageUrl,
+      final ProgressMonitorDialog monitorDialog ) throws Exception {
     try {
 
       PluginInterface plugin = getPluginObject( "market" );
@@ -546,7 +548,9 @@ public class Market implements SpoonPluginInterface {
             IOUtils.copy( fis, fos );
             fis.close();
             fos.close();
-            classloader = new KettleURLClassLoader( new URL[] { tmpJar.toURI().toURL() }, Spoon.getInstance().getClass().getClassLoader() );
+            classloader =
+                new KettleURLClassLoader( new URL[] { tmpJar.toURI().toURL() }, Spoon.getInstance().getClass()
+                    .getClassLoader() );
             Class<?> clazz = classloader.loadClass( "org.pentaho.di.core.market.Market" );
             // remove the plugin, unload when done.
             Method m = clazz.getMethod( "upgradeMarketInSeparateClassLoader", File.class, String.class );
@@ -610,10 +614,13 @@ public class Market implements SpoonPluginInterface {
             // The classloader will be closed by the invoked method
             //
             @SuppressWarnings( "resource" )
-            KettleURLClassLoader classloader = new KettleURLClassLoader( new URL[] { tmpJar.toURI().toURL() }, Spoon.getInstance().getClass().getClassLoader() );
+            KettleURLClassLoader classloader =
+                new KettleURLClassLoader( new URL[] { tmpJar.toURI().toURL() }, Spoon.getInstance().getClass()
+                    .getClassLoader() );
             Class<?> clazz = classloader.loadClass( "org.pentaho.di.core.market.Market" );
             // remove the plugin, unload when done.
-            Method m = clazz.getMethod( "uninstallMarketInSeparateClassLoader", File.class, ProgressMonitorDialog.class );
+            Method m =
+                clazz.getMethod( "uninstallMarketInSeparateClassLoader", File.class, ProgressMonitorDialog.class );
             m.invoke( null, tmpJar, null );
           } catch ( Throwable t ) {
             t.printStackTrace();
@@ -634,7 +641,7 @@ public class Market implements SpoonPluginInterface {
 
   /**
    * Refreshes Spoons plugin registry, core objects and some UI things.
-   *
+   * 
    * @throws KettleException
    */
   private static void refreshSpoon( ProgressMonitorDialog monitorDialog ) throws KettleException {
@@ -680,7 +687,7 @@ public class Market implements SpoonPluginInterface {
 
   /**
    * Returns the folder name for the MarketEntries type.
-   *
+   * 
    * @param marketEntry
    * @return
    */
@@ -720,15 +727,13 @@ public class Market implements SpoonPluginInterface {
   }
 
   /**
-   * This is a copy of method. That method works fine if the plugin is used in
-   * the same version it is built from. When the plugin was dropped into PDI
-   * 4.2.1 then an invocation target exception was thrown when invoking
+   * This is a copy of method. That method works fine if the plugin is used in the same version it is built from. When
+   * the plugin was dropped into PDI 4.2.1 then an invocation target exception was thrown when invoking
    * JarfileGenerator.deleteDirectory().
-   *
-   * I placed the method here even though the cause of the exception is not that
-   * obvious. The JarfileGenerator.deleteDirectory method has not changed since
-   * 4.2.1.
-   *
+   * 
+   * I placed the method here even though the cause of the exception is not that obvious. The
+   * JarfileGenerator.deleteDirectory method has not changed since 4.2.1.
+   * 
    * @param dir
    */
   private static void deleteDirectory( File dir ) throws KettleException {

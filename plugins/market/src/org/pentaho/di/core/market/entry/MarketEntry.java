@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.market.entry;
 
@@ -31,9 +31,9 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.w3c.dom.Node;
 
 /**
- * This class defines a single PDI market entry. It defines the type of plugin,
- * the version, where to download the archive package and so on.
- *
+ * This class defines a single PDI market entry. It defines the type of plugin, the version, where to download the
+ * archive package and so on.
+ * 
  * @author matt
  */
 public class MarketEntry implements XMLInterface {
@@ -71,7 +71,8 @@ public class MarketEntry implements XMLInterface {
 
   /**
    * @param id
-   * @param type;
+   * @param type
+   *          ;
    * @param name
    * @param version
    * @param author
@@ -88,9 +89,11 @@ public class MarketEntry implements XMLInterface {
    * @param supportOrganization
    * @param supportUrl
    */
-  public MarketEntry( String id, MarketEntryType type, String name, String version, String author, String description, String documentationUrl,
-    String sourceUrl, String forumUrl, String casesUrl, String packageUrl, String licenseName, String licenseText, SupportLevel supportLevel,
-    String supportMessage, String supportOrganization, String supportUrl, String minPdiVersion, String maxPdiVersion ) throws KettleException {
+  public MarketEntry( String id, MarketEntryType type, String name, String version, String author, String description,
+      String documentationUrl, String sourceUrl, String forumUrl, String casesUrl, String packageUrl,
+      String licenseName, String licenseText, SupportLevel supportLevel, String supportMessage,
+      String supportOrganization, String supportUrl, String minPdiVersion, String maxPdiVersion )
+    throws KettleException {
     this();
     this.id = id;
     this.type = type;
@@ -118,7 +121,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   public MarketEntry( String id, MarketEntryType type ) throws KettleException {
-    this( id, type, null, null, null, null, null, null, null, null, null, null, null, SupportLevel.NOT_SUPPORTED, null, null, null, null, null );
+    this( id, type, null, null, null, null, null, null, null, null, null, null, null, SupportLevel.NOT_SUPPORTED, null,
+        null, null, null, null );
   }
 
   @Override
@@ -222,7 +226,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param id the id to set
+   * @param id
+   *          the id to set
    */
   public void setId( String id ) {
     this.id = id;
@@ -236,7 +241,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param name the name to set
+   * @param name
+   *          the name to set
    */
   public void setName( String name ) {
     this.name = name;
@@ -250,7 +256,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param version the version to set
+   * @param version
+   *          the version to set
    */
   public void setVersion( String version ) {
     this.version = version;
@@ -264,7 +271,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param author the author to set
+   * @param author
+   *          the author to set
    */
   public void setAuthor( String author ) {
     this.author = author;
@@ -278,7 +286,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param description the description to set
+   * @param description
+   *          the description to set
    */
   public void setDescription( String description ) {
     this.description = description;
@@ -292,7 +301,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param documentationUrl the documentationUrl to set
+   * @param documentationUrl
+   *          the documentationUrl to set
    */
   public void setDocumentationUrl( String documentationUrl ) {
     this.documentationUrl = documentationUrl;
@@ -306,7 +316,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param packageUrl the packageUrl to set
+   * @param packageUrl
+   *          the packageUrl to set
    */
   public void setPackageUrl( String packageUrl ) {
     this.packageUrl = packageUrl;
@@ -320,7 +331,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param licenseName the licenseName to set
+   * @param licenseName
+   *          the licenseName to set
    */
   public void setLicenseName( String licenseName ) {
     this.licenseName = licenseName;
@@ -334,7 +346,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param licenseText the licenseText to set
+   * @param licenseText
+   *          the licenseText to set
    */
   public void setLicenseText( String licenseText ) {
     this.licenseText = licenseText;
@@ -348,7 +361,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param supportLevel the supportLevel to set
+   * @param supportLevel
+   *          the supportLevel to set
    */
   public void setSupportLevel( SupportLevel supportLevel ) {
     this.supportLevel = supportLevel;
@@ -362,7 +376,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param supportMessage the supportMessage to set
+   * @param supportMessage
+   *          the supportMessage to set
    */
   public void setSupportMessage( String supportMessage ) {
     this.supportMessage = supportMessage;
@@ -376,7 +391,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param supportOrganization the supportOrganization to set
+   * @param supportOrganization
+   *          the supportOrganization to set
    */
   public void setSupportOrganization( String supportOrganization ) {
     this.supportOrganization = supportOrganization;
@@ -390,7 +406,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param supportUrl the supportUrl to set
+   * @param supportUrl
+   *          the supportUrl to set
    */
   public void setSupportUrl( String supportUrl ) {
     this.supportUrl = supportUrl;
@@ -404,7 +421,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param type the type to set
+   * @param type
+   *          the type to set
    */
   public void setType( MarketEntryType type ) {
     this.type = type;
@@ -418,7 +436,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param sourceUrl the sourceUrl to set
+   * @param sourceUrl
+   *          the sourceUrl to set
    */
   public void setSourceUrl( String sourceUrl ) {
     this.sourceUrl = sourceUrl;
@@ -432,7 +451,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param forumUrl the forumUrl to set
+   * @param forumUrl
+   *          the forumUrl to set
    */
   public void setForumUrl( String forumUrl ) {
     this.forumUrl = forumUrl;
@@ -446,7 +466,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param casesUrl the casesUrl to set
+   * @param casesUrl
+   *          the casesUrl to set
    */
   public void setCasesUrl( String casesUrl ) {
     this.casesUrl = casesUrl;
@@ -460,7 +481,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param marketPlaceName the marketPlaceName to set
+   * @param marketPlaceName
+   *          the marketPlaceName to set
    */
   public void setMarketPlaceName( String marketPlaceName ) {
     this.marketPlaceName = marketPlaceName;
@@ -474,7 +496,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param minPdiVersion the minPdiVersion to set
+   * @param minPdiVersion
+   *          the minPdiVersion to set
    */
   public void setMinPdiVersion( String minPdiVersion ) {
     this.minPdiVersion = minPdiVersion;
@@ -488,7 +511,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param maxPdiVersion the maxPdiVersion to set
+   * @param maxPdiVersion
+   *          the maxPdiVersion to set
    */
   public void setMaxPdiVersion( String maxPdiVersion ) {
     this.maxPdiVersion = maxPdiVersion;
@@ -518,7 +542,8 @@ public class MarketEntry implements XMLInterface {
   }
 
   /**
-   * @param installedBuildId the installedBuildId to set
+   * @param installedBuildId
+   *          the installedBuildId to set
    */
   public void setInstalledBuildId( String installedBuildId ) {
     this.installedBuildId = installedBuildId;

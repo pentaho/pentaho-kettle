@@ -1,22 +1,22 @@
 /*
-*   This file is part of PaloKettlePlugin.
-*
-*   PaloKettlePlugin is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Lesser General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.
-*
-*   PaloKettlePlugin is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Lesser General Public License for more details.
-*
-*   You should have received a copy of the GNU Lesser General Public License
-*   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
-*
-*   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
-*   Portions Copyright 2011 - 2013 Pentaho Corporation
-*/
+ *   This file is part of PaloKettlePlugin.
+ *
+ *   PaloKettlePlugin is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   PaloKettlePlugin is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ */
 
 package org.pentaho.di.ui.job.entries.palo.JobEntryCubeCreate;
 
@@ -67,314 +67,310 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to define the palo cube you want to create
- *
+ * 
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
 
-public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDialogInterface
-{
-	private static Class<?> PKG = PaloCubeCreate.class;
-	
-	private Text textStepName;
-	private Label labelStepName;
+public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDialogInterface {
+  private static Class<?> PKG = PaloCubeCreate.class;
 
-	private CCombo addConnectionLine;
+  private Text textStepName;
+  private Label labelStepName;
 
-	private Label labelCubeName;
-	private Text textCubeName;
-	
-	private ColumnInfo[] colinf;
-	private TableView tableViewFields;
-	
-	private Button wOK, wCancel;
-	private Listener lsOK, lsCancel;
+  private CCombo addConnectionLine;
 
-	private PaloCubeCreate     jobEntry;
-	private Shell       	shell;
-	private PropsUI       	props;
+  private Label labelCubeName;
+  private Text textCubeName;
 
-	private ColumnInfo comboDropDown;
-	
-	private SelectionAdapter lsDef;
+  private ColumnInfo[] colinf;
+  private TableView tableViewFields;
 
-	private boolean changed;
-	private JobMeta jobMeta;
+  private Button wOK, wCancel;
+  private Listener lsOK, lsCancel;
 
-	public PaloCubeCreateDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
-	{
-		super(parent, jobEntryInt, rep, jobMeta);
-		props=PropsUI.getInstance();
-		this.jobEntry=(PaloCubeCreate) jobEntryInt;
+  private PaloCubeCreate jobEntry;
+  private Shell shell;
+  private PropsUI props;
 
-		if (this.jobEntry.getName() == null) this.jobEntry.setName(jobEntryInt.getName());
-		
-		this.jobMeta = jobMeta;
-	}
+  private ColumnInfo comboDropDown;
 
-	public JobEntryInterface open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  private SelectionAdapter lsDef;
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
-		props.setLook(shell);
-		JobDialog.setShellImage(shell, jobEntry);
+  private boolean changed;
+  private JobMeta jobMeta;
 
-		ModifyListener lsMod = new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{	
-				jobEntry.setChanged();
-			}
-		};
-		changed = jobEntry.hasChanged();
+  public PaloCubeCreateDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+    super( parent, jobEntryInt, rep, jobMeta );
+    props = PropsUI.getInstance();
+    this.jobEntry = (PaloCubeCreate) jobEntryInt;
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    if ( this.jobEntry.getName() == null )
+      this.jobEntry.setName( jobEntryInt.getName() );
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.PaloCubeCreate"));
+    this.jobMeta = jobMeta;
+  }
 
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+  public JobEntryInterface open() {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		// Stepname line
-		labelStepName=new Label(shell, SWT.RIGHT);
-		labelStepName.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.StepName"));
-		props.setLook( labelStepName );
-		FormData fd = new FormData();
-		fd.left = new FormAttachment(0, 0);
-		fd.right= new FormAttachment(middle, -margin);
-		fd.top  = new FormAttachment(0, margin);
-		labelStepName.setLayoutData(fd);
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    props.setLook( shell );
+    JobDialog.setShellImage( shell, jobEntry );
 
-		textStepName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		textStepName.setText(jobEntry.getName());
-		props.setLook( textStepName );
-		textStepName.addModifyListener(lsMod);
-		fd=new FormData();
-		fd.left = new FormAttachment(middle, 0);
-		fd.top  = new FormAttachment(0, margin);
-		fd.right= new FormAttachment(100, 0);
-		textStepName.setLayoutData(fd);
+    ModifyListener lsMod = new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        jobEntry.setChanged();
+      }
+    };
+    changed = jobEntry.hasChanged();
 
-		addConnectionLine = addConnectionLine(shell, textStepName, Const.MIDDLE_PCT, margin);
-		
-		addConnectionLine.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                doSelectConnection(false);
-            }
-        });
-		
-		props.setLook(addConnectionLine);
+    FormLayout formLayout = new FormLayout();
+    formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		// Get cube name to delete
-		labelCubeName = new Label(shell, SWT.RIGHT);
-		labelCubeName.setText(BaseMessages.getString(PKG,"PaloCubeCreateDialog.CubeName"));
-		props.setLook(labelCubeName);
+    shell.setLayout( formLayout );
+    shell.setText( BaseMessages.getString( PKG, "PaloCubeCreateDialog.PaloCubeCreate" ) );
 
-		fd = new FormData();
-		fd.left = new FormAttachment(0, 0);
-		fd.right= new FormAttachment(middle, -margin);
-		fd.top  = new FormAttachment(addConnectionLine, margin);
-		labelCubeName.setLayoutData(fd);
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		textCubeName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		textCubeName.addModifyListener(lsMod);
-		props.setLook(textCubeName);
-		
-		fd = new FormData();
-		fd.left = new FormAttachment(middle, 0);
-		fd.right= new FormAttachment(100, 0);
-		fd.top  = new FormAttachment(addConnectionLine, margin);
-		textCubeName.setLayoutData(fd);
-		
-		colinf=new ColumnInfo[] {
-                new ColumnInfo(getLocalizedColumn(0),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false)
-                };
+    // Stepname line
+    labelStepName = new Label( shell, SWT.RIGHT );
+    labelStepName.setText( BaseMessages.getString( PKG, "PaloCubeCreateDialog.StepName" ) );
+    props.setLook( labelStepName );
+    FormData fd = new FormData();
+    fd.left = new FormAttachment( 0, 0 );
+    fd.right = new FormAttachment( middle, -margin );
+    fd.top = new FormAttachment( 0, margin );
+    labelStepName.setLayoutData( fd );
 
-        tableViewFields = new TableView(null, shell,
-                                                  SWT.NONE | SWT.BORDER,
-                                                  colinf,
-                                                  10, true,
-                                                  lsMod,
-                                                  props
-                                                  );
+    textStepName = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    textStepName.setText( jobEntry.getName() );
+    props.setLook( textStepName );
+    textStepName.addModifyListener( lsMod );
+    fd = new FormData();
+    fd.left = new FormAttachment( middle, 0 );
+    fd.top = new FormAttachment( 0, margin );
+    fd.right = new FormAttachment( 100, 0 );
+    textStepName.setLayoutData( fd );
 
-        tableViewFields.setSize(477, 105);
-        tableViewFields.setBounds(5, 250, 477, 105);
-        tableViewFields.setReadonly(false);
-        tableViewFields.table.removeAll();
-        tableViewFields.optWidth(true);
+    addConnectionLine = addConnectionLine( shell, textStepName, Const.MIDDLE_PCT, margin );
 
-        fd=new FormData();
-        fd.left  = new FormAttachment(0, margin);
-        fd.top   = new FormAttachment(textCubeName, 3*margin);
-        fd.right = new FormAttachment(100, 0);
-        fd.bottom= new FormAttachment(100, -50);
-        tableViewFields.setLayoutData(fd);
+    addConnectionLine.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        doSelectConnection( false );
+      }
+    } );
 
-        tableViewFields.table.addFocusListener(new FocusListener() {
-			
-			public void focusLost(FocusEvent arg0) {
-			}
-			
-			public void focusGained(FocusEvent arg0) {
-				doBuildDimensionList();
-			}
-		});
+    props.setLook( addConnectionLine );
 
+    // Get cube name to delete
+    labelCubeName = new Label( shell, SWT.RIGHT );
+    labelCubeName.setText( BaseMessages.getString( PKG, "PaloCubeCreateDialog.CubeName" ) );
+    props.setLook( labelCubeName );
 
-        props.setLook(tableViewFields);
+    fd = new FormData();
+    fd.left = new FormAttachment( 0, 0 );
+    fd.right = new FormAttachment( middle, -margin );
+    fd.top = new FormAttachment( addConnectionLine, margin );
+    labelCubeName.setLayoutData( fd );
 
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG,"System.Button.OK"));
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG,"System.Button.Cancel"));
+    textCubeName = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    textCubeName.addModifyListener( lsMod );
+    props.setLook( textCubeName );
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, tableViewFields);
+    fd = new FormData();
+    fd.left = new FormAttachment( middle, 0 );
+    fd.right = new FormAttachment( 100, 0 );
+    fd.top = new FormAttachment( addConnectionLine, margin );
+    textCubeName.setLayoutData( fd );
 
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+    colinf =
+        new ColumnInfo[] { new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {},
+            false ) };
 
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
+    tableViewFields = new TableView( null, shell, SWT.NONE | SWT.BORDER, colinf, 10, true, lsMod, props );
 
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+    tableViewFields.setSize( 477, 105 );
+    tableViewFields.setBounds( 5, 250, 477, 105 );
+    tableViewFields.setReadonly( false );
+    tableViewFields.table.removeAll();
+    tableViewFields.optWidth( true );
 
-		textStepName.addSelectionListener( lsDef );
+    fd = new FormData();
+    fd.left = new FormAttachment( 0, margin );
+    fd.top = new FormAttachment( textCubeName, 3 * margin );
+    fd.right = new FormAttachment( 100, 0 );
+    fd.bottom = new FormAttachment( 100, -50 );
+    tableViewFields.setLayoutData( fd );
 
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+    tableViewFields.table.addFocusListener( new FocusListener() {
 
-		getData();
+      public void focusLost( FocusEvent arg0 ) {
+      }
 
-		BaseStepDialog.setSize(shell);
+      public void focusGained( FocusEvent arg0 ) {
+        doBuildDimensionList();
+      }
+    } );
 
-		shell.open();
-		while (!shell.isDisposed())
-		{
-			if (!display.readAndDispatch()) display.sleep();
-		}
-		return jobEntry;
-	}
-	
-	private String getLocalizedColumn(int columnIndex) {
-        switch(columnIndex) {
-            case 0:
-                return BaseMessages.getString(PKG,"PaloCellCreateDialog.ColumnDimension");
-            default:
-                return "";
-        }
+    props.setLook( tableViewFields );
+
+    // Some buttons
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+
+    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCancel }, margin, tableViewFields );
+
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent( Event e ) {
+        cancel();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent( Event e ) {
+        ok();
+      }
+    };
+
+    wCancel.addListener( SWT.Selection, lsCancel );
+    wOK.addListener( SWT.Selection, lsOK );
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        ok();
+      }
+    };
+
+    textStepName.addSelectionListener( lsDef );
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() {
+      public void shellClosed( ShellEvent e ) {
+        cancel();
+      }
+    } );
+
+    getData();
+
+    BaseStepDialog.setSize( shell );
+
+    shell.open();
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() )
+        display.sleep();
     }
+    return jobEntry;
+  }
 
-	public void dispose()
-	{
-		WindowProperty winprop = new WindowProperty(shell);
-		props.setScreen(winprop);
-		shell.dispose();
-	}
+  private String getLocalizedColumn( int columnIndex ) {
+    switch ( columnIndex ) {
+      case 0:
+        return BaseMessages.getString( PKG, "PaloCellCreateDialog.ColumnDimension" );
+      default:
+        return "";
+    }
+  }
 
+  public void dispose() {
+    WindowProperty winprop = new WindowProperty( shell );
+    props.setScreen( winprop );
+    shell.dispose();
+  }
 
-	private void doBuildDimensionList() {
-		if(comboDropDown == null && addConnectionLine.getText() != null) {
-			DatabaseMeta dbMeta = DatabaseMeta.findDatabase(jobMeta.getDatabases(), addConnectionLine.getText());
-			if (dbMeta != null) {
-				PaloHelper helper = new PaloHelper(dbMeta, DefaultLogLevel.getLogLevel());
-				try{
-					helper.connect();
-					List<String> dimensionNames = helper.getDimensionsNames();
-					List <String> dimensions = helper.getDimensionsNames();
-					Collections.sort(dimensions, new PaloNameComparator());
-					comboDropDown = new ColumnInfo("Field",  ColumnInfo.COLUMN_TYPE_CCOMBO, dimensions.toArray(new String[dimensionNames.size()]), true);
-					tableViewFields.setColumnInfo(0, comboDropDown);
-				}
-				catch (Exception ex) {
-					new ErrorDialog(shell, BaseMessages.getString(PKG,"PaloCellOutputDialog.RetreiveCubesErrorTitle") , BaseMessages.getString(PKG,"PaloCellOutputDialog.RetreiveCubesError") , ex);
-				}
-				finally
-				{
-					helper.disconnect();
-				}
+  private void doBuildDimensionList() {
+    if ( comboDropDown == null && addConnectionLine.getText() != null ) {
+      DatabaseMeta dbMeta = DatabaseMeta.findDatabase( jobMeta.getDatabases(), addConnectionLine.getText() );
+      if ( dbMeta != null ) {
+        PaloHelper helper = new PaloHelper( dbMeta, DefaultLogLevel.getLogLevel() );
+        try {
+          helper.connect();
+          List<String> dimensionNames = helper.getDimensionsNames();
+          List<String> dimensions = helper.getDimensionsNames();
+          Collections.sort( dimensions, new PaloNameComparator() );
+          comboDropDown =
+              new ColumnInfo( "Field", ColumnInfo.COLUMN_TYPE_CCOMBO, dimensions.toArray( new String[dimensionNames
+                  .size()] ), true );
+          tableViewFields.setColumnInfo( 0, comboDropDown );
+        } catch ( Exception ex ) {
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloCellOutputDialog.RetreiveCubesErrorTitle" ),
+              BaseMessages.getString( PKG, "PaloCellOutputDialog.RetreiveCubesError" ), ex );
+        } finally {
+          helper.disconnect();
+        }
 
-			}
-		}
-	}
+      }
+    }
+  }
 
-	private void doSelectConnection(boolean clearCurrentData ) {
-		comboDropDown = null;
-	}
-	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */
-	public void getData()
-	{
-		if (jobEntry.getName()    != null)
-			textStepName.setText( jobEntry.getName() );
-		textStepName.selectAll();
+  private void doSelectConnection( boolean clearCurrentData ) {
+    comboDropDown = null;
+  }
 
-		int index = addConnectionLine.indexOf(jobEntry.getDatabaseMeta() != null ? jobEntry.getDatabaseMeta().getName() : "");
-		if (index >=0)
-			addConnectionLine.select(index);
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if ( jobEntry.getName() != null )
+      textStepName.setText( jobEntry.getName() );
+    textStepName.selectAll();
 
-		if (jobEntry.getCubeName() != null)
-			textCubeName.setText(jobEntry.getCubeName());
-		
-		tableViewFields.table.removeAll();
+    int index =
+        addConnectionLine.indexOf( jobEntry.getDatabaseMeta() != null ? jobEntry.getDatabaseMeta().getName() : "" );
+    if ( index >= 0 )
+      addConnectionLine.select( index );
 
-        if(jobEntry.getDimensionNames() != null
-        		&& jobEntry.getDimensionNames().size() > 0)
-            for (String dimensionName : jobEntry.getDimensionNames())
-                tableViewFields.add(dimensionName);
+    if ( jobEntry.getCubeName() != null )
+      textCubeName.setText( jobEntry.getCubeName() );
 
-        if (tableViewFields.table.getItemCount() == 0)
-        	tableViewFields.add("");
+    tableViewFields.table.removeAll();
 
-		tableViewFields.setRowNums();
-		
-	}
+    if ( jobEntry.getDimensionNames() != null && jobEntry.getDimensionNames().size() > 0 )
+      for ( String dimensionName : jobEntry.getDimensionNames() )
+        tableViewFields.add( dimensionName );
 
-	private void cancel()
-	{
-		jobEntry.setChanged(changed);
-		jobEntry=null;
-		dispose();
-	}
+    if ( tableViewFields.table.getItemCount() == 0 )
+      tableViewFields.add( "" );
 
-	private void ok()
-	{
-		tableViewFields.removeEmptyRows();
-		List <String> dimensionNames = new ArrayList<String>();
-		
-		for (int i = 0; i < tableViewFields.table.getItemCount(); i++)
-        	dimensionNames.add(tableViewFields.table.getItem(i).getText(1));
+    tableViewFields.setRowNums();
 
+  }
 
-		jobEntry.setName(textStepName.getText());
-		jobEntry.setDatabaseMeta(DatabaseMeta.findDatabase(jobMeta.getDatabases(), addConnectionLine.getText()));
-		jobEntry.setCubeName(textCubeName.getText());
-		jobEntry.setDimensionNames(dimensionNames);
-		
-		dispose();
-	}
+  private void cancel() {
+    jobEntry.setChanged( changed );
+    jobEntry = null;
+    dispose();
+  }
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
+  private void ok() {
+    tableViewFields.removeEmptyRows();
+    List<String> dimensionNames = new ArrayList<String>();
 
-	public boolean evaluates()
-	{
-		return true;
-	}
+    for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ )
+      dimensionNames.add( tableViewFields.table.getItem( i ).getText( 1 ) );
 
-	public boolean isUnconditional()
-	{
-		return false;
-	}
+    jobEntry.setName( textStepName.getText() );
+    jobEntry.setDatabaseMeta( DatabaseMeta.findDatabase( jobMeta.getDatabases(), addConnectionLine.getText() ) );
+    jobEntry.setCubeName( textCubeName.getText() );
+    jobEntry.setDimensionNames( dimensionNames );
+
+    dispose();
+  }
+
+  public String toString() {
+    return this.getClass().getName();
+  }
+
+  public boolean evaluates() {
+    return true;
+  }
+
+  public boolean isUnconditional() {
+    return false;
+  }
 }

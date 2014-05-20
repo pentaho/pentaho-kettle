@@ -117,11 +117,7 @@ public class GPLoad extends BaseStep implements StepInterface {
 
   }
 
-  public GPLoad( StepMeta stepMeta,
-    StepDataInterface stepDataInterface,
-    int copyNr,
-    TransMeta transMeta,
-    Trans trans ) {
+  public GPLoad( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -178,7 +174,7 @@ public class GPLoad extends BaseStep implements StepInterface {
 
     // match and update column verification
     if ( loadAction.equalsIgnoreCase( GPLoadMeta.ACTION_MERGE )
-      || loadAction.equalsIgnoreCase( GPLoadMeta.ACTION_UPDATE ) ) {
+        || loadAction.equalsIgnoreCase( GPLoadMeta.ACTION_UPDATE ) ) {
 
       // throw an exception if we don't have match columns
       if ( matchColumn == null ) {
@@ -228,7 +224,7 @@ public class GPLoad extends BaseStep implements StepInterface {
     contents.append( "USER: " ).append( environmentSubstitute( databaseMeta.getUsername() ) ).append( Const.CR );
     contents.append( "HOST: " ).append( environmentSubstitute( databaseMeta.getHostname() ) ).append( Const.CR );
     contents.append( "PORT: " ).append( environmentSubstitute( databaseMeta.getDatabasePortNumberString() ) ).append(
-      Const.CR );
+        Const.CR );
     contents.append( "GPLOAD:" ).append( Const.CR );
     contents.append( GPLoad.INDENT ).append( "INPUT: " ).append( Const.CR );
     contents.append( GPLoad.INDENT ).append( "- SOURCE: " ).append( Const.CR );
@@ -245,13 +241,13 @@ public class GPLoad extends BaseStep implements StepInterface {
         trimmedAndSubstitutedLocalHost = environmentSubstitute( localHost.trim() );
         if ( !Const.isEmpty( trimmedAndSubstitutedLocalHost ) ) {
           sbLocalHosts.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( GPLoad.SPACE_PADDED_DASH ).append(
-            trimmedAndSubstitutedLocalHost ).append( Const.CR );
+              trimmedAndSubstitutedLocalHost ).append( Const.CR );
         }
       }
       stringLocalHosts = sbLocalHosts.toString();
       if ( !Const.isEmpty( stringLocalHosts ) ) {
         contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( "LOCAL_HOSTNAME: " ).append( Const.CR )
-          .append( stringLocalHosts );
+            .append( stringLocalHosts );
       }
     }
 
@@ -261,14 +257,14 @@ public class GPLoad extends BaseStep implements StepInterface {
       localhostPort = environmentSubstitute( localhostPort ).trim();
       if ( !Const.isEmpty( localhostPort ) ) {
         contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( "PORT: " ).append( localhostPort ).append(
-          Const.CR );
+            Const.CR );
       }
     }
 
     // TODO: Stream to a temporary file and then bulk load OR optionally stream to a named pipe (like MySQL bulk loader)
     dataFilename = GPLoad.SINGLE_QUOTE + environmentSubstitute( dataFilename ) + GPLoad.SINGLE_QUOTE;
     contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( "FILE: " ).append( GPLoad.OPEN_BRACKET ).append(
-      dataFilename ).append( GPLoad.CLOSE_BRACKET ).append( Const.CR );
+        dataFilename ).append( GPLoad.CLOSE_BRACKET ).append( Const.CR );
 
     // columns
     if ( tableFields.length > 0 ) {
@@ -276,7 +272,7 @@ public class GPLoad extends BaseStep implements StepInterface {
 
       for ( String columnName : tableFields ) {
         contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( GPLoad.SPACE_PADDED_DASH ).append(
-          databaseMeta.quoteField( columnName ) ).append( GPLoad.COLON ).append( Const.CR );
+            databaseMeta.quoteField( columnName ) ).append( GPLoad.COLON ).append( Const.CR );
       }
     }
 
@@ -284,7 +280,7 @@ public class GPLoad extends BaseStep implements StepInterface {
     // delimiter validation should have been perfomed
     contents.append( GPLoad.INDENT ).append( "- FORMAT: TEXT" ).append( Const.CR );
     contents.append( GPLoad.INDENT ).append( "- DELIMITER: " ).append( GPLoad.SINGLE_QUOTE ).append( delimiter )
-      .append( GPLoad.SINGLE_QUOTE ).append( Const.CR );
+        .append( GPLoad.SINGLE_QUOTE ).append( Const.CR );
 
     // TODO: implement escape character, null_as
     // TODO: test what happens when a single quote is specified- can we specify a single quiote within doubole quotes
@@ -299,7 +295,7 @@ public class GPLoad extends BaseStep implements StepInterface {
       enclosure = "";
     }
     contents.append( GPLoad.INDENT ).append( "- QUOTE: " ).append( GPLoad.SINGLE_QUOTE ).append( enclosure ).append(
-      GPLoad.SINGLE_QUOTE ).append( Const.CR );
+        GPLoad.SINGLE_QUOTE ).append( Const.CR );
     contents.append( GPLoad.INDENT ).append( "- HEADER: FALSE" ).append( Const.CR );
 
     // ENCODING
@@ -353,7 +349,7 @@ public class GPLoad extends BaseStep implements StepInterface {
         for ( int i = 0; i < matchColumn.length; i++ ) {
           if ( matchColumn[i] ) {
             contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( GPLoad.SPACE_PADDED_DASH ).append(
-              databaseMeta.quoteField( tableFields[i] ) ).append( Const.CR );
+                databaseMeta.quoteField( tableFields[i] ) ).append( Const.CR );
           }
         }
       }
@@ -365,7 +361,7 @@ public class GPLoad extends BaseStep implements StepInterface {
         for ( int i = 0; i < updateColumn.length; i++ ) {
           if ( updateColumn[i] ) {
             contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( GPLoad.SPACE_PADDED_DASH ).append(
-              databaseMeta.quoteField( tableFields[i] ) ).append( Const.CR );
+                databaseMeta.quoteField( tableFields[i] ) ).append( Const.CR );
           }
         }
       }
@@ -383,7 +379,7 @@ public class GPLoad extends BaseStep implements StepInterface {
 
           // we'll write out what we have
           contents.append( GPLoad.INDENT ).append( "- UPDATE_CONDITION: " ).append( GPLoad.DOUBLE_QUOTE ).append(
-            updateCondition ).append( GPLoad.DOUBLE_QUOTE ).append( Const.CR );
+              updateCondition ).append( GPLoad.DOUBLE_QUOTE ).append( Const.CR );
         }
       }
     }
@@ -442,7 +438,8 @@ public class GPLoad extends BaseStep implements StepInterface {
    * @return
    * @throws KettleException
    */
-  private String getPath( String pathToFile, String exceptionMessage, boolean checkExistenceOfFile ) throws KettleException {
+  private String getPath( String pathToFile, String exceptionMessage, boolean checkExistenceOfFile )
+    throws KettleException {
 
     // Make sure the path is not empty
     if ( Const.isEmpty( pathToFile ) ) {
@@ -468,7 +465,7 @@ public class GPLoad extends BaseStep implements StepInterface {
           return KettleVFS.getFilename( fileObject );
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "GPLoad.Exception.DirectoryDoesNotExist",
-            parentFolder.getURL().getPath() ) );
+              parentFolder.getURL().getPath() ) );
         }
 
       }
@@ -480,8 +477,7 @@ public class GPLoad extends BaseStep implements StepInterface {
         return KettleVFS.getFilename( fileObject );
       }
     } catch ( FileSystemException fsex ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-        "GPLoad.Exception.GPLoadCommandBuild", fsex.getMessage() ) );
+      throw new KettleException( BaseMessages.getString( PKG, "GPLoad.Exception.GPLoadCommandBuild", fsex.getMessage() ) );
     }
   }
 
@@ -508,19 +504,19 @@ public class GPLoad extends BaseStep implements StepInterface {
 
     // get path to the executable
     sbCommandLine.append( getPath( meta.getGploadPath(), BaseMessages.getString( PKG,
-      "GPLoad.Exception.GPLoadPathMisssing" ), true ) );
+        "GPLoad.Exception.GPLoadPathMisssing" ), true ) );
 
     // get the path to the control file
     sbCommandLine.append( " -f " );
     sbCommandLine.append( getPath( meta.getControlFile(), BaseMessages.getString( PKG,
-      "GPLoad.Exception.ControlFilePathMissing" ), false ) );
+        "GPLoad.Exception.ControlFilePathMissing" ), false ) );
 
     // get the path to the log file, if specified
     String logfile = meta.getLogFile();
     if ( !Const.isEmpty( logfile ) ) {
       sbCommandLine.append( " -l " );
       sbCommandLine.append( getPath( meta.getLogFile(), BaseMessages.getString( PKG,
-        "GPLoad.Exception.LogFilePathMissing" ), false ) );
+          "GPLoad.Exception.LogFilePathMissing" ), false ) );
     }
     return sbCommandLine.toString();
   }
@@ -552,8 +548,7 @@ public class GPLoad extends BaseStep implements StepInterface {
         gpLoadExitVal = gploadProcess.waitFor();
         logBasic( BaseMessages.getString( PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal ) );
         if ( gpLoadExitVal != -0 ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-            "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal ) );
+          throw new KettleException( BaseMessages.getString( PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal ) );
         }
       }
     } catch ( KettleException ke ) {
@@ -607,11 +602,9 @@ public class GPLoad extends BaseStep implements StepInterface {
 
             // we create the control file but do not execute
             createControlFile( meta );
-            logBasic( BaseMessages.getString( PKG,
-              "GPLoad.Info.MethodManual" ) );
+            logBasic( BaseMessages.getString( PKG, "GPLoad.Info.MethodManual" ) );
           } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-              "GPload.Execption.UnhandledLoadMethod", loadMethod ) );
+            throw new KettleException( BaseMessages.getString( PKG, "GPload.Execption.UnhandledLoadMethod", loadMethod ) );
           }
         }
         return false;
@@ -677,8 +670,7 @@ public class GPLoad extends BaseStep implements StepInterface {
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
-            logError( "Error deleting control file \'"
-              + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage() );
+            logError( "Error deleting control file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage() );
           }
         }
       }
@@ -692,7 +684,7 @@ public class GPLoad extends BaseStep implements StepInterface {
             fileObject.close();
           } catch ( Exception ex ) {
             logError( "Error deleting data file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(),
-              ex );
+                ex );
           }
         }
       }

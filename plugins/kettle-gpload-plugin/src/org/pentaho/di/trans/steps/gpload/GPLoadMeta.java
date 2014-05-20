@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.di.trans.steps.gpload;
 
@@ -51,16 +51,12 @@ import org.w3c.dom.Node;
 
 /**
  * GPLoad Bulk Loader Step Meta
- *
+ * 
  * @author Matt Casters, Sean Flatley
  */
-@Step(
-  id = "GPLoad",
-  image = "GBL.png",
-  i18nPackageName = "org.pentaho.di.trans.steps.gpload",
-  name = "GPLoad.TypeLongDesc",
-  description = "GPLoad.TypeLongDesc",
-  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk" )
+@Step( id = "GPLoad", image = "GBL.png", i18nPackageName = "org.pentaho.di.trans.steps.gpload",
+    name = "GPLoad.TypeLongDesc", description = "GPLoad.TypeLongDesc",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk" )
 public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -82,7 +78,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   /** Path to the gpload utility */
   private String gploadPath;
 
-  /** Path to the control file  */
+  /** Path to the control file */
   private String controlFile;
 
   /** Path to the data file */
@@ -137,20 +133,13 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   private String updateCondition;
 
   /*
-   * Encodings supported by GPLoad.
-   * This list was obtained from the GPAAdminGuide.
+   * Encodings supported by GPLoad. This list was obtained from the GPAAdminGuide.
    */
-  public static final String[] SUPPORTED_ENCODINGS = {
-    "", "BIG5",
-    "EUC_CN", "EUC_JP", "EUC_KR", "EUC_TW",
-    "GB18030", "GBK",
-    "ISO-8859-1", "ISO_8859_5", "ISO_8859_6", "ISO_8859_7", "ISO_8859_8",
-    "JOHAB", "KOI8",
-    "LATIN1", "LATIN2", "LATIN3", "LATIN4", "LATIN5",
-    "LATIN6", "LATIN7", "LATIN8", "LATIN9", "LATIN10",
-    "MULE_INTERNAL", "SJIS", "SQL_ASCII", "UHC", "UTF8",
-    "WIN866", "WIN874", "WIN1250", "WIN1251", "WIN1252",
-    "WIN1253", "WIN1254", "WIN1255", "WIN1256", "WIN1257", "WIN1258" };
+  public static final String[] SUPPORTED_ENCODINGS = { "", "BIG5", "EUC_CN", "EUC_JP", "EUC_KR", "EUC_TW", "GB18030",
+    "GBK", "ISO-8859-1", "ISO_8859_5", "ISO_8859_6", "ISO_8859_7", "ISO_8859_8", "JOHAB", "KOI8", "LATIN1", "LATIN2",
+    "LATIN3", "LATIN4", "LATIN5", "LATIN6", "LATIN7", "LATIN8", "LATIN9", "LATIN10", "MULE_INTERNAL", "SJIS",
+    "SQL_ASCII", "UHC", "UTF8", "WIN866", "WIN874", "WIN1250", "WIN1251", "WIN1252", "WIN1253", "WIN1254", "WIN1255",
+    "WIN1256", "WIN1257", "WIN1258" };
 
   /*
    * Do not translate following values!!! They are will end up in the job export.
@@ -184,7 +173,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param database The database to set.
+   * @param database
+   *          The database to set.
    */
   public void setDatabaseMeta( DatabaseMeta database ) {
     this.databaseMeta = database;
@@ -198,7 +188,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param tableName The tableName to set.
+   * @param tableName
+   *          The tableName to set.
    */
   public void setTableName( String tableName ) {
     this.tableName = tableName;
@@ -212,7 +203,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param errorTableName The error table name to set.
+   * @param errorTableName
+   *          The error table name to set.
    */
   public void setErrorTableName( String errorTableName ) {
     this.errorTableName = errorTableName;
@@ -234,7 +226,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldTable The fieldTable to set.
+   * @param fieldTable
+   *          The fieldTable to set.
    */
   public void setFieldTable( String[] fieldTable ) {
     this.fieldTable = fieldTable;
@@ -248,7 +241,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldStream The fieldStream to set.
+   * @param fieldStream
+   *          The fieldStream to set.
    */
   public void setFieldStream( String[] fieldStream ) {
     this.fieldStream = fieldStream;
@@ -338,8 +332,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
         if ( locDateMask == null ) {
           dateMask[i] = "";
         } else {
-          if ( GPLoadMeta.DATE_MASK_DATE.equals( locDateMask )
-            || GPLoadMeta.DATE_MASK_DATETIME.equals( locDateMask ) ) {
+          if ( GPLoadMeta.DATE_MASK_DATE.equals( locDateMask ) || GPLoadMeta.DATE_MASK_DATETIME.equals( locDateMask ) ) {
             dateMask[i] = locDateMask;
           } else {
             dateMask[i] = "";
@@ -351,13 +344,13 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "GPLoadMeta.Exception.UnableToReadStepInfoFromXML" ),
-        e );
+          e );
     }
   }
 
   public void setDefault() {
 
-    //  TODO: Make non empty defaults public static Strings
+    // TODO: Make non empty defaults public static Strings
 
     fieldTable = null;
     databaseMeta = null;
@@ -365,7 +358,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
     schemaName = "";
     localhostPort = "";
     tableName = BaseMessages.getString( PKG, "GPLoadMeta.DefaultTableName" );
-    errorTableName = ""; //BaseMessages.getString(PKG, "GPLocal.ErrorTable.Prefix")+tableName;
+    errorTableName = ""; // BaseMessages.getString(PKG, "GPLocal.ErrorTable.Prefix")+tableName;
     loadMethod = METHOD_AUTO_END;
     loadAction = ACTION_INSERT;
     gploadPath = "/usr/local/greenplum-db/bin/gpload";
@@ -385,8 +378,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuffer retval = new StringBuffer( 300 );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "connection",
-      databaseMeta == null ? "" : databaseMeta.getName() ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "errors", maxErrors ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "table", tableName ) );
@@ -423,7 +416,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       maxErrors = rep.getStepAttributeString( id_step, "errors" );
@@ -440,9 +434,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
       eraseFiles = rep.getStepAttributeBoolean( id_step, "erase_files" );
       encoding = rep.getStepAttributeString( id_step, "encoding" );
       localhostPort = rep.getStepAttributeString( id_step, "localhost_port" );
-      encloseNumbers = ( rep.getStepAttributeString( id_step, "enclose_numbers" ).equalsIgnoreCase( "Y" )
-        ? true
-        : false );
+      encloseNumbers =
+          ( rep.getStepAttributeString( id_step, "enclose_numbers" ).equalsIgnoreCase( "Y" ) ? true : false );
       updateCondition = rep.getStepAttributeString( id_step, "update_condition" );
 
       int numberOfLocalHosts = rep.countNrStepAttributes( id_step, "local_host" );
@@ -462,12 +455,13 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
         updateColumn[i] = rep.getStepAttributeBoolean( id_step, i, "update_column" );
       }
     } catch ( Exception e ) {
-      throw new KettleException(
-        BaseMessages.getString( PKG, "GPLoadMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString( PKG,
+          "GPLoadMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "errors", maxErrors );
@@ -504,20 +498,19 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException(
-        BaseMessages.getString( PKG, "GPLoadMeta.Exception.UnableToSaveStepInfoToRepository" ) + id_step, e );
+      throw new KettleException( BaseMessages.getString( PKG, "GPLoadMeta.Exception.UnableToSaveStepInfoToRepository" )
+          + id_step, e );
     }
   }
 
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info,
-    StepMeta nextStep, VariableSpace space, Repository repository,
-    IMetaStore metaStore ) throws KettleStepException {
+  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta,
-    StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output,
-    RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -528,8 +521,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
         db.connect();
 
         if ( !Const.isEmpty( tableName ) ) {
-          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
-            BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.TableNameOK" ), stepMeta );
+          cr =
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                  "GPLoadMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -537,13 +531,14 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
           error_message = "";
 
           // Check fields in table
-          String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
-            transMeta.environmentSubstitute( schemaName ),
-            transMeta.environmentSubstitute( tableName ) );
+          String schemaTable =
+              databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                  .environmentSubstitute( tableName ) );
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
-            cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
-              BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.TableExists" ), stepMeta );
+            cr =
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                    "GPLoadMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             // How about the fields to insert/dateMask in the table?
@@ -558,8 +553,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
               if ( v == null ) {
                 if ( first ) {
                   first = false;
-                  error_message += BaseMessages.getString( PKG,
-                    "GPLoadMeta.CheckResult.MissingFieldsToLoadInTargetTable" ) + Const.CR;
+                  error_message +=
+                      BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.MissingFieldsToLoadInTargetTable" )
+                          + Const.CR;
                 }
                 error_found = true;
                 error_message += "\t\t" + field + Const.CR;
@@ -568,8 +564,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
             if ( error_found ) {
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
-              cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
-                BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
+              cr =
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                      "GPLoadMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
@@ -581,8 +578,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
 
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
-          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
-            BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+          cr =
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                  "GPLoadMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -595,7 +593,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
               if ( first ) {
                 first = false;
                 error_message +=
-                  BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
+                    BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
               }
               error_found = true;
               error_message += "\t\t" + fieldStream[i] + Const.CR;
@@ -604,8 +602,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
           if ( error_found ) {
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
-            cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
-              BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+            cr =
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                    "GPLoadMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
         } else {
@@ -628,18 +627,20 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
-      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
-        BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "GPLoadMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
-      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
-        BaseMessages.getString( PKG, "GPLoadMeta.CheckResult.NoInputError" ), stepMeta );
+      cr =
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "GPLoadMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      Repository repository, IMetaStore metaStore ) throws KettleStepException {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
@@ -665,15 +666,10 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
           try {
             db.connect();
 
-            String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
-              transMeta.environmentSubstitute( schemaName ),
-              transMeta.environmentSubstitute( tableName ) );
-            String sql = db.getDDL( schemaTable,
-              tableFields,
-              null,
-              false,
-              null,
-              true );
+            String schemaTable =
+                databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                    .environmentSubstitute( tableName ) );
+            String sql = db.getDDL( schemaTable, tableFields, null, false, null, true );
 
             if ( sql.length() == 0 ) {
               retval.setSQL( null );
@@ -696,32 +692,26 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta,
-    StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output,
-    RowMetaInterface info, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
+      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+      IMetaStore metaStore ) throws KettleStepException {
     if ( prev != null ) {
       /* DEBUG CHECK THIS */
       // Insert dateMask fields : read/write
       for ( int i = 0; i < fieldTable.length; i++ ) {
         ValueMetaInterface v = prev.searchValueMeta( fieldStream[i] );
 
-        DatabaseImpact ii = new DatabaseImpact(
-          DatabaseImpact.TYPE_IMPACT_READ_WRITE,
-          transMeta.getName(),
-          stepMeta.getName(),
-          databaseMeta.getDatabaseName(),
-          transMeta.environmentSubstitute( tableName ),
-          fieldTable[i],
-          fieldStream[i],
-          v != null ? v.getOrigin() : "?", "",
-          "Type = " + v.toStringMeta() );
+        DatabaseImpact ii =
+            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
+                databaseMeta.getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
+                fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() );
         impact.add( ii );
       }
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface,
-    int cnr, TransMeta transMeta, Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
     return new GPLoad( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -776,7 +766,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param schemaName the schemaName to set
+   * @param schemaName
+   *          the schemaName to set
    */
   public void setSchemaName( String schemaName ) {
     this.schemaName = schemaName;
