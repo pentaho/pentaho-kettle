@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.compress.gzip.GZIPCompressionProvider;
+import org.pentaho.di.core.compress.hadoopsnappy.HadoopSnappyCompressionProvider;
+import org.pentaho.di.core.compress.snappy.SnappyCompressionProvider;
 import org.pentaho.di.core.compress.zip.ZIPCompressionProvider;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
@@ -64,6 +66,18 @@ public class CompressionProviderFactoryTest {
     assertTrue( provider.getClass().isAssignableFrom( GZIPCompressionProvider.class ) );
     assertEquals( "GZip", provider.getName() );
     assertEquals( "GZIP compression", provider.getDescription() );
+    
+    provider = factory.createCompressionProviderInstance( "Snappy" );
+    assertNotNull( provider );
+    assertTrue( provider.getClass().isAssignableFrom( SnappyCompressionProvider.class ) );
+    assertEquals( "Snappy", provider.getName() );
+    assertEquals( "Snappy compression", provider.getDescription() );
+    
+    provider = factory.createCompressionProviderInstance( "Hadoop-snappy" );
+    assertNotNull( provider );
+    assertTrue( provider.getClass().isAssignableFrom( HadoopSnappyCompressionProvider.class ) );
+    assertEquals( "Hadoop-snappy", provider.getName() );
+    assertEquals( "Hadoop Snappy compression", provider.getDescription() );
   }
 
   /**
@@ -78,6 +92,7 @@ public class CompressionProviderFactoryTest {
         put( "Zip", false );
         put( "GZip", false );
         put( "Snappy", false );
+        put( "Hadoop-snappy", false );
       }
     };
 
@@ -108,6 +123,7 @@ public class CompressionProviderFactoryTest {
         put( "Zip", false );
         put( "GZip", false );
         put( "Snappy", false );
+        put( "Hadoop-snappy", false );
       }
     };
 
