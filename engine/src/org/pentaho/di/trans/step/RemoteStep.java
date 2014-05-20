@@ -376,7 +376,9 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
           baseStep.stopAll();
         } finally {
           try {
-            socket.shutdownOutput();
+            if ( socket != null ) {
+              socket.shutdownOutput();
+            }
           } catch ( Exception e ) {
             baseStep.logError( "Error shutting down output channel on the server socket of remote step", e );
             baseStep.setErrors( 1L );
@@ -814,7 +816,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
   }
 
   /**
-   * @param sourceSlaveServername
+   * @param sourceSlaveServerName
    *          the sourceSlaveServerName to set
    */
   public void setSourceSlaveServerName( String sourceSlaveServerName ) {
