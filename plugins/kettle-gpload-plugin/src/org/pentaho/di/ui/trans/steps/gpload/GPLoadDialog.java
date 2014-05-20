@@ -81,7 +81,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * Dialog class for the Greenplum bulk loader step. Created on 28mar2008, copied from Sven Boden's Oracle version
- *
+ * 
  * @author Luke Lonergan
  */
 public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface {
@@ -127,7 +127,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
   private ColumnInfo[] ciLocalHosts;
 
   private static final String[] ALL_FILETYPES = new String[] { BaseMessages
-    .getString( PKG, "GPLoadDialog.Filetype.All" ) };
+      .getString( PKG, "GPLoadDialog.Filetype.All" ) };
 
   private Map<String, Integer> inputFields;
 
@@ -425,7 +425,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.UnableToFindSourceFields.Title" ),
-        BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+          BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -436,7 +436,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.UnableToFindTargetFields.Title" ),
-        BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+          BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -481,29 +481,29 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-          BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
-            .toString() )
-            + Const.CR;
+            BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
+                .toString() )
+                + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-          BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
-            .toString() )
-            + Const.CR;
+            BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
+                .toString() )
+                + Const.CR;
       }
       message += Const.CR;
       message += BaseMessages.getString( PKG, "GPLoadDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-        MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-          "GPLoadDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
+              "GPLoadDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-      new EnterMappingDialog( GPLoadDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(),
-        mappings );
+        new EnterMappingDialog( GPLoadDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(),
+            mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -529,7 +529,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-            wSchema.getText();
+              wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -543,8 +543,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
                 db.connect();
 
                 String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                    .environmentSubstitute( tableName ) );
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                        .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
@@ -729,7 +729,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       logDebug( BaseMessages.getString( PKG, "GPLoadDialog.Log.FoundFields", "" + nrfields ) );
     }
 
-    //CHECKSTYLE:Indentation:OFF
+    // CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
 
       TableItem item = wReturn.getNonEmpty( i );
@@ -874,7 +874,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GPLoadDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-        .getString( PKG, "GPLoadDialog.FailedToGetFields.DialogMessage" ), ke );
+          .getString( PKG, "GPLoadDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -894,7 +894,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -910,7 +910,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GPLoadDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
-        .getString( PKG, "GPLoadDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+          .getString( PKG, "GPLoadDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }
@@ -985,34 +985,34 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     ciReturn = new ColumnInfo[numberOfColumns];
 
     ciReturn[0] =
-      new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.TableField" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.TableField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
 
     ciReturn[1] =
-      new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.StreamField" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+        new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.StreamField" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
 
     ciReturn[2] =
-      new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.DateMask" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "",
-          BaseMessages.getString( PKG, "GPLoadDialog.DateMask.Label" ),
-          BaseMessages.getString( PKG, "GPLoadDialog.DateTimeMask.Label" ) }, true );
+        new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.DateMask" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "",
+              BaseMessages.getString( PKG, "GPLoadDialog.DateMask.Label" ),
+              BaseMessages.getString( PKG, "GPLoadDialog.DateTimeMask.Label" ) }, true );
 
     ciReturn[3] =
-      new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.ColumnMatch" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-          BaseMessages.getString( PKG, "System.Combo.No" ) }, true );
+        new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.ColumnMatch" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
+              BaseMessages.getString( PKG, "System.Combo.No" ) }, true );
 
     ciReturn[4] =
-      new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.ColumnUpdate" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-          BaseMessages.getString( PKG, "System.Combo.No" ) }, true );
+        new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.ColumnUpdate" ),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
+              BaseMessages.getString( PKG, "System.Combo.No" ) }, true );
 
     tableFieldColumns.add( ciReturn[0] );
 
     wReturn =
-      new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-        | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
+            | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
 
     FormData fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
@@ -1058,8 +1058,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     wGetLU.addListener( SWT.Selection, lsGetLU );
   }
 
-  private void addLocalHostsTabItem( CTabFolder tabFolder, int margin,
-    ModifyListener lsMod, FocusListener lsFocusLost ) {
+  private void addLocalHostsTabItem( CTabFolder tabFolder, int margin, ModifyListener lsMod, FocusListener lsFocusLost ) {
 
     CTabItem tabItem = new CTabItem( tabFolder, SWT.NONE );
     tabItem.setText( BaseMessages.getString( PKG, "GPLoadDialog.LocalHostsTab.Title" ) );
@@ -1107,13 +1106,13 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     int LocalHostsRows = ( input.getLocalHosts() != null ? input.getLocalHosts().length : 1 );
     ciLocalHosts = new ColumnInfo[LocalHostsColumns];
     ciLocalHosts[0] =
-      new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.LocalHosts" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, new String[] { "" }, false );
+        new ColumnInfo( BaseMessages.getString( PKG, "GPLoadDialog.ColumnInfo.LocalHosts" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, new String[] { "" }, false );
 
     localHostsColumns.add( ciReturn[0] );
     wLocalHosts =
-      new TableView( transMeta, wLocalHostsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-        | SWT.H_SCROLL, ciLocalHosts, LocalHostsRows, lsMod, props );
+        new TableView( transMeta, wLocalHostsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
+            | SWT.H_SCROLL, ciLocalHosts, LocalHostsRows, lsMod, props );
 
     FormData fdLocalHostsComp = new FormData();
     fdLocalHostsComp.left = new FormAttachment( 0, 0 );

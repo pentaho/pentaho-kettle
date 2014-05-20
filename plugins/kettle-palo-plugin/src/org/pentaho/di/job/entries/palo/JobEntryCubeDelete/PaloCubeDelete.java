@@ -1,22 +1,22 @@
 /*
-*   This file is part of PaloKettlePlugin.
-*
-*   PaloKettlePlugin is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Lesser General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.
-*
-*   PaloKettlePlugin is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Lesser General Public License for more details.
-*
-*   You should have received a copy of the GNU Lesser General Public License
-*   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
-*
-*   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
-*   Portions Copyright 2011 - 2013 Pentaho Corporation
-*/
+ *   This file is part of PaloKettlePlugin.
+ *
+ *   PaloKettlePlugin is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   PaloKettlePlugin is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ */
 
 package org.pentaho.di.job.entries.palo.JobEntryCubeDelete;
 
@@ -38,134 +38,129 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-
 /**
  * Job to delete a cube in palo
- *
+ * 
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
 
-@org.pentaho.di.core.annotations.JobEntry(
-		id="PALO_CUBE_DELETE",
-		i18nPackageName="org.pentaho.di.job.entries.palo.JobEntryCubeDelete",
-		image = "PaloCubeDelete.png",
-		name="PaloCubeDelete.JobName",
-		description="PaloCubeDelete.JobDescription",
-		categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo")
+@org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_DELETE",
+    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeDelete", image = "PaloCubeDelete.png",
+    name = "PaloCubeDelete.JobName", description = "PaloCubeDelete.JobDescription",
+    categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo" )
 public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryInterface {
 
-	private DatabaseMeta databaseMeta;
-	private String cubeName = "";
+  private DatabaseMeta databaseMeta;
+  private String cubeName = "";
 
+  public PaloCubeDelete( String n ) {
+    super( n, "" );
+    setID( -1L );
+  }
 
-	public PaloCubeDelete(String n) {
-		super(n, "");
-		setID(-1L);
-	}
+  public PaloCubeDelete() {
+    this( "" );
+  }
 
-	public PaloCubeDelete() {
-		this("");
-	}
+  public Object clone() {
+    PaloCubeDelete je = (PaloCubeDelete) super.clone();
+    return je;
+  }
 
-	public Object clone() {
-		PaloCubeDelete je = (PaloCubeDelete) super.clone();
-		return je;
-	}
+  public String getXML() {
+    StringBuffer retval = new StringBuffer();
 
-	public String getXML() {
-		StringBuffer retval = new StringBuffer();
+    retval.append( super.getXML() );
 
-		retval.append(super.getXML());
+    retval.append( "      " ).append(
+        XMLHandler.addTagValue( "connection", getDatabaseMeta() == null ? "" : getDatabaseMeta().getName() ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "cubeName", getCubeName() ) );
 
-		retval.append("      ").append(XMLHandler.addTagValue("connection", getDatabaseMeta() == null ? "": getDatabaseMeta().getName()));
-		retval.append("      ").append(XMLHandler.addTagValue("cubeName", getCubeName()));
+    return retval.toString();
+  }
 
-		return retval.toString();
-	}
-
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep, IMetaStore metaStore) throws KettleXMLException {
-		try {
-			super.loadXML(entrynode, databases, slaveServers);
-
-			this.setDatabaseMeta(DatabaseMeta.findDatabase(
-					databases, XMLHandler.getTagValue(entrynode, "connection")));
-			this.setCubeName(XMLHandler.getTagValue(entrynode, "cubeName"));
-		} catch (KettleXMLException xe) {
-			throw new KettleXMLException("Unable to load file exists job entry from XML node",
-					xe);
-		}
-	}
-
-	public void loadRep(Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
-		try {
-			this.databaseMeta = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);
-			this.setCubeName(rep.getStepAttributeString(id_jobentry, "cubeName"));
-
-		} catch (KettleException dbe) {
-			throw new KettleException(
-					"Unable to load job entry for type file exists from the repository for id_jobentry="
-					+ id_jobentry, dbe);
-		}
-	}
-
-  public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_job) throws KettleException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
+      IMetaStore metaStore ) throws KettleXMLException {
     try {
+      super.loadXML( entrynode, databases, slaveServers );
 
-      rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", databaseMeta);
-      rep.saveStepAttribute(id_job, getObjectId(), "cubeName", this.getCubeName());
-
-    } catch (KettleDatabaseException dbe) {
-      throw new KettleException("unable to save jobentry of type 'file exists' to the repository for id_job=" + id_job,
-          dbe);
+      this.setDatabaseMeta( DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( entrynode, "connection" ) ) );
+      this.setCubeName( XMLHandler.getTagValue( entrynode, "cubeName" ) );
+    } catch ( KettleXMLException xe ) {
+      throw new KettleXMLException( "Unable to load file exists job entry from XML node", xe );
     }
   }
 
-	public Result execute(Result prevResult, int nr) throws KettleException {
-		
-		Result result = new Result(nr);
-		result.setResult(false);
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+      List<SlaveServer> slaveServers ) throws KettleException {
+    try {
+      this.databaseMeta =
+          rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
+      this.setCubeName( rep.getStepAttributeString( id_jobentry, "cubeName" ) );
 
-		logDetailed(toString(), "Start of processing");
+    } catch ( KettleException dbe ) {
+      throw new KettleException( "Unable to load job entry for type file exists from the repository for id_jobentry="
+          + id_jobentry, dbe );
+    }
+  }
 
-		// String substitution..
-		String realCubeName = environmentSubstitute(getCubeName());
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
+    try {
 
-		PaloHelper database = new PaloHelper(this.getDatabaseMeta(), getLogLevel());
-		try {
-			database.connect();
-			int cubesremoved = database.removeCube(realCubeName);
-			result.setResult(true);
-			result.setNrLinesOutput(cubesremoved);
-		} catch (Exception e) {
-			result.setNrErrors(1);
-			e.printStackTrace();
-			logError(toString(), "Error processing Palo Cube Delete : " + e.getMessage());
-		}
-		finally{
-			database.disconnect();
-		}
+      rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), "connection", "id_database", databaseMeta );
+      rep.saveStepAttribute( id_job, getObjectId(), "cubeName", this.getCubeName() );
 
-		return result;
-	}
+    } catch ( KettleDatabaseException dbe ) {
+      throw new KettleException(
+          "unable to save jobentry of type 'file exists' to the repository for id_job=" + id_job, dbe );
+    }
+  }
 
-	public boolean evaluates() {
-		return true;
-	}
+  public Result execute( Result prevResult, int nr ) throws KettleException {
 
-	public void setDatabaseMeta(DatabaseMeta databaseMeta) {
-		this.databaseMeta = databaseMeta;
-	}
+    Result result = new Result( nr );
+    result.setResult( false );
 
-	public DatabaseMeta getDatabaseMeta() {
-		return databaseMeta;
-	}
+    logDetailed( toString(), "Start of processing" );
 
-	public void setCubeName(String cubeName) {
-		this.cubeName = cubeName;
-	}
+    // String substitution..
+    String realCubeName = environmentSubstitute( getCubeName() );
 
-	public String getCubeName() {
-		return cubeName;
-	}
+    PaloHelper database = new PaloHelper( this.getDatabaseMeta(), getLogLevel() );
+    try {
+      database.connect();
+      int cubesremoved = database.removeCube( realCubeName );
+      result.setResult( true );
+      result.setNrLinesOutput( cubesremoved );
+    } catch ( Exception e ) {
+      result.setNrErrors( 1 );
+      e.printStackTrace();
+      logError( toString(), "Error processing Palo Cube Delete : " + e.getMessage() );
+    } finally {
+      database.disconnect();
+    }
+
+    return result;
+  }
+
+  public boolean evaluates() {
+    return true;
+  }
+
+  public void setDatabaseMeta( DatabaseMeta databaseMeta ) {
+    this.databaseMeta = databaseMeta;
+  }
+
+  public DatabaseMeta getDatabaseMeta() {
+    return databaseMeta;
+  }
+
+  public void setCubeName( String cubeName ) {
+    this.cubeName = cubeName;
+  }
+
+  public String getCubeName() {
+    return cubeName;
+  }
 }

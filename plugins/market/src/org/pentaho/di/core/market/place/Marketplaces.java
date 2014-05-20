@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.core.market.place;
 
@@ -36,9 +36,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
- * This class is an extension of ArrayList<Marketplace.
- * It will populate itself on construction.
- *
+ * This class is an extension of ArrayList<Marketplace. It will populate itself on construction.
+ * 
  * @author sflatley
  * @extends ArrayList<Marketplace>
  */
@@ -66,9 +65,8 @@ public class Marketplaces extends ArrayList<Marketplace> {
         addAll( Marketplace.getDefaultMarketplaces() );
       }
     } catch ( KettleXMLException kxe ) {
-      new ErrorDialog( Spoon.getInstance().getShell(),
-        BaseMessages.getString( MARKET_PKG, "Market.error" ),
-        BaseMessages.getString( MARKET_PKG, "Marketplaces.xmlerror.message", marketplacesFile ), kxe );
+      new ErrorDialog( Spoon.getInstance().getShell(), BaseMessages.getString( MARKET_PKG, "Market.error" ),
+          BaseMessages.getString( MARKET_PKG, "Marketplaces.xmlerror.message", marketplacesFile ), kxe );
     }
   }
 }
