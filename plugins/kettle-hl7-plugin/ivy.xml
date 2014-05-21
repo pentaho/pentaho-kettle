@@ -35,7 +35,7 @@
     <dependency org="ca.uhn.hapi" name="hapi-structures-v26" rev="1.1" transitive="false"/>
     
     <!-- SWT it required to compile any version of any architecture will work -->
-    <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="3.7" conf="dev->default" transitive="false"/>
+    <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="4.3.2" conf="dev->default" transitive="false"/>
     
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>     
   </dependencies>
