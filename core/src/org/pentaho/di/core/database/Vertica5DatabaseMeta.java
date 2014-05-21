@@ -61,9 +61,9 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
   /**
    * This method allows a database dialect to convert database specific data types to Kettle data types.
    *
-   * @param resultSet
+   * @param rs
    *          The result set to use
-   * @param valueMeta
+   * @param val
    *          The description of the value to retrieve
    * @param index
    *          the index on which we need to retrieve the value, 0-based.
@@ -71,28 +71,31 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
    * @throws KettleDatabaseException
    */
   @Override
-  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int i ) throws KettleDatabaseException {
-    Object data = null;
+  public Object getValueFromResultSet( ResultSet rs, ValueMetaInterface val, int index ) throws KettleDatabaseException {
+    Object data;
 
     try {
       switch ( val.getType() ) {
         case ValueMetaInterface.TYPE_DATE:
           if ( val.getOriginalColumnType() == java.sql.Types.TIMESTAMP ) {
-            data = rs.getTimestamp( i + 1 );
+            data = rs.getTimestamp( index + 1 );
             break; // Timestamp extends java.util.Date
+          } else if ( val.getOriginalColumnType() == java.sql.Types.TIME ) {
+            data = rs.getTime( index + 1 );
+            break;
           } else {
-            data = rs.getDate( i + 1 );
+            data = rs.getDate( index + 1 );
             break;
           }
         default:
-          return super.getValueFromResultSet( rs, val, i );
+          return super.getValueFromResultSet( rs, val, index );
       }
       if ( rs.wasNull() ) {
         data = null;
       }
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Unable to get value '"
-        + val.toStringMeta() + "' from database resultset, index " + i, e );
+        + val.toStringMeta() + "' from database resultset, index " + index, e );
     }
 
     return data;

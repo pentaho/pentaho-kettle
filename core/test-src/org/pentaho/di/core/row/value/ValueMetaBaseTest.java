@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.Time;
 import java.sql.Types;
 
 import org.junit.BeforeClass;
@@ -141,6 +142,24 @@ public class ValueMetaBaseTest {
     assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
     assertFalse( varbinaryValueMeta.isLargeTextField() );
 
+  }
+
+  @Test
+  public void testVerticaTimeType() throws Exception {
+    // PDI-12244
+    ResultSet resultSet = Mockito.mock( ResultSet.class );
+    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+    ValueMetaInterface valueMetaInterface = Mockito.mock( ValueMetaInternetAddress.class );
+
+    Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
+    Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.TIME );
+    Mockito.when( resultSet.getTime( 1 ) ).thenReturn( new Time( 0 ) );
+    Mockito.when( valueMetaInterface.getOriginalColumnType() ).thenReturn( Types.TIME );
+    Mockito.when( valueMetaInterface.getType() ).thenReturn(  ValueMetaInterface.TYPE_DATE );
+
+    DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
+    Object ret = databaseInterface.getValueFromResultSet(  resultSet, valueMetaInterface, 0 );
+    assertEquals( new Time( 0 ), ret );
   }
 
   @Test
