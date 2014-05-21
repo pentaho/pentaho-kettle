@@ -190,64 +190,9 @@ public class Formula extends BaseStep implements StepInterface {
               data.returnType[i] = FormulaData.RETURN_TYPE_STRING;
             }
           }
-          Object value = null;
+
           int realIndex = ( data.replaceIndex[i] < 0 ) ? tempIndex++ : data.replaceIndex[i];
-
-          switch ( data.returnType[i] ) {
-            case FormulaData.RETURN_TYPE_STRING:
-              if ( formulaResult == null ) {
-                value = null;
-              }
-              if ( fn.isNeedDataConversion() ) {
-                value = convertDataToTargetValueMeta( realIndex, formulaResult );
-              } else {
-                value = formulaResult.toString();
-              }
-              break;
-            case FormulaData.RETURN_TYPE_NUMBER:
-              if ( fn.isNeedDataConversion() ) {
-                value = convertDataToTargetValueMeta( realIndex, formulaResult );
-              } else {
-                value = new Double( ( (Number) formulaResult ).doubleValue() );
-              }
-              break;
-            case FormulaData.RETURN_TYPE_INTEGER:
-              if ( fn.isNeedDataConversion() ) {
-                value = convertDataToTargetValueMeta( realIndex, formulaResult );
-              } else {
-                value = new Long( ( (Integer) formulaResult ).intValue() );
-              }
-              break;
-            case FormulaData.RETURN_TYPE_LONG:
-              if ( fn.isNeedDataConversion() ) {
-                value = convertDataToTargetValueMeta( realIndex, formulaResult );
-              } else {
-                value = formulaResult;
-              }
-              break;
-            case FormulaData.RETURN_TYPE_DATE:
-              if ( fn.isNeedDataConversion() ) {
-                value = convertDataToTargetValueMeta( realIndex, formulaResult );
-              } else {
-                value = formulaResult;
-              }
-              break;
-            case FormulaData.RETURN_TYPE_BIGDECIMAL:
-              if ( fn.isNeedDataConversion() ) {
-                value = convertDataToTargetValueMeta( realIndex, formulaResult );
-              } else {
-                value = formulaResult;
-              }
-              break;
-            case FormulaData.RETURN_TYPE_BYTE_ARRAY:
-              value = formulaResult;
-              break;
-            case FormulaData.RETURN_TYPE_BOOLEAN:
-              value = formulaResult;
-              break;
-          } //if none case is caught - null is returned.
-
-          outputRowData[realIndex] = value;
+          outputRowData[realIndex] = getReturnValue( formulaResult, data.returnType[i], realIndex, fn );
         }
       }
 
@@ -255,6 +200,65 @@ public class Formula extends BaseStep implements StepInterface {
     } catch ( Throwable e ) {
       throw new KettleValueException( e );
     }
+  }
+
+  protected Object getReturnValue( Object formulaResult, int returnType, int realIndex, FormulaMetaFunction fn )
+    throws KettleException {
+    if ( formulaResult == null ) {
+      return null;
+    }
+    Object value = null;
+    switch ( returnType ) {
+      case FormulaData.RETURN_TYPE_STRING:
+        if ( fn.isNeedDataConversion() ) {
+          value = convertDataToTargetValueMeta( realIndex, formulaResult );
+        } else {
+          value = formulaResult.toString();
+        }
+        break;
+      case FormulaData.RETURN_TYPE_NUMBER:
+        if ( fn.isNeedDataConversion() ) {
+          value = convertDataToTargetValueMeta( realIndex, formulaResult );
+        } else {
+          value = new Double( ( (Number) formulaResult ).doubleValue() );
+        }
+        break;
+      case FormulaData.RETURN_TYPE_INTEGER:
+        if ( fn.isNeedDataConversion() ) {
+          value = convertDataToTargetValueMeta( realIndex, formulaResult );
+        } else {
+          value = new Long( ( (Integer) formulaResult ).intValue() );
+        }
+        break;
+      case FormulaData.RETURN_TYPE_LONG:
+        if ( fn.isNeedDataConversion() ) {
+          value = convertDataToTargetValueMeta( realIndex, formulaResult );
+        } else {
+          value = formulaResult;
+        }
+        break;
+      case FormulaData.RETURN_TYPE_DATE:
+        if ( fn.isNeedDataConversion() ) {
+          value = convertDataToTargetValueMeta( realIndex, formulaResult );
+        } else {
+          value = formulaResult;
+        }
+        break;
+      case FormulaData.RETURN_TYPE_BIGDECIMAL:
+        if ( fn.isNeedDataConversion() ) {
+          value = convertDataToTargetValueMeta( realIndex, formulaResult );
+        } else {
+          value = formulaResult;
+        }
+        break;
+      case FormulaData.RETURN_TYPE_BYTE_ARRAY:
+        value = formulaResult;
+        break;
+      case FormulaData.RETURN_TYPE_BOOLEAN:
+        value = formulaResult;
+        break;
+    } //if none case is caught - null is returned.
+    return value;
   }
 
   private Object convertDataToTargetValueMeta( int i, Object formulaResult ) throws KettleException {
