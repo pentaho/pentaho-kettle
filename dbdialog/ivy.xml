@@ -28,7 +28,7 @@
     <!--  Third-party (external) dependencies -->
     
     <!-- SWT it required to compile any version of any architecture will work -->
-    <dependency org="org.eclipse.swt" name="swt-linux-x86_64"  rev="3.7" transitive="false" />
+    <dependency org="org.eclipse.swt" name="swt-linux-x86_64"  rev="4.3.2" transitive="false" />
     
     <dependency org="junit" name="junit" rev="4.7" conf="test->default" transitive="false"/>
   </dependencies>
