@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -303,6 +304,20 @@ public class TransMetricsDelegate extends SpoonDelegate {
   }
 
   private void refreshImage( GC canvasGc ) {
+    List<MetricsDuration> durations = MetricsUtil.getAllDurations( transGraph.trans.getLogChannelId() );
+    if ( Const.isEmpty( durations ) ) {
+      // In case of an empty durations or null there is nothing to draw
+      return;
+    }
+
+    // Sort the metrics.
+    Collections.sort( durations, new Comparator<MetricsDuration>() {
+      @Override
+      public int compare( MetricsDuration o1, MetricsDuration o2 ) {
+        return o1.getDate().compareTo( o2.getDate() );
+      }
+    } );
+    
     Rectangle bounds = canvas.getBounds();
     if ( bounds.width <= 0 || bounds.height <= 0 ) {
       return;
@@ -324,19 +339,8 @@ public class TransMetricsDelegate extends SpoonDelegate {
       image.dispose(); // prevent out of memory...
       image = null;
     }
-    List<MetricsDuration> durations = MetricsUtil.getAllDurations( transGraph.trans.getLogChannelId() );
-
-    // Sort the metrics.
-    Collections.sort( durations, new Comparator<MetricsDuration>() {
-      @Override
-      public int compare( MetricsDuration o1, MetricsDuration o2 ) {
-        return o1.getDate().compareTo( o2.getDate() );
-      }
-    } );
 
     // Correct size of canvas.
-    //
-
     org.eclipse.swt.graphics.Point textExtent = canvasGc.textExtent( "AagKkiw" );
     int height = textExtent.y + 8;
 
