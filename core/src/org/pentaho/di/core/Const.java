@@ -806,10 +806,26 @@ public class Const {
   public static final String XML_FILE_KETTLE_VALUEMETA_PLUGINS = "kettle-valuemeta-plugins.xml";
 
   /**
+   * The XML file that contains the list of native Kettle two-way password encoder plugins
+   */
+  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
+
+  /**
    * The name of the environment variable that will contain the alternative location of the kettle-valuemeta-plugins.xml
    * file
    */
   public static final String KETTLE_VALUEMETA_PLUGINS_FILE = "KETTLE_VALUEMETA_PLUGINS_FILE";
+
+  /**
+   * Specifies the password encoding plugin to use by ID (Kettle is the default).
+   */
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
+
+  /**
+   * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
+   * file
+   */
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
    * The XML file that contains the list of native Kettle logging plugins
