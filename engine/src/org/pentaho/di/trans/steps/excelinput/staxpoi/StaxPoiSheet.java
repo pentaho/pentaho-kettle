@@ -17,7 +17,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KSheet;
 
@@ -48,7 +47,8 @@ public class StaxPoiSheet implements KSheet {
         int event = sheetReader.next();
         if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "dimension" ) ) {
           String dim = sheetReader.getAttributeValue( null, "ref" ).split( ":" )[1];
-          numRows = Integer.parseInt( dim.substring( 1 ) );
+          numRows = StaxUtil.extractRowNumber( dim );
+          numCols = StaxUtil.extractColumnNumber( dim );
         }
         if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
           currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
@@ -60,7 +60,8 @@ public class StaxPoiSheet implements KSheet {
               break;
             }
             if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
-              if ( sheetReader.getAttributeValue( null, "t" ).equals( "s" ) ) {
+              String attributeValue = sheetReader.getAttributeValue( null, "t" );
+              if ( attributeValue != null && attributeValue.equals( "s" ) ) {
                 // only if the type of the cell is string, we continue
                 while ( sheetReader.hasNext() ) {
                   event = sheetReader.next();
@@ -80,7 +81,7 @@ public class StaxPoiSheet implements KSheet {
           break;
         }
       }
-      numCols = headerRow.size();
+      // numCols = headerRow.size();
     } catch ( Exception e ) {
       e.printStackTrace();
       throw new RuntimeException( e.getMessage() );
@@ -89,19 +90,19 @@ public class StaxPoiSheet implements KSheet {
 
   @Override
   public KCell[] getRow( int rownr ) {
+
     // convert 0 based index to 1 based
     rownr += 1;
     try {
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
         if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
-          currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
+          String rowIndicator = sheetReader.getAttributeValue( null, "r" );
+          currentRow = Integer.parseInt( rowIndicator );
           if ( currentRow < rownr ) {
             continue;
           }
-          if ( currentRow > rownr ) {
-            throw new KettleException( "Going back in stream is not supported yet" );
-          }
+
           KCell[] cells = new StaxPoiCell[numCols];
           for ( int i = 0; i < numCols; i++ ) {
             // go to the "c" <cell> tag
@@ -111,6 +112,8 @@ public class StaxPoiSheet implements KSheet {
               }
               event = sheetReader.next();
             }
+            String cellLocation = sheetReader.getAttributeValue( null, "r" );
+            int columnIndex = StaxUtil.extractColumnNumber( cellLocation ) - 1;
             String cellType = sheetReader.getAttributeValue( null, "t" );
 
             // go to the "v" <value> tag
@@ -133,7 +136,7 @@ public class StaxPoiSheet implements KSheet {
             } else {
               content = sheetReader.getElementText();
             }
-            cells[i] = new StaxPoiCell( content, currentRow );
+            cells[columnIndex] = new StaxPoiCell( content, currentRow );
           }
           return cells;
         }
