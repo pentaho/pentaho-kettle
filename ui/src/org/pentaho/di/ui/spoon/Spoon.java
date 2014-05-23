@@ -250,6 +250,7 @@ import org.pentaho.di.ui.core.dialog.EnterStringsDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.KettlePropertiesFileDialog;
+import org.pentaho.di.ui.core.dialog.PopupOverwritePrompter;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
@@ -8487,18 +8488,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean overwritePrompt( String message, String rememberText, String rememberPropertyName ) {
-    Object[] res =
-      messageDialogWithToggle(
-        "Warning", null, message, Const.WARNING, new String[] {
-          BaseMessages.getString( PKG, "System.Button.Yes" ),
-          BaseMessages.getString( PKG, "System.Button.No" ) }, 1, rememberText, !"Y".equalsIgnoreCase( props
-          .getProperty( rememberPropertyName ) ) );
-    int idx = (Integer) res[ 0 ];
-    boolean overwrite = ( ( idx & 0xFF ) == 0 );
-    boolean toggleState = (Boolean) res[ 1 ];
-    props.setProperty( rememberPropertyName, ( !toggleState ) ? "Y" : "N" );
-    return overwrite;
-
+    return new PopupOverwritePrompter( shell, props ).overwritePrompt( message, rememberText, rememberPropertyName );
   }
 
   public boolean messageBox( final String message, final String text, final boolean allowCancel, final int type ) {
