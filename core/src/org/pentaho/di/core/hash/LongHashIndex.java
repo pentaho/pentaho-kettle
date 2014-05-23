@@ -35,7 +35,7 @@ public class LongHashIndex {
 
   /**
    * Create a new long/long hash index
-   *
+   * 
    * @param size
    *          the initial size of the hash index
    */
@@ -47,7 +47,6 @@ public class LongHashIndex {
       factor2Size <<= 1; // Multiply by 2
     }
 
-    this.size = factor2Size;
     this.resizeThresHold = (int) ( factor2Size * STANDARD_LOAD_FACTOR );
 
     index = new LongHashIndexEntry[factor2Size];
@@ -71,7 +70,7 @@ public class LongHashIndex {
   public Long get( long key ) throws KettleValueException {
     int hashCode = generateHashCode( key );
 
-    int indexPointer = hashCode & ( index.length - 1 );
+    int indexPointer = indexFor( hashCode, index.length );
     LongHashIndexEntry check = index[indexPointer];
 
     while ( check != null ) {
@@ -85,17 +84,12 @@ public class LongHashIndex {
 
   public void put( long key, Long value ) throws KettleValueException {
     int hashCode = generateHashCode( key );
-    int indexPointer = hashCode & ( index.length - 1 );
-
-    // First see if there is an entry on that pointer...
-    //
-    boolean searchEmptySpot = false;
+    int indexPointer = indexFor( hashCode, index.length );
 
     LongHashIndexEntry check = index[indexPointer];
     LongHashIndexEntry previousCheck = null;
 
     while ( check != null ) {
-      searchEmptySpot = true;
 
       // If there is an identical entry in there, we replace the entry
       // And then we just return...
@@ -108,27 +102,12 @@ public class LongHashIndex {
       check = check.nextEntry;
     }
 
-    // If we are still here, that means that we are ready to put the value down...
-    // Where do we need to search for an empty spot in the index?
-    //
-    while ( searchEmptySpot ) {
-      indexPointer++;
-      if ( indexPointer >= size ) {
-        indexPointer = 0;
-      }
-      if ( index[indexPointer] == null ) {
-        searchEmptySpot = false;
-      }
-    }
-
-    // OK, now that we know where to put the entry, insert it...
-    //
-    index[indexPointer] = new LongHashIndexEntry( hashCode, key, value, index[indexPointer] );
-
     // Don't forget to link to the previous check entry if there was any...
     //
     if ( previousCheck != null ) {
-      previousCheck.nextEntry = index[indexPointer];
+      previousCheck.nextEntry = new LongHashIndexEntry( hashCode, key, value, null );
+    } else {
+      index[indexPointer] = new LongHashIndexEntry( hashCode, key, value, null );
     }
 
     // If required, resize the table...
@@ -169,7 +148,7 @@ public class LongHashIndex {
           //
           do {
             LongHashIndexEntry next = entry.nextEntry;
-            int indexPointer = entry.hashCode & ( newSize - 1 );
+            int indexPointer = indexFor( entry.hashCode, newSize );
             entry.nextEntry = newIndex[indexPointer];
             newIndex[indexPointer] = entry;
             entry = next;
@@ -189,6 +168,10 @@ public class LongHashIndex {
 
   public static int generateHashCode( Long key ) throws KettleValueException {
     return key.hashCode();
+  }
+
+  public static int indexFor( int hash, int length ) {
+    return hash & ( length - 1 );
   }
 
   private static final class LongHashIndexEntry {
