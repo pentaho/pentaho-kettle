@@ -988,4 +988,8 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   public void setOverwrite( boolean overwrite ) {
     this.overwrite = overwrite;
   }
+
+  public String getVersionComment() {
+    return versionComment;
+  }
 }
