@@ -34,10 +34,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
 import org.mockito.Mockito;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogLevel;
@@ -52,14 +52,19 @@ public class DatabaseUnitTest {
 
   static LoggingObjectInterface log = new SimpleLoggingObject( "junit", LoggingObjectType.GENERAL, null );
 
+  @BeforeClass
+  public static void setUp() throws Exception {
+    KettleClientEnvironment.init();
+  }
+
   /**
    * PDI-11363. when using getLookup calls there is no need to make attempt to retrieve row set metadata for every call.
    * That may bring performance penalty depends on jdbc driver implementation. For some drivers that penalty can be huge
    * (postgres).
-   * 
+   * <p/>
    * During the execution calling getLookup() method we changing usually only lookup where clause which will not impact
    * return row structure.
-   * 
+   *
    * @throws KettleDatabaseException
    * @throws SQLException
    */
@@ -96,7 +101,7 @@ public class DatabaseUnitTest {
 
   /**
    * Test that for every PreparedStatement passed into lookup signature we do reset and re-create row meta.
-   * 
+   *
    * @throws SQLException
    * @throws KettleDatabaseException
    */
@@ -203,7 +208,8 @@ public class DatabaseUnitTest {
   }
 
   @Test( expected = KettleDatabaseException.class )
-  public void testEmptyAndCommitWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
+  public void testEmptyAndCommitWithoutBatchDoesntThrowKettleBatchException()
+    throws KettleDatabaseException, SQLException {
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
     when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
 
@@ -405,6 +411,38 @@ public class DatabaseUnitTest {
       "PRIMARY KEY \\(pKey\\)",
       "\\)", ";" );
     assertTrue( statement.matches( expectedStatRegexp ) );
+  }
+
+  @Test
+  public void mySqlVarBinaryIsConvertedToStringType() throws Exception {
+    ResultSetMetaData rsMeta = mock( ResultSetMetaData.class );
+    when( rsMeta.getColumnCount() ).thenReturn( 1 );
+    when( rsMeta.getColumnLabel( 1 ) ).thenReturn( "column" );
+    when( rsMeta.getColumnName( 1 ) ).thenReturn( "column" );
+    when( rsMeta.getColumnType( 1 ) ).thenReturn( java.sql.Types.VARBINARY );
+
+    ResultSet rs = mock( ResultSet.class );
+    when( rs.getMetaData() ).thenReturn( rsMeta );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
+    when( ps.executeQuery() ).thenReturn( rs );
+
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setDatabaseInterface( new MySQLDatabaseMeta() );
+
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+
+    Database db = new Database( log, meta );
+    db.setConnection( mockConnection( dbMetaData ) );
+
+    db.getLookup( ps, false, true );
+
+    RowMetaInterface rowMeta = db.getReturnRowMeta();
+    assertEquals( 1, rowMeta.size() );
+
+    ValueMetaInterface valueMeta = rowMeta.getValueMeta( 0 );
+    assertEquals( ValueMetaInterface.TYPE_STRING, valueMeta.getType() );
+    assertEquals( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING, valueMeta.getStorageType() );
   }
 
   private static String concatWordsForRegexp( String... words ) {
