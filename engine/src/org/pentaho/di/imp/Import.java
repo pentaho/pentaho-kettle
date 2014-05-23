@@ -22,6 +22,9 @@
 
 package org.pentaho.di.imp;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +33,10 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.HasOverwritePrompter;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -41,11 +47,12 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.pan.CommandLineOption;
+import org.pentaho.di.repository.CanLimitDirs;
+import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportFeedbackInterface;
-import org.pentaho.di.repository.RepositoryImporter;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
@@ -57,8 +64,100 @@ public class Import {
 
   public static final String STRING_IMPORT = "Import";
 
+  private static class ImportFeedback implements RepositoryImportFeedbackInterface, HasOverwritePrompter {
+    private final LogChannelInterface log;
+    private final boolean continueOnError;
+    private final boolean replace;
+    private final BufferedReader reader;
+
+    public ImportFeedback( LogChannelInterface log, boolean continueOnError, boolean replace, BufferedReader reader ) {
+      this.log = log;
+      this.continueOnError = continueOnError;
+      this.replace = replace;
+      this.reader = reader;
+    }
+
+    @Override
+    public void updateDisplay() {
+    }
+
+    @Override
+    public boolean transOverwritePrompt( TransMeta transMeta ) {
+      return replace;
+    }
+
+    @Override
+    public void showError( String title, String message, Exception e ) {
+      log.logError( title + " : " + message, e );
+    }
+
+    @Override
+    public void setLabel( String labelText ) {
+      log.logBasic( labelText );
+    }
+
+    @Override
+    public boolean jobOverwritePrompt( JobMeta jobMeta ) {
+      return replace;
+    }
+
+    @Override
+    public boolean askContinueOnErrorQuestion( String title, String message ) {
+      return continueOnError;
+    }
+
+    @Override
+    public void addLog( String line ) {
+      log.logBasic( line );
+    }
+
+    @Override
+    public boolean isAskingOverwriteConfirmation() {
+      return false;
+    }
+
+    @Override
+    public OverwritePrompter getOverwritePrompter() {
+      return new OverwritePrompter() {
+        private final String yes = BaseMessages.getString( PKG, "Import.Yes" );
+        private final String no = BaseMessages.getString( PKG, "Import.No" );
+        private final String none = BaseMessages.getString( PKG, "Import.None" );
+        private final String all = BaseMessages.getString( PKG, "Import.All" );
+        private final String prompt = "[" + yes + "," + no + "," + none + "," + all + "]";
+
+        @Override
+        public boolean overwritePrompt( String message, String rememberText, String rememberPropertyName ) {
+          log.logBasic( message );
+          String line;
+          Boolean result = null;
+          boolean remember = false;
+          while ( result == null ) {
+            log.logBasic( prompt );
+            try {
+              line = reader.readLine().trim();
+            } catch ( IOException e ) {
+              throw new RuntimeException( BaseMessages.getString( PKG, "Import.CouldntReadline" ) );
+            }
+            if ( line.equalsIgnoreCase( yes ) || line.equalsIgnoreCase( all ) ) {
+              result = true;
+            } else if ( line.equalsIgnoreCase( no ) || line.equalsIgnoreCase( none ) ) {
+              result = false;
+            }
+            if ( line.equalsIgnoreCase( all ) || line.equalsIgnoreCase( none ) ) {
+              remember = true;
+            }
+          }
+          Props.getInstance().setProperty( rememberPropertyName, ( !remember ) ? "Y" : "N" );
+          return result;
+        }
+      };
+    }
+  };
+
   public static void main( String[] a ) throws KettleException {
+    BufferedReader reader = new BufferedReader( new InputStreamReader( System.in ) );
     KettleEnvironment.init();
+    Props.init( Props.TYPE_PROPERTIES_SPOON );
 
     List<String> args = new ArrayList<String>();
     for ( int i = 0; i < a.length; i++ ) {
@@ -284,52 +383,19 @@ public class Import {
       }
 
       // Perform the actual import
-      //
-      RepositoryImporter importer = new RepositoryImporter( repository, importRules, limitDirs );
-      RepositoryImportFeedbackInterface feedbackInterface = new RepositoryImportFeedbackInterface() {
-
-        @Override
-        public void updateDisplay() {
+      IRepositoryImporter importer = repository.getImporter();
+      importer.setImportRules( importRules );
+      if ( limitDirs.size() > 0 ) {
+        if ( importer instanceof CanLimitDirs ) {
+          ( (CanLimitDirs) importer ).setLimitDirs( limitDirs );
+        } else {
+          throw new KettleException( BaseMessages.getString( PKG, "Import.CouldntLimitDirs", importer.getClass()
+              .getCanonicalName() ) );
         }
-
-        @Override
-        public boolean transOverwritePrompt( TransMeta transMeta ) {
-          return replace;
-        }
-
-        @Override
-        public void showError( String title, String message, Exception e ) {
-          log.logError( title + " : " + message, e );
-        }
-
-        @Override
-        public void setLabel( String labelText ) {
-          log.logBasic( labelText );
-        }
-
-        @Override
-        public boolean jobOverwritePrompt( JobMeta jobMeta ) {
-          return replace;
-        }
-
-        @Override
-        public boolean askContinueOnErrorQuestion( String title, String message ) {
-          return continueOnError;
-        }
-
-        @Override
-        public void addLog( String line ) {
-          log.logBasic( line );
-        }
-
-        @Override
-        public boolean isAskingOverwriteConfirmation() {
-          return false;
-        }
-      };
+      }
+      RepositoryImportFeedbackInterface feedbackInterface = new ImportFeedback( log, continueOnError, replace, reader );
 
       // Import files in a certain directory
-      //
       importer.importAll( feedbackInterface, optionFileDir.toString(), filenames.toArray( new String[filenames
         .size()] ), targetDirectory, replace, continueOnError, optionComment.toString() );
 

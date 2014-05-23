@@ -22,17 +22,25 @@
 
 package org.pentaho.di.repository;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.HasOverwritePrompter;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -54,7 +62,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
 
-public class RepositoryImporter implements IRepositoryImporter {
+public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
+  public static final String IMPORT_ASK_ABOUT_REPLACE_DB = "IMPORT_ASK_ABOUT_REPLACE_DB";
+  public static final String IMPORT_ASK_ABOUT_REPLACE_SS = "IMPORT_ASK_ABOUT_REPLACE_SS";
+  public static final String IMPORT_ASK_ABOUT_REPLACE_CS = "IMPORT_ASK_ABOUT_REPLACE_CS";
+  public static final String IMPORT_ASK_ABOUT_REPLACE_PS = "IMPORT_ASK_ABOUT_REPLACE_PS";
+
   private static Class<?> PKG = RepositoryImporter.class;
 
   private Repository rep;
@@ -82,25 +95,86 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   private List<Exception> exceptions;
 
+  private OverwritePrompter overwritePrompter;
+
+  private final Set<String> rememberPropertyNamesToOverwrite = new HashSet<String>();
+
   public RepositoryImporter( Repository repository ) {
     this( repository, new ImportRules(), new ArrayList<String>() );
   }
 
+  public RepositoryImporter( Repository repository, LogChannelInterface log ) {
+    this( repository, new ImportRules(), new ArrayList<String>(), log );
+  }
+
   public RepositoryImporter( Repository repository, ImportRules importRules, List<String> limitDirs ) {
-    this.log = new LogChannel( "Repository import" );
+    this( repository, importRules, limitDirs, new LogChannel( "Repository import" ) );
+  }
+
+  public RepositoryImporter( Repository repository, ImportRules importRules, List<String> limitDirs,
+      LogChannelInterface log ) {
+    this.log = log;
     this.rep = repository;
     this.importRules = importRules;
     this.limitDirs = limitDirs;
     this.exceptions = new ArrayList<Exception>();
   }
 
+  private boolean isRemembered( String rememberPropertyName ) {
+    return !"Y".equalsIgnoreCase( Props.getInstance().getProperty( rememberPropertyName ) );
+  }
+
+  private boolean getPromptResult( String message, String rememberText, String rememberPropertyName ) {
+    if ( isRemembered( rememberPropertyName ) ) {
+      return rememberPropertyNamesToOverwrite.contains( rememberPropertyName );
+    }
+    boolean result = overwritePrompter.overwritePrompt( message, rememberText, rememberPropertyName );
+    // Save result so we'll know what to return if the user selects to remember
+    if ( result ) {
+      rememberPropertyNamesToOverwrite.add( rememberPropertyName );
+    } else {
+      rememberPropertyNamesToOverwrite.remove( rememberPropertyName );
+    }
+    return result;
+  }
+
+  @Override
   public synchronized void importAll( RepositoryImportFeedbackInterface feedback, String fileDirectory,
-    String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError,
-    String versionComment ) {
+      String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError,
+      String versionComment ) {
     this.baseDirectory = baseDirectory;
     this.overwrite = overwrite;
     this.continueOnError = continueOnError;
     this.versionComment = versionComment;
+
+    boolean askReplace = Props.getInstance().askAboutReplacingDatabaseConnections();
+
+    if ( askReplace ) {
+      if ( feedback instanceof HasOverwritePrompter ) {
+        Props.getInstance().setProperty( IMPORT_ASK_ABOUT_REPLACE_CS, "Y" );
+        Props.getInstance().setProperty( IMPORT_ASK_ABOUT_REPLACE_DB, "Y" );
+        Props.getInstance().setProperty( IMPORT_ASK_ABOUT_REPLACE_PS, "Y" );
+        Props.getInstance().setProperty( IMPORT_ASK_ABOUT_REPLACE_SS, "Y" );
+        this.overwritePrompter = ( (HasOverwritePrompter) feedback ).getOverwritePrompter();
+      } else {
+        this.overwritePrompter = new OverwritePrompter() {
+
+          @Override
+          public boolean overwritePrompt( String arg0, String arg1, String arg2 ) {
+            throw new RuntimeException( BaseMessages.getString( PKG, "RepositoryImporter.CannotPrompt.Label" ) );
+          }
+        };
+      }
+    } else {
+      final boolean replaceExisting = Props.getInstance().replaceExistingDatabaseConnections();
+      this.overwritePrompter = new OverwritePrompter() {
+
+        @Override
+        public boolean overwritePrompt( String arg0, String arg1, String arg2 ) {
+          return replaceExisting;
+        }
+      };
+    }
 
     referencingObjects = new ArrayList<RepositoryObject>();
 
@@ -114,8 +188,7 @@ public class RepositoryImporter implements IRepositoryImporter {
       for ( int ii = 0; ii < filenames.length; ++ii ) {
 
         final String filename =
-          ( !Const.isEmpty( fileDirectory ) )
-            ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
+            ( !Const.isEmpty( fileDirectory ) ) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
         if ( log.isBasic() ) {
           log.logBasic( "Import objects from XML file [" + filename + "]" );
         }
@@ -129,20 +202,10 @@ public class RepositoryImporter implements IRepositoryImporter {
         try {
           RepositoryExportSaxParser parser = new RepositoryExportSaxParser( filename, feedback );
           parser.parse( this );
-        } catch ( FileNotFoundException fnfe ) {
-          addException( fnfe );
-          feedback.showError(
-            BaseMessages.getString( PKG, "PurRepositoryImporter.ErrorGeneral.Title" ), BaseMessages.getString(
-              PKG, "PurRepositoryImporter.FileNotFound.Message", filename ), fnfe );
-
-        } catch ( SAXParseException spe ) {
-          addException( spe );
-          feedback.showError(
-            BaseMessages.getString( PKG, "PurRepositoryImporter.ErrorGeneral.Title" ), BaseMessages.getString(
-              PKG, "PurRepositoryImporter.ParseError.Message", filename ), spe );
         } catch ( Exception e ) {
+          addException( e );
           feedback.showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorGeneral.Title" ), BaseMessages
-            .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
+              .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
         }
       }
 
@@ -156,7 +219,7 @@ public class RepositoryImporter implements IRepositoryImporter {
           } catch ( KettleException e ) {
             // log and continue; might fail from exports performed before PDI-5294
             feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.LookupRepoRefsError.Log", transMeta
-              .getName() ) );
+                .getName() ) );
           }
           rep.save( transMeta, "import object reference specification", null );
         }
@@ -167,16 +230,17 @@ public class RepositoryImporter implements IRepositoryImporter {
           } catch ( KettleException e ) {
             // log and continue; might fail from exports performed before PDI-5294
             feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.LookupRepoRefsError.Log", jobMeta
-              .getName() ) );
+                .getName() ) );
           }
           rep.save( jobMeta, "import object reference specification", null );
         }
       }
 
       feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ImportFinished.Log" ) );
-    } catch ( KettleException e ) {
+    } catch ( Exception e ) {
+      addException( e );
       feedback.showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorGeneral.Title" ), BaseMessages
-        .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
+          .getString( PKG, "RepositoryImporter.ErrorGeneral.Message" ), e );
     } finally {
       // set the repository import location to null when done!
       RepositoryImportLocation.setRepositoryImportLocation( null );
@@ -186,10 +250,10 @@ public class RepositoryImporter implements IRepositoryImporter {
   /**
    * Load the shared objects up front, replace them in the xforms/jobs loaded from XML. We do this for performance
    * reasons.
-   *
+   * 
    * @throws KettleException
    */
-  private void loadSharedObjects() throws KettleException {
+  protected void loadSharedObjects() throws KettleException {
     sharedObjects = new SharedObjects();
 
     for ( ObjectId id : rep.getDatabaseIDs( false ) ) {
@@ -218,7 +282,7 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   /**
    * Validates the repository element that is about to get imported against the list of import rules.
-   *
+   * 
    * @param the
    *          import rules to validate against.
    * @param subject
@@ -229,8 +293,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors( feedback );
     if ( !errors.isEmpty() ) {
       StringBuffer message =
-        new StringBuffer( BaseMessages.getString( PKG, "RepositoryImporter.ValidationFailed.Message", subject
-          .toString() ) );
+          new StringBuffer( BaseMessages.getString( PKG, "RepositoryImporter.ValidationFailed.Message", subject
+              .toString() ) );
       message.append( Const.CR );
       for ( ImportValidationFeedback error : errors ) {
         message.append( " - " );
@@ -241,166 +305,255 @@ public class RepositoryImporter implements IRepositoryImporter {
     }
   }
 
+  @Override
   public void addLog( String line ) {
     log.logBasic( line );
   }
 
+  @Override
   public void setLabel( String labelText ) {
     log.logBasic( labelText );
   }
 
+  @Override
   public boolean transOverwritePrompt( TransMeta transMeta ) {
     return overwrite;
   }
 
+  @Override
   public boolean jobOverwritePrompt( JobMeta jobMeta ) {
     return overwrite;
   }
 
+  @Override
   public void updateDisplay() {
   }
 
+  @Override
   public void showError( String title, String message, Exception e ) {
     log.logError( message, e );
   }
 
-  private void replaceSharedObjects( TransMeta transMeta ) {
+  @SuppressWarnings( "unchecked" )
+  protected <T extends SharedObjectInterface> List<T> getSharedObjects( Class<T> clazz ) {
+    List<T> result = new ArrayList<T>();
     for ( SharedObjectInterface sharedObject : sharedObjects.getObjectsMap().values() ) {
+      if ( clazz.isInstance( sharedObject ) ) {
+        result.add( (T) sharedObject );
+      }
+    }
+    return result;
+  }
+
+  private boolean equals( Object obj1, Object obj2 ) {
+    if ( obj1 == null ) {
+      if ( obj2 == null ) {
+        return true;
+      }
+      return false;
+    }
+    if ( obj2 == null ) {
+      return false;
+    }
+    return obj1.equals( obj2 );
+  }
+
+  /**
+   * Adapted from KettleDatabaseRepositoryDatabaseDelegate.saveDatabaseMeta
+   */
+  protected boolean equals( DatabaseMeta databaseMeta, DatabaseMeta databaseMeta2 ) {
+    if ( !equals( databaseMeta.getName(), databaseMeta2.getName() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getPluginId(), databaseMeta2.getPluginId() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getAccessType(), databaseMeta2.getAccessType() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getHostname(), databaseMeta2.getHostname() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getDatabaseName(), databaseMeta2.getDatabaseName() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getDatabasePortNumberString(), databaseMeta2.getDatabasePortNumberString() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getUsername(), databaseMeta2.getUsername() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getPassword(), databaseMeta2.getPassword() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getServername(), databaseMeta2.getServername() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getDataTablespace(), databaseMeta2.getDataTablespace() ) ) {
+      return false;
+    } else if ( !equals( databaseMeta.getIndexTablespace(), databaseMeta2.getIndexTablespace() ) ) {
+      return false;
+    }
+    Map<Object, Object> databaseMeta2Attributes = new HashMap<Object, Object>( databaseMeta2.getAttributes() );
+    for ( Entry<Object, Object> databaseMetaEntry : new HashMap<Object, Object>( databaseMeta.getAttributes() )
+        .entrySet() ) {
+      Object value = databaseMeta2Attributes.remove( databaseMetaEntry.getKey() );
+      if ( !equals( value, databaseMetaEntry.getValue() ) ) {
+        return false;
+      }
+    }
+    if ( databaseMeta2Attributes.size() > 0 ) {
+      return false;
+    }
+    return true;
+  }
+
+  protected boolean equals( SlaveServer slaveServer, SlaveServer slaveServer2 ) {
+    if ( !equals( slaveServer.getName(), slaveServer2.getName() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getHostname(), slaveServer2.getHostname() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getPort(), slaveServer2.getPort() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getWebAppName(), slaveServer2.getWebAppName() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getUsername(), slaveServer2.getUsername() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getPassword(), slaveServer2.getPassword() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getProxyHostname(), slaveServer2.getProxyHostname() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getProxyPort(), slaveServer2.getProxyPort() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.getNonProxyHosts(), slaveServer2.getNonProxyHosts() ) ) {
+      return false;
+    } else if ( !equals( slaveServer.isMaster(), slaveServer2.isMaster() ) ) {
+      return false;
+    }
+    return true;
+  }
+
+  protected boolean equals( PartitionSchema partitionSchema, PartitionSchema partitionSchema2 ) {
+    if ( !equals( partitionSchema.getName(), partitionSchema2.getName() ) ) {
+      return false;
+    } else if ( !equals( partitionSchema.getPartitionIDs(), partitionSchema2.getPartitionIDs() ) ) {
+      return false;
+    } else if ( !equals( partitionSchema.isDynamicallyDefined(), partitionSchema2.isDynamicallyDefined() ) ) {
+      return false;
+    } else if ( !equals( partitionSchema.getNumberOfPartitionsPerSlave(), partitionSchema2
+        .getNumberOfPartitionsPerSlave() ) ) {
+      return false;
+    }
+    return true;
+  }
+
+  protected boolean equals( ClusterSchema clusterSchema, ClusterSchema clusterSchema2 ) {
+    if ( !equals( clusterSchema.getName(), clusterSchema2.getName() ) ) {
+      return false;
+    } else if ( !equals( clusterSchema.getBasePort(), clusterSchema2.getBasePort() ) ) {
+      return false;
+    } else if ( !equals( clusterSchema.getSocketsBufferSize(), clusterSchema2.getSocketsBufferSize() ) ) {
+      return false;
+    } else if ( !equals( clusterSchema.getSocketsFlushInterval(), clusterSchema2.getSocketsFlushInterval() ) ) {
+      return false;
+    } else if ( !equals( clusterSchema.isSocketsCompressed(), clusterSchema2.isSocketsCompressed() ) ) {
+      return false;
+    } else if ( !equals( clusterSchema.isDynamic(), clusterSchema2.isDynamic() ) ) {
+      return false;
+    } else if ( !equals( clusterSchema.getSlaveServers(), clusterSchema2.getSlaveServers() ) ) {
+      return false;
+    }
+    return true;
+  }
+
+  private void replaceSharedObjects( AbstractMeta abstractMeta ) {
+    for ( DatabaseMeta databaseMeta : getSharedObjects( DatabaseMeta.class ) ) {
       // Database...
-      //
-      if ( sharedObject instanceof DatabaseMeta ) {
-        DatabaseMeta databaseMeta = (DatabaseMeta) sharedObject;
-        int index = transMeta.indexOfDatabase( databaseMeta );
-        if ( index < 0 ) {
-          transMeta.addDatabase( databaseMeta );
+      int index = abstractMeta.indexOfDatabase( databaseMeta );
+      if ( index < 0 ) {
+        abstractMeta.addDatabase( databaseMeta );
+      } else {
+        DatabaseMeta imported = abstractMeta.getDatabase( index );
+        // Preserve the object id so we can update without having to look up the id
+        imported.setObjectId( databaseMeta.getObjectId() );
+        if ( equals( databaseMeta, imported )
+            || !getPromptResult( BaseMessages.getString( PKG,
+                "RepositoryImporter.Dialog.ConnectionExistsOverWrite.Message", imported.getName() ), BaseMessages
+                .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
+                IMPORT_ASK_ABOUT_REPLACE_DB ) ) {
+          imported.replaceMeta( databaseMeta );
+          // We didn't actually change anything
+          imported.clearChanged();
         } else {
-          DatabaseMeta imported = transMeta.getDatabase( index );
-          if ( overwrite ) {
-            // Preserve the object id so we can update without having to look up the id
-            imported.setObjectId( databaseMeta.getObjectId() );
-            imported.setChanged();
-          } else {
-            imported.replaceMeta( databaseMeta );
-            // We didn't actually change anything
-            imported.setChanged( false );
-          }
+          imported.setChanged();
         }
       }
+    }
 
-      // Partition Schema...
-      //
-      if ( sharedObject instanceof SlaveServer ) {
-        SlaveServer slaveServer = (SlaveServer) sharedObject;
-
-        int index = transMeta.getSlaveServers().indexOf( slaveServer );
-        if ( index < 0 ) {
-          transMeta.getSlaveServers().add( slaveServer );
+    for ( SlaveServer slaveServer : getSharedObjects( SlaveServer.class ) ) {
+      int index = abstractMeta.getSlaveServers().indexOf( slaveServer );
+      if ( index < 0 ) {
+        abstractMeta.getSlaveServers().add( slaveServer );
+      } else {
+        SlaveServer imported = abstractMeta.getSlaveServers().get( index );
+        // Preserve the object id so we can update without having to look up the id
+        imported.setObjectId( slaveServer.getObjectId() );
+        if ( equals( slaveServer, imported )
+            || !getPromptResult( BaseMessages.getString( PKG,
+                "RepositoryImporter.Dialog.SlaveServerExistsOverWrite.Message", imported.getName() ), BaseMessages
+                .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
+                IMPORT_ASK_ABOUT_REPLACE_SS ) ) {
+          imported.replaceMeta( slaveServer );
+          // We didn't actually change anything
+          imported.clearChanged();
         } else {
-          SlaveServer imported = transMeta.getSlaveServers().get( index );
-          if ( overwrite ) {
-            // Preserve the object id so we can update without having to look up the id
-            imported.setObjectId( slaveServer.getObjectId() );
-            imported.setChanged();
-          } else {
-            imported.replaceMeta( slaveServer );
-            // We didn't actually change anything
-            imported.setChanged( false );
-          }
+          imported.setChanged();
         }
       }
-
-      // Cluster Schema...
-      //
-      if ( sharedObject instanceof ClusterSchema ) {
-        ClusterSchema clusterSchema = (ClusterSchema) sharedObject;
-
-        int index = transMeta.getClusterSchemas().indexOf( clusterSchema );
-        if ( index < 0 ) {
-          transMeta.getClusterSchemas().add( clusterSchema );
-        } else {
-          ClusterSchema imported = transMeta.getClusterSchemas().get( index );
-          if ( overwrite ) {
-            // Preserve the object id so we can update without having to look up the id
-            imported.setObjectId( clusterSchema.getObjectId() );
-            imported.setChanged();
-          } else {
-            imported.replaceMeta( clusterSchema );
-            // We didn't actually change anything
-            imported.setChanged( false );
-          }
-        }
-      }
-
-      // Partition Schema...
-      //
-      if ( sharedObject instanceof PartitionSchema ) {
-        PartitionSchema partitionSchema = (PartitionSchema) sharedObject;
-
-        int index = transMeta.getPartitionSchemas().indexOf( partitionSchema );
-        if ( index < 0 ) {
-          transMeta.getPartitionSchemas().add( partitionSchema );
-        } else {
-          PartitionSchema imported = transMeta.getPartitionSchemas().get( index );
-          if ( overwrite ) {
-            // Preserve the object id so we can update without having to look up the id
-            imported.setObjectId( partitionSchema.getObjectId() );
-            imported.setChanged();
-          } else {
-            imported.replaceMeta( partitionSchema );
-            // We didn't actually change anything
-            imported.setChanged( false );
-          }
-        }
-      }
-
     }
   }
 
-  private void replaceSharedObjects( JobMeta transMeta ) {
-    for ( SharedObjectInterface sharedObject : sharedObjects.getObjectsMap().values() ) {
-      // Database...
-      //
-      if ( sharedObject instanceof DatabaseMeta ) {
-        DatabaseMeta databaseMeta = (DatabaseMeta) sharedObject;
-        int index = transMeta.indexOfDatabase( databaseMeta );
-        if ( index < 0 ) {
-          transMeta.addDatabase( databaseMeta );
+  protected void replaceSharedObjects( TransMeta transMeta ) throws KettleException {
+    replaceSharedObjects( (AbstractMeta) transMeta );
+    for ( ClusterSchema clusterSchema : getSharedObjects( ClusterSchema.class ) ) {
+      int index = transMeta.getClusterSchemas().indexOf( clusterSchema );
+      if ( index < 0 ) {
+        transMeta.getClusterSchemas().add( clusterSchema );
+      } else {
+        ClusterSchema imported = transMeta.getClusterSchemas().get( index );
+        // Preserve the object id so we can update without having to look up the id
+        imported.setObjectId( clusterSchema.getObjectId() );
+        if ( equals( clusterSchema, imported )
+            || !getPromptResult( BaseMessages.getString( PKG,
+                "RepositoryImporter.Dialog.ClusterSchemaExistsOverWrite.Message", imported.getName() ), BaseMessages
+                .getString( PKG, "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
+                IMPORT_ASK_ABOUT_REPLACE_CS ) ) {
+          imported.replaceMeta( clusterSchema );
+          // We didn't actually change anything
+          imported.clearChanged();
         } else {
-          DatabaseMeta imported = transMeta.getDatabase( index );
-          if ( overwrite ) {
-            // Preserve the object id so we can update without having to look up the id
-            imported.setObjectId( databaseMeta.getObjectId() );
-            imported.setChanged();
-          } else {
-            imported.replaceMeta( databaseMeta );
-            // We didn't actually change anything
-            imported.setChanged( false );
-          }
-        }
-      }
-
-      // Partition Schema...
-      //
-      if ( sharedObject instanceof SlaveServer ) {
-        SlaveServer slaveServer = (SlaveServer) sharedObject;
-
-        int index = transMeta.getSlaveServers().indexOf( slaveServer );
-        if ( index < 0 ) {
-          transMeta.getSlaveServers().add( slaveServer );
-        } else {
-          SlaveServer imported = transMeta.getSlaveServers().get( index );
-          if ( overwrite ) {
-            // Preserve the object id so we can update without having to look up the id
-            imported.setObjectId( slaveServer.getObjectId() );
-            imported.setChanged();
-          } else {
-            imported.replaceMeta( slaveServer );
-            // We didn't actually change anything
-            imported.setChanged( false );
-          }
+          imported.setChanged();
         }
       }
     }
+
+    for ( PartitionSchema partitionSchema : getSharedObjects( PartitionSchema.class ) ) {
+      int index = transMeta.getPartitionSchemas().indexOf( partitionSchema );
+      if ( index < 0 ) {
+        transMeta.getPartitionSchemas().add( partitionSchema );
+      } else {
+        PartitionSchema imported = transMeta.getPartitionSchemas().get( index );
+        // Preserve the object id so we can update without having to look up the id
+        imported.setObjectId( partitionSchema.getObjectId() );
+        if ( equals( partitionSchema, imported )
+            || !getPromptResult( BaseMessages.getString( PKG,
+                "RepositoryImporter.Dialog.PartitionSchemaExistsOverWrite.Message", imported.getName() ),
+                BaseMessages.getString( PKG,
+                    "RepositoryImporter.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
+                IMPORT_ASK_ABOUT_REPLACE_PS ) ) {
+          imported.replaceMeta( partitionSchema );
+          // We didn't actually change anything
+          imported.clearChanged();
+        } else {
+          imported.setChanged();
+        }
+      }
+    }
+  }
+
+  protected void replaceSharedObjects( JobMeta transMeta ) throws KettleException {
+    replaceSharedObjects( (AbstractMeta) transMeta );
   }
 
   private void patchMappingSteps( TransMeta transMeta ) {
@@ -470,22 +623,26 @@ public class RepositoryImporter implements IRepositoryImporter {
     }
   }
 
+  protected void saveTransMeta( TransMeta transMeta ) throws KettleException {
+    rep.save( transMeta, versionComment, this, overwrite );
+  }
+
   /**
-   *
+   * 
    * @param transnode
    *          The XML DOM node to read the transformation from
    * @return false if the import should be canceled.
    * @throws KettleException
    *           in case there is an unexpected error
    */
-  private boolean importTransformation( Node transnode, RepositoryImportFeedbackInterface feedback ) throws KettleException {
+  protected boolean importTransformation( Node transnode, RepositoryImportFeedbackInterface feedback )
+    throws KettleException {
     //
     // Load transformation from XML into a directory, possibly created!
     //
     TransMeta transMeta = new TransMeta( transnode, null ); // ignore shared objects
-    replaceSharedObjects( transMeta );
     feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportTrans.Label", Integer
-      .toString( transformationNumber ), transMeta.getName() ) );
+        .toString( transformationNumber ), transMeta.getName() ) );
 
     validateImportedElement( importRules, transMeta );
 
@@ -505,8 +662,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     if ( limitDirs.size() > 0 && Const.indexOfString( directoryPath, limitDirs ) < 0 ) {
       // Not in the limiting set of source directories, skip the import of this transformation...
       //
-      feedback.addLog( BaseMessages.getString(
-        PKG, "RepositoryImporter.SkippedTransformationNotPartOfLimitingDirectories.Log", transMeta.getName() ) );
+      feedback.addLog( BaseMessages.getString( PKG,
+          "RepositoryImporter.SkippedTransformationNotPartOfLimitingDirectories.Log", transMeta.getName() ) );
       return true;
     }
 
@@ -523,6 +680,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     }
 
     if ( existingId == null || overwrite ) {
+      replaceSharedObjects( transMeta );
       transMeta.setObjectId( existingId );
       transMeta.setRepositoryDirectory( targetDirectory );
       patchMappingSteps( transMeta );
@@ -537,39 +695,52 @@ public class RepositoryImporter implements IRepositoryImporter {
             transMeta.setCreatedUser( null );
           }
         }
-        rep.save( transMeta, versionComment, this, overwrite );
+        saveTransMeta( transMeta );
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.TransSaved.Log", Integer
-          .toString( transformationNumber ), transMeta.getName() ) );
+            .toString( transformationNumber ), transMeta.getName() ) );
 
         if ( transMeta.hasRepositoryReferences() ) {
           referencingObjects.add( new RepositoryObject( transMeta.getObjectId(), transMeta.getName(), transMeta
-            .getRepositoryDirectory(), null, null, RepositoryObjectType.TRANSFORMATION, null, false ) );
+              .getRepositoryDirectory(), null, null, RepositoryObjectType.TRANSFORMATION, null, false ) );
         }
 
       } catch ( Exception e ) {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer
-          .toString( transformationNumber ), transMeta.getName(), Const.getStackTracker( e ) ) );
+            .toString( transformationNumber ), transMeta.getName(), Const.getStackTracker( e ) ) );
 
-        if ( !feedback.askContinueOnErrorQuestion(
-          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
-          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
+            "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
+            "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
     } else {
-      feedback.addLog( BaseMessages.getString(
-        PKG, "RepositoryImporter.SkippedExistingTransformation.Log", transMeta.getName() ) );
+      feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.SkippedExistingTransformation.Log", transMeta
+          .getName() ) );
     }
     return true;
   }
 
-  private boolean importJob( Node jobnode, RepositoryImportFeedbackInterface feedback ) throws KettleException {
+  protected void saveJobMeta( JobMeta jobMeta ) throws KettleException {
+    // Keep info on who & when this transformation was created...
+    if ( jobMeta.getCreatedUser() == null || jobMeta.getCreatedUser().equals( "-" ) ) {
+      jobMeta.setCreatedDate( new Date() );
+      if ( rep.getUserInfo() != null ) {
+        jobMeta.setCreatedUser( rep.getUserInfo().getLogin() );
+      } else {
+        jobMeta.setCreatedUser( null );
+      }
+    }
+
+    rep.save( jobMeta, versionComment, null, overwrite );
+  }
+
+  protected boolean importJob( Node jobnode, RepositoryImportFeedbackInterface feedback ) throws KettleException {
     // Load the job from the XML node.
     //
-    JobMeta jobMeta = new JobMeta( jobnode, rep, false, SpoonFactory.getInstance() );
-    replaceSharedObjects( jobMeta );
-    feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportJob.Label", Integer
-      .toString( jobNumber ), jobMeta.getName() ) );
+    JobMeta jobMeta = new JobMeta( jobnode, null, false, SpoonFactory.getInstance() );
+    feedback.setLabel( BaseMessages.getString( PKG, "RepositoryImporter.ImportJob.Label",
+        Integer.toString( jobNumber ), jobMeta.getName() ) );
     validateImportedElement( importRules, jobMeta );
 
     // What's the directory path?
@@ -589,8 +760,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     if ( limitDirs.size() > 0 && Const.indexOfString( directoryPath, limitDirs ) < 0 ) {
       // Not in the limiting set of source directories, skip the import of this transformation...
       //
-      feedback.addLog( BaseMessages.getString(
-        PKG, "RepositoryImporter.SkippedJobNotPartOfLimitingDirectories.Log", jobMeta.getName() ) );
+      feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.SkippedJobNotPartOfLimitingDirectories.Log",
+          jobMeta.getName() ) );
       return true;
     }
 
@@ -607,48 +778,39 @@ public class RepositoryImporter implements IRepositoryImporter {
     }
 
     if ( existintId == null || overwrite ) {
+      replaceSharedObjects( jobMeta );
       jobMeta.setRepositoryDirectory( targetDirectory );
       jobMeta.setObjectId( existintId );
       patchJobEntries( jobMeta );
       try {
-        // Keep info on who & when this transformation was created...
-        if ( jobMeta.getCreatedUser() == null || jobMeta.getCreatedUser().equals( "-" ) ) {
-          jobMeta.setCreatedDate( new Date() );
-          if ( rep.getUserInfo() != null ) {
-            jobMeta.setCreatedUser( rep.getUserInfo().getLogin() );
-          } else {
-            jobMeta.setCreatedUser( null );
-          }
-        }
-
-        rep.save( jobMeta, versionComment, null, overwrite );
+        saveJobMeta( jobMeta );
 
         if ( jobMeta.hasRepositoryReferences() ) {
           referencingObjects.add( new RepositoryObject( jobMeta.getObjectId(), jobMeta.getName(), jobMeta
-            .getRepositoryDirectory(), null, null, RepositoryObjectType.JOB, null, false ) );
+              .getRepositoryDirectory(), null, null, RepositoryObjectType.JOB, null, false ) );
         }
 
-        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.JobSaved.Log", Integer
-          .toString( jobNumber ), jobMeta.getName() ) );
+        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.JobSaved.Log", Integer.toString( jobNumber ),
+            jobMeta.getName() ) );
       } catch ( Exception e ) {
         feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.ErrorSavingJob.Log", Integer
-          .toString( jobNumber ), jobMeta.getName(), Const.getStackTracker( e ) ) );
+            .toString( jobNumber ), jobMeta.getName(), Const.getStackTracker( e ) ) );
 
-        if ( !feedback.askContinueOnErrorQuestion(
-          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
-          BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+        if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
+            "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
+            "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
           return false;
         }
       }
     } else {
-      feedback.addLog( BaseMessages
-        .getString( PKG, "RepositoryImporter.SkippedExistingJob.Log", jobMeta.getName() ) );
+      feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.SkippedExistingJob.Log", jobMeta.getName() ) );
     }
     return true;
   }
 
   private int transformationNumber = 1;
 
+  @Override
   public boolean transformationElementRead( String xml, RepositoryImportFeedbackInterface feedback ) {
     try {
       Document doc = XMLHandler.loadXMLString( xml );
@@ -662,13 +824,13 @@ public class RepositoryImporter implements IRepositoryImporter {
       // This is usually a problem with a missing plugin or something
       // like that...
       //
-      feedback.showError(
-        BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ),
-        BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
+      feedback.showError( BaseMessages.getString( PKG,
+          "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Title" ), BaseMessages.getString( PKG,
+          "RepositoryImporter.UnexpectedErrorDuringTransformationImport.Message" ), e );
 
-      if ( !feedback.askContinueOnErrorQuestion(
-        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
-        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
+          "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
+          "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }
@@ -677,6 +839,7 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   private int jobNumber = 1;
 
+  @Override
   public boolean jobElementRead( String xml, RepositoryImportFeedbackInterface feedback ) {
     try {
       Document doc = XMLHandler.loadXMLString( xml );
@@ -690,13 +853,12 @@ public class RepositoryImporter implements IRepositoryImporter {
       // This is usually a problem with a missing plugin or something
       // like that...
       //
-      showError(
-        BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Title" ), BaseMessages
+      showError( BaseMessages.getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Title" ), BaseMessages
           .getString( PKG, "RepositoryImporter.UnexpectedErrorDuringJobImport.Message" ), e );
 
-      if ( !feedback.askContinueOnErrorQuestion(
-        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Title" ),
-        BaseMessages.getString( PKG, "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
+      if ( !feedback.askContinueOnErrorQuestion( BaseMessages.getString( PKG,
+          "RepositoryImporter.DoYouWantToContinue.Title" ), BaseMessages.getString( PKG,
+          "RepositoryImporter.DoYouWantToContinue.Message" ) ) ) {
         return false;
       }
     }
@@ -704,20 +866,20 @@ public class RepositoryImporter implements IRepositoryImporter {
   }
 
   private RepositoryDirectoryInterface getTargetDirectory( String directoryPath, String dirOverride,
-    RepositoryImportFeedbackInterface feedback ) throws KettleException {
+      RepositoryImportFeedbackInterface feedback ) throws KettleException {
     RepositoryDirectoryInterface targetDirectory = null;
     if ( dirOverride != null ) {
       targetDirectory = rep.findDirectory( directoryPath );
       if ( targetDirectory == null ) {
-        feedback.addLog( BaseMessages.getString(
-          PKG, "RepositoryImporter.CreateDir.Log", directoryPath, getRepositoryRoot().toString() ) );
+        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.CreateDir.Log", directoryPath,
+            getRepositoryRoot().toString() ) );
         targetDirectory = rep.createRepositoryDirectory( getRepositoryRoot(), directoryPath );
       }
     } else {
       targetDirectory = baseDirectory.findDirectory( directoryPath );
       if ( targetDirectory == null ) {
-        feedback.addLog( BaseMessages.getString(
-          PKG, "RepositoryImporter.CreateDir.Log", directoryPath, baseDirectory.toString() ) );
+        feedback.addLog( BaseMessages.getString( PKG, "RepositoryImporter.CreateDir.Log", directoryPath, baseDirectory
+            .toString() ) );
         targetDirectory = rep.createRepositoryDirectory( baseDirectory, directoryPath );
       }
     }
@@ -731,34 +893,42 @@ public class RepositoryImporter implements IRepositoryImporter {
     return root;
   }
 
+  @Override
   public void fatalXmlErrorEncountered( SAXParseException e ) {
-    showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorInvalidXML.Message" ), BaseMessages
-      .getString( PKG, "RepositoryImporter.ErrorInvalidXML.Title" ), e );
+    showError( BaseMessages.getString( PKG, "RepositoryImporter.ErrorInvalidXML.Message" ), BaseMessages.getString(
+        PKG, "RepositoryImporter.ErrorInvalidXML.Title" ), e );
   }
 
+  @Override
   public boolean askContinueOnErrorQuestion( String title, String message ) {
     return continueOnError;
   }
 
+  @Override
   public void beginTask( String message, int nrWorks ) {
     addLog( message );
   }
 
+  @Override
   public void done() {
   }
 
+  @Override
   public boolean isCanceled() {
     return false;
   }
 
+  @Override
   public void setTaskName( String taskName ) {
     addLog( taskName );
   }
 
+  @Override
   public void subTask( String message ) {
     addLog( message );
   }
 
+  @Override
   public void worked( int nrWorks ) {
   }
 
@@ -766,6 +936,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     return transDirOverride;
   }
 
+  @Override
   public void setTransDirOverride( String transDirOverride ) {
     this.transDirOverride = transDirOverride;
   }
@@ -774,6 +945,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     return jobDirOverride;
   }
 
+  @Override
   public void setJobDirOverride( String jobDirOverride ) {
     this.jobDirOverride = jobDirOverride;
   }
@@ -802,5 +974,18 @@ public class RepositoryImporter implements IRepositoryImporter {
   @Override
   public List<Exception> getExceptions() {
     return exceptions;
+  }
+
+  @Override
+  public void setLimitDirs( List<String> limitDirs ) {
+    this.limitDirs = new ArrayList<String>( limitDirs );
+  }
+
+  protected void setBaseDirectory( RepositoryDirectoryInterface baseDirectory ) {
+    this.baseDirectory = baseDirectory;
+  }
+
+  public void setOverwrite( boolean overwrite ) {
+    this.overwrite = overwrite;
   }
 }
