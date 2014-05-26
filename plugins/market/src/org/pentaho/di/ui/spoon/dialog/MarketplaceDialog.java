@@ -22,15 +22,11 @@
 
 package org.pentaho.di.ui.spoon.dialog;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -48,10 +44,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -67,6 +65,11 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MarketplaceDialog extends Dialog {
   private static Class<?> MARKET_PKG = Market.class; // for i18n purposes, needed by Translator2!!
@@ -393,13 +396,29 @@ public class MarketplaceDialog extends Dialog {
   }
 
   private Composite createMarketEntryControl( final MarketEntry marketEntry ) {
-    final Composite composite = new Composite( expandBar, SWT.NONE );
+    final ScrolledComposite scrollBox = new ScrolledComposite( expandBar, SWT.V_SCROLL );
+    scrollBox.setExpandHorizontal( true );
+    scrollBox.setExpandVertical( true );
+    final Composite composite = new Composite( scrollBox, SWT.NONE );
     composite.setData( "marketEntry", marketEntry );
     FormLayout layout = new FormLayout();
     layout.marginHeight = margin;
     layout.marginWidth = margin;
     composite.setLayout( layout );
     props.setLook( composite );
+
+    composite.addListener( SWT.Paint, new Listener() {
+      int width = -1;
+
+      public void handleEvent( Event e ) {
+        int newWidth = composite.getSize().x;
+        if ( newWidth != width ) {
+          scrollBox.setMinHeight( composite.computeSize( newWidth, SWT.DEFAULT ).y + 15 );
+          width = newWidth;
+        }
+      }
+    } );
+    scrollBox.setContent( composite );
 
     // Add a series of details in the expand-bar item as well as an install
     // button...
@@ -414,6 +433,19 @@ public class MarketplaceDialog extends Dialog {
     addLeftLabel( composite, BaseMessages.getString( MARKET_PKG, "MarketplacesDialog.AvailableVersion.label" ),
         lastControl );
     lastControl = addRightLabel( composite, Const.NVL( marketEntry.getVersion(), "" ), lastControl );
+    // The minimum PDI version
+    if ( !Const.isEmpty( marketEntry.getMinPdiVersion() ) ) {
+      addLeftLabel( composite, BaseMessages.getString( MARKET_PKG, "MarketplacesDialog.MinPdiVersion.label" ),
+        lastControl );
+      lastControl = addRightLabel( composite, Const.NVL( marketEntry.getMinPdiVersion(), "" ), lastControl );
+    }
+    // The maximum PDI version
+    if ( !Const.isEmpty( marketEntry.getMaxPdiVersion() ) ) {
+      addLeftLabel( composite, BaseMessages.getString( MARKET_PKG, "MarketplacesDialog.MaxPdiVersion.label" ),
+        lastControl );
+      lastControl = addRightLabel( composite, Const.NVL( marketEntry.getMaxPdiVersion(), "" ), lastControl );
+    }
+
     // The author
     if ( !Const.isEmpty( marketEntry.getAuthor() ) ) {
       addLeftLabel( composite, BaseMessages.getString( MARKET_PKG, "MarketplacesDialog.Author.label" ), lastControl );
@@ -552,7 +584,7 @@ public class MarketplaceDialog extends Dialog {
     fdlName.left = new FormAttachment( 0, 0 );
     fdlName.right = new FormAttachment( middle, 0 );
     wlName.setLayoutData( fdlName );
-    return composite;
+    return scrollBox;
   }
 
   private void addMarketPlaceEntries() {
@@ -614,7 +646,7 @@ public class MarketplaceDialog extends Dialog {
   }
 
   private Control addRightLabel( Composite composite, String string, Control lastControl ) {
-    Label label = new Label( composite, SWT.LEFT );
+    Label label = new Label( composite, SWT.WRAP | SWT.LEFT );
     props.setLook( label );
     if ( string == null ) {
       string = "null";
@@ -634,7 +666,7 @@ public class MarketplaceDialog extends Dialog {
   }
 
   private Control addRightURL( Composite composite, final String string, Control lastControl ) {
-    Link link = new Link( composite, SWT.LEFT );
+    Link link = new Link( composite, SWT.LEFT | SWT.WRAP );
     props.setLook( link );
     link.setText( "<a>" + string + "</a>" );
     FormData fdLabel = new FormData();
