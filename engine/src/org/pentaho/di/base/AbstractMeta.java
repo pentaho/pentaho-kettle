@@ -34,9 +34,11 @@ import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.ContentChangedListener;
@@ -1700,5 +1702,16 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
       return true;
     }
     return oldName.equals( newName );
+  }
+
+  protected boolean shouldOverwrite( OverwritePrompter prompter, Props props, String message, String rememberMessage ) {
+    boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
+    boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
+    if ( askOverwrite ) {
+      if ( prompter != null ) {
+        overwrite = prompter.overwritePrompt( message, rememberMessage, Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
+      }
+    }
+    return overwrite;
   }
 }

@@ -2898,21 +2898,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           } else {
             if ( !exist.isShared() ) // otherwise, we just keep the shared connection.
             {
-              boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
-              boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
-              if ( askOverwrite ) {
-                if ( prompter != null ) {
-                  overwrite =
-                    prompter
-                      .overwritePrompt(
-                        BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnectionYN", dbcon
-                          .getName() ), BaseMessages.getString(
-                          PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ),
-                        Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
-                }
-              }
-
-              if ( overwrite ) {
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 int idx = indexOfDatabase( exist );
                 removeDatabase( idx );
                 addDatabase( idx, dbcon );
@@ -3165,8 +3153,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( check != null ) {
             if ( !check.isShared() ) {
               // we don't overwrite shared objects.
-
-              addOrReplacePartitionSchema( partitionSchema );
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                addOrReplacePartitionSchema( partitionSchema );
+              }
             }
           } else {
             partitionSchemas.add( partitionSchema );
@@ -3203,8 +3194,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( check != null ) {
             if ( !check.isShared() ) {
               // we don't overwrite shared objects.
-
-              addOrReplaceSlaveServer( slaveServer );
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteSlaveServerYN", slaveServer.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                addOrReplaceSlaveServer( slaveServer );
+              }
             }
           } else {
             slaveServers.add( slaveServer );
@@ -3227,8 +3221,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( check != null ) {
             if ( !check.isShared() ) {
               // we don't overwrite shared objects.
-
-              addOrReplaceClusterSchema( clusterSchema );
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteClusterSchemaYN", clusterSchema.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                addOrReplaceClusterSchema( clusterSchema );
+              }
             }
           } else {
             clusterSchemas.add( clusterSchema );
