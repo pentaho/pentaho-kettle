@@ -1028,19 +1028,9 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         } else {
           if ( !exist.isShared() ) {
             // skip shared connections
-
-            boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
-            boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
-            if ( askOverwrite && prompter != null ) {
-              overwrite =
-                prompter.overwritePrompt(
-                  BaseMessages.getString( PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon
-                    .getName() ), BaseMessages.getString(
-                    PKG, "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ),
-                  Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
-            }
-
-            if ( overwrite ) {
+            if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                "JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName() ), BaseMessages.getString( PKG,
+                "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ) ) ) {
               int idx = indexOfDatabase( exist );
               removeDatabase( idx );
               addDatabase( idx, dbcon );
@@ -1065,7 +1055,11 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         if ( check != null ) {
           if ( !check.isShared() ) {
             // we don't overwrite shared objects.
-            addOrReplaceSlaveServer( slaveServer );
+            if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                "JobMeta.Dialog.SlaveServerExistsOverWrite.Message", slaveServer.getName() ), BaseMessages.getString( PKG,
+                "JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage" ) ) ) {
+              addOrReplaceSlaveServer( slaveServer );
+            }
           }
         } else {
           slaveServers.add( slaveServer );

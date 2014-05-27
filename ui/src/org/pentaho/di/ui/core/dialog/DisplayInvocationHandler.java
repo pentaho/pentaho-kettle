@@ -59,6 +59,13 @@ public class DisplayInvocationHandler<T> implements InvocationHandler {
 
   @Override
   public Object invoke( Object proxy, final Method method, final Object[] args ) throws Throwable {
+    if ( display.getThread() == Thread.currentThread() ) {
+      try {
+        return method.invoke( delegate, args );
+      } catch ( InvocationTargetException e ) {
+        throw e.getCause();
+      }
+    }
     if ( asyncForVoid && method.getReturnType().equals( Void.TYPE ) ) {
       display.asyncExec( new Runnable() {
 
