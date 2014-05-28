@@ -86,7 +86,17 @@ public class RepositoryExportProgressDialog {
     boolean retval = true;
 
     final List<ExportFeedback> list = new ArrayList<ExportFeedback>();
-    final IRepositoryExporter exporter = rep.getExporter();
+    IRepositoryExporter tmpExporter = null;
+    try {
+      tmpExporter = rep.getExporter();
+    } catch ( KettleException e ) {
+      log.logError( RepositoryExportProgressDialog.class.toString(), "Error creating repository: " + e.toString() );
+      log.logError( Const.getStackTracker( e ) );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExportDialog.ErrorExport.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExportDialog.ErrorExport.Message" ), e );
+      return false;
+    }
+    final IRepositoryExporter exporter = tmpExporter;
     // this hack is only to support dog-nail build process for <...>
     // and keep base interfaces without changes - getExporter should 
     // directly return IRepositoryExporterFeedback.
