@@ -127,6 +127,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.lineage.TransDataLineage;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -166,6 +167,7 @@ import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
+import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.AbstractGraph;
@@ -1854,7 +1856,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   public boolean setFocus() {
-    return canvas.setFocus();
+    return ( canvas != null ) ? canvas.setFocus() : false;
   }
 
   public void renameStep( StepMeta stepMeta, String stepname ) {
@@ -3906,13 +3908,17 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       return;
     }
 
+
     getDisplay().asyncExec( new Runnable() {
 
       public void run() {
+        boolean operationsNotAllowed = RepositorySecurityUI.verifyOperations( shell, spoon.rep, false,
+            RepositoryOperation.EXECUTE_TRANSFORMATION );
+
         // Start/Run button...
         //
         XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById( "trans-run" );
-        if ( runButton != null && !controlDisposed( runButton ) ) {
+        if ( runButton != null && !controlDisposed( runButton ) && !operationsNotAllowed ) {
           if ( runButton.isDisabled() ^ running ) {
             runButton.setDisabled( running );
           }
@@ -3943,7 +3949,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         // Debug button...
         //
         XulToolbarbutton debugButton = (XulToolbarbutton) toolbar.getElementById( "trans-debug" );
-        if ( debugButton != null && !controlDisposed( debugButton ) ) {
+
+        if ( debugButton != null && !controlDisposed( debugButton ) && !operationsNotAllowed ) {
           if ( debugButton.isDisabled() ^ running ) {
             debugButton.setDisabled( running );
           }
@@ -3952,12 +3959,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         // Preview button...
         //
         XulToolbarbutton previewButton = (XulToolbarbutton) toolbar.getElementById( "trans-preview" );
-        if ( previewButton != null && !controlDisposed( previewButton ) ) {
+        if ( previewButton != null && !controlDisposed( previewButton ) && !operationsNotAllowed ) {
           if ( previewButton.isDisabled() ^ running ) {
             previewButton.setDisabled( running );
           }
         }
-
       }
 
     } );
