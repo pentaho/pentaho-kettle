@@ -805,7 +805,7 @@ public class PropsUI extends Props {
   }
 
   public boolean showRepositoriesDialogAtStartup() {
-    String show = properties.getProperty( STRING_START_SHOW_REPOSITORIES, YES );
+    String show = properties.getProperty( STRING_START_SHOW_REPOSITORIES, NO );
     return YES.equalsIgnoreCase( show ); // Default: show warning before tool exit.
   }
 
