@@ -23,12 +23,13 @@
 package org.pentaho.di.core.encryption;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.mortbay.jetty.security.Password;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 
 /**
  * This class handles basic encryption of passwords in Kettle. Note that it's not really encryption, it's more
@@ -39,16 +40,47 @@ import org.pentaho.di.core.util.StringUtil;
  *
  */
 public class Encr {
-  private static final int RADIX = 16;
-  private static final String SEED = "0933910847463829827159347601486730416058";
+
+  private static TwoWayPasswordEncoderInterface encoder;
 
   public Encr() {
   }
 
+  @Deprecated
   public boolean init() {
     return true;
   }
 
+  public static void init( String encoderPluginId ) throws KettleException {
+    if ( Const.isEmpty( encoderPluginId ) ) {
+      throw new KettleException( "Unable to initialize the two way password encoder: No encoder plugin type specified." );
+    }
+    PluginRegistry registry = PluginRegistry.getInstance();
+    PluginInterface plugin = registry.findPluginWithId( TwoWayPasswordEncoderPluginType.class, encoderPluginId );
+    if ( plugin == null ) {
+      throw new KettleException( "Unable to find plugin with ID '" + encoderPluginId + "'" );
+    }
+    encoder = (TwoWayPasswordEncoderInterface) registry.loadClass( plugin );
+
+    // Load encoder specific options...
+    //
+    encoder.init();
+  }
+
+  private static final int RADIX = 16;
+  private static final String SEED = "0933910847463829827159347601486730416058";
+
+  /**
+   * Old Kettle 1.x code which built a signature to validate a license key against.
+   * 
+   * @param mac
+   * @param username
+   * @param company
+   * @param products
+   * @return
+   * @deprecated
+   */
+  @Deprecated
   public String buildSignature( String mac, String username, String company, String products ) {
     try {
       BigInteger bi_mac = new BigInteger( mac.getBytes() );
@@ -68,10 +100,25 @@ public class Encr {
     }
   }
 
+  /**
+   * Old signature code, used in license keys, from the Kettle 1.x days.
+   * @param signature
+   * @param verify
+   * @return
+   * @deprecated
+   */
+  @Deprecated
   public static final boolean checkSignatureShort( String signature, String verify ) {
     return getSignatureShort( signature ).equalsIgnoreCase( verify );
   }
 
+  /**
+   * Old Kettle 1.x code used to get a short signature from a long version signature for license checking.
+   * @param signature
+   * @return
+   * @deprecated
+   */
+  @Deprecated
   public static final String getSignatureShort( String signature ) {
     String retval = "";
     if ( signature == null ) {
@@ -87,39 +134,15 @@ public class Encr {
   }
 
   public static final String encryptPassword( String password ) {
-    if ( password == null ) {
-      return "";
-    }
-    if ( password.length() == 0 ) {
-      return "";
-    }
 
-    BigInteger bi_passwd = new BigInteger( password.getBytes() );
+    return encoder.encode( password, false );
 
-    BigInteger bi_r0 = new BigInteger( SEED );
-    BigInteger bi_r1 = bi_r0.xor( bi_passwd );
-
-    return bi_r1.toString( RADIX );
   }
 
   public static final String decryptPassword( String encrypted ) {
-    if ( encrypted == null ) {
-      return "";
-    }
-    if ( encrypted.length() == 0 ) {
-      return "";
-    }
 
-    BigInteger bi_confuse = new BigInteger( SEED );
+    return encoder.decode( encrypted );
 
-    try {
-      BigInteger bi_r1 = new BigInteger( encrypted, RADIX );
-      BigInteger bi_r0 = bi_r1.xor( bi_confuse );
-
-      return new String( bi_r0.toByteArray() );
-    } catch ( Exception e ) {
-      return "";
-    }
   }
 
   /**
@@ -136,16 +159,8 @@ public class Encr {
    * @return The encrypted password or the
    */
   public static final String encryptPasswordIfNotUsingVariables( String password ) {
-    String encrPassword = "";
-    List<String> varList = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, varList, true );
-    if ( varList.isEmpty() ) {
-      encrPassword = PASSWORD_ENCRYPTED_PREFIX + Encr.encryptPassword( password );
-    } else {
-      encrPassword = password;
-    }
 
-    return encrPassword;
+    return encoder.encode( password, true );
   }
 
   /**
@@ -156,10 +171,8 @@ public class Encr {
    * @return The decrypted password or the original value if the password doesn't start with "Encrypted "
    */
   public static final String decryptPasswordOptionallyEncrypted( String password ) {
-    if ( !Const.isEmpty( password ) && password.startsWith( PASSWORD_ENCRYPTED_PREFIX ) ) {
-      return Encr.decryptPassword( password.substring( PASSWORD_ENCRYPTED_PREFIX.length() ) );
-    }
-    return password;
+
+    return encoder.decode( password, true );
   }
 
   /**
@@ -168,8 +181,9 @@ public class Encr {
    * @param args
    *          the password to encrypt
    */
-  public static void main( String[] args ) {
-    if ( args.length != 2 ) {
+  public static void main( String[] args ) throws KettleException {
+    KettleClientEnvironment.init();
+    if ( args.length <= 2 ) {
       printOptions();
       System.exit( 9 );
     }
@@ -180,8 +194,8 @@ public class Encr {
     if ( Const.trim( option ).substring( 1 ).equalsIgnoreCase( "kettle" ) ) {
       // Kettle password obfuscation
       //
-      String obfuscated = Encr.encryptPassword( password );
-      System.out.println( PASSWORD_ENCRYPTED_PREFIX + obfuscated );
+      String obfuscated = Encr.encryptPasswordIfNotUsingVariables( password );
+      System.out.println( obfuscated );
       System.exit( 0 );
 
     } else if ( Const.trim( option ).substring( 1 ).equalsIgnoreCase( "carte" ) ) {
@@ -206,14 +220,10 @@ public class Encr {
     System.err.println( "  encr <-kettle|-carte> <password>" );
     System.err.println( "  Options:" );
     System.err.println( "    -kettle: generate an obfuscated password to include in Kettle XML files" );
-    System.err.println( "    -carte: generate an obfuscated password to include in "
-      + "the carte password file 'pwd/kettle.pwd'" );
-    System.err.println( "\nThis command line tool obfuscates a plain text password for use "
-      + "in XML and password files." );
-    System.err.println( "Make sure to also copy the '"
-      + PASSWORD_ENCRYPTED_PREFIX + "' prefix to indicate the obfuscated nature of the password." );
-    System.err.println( "Kettle will then be able to make the distinction between "
-      + "regular plain text passwords and obfuscated ones." );
+    System.err.println( "    -carte : generate an obfuscated password to include in the carte password file 'pwd/kettle.pwd'" );
+    System.err.println( "\nThis command line tool obfuscates a plain text password for use in XML and password files." );
+    System.err.println( "Make sure to also copy the '" + PASSWORD_ENCRYPTED_PREFIX + "' prefix to indicate the obfuscated nature of the password." );
+    System.err.println( "Kettle will then be able to make the distinction between regular plain text passwords and obfuscated ones." );
     System.err.println();
   }
 }
