@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.logging.ConsoleLoggingEventListener;
@@ -90,7 +92,12 @@ public class KettleClientEnvironment {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
     PluginRegistry.addPluginType( ExtensionPointPluginType.getInstance() );
+    PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
     PluginRegistry.init( true );
+
+    String passwordEncoderPluginID = Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
+
+    Encr.init( passwordEncoderPluginID );
 
     initialized = new Boolean( true );
   }
