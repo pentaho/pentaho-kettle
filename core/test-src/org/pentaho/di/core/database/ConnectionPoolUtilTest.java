@@ -2,9 +2,12 @@ package org.pentaho.di.core.database;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
 import java.sql.Connection;
@@ -35,6 +38,11 @@ public class ConnectionPoolUtilTest implements Driver {
     } catch ( SQLException e ) {
       e.printStackTrace();
     }
+  }
+
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
   }
 
   @Before
