@@ -41,7 +41,8 @@
     <dependency org="secondstring"        name="secondstring"        rev="20060615"         transitive="false"/>
     <dependency org="org.owasp.esapi"     name="esapi"               rev="2.0.1"            transitive="false"/>
     <dependency org="javassist"           name="javassist"           rev="3.12.1.GA"        transitive="false" conf="runtime->default"/>
-    
+    <dependency org="org.samba.jcifs"     name="jcifs"               rev="1.3.3"            transitive="false" conf="runtime->default"/>
+
     <dependency org="junit"               name="junit"               rev="4.7"              transitive="false" conf="test->default"/>
     <dependency org="org.mockito"         name="mockito-all"         rev="1.9.5"            transitive="false" conf="test->default"/>
   </dependencies>
