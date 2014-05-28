@@ -3909,15 +3909,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     getDisplay().asyncExec( new Runnable() {
 
       public void run() {
-        // Start/Run button...
-        //
-        XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById( "trans-run" );
-        if ( runButton != null && !controlDisposed( runButton ) ) {
-          if ( runButton.isDisabled() ^ running ) {
-            runButton.setDisabled( running );
-          }
-        }
-
         // Pause button...
         //
         XulToolbarbutton pauseButton = (XulToolbarbutton) toolbar.getElementById( "trans-pause" );
@@ -3939,25 +3930,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             stopButton.setDisabled( !running );
           }
         }
-
-        // Debug button...
-        //
-        XulToolbarbutton debugButton = (XulToolbarbutton) toolbar.getElementById( "trans-debug" );
-        if ( debugButton != null && !controlDisposed( debugButton ) ) {
-          if ( debugButton.isDisabled() ^ running ) {
-            debugButton.setDisabled( running );
-          }
-        }
-
-        // Preview button...
-        //
-        XulToolbarbutton previewButton = (XulToolbarbutton) toolbar.getElementById( "trans-preview" );
-        if ( previewButton != null && !controlDisposed( previewButton ) ) {
-          if ( previewButton.isDisabled() ^ running ) {
-            previewButton.setDisabled( running );
-          }
-        }
-
       }
 
     } );
