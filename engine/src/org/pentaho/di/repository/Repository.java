@@ -709,7 +709,7 @@ public interface Repository {
   /**
    * @return the exporter that will handle exports from this repository
    */
-  public IRepositoryExporter getExporter();
+  public IRepositoryExporter getExporter() throws KettleException;
 
   /**
    * @return the Metastore that is implemented in this Repository. Return null if this repository doesn't implement a
