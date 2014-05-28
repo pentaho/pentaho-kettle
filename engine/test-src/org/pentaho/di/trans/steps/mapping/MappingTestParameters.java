@@ -10,7 +10,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.StepMockUtil;
 
-public class MappingTest {
+public class MappingTestParameters {
 
   private Mapping step;
   private Trans trans;
