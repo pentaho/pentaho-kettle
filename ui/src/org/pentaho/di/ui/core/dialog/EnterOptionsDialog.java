@@ -1196,32 +1196,13 @@ public class EnterOptionsDialog extends Dialog {
     fdDBConnXML.right = new FormAttachment( 100, 0 );
     wDBConnXML.setLayoutData( fdDBConnXML );
 
-    // Ask about replacing existing connections?
-    Label wlAskReplaceDB = new Label( wGeneralComp, SWT.RIGHT );
-    wlAskReplaceDB.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Label" ) );
-    props.setLook( wlAskReplaceDB );
-    FormData fdlAskReplaceDB = new FormData();
-    fdlAskReplaceDB.left = new FormAttachment( 0, 0 );
-    fdlAskReplaceDB.top = new FormAttachment( wDBConnXML, margin );
-    fdlAskReplaceDB.right = new FormAttachment( middle, -margin );
-    wlAskReplaceDB.setLayoutData( fdlAskReplaceDB );
-    wAskReplaceDB = new Button( wGeneralComp, SWT.CHECK );
-    props.setLook( wAskReplaceDB );
-    wAskReplaceDB.setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Tooltip" ) );
-    wAskReplaceDB.setSelection( props.askAboutReplacingDatabaseConnections() );
-    FormData fdAskReplaceDB = new FormData();
-    fdAskReplaceDB.left = new FormAttachment( middle, 0 );
-    fdAskReplaceDB.top = new FormAttachment( wDBConnXML, margin );
-    fdAskReplaceDB.right = new FormAttachment( 100, 0 );
-    wAskReplaceDB.setLayoutData( fdAskReplaceDB );
-
     // Only save used connections to XML?
     Label wlReplaceDB = new Label( wGeneralComp, SWT.RIGHT );
     wlReplaceDB.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDB.Label" ) );
     props.setLook( wlReplaceDB );
     FormData fdlReplaceDB = new FormData();
     fdlReplaceDB.left = new FormAttachment( 0, 0 );
-    fdlReplaceDB.top = new FormAttachment( wAskReplaceDB, margin );
+    fdlReplaceDB.top = new FormAttachment( wDBConnXML, margin );
     fdlReplaceDB.right = new FormAttachment( middle, -margin );
     wlReplaceDB.setLayoutData( fdlReplaceDB );
     wReplaceDB = new Button( wGeneralComp, SWT.CHECK );
@@ -1230,9 +1211,42 @@ public class EnterOptionsDialog extends Dialog {
     wReplaceDB.setSelection( props.replaceExistingDatabaseConnections() );
     FormData fdReplaceDB = new FormData();
     fdReplaceDB.left = new FormAttachment( middle, 0 );
-    fdReplaceDB.top = new FormAttachment( wAskReplaceDB, margin );
+    fdReplaceDB.top = new FormAttachment( wDBConnXML, margin );
     fdReplaceDB.right = new FormAttachment( 100, 0 );
     wReplaceDB.setLayoutData( fdReplaceDB );
+
+    // Ask about replacing existing connections?
+    Label wlAskReplaceDB = new Label( wGeneralComp, SWT.RIGHT );
+    wlAskReplaceDB.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Label" ) );
+    props.setLook( wlAskReplaceDB );
+    FormData fdlAskReplaceDB = new FormData();
+    fdlAskReplaceDB.left = new FormAttachment( 0, 0 );
+    fdlAskReplaceDB.top = new FormAttachment( wReplaceDB, margin );
+    fdlAskReplaceDB.right = new FormAttachment( middle, -margin );
+    wlAskReplaceDB.setLayoutData( fdlAskReplaceDB );
+    wAskReplaceDB = new Button( wGeneralComp, SWT.CHECK );
+    props.setLook( wAskReplaceDB );
+    wAskReplaceDB.setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Tooltip" ) );
+    wAskReplaceDB.setSelection( props.askAboutReplacingDatabaseConnections() );
+    FormData fdAskReplaceDB = new FormData();
+    fdAskReplaceDB.left = new FormAttachment( middle, 0 );
+    fdAskReplaceDB.top = new FormAttachment( wReplaceDB, margin );
+    fdAskReplaceDB.right = new FormAttachment( 100, 0 );
+    wAskReplaceDB.setLayoutData( fdAskReplaceDB );
+
+    updateAskButton();
+    wReplaceDB.addSelectionListener( new SelectionListener() {
+
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+        updateAskButton();
+      }
+
+      @Override
+      public void widgetDefaultSelected( SelectionEvent arg0 ) {
+        // Noop
+      }
+    } );
 
     // Show confirmation after save?
     Label wlSaveConf = new Label( wGeneralComp, SWT.RIGHT );
@@ -1240,7 +1254,7 @@ public class EnterOptionsDialog extends Dialog {
     props.setLook( wlSaveConf );
     FormData fdlSaveConf = new FormData();
     fdlSaveConf.left = new FormAttachment( 0, 0 );
-    fdlSaveConf.top = new FormAttachment( wReplaceDB, margin );
+    fdlSaveConf.top = new FormAttachment( wAskReplaceDB, margin );
     fdlSaveConf.right = new FormAttachment( middle, -margin );
     wlSaveConf.setLayoutData( fdlSaveConf );
     wSaveConf = new Button( wGeneralComp, SWT.CHECK );
@@ -1248,7 +1262,7 @@ public class EnterOptionsDialog extends Dialog {
     wSaveConf.setSelection( props.getSaveConfirmation() );
     FormData fdSaveConf = new FormData();
     fdSaveConf.left = new FormAttachment( middle, 0 );
-    fdSaveConf.top = new FormAttachment( wReplaceDB, margin );
+    fdSaveConf.top = new FormAttachment( wAskReplaceDB, margin );
     fdSaveConf.right = new FormAttachment( 100, 0 );
     wSaveConf.setLayoutData( fdSaveConf );
 
@@ -1488,6 +1502,15 @@ public class EnterOptionsDialog extends Dialog {
     // / END OF GENERAL TAB
     // ///////////////////////////////////////////////////////////
 
+  }
+
+  private void updateAskButton() {
+    if ( wReplaceDB.getSelection() ) {
+      wAskReplaceDB.setEnabled( true );
+    } else {
+      wAskReplaceDB.setSelection( false );
+      wAskReplaceDB.setEnabled( false );
+    }
   }
 
   /**
