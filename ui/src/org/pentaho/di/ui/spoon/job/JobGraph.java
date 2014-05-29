@@ -3288,6 +3288,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     spoon.getSQL();
   }
 
+  public XulToolbar getToolbar() { return toolbar; }
+
   public void exploreDatabase() {
     spoon.exploreDatabase();
   }
@@ -3494,15 +3496,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     getDisplay().asyncExec( new Runnable() {
 
       public void run() {
-        // Start/Run button...
-        //
         boolean running = job != null && job.isActive();
-        XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById( "job-run" );
-        if ( runButton != null && !controlDisposed( runButton ) ) {
-          if ( runButton.isDisabled() ^ running ) {
-            runButton.setDisabled( running );
-          }
-        }
 
         // Stop button...
         //
