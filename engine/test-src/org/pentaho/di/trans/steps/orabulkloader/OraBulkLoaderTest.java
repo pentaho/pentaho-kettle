@@ -21,8 +21,11 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.orabulkloader;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -37,6 +40,12 @@ import static org.mockito.Mockito.when;
  * User: Dzmitry Stsiapanau Date: 4/8/14 Time: 1:44 PM
  */
 public class OraBulkLoaderTest {
+
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
+
   @Test
   public void testCreateCommandLine() throws Exception {
     StepMockHelper<OraBulkLoaderMeta, OraBulkLoaderData> stepMockHelper = new StepMockHelper<OraBulkLoaderMeta,

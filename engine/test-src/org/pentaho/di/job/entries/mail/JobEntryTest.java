@@ -2,9 +2,17 @@ package org.pentaho.di.job.entries.mail;
 
 import junit.framework.Assert;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 
 public class JobEntryTest {
+
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Test
   public void testJobEntrymailPasswordFixed() {
