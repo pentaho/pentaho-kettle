@@ -1006,7 +1006,37 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         break; // A single cancel aborts the rest of the operation
       }
     }
+  }
 
+  /**
+   * Prompt user to close all open Jobs & Transformations.  Save setting to warn user the next time.
+   */
+  public void closeAllJobsAndTransformations() {
+    // Query user to see if they want to close trans/jobs
+    if ( props.showCloseAllFilesWarning() ) {
+      MessageDialogWithToggle md = new MessageDialogWithToggle( getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.Title" ), null,
+          BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.Message" ), MessageDialog.QUESTION,
+          new String[] { BaseMessages.getString( PKG, "Spoon.Message.Warning.Yes" ),
+                         BaseMessages.getString( PKG, "Spoon.Message.Warning.No" ),
+                         BaseMessages.getString( PKG, "Spoon.Message.Warning.Cancel" ) },
+          1,
+          BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.DontAskAgain.Label" ),
+          !props.showCloseAllFilesWarning() );
+
+      MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
+
+      final int answer = md.open();
+      if ( ( answer & 0xFF ) == 0 ) {
+        // User specified that they want to close all
+        Spoon.getInstance().closeAllFiles();
+      }
+
+      props.showSetCloseAllFilesWarning( !md.getToggleState() );
+      props.saveProps();
+    } else {
+      // User did not want warning before closing files - close them now.
+      Spoon.getInstance().closeAllFiles();
+    }
   }
 
   public void closeSpoonBrowser() {

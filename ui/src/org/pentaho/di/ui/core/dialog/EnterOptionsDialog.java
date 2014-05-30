@@ -203,6 +203,8 @@ public class EnterOptionsDialog extends Dialog {
 
   private Button helptipBtn;
 
+  private Button closeAllFilesBtn;
+
   private Button autoCollapseBtn;
 
   private Button wIndicateSlowSteps;
@@ -1430,6 +1432,24 @@ public class EnterOptionsDialog extends Dialog {
     helpTipBtnData.right = new FormAttachment( 100, 0 );
     helptipBtn.setLayoutData( helpTipBtnData );
 
+    // Warn before closing all trans/job tabs
+    Label closeAllFilesLbl = new Label( wGeneralComp, SWT.RIGHT );
+    closeAllFilesLbl.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.CloseAllFilesWarning.Label" ) );
+    props.setLook( closeAllFilesLbl );
+    FormData fdlCloseAllFilesData = new FormData();
+    fdlCloseAllFilesData.left = new FormAttachment( 0, 0 );
+    fdlCloseAllFilesData.top = new FormAttachment( closeAllFilesLbl, margin );
+    fdlCloseAllFilesData.right = new FormAttachment( middle, -margin );
+    closeAllFilesLbl.setLayoutData( fdlCloseAllFilesData );
+    closeAllFilesBtn = new Button( wGeneralComp, SWT.CHECK );
+    props.setLook( closeAllFilesBtn );
+    closeAllFilesBtn.setSelection( props.showCloseAllFilesWarning() );
+    FormData closeAllFilesBtnData = new FormData();
+    closeAllFilesBtnData.left = new FormAttachment( middle, 0 );
+    closeAllFilesBtnData.top = new FormAttachment( helptipBtn, margin );
+    closeAllFilesBtnData.right = new FormAttachment( 100, 0 );
+    closeAllFilesBtn.setLayoutData( closeAllFilesBtnData );
+
     fdGeneralComp = new FormData();
     fdGeneralComp.left = new FormAttachment( 0, 0 );
     fdGeneralComp.right = new FormAttachment( 100, 0 );
@@ -1452,7 +1472,7 @@ public class EnterOptionsDialog extends Dialog {
     // editables
     Label refLabel = new Label( wGeneralComp, SWT.RIGHT );
     refLabel = tooltipLbl;
-    Button lastbtn = helptipBtn;
+    Button lastbtn = closeAllFilesBtn;
     for ( final GUIOption<Object> e : PropsUI.getInstance().getRegisteredEditableComponents() ) {
       if ( e.getLabelText() == null ) {
         continue;
@@ -1639,6 +1659,7 @@ public class EnterOptionsDialog extends Dialog {
     props.setIndicateSlowTransStepsEnabled( wIndicateSlowSteps.getSelection() );
     props.setAutoCollapseCoreObjectsTree( autoCollapseBtn.getSelection() );
     props.setShowingHelpToolTips( helptipBtn.getSelection() );
+    props.showSetCloseAllFilesWarning( closeAllFilesBtn.getSelection() );
 
     int defaultLocaleIndex = wDefaultLocale.getSelectionIndex();
     if ( defaultLocaleIndex < 0 || defaultLocaleIndex >= GlobalMessages.localeCodes.length ) {
