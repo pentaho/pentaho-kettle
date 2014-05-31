@@ -369,6 +369,15 @@
     <description>Specifies the password encoder plugin to use by ID (Kettle is the default).</description>
     <default-value>Kettle</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to Y to revert the Enterprise Repository node naming behavior back to the old mode.
+      See http://jira.pentaho.com/browse/PDI-6394 for details.
+    </description>
+    <variable>KETTLE_COMPATIBILITY_PUR_OLD_NAMING_MODE</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
 	
 </kettle-variables>
 
