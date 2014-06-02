@@ -3499,7 +3499,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
       public void run() {
         boolean operationsNotAllowed = RepositorySecurityUI.verifyOperations( shell, spoon.rep, false,
-            RepositoryOperation.EXECUTE_TRANSFORMATION  );
+            RepositoryOperation.EXECUTE_JOB  );
 
         // Start/Run button...
         //
@@ -3517,6 +3517,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         if ( stopButton != null && !controlDisposed( stopButton ) ) {
           if ( stopButton.isDisabled() ^ !running ) {
             stopButton.setDisabled( !running );
+          }
+        }
+
+        // Replay button...
+        //
+        XulToolbarbutton replayButton = (XulToolbarbutton) toolbar.getElementById( "job-replay" );
+        if ( replayButton != null && !controlDisposed( replayButton ) ) {
+          if ( replayButton.isDisabled() ^ !running ) {
+            replayButton.setDisabled( !running );
           }
         }
 
