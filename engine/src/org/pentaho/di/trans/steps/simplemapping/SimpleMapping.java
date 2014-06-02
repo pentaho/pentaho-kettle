@@ -104,9 +104,14 @@ public class SimpleMapping extends BaseStep implements StepInterface {
       // The data we read we pass to the mapping
       //
       Object[] row = getRow();
+      boolean rowWasPut = false;
       if ( row != null ) {
-        data.rowDataInputMapper.putRow( getInputRowMeta(), row );
-      } else {
+        while ( !( data.mappingTrans.isFinishedOrStopped() || rowWasPut ) ) {
+          rowWasPut = data.rowDataInputMapper.putRow( getInputRowMeta(), row );
+        }
+      }
+
+      if ( !rowWasPut ) {
         data.rowDataInputMapper.finished();
         data.mappingTrans.waitUntilFinished();
         setOutputDone();
