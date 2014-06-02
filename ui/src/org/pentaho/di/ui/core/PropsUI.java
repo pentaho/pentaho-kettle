@@ -786,6 +786,16 @@ public class PropsUI extends Props {
     return YES.equalsIgnoreCase( saveconf ); // Default = OFF
   }
 
+  public void showSetCloseAllFilesWarning( boolean closeAll ) {
+    properties.setProperty( STRING_SHOW_CLOSE_ALL_FILES_WARNING, closeAll ? YES : NO );
+
+  }
+
+  public boolean showCloseAllFilesWarning() {
+    String closeAll = properties.getProperty( STRING_SHOW_CLOSE_ALL_FILES_WARNING, YES );
+    return YES.equalsIgnoreCase( closeAll ); // Default = OFF
+  }
+
   public void setAutoSplit( boolean autosplit ) {
     properties.setProperty( STRING_AUTO_SPLIT, autosplit ? YES : NO );
   }
