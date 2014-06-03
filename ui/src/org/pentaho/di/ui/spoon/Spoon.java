@@ -338,8 +338,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private static Class<?> PKG = Spoon.class;
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
-    "Spoon", LoggingObjectType.SPOON, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Spoon", LoggingObjectType.SPOON,
+      null );
 
   public static final String STRING_TRANSFORMATIONS = BaseMessages.getString( PKG, "Spoon.STRING_TRANSFORMATIONS" );
 
@@ -381,14 +381,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private static final String STRING_SPOON_MAIN_TREE = BaseMessages.getString( PKG, "Spoon.MainTree.Label" );
 
-  private static final String STRING_SPOON_CORE_OBJECTS_TREE = BaseMessages.getString( PKG,
-    "Spoon.CoreObjectsTree.Label" );
+  private static final String STRING_SPOON_CORE_OBJECTS_TREE = BaseMessages
+      .getString( PKG, "Spoon.CoreObjectsTree.Label" );
 
   public static final String XML_TAG_TRANSFORMATION_STEPS = "transformation-steps";
 
   public static final String XML_TAG_JOB_JOB_ENTRIES = "job-jobentries";
 
   private static final String XML_TAG_STEPS = "steps";
+
+  public static final int MESSAGE_DIALOG_WITH_TOGGLE_YES_BUTTON_ID = 256;
+
+  public static final int MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID = 257;
+
+  public static final int MESSAGE_DIALOG_WITH_TOGGLE_CUSTOM_DISTRIBUTION_BUTTON_ID = 258;
 
   private static Spoon staticSpoon;
 
@@ -452,12 +458,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private static final String STRING_DOCUMENT_TAB_NAME = BaseMessages.getString( PKG, "Spoon.Documentation" );
 
   // "docs/English/welcome/index.html";
-  private static final String FILE_WELCOME_PAGE = Const.safeAppendDirectory( BasePropertyHandler.getProperty(
-    "documentationDirBase", "docs/" ), BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME" ) );
+  private static final String FILE_WELCOME_PAGE = Const
+      .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
+          BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME" ) );
 
   // "docs/English/welcome/index.html";
-  private static final String FILE_DOCUMENT_MAP = Const.safeAppendDirectory( BasePropertyHandler.getProperty(
-    "documentationDirBase", "docs/" ), BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_MAP" ) );
+  private static final String FILE_DOCUMENT_MAP = Const
+      .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
+          BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_MAP" ) );
 
   private static final String UNDO_MENU_ITEM = "edit-undo";
 
@@ -545,7 +553,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * This is the main procedure for Spoon.
    *
    * @param a
-   *          Arguments are available in the "Get System Info" step.
+   *     Arguments are available in the "Get System Info" step.
    */
   public static void main( String[] a ) throws KettleException {
     ExecutorService executor = Executors.newCachedThreadPool();
@@ -605,8 +613,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       PropsUI.init( display, Props.TYPE_PROPERTIES_SPOON );
 
-      KettleLogStore.init( PropsUI.getInstance().getMaxNrLinesInLog(), PropsUI
-        .getInstance().getMaxLogLineTimeoutMinutes() );
+      KettleLogStore
+          .init( PropsUI.getInstance().getMaxNrLinesInLog(), PropsUI.getInstance().getMaxLogLineTimeoutMinutes() );
 
       initLogging( commandLineOptions );
       // remember...
@@ -615,8 +623,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       staticSpoon.commandLineOptions = commandLineOptions;
       // pull the startup perspective id from the command line options and hand it to Spoon
       String pId;
-      StringBuffer perspectiveIdBuff =
-        Spoon.getCommandLineOption( commandLineOptions, "perspective" ).getArgument();
+      StringBuffer perspectiveIdBuff = Spoon.getCommandLineOption( commandLineOptions, "perspective" ).getArgument();
       pId = perspectiveIdBuff.toString();
       if ( !Const.isEmpty( pId ) ) {
         Spoon.staticSpoon.startupPerspective = pId;
@@ -625,7 +632,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       staticSpoon.setDestroy( true );
       GUIFactory.setThreadDialogs( new ThreadGuiResources() );
 
-      staticSpoon.setArguments( args.toArray( new String[args.size()] ) );
+      staticSpoon.setArguments( args.toArray( new String[ args.size() ] ) );
       staticSpoon.start();
 
     } catch ( Throwable t ) {
@@ -665,8 +672,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       log.setLogLevel( LogLevel.getLogLevelForCode( optionLogLevel.toString() ) );
       if ( log.isBasic() ) {
         // "Logging is at level : "
-        log.logBasic( BaseMessages.getString( PKG, "Spoon.Log.LoggingAtLevel" )
-          + log.getLogLevel().getDescription() );
+        log.logBasic( BaseMessages.getString( PKG, "Spoon.Log.LoggingAtLevel" ) + log.getLogLevel().getDescription() );
       }
     }
   }
@@ -721,8 +727,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * happen in those listeners.
    */
   private static void registerUIPluginObjectTypes() {
-    RepositoryPluginType.getInstance().addObjectType(
-      RepositoryRevisionBrowserDialogInterface.class, "version-browser-classname" );
+    RepositoryPluginType.getInstance()
+                        .addObjectType( RepositoryRevisionBrowserDialogInterface.class, "version-browser-classname" );
     RepositoryPluginType.getInstance().addObjectType( RepositoryDialogInterface.class, "dialog-classname" );
 
     PluginRegistry.addPluginType( SpoonPluginType.getInstance() );
@@ -730,8 +736,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     SpoonPluginType.getInstance().getPluginFolders().add( new PluginFolder( "plugins/repositories", false, true ) );
 
     LifecyclePluginType.getInstance().getPluginFolders().add( new PluginFolder( "plugins/spoon", false, true ) );
-    LifecyclePluginType.getInstance().getPluginFolders().add(
-      new PluginFolder( "plugins/repositories", false, true ) );
+    LifecyclePluginType.getInstance().getPluginFolders().add( new PluginFolder( "plugins/repositories", false, true ) );
 
     PluginRegistry.addPluginType( JobDialogPluginType.getInstance() );
     PluginRegistry.addPluginType( TransDialogPluginType.getInstance() );
@@ -792,9 +797,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       BindingFactory bf = new DefaultBindingFactory();
       bf.setDocument( mainSpoonContainer.getDocumentRoot() );
       mainSpoonContainer.addEventHandler( this );
-      /* menuBar = (XulMenubar) */mainSpoonContainer.getDocumentRoot().getElementById( "spoon-menubar" );
+      /* menuBar = (XulMenubar) */
+      mainSpoonContainer.getDocumentRoot().getElementById( "spoon-menubar" );
       mainToolbar = (XulToolbar) mainSpoonContainer.getDocumentRoot().getElementById( "main-toolbar" );
-      /* canvas = (XulVbox) */mainSpoonContainer.getDocumentRoot().getElementById( "trans-job-canvas" );
+      /* canvas = (XulVbox) */
+      mainSpoonContainer.getDocumentRoot().getElementById( "trans-job-canvas" );
       deck = (SwtDeck) mainSpoonContainer.getDocumentRoot().getElementById( "canvas-deck" );
 
       final Composite tempSashComposite = new Composite( shell, SWT.None );
@@ -962,7 +969,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void loadPerspective( int pos ) {
     try {
       SpoonPerspectiveManager.getInstance().activatePerspective(
-        SpoonPerspectiveManager.getInstance().getPerspectives().get( pos ).getClass() );
+          SpoonPerspectiveManager.getInstance().getPerspectives().get( pos ).getClass() );
     } catch ( KettleException e ) {
       log.logError( "Error loading perspective", e );
     }
@@ -974,8 +981,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public VfsFileChooserDialog getVfsFileChooserDialog( FileObject rootFile, FileObject initialFile ) {
     if ( vfsFileChooserDialog == null ) {
-      vfsFileChooserDialog =
-        new VfsFileChooserDialog( shell, KettleVFS.getInstance().getFileSystemManager(), rootFile, initialFile );
+      vfsFileChooserDialog = new VfsFileChooserDialog( shell, KettleVFS.getInstance().getFileSystemManager(), rootFile,
+          initialFile );
     }
     vfsFileChooserDialog.setRootFile( rootFile );
     vfsFileChooserDialog.setInitialFile( initialFile );
@@ -1009,34 +1016,73 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
-   * Prompt user to close all open Jobs & Transformations.  Save setting to warn user the next time.
+   * Prompt user to close all open Jobs & Transformations if they have execute permissions.
+   * If they don't have execute permission then warn user if they really want to disconnect
+   * from repository.  If yes, close all tabs.
+   *
+   * @return If user agrees with closing of tabs then return true so we can disconnect from the repo.
    */
-  public void closeAllJobsAndTransformations() {
-    // Query user to see if they want to close trans/jobs
-    if ( props.showCloseAllFilesWarning() ) {
-      MessageDialogWithToggle md = new MessageDialogWithToggle( getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.Title" ), null,
+  public boolean closeAllJobsAndTransformations() {
+    // Check to see if there are any open jobs/trans
+    if ( getActiveMeta() == null ) {
+      return true;
+    }
+
+    // If user does not have Execute permissions, then display a warning.  If they agree with
+    // close warning then close jobs/trans
+    // If user has Execute permissions then give them opportunity to change their minds.
+    boolean operationsNotAllowed = RepositorySecurityUI
+        .verifyOperations( shell, rep, false, RepositoryOperation.EXECUTE_TRANSFORMATION, RepositoryOperation.EXECUTE_JOB );
+
+    MessageDialog md;
+    final int answer;
+    if ( operationsNotAllowed ) {
+      // User does not have Execute permissions.  Warn them that we are going to close files
+      // If cancel is clicked, then don't disconnect
+      md = new MessageDialog( getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAll.Title" ), null,
+          BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAll.Message" ), MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "Spoon.Message.Warning.Yes" ), BaseMessages
+              .getString( PKG, "Spoon.Message.Warning.No" ) }, 0 );
+
+      answer = md.open();
+    } else if ( props.showCloseAllFilesWarning() ) {
+      md = new MessageDialogWithToggle( getShell(),
+          BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.Title" ), null,
           BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.Message" ), MessageDialog.QUESTION,
-          new String[] { BaseMessages.getString( PKG, "Spoon.Message.Warning.Yes" ),
-                         BaseMessages.getString( PKG, "Spoon.Message.Warning.No" ),
-                         BaseMessages.getString( PKG, "Spoon.Message.Warning.Cancel" ) },
-          1,
+          new String[] { BaseMessages.getString( PKG, "Spoon.Message.Warning.Yes" ), BaseMessages
+              .getString( PKG, "Spoon.Message.Warning.No" ), BaseMessages
+              .getString( PKG, "Spoon.Message.Warning.Cancel" ) }, 0,
           BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.DontAskAgain.Label" ),
           !props.showCloseAllFilesWarning() );
 
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
 
-      final int answer = md.open();
-      if ( ( answer & 0xFF ) == 0 ) {
-        // User specified that they want to close all
-        Spoon.getInstance().closeAllFiles();
-      }
+      answer = md.open();
 
-      props.showSetCloseAllFilesWarning( !md.getToggleState() );
+      // Save the property
+      boolean closeAllFilesOption = ( (MessageDialogWithToggle) md ).getToggleState();
+      props.showSetCloseAllFilesWarning( !closeAllFilesOption );
       props.saveProps();
     } else {
       // User did not want warning before closing files - close them now.
       Spoon.getInstance().closeAllFiles();
+      return true;
     }
+
+    // If user acknowledged closing of all tabs, then close them.
+    if ( ( answer & 0xFF )  == 0 ) {
+      // Yes - User specified that they want to close all
+      Spoon.getInstance().closeAllFiles();
+    } else if ( answer == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID ) {
+      // No - don't close tabs
+      return true;
+    } else {
+      // Cancel
+      return false;
+    }
+
+    // User agreed to close the tabs.
+    return true;
   }
 
   public void closeSpoonBrowser() {
@@ -3584,8 +3630,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         props.setShowCopyOrDistributeWarning( !md.getToggleState() );
         props.saveProps();
 
-        distributes = idx == 256;
-        customDistribution = idx == 258;
+        distributes = idx == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_YES_BUTTON_ID;
+        customDistribution = idx == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_CUSTOM_DISTRIBUTION_BUTTON_ID;
       }
 
       if ( distributes ) {
@@ -4001,24 +4047,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void closeRepository() {
     if ( rep != null ) {
 
-      loadSessionInformation( null, false );
+      // Prompt and close all tabs as user disconnected from the repo
+      boolean shouldDisconnect = Spoon.getInstance().closeAllJobsAndTransformations();
+      if ( shouldDisconnect ) {
+        loadSessionInformation( null, false );
 
-      rep.disconnect();
-      if ( metaStore.getMetaStoreList().size() > 1 ) {
-        try {
-          metaStore.getMetaStoreList().remove( 0 );
-          metaStore.setActiveMetaStoreName( metaStore.getMetaStoreList().get( 0 ).getName() );
-        } catch ( MetaStoreException e ) {
-          new ErrorDialog(
-            shell, BaseMessages.getString( PKG, "Spoon.ErrorRemovingMetaStore.Title" ), BaseMessages.getString(
-              PKG, "Spoon.ErrorRemovingMetaStore.Message" ), e );
+        rep.disconnect();
+        if ( metaStore.getMetaStoreList().size() > 1 ) {
+          try {
+            metaStore.getMetaStoreList().remove( 0 );
+            metaStore.setActiveMetaStoreName( metaStore.getMetaStoreList().get( 0 ).getName() );
+          } catch ( MetaStoreException e ) {
+            new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.ErrorRemovingMetaStore.Title" ),
+                BaseMessages.getString( PKG, "Spoon.ErrorRemovingMetaStore.Message" ), e );
+          }
         }
+
+        setRepository( null );
+        setShellText();
+        SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
       }
     }
-
-    setRepository( null );
-    setShellText();
-    SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
   }
 
   public void openFile() {
