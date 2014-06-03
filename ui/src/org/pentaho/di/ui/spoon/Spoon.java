@@ -390,6 +390,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private static final String XML_TAG_STEPS = "steps";
 
+  public static final int MESSAGE_DIALOG_WITH_TOGGLE_YES_BUTTON_ID = 256;
+
+  public static final int MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID = 257;
+
+  public static final int MESSAGE_DIALOG_WITH_TOGGLE_CUSTOM_DISTRIBUTION_BUTTON_ID = 258;
+
   private static Spoon staticSpoon;
 
   private static LogChannelInterface log;
@@ -1054,7 +1060,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       answer = md.open();
 
       // Save the property
-      props.showSetCloseAllFilesWarning( !( (MessageDialogWithToggle) md ).getToggleState() );
+      boolean closeAllFilesOption = ( (MessageDialogWithToggle) md ).getToggleState();
+      props.showSetCloseAllFilesWarning( !closeAllFilesOption );
       props.saveProps();
     } else {
       // User did not want warning before closing files - close them now.
@@ -1066,7 +1073,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( ( answer & 0xFF )  == 0 ) {
       // Yes - User specified that they want to close all
       Spoon.getInstance().closeAllFiles();
-    } else if ( answer == 257 /* No button */ ) {
+    } else if ( answer == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID ) {
       // No - don't close tabs
       return true;
     } else {
@@ -3623,8 +3630,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         props.setShowCopyOrDistributeWarning( !md.getToggleState() );
         props.saveProps();
 
-        distributes = idx == 256;
-        customDistribution = idx == 258;
+        distributes = idx == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_YES_BUTTON_ID;
+        customDistribution = idx == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_CUSTOM_DISTRIBUTION_BUTTON_ID;
       }
 
       if ( distributes ) {
