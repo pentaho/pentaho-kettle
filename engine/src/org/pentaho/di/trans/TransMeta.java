@@ -2330,17 +2330,17 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     String[] parameters = listParameters();
     for ( int idx = 0; idx < parameters.length; idx++ ) {
-      retval.append( "        " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
-      retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
-      retval.append( "            " ).append(
+      retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
+      retval.append( "        " ).append(
         XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
-      retval.append( "            " ).append(
+      retval.append( "        " ).append(
         XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
-      retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
 
-    retval.append( "    <log>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.openTag( "log" ) ).append( Const.CR );
 
     // Add the metadata for the various logging tables
     //
@@ -2350,8 +2350,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     retval.append( stepLogTable.getXML() );
     retval.append( metricsLogTable.getXML() );
 
-    retval.append( "    </log>" ).append( Const.CR );
-    retval.append( "    <maxdate>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( "log" ) ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.openTag( "maxdate" ) ).append( Const.CR );
     retval
       .append( "      " ).append(
         XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) );
@@ -2422,11 +2422,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
     }
 
-    retval.append( "  " ).append( XMLHandler.addTagValue( "created_user", createdUser ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( createdDate ) ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "created_user", createdUser ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( createdDate ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
     retval
-      .append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
+      .append( "    " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
 
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_INFO ) ).append( Const.CR );
 
@@ -2483,16 +2483,16 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     }
 
     // The slave-step-copy/partition distribution. Only used for slave transformations in a clustering environment.
-    retval.append( "   " ).append( slaveStepCopyPartitionDistribution.getXML() );
+    retval.append( slaveStepCopyPartitionDistribution.getXML() );
 
     // Is this a slave transformation or not?
-    retval.append( "   " ).append( XMLHandler.addTagValue( "slave_transformation", slaveTransformation ) );
+    retval.append( "  " ).append( XMLHandler.addTagValue( "slave_transformation", slaveTransformation ) );
 
     // Also store the attribute groups
     //
-    retval.append( AttributesUtil.getAttributesXml( attributesMap ) ).append( Const.CR );
+    retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "</" ).append( XML_TAG + ">" ).append( Const.CR );
+    retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return retval.toString();
   }

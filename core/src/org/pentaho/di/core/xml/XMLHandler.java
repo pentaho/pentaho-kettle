@@ -1016,7 +1016,7 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static final String addTagValue( String tag, BigDecimal val, boolean cr ) {
-    return addTagValue( tag, val != null ? val.toString() : (String) null, true );
+    return addTagValue( tag, val != null ? val.toString() : (String) null, cr );
   }
 
   /**
@@ -1053,7 +1053,7 @@ public class XMLHandler {
       string = encodeBinaryData( val );
     }
 
-    return addTagValue( tag, string, true );
+    return addTagValue( tag, string, cr );
   }
 
   public static String encodeBinaryData( byte[] val ) throws IOException {
