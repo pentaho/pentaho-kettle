@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.encryption;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
@@ -121,6 +122,8 @@ public class KettleTwoWayPasswordEncoderTest {
     encryption = encoder.encode( "1234567890" );
     decryption = encoder.decode( encryption );
     assertTrue( "1234567890".equals( decryption ) );
+
+    assertEquals( "", encoder.decode( null ) );
   }
 
   /**
