@@ -1364,6 +1364,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void copyJobentries() {
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
+      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_JOB ) ) {
+        return;
+      }
+
       delegates.jobs.copyJobEntries( jobMeta, jobMeta.getSelectedEntries() );
     }
   }
@@ -3371,6 +3375,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void copySelected( TransMeta transMeta, List<StepMeta> steps, List<NotePadMeta> notes ) {
     if ( steps == null || steps.size() == 0 ) {
+      return;
+    }
+
+    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
       return;
     }
 
@@ -7257,6 +7265,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
     try {
+      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
+        return;
+      }
+
       toClipboard( XMLHandler.getXMLHeader() + transMeta.getXML() );
     } catch ( Exception ex ) {
       new ErrorDialog( getShell(), "Error", "Error encoding to XML", ex );
@@ -7267,6 +7279,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( jobMeta == null ) {
       return;
     }
+    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_JOB ) ) {
+      return;
+    }
+
     toClipboard( XMLHandler.getXMLHeader() + jobMeta.getXML() );
   }
 
