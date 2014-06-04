@@ -73,7 +73,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
       return "jdbc:odbc:" + databaseName;
     } else {
       return "jdbc:informix-sqli://"
-        + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER=" + getServername();
+        + hostname + ":" + port + "/" + databaseName + ":INFORMIXSERVER=" + getServername() + ";DELIMIDENT=Y";
     }
   }
 
