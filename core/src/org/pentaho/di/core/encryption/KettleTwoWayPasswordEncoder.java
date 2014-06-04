@@ -67,7 +67,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
   @Override
   public String decode( String encodedPassword ) {
 
-    if ( encodedPassword.startsWith( PASSWORD_ENCRYPTED_PREFIX ) ) {
+    if ( encodedPassword != null && encodedPassword.startsWith( PASSWORD_ENCRYPTED_PREFIX ) ) {
       encodedPassword = encodedPassword.substring( PASSWORD_ENCRYPTED_PREFIX.length() );
     }
 
@@ -77,7 +77,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
   @Override
   public String decode( String encodedPassword, boolean optionallyEncrypted ) {
 
-    if(encodedPassword == null) {
+    if ( encodedPassword == null ) {
       return null;
     }
 
