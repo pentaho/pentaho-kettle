@@ -24,6 +24,8 @@ package org.pentaho.di.ui.core.widget;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -103,8 +105,7 @@ public class TextVar extends Composite {
 
     // add a text field on it...
     wText = new Text( this, flags );
-
-    controlDecoration = new ControlDecoration( wText, SWT.TOP | SWT.RIGHT );
+    controlDecoration = new ControlDecoration( wText, SWT.TOP | SWT.RIGHT, this );
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage( image );
     controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );
@@ -257,5 +258,4 @@ public class TextVar extends Composite {
     controlSpaceKeyAdapter.setVariables( variables );
     modifyListenerTooltipText.modifyText( null );
   }
-
 }
