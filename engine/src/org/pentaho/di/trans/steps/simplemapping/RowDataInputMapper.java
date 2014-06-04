@@ -32,11 +32,11 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
  * This class renamed fields in rows before passing them to the row producer specified
  *
  * @author matt
- *
  */
 public class RowDataInputMapper {
-  private RowProducer rowProducer;
-  private MappingIODefinition inputDefinition;
+  private final RowProducer rowProducer;
+  private final MappingIODefinition inputDefinition;
+
   private boolean first = true;
   private RowMetaInterface renamedRowMeta;
 
@@ -45,7 +45,15 @@ public class RowDataInputMapper {
     this.rowProducer = rowProducer;
   }
 
-  public void putRow( RowMetaInterface rowMeta, Object[] row ) {
+  /**
+   * Attempts to put the <code>row</code> onto the underlying <code>rowProducer</code> during its timeout period.
+   * Returns <code>true</code> if the operation completed successfully and <code>false</code> otherwise.
+   *
+   * @param rowMeta input row's meta data
+   * @param row     input row
+   * @return <code>true</code> if the <code>row</code> was put successfully
+   */
+  public boolean putRow( RowMetaInterface rowMeta, Object[] row ) {
     if ( first ) {
       first = false;
       renamedRowMeta = rowMeta.clone();
@@ -57,7 +65,7 @@ public class RowDataInputMapper {
         }
       }
     }
-    rowProducer.putRow( renamedRowMeta, row );
+    return rowProducer.putRow( renamedRowMeta, row, false );
   }
 
   public void finished() {

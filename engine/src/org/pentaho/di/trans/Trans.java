@@ -1650,6 +1650,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     finished.set( newValue );
   }
 
+  public boolean isFinishedOrStopped() {
+    return isFinished() || isStopped();
+  }
+
   /**
    * Attempts to stops all running steps and subtransformations. If all steps have finished, the transformation is
    * marked as Finished.
