@@ -26,16 +26,6 @@
 
   <import file="build-res/subfloor-pkg.xml" />
 	
-  <macrodef name="ivy-resolve">
-    <attribute name="ivyfile" default="${ivyfile}" />
-    <attribute name="conf" default="default" />
-    <attribute name="directory"/>
-    <sequential>
-      <mkdir dir="@{directory}" />
-      <ivy:resolve file="@{ivyfile}" conf="@{conf}" />
-      <ivy:retrieve conf="@{conf}" pattern="@{directory}/[module]-[revision](-[classifier]).[ext]" />
-    </sequential>
-  </macrodef>
 	
   <property name="pdf.docs.dir" value="${approot.stage.dir}/docs/English" />
 
@@ -51,7 +41,8 @@
     target: resolve-pdf-docs
   - - - - - - - - - - - - - - - - - -->
   <target name="resolve-pdf-docs" depends="install-ivy">
-    <ivy-resolve conf="pdf-docs" directory="${pdf.docs.dir}" />
+    <ivy:resolve file="${ivyfile}" conf="pdf-docs" />
+    <ivy:retrieve conf="pdf-docs" pattern="${pdf.docs.dir}/[module].[ext]" />
   </target>
 	
   <target name="assemble" depends="resolve-swtlibs,resolve-pdf-docs,create-sampledb-from-sql,subfloor-pkg.assemble"
