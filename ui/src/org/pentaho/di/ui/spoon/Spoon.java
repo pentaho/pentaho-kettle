@@ -1005,14 +1005,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return closed;
   }
 
-  public void closeAllFiles() {
+  public boolean closeAllFiles() {
     int numTabs = delegates.tabs.getTabs().size();
     for ( int i = numTabs - 1; i >= 0; i-- ) {
       tabfolder.setSelected( i );
       if ( !closeFile() ) {
-        break; // A single cancel aborts the rest of the operation
+        return false; // A single cancel aborts the rest of the operation
       }
     }
+
+    return true;
   }
 
   /**
@@ -1065,14 +1067,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       props.saveProps();
     } else {
       // User did not want warning before closing files - close them now.
-      Spoon.getInstance().closeAllFiles();
-      return true;
+      return Spoon.getInstance().closeAllFiles();
     }
 
     // If user acknowledged closing of all tabs, then close them.
     if ( ( answer & 0xFF )  == 0 ) {
       // Yes - User specified that they want to close all
-      Spoon.getInstance().closeAllFiles();
+      return Spoon.getInstance().closeAllFiles();
     } else if ( answer == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID ) {
       // No - don't close tabs
       return true;
@@ -1080,9 +1081,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Cancel
       return false;
     }
-
-    // User agreed to close the tabs.
-    return true;
   }
 
   public void closeSpoonBrowser() {
