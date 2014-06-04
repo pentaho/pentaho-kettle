@@ -188,11 +188,11 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
     StringBuilder retval = new StringBuilder( 200 );
 
     if ( from_step != null && to_step != null ) {
-      retval.append( "  <hop> " );
+      retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) );
       retval.append( XMLHandler.addTagValue( "from", from_step.getName(), false ) );
       retval.append( XMLHandler.addTagValue( "to", to_step.getName(), false ) );
       retval.append( XMLHandler.addTagValue( "enabled", enabled, false ) );
-      retval.append( " </hop>" );
+      retval.append( XMLHandler.closeTag( XML_TAG ) );
     }
 
     return retval.toString();
