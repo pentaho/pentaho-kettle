@@ -379,5 +379,12 @@
   </kettle-variable>
 
 	
+	<kettle-variable>
+    <description>You can use this variable to speed up hostname lookup. Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
+    </description>
+    <variable>KETTLE_SYSTEM_HOSTNAME</variable>
+    <default-value></default-value>
+  </kettle-variable>
+  
 </kettle-variables>
 
