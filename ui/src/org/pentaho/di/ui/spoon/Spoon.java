@@ -1072,13 +1072,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // If user acknowledged closing of all tabs, then close them.
     if ( ( answer & 0xFF )  == 0 ) {
-      // Yes - User specified that they want to close all
+      // Yes - User specified that they want to close all.
       return Spoon.getInstance().closeAllFiles();
-    } else if ( answer == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID ) {
-      // No - don't close tabs
+    } else if ( ( answer == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID ) && ( operationsNotAllowed == false ) ) {
+      // No - don't close tabs only if user has execute permissions.  Return true so we can disconnect from repo
       return true;
     } else {
-      // Cancel
+      // Cancel - don't close tabs and don't disconnect from repo
       return false;
     }
   }
