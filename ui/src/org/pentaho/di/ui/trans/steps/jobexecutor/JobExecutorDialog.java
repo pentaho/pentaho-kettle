@@ -619,7 +619,9 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       if ( fname != null ) {
 
         loadFileJob( fname );
-        wFilename.setText( executorJobMeta.getFilename() );
+        // PDI-11985 set filename for UI edit field. This will be saved later in xml
+        // as a filename for JobMeta.
+        wFilename.setText( fname );
         wJobname.setText( Const.NVL( executorJobMeta.getName(), "" ) );
         wDirectory.setText( "" );
         specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
