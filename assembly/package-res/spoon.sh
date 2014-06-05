@@ -20,6 +20,10 @@ export GDK_NATIVE_WINDOWS=1
 # Fix overlay scrollbar bug with Ubuntu 11.04
 export LIBOVERLAY_SCROLLBAR=0
 
+# Fix menus not showing up on Ubuntu 14.04's unity
+# Bug in: https://bugs.launchpad.net/ubuntu/+source/unity-gtk-module/+bug/1208019
+export UBUNTU_MENUPROXY=0
+
 # **************************************************
 # ** Init BASEDIR                                 **
 # **************************************************
