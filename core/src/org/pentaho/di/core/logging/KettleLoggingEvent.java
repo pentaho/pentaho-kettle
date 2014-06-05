@@ -24,6 +24,8 @@ package org.pentaho.di.core.logging;
 
 public class KettleLoggingEvent {
 
+  private final Object subjectOfLog;
+  private final LogLevel channelLogLevel;
   private Object message;
 
   public long timeStamp;
@@ -31,14 +33,27 @@ public class KettleLoggingEvent {
   private LogLevel level;
 
   public KettleLoggingEvent() {
-    this( null, System.currentTimeMillis(), LogLevel.BASIC );
+    this( null, System.currentTimeMillis(), LogLevel.BASIC, LogLevel.BASIC, null);
   }
 
   public KettleLoggingEvent( Object message, long timeStamp, LogLevel level ) {
-    super();
+    this(message, timeStamp, level, LogLevel.BASIC, null);
+  }
+
+  public KettleLoggingEvent(Object message, long timeStamp, LogLevel level, LogLevel channelLogLevel, Object subjectOfLog) {
     this.message = message;
     this.timeStamp = timeStamp;
     this.level = level;
+    this.channelLogLevel = channelLogLevel;
+    this.subjectOfLog = subjectOfLog;
+  }
+
+  public LogLevel getChannelLogLevel() {
+    return channelLogLevel;
+  }
+
+  public Object getSubjectOfLog() {
+    return subjectOfLog;
   }
 
   public Object getMessage() {

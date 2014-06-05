@@ -53,9 +53,12 @@ public class LogChannel implements LogChannelInterface {
 
   private String filter;
 
+  private Object subjectOfLog;
+
   public LogChannel( Object subject ) {
     logLevel = DefaultLogLevel.getLogLevel();
     logChannelId = LoggingRegistry.getInstance().registerLoggingSource( subject );
+    this.subjectOfLog = subject;
   }
 
   public LogChannel( Object subject, boolean gatheringMetrics ) {
@@ -118,7 +121,7 @@ public class LogChannel implements LogChannelInterface {
     // Let's not keep everything...
     //
     if ( channelLogLevel.getLevel() >= logLevel.getLevel() ) {
-      KettleLoggingEvent loggingEvent = new KettleLoggingEvent( logMessage, System.currentTimeMillis(), logLevel );
+      KettleLoggingEvent loggingEvent = new KettleLoggingEvent( logMessage, System.currentTimeMillis(), logLevel, channelLogLevel, subjectOfLog );
       KettleLogStore.getAppender().addLogggingEvent( loggingEvent );
     }
   }
