@@ -56,6 +56,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.version.BuildVersion;
@@ -684,7 +685,13 @@ public class Const {
    * details.
    */
   public static final String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
-      "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
+    "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
+
+  /**
+   * You can use this variable to speed up hostname lookup. 
+   * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
+   */
+  public static final String KETTLE_SYSTEM_HOSTNAME = "KETTLE_SYSTEM_HOSTNAME";
 
   /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
@@ -1376,6 +1383,14 @@ public class Const {
       return cachedHostname;
     }
 
+    // In case we don't want to leave anything to doubt...
+    //
+    String systemHostname = EnvUtil.getSystemProperty( KETTLE_SYSTEM_HOSTNAME );
+    if ( !isEmpty( systemHostname ) ) {
+      cachedHostname = systemHostname;
+      return systemHostname;
+    }
+
     String lastHostname = "localhost";
     try {
       Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
@@ -1410,6 +1425,14 @@ public class Const {
    * @return The hostname
    */
   public static final String getHostnameReal() {
+
+    // In case we don't want to leave anything to doubt...
+    //
+    String systemHostname = EnvUtil.getSystemProperty( KETTLE_SYSTEM_HOSTNAME );
+    if ( !isEmpty( systemHostname ) ) {
+      return systemHostname;
+    }
+
     if ( isWindows() ) {
       // Windows will always set the 'COMPUTERNAME' variable
       return System.getenv( "COMPUTERNAME" );
