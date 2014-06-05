@@ -1281,7 +1281,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void transFinished( Trans trans ) {
 
         try {
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationFinish.id, this );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationFinish.id, trans );
         } catch ( KettleException e ) {
           throw new RuntimeException( "Error calling extension point at end of transformation", e );
         }
