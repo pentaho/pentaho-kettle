@@ -23,11 +23,13 @@
 package org.pentaho.di.trans.steps.excelinput;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -55,6 +57,7 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
+import org.pentaho.di.trans.steps.excelinput.staxpoi.StaxPoiCell;
 
 /**
  * This class reads data from one or more Microsoft Excel files.
@@ -102,6 +105,14 @@ public class ExcelInput extends BaseStep implements StepInterface {
 
       ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta( rowcolumn );
       ValueMetaInterface sourceMeta = null;
+
+      if ( meta.getSpreadSheetType() == SpreadSheetType.SAX_POI ) {
+        if ( targetMeta.isDate() ) {
+          Double dateValue = Double.valueOf( cell.getContents() );
+          Calendar calendar = DateUtil.getJavaCalendarUTC( dateValue, false );
+          cell = new StaxPoiCell( calendar.getTime(), KCellType.DATE, cell.getRow() );
+        }
+      }
 
       try {
         checkType( cell, targetMeta );
@@ -791,7 +802,6 @@ public class ExcelInput extends BaseStep implements StepInterface {
         return true;
       } else {
         logError( BaseMessages.getString( PKG, "ExcelInput.Error.NotInputFieldsDefined" ) );
-
       }
 
     }
