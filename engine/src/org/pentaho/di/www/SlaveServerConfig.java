@@ -49,6 +49,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
+import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.w3c.dom.Node;
 
@@ -113,7 +114,17 @@ public class SlaveServerConfig {
       metaStore.addMetaStore( localStore );
       metaStore.setActiveMetaStoreName( localStore.getName() );
     } catch ( MetaStoreException e ) {
-      throw new RuntimeException( "Unable to open local Pentaho meta store", e );
+      LogChannel.GENERAL.logError( "Unable to open local Pentaho meta store from [" + MetaStoreConst.getDefaultPentahoMetaStoreLocation() + "]", e );
+      // now replace this with an in memory metastore.
+      //
+      try {
+        MemoryMetaStore memoryStore = new MemoryMetaStore();
+        memoryStore.setName( "Memory metastore" );
+        metaStore.addMetaStore( memoryStore );
+        metaStore.setActiveMetaStoreName( memoryStore.getName() );
+      } catch ( MetaStoreException e2 ) {
+        throw new RuntimeException( "Unable to add a default memory metastore to the delegating store", e );
+      }
     }
     passwordFile = null; // force lookup by server in ~/.kettle or local folder
   }
