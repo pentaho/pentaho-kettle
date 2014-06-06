@@ -46,4 +46,19 @@ public class WorkbookFactory {
     }
 
   }
+  public static KWorkbook getWorkbook( SpreadSheetType type, InputStream inputStream, String encoding ) throws KettleException {
+    switch ( type ) {
+      case JXL:
+        return new XLSWorkbook( inputStream, encoding );
+      case POI:
+        return new PoiWorkbook( inputStream, encoding ); // encoding is not used, perhaps detected automatically?
+      case SAX_POI:
+        return new StaxPoiWorkbook( inputStream, encoding ); // encoding is not used, perhaps detected automatically?
+      case ODS:
+        return new OdfWorkbook( inputStream, encoding ); // encoding is not used, perhaps detected automatically?
+      default:
+        throw new KettleException( "Sorry, spreadsheet type " + type.getDescription() + " is not yet supported" );
+    }
+
+  }
 }
