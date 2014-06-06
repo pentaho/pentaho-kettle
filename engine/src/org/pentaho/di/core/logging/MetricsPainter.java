@@ -25,6 +25,7 @@ package org.pentaho.di.core.logging;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
@@ -63,8 +64,15 @@ public class MetricsPainter {
     this.barHeight = barHeight;
   }
 
+  /**
+   * Draws a metrics tab.
+   * 
+   * @param durations
+   *          is a list of metrics durations
+   * @return list of drawing areas.Throw IllegalArgumentException in case if input parameter is null or an empty
+   */
   public List<MetricsDrawArea> paint( List<MetricsDuration> durations ) {
-    if ( durations == null || durations.isEmpty() ) {
+    if ( Const.isEmpty( durations ) ) {
       throw new IllegalArgumentException();
     }
 
@@ -124,10 +132,10 @@ public class MetricsPainter {
       areas.add( new MetricsDrawArea( new Rectangle( x, y, durationWidth, barHeight ), duration ) );
 
       LoggingObjectInterface loggingObject =
-        LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
+          LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
 
       String message =
-        duration.getDescription() + " - " + loggingObject.getObjectName() + " : " + duration.getDuration() + "ms";
+          duration.getDescription() + " - " + loggingObject.getObjectName() + " : " + duration.getDuration() + "ms";
       if ( duration.getCount() > 1 ) {
         message += " " + duration.getCount() + " calls, avg=" + ( duration.getDuration() / duration.getCount() );
       }
