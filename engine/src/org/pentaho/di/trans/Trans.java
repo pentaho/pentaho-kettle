@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -393,7 +394,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected Hashtable<String, Counter> counters;
 
-  private HttpServletResponse servletresponse;
+  private HttpServletResponse servletResponse;
 
   private HttpServletRequest servletRequest;
 
@@ -5346,9 +5347,22 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
   }
 
+  
+  /**
+   * Sets encoding of HttpServletResponse according to System encoding.Check if system encoding is null or an empty and
+   * set it to HttpServletResponse when not and writes error to log if null. Throw IllegalArgumentException if input
+   * parameter is null.
+   * 
+   * @param response
+   *          the HttpServletResponse to set encoding, mayn't be null
+   */
   public void setServletReponse( HttpServletResponse response ) {
+    if ( response == null ) {
+      throw new IllegalArgumentException( "Response is not valid: " + response );
+    }
     String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( !Const.isEmpty( encoding.trim() ) ) {
+    // true if encoding is null or an empty (also for the next kin of strings: "   ")
+    if ( !StringUtils.isBlank( encoding ) ) {
       try {
         response.setCharacterEncoding( encoding.trim() );
         response.setContentType( "text/html; charset=" + encoding );
@@ -5356,11 +5370,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         LogChannel.GENERAL.logError( "Unable to encode data with encoding : '" + encoding + "'", ex );
       }
     }
-    this.servletresponse = response;
+    this.servletResponse = response;
   }
 
   public HttpServletResponse getServletResponse() {
-    return servletresponse;
+    return servletResponse;
   }
 
   public void setServletRequest( HttpServletRequest request ) {

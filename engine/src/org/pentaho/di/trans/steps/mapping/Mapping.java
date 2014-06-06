@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.TransStepUtil;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 
@@ -542,16 +543,7 @@ public class Mapping extends BaseStep implements StepInterface {
   }
 
   void initServletConfig() {
-    // Also pass servlet information (if any)
-    //
-    getData().getMappingTrans().setServletPrintWriter( getTrans().getServletPrintWriter() );
-
-    if ( getTrans().getServletResponse() != null ) {
-      getData().getMappingTrans().setServletReponse( getTrans().getServletResponse() );
-
-    }
-
-    getData().getMappingTrans().setServletRequest( getTrans().getServletRequest() );
+    TransStepUtil.initServletConfig( getTrans(), getData().getMappingTrans() );
   }
 
   public static void addInputRenames( List<MappingValueRename> renameList, List<MappingValueRename> addRenameList ) {
