@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
-import java.io.InputStream;
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.trans.steps.excelinput.jxl.XLSWorkbook;
@@ -48,7 +46,6 @@ public class WorkbookFactory {
     }
 
   }
-
   public static KWorkbook getWorkbook( SpreadSheetType type, InputStream inputStream, String encoding ) throws KettleException {
     switch ( type ) {
       case JXL:
