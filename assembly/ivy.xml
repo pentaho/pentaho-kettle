@@ -6,6 +6,7 @@
     <conf name="test" visibility="private" />
     <conf name="swtlibs"/>
     <conf name="pdf-docs" />
+    <conf name="oss-licenses" />
     <conf name="plugins"/>
     <conf name="launcher" />
   </configurations>
@@ -131,6 +132,10 @@
 		<artifact name="workflows" type="pdf" />
 	</dependency>
     
+ 	<!--  OSS Licenses file -->
+	<dependency org="pentaho" name="oss-licenses" rev="${dependency.oss-licenses.revision}" conf="oss-licenses->default">
+		<artifact name="oss-licenses" type="zip" />
+	</dependency>
      
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
     <dependency org="org.eclipse"          name="swtlibs"               rev="4.3.2" conf="swtlibs->default" transitive="false">
