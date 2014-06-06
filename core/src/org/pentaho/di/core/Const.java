@@ -83,13 +83,33 @@ public class Const {
   /**
    * Copyright year
    */
-  public static final String COPYRIGHT_YEAR = "2013";
+  public static final String COPYRIGHT_YEAR = "2014";
 
   /**
    * Release Type
    */
   public enum ReleaseType {
-    RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA
+    RELEASE_CANDIDATE {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.PreviewRelease.HelpAboutText" );
+      }
+    },
+    MILESTONE {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.Candidate.HelpAboutText" );
+      }
+    },
+    PREVIEW {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.Milestone.HelpAboutText" );
+      }
+    },
+    GA {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.GA.HelpAboutText" );
+      }
+    };
+    public abstract String getMessage();
   }
 
   /**

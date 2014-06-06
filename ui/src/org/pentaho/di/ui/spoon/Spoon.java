@@ -31,6 +31,8 @@ import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -5729,48 +5731,102 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER | SWT.SHEET );
 
     // resolve the release text
-    String releaseText = "";
-    if ( Const.RELEASE.equals( Const.ReleaseType.PREVIEW ) ) {
-      releaseText = BaseMessages.getString( PKG, "Spoon.PreviewRelease.HelpAboutText" );
-    } else if ( Const.RELEASE.equals( Const.ReleaseType.RELEASE_CANDIDATE ) ) {
-      releaseText = BaseMessages.getString( PKG, "Spoon.Candidate.HelpAboutText" );
-    } else if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
-      releaseText = BaseMessages.getString( PKG, "Spoon.Milestone.HelpAboutText" );
-    } else if ( Const.RELEASE.equals( Const.ReleaseType.GA ) ) {
-      releaseText = BaseMessages.getString( PKG, "Spoon.GA.HelpAboutText" );
+    String releaseText = Const.RELEASE.getMessage();
+    StringBuilder messageBuilder = new StringBuilder();
+    BuildVersion buildVersion = BuildVersion.getInstance();
+
+    // buildVsionInfo correspond to ${release.minor.number}.${release.milestone.number}.${build.id}
+    String buildVsionInfo = buildVersion.getVersion();
+
+    if ( Const.isEmpty( buildVsionInfo ) ) {
+      buildVsionInfo = "Unknown";
     }
 
-    // build a message
-    StringBuilder messageBuilder = new StringBuilder();
+    // suppose buildVersion consist of releaseInfo and buildStatus for non - stable version
+    String releaseInfo = "";
+    String buildStatus = "";
 
+    // build the result message
     messageBuilder.append( BaseMessages.getString( PKG, "System.ProductInfo" ) );
     messageBuilder.append( releaseText );
     messageBuilder.append( " - " );
-    messageBuilder.append( BuildVersion.getInstance().getVersion() );
+
+    if ( buildVsionInfo.contains( "NIGHTLY" ) || buildVsionInfo.contains( "stable" )
+        || buildVsionInfo.contains( "Unknown" ) || buildVsionInfo.contains( "TRUNK-SNAPSHOT" ) ) {
+      releaseInfo = buildVsionInfo;
+    } else {
+      /*
+       * the next actions will not have sense when the next string: " <entry key="impl.version"
+       * value="${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}"
+       * />" in "\kettle\engine\build-res\subfloor.xml" file will be appropriately changed
+       */
+      String[] buildVsionInfoElts = buildVsionInfo.split( "\\." );
+      if ( buildVsionInfoElts.length != 1 ) {
+        int elementCount = buildVsionInfoElts.length;
+        for ( int i = 0; i < elementCount - 1; i++ ) {
+          releaseInfo += buildVsionInfoElts[i] + ".";
+        }
+        releaseInfo = new String( releaseInfo.substring( 0, releaseInfo.length() - 1 ) );
+        buildStatus = buildVsionInfoElts[elementCount - 1];
+      } else {
+        releaseInfo = buildVsionInfoElts[0];
+      }
+    }
+    messageBuilder.append( releaseInfo );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
     messageBuilder.append( BaseMessages.getString( PKG, "System.CompanyInfo", Const.COPYRIGHT_YEAR ) );
     messageBuilder.append( Const.CR );
-    messageBuilder.append( "         " );
     messageBuilder.append( BaseMessages.getString( PKG, "System.ProductWebsiteUrl" ) );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
-    messageBuilder.append( Const.CR );
     messageBuilder.append( "Build version : " );
-    messageBuilder.append( BuildVersion.getInstance().getVersion() );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( "Build date    : " );
-    messageBuilder.append( BuildVersion.getInstance().getBuildDate() ); // this should be the longest line of text
-    messageBuilder.append( "     " ); // so this is the right margin
-    messageBuilder.append( Const.CR );
+    messageBuilder.append( releaseInfo );
 
+    if ( !buildStatus.isEmpty() ) {
+      messageBuilder.append( Const.CR );
+      messageBuilder.append( "Commit ID : " );
+      messageBuilder.append( buildStatus );
+    }
+
+    messageBuilder.append( Const.CR );
+    messageBuilder.append( "Build date : " );
+
+    String inputStringDate = buildVersion.getBuildDate();
+    String outputStringDate = "";
+    SimpleDateFormat inputFormat = null;
+    SimpleDateFormat otputFormat = null;
+
+    if ( inputStringDate.matches( "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}.\\d{3}$" ) ) {
+      inputFormat = new SimpleDateFormat( "yyyy/MM/dd hh:mm:ss.SSS" );
+    }
+    if ( inputStringDate.matches( "^\\d{4}-\\d{1,2}-\\d{1,2}\\_\\d{1,2}-\\d{2}-\\d{2}$" ) ) {
+      inputFormat = new SimpleDateFormat( "yyyy-MM-dd_hh-mm-ss" );
+    }
+    if ( inputStringDate.matches( "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}.\\d{2}.\\d{2}$" ) ) {
+      inputFormat = new SimpleDateFormat( "yyyy-MM-dd hh.mm.ss" );
+    }
+    otputFormat = new SimpleDateFormat( "MMMM d, yyyy hh:mm:ss" );
+    try {
+      if ( inputFormat != null ) {
+        Date date = inputFormat.parse( inputStringDate );
+        outputStringDate = otputFormat.format( date );
+      } else {
+        // If date isn't correspond to formats above just show date in origin format
+        outputStringDate = inputStringDate;
+      }
+    } catch ( ParseException e ) {
+      // Just show date in origin format
+      outputStringDate = inputStringDate;
+    }
+    messageBuilder.append( outputStringDate );
     // set the text in the message box
     mb.setMessage( messageBuilder.toString() );
     mb.setText( APP_NAME );
 
-    // now open the message bx
+    // now open the message box
     mb.open();
   }
 
