@@ -1032,52 +1032,36 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return true;
     }
 
-    // If user does not have Execute permissions, then display a warning.  If they agree with
-    // close warning then close jobs/trans
-    // If user has Execute permissions then give them opportunity to change their minds.
-    boolean operationsNotAllowed = RepositorySecurityUI
-        .verifyOperations( shell, rep, false, RepositoryOperation.EXECUTE_TRANSFORMATION, RepositoryOperation.EXECUTE_JOB );
+    boolean createPerms = !RepositorySecurityUI
+        .verifyOperations( shell, rep, false, RepositoryOperation.MODIFY_TRANSFORMATION,
+            RepositoryOperation.MODIFY_JOB );
+    boolean executePerms = !RepositorySecurityUI
+        .verifyOperations( shell, rep, false, RepositoryOperation.EXECUTE_TRANSFORMATION,
+            RepositoryOperation.EXECUTE_JOB );
+    boolean readPerms = !RepositorySecurityUI
+        .verifyOperations( shell, rep, false, RepositoryOperation.READ_TRANSFORMATION, RepositoryOperation.READ_JOB );
 
-    MessageDialog md;
-    final int answer;
-    if ( operationsNotAllowed ) {
-      // User does not have Execute permissions.  Warn them that we are going to close files
-      // If cancel is clicked, then don't disconnect
-      md = new MessageDialog( getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAll.Title" ), null,
-          BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAll.Message" ), MessageDialog.WARNING,
-          new String[] { BaseMessages.getString( PKG, "Spoon.Message.Warning.Yes" ), BaseMessages
-              .getString( PKG, "Spoon.Message.Warning.No" ) }, 0 );
-
-      answer = md.open();
-    } else if ( props.showCloseAllFilesWarning() ) {
-      md = new MessageDialogWithToggle( getShell(),
-          BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.Title" ), null,
-          BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.Message" ), MessageDialog.QUESTION,
-          new String[] { BaseMessages.getString( PKG, "Spoon.Message.Warning.Yes" ), BaseMessages
-              .getString( PKG, "Spoon.Message.Warning.No" ), BaseMessages
-              .getString( PKG, "Spoon.Message.Warning.Cancel" ) }, 0,
-          BaseMessages.getString( PKG, "Spoon.Dialog.PromptToCloseAll.DontAskAgain.Label" ),
-          !props.showCloseAllFilesWarning() );
-
-      MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
-
-      answer = md.open();
-
-      // Save the property
-      boolean closeAllFilesOption = ( (MessageDialogWithToggle) md ).getToggleState();
-      props.showSetCloseAllFilesWarning( !closeAllFilesOption );
-      props.saveProps();
-    } else {
-      // User did not want warning before closing files - close them now.
-      return Spoon.getInstance().closeAllFiles();
+    // Check to see if display of warning dialog has been disabled
+    String warningTitle = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllForce.Disconnect.Title" );
+    String warningText = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllForce.Disconnect.Message" );
+    int buttons = SWT.OK;
+    if ( ( readPerms && createPerms && executePerms ) || ( readPerms && executePerms ) ) {
+      warningTitle = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllOption.Disconnect.Title" );
+      warningText = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllOption.Disconnect.Message" );
+      buttons = SWT.YES | SWT.NO;
     }
 
-    // If user acknowledged closing of all tabs, then close them.
-    if ( ( answer & 0xFF )  == 0 ) {
+    MessageBox mb = new MessageBox( Spoon.getInstance().getShell(), buttons | SWT.ICON_WARNING );
+    mb.setMessage( warningText );
+    mb.setText( warningTitle );
+
+    final int isCloseAllFiles = mb.open();
+    if ( isCloseAllFiles == SWT.YES ) {
       // Yes - User specified that they want to close all.
       return Spoon.getInstance().closeAllFiles();
-    } else if ( ( answer == Spoon.MESSAGE_DIALOG_WITH_TOGGLE_NO_BUTTON_ID ) && ( operationsNotAllowed == false ) ) {
-      // No - don't close tabs only if user has execute permissions.  Return true so we can disconnect from repo
+    } else if ( ( isCloseAllFiles == SWT.NO ) && ( executePerms ) ) {
+      // No - don't close tabs only if user has execute permissions.
+      // Return true so we can disconnect from repo
       return true;
     } else {
       // Cancel - don't close tabs and don't disconnect from repo
@@ -8601,13 +8585,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return transExecutionConfiguration;
   }
 
-  public Object[] messageDialogWithToggle( String dialogTitle, Object image, String message, int dialogImageType,
-    String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
-    return GUIResource.getInstance().messageDialogWithToggle(
-      shell, dialogTitle, (Image) image, message, dialogImageType, buttonLabels, defaultIndex, toggleMessage,
-      toggleState );
-  }
-
   public void editStepErrorHandling( TransMeta transMeta, StepMeta stepMeta ) {
     delegates.steps.editStepErrorHandling( transMeta, stepMeta );
   }
@@ -8638,6 +8615,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean overwritePrompt( String message, String rememberText, String rememberPropertyName ) {
     return new PopupOverwritePrompter( shell, props ).overwritePrompt( message, rememberText, rememberPropertyName );
+  }
+
+  public Object[] messageDialogWithToggle( String dialogTitle, Object image, String message, int dialogImageType,
+      String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
+    return GUIResource.getInstance().messageDialogWithToggle(
+        shell, dialogTitle, (Image) image, message, dialogImageType, buttonLabels, defaultIndex, toggleMessage,
+        toggleState );
   }
 
   public boolean messageBox( final String message, final String text, final boolean allowCancel, final int type ) {
