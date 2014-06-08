@@ -993,17 +993,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean closeFile() {
     boolean closed = true;
-    TransMeta transMeta = getActiveTransformation();
-    if ( transMeta != null ) {
+    EngineMetaInterface meta = getActiveMeta();
+    if ( meta != null ) {
       // If a transformation is the current active tab, close it
       closed = tabCloseSelected();
-    } else {
-      // Otherwise try to find the current open job and close it
-      JobMeta jobMeta = getActiveJob();
-      if ( jobMeta != null ) {
-        closed = tabCloseSelected();
-      }
     }
+
     return closed;
   }
 
@@ -1056,7 +1051,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     mb.setText( warningTitle );
 
     final int isCloseAllFiles = mb.open();
-    if ( isCloseAllFiles == SWT.YES ) {
+    if ( ( isCloseAllFiles == SWT.YES ) || ( isCloseAllFiles == SWT.OK ) ) {
       // Yes - User specified that they want to close all.
       return Spoon.getInstance().closeAllFiles();
     } else if ( ( isCloseAllFiles == SWT.NO ) && ( executePerms ) ) {
@@ -6705,7 +6700,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "trans-last-impact", disableTransMenu );
 
         // Tools
-        disableMenuItem( doc, "repository-connect", isRepositoryRunning );
+        // Enable Connect to repository only when all tabs are not dirty
+        disableMenuItem( doc, "repository-connect", isTabsChanged() );
         disableMenuItem( doc, "repository-disconnect", !isRepositoryRunning );
         disableMenuItem( doc, "repository-explore", !isRepositoryRunning );
         disableMenuItem( doc, "repository-clear-shared-object-cache", !isRepositoryRunning );
@@ -6795,14 +6791,37 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void markTabsChanged() {
+    boolean anyTabsChanged = false;
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       if ( entry.getTabItem().isDisposed() ) {
         continue;
       }
 
       boolean changed = entry.getObject().hasContentChanged();
+      anyTabsChanged |= changed;
       entry.getTabItem().setChanged( changed );
     }
+
+    // If there are tabs that are dirty, then disable connect menu-item
+    disableMenuItem( mainSpoonContainer.getDocumentRoot(), "repository-connect", anyTabsChanged );
+  }
+
+  /**
+   * Check to see if any jobs or transformations are dirty
+   * @return true if any of the open jobs or trans are marked dirty
+   */
+  public boolean isTabsChanged() {
+    for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
+      if ( entry.getTabItem().isDisposed() ) {
+        continue;
+      }
+
+      if ( entry.getObject().hasContentChanged() ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public void printFile() {
