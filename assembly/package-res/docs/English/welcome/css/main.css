@@ -487,6 +487,10 @@ ul li:before {
    	font-weight: 300;
 }
 
+ul ul {
+	margin: 10px 10px;
+}
+
 ul ul li:before {
 	font-weight: 300;
 }
