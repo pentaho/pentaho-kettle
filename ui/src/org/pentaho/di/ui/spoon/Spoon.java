@@ -1040,7 +1040,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String warningTitle = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllForce.Disconnect.Title" );
     String warningText = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllForce.Disconnect.Message" );
     int buttons = SWT.OK;
-    if ( ( readPerms && createPerms && executePerms ) || ( readPerms && executePerms ) ) {
+    if ( readPerms && createPerms && executePerms ) {
       warningTitle = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllOption.Disconnect.Title" );
       warningText = BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllOption.Disconnect.Message" );
       buttons = SWT.YES | SWT.NO;
@@ -3655,6 +3655,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openRepository() {
+    // Check to tabs are dirty and warn user that they must save tabs prior to connecting.  Don't connect!
+    if ( Spoon.getInstance().isTabsChanged() ) {
+      MessageBox mb = new MessageBox( Spoon.getInstance().getShell(), SWT.OK );
+      mb.setMessage(  BaseMessages.getString( PKG, "Spoon.Dialog.WarnToSaveAllPriorToConnect.Message" ) );
+      mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.WarnToCloseAllForce.Disconnect.Title" ) );
+      mb.open();
+
+      // Don't connect, user will need to save all their dirty tabs.
+      return;
+    }
+
     loginDialog = new RepositoriesDialog( shell, null, new ILoginCallback() {
 
       public void onSuccess( Repository repository ) {
@@ -6700,8 +6711,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "trans-last-impact", disableTransMenu );
 
         // Tools
-        // Enable Connect to repository only when all tabs are not dirty
-        disableMenuItem( doc, "repository-connect", isTabsChanged() );
+        disableMenuItem( doc, "repository-connect", isRepositoryRunning );
         disableMenuItem( doc, "repository-disconnect", !isRepositoryRunning );
         disableMenuItem( doc, "repository-explore", !isRepositoryRunning );
         disableMenuItem( doc, "repository-clear-shared-object-cache", !isRepositoryRunning );
@@ -6801,9 +6811,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       anyTabsChanged |= changed;
       entry.getTabItem().setChanged( changed );
     }
-
-    // If there are tabs that are dirty, then disable connect menu-item
-    disableMenuItem( mainSpoonContainer.getDocumentRoot(), "repository-connect", anyTabsChanged );
   }
 
   /**
