@@ -1212,6 +1212,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public boolean insertRow( PreparedStatement ps, boolean batch, boolean handleCommit ) throws KettleDatabaseException {
     String debug = "insertRow start";
     boolean rowsAreSafe = false;
+    boolean isBatchUpdate = false;
 
     try {
       // Unique connections and Batch inserts don't mix when you want to roll
@@ -1244,6 +1245,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
                             // TableOutput step)
         if ( !isAutoCommit() && ( written % commitsize ) == 0 ) {
           if ( useBatchInsert ) {
+            isBatchUpdate = true;
             debug = "insertRow executeBatch commit";
             ps.executeBatch();
             commit();
@@ -1259,21 +1261,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       return rowsAreSafe;
     } catch ( BatchUpdateException ex ) {
-      KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( "Error updating batch", ex );
-      kdbe.setUpdateCounts( ex.getUpdateCounts() );
-      List<Exception> exceptions = new ArrayList<Exception>();
-
-      // 'seed' the loop with the root exception
-      SQLException nextException = ex;
-      do {
-        exceptions.add( nextException );
-        // while current exception has next exception, add to list
-      } while ( ( nextException = nextException.getNextException() ) != null );
-      kdbe.setExceptionsList( exceptions );
-      throw kdbe;
+      throw createKettleDatabaseBatchException( "Error updating batch", ex );
     } catch ( SQLException ex ) {
-      // log.logError(Const.getStackTracker(ex));
-      throw new KettleDatabaseException( "Error inserting/updating row", ex );
+      if ( isBatchUpdate ) {
+        throw createKettleDatabaseBatchException( "Error updating batch", ex );
+      } else {
+        throw new KettleDatabaseException( "Error inserting/updating row", ex );
+      }
     } catch ( Exception e ) {
       // System.out.println("Unexpected exception in ["+debug+"] : "+e.getMessage());
       throw new KettleDatabaseException( "Unexpected error inserting/updating row in part [" + debug + "]", e );
@@ -1328,12 +1322,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    */
   public void emptyAndCommit( PreparedStatement ps, boolean batch, int batchCounter ) throws KettleDatabaseException {
-
+    boolean isBatchUpdate = false;
     try {
       if ( ps != null ) {
         if ( !isAutoCommit() ) {
           // Execute the batch or just perform a commit.
-          //
           if ( batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter > 0 ) {
             // The problem with the batch counters is that you can't just
             // execute the current batch.
@@ -1344,7 +1337,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             // do anything.
             // That leaves the task of keeping track of the number of rows up to
             // our responsibility.
-            //
+            isBatchUpdate = true;
             ps.executeBatch();
             commit();
             ps.clearBatch();
@@ -1358,27 +1351,40 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         ps.close();
       }
     } catch ( BatchUpdateException ex ) {
-      KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( "Error updating batch", ex );
-      kdbe.setUpdateCounts( ex.getUpdateCounts() );
-      List<Exception> exceptions = new ArrayList<Exception>();
-      SQLException nextException = ex.getNextException();
-      SQLException oldException = null;
-
-      // This construction is specifically done for some JDBC drivers, these
-      // drivers
-      // always return the same exception on getNextException() (and thus go
-      // into an infinite loop).
-      // So it's not "equals" but != (comments from Sven Boden).
-      while ( ( nextException != null ) && ( oldException != nextException ) ) {
-        exceptions.add( nextException );
-        oldException = nextException;
-        nextException = nextException.getNextException();
-      }
-      kdbe.setExceptionsList( exceptions );
-      throw kdbe;
+      throw createKettleDatabaseBatchException( "Error updating batch", ex );
     } catch ( SQLException ex ) {
-      throw new KettleDatabaseException( "Unable to empty ps and commit connection.", ex );
+      if ( isBatchUpdate ) {
+        throw createKettleDatabaseBatchException( "Error updating batch", ex );
+      } else {
+        throw new KettleDatabaseException( "Unable to empty ps and commit connection.", ex );
+      }
     }
+  }
+
+  public static KettleDatabaseBatchException createKettleDatabaseBatchException( String message, SQLException ex ) {
+    KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( message, ex );
+    if ( ex instanceof BatchUpdateException ) {
+      kdbe.setUpdateCounts( ( (BatchUpdateException) ex ).getUpdateCounts() );
+    } else {
+      // Null update count forces rollback of batch
+      kdbe.setUpdateCounts( null );
+    }
+    List<Exception> exceptions = new ArrayList<Exception>();
+    SQLException nextException = ex.getNextException();
+    SQLException oldException = null;
+
+    // This construction is specifically done for some JDBC drivers, these
+    // drivers
+    // always return the same exception on getNextException() (and thus go
+    // into an infinite loop).
+    // So it's not "equals" but != (comments from Sven Boden).
+    while ( ( nextException != null ) && ( oldException != nextException ) ) {
+      exceptions.add( nextException );
+      oldException = nextException;
+      nextException = nextException.getNextException();
+    }
+    kdbe.setExceptionsList( exceptions );
+    return kdbe;
   }
 
   /**
@@ -1396,11 +1402,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    */
   @Deprecated
   public void insertFinished( PreparedStatement ps, boolean batch ) throws KettleDatabaseException {
+    boolean isBatchUpdate = false;
     try {
       if ( ps != null ) {
         if ( !isAutoCommit() ) {
           // Execute the batch or just perform a commit.
-          //
           if ( batch && getDatabaseMetaData().supportsBatchUpdates() ) {
             // The problem with the batch counters is that you can't just
             // execute the current batch.
@@ -1411,7 +1417,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             // do anything.
             // That leaves the task of keeping track of the number of rows up to
             // our responsibility.
-            //
+            isBatchUpdate = true;
             ps.executeBatch();
             commit();
           } else {
@@ -1424,26 +1430,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         ps.close();
       }
     } catch ( BatchUpdateException ex ) {
-      KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( "Error updating batch", ex );
-      kdbe.setUpdateCounts( ex.getUpdateCounts() );
-      List<Exception> exceptions = new ArrayList<Exception>();
-      SQLException nextException = ex.getNextException();
-      SQLException oldException = null;
-
-      // This construction is specifically done for some JDBC drivers, these
-      // drivers
-      // always return the same exception on getNextException() (and thus go
-      // into an infinite loop).
-      // So it's not "equals" but != (comments from Sven Boden).
-      while ( ( nextException != null ) && ( oldException != nextException ) ) {
-        exceptions.add( nextException );
-        oldException = nextException;
-        nextException = nextException.getNextException();
-      }
-      kdbe.setExceptionsList( exceptions );
-      throw kdbe;
+      throw createKettleDatabaseBatchException( "Error updating batch", ex );
     } catch ( SQLException ex ) {
-      throw new KettleDatabaseException( "Unable to commit connection after having inserted rows.", ex );
+      if ( isBatchUpdate ) {
+        throw createKettleDatabaseBatchException( "Error updating batch", ex );
+      } else {
+        throw new KettleDatabaseException( "Unable to commit connection after having inserted rows.", ex );
+      }
     }
   }
 

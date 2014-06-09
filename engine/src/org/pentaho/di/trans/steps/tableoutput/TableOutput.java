@@ -22,11 +22,9 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
-import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -287,21 +285,8 @@ public class TableOutput extends BaseStep implements StepInterface {
             insertStatement.executeBatch();
             data.db.commit();
             insertStatement.clearBatch();
-          } catch ( BatchUpdateException ex ) {
-            KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( "Error updating batch", ex );
-            kdbe.setUpdateCounts( ex.getUpdateCounts() );
-            List<Exception> exceptions = new ArrayList<Exception>();
-
-            // 'seed' the loop with the root exception
-            SQLException nextException = ex;
-            do {
-              exceptions.add( nextException );
-              // while current exception has next exception, add to list
-            } while ( ( nextException = nextException.getNextException() ) != null );
-            kdbe.setExceptionsList( exceptions );
-            throw kdbe;
           } catch ( SQLException ex ) {
-            throw new KettleDatabaseException( "Error inserting row", ex );
+            throw Database.createKettleDatabaseBatchException( "Error updating batch", ex );
           } catch ( Exception ex ) {
             throw new KettleDatabaseException( "Unexpected error inserting row", ex );
           }
