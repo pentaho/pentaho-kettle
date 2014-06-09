@@ -26,6 +26,7 @@ public enum RepositoryOperation {
 
   READ_TRANSFORMATION( "Read transformation" ), MODIFY_TRANSFORMATION( "Modify transformation" ),
     DELETE_TRANSFORMATION( "Delete transformation" ), EXECUTE_TRANSFORMATION( "Execute transformation" ),
+    CREATE_TRANSFORMATION( "Create Transformation" ), CREATE_JOB( "Create Job" ),
     LOCK_TRANSFORMATION( "Lock transformation" ),
 
     READ_JOB( "Read job" ), MODIFY_JOB( "Modify job" ), DELETE_JOB( "Delete job" ), EXECUTE_JOB( "Execute job" ),
