@@ -387,24 +387,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
                 data.db.commit();
                 data.deleteStatement.clearBatch();
               }
-            } catch ( BatchUpdateException ex ) {
-              KettleDatabaseBatchException kdbe =
-                new KettleDatabaseBatchException( BaseMessages.getString(
-                  PKG, "SynchronizeAfterMerge.Error.UpdatingBatch" ), ex );
-              kdbe.setUpdateCounts( ex.getUpdateCounts() );
-              List<Exception> exceptions = new ArrayList<Exception>();
-
-              // 'seed' the loop with the root exception
-              SQLException nextException = ex;
-              do {
-                exceptions.add( nextException );
-                // while current exception has next exception, add to list
-              } while ( ( nextException = nextException.getNextException() ) != null );
-              kdbe.setExceptionsList( exceptions );
-              throw kdbe;
             } catch ( SQLException ex ) {
-              throw new KettleDatabaseException( BaseMessages.getString(
-                PKG, "SynchronizeAfterMerge.Error.InsertingRow" ), ex );
+              throw Database.createKettleDatabaseBatchException( BaseMessages.getString(
+                  PKG, "SynchronizeAfterMerge.Error.UpdatingBatch" ), ex );
             } catch ( Exception ex ) {
               throw new KettleDatabaseException( "Unexpected error inserting row", ex );
             }
