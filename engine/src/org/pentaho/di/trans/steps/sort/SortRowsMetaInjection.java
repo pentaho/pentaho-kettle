@@ -204,18 +204,22 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
 
     // Pass the grid to the step metadata
     //
-    meta.setFieldName( sortNames.toArray( new String[sortNames.size()] ) );
-    boolean[] ascending = new boolean[sortAscs.size()];
-    boolean[] cases = new boolean[sortCases.size()];
-    boolean[] presorteds = new boolean[sortPresorteds.size()];
-    for ( int i = 0; i < ascending.length; i++ ) {
-      ascending[i] = sortAscs.get( i );
-      cases[i] = sortCases.get( i );
-      presorteds[i] = sortPresorteds.get( i );
+    // if at least one of the arrays was specified to be injected
+    // we inject the entire grid
+    if ( !sortNames.isEmpty() || !sortAscs.isEmpty() || !sortCases.isEmpty() || !sortPresorteds.isEmpty() ) {
+      meta.setFieldName( sortNames.toArray( new String[sortNames.size()] ) );
+      boolean[] ascending = new boolean[sortAscs.size()];
+      boolean[] cases = new boolean[sortCases.size()];
+      boolean[] presorteds = new boolean[sortPresorteds.size()];
+      for ( int i = 0; i < ascending.length; i++ ) {
+        ascending[i] = sortAscs.get( i );
+        cases[i] = sortCases.get( i );
+        presorteds[i] = sortPresorteds.get( i );
+      }
+      meta.setAscending( ascending );
+      meta.setCaseSensitive( cases );
+      meta.setPreSortedField( presorteds );
     }
-    meta.setAscending( ascending );
-    meta.setCaseSensitive( cases );
-    meta.setPreSortedField( presorteds );
   }
 
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
