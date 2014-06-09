@@ -1,3 +1,5 @@
+
+
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
@@ -20,11 +22,11 @@ body, html {
 }
 
 h1.large {
-	font-size: 58px;
+	font-size: 44px;
 	color: #005ca7;
 	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
-	width: 750px;
+	width: 940px;
 	margin: 0px 0px 30px -2px;
 }
 
@@ -37,19 +39,9 @@ h2.large {
 	margin: 0px 0px 20px 0px;
 }
 
-.title-row a.buy-pentaho, 
-.title-row a.buy-pentaho:link, 
-.title-row a.buy-pentaho:visited, 
-.title-row a.buy-pentaho:hover, 
-.title-row a.buy-pentaho:active, 
-.title-row a.buy-pentaho:focus {
-  	margin-top: 5px;
-  	float: right;
-}
-
 .header-container {
 	width: 940px;
-	height: 255px;
+	height: 335px;
 	margin: 0px auto;
 	border: 1px #ccc solid;
 	border-top: 0px;
@@ -66,8 +58,8 @@ h2.large {
 	width: 380px;
 	font-size: 16px;
 	float: left;
-	margin-top: 15px;
-	margin-left: 20px;
+	margin-top: 25px;
+	margin-left: 40px;
 	font-weight: 400;
 	color: #7c7c7c;
 	font-family: Arial, Helvetica, sans-serif;
@@ -75,10 +67,34 @@ h2.large {
 
 .header-container > img {
 	float: left;
-	width: 350px;
-	margin-top: -2px;
+	width: 400px;
+	margin-top: -32px;
+	margin-left: 60px;
+	margin-right: 28px;
+}
+
+.header-container .secondimage > img {
+	float: left;
+	width: 200px;
+	margin-top: -32px;
 	margin-left: 120px;
-	margin-right: 38px;
+	margin-right: 28px;
+}
+
+.header-container > a img {
+	float: left;
+	width: 400px;
+	margin-top: -32px;
+	margin-left: 60px;
+	margin-right: 28px;
+}
+
+.header-container .secondimage > a img {
+	float: left;
+	width: 200px;
+	margin-top: -32px;
+	margin-left: 120px;
+	margin-right: 28px;
 }
 
 .header-container .git-button,
@@ -232,6 +248,107 @@ h2.large {
     position: absolute;
     width: 234px;
     background: linear-gradient(rgb(252, 215, 28), rgb(238, 202, 20));
+}
+
+
+/* ==========================================================================
+   custom styles for pdi home page revision 6/9/14
+   ========================================================================== */
+
+
+.bordertopyellow {
+	border-top:12px solid #ffc20f;
+	padding-top:4px !important;
+
+}
+
+.banner-sub-header {
+	
+	float: left;
+	text-align: left;
+	left: 0px;
+	display: block;
+	box-sizing: border-box;
+	padding: 0px;
+	margin: 0px;
+	font-size: 24px;
+	font-weight: 300;
+	height: 76px;
+	color: #333333;
+	line-height: 25px;
+	overflow: hidden;
+	font-family:"Open Sans", sans-serif;
+}
+.banner-action {
+	
+	float: left;
+	text-align: left;
+	left: 0px;
+	display: block;
+	box-sizing: border-box;
+	padding: 0px;
+	margin: 0px;
+	font-size: 20px;
+	font-weight: 300;
+	height: 76px;
+	color: #333333;
+	line-height: 25px;
+	overflow: hidden;
+	font-family:"Open Sans", sans-serif;
+}
+
+
+.blue {
+
+	color:#005ca7
+	
+	;}
+
+.getlatestheader {
+
+	float:none;
+	text-align:center;
+	height:40px !important;
+	
+	;}
+
+.w190 {
+
+	width:190px;
+}
+
+.w120 {
+
+	width:120px;
+}
+
+.mt-image3 {
+	margin-top:-14px !important
+}
+
+
+.right-arrow-large {
+
+	text-decoration: none;
+	font-size: 17px;
+	font-weight: 300;
+	width: 16px;
+	height: 26px;
+	float: right;
+	background-image: url(../img/arrow-right-large.png);
+	background-position: top 1px left;
+	background-repeat:no-repeat;
+}
+.lineheight45 {
+	line-height:45px;
+}
+
+.center {
+	text-align:center;
+}
+
+.mb20 {
+	margin-bottom:20px;
 }
 
 /*CONTENT*/
@@ -487,10 +604,6 @@ ul li:before {
    	font-weight: 300;
 }
 
-ul ul {
-	margin: 10px 10px;
-}
-
 ul ul li:before {
 	font-weight: 300;
 }
@@ -539,7 +652,6 @@ hr {
 
 #extend-project,
 #extend-suite {
-	width: 200px;
 	text-align: center;
 	display: inline-block;
 	color: #fff;
@@ -550,9 +662,9 @@ hr {
 	background-image: -o-linear-gradient(#247dc5,#015ea9);
 	background-image: linear-gradient(#247dc5,#015ea9);
 	margin: 0px;
-	font-height: 30px;
-	padding: 13px 0px;
-	font-size: 12px;
+	padding: 10px 15px;
+	font-size: 18px;
+	height:23px;
 }
 
 #extend-project {
@@ -562,7 +674,7 @@ hr {
 }
 
 #extend-suite {
-	border-radius: 0px 5px 5px 0px;
+	border-radius: 5px;
 	margin-left: -2px;
 	border-left: none;
 }
