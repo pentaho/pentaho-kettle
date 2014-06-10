@@ -45,7 +45,15 @@
     <ivy:retrieve conf="pdf-docs" pattern="${pdf.docs.dir}/[module].[ext]" />
   </target>
 	
-  <target name="assemble" depends="resolve-swtlibs,resolve-pdf-docs,create-sampledb-from-sql,subfloor-pkg.assemble"
+  <!-- - - - - - - - - - - - - - - - - - 
+	target: resolve-oss-licenses
+  - - - - - - - - - - - - - - - - - -->
+  <target name="resolve-oss-licenses" depends="install-ivy">
+	 <ivy:resolve file="${ivyfile}" conf="oss-licenses" />
+     <ivy:retrieve conf="oss-licenses" pattern="${bin.dir}/[module].[ext]" />
+  </target>
+	
+  <target name="assemble" depends="resolve-swtlibs,resolve-pdf-docs,resolve-oss-licenses,create-sampledb-from-sql,subfloor-pkg.assemble"
           description="copy jar files to distribution directory">
     <echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
@@ -72,6 +80,13 @@
       <include name="*.sh"/>
       <replacefilter token="@KETTLE_VERSION_STRING@" value="${dependency.kettle.revision}"/>     
     </replace>
+  	
+    <unzip src="${bin.dir}/oss-licenses.zip" dest="${approot.stage.dir}">
+      <patternset>
+        <include name="PentahoDataIntegrationClientEE_OSS_Licenses.html"/>
+      	<include name="PentahoDataIntegrationServerEE_OSS_Licenses.html"/>
+      </patternset>
+    </unzip>
   	
   	<chmod perm="a+x" dir="${approot.stage.dir}" includes="**/*.sh" />
   </target>
