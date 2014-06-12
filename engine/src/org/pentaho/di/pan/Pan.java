@@ -50,6 +50,7 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
@@ -291,6 +292,8 @@ public class Pan {
 
             rep.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
               ? optionPassword.toString() : null );
+
+            rep.getSecurityProvider().validateAction( RepositoryOperation.EXECUTE_TRANSFORMATION );
 
             // Default is the root directory
             //
