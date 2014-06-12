@@ -1744,7 +1744,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   }
 
   public void copyEntry() {
-    if ( RepositorySecurityUI.verifyOperations( shell, spoon.rep, RepositoryOperation.EXECUTE_JOB ) ) {
+    if ( RepositorySecurityUI.verifyOperations( shell, spoon.rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
       return;
     }
     List<JobEntryCopy> entries = jobMeta.getSelectedEntries();

@@ -1389,7 +1389,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void copyJobentries() {
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
-      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_JOB ) ) {
+      if ( RepositorySecurityUI.verifyOperations( shell, rep,
+          RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
         return;
       }
 
@@ -3403,7 +3404,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
+    if ( RepositorySecurityUI.verifyOperations( shell, rep,
+        RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
       return;
     }
 
@@ -7378,7 +7380,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
     try {
-      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
+      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
         return;
       }
 
@@ -7392,7 +7394,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( jobMeta == null ) {
       return;
     }
-    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_JOB ) ) {
+    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
       return;
     }
 
@@ -8367,6 +8369,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void executeTransformation( final TransMeta transMeta, final boolean local, final boolean remote,
     final boolean cluster, final boolean preview, final boolean debug, final Date replayDate,
     final boolean safe, final LogLevel logLevel ) {
+
+    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
+      return;
+    }
+
     Thread thread = new Thread() {
       public void run() {
         getDisplay().asyncExec( new Runnable() {
@@ -8387,9 +8394,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void executeJob( JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe,
     String startCopyName, int startCopyNr ) {
-    // delegates.jobs.addJobLog(jobMeta);
-    // JobLog jobLog = getActiveJobLog();
-    // jobLog.startJob(replayDate);
+
+    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.EXECUTE_JOB ) ) {
+      return;
+    }
 
     try {
       delegates.jobs.executeJob( jobMeta, local, remote, replayDate, safe, startCopyName, startCopyNr );
