@@ -58,6 +58,7 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.version.BuildVersion;
@@ -307,6 +308,8 @@ public class Kitchen {
             repository.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
               ? optionPassword.toString() : null );
 
+            repository.getSecurityProvider().validateAction( RepositoryOperation.EXECUTE_JOB );
+
             RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree(); // Default = root
 
             // Add the IMetaStore of the repository to our delegation
@@ -388,8 +391,10 @@ public class Kitchen {
     } catch ( KettleException e ) {
       job = null;
       jobMeta = null;
+      if ( repository != null ) {
+        repository.disconnect();
+      }
       System.out.println( BaseMessages.getString( PKG, "Kitchen.Error.StopProcess", e.getMessage() ) );
-
     }
 
     if ( job == null ) {
