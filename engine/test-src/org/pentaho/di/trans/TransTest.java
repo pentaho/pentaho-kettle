@@ -1,9 +1,19 @@
 package org.pentaho.di.trans;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.util.concurrent.CountDownLatch;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs.FileObject;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +24,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
@@ -39,11 +50,13 @@ public class TransTest {
 
   @Test
   public void testFindDatabaseWithEncodedConnectionName() {
-    DatabaseMeta dbMeta1 = new DatabaseMeta( "encoded_DBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
+    DatabaseMeta dbMeta1 =
+        new DatabaseMeta( "encoded_DBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
     dbMeta1.setDisplayName( "encoded.DBConnection" );
     meta.addDatabase( dbMeta1 );
 
-    DatabaseMeta dbMeta2 = new DatabaseMeta( "normalDBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
+    DatabaseMeta dbMeta2 =
+        new DatabaseMeta( "normalDBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
     dbMeta2.setDisplayName( "normalDBConnection" );
     meta.addDatabase( dbMeta2 );
 
@@ -72,14 +85,14 @@ public class TransTest {
   public void testLoggingObjectIsNotLeakInTrans() throws KettleException {
     Repository rep = Mockito.mock( Repository.class );
     RepositoryDirectoryInterface repInt = Mockito.mock( RepositoryDirectoryInterface.class );
-    Mockito.when( rep.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ),
-        Mockito.any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) )
-        .thenReturn( meta );
+    Mockito.when(
+        rep.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
+            .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenReturn( meta );
     Mockito.when( rep.findDirectory( Mockito.anyString() ) ).thenReturn( repInt );
 
     Trans trans = new Trans( meta, rep, "junit", "junitDir", "fileName" );
-    Assert.assertEquals( "Log channel General assigned", LogChannel.GENERAL.getLogChannelId(),
-        trans.log.getLogChannelId() );
+    Assert.assertEquals( "Log channel General assigned", LogChannel.GENERAL.getLogChannelId(), trans.log
+        .getLogChannelId() );
   }
 
   /**
@@ -127,6 +140,23 @@ public class TransTest {
     startThreads( stopper, adder, start );
     Assert.assertEquals( "All transformation stop listeners is added", count, adder.c );
     Assert.assertEquals( "All stop call success", count, stopper.c );
+  }
+
+  @Test
+  public void testPDI12424ParametersFromMetaAreCopiedToTrans() throws KettleException, URISyntaxException, IOException {
+    String testParam = "testParam";
+    String testParamValue = "testParamValue";
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    when( mockTransMeta.listVariables() ).thenReturn( new String[] {} );
+    when( mockTransMeta.listParameters() ).thenReturn( new String[] { testParam } );
+    when( mockTransMeta.getParameterValue( testParam ) ).thenReturn( testParamValue );
+    FileObject ktr = KettleVFS.createTempFile( "parameters", ".ktr", "ram://" );
+    OutputStream outputStream = ktr.getContent().getOutputStream( true );
+    StringInputStream stringInputStream = new StringInputStream( "<transformation></transformation>" );
+    IOUtils.copy( stringInputStream, outputStream );
+    outputStream.close();
+    Trans trans = new Trans( mockTransMeta, null, null, null, ktr.getURL().toURI().toString() );
+    assertEquals( testParamValue, trans.getParameterValue( testParam ) );
   }
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {
