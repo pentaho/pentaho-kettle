@@ -3249,6 +3249,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void pasteXML( TransMeta transMeta, String clipcontent, Point loc ) {
+    if ( RepositorySecurityUI.verifyOperations( shell, rep,
+        RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
+      return;
+    }
     try {
       Document doc = XMLHandler.loadXMLString( clipcontent );
       Node transNode = XMLHandler.getSubNode( doc, Spoon.XML_TAG_TRANSFORMATION_STEPS );
@@ -4066,6 +4070,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         setRepository( null );
         setShellText();
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
+        enableMenus();
       }
     }
   }
@@ -7333,6 +7338,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public void pasteTransformation() {
+
+    if ( RepositorySecurityUI.verifyOperations( shell, rep,
+        RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
+      return;
+    }
+
     if ( log.isDetailed() ) {
       // "Paste transformation from the clipboard!"
       log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.PasteTransformationFromClipboard" ) );
@@ -7359,6 +7370,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public void pasteJob() {
+
+    if ( RepositorySecurityUI.verifyOperations( shell, rep,
+        RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
+      return;
+    }
+
     String xml = fromClipboard();
     try {
       Document doc = XMLHandler.loadXMLString( xml );
@@ -8484,6 +8501,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void pasteXML( JobMeta jobMeta, String clipContent, Point loc ) {
+    if ( RepositorySecurityUI.verifyOperations( shell, rep,
+        RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
+      return;
+    }
     delegates.jobs.pasteXML( jobMeta, clipContent, loc );
   }
 
