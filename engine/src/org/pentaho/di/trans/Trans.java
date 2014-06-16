@@ -542,8 +542,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * loading a transformation from a file (if the filename is provided but not a repository object) or from a repository
    * (if the repository object, repository directory name, and transformation name are specified).
    *
-   * @param parentVariableSpace
-   *          the parent variable space
+   * @param parent
+   *          the parent variable space and named params
    * @param rep
    *          the repository
    * @param name
@@ -555,7 +555,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException
    *           if any error occurs during loading, parsing, or creation of the transformation
    */
-  public Trans( VariableSpace parentVariableSpace, Repository rep, String name, String dirname, String filename ) throws KettleException {
+  public <Parent extends VariableSpace & NamedParams> Trans( Parent parent, Repository rep, String name,
+      String dirname, String filename ) throws KettleException {
     this();
     try {
       if ( rep != null ) {
@@ -572,11 +573,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       this.log = LogChannel.GENERAL;
 
-      transMeta.initializeVariablesFrom( parentVariableSpace );
-      initializeVariablesFrom( parentVariableSpace );
+      transMeta.initializeVariablesFrom( parent );
+      initializeVariablesFrom( parent );
       // PDI-3064 do not erase parameters from meta!
       // instead of this - copy parameters to actual transformation
-      this.copyParametersFrom( transMeta );
+      this.copyParametersFrom( parent );
       this.activateParameters();
 
       this.setDefaultLogCommitSize();
@@ -5347,7 +5348,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
   }
 
-  
+
   /**
    * Sets encoding of HttpServletResponse according to System encoding.Check if system encoding is null or an empty and
    * set it to HttpServletResponse when not and writes error to log if null. Throw IllegalArgumentException if input
